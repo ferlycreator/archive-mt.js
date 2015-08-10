@@ -21,3 +21,5 @@ dist: 发布目录
 build: 编译发布所需的资源文件
 
 assets: css和images文件
+
+test: 单元测试代码
