@@ -1,0 +1,171 @@
+{
+  "startedDateTime": "2012-08-09T18:39:43.421Z",
+  "time": 111,
+  "request": {
+    "method": "GET",
+    "url": "http://api.map.baidu.com/images/blank.gif",
+    "httpVersion": "HTTP/1.1",
+    "headers": [
+      {
+        "name": "Accept-Encoding",
+        "value": "gzip,deflate,sdch"
+      },
+      {
+        "name": "Accept-Language",
+        "value": "zh-CN,zh;q=0.8"
+      },
+      {
+        "name": "Cookie",
+        "value": "BAIDUID=004EBC095B5C8F79B359670C21E60A43:FG=1; showgrtip=1; BDSFRCVID=UZ8_JgCbZsQ4twvJtsiXZyeZnnfEBaHh3J; H_BDCLCKID_SF=tbCjoD-XfCvbfP0kh46B5JF0-fIX5-RLf27ZLp5FBRo-q4jO2R642t-lXhQEWfvJBg5K5hkM5-OUfh4R2hP-MUCLMbQnLJTfMn7ZVD_KJCL5hI0r5KTHbnD_hlOeK4uXKKOLVhn8BU7kep8R5R7G2xtD54v8a44Ofgbyoq_XyR3jfDOYDUC0D650jG-et5nJHD6MQJj8bPOqDjrnhPF3LIuFBP6M35JqMN6E5bCh3ncjsP5OX4PKL6F4bUbtJ-FeWJLHoDPaJIDabP365ITVMtCjMqoBa4oBb4o2WbCQ256msqFzjU4ajf4hLPJvtljUBIOW2tbj2tPWOIJTKUOILqKWK46yQfAJWjRp5bj_thF0hIK4D50WDjPW5ptXb-vE2I5LBRrjHJOoDDk9b5OpyxrbLP78tJIqMT6-bf31abvFfhulhUbvD--y-nAjBfnhaeJNKq7mQxOAjM8Ry6C5e5JQDHLOqbbfb-of0RT-KRrMDP5uMDTjhPrMyfKJ0xIL5I7w5fbLJtnaKfo5X-nOXR04KRtOB5OM-K3gbh7m0f7kMpDxhn3HetQXDPCEJ50DJJFe_Dv5b-0_DtJpb-8_-P4DenjO3MQZBmj0XUb-MDTSHfO--noahtobytJvtUPj5572L4Ky2Jc6HtjqyR5xhjL1jGbZqjLOJbAjoIv5b-0_hIDG-P7qq4tehHRj-f34WDrp5KnOa-cE8-D9yloKWRK_M-KJ0jvitIve0R7MtRbzsT6P3f6C0--A5b_eBjIHJn48oKLhf-3bfTrxMtTJ-t6H-UnLqhQzfNOZ0hOtytOGM-b65x6MKPFRWlr-Xt6X5eTG3lnSthF0hIKlD5u-jjPW5ptXanQKMTIX3buQQRrrsqcEqJQKjJj3bRrC3hj2ymoA34bwfC8MOIJTKUOjhqk33HogKh5GKHnOKMbDthF0HPonHjKWj6cB3f; BDUSS=QyVVdNTGFJeURhfkxWRmNOfjNPU3RNZVVmR2luTmg5ZG9Ia0ZmcXlyMk8zY1ZRQUFBQUFBJCQAAAAAAAAAAAokNygAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABbKkIAAAAAAAAAAAAAAAAAEFCBEQAAAAAAAAAACkEsuY6P2E-Oj9hPWm; BDUT=bmgf004EBC095B5C8F79B359670C21E60A43137542df7901; MCITY=-%3A"
+      },
+      {
+        "name": "Connection",
+        "value": "keep-alive"
+      },
+      {
+        "name": "Pragma",
+        "value": "no-cache"
+      },
+      {
+        "name": "Accept-Charset",
+        "value": "GBK,utf-8;q=0.7,*;q=0.3"
+      },
+      {
+        "name": "Host",
+        "value": "api.map.baidu.com"
+      },
+      {
+        "name": "User-Agent",
+        "value": "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.60 Safari/537.1"
+      },
+      {
+        "name": "Accept",
+        "value": "*/*"
+      },
+      {
+        "name": "Cache-Control",
+        "value": "no-cache"
+      },
+      {
+        "name": "Referer",
+        "value": "http://map.baidu.com/"
+      }
+    ],
+    "queryString": [],
+    "cookies": [
+      {
+        "name": "BAIDUID",
+        "value": "004EBC095B5C8F79B359670C21E60A43:FG=1",
+        "expires": null,
+        "httpOnly": false,
+        "secure": false
+      },
+      {
+        "name": "showgrtip",
+        "value": "1",
+        "expires": null,
+        "httpOnly": false,
+        "secure": false
+      },
+      {
+        "name": "BDSFRCVID",
+        "value": "UZ8_JgCbZsQ4twvJtsiXZyeZnnfEBaHh3J",
+        "expires": null,
+        "httpOnly": false,
+        "secure": false
+      },
+      {
+        "name": "H_BDCLCKID_SF",
+        "value": "tbCjoD-XfCvbfP0kh46B5JF0-fIX5-RLf27ZLp5FBRo-q4jO2R642t-lXhQEWfvJBg5K5hkM5-OUfh4R2hP-MUCLMbQnLJTfMn7ZVD_KJCL5hI0r5KTHbnD_hlOeK4uXKKOLVhn8BU7kep8R5R7G2xtD54v8a44Ofgbyoq_XyR3jfDOYDUC0D650jG-et5nJHD6MQJj8bPOqDjrnhPF3LIuFBP6M35JqMN6E5bCh3ncjsP5OX4PKL6F4bUbtJ-FeWJLHoDPaJIDabP365ITVMtCjMqoBa4oBb4o2WbCQ256msqFzjU4ajf4hLPJvtljUBIOW2tbj2tPWOIJTKUOILqKWK46yQfAJWjRp5bj_thF0hIK4D50WDjPW5ptXb-vE2I5LBRrjHJOoDDk9b5OpyxrbLP78tJIqMT6-bf31abvFfhulhUbvD--y-nAjBfnhaeJNKq7mQxOAjM8Ry6C5e5JQDHLOqbbfb-of0RT-KRrMDP5uMDTjhPrMyfKJ0xIL5I7w5fbLJtnaKfo5X-nOXR04KRtOB5OM-K3gbh7m0f7kMpDxhn3HetQXDPCEJ50DJJFe_Dv5b-0_DtJpb-8_-P4DenjO3MQZBmj0XUb-MDTSHfO--noahtobytJvtUPj5572L4Ky2Jc6HtjqyR5xhjL1jGbZqjLOJbAjoIv5b-0_hIDG-P7qq4tehHRj-f34WDrp5KnOa-cE8-D9yloKWRK_M-KJ0jvitIve0R7MtRbzsT6P3f6C0--A5b_eBjIHJn48oKLhf-3bfTrxMtTJ-t6H-UnLqhQzfNOZ0hOtytOGM-b65x6MKPFRWlr-Xt6X5eTG3lnSthF0hIKlD5u-jjPW5ptXanQKMTIX3buQQRrrsqcEqJQKjJj3bRrC3hj2ymoA34bwfC8MOIJTKUOjhqk33HogKh5GKHnOKMbDthF0HPonHjKWj6cB3f",
+        "expires": null,
+        "httpOnly": false,
+        "secure": false
+      },
+      {
+        "name": "BDUSS",
+        "value": "QyVVdNTGFJeURhfkxWRmNOfjNPU3RNZVVmR2luTmg5ZG9Ia0ZmcXlyMk8zY1ZRQUFBQUFBJCQAAAAAAAAAAAokNygAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABbKkIAAAAAAAAAAAAAAAAAEFCBEQAAAAAAAAAACkEsuY6P2E-Oj9hPWm",
+        "expires": null,
+        "httpOnly": false,
+        "secure": false
+      },
+      {
+        "name": "BDUT",
+        "value": "bmgf004EBC095B5C8F79B359670C21E60A43137542df7901",
+        "expires": null,
+        "httpOnly": false,
+        "secure": false
+      },
+      {
+        "name": "MCITY",
+        "value": "-%3A",
+        "expires": null,
+        "httpOnly": false,
+        "secure": false
+      }
+    ],
+    "headersSize": 1745,
+    "bodySize": 0
+  },
+  "response": {
+    "status": 200,
+    "statusText": "OK",
+    "httpVersion": "HTTP/1.1",
+    "headers": [
+      {
+        "name": "Date",
+        "value": "Thu, 09 Aug 2012 18:39:43 GMT"
+      },
+      {
+        "name": "Content-Length",
+        "value": "49"
+      },
+      {
+        "name": "Last-Modified",
+        "value": "Fri, 01 Apr 2011 06:35:39 GMT"
+      },
+      {
+        "name": "Server",
+        "value": "apache"
+      },
+      {
+        "name": "ETag",
+        "value": "\"1674123982\""
+      },
+      {
+        "name": "Content-Type",
+        "value": "image/gif"
+      },
+      {
+        "name": "Cache-Control",
+        "value": "max-age=86400"
+      },
+      {
+        "name": "Accept-Ranges",
+        "value": "bytes"
+      },
+      {
+        "name": "Expires",
+        "value": "Fri, 10 Aug 2012 18:39:43 GMT"
+      }
+    ],
+    "cookies": [],
+    "content": {
+      "size": 49,
+      "mimeType": "image/gif",
+      "compression": 0
+    },
+    "redirectURL": "",
+    "headersSize": 275,
+    "bodySize": 49
+  },
+  "cache": {},
+  "timings": {
+    "blocked": 0,
+    "dns": -1,
+    "connect": -1,
+    "send": 0,
+    "wait": 27,
+    "receive": 83,
+    "ssl": -1
+  }
+}
