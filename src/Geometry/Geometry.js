@@ -355,8 +355,9 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     },
 
     /**
-     * 计算Geometry的像素长宽     
-     * @return {[type]}     [description]
+     * 返回Geometry的像素长宽, 像素长宽只在当前比例尺上有效, 比例尺变化后, 其值也会发生变化
+     * @return {Size}     Size.width, Size.height
+     * @export
      */
     getSize: function() {
         var map = this.getMap();
