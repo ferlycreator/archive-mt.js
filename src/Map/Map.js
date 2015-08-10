@@ -967,7 +967,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 在当前比例尺下将距离转换为像素
      * @param  {double} x [description]
-     * @param  {[type]} y [description]
+     * @param  {double} y [description]
      * @return {[type]}   [description]
      */
     distanceToPixel: function(x,y) {

@@ -155,21 +155,22 @@ Z['Tip'] = Z.Tip = Z.Control.extend({
 		var textSize = painter.measureTextMarker();
 		var width = textSize['width'],
 			height = textSize['height'];
-		var geoSide = this._target.computeVisualSide(this._map);
-		var sideWidth = geoSide['width'];
-		var sideHeight = geoSide['height'];
+		var geoSize = this._target.getSize();
+		var w = geoSize['width'],
+			h = geoSize['height'];
+		var left = 0, top = 0;
 		if (this.options) {
 			var placement = this.options['style']['placement'];
-			var left = 0, top = 0;
+			
 			if('left' === placement) {
-				left = -sideWidth/2;
-				top = sideHeight/2;
+				left = -w/2;
+				top = h/2;
 			} else if('right' === placement) {
-				left = sideWidth/2;
-				top = sideHeight/2;
+				left = w/2;
+				top = h/2;
 			} else if('top' === placement) {
 				left = 0;
-				top = height + sideHeight/2;
+				top = height + h/2;
 			} else if('bottom' === placement) {
 				left = 0;
 				top = 0;

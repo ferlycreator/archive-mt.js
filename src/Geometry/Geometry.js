@@ -354,6 +354,30 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         return this.computeExtent(this.getProjection());
     },
 
+    /**
+     * 计算Geometry的像素长宽     
+     * @return {[type]}     [description]
+     */
+    getSize: function() {
+        var map = this.getMap();
+        if (!map) {
+            return null;
+        }
+        var projection = this.getProjection();
+        var extent = this.computeVisualExtent(projection);
+        var xmin = extent['xmin'];
+        var xmax = extent['xmax'];
+        var ymin = extent['ymin'];
+        var ymax = extent['ymax'];
+        var topLeftPoint = new Z.Coordinate(xmin, ymax);
+        var topRightPoint = new Z.Coordinate(xmax, ymax);
+        var bottomLeftPoint = new Z.Coordinate(xmin, ymin);
+        var width = map.computeDistance(topLeftPoint, topRightPoint);
+        var height = map.computeDistance(topLeftPoint, bottomLeftPoint);
+        var result = map.distanceToPixel(width, height);
+        return {'width': result['px'], 'height': result['py']};
+    },
+
     getPrjExtent:function() {
         var ext = this.getExtent();
         var p = this.getProjection();

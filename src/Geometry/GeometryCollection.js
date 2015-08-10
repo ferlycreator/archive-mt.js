@@ -129,16 +129,6 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         return result;
     },
 
-    computeVisualExtent: function(projection) {
-        if (!projection || this.isEmpty()) {
-            return null;
-        }
-        var result = null;
-        for (var i=0, len=this.geometries.length;i<len;i++) {
-            result = Z.Extent.combine(this.geometries[i].computeVisualExtent(projection),result);
-        }
-        return result;
-    },
 
     computeVisualSide: function(map) {
         var projection = map.getProjection();
