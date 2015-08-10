@@ -130,22 +130,6 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
     },
 
 
-    computeVisualSide: function(map) {
-        var projection = map.getProjection();
-        var extent = this.computeVisualExtent(projection);
-        var xmin = extent['xmin'];
-        var xmax = extent['xmax'];
-        var ymin = extent['ymin'];
-        var ymax = extent['ymax'];
-        var topLeftPoint = new Z.Coordinate(xmin, ymax);
-        var topRightPoint = new Z.Coordinate(xmax, ymax);
-        var bottomLeftPoint = new Z.Coordinate(xmin, ymin);
-        var width = map.computeDistance(topLeftPoint, topRightPoint);
-        var height = map.computeDistance(topLeftPoint, bottomLeftPoint);
-        var result = map.distanceToPixel(width, height);
-        return {'width': result['px'], 'height': result['py']};
-    },
-
     assignPainter:function() {
         return new Z.GeometryCollection.Painter(this);
     },
