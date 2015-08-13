@@ -9,9 +9,9 @@ var karma = require('karma').server;
 //  set variables your_*_path to your own to dist.
 //  if not, default dist to ./dist/
 //------------------------------------------------
-// var your_engine_front_path = '../MapTalks/engine-front/';
-// var your_css_dist_path = your_engine_front_path+'webroot/css/';
-// var your_js_dist_path = your_engine_front_path+'webroot/js/build/v2/';
+var your_engine_front_path = '../MapTalks/engine-front/';
+var your_css_dist_path = your_engine_front_path+'webroot/css/';
+var your_js_dist_path = your_engine_front_path+'webroot/js/build/v2/';
 
 var minimist = require('minimist');
 
@@ -130,7 +130,7 @@ gulp.task('dist',['build'],function() {
 });
 
 gulp.task('watch-dist', function () {
-   gulp.watch('src/**/*.js', ['dist']);
+   gulp.watch(['src/**/*.js','build/srcList.txt'], ['dist']);
 });
 
 /**

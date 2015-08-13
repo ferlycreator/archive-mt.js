@@ -1,5 +1,5 @@
-Z.GeometryExt={};
-Z.GeometryExt.Util={
+
+Z.Geometry.include({
 	toGeoJsonCoordinates:function(coordinates) {
 		if (!Z.Util.isArray(coordinates)) {
 			return null;
@@ -10,4 +10,4 @@ Z.GeometryExt.Util={
 		}
 		return result;
 	}
-};
+});

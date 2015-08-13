@@ -1,6 +1,6 @@
 Z.Painter={};
 Z['Geometry']=Z.Geometry=Z.Class.extend({
-    includes: [Z.Eventable,Z.GeometryExt.Util,Z.GeometryExt.Menu,Z.GeometryExt.InfoWindow,Z.GeometryExt.Edit,Z.GeometryExt.Events],
+    includes: [Z.Eventable],
 
     //根据不同的语言定义不同的错误信息
     'exceptionDefs':{

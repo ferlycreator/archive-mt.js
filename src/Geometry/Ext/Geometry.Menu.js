@@ -1,4 +1,4 @@
-Z.GeometryExt.Menu = {
+Z.Geometry.include({
     /**
     * 设置Geometry的菜单
     * @param {Array} menuOption 菜单项
@@ -25,7 +25,7 @@ Z.GeometryExt.Menu = {
         var param = {'coordinate':coordinate, 'pixel':position};
         this.menu.showPosition = position;
         this.menu.beforeOpen(param);
-        return this;
+        return this; 
     },
 
     /**
@@ -58,4 +58,4 @@ Z.GeometryExt.Menu = {
         if(this.menu)
             this.menu.closeMenu();
     }
-};
+});

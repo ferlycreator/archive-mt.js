@@ -18,17 +18,17 @@ Z.LodConfig=Z.Class.extend({
          * @return {[type]}         [description]
          */
         initialize:function(lodInfo) {
-            if (!this.checkLodInfo(lodInfo)) {return;}
+            if (!this.checkLodInfo(lodInfo)) {return;} 
             //lodInfo是预设值的字符串
             var lodName = null;
-            if (Z.Util.isString(lodInfo)) {
+            if (Z.Util.isString(lodInfo)) { 
                 lodName = lodInfo;
                 lodInfo = Z['LodInfo'][lodInfo.toLowerCase()];
                 if (!lodInfo) {
                     throw new Error(this.exceptions['INVALID_CRS']+':'+lodName);
                 }
             }
-            this.lodInfo = lodInfo;
+            this.lodInfo = lodInfo; 
             Z.Util.extend(this,lodInfo);
             if (!this['padding']) {
                 this['padding'] = {
