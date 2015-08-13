@@ -2,7 +2,7 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
     includes:[Z.Geometry.Center],
 
     initialize:function(center,opts) {
-        this.type=Z.Geometry['TYPE_POINT'];
+        this.type = Z.Geometry['TYPE_POINT'];
         this.center = center;
         this.initOptions(opts);
     },

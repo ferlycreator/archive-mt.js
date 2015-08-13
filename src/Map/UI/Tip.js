@@ -20,6 +20,34 @@ Z['Tip'] = Z.Tip = Z.Control.extend({
 	},
 
 	options:{
+		/**
+		'cartocss' : {
+			'marker-file': '',
+			'marker-opacity': 1,
+			'marker-fill-opacity': 1,
+			'marker-line-color': '#000000',
+			'marker-line-width': 1,
+			'marker-line-opacity': 1,
+			'marker-placement': 'point',
+			'marker-type': 'ellipse', //arrow ellipse rectangle
+			'marker-width': 10,
+			'marker-height': 10,
+			'marker-fill': '#000000',
+
+			'text-name': [name],
+			'text-face-name': '',
+			'text-size': 10,
+			'text-ratio': 0,
+			'text-wrap-width': 1,
+			'text-spacing': '',
+			'text-fill': '#000000',
+			'text-opacity': 1,
+			'text-align': 'center',//left,right,center,auto
+			'text-vertical-alignment': 'top',//top,middle,bottom,auto
+			'text-horizontal-alignment': 'left',//left,middle,right,auto
+			'text-placement': 'point' //point line vertex interior
+		},
+		*/
 		'style': {
 			'color': '#000000',
 			'padding': 1,
@@ -29,14 +57,13 @@ Z['Tip'] = Z.Tip = Z.Control.extend({
 			'background': '#ffffff',
 			'stroke': '#000000',
 			'strokewidth': 1,
+			'type': 'rectangle', //bubble ellipse rectangle,
+			'file': '',
 			'placement' : 'top' //top | bottom | left | right | auto.
-			//'align': 'left', //水平对齐:left|center|right
-			//'valign': 'center'//垂直对齐:top|center|bottom
 		},
+		'content': '',
 		'link': true,
 		'draggable': true,
-		'html': true,
-		'content': '',
 		'target': null,
 		'trigger': 'hover'//click|hover
 	},
