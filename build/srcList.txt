@@ -37,6 +37,8 @@
 ../src/Geometry/Ext/Geometry.Menu.js
 ../src/Geometry/Ext/Geometry.Events.js
 ../src/Geometry/Geometry.js
+../src/Geometry/Ext/Geometry.Label.js
+../src/Geometry/Ext/Geometry.Tip.js
 ../src/Geometry/Extent.js
 ../src/Geometry/Vector.js
 ../src/Geometry/Geometry.Center.js
@@ -82,8 +84,8 @@
 ../src/Map/Map.ContextMenu.js
 ../src/Map/Map.DomEvents.js
 ../src/Map/Map.Snap.js
+../src/Map/Map.Fullscreen.js
 ../src/Map/Map.js
-../src/Map/Map.CartoCSS.js
 ../src/Map/Handler/Map.Drag.js
 ../src/Map/Handler/Map.DoubleClickZoom.js
 ../src/Map/Handler/Map.ScrollWheelZoom.js
@@ -94,6 +96,11 @@
 ../src/Map/Control/Control.Zoom.js
 ../src/Map/Control/Control.Attribution.js
 ../src/Map/Control/Control.Nav.js
+../src/Map/Control/Control.Scale.js
+../src/Map/UI/Button.js
+../src/Map/UI/Toolbar.js
+../src/Map/UI/Label.js
+../src/Map/UI/Tip.js
 ../src/Topo/GeoUtils.js
 ../src/Topo/SimplifyUtil.js
 ../src/Query/SpatialFilter.js
