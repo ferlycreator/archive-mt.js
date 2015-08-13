@@ -1,4 +1,4 @@
-Z.MapExt.Pan={
+Z.Map.include({
     
     /**
      * 将地图移动到指定的坐标
@@ -129,4 +129,4 @@ Z.MapExt.Pan={
         }
     }
 
-};
+});

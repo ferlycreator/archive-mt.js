@@ -1,4 +1,4 @@
-Z.MapExt.Fullscreen={
+Z.Map.include({
     /**
      * 全屏地图
      * @export
@@ -52,4 +52,4 @@ Z.MapExt.Fullscreen={
          document.webkitExitFullscreen();
        }
      }
-};
+});

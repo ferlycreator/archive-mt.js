@@ -3,7 +3,7 @@
  * 地图的事件处理
  * @type {Object}
  */
-Z.MapExt.DomEvents = {
+Z.Map.include({
 	/**
     * 初始化地图事件
     * @param {Boolean} remove
@@ -92,4 +92,4 @@ Z.MapExt.DomEvents = {
         obj = obj.options.draggable ? obj : this;
         return (obj.dragging) || (this.boxZoom);
     },*/
-};
+});

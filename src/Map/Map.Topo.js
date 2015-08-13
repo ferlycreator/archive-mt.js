@@ -1,7 +1,7 @@
 /**
  * Map类的扩展:拓扑计算的相关方法
  */
-Z.MapExt.Topo={
+Z.Map.include({
     /**
      * 计算两坐标间距离，计算结果单位为米，如果返回-1，则说明参数不合法
      * 
@@ -765,4 +765,4 @@ Z.MapExt.Topo={
         focusPoints["rightFocus"] = rightFocus;
         return focusPoints;
     }
-};
+});

@@ -75,14 +75,13 @@
 ../src/Geometry/Painter/Vector/Sector.Canvas.js
 ../src/Geometry/Painter/Collection/Collection.Painter.js
 ../src/Geometry/Editor/Editor.js
-../src/Map/Map.Ext.js
+../src/Map/Map.js
 ../src/Map/Map.Pan.js
 ../src/Map/Map.Zoom.js
 ../src/Map/Map.Topo.js
 ../src/Map/Map.ContextMenu.js
 ../src/Map/Map.DomEvents.js
 ../src/Map/Map.Snap.js
-../src/Map/Map.js
 ../src/Map/Map.CartoCSS.js
 ../src/Map/Handler/Map.Drag.js
 ../src/Map/Handler/Map.DoubleClickZoom.js

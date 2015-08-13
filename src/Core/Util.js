@@ -42,10 +42,6 @@ Z.Util = {
         return '___GLOBAL_'+(Z.Util.globalCounter++);
     },
 
-    stamp: function (obj) {
-        obj._Z_id = obj._Z_id || ++Z.Util.lastId;
-        return obj._Z_id;
-    },
 
     lastId: 0,
 
