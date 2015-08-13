@@ -5,6 +5,14 @@ var runSequence = require('run-sequence');
 var gcc = require('gulp-closure-compiler');
 var karma = require('karma').server;
 
+//--------------ATTENTION HERE!!------------------
+//  set variables your_*_path to your own to dist.
+//  if not, default dist to ./dist/
+//------------------------------------------------
+var your_engine_front_path = '../MapTalks/engine-front/';
+var your_css_dist_path = your_engine_front_path+'webroot/css/';
+var your_js_dist_path = your_engine_front_path+'webroot/js/build/v2/';
+
 var minimist = require('minimist');
 
 var knownOptions = {
@@ -63,6 +71,15 @@ gulp.task('scripts', function () {
   sources.push('build/footer.js');
   return gulp.src(sources)
     .pipe($.concat('maptalks.js'))
+    .pipe(gulp.dest('./dist/'));
+});
+
+gulp.task('compile',function () {
+  var sources = require('./build/getFiles.js').getFiles();
+  sources.unshift('build/header.js');
+  sources.push('build/footer.js');
+  return gulp.src(sources)
+    .pipe($.concat('maptalks.js'))
     .pipe(gulp.dest('./dist/'))
     // .pipe($.uglify({preserveComments: 'some'}))
     .pipe(gcc({
@@ -90,6 +107,30 @@ gulp.task('build', ['clean'], function (done) {
     'styles',
     ['jshint', 'scripts'],
     done);
+});
+
+//
+gulp.task('dist',['build'],function() {
+  var css_path = your_css_dist_path;
+  var js_path = your_js_dist_path;
+  if (!css_path) {
+    css_path = './dist/';
+  }
+  if (!js_path) {
+    js_path = './dist/';
+  }
+  gulp.src('./dist/*.css')    
+    .pipe(gulp.dest(css_path));
+  gulp.src('./dist/*.css.gz')    
+    .pipe(gulp.dest(css_path));
+  gulp.src('./dist/*.js')    
+    .pipe(gulp.dest(js_path));
+    gulp.src('./dist/*.js.gz')    
+    .pipe(gulp.dest(js_path));
+});
+
+gulp.task('watch-dist', function () {
+   gulp.watch(['src/**/*.js','build/srcList.txt'], ['dist']);
 });
 
 /**
@@ -143,4 +184,4 @@ gulp.task('tdd', ['styles'], function (done) {
   }, done);
 });
 
-gulp.task('default', ['build']);
+gulp.task('default', ['watch-dist']);

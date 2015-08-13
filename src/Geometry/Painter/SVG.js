@@ -106,6 +106,9 @@ Z.SVG.SVG={
                 if (key.toLowerCase() === 'fill') {
                     //模式填充
                     var fillValue = fillSymbol[key];
+                    if (Z.Util.isNil(fillValue)) {
+                        continue;
+                    }
                     var isUrl = fillValue.match(Z.SVG._ISURL);
                     if (isUrl) {
                         var pattern = Z.SVG.SVG.fillWithPattern(isUrl, vector, paper);

@@ -1,3 +1,8 @@
+/**
+ * CartoCSS解析参考了CartoCSS.js
+ * https://github.com/CartoDB/carto
+ */
+
 Z.Map.include({
     cartoCSS:function(css) {
         if (!Z.Util.isString(css) || css.length===0) {

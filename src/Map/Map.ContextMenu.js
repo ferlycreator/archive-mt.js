@@ -1,4 +1,4 @@
-Z.MapExt.ContextMenu = {
+Z.Map.include({
    /**
     * 设置Map的右键菜单
     * @param {Array} menuOption 菜单项
@@ -58,4 +58,4 @@ Z.MapExt.ContextMenu = {
     closeMenu: function() {
         this.menu.closeMenu();
     }
-};
+});

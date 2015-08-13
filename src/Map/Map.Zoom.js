@@ -1,4 +1,4 @@
-Z.MapExt.Zoom={
+Z.Map.include({
     onZoomStart:function(scale,focusPos,nextZoomLevel) {
         function zoomLayer(layer) {
             if (layer&&layer.onZoomStart) {
@@ -167,5 +167,5 @@ Z.MapExt.Zoom={
     getZoomMillisecs:function() {
         return 150;
     }
-};
+});
 

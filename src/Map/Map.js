@@ -1,6 +1,6 @@
 Z['Map']=Z.Map=Z.Class.extend({
     
-    includes: [Z.Eventable,Z.MapExt.Pan,Z.MapExt.Zoom,Z.MapExt.Topo,Z.MapExt.ContextMenu, Z.MapExt.DomEvents, Z.MapExt.Snap, Z.MapExt.Fullscreen],
+    includes: [Z.Eventable/*,Z.MapExt.Pan,Z.MapExt.Zoom,Z.MapExt.Topo,Z.MapExt.ContextMenu, Z.MapExt.DomEvents, Z.MapExt.Snap, Z.MapExt.Fullscreen*/],
 
     options:{
         'enableMapSliding':true,
