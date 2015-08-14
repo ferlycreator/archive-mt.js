@@ -4,7 +4,7 @@ Z.Geometry.include({
     * @param {Object} options/Z.Tip
     * @expose
     */
-    addTip: function (options) {
+    'addTip': function (options) {
         if(options instanceof Z.Tip) {
             tip = options;
             tip.options['target'] = this;

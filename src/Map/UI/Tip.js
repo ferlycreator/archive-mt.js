@@ -6,10 +6,10 @@ Z['Tip'] = Z.Tip = Z.Control.extend({
 	*/
 	'exceptionDefs':{
 		'en-US':{
-			'NEED_TARGET':'You must set target to Tip.'
+			'INVALID_TARGET':'You must set target to Tip.'
 		},
 		'zh-CN':{
-			'NEED_TARGET':'你必须设置Tip绑定的Geometry目标。'
+			'INVALID_TARGET':'你必须设置Tip绑定的Geometry目标。'
 		}
 	},
 
@@ -105,12 +105,13 @@ Z['Tip'] = Z.Tip = Z.Control.extend({
 	},
 
 	buildOn: function (map) {
-		if(!map || !this.options || !this.options['content']) return;
+		if(!map || !this.options || !this.options['content']) {return;}
 		this._tipContrainer = map.containerDOM;
 
 		this._target = this.options['target'];
-		if(!this._target) throw new Error(this.exceptions['NEED_TARGET']);
+		if(!this._target) {throw new Error(this.exceptions['INVALID_TARGET']);}
 		var layerId = '__mt__layer_tip';
+		// tip的图层类型可以只用svg
 		var canvas = false;
 		var targetLayer = this._target.getLayer();
 		if(targetLayer && targetLayer instanceof Z.CanvasLayer) {
@@ -122,10 +123,10 @@ Z['Tip'] = Z.Tip = Z.Control.extend({
 		this._tip = new Z.Marker(targetCenter);
 		this._tip['target'] = this._target;
 		this._tip.setIcon({
-			type: 'text',
-			textStyle: this.options['style'],
-			content: this.options['content'],
-			offset: {x:0, y:0}
+			'type': 'text',
+			'textStyle': this.options['style'],
+			'content': this.options['content'],
+			'offset': {x:0, y:0}
 		});
 		this._internalLayer.addGeometry(this._tip);
 		this._tip.hide();
