@@ -1,4 +1,4 @@
-Z.GeometryExt.Edit={
+Z.Geometry.include({
     /**
      *  开始编辑Geometry
      * @export
@@ -144,4 +144,4 @@ Z.GeometryExt.Edit={
         return map.getLayer(layerId);
     }
 
-};
+});

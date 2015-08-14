@@ -1,6 +1,16 @@
 Z.LodConfig=Z.Class.extend({
+ 
+        includes:Z.LodUtil.Common, 
 
-        includes:Z.LodUtil.Common,
+        //根据不同的语言定义不同的错误信息
+        'exceptionDefs':{
+            'en-US':{
+                'INVALID_CRS':'Invalid CRS'
+            },
+            'zh-CN':{
+                'INVALID_CRS':'无效的CRS'
+            }
+        },
 
         /**
          * 初始化方法
@@ -8,14 +18,17 @@ Z.LodConfig=Z.Class.extend({
          * @return {[type]}         [description]
          */
         initialize:function(lodInfo) {
-            if (!this.checkLodInfo(lodInfo)) {return;}
+            if (!this.checkLodInfo(lodInfo)) {return;} 
             //lodInfo是预设值的字符串
             var lodName = null;
-            if (Z.Util.isString(lodInfo)) {
+            if (Z.Util.isString(lodInfo)) { 
                 lodName = lodInfo;
                 lodInfo = Z['LodInfo'][lodInfo.toLowerCase()];
+                if (!lodInfo) {
+                    throw new Error(this.exceptions['INVALID_CRS']+':'+lodName);
+                }
             }
-            this.lodInfo = lodInfo;
+            this.lodInfo = lodInfo; 
             Z.Util.extend(this,lodInfo);
             if (!this['padding']) {
                 this['padding'] = {

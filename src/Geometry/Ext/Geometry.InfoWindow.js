@@ -1,4 +1,4 @@
-Z.GeometryExt.InfoWindow={
+Z.Geometry.include({
     /**
      * 设置Geometry的信息提示框设置
      * @param {Object} tipOption 信息提示框设置
@@ -56,4 +56,4 @@ Z.GeometryExt.InfoWindow={
         }
     }
 
-};
+});

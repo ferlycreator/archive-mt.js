@@ -1,4 +1,4 @@
-Z.GeometryExt.Events= {
+Z.Geometry.include({
 
     onEvent: function(event) {
         //还没加载到地图上时, 不处理事件
@@ -52,4 +52,4 @@ Z.GeometryExt.Events= {
         var params = this.getEventParams(originalEvent);
         this.fireEvent('mouseout', params);
     }
-};
+});
