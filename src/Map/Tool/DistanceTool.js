@@ -60,7 +60,7 @@ Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
 
 	/**
 	 * 停止测距鼠标工具
-	 * @export
+	 * @expose
 	 */
 	disable:function() {
 		if (!this.map) return;
@@ -166,7 +166,7 @@ Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
 
 	/**
 	 * 清除测量结果
-	 * @export
+	 * @expose
 	 */
 	clear: function(){
 		if (this.drawLayer != null && this.map!=null) {

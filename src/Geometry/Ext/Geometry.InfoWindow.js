@@ -2,7 +2,7 @@ Z.Geometry.include({
     /**
      * 设置Geometry的信息提示框设置
      * @param {Object} tipOption 信息提示框设置
-     * @export
+     * @expose
      */
     setInfoWindow:function(tipOption) {
         this.map = this.getMap();
@@ -30,7 +30,7 @@ Z.Geometry.include({
     /**
      * 获取Geometry的信息提示框设置
      * @return {Object} 信息提示框设置
-     * @export
+     * @expose
      */
     getInfoWindow:function() {
         if (!this.infoWindow) {return null;}
@@ -40,7 +40,7 @@ Z.Geometry.include({
     /**
      * 打开geometry的信息提示框
      * @param  {Coordinate} coordinate 提示框位置,可以为空
-     * @export
+     * @expose
      */
     openInfoWindow:function(coordinate) {
         this.infoWindow.show(coordinate);
@@ -48,7 +48,7 @@ Z.Geometry.include({
 
     /**
      * 关闭Geometry的信息提示框
-     * @export
+     * @expose
      */
     closeInfoWindow:function() {
         if (this.infoWindow) {

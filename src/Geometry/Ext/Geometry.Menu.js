@@ -3,7 +3,7 @@ Z.Geometry.include({
     * 设置Geometry的菜单
     * @param {Array} menuOption 菜单项
     * {"items":[], width:240, beforeopen:fn}
-    * @export
+    * @expose
     */
     setMenu: function(menuOption) {
         this.map = this.getMap();
@@ -31,7 +31,7 @@ Z.Geometry.include({
     /**
     * 打开geometry菜单
     * @param {Coordinate} 坐标
-    * @export
+    * @expose
     */
     openMenu: function(coordinate) {
         if(!coordinate) {
@@ -43,7 +43,7 @@ Z.Geometry.include({
     /**
     * 添加菜单项目
     * @param {Array} 菜单项数组
-    * @export
+    * @expose
     */
     setMenuItem: function(items) {
         this.menu.setItems(items);
@@ -52,7 +52,7 @@ Z.Geometry.include({
 
     /**
     * 关闭geometry菜单
-    * @export
+    * @expose
     */
     closeMenu: function() {
         if(this.menu)

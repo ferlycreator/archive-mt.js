@@ -91,6 +91,7 @@ gulp.task('compile',function () {
       compilerFlags: {
         formatting: 'PRETTY_PRINT',
         compilation_level: 'ADVANCED_OPTIMIZATIONS',
+        // generate_exports: true,
         externs: []
         // language_in: 'ECMASCRIPT5'
       },
@@ -109,7 +110,7 @@ gulp.task('clean', del.bind(null, [], {dot: true}));
 gulp.task('build', ['clean'], function (done) {
   runSequence(
     'styles',
-    ['jshint', 'scripts'],
+    ['compile'],
     done);
 });
 

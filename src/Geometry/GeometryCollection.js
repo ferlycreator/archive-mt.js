@@ -31,7 +31,7 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
     /**
      * 设置
      * @param {[Geometry]} geometries [Geometry数组]
-     * @export
+     * @expose
      *
      */
     setGeometries:function(geometries) {
@@ -45,7 +45,7 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
     /**
      * 获取集合中的Geometries
      * @return {[Geometry]} Geometry数组
-     * @export
+     * @expose
      */
     getGeometries:function() {
         if (!this.geometries && !Z.Util.isArray(this.geometries)) {
@@ -65,7 +65,7 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
     /**
      * 集合是否为空
      * @return {Boolean} [是否为空]
-     * @export
+     * @expose
      */
     isEmpty:function() {
         return !Z.Util.isArrayHasData(this.geometries);
@@ -176,7 +176,7 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
 
     /**
      * 开始编辑
-     * @export
+     * @expose
      */
     startEdit:function(opts) {
         if (opts['symbol']) {
@@ -193,7 +193,7 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
 
     /**
      * 停止编辑
-     * @export
+     * @expose
      */
     endEdit:function() {
         var geometries = this.getGeometries();
@@ -211,7 +211,7 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
     /**
      * 是否处于编辑状态
      * @return {Boolean} [是否处于编辑状态]
-     * @export
+     * @expose
      */
     isEditing:function() {
         return this.editing;
@@ -219,7 +219,7 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
 
     /**
      * 开始拖拽
-     * @export
+     * @expose
      */
     startDrag:function() {
         var geometries = this.getGeometries();
@@ -232,7 +232,7 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
 
     /**
      * 停止拖拽
-     * @export
+     * @expose
      */
     endDrag:function() {
         var geometries = this.getGeometries();
@@ -246,7 +246,7 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
     /**
      * 是否处于拖拽状态
      * @return {Boolean} [是否处于拖拽状态]
-     * @export
+     * @expose
      */
     isDragging:function() {
         return this.dragging;

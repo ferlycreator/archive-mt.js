@@ -56,7 +56,7 @@ seegoo.maps.HistoryRoutePlayer=function(map, config, routes) {
 seegoo.maps.Util.extend(seegoo.maps.HistoryRoutePlayer, seegoo.maps.Eventable, {
 		/**
 		 * 显示轨迹
-		 * @export
+		 * @expose
 		 * @param identifier {String|Number} 轨迹的identifier
 		 */
 		show:function(identifier) {
@@ -64,7 +64,7 @@ seegoo.maps.Util.extend(seegoo.maps.HistoryRoutePlayer, seegoo.maps.Eventable, {
 		},
 		/**
 		 * 隐藏轨迹
-		 * @export
+		 * @expose
 		 * @param identifier {String|Number} 轨迹的identifier
 		 */
 		hide:function(identifier) {
@@ -72,14 +72,14 @@ seegoo.maps.Util.extend(seegoo.maps.HistoryRoutePlayer, seegoo.maps.Eventable, {
 		},
 		/**
 		 * 取消聚焦
-		 * @export
+		 * @expose
 		 */
 		unfocus:function() {
 		  this.player && this.player.unfocus();
 		}, 
 		/**
 		 * 聚焦轨迹
-		 * @export
+		 * @expose
 		 * @param identifier {String|Number} 聚焦轨迹的identifier
 		 */
 		focus:function(identifier) {
@@ -87,7 +87,7 @@ seegoo.maps.Util.extend(seegoo.maps.HistoryRoutePlayer, seegoo.maps.Eventable, {
 		}, 
 		/**
 		 * 开始播放
-		 * @export
+		 * @expose
 		 */
 		start:function() {
 		  this.initializeRoute();
@@ -95,28 +95,28 @@ seegoo.maps.Util.extend(seegoo.maps.HistoryRoutePlayer, seegoo.maps.Eventable, {
 		}, 
 		/**
 		 * 暂停播放
-		 * @export
+		 * @expose
 		 */
 		pause:function() {
 		  this.player && this.player.pause();
 		}, 
 		/**
 		 * 恢复播放
-		 * @export
+		 * @expose
 		 */
 		resume:function() {
 		  this.player && this.player.resume();
 		}, 
 		/**
 		 * 停止播放
-		 * @export
+		 * @expose
 		 */
 		stop:function() {
 		  this.player && this.player.stop();
 		}, 
 		/**
 		 * 设定播放时间
-		 * @export
+		 * @expose
 		 * @param time {Number} 播放时间
 		 */
 		setTime:function(time) {
@@ -125,7 +125,7 @@ seegoo.maps.Util.extend(seegoo.maps.HistoryRoutePlayer, seegoo.maps.Eventable, {
 		}, 
 		/**
 		 * 获得播放器的当前时间
-		 * @export
+		 * @expose
 		 * @returns {Number}
 		 */
 		getCurrentTime:function() {
@@ -386,7 +386,7 @@ seegoo.maps.Util.extend(seegoo.maps.HistoryRoutePlayer, seegoo.maps.Eventable, {
 		},
 		/**
 		 * 设定播放器的TimeSpan，改变播放器获取数据的时间频率，timeSpan越小，轨迹播放越平滑但CPU占用率越高。
-		 * @export
+		 * @expose
 		 * @param timeSpan {Number} timeSpan
 		 */
 		setTimeSpan:function(timeSpan) {
@@ -395,7 +395,7 @@ seegoo.maps.Util.extend(seegoo.maps.HistoryRoutePlayer, seegoo.maps.Eventable, {
 		},
 		/**
 		 * 设定播放器的unitTime，改变每个timeSpan对应的真实事件，unitTime越大，播放速度越快
-		 * @export
+		 * @expose
 		 * @param unitTime {Number} unitTime
 		 */
 		setUnitTime:function(unitTime) {
@@ -404,7 +404,7 @@ seegoo.maps.Util.extend(seegoo.maps.HistoryRoutePlayer, seegoo.maps.Eventable, {
 		},
 		/**
 		 * 获取播放器的timeSpan
-		 * @export
+		 * @expose
 		 * @returns {Number}
 		 */
 		getTimeSpan:function() {
@@ -413,7 +413,7 @@ seegoo.maps.Util.extend(seegoo.maps.HistoryRoutePlayer, seegoo.maps.Eventable, {
 		},
 		/**
 		 * 获取播放器的unitTime
-		 * @export
+		 * @expose
 		 * @returns {Number}
 		 */
 		getUnitTime:function() {

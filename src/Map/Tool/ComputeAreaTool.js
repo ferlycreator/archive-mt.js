@@ -30,7 +30,7 @@ Z['ComputeAreaTool'] = Z.ComputeAreaTool = Z.Class.extend({
 	},
 	/**
 	* 激活测距鼠标工具
-	* @export
+	* @expose
 	*/
 	enable: function() {
 		if (!this.map) return;
@@ -67,7 +67,7 @@ Z['ComputeAreaTool'] = Z.ComputeAreaTool = Z.Class.extend({
 
 	/**
 	* 停止测距鼠标工具
-	* @export
+	* @expose
 	*/
 	disable: function() {
 		this.clear();
@@ -115,7 +115,7 @@ Z['ComputeAreaTool'] = Z.ComputeAreaTool = Z.Class.extend({
 
 	/**
 	 * 清除测量过程中产生的标注
-	 * @export
+	 * @expose
 	 */
 	clear:function(){
 		if (!this.map) return;

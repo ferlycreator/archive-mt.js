@@ -12,7 +12,7 @@ Z.Marker.SVG=Z.Painter.SVG.extend({
      */
     _paint:function(layerContainer, zIndex, symbol) {        
         if (!this.geometry) {return;}
-        this.layerContainer = layerContainer;
+        this.layerContainer = layerContainer;        
         this.setSymbol(symbol);
         var icon = this.getGeoIcon();
         //普通图形标注
@@ -57,16 +57,16 @@ Z.Marker.SVG=Z.Painter.SVG.extend({
 
     createMarkerDom:function(icon) {
         var iconType = icon['type'];
-        this.markerDom = null;
+        var markerDom = null;
         var geometry = this.geometry;
         if ("picture" === iconType) {
-            this.markerDom =  this.createPictureMarker(geometry);
+            markerDom =  this.createPictureMarker(geometry);
         } else if ("html" === iconType) {
-            this.markerDom = this.createHtmlMarker(this.getMarkerDomOffset(),icon["content"]);
+            markerDom = this.createHtmlMarker(this.getMarkerDomOffset(),icon["content"]);
         } else if ("text" === iconType) {
-            this.markerDom = this.createTextMarker(geometry);
+            markerDom = this.createTextMarker(geometry);
         }
-        return this.markerDom;
+        return markerDom;
     },
 
     paintDomMarker:function(markerGraphic,layerContainer) {

@@ -2,7 +2,7 @@ Z.Geometry.include({
 	/*
     * 添加标签
     * @param {Object} options/Z.Label
-    * @export
+    * @expose
     */
     'addLabel': function (options) {
         if(options instanceof Z.Label) {
@@ -20,7 +20,7 @@ Z.Geometry.include({
     /*
     * 删除标签
     * @param {Object} id or Z.Label
-    * @export
+    * @expose
     */
     'removeLabel': function (obj) {
         label = this._getLabel(obj);
@@ -31,7 +31,7 @@ Z.Geometry.include({
     /*
     * 删除标签
     * @param {Object} id or Z.Label
-    * @export
+    * @expose
     */
     'hideLabel': function(obj) {
         label = this._getLabel(obj);
@@ -42,7 +42,7 @@ Z.Geometry.include({
     /*
     * 删除标签
     * @param {Object} id or Z.Label
-    * @export
+    * @expose
     */
     'showLabel': function(obj) {
         label = this._getLabel(obj);
@@ -53,7 +53,7 @@ Z.Geometry.include({
     /*
     * 获取标签
     * @param {String} id
-    * @export
+    * @expose
     */
     'getLabel': function(id) {
         return Z.Label['getLabel'](id);

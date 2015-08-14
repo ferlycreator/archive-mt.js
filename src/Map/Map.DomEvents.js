@@ -55,7 +55,7 @@ Z.Map.include({
     _fireDOMEvent: function (target, e, type) {
     	//TODO DOM事件参数属性应该统一起来
         var data = {
-            originalEvent: e
+            'originalEvent': e
         };
         //阻止右键菜单
         if (type === 'contextmenu') {

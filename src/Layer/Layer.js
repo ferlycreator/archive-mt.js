@@ -33,7 +33,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
 	/**
 	 * 获取图层id
 	 * @returns
-	 * @export
+	 * @expose
 	 */
 	getId:function() {
 		return this.identifier;
@@ -42,7 +42,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
 	/**
 	 * 设置图层id
 	 * @param {String} [id] [图层id]
-	 * @export
+	 * @expose
 	 */
 	setId:function(id) {
 		this.identifier = id;
@@ -50,7 +50,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
 
 	/**
 	 * 获取图层所属的地图对象
-	 * @export
+	 * @expose
 	 * @returns {seegoo.maps.Map}
 	 */
 	getMap:function() {
@@ -72,7 +72,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
 
 	/**
 	 * 将图层置顶
-	 * @export
+	 * @expose
 	 */
 	bringToFront:function() {
 		var layers = this.getLayerList();
@@ -89,7 +89,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
 	
 	/**
 	 * 将图层置底
-	 * @export
+	 * @expose
 	 */
 	bringToBack:function(){
 		var layers = this.getLayerList();

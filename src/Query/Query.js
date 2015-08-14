@@ -6,7 +6,7 @@ Z['Query']=Z.Query=Z.Class.extend({
     /**
      * query
      * @param  {Object} opts 查询参数
-     * @export
+     * @expose
      */
     query:function(opts) {
 

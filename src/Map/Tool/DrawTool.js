@@ -27,7 +27,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
 
     /**
      * 激活
-     * @export
+     * @expose
      */
     enable:function() {
         if (!this.map) {return;}
@@ -39,7 +39,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
 
     /**
      * 停止激活
-     * @export
+     * @expose
      */
     disable:function() {
         if (!this.map) {
@@ -53,7 +53,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
     /**
      * 设置绘图模式
      * @param {Number} [node] [绘图模式]
-     * @export
+     * @expose
      */
     setMode:function(mode) {
         if (this.geometry) {
@@ -68,7 +68,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
     /**
      * 获得drawtool的绘制样式
      * @return {Object} [绘制样式]
-     * @export
+     * @expose
      */
     getSymbol:function() {
         if(this['symbol']) {

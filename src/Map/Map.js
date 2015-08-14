@@ -88,7 +88,7 @@ Z['Map']=Z.Map=Z.Class.extend({
 
     /**
      * Load Map
-     * @export
+     * @expose
      */
     Load:function(){
         if (this.loaded) {return;}
@@ -122,7 +122,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 获取地图容器的宽度和高度
      * @return {{'width':?, 'height':?}}} 地图容器大小,单位像素
-     * @export
+     * @expose
      */
     getSize:function() {
         if (Z.Util.isNil(this.width) || Z.Util.isNil(this.height)) {
@@ -137,7 +137,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 获取地图的Extent
      * @return {Extent} 地图的Extent
-     * @export
+     * @expose
      */
     getExtent:function() {
         var lodConfig = this.getLodConfig();
@@ -164,7 +164,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 获取地图的中心点
      * @return {Coordinate} 坐标
-     * @export
+     * @expose
      */
     getCenter:function() {
         if (!this.lodConfig || !this.loaded) {return this.center;}
@@ -175,7 +175,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 设置地图中心点
      * @param {Coordinate} center [新的中心点坐标]
-     * @export
+     * @expose
      */
     setCenter:function(center) {
         if (!this.lodConfig || !this.loaded) {
@@ -235,7 +235,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 获取地图的缩放级别
      * @return {Number} 地图缩放级别
-     * @export
+     * @expose
      */
     getZoomLevel:function() {
         return this.zoomLevel;
@@ -244,7 +244,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 设置地图的缩放级别
      * @param {Number} z 新的缩放级别
-     * @export
+     * @expose
      */
     setZoomLevel:function(z) {
         this.zoom(z);
@@ -254,7 +254,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 获得地图最大放大级别
      * @return {Number} 最大放大级别
-     * @export
+     * @expose
      */
     getMaxZoomLevel:function() {
         return this.maxZoomLevel;
@@ -263,7 +263,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 设置最大放大级别
      * @param {Number} zoomLevel 最大放大级别
-     * @export
+     * @expose
      */
     setMaxZoomLevel:function(zoomLevel) {
         var lodConfig = this.getLodConfig();
@@ -277,7 +277,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 获得地图最小放大级别
      * @return {Number} 最小放大级别
-     * @export
+     * @expose
      */
     getMinZoomLevel:function() {
         return this.minZoomLevel;
@@ -286,7 +286,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 设置最小放大级别
      * @param {Number} zoomLevel 最小放大级别
-     * @export
+     * @expose
      */
     setMinZoomLevel:function(zoomLevel) {
         var lodConfig = this.getLodConfig();
@@ -299,7 +299,7 @@ Z['Map']=Z.Map=Z.Class.extend({
 
     /**
      * 放大地图
-     * @export
+     * @expose
      */
     zoomIn: function() {
         this.zoom(this.getZoomLevel() + 1);
@@ -308,7 +308,7 @@ Z['Map']=Z.Map=Z.Class.extend({
 
     /**
      * 地图缩小
-     * @export
+     * @expose
      */
     zoomOut: function() {
         this.zoom(this.getZoomLevel() - 1);
@@ -319,7 +319,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * 设置中心点并放大缩小
      * @param {Coordinate} center    [新的中心点]
      * @param {Number} zoomLevel [新的缩放级别]
-     * @export
+     * @expose
      */
     setCenterAndZoom:function(center,zoomLevel) {
         if (!this.lodConfig || !this.loaded) {
@@ -342,7 +342,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @category 工具方法
      * @param extent {Extent} Extent对象
      * @returns
-     * @export
+     * @expose
      */
     getFitZoomLevel: function(extent) {
         if (!extent && !(extent instanceof Z.Extent)) {
@@ -391,7 +391,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 返回基础地图图层
      * @return {TileLayer} [基础地图图层]
-     * @export
+     * @expose
      */
     getBaseTileLayer:function() {
         return this.baseTileLayer;
@@ -400,7 +400,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 设定地图的基础瓦片图层
      * @param  {TileLayer} baseTileLayer 瓦片图层
-     * @export
+     * @expose
      */
     setBaseTileLayer:function(baseTileLayer) {
         if (!baseTileLayer || !baseTileLayer.getLodConfig) {
@@ -435,7 +435,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * 获取图层
      * @param  {String} id 图层id
      * @return {Layer}  图层
-     * @export
+     * @expose
      */
     getLayer:function(id) {
         if (!id || !this.layerCache || !this.layerCache[id]) {
@@ -447,7 +447,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 向地图里添加图层
      * @param  {Layer} layer 图层对象
-     * @export
+     * @expose
      */
     addLayer:function(layers){
         if (!layers) {
@@ -521,7 +521,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 移除图层
      * @param  {Layer | id} layer 图层或图层id
-     * @export
+     * @expose
      */
     removeLayer: function(layer) {
         if (!(layer instanceof Z.Layer)) {
@@ -570,7 +570,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * [addHandler description]
      * @param {[type]} name         [description]
      * @param {[type]} HandlerClass [description]
-     * @export
+     * @expose
      */
     addHandler: function (name, HandlerClass) {
         if (!HandlerClass) { return this; }
@@ -596,7 +596,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 获取地图的坐标类型
      * @return {String} 坐标类型
-     * @export
+     * @expose
      */
     getCoordinateType:function() {
         var result = this.options['coordinateType'];
@@ -612,7 +612,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * 将地理坐标转化为屏幕像素坐标
      * @param {Coordinate} 地理坐标
      * @return {Point}
-     * @export
+     * @expose
      */
     coordinateToScreenPoint: function(coordinate) {
         var projection = this.getProjection();
@@ -625,7 +625,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * 将屏幕像素坐标转化为地理坐标
      * @param {screenPoint} 屏幕坐标
      * @return {coordinate} 地理坐标
-     * @export
+     * @expose
      */
     screenPointToCoordinate: function(screenPoint) {
         //var domOffset = this.screenToDomOffset(screenPoint);
@@ -1199,7 +1199,7 @@ Z.Map.prototype._callOnLoadHooks=function() {
 /**
  * 添加底图加载完成后的钩子
  * @param {Function} fn 执行回调函数
- * @export
+ * @expose
  */
 Z.Map.addOnLoadHook = function (fn) { // (Function) || (String, args...)
     var args = Array.prototype.slice.call(arguments, 1);

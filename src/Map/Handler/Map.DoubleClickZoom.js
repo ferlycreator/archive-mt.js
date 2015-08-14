@@ -2,7 +2,7 @@ Z.Map.mergeOptions({
 	'doubleClickZoom': true
 });
 
-Z.Map.DoubleClickZoom = Z.Handler.extend({
+Z.Map.DoubleClickZoom = Z.Handler.extend({ 
 	addHooks: function () {
 		this.map.on('dblclick', this._onDoubleClick, this);
 	},
