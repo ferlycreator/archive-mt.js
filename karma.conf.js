@@ -3,6 +3,8 @@
 // Generated on 2015-05-27 using
 // generator-karma 1.0.0
 
+/* jshint node: true */
+
 module.exports = function(config) {
   'use strict';
 
