@@ -4,7 +4,7 @@ Z.Geometry.include({
     * @param {Object} options/Z.Label
     * @expose
     */
-    'addLabel': function (options) {
+    addLabel: function (options) {
         if(options instanceof Z.Label) {
             label = options;
             label.options['target'] = this;
@@ -22,7 +22,7 @@ Z.Geometry.include({
     * @param {Object} id or Z.Label
     * @expose
     */
-    'removeLabel': function (obj) {
+    removeLabel: function (obj) {
         label = this._getLabel(obj);
         label.removeLable();
         return this;
@@ -33,7 +33,7 @@ Z.Geometry.include({
     * @param {Object} id or Z.Label
     * @expose
     */
-    'hideLabel': function(obj) {
+    hideLabel: function(obj) {
         label = this._getLabel(obj);
         label.hide();
         return this;
@@ -44,7 +44,7 @@ Z.Geometry.include({
     * @param {Object} id or Z.Label
     * @expose
     */
-    'showLabel': function(obj) {
+    showLabel: function(obj) {
         label = this._getLabel(obj);
         label.show();
         return this;
@@ -55,7 +55,7 @@ Z.Geometry.include({
     * @param {String} id
     * @expose
     */
-    'getLabel': function(id) {
+    getLabel: function(id) {
         return Z.Label['getLabel'](id);
     },
 
