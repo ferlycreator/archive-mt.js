@@ -26,6 +26,7 @@ describe('API', function () {
     });
 
     describe('Map', function () {
+
         it('Load', function () {
             expect(function () {
                 map.Load();
@@ -179,6 +180,187 @@ describe('API', function () {
             var coord = map.screenPointToCoordinate();
 
             expect(coord).to.not.be(null);
+        });
+
+    });
+
+    describe('Map.Pan', function() {
+
+        it('panTo', function() {
+            var coord = {x: 1, y: 1};
+
+            expect(function () {
+                map.panTo(coord);
+            }).to.not.throwException();
+        });
+
+        it('panBy', function() {
+            var offset = {left: 20, top: 20};
+
+            expect(function () {
+                map.panBy(offset);
+            }).to.not.throwException();
+        });
+
+        it('animatePan', function() {
+            var offset = {left: 20, top: 20};
+
+            expect(function () {
+                map.animatePan(offset);
+            }).to.not.throwException();
+        });
+
+    });
+
+    describe('Map.Zoom', function() {
+
+        it('zoom', function() {
+            var zoom = map.getZoomLevel();
+            zoom = Math.ceil(zoom / 2);
+
+            expect(function () {
+                map.zoom(zoom);
+            }).to.not.throwException();
+        });
+
+    });
+
+    describe('Map.ContextMenu', function() {
+
+        it('setContextMenu', function() {
+            var spy = sinon.spy();
+
+            expect(function () {
+                map.setContextMenu({
+                    items: []
+                });
+                map.setContextMenu({
+                    items: [
+                        {item: 'item1', callback: spy},
+                        {item: 'item2', callback: spy}
+                    ],
+                    width: 250
+                });
+            }).to.not.throwException();
+        });
+
+        it('setMenuItem', function() {
+            var spy = sinon.spy();
+            var items_1 = [];
+            var items_2 = [
+                {item: 'item1', callback: spy},
+                {item: 'item2', callback: spy}
+            ];
+
+            expect(function () {
+                map.setMenuItem(items_1);
+                map.setMenuItem(items_2);
+            }).to.not.throwException();
+        });
+
+        it('openMenu', function() {
+            var pos = {x: 25, y: 25};
+
+            expect(function () {
+                map.openMenu();
+                map.openMenu(pos);
+            }).to.not.throwException();
+        });
+
+        it('closeMenu', function() {
+            expect(function () {
+                map.closeMenu();
+            }).to.not.throwException();
+        });
+
+    });
+
+    describe('Map.FullScreen', function() {
+
+        it('openFullScreen', function(done) {
+            expect(function () {
+                map.openFullscreen();
+                done();
+            }).to.not.throwException();
+        });
+
+        it('exitFullScreen', function(done) {
+            expect(function () {
+                map.exitFullscreen();
+                done();
+            }).to.not.throwException();
+        });
+
+    });
+
+    describe('Map.Snap', function() {
+        it('snap');
+    });
+
+    describe('Map.CartoCSS', function() {
+
+        it('CartoCSS');
+
+        it('loadCartoCSS');
+
+        it('rendCartoCSS');
+
+        it('cartoCSSGeometry');
+
+    });
+
+    describe('Map.Topo', function() {
+
+        it('computeDistance', function() {
+            var lonlat1 = new Z.Coordinate([0, 0]);
+            var lonlat2 = new Z.Coordinate([1, 1]);
+            var distance = map.computeDistance(lonlat1, lonlat2);
+
+            expect(distance).to.be.above(0);
+        });
+
+        it('computeGeodesicLength', function() {
+            var all = genAllTypeGeometries();
+
+            expect(function () {
+                for (var i = 0; i < all.length; i++) {
+                    var g = all[i];
+                    g.computeGeodesicLength(g);
+                }
+            }).to.not.throwException();
+        });
+
+        it('computeGeodesicArea', function() {
+            var all = genAllTypeGeometries();
+
+            expect(function () {
+                for (var i = 0; i < all.length; i++) {
+                    var g = all[i];
+                    g.computeGeodesicArea(g);
+                }
+            }).to.not.throwException();
+        });
+
+        it('buffer');
+
+        it('relate');
+
+        it('identify', function() {
+            var spy = sinon.spy();
+            var layer = new Z.SVGLayer('id');
+            var geometries = genAllTypeGeometries();
+            layer.addGeometry(geometries);
+            map.addLayer(layer);
+
+            expect(function () {
+                map.identify({
+                    coordinate: center,
+                    radius: 50, // m
+                    layers: [layer],
+                    success: spy
+                });
+            }).to.not.throwException();
+
         });
 
     });

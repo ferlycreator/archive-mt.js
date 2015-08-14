@@ -11,7 +11,7 @@ module.exports = function(config) {
   var srcFiles = require(__dirname + '/build/getFiles.js').getFiles();
   var files = srcFiles.concat([
     'test/**/*.js',
-    {pattern: '.tmp/css/**/*.css', watched: true, included: false, served: true},
+    {pattern: 'assets/css/**/*.css', watched: true, included: false, served: true},
     {pattern: 'assets/images/**/*.png', watched: false, included: false, served: true}
   ]);
 
@@ -24,7 +24,7 @@ module.exports = function(config) {
 
     proxies: {
       '/engine/': '/base/assets/',
-      '/engine/css/controls.min.css': '/base/.tmp/css/controls.css'
+      '/engine/css/controls.min.css': '/base/assets/css/controls.css'
     },
 
     // testing framework to use (jasmine/mocha/qunit/...)
