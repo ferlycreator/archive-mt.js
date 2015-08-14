@@ -40,7 +40,7 @@ Z.Geometry.include({
         this._map = this.getMap();
         this.hide();
         var type = this.getType();
-        if(type === Z.Geometry.TYPE_POINT) {
+        if(type === Z.Geometry['TYPE_POINT']) {
             this._dragGeometry = new Z.Marker(this.getCenter());
             var targetIcon = this.getIcon();
             var iconType = (targetIcon?targetIcon['type']:null);
@@ -60,10 +60,10 @@ Z.Geometry.include({
                     'placement': targetTextStyle['placement']
                 };
                 var icon = {
-                    type: 'text',
-                    textStyle: textStyle,
-                    content: targetIcon['content'],
-                    offset: targetIcon['offset']
+                    'type': 'text',
+                    'textStyle': textStyle,
+                    'content': targetIcon['content'],
+                    'offset': targetIcon['offset']
                 };
                 this._dragGeometry.setIcon(icon);
             } else if ("vector" === iconType){
