@@ -132,7 +132,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         * 设置InfoWindow窗口
         * @param {Array} tipOption 项
         * {"items":[], width:240, beforeopen:fn}
-        * @export
+        * @expose
         */
         setOption: function(tipOption) {
             if (!tipOption) {
@@ -151,7 +151,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
 
         /**
         * 隐藏信息框
-        * @export
+        * @expose
         */
         hide:function() {
             this.visible = false;

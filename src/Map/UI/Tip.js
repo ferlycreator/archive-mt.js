@@ -70,7 +70,7 @@ Z['Tip'] = Z.Tip = Z.Control.extend({
 
 	/**
 	* 隐藏tip
-	* @export
+	* @expose
 	*/
 	hideTip: function() {
 		this._tip.hide();
@@ -82,7 +82,7 @@ Z['Tip'] = Z.Tip = Z.Control.extend({
 
 	/**
 	* 显示tip
-	* @export
+	* @expose
 	*/
 	showTip: function() {
 		this._tip.show();
@@ -94,7 +94,7 @@ Z['Tip'] = Z.Tip = Z.Control.extend({
 
 	/**
 	* 移除tip
-	* @export
+	* @expose
 	*/
 	removeTip: function() {
 		this._tip.remove();
@@ -213,10 +213,10 @@ Z['Tip'] = Z.Tip = Z.Control.extend({
 		var path = [center, nearestPoints[0], nearestPoints[1]];
 		this._link = new Z.Polyline(path);
 		var strokeSymbol = {
-			'stroke': this.options['style']['stroke'],
-			'stroke-width': this.options['style']['strokewidth']
+			'line-color': this.options['style']['line-color'],
+			'line-width': this.options['style']['line-width']
 		};
-		this._link.setStrokeSymbol(strokeSymbol);
+		this._link.setSymbol(strokeSymbol);
 		this._internalLayer.addGeometry(this._link);
 		geometry.on('positionchanged', this._changeLinkPath, this)
 				.on('remove', this.remove, this);
@@ -347,9 +347,9 @@ Z['Tip'] = Z.Tip = Z.Control.extend({
 		var center = geometry.getCenter();
 		var nearestPoints = this._getNearestPoint(center);
 		var path = [center, nearestPoints[0], nearestPoints[1]];
-		var strokeSymbol = this._link.getStrokeSymbol();
-		strokeSymbol['stroke'] = '#ff0000';
-		this._link.setStrokeSymbol(strokeSymbol);
+		var strokeSymbol = this._link.getSymbol();
+		strokeSymbol['line-color'] = '#ff0000';
+		this._link.setSymbol(strokeSymbol);
 		this._link.setPath(path);
 	},
 
@@ -374,11 +374,11 @@ Z['Tip'] = Z.Tip = Z.Control.extend({
 		if(this.options['link']) {
 			this._map.off('mousemove zoomend resize moving', this._changeLinkPath, this);
 			var strokeSymbol = {
-				'stroke': this.options['style']['stroke'],
-				'stroke-width': this.options['style']['strokewidth']
+				'line-color': this.options['style']['stroke'],
+				'line-width': this.options['style']['strokewidth']
 			};
 			if(this._link) {
-				this._link.setStrokeSymbol(strokeSymbol);
+				this._link.setSymbol(strokeSymbol);
 			}
 		}
 		this.fire('dragend', {'target': this});

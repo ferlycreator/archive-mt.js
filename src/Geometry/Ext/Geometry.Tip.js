@@ -2,9 +2,9 @@ Z.Geometry.include({
 	/*
     * 添加tip
     * @param {Object} options/Z.Tip
-    * @export
+    * @expose
     */
-    'addTip': function (options) {
+    addTip: function (options) {
         if(options instanceof Z.Tip) {
             tip = options;
             tip.options['target'] = this;
@@ -20,9 +20,9 @@ Z.Geometry.include({
     /*
     * 删除tip
     * @param {Object} id or Z.Tip
-    * @export
+    * @expose
     */
-    'removeTip': function (obj) {
+    removeTip: function (obj) {
         tip = this._getLabel(obj);
         tip.removeTip();
         return this;
@@ -31,9 +31,9 @@ Z.Geometry.include({
     /*
     * 删除tip
     * @param {Object} id or Z.Tip
-    * @export
+    * @expose
     */
-    'hideTip': function(obj) {
+    hideTip: function(obj) {
         tip = this._getTip(obj);
         tip.hide();
         return this;
@@ -42,9 +42,9 @@ Z.Geometry.include({
     /*
     * 删除tip
     * @param {Object} id or Z.Tip
-    * @export
+    * @expose
     */
-    'showTip': function(obj) {
+    showTip: function(obj) {
         tip = this._getTip(obj);
         tip.show();
         return this;
@@ -53,9 +53,9 @@ Z.Geometry.include({
     /*
     * 获取tip
     * @param {String} id
-    * @export
+    * @expose
     */
-    'getTip': function(id) {
+    getTip: function(id) {
         return Z.Tip['getTip'](id);
     },
 

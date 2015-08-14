@@ -26,7 +26,7 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
     /**
      * 设置多边形的坐标值
      * @param {Array} ring 坐标数组
-     * @export
+     * @expose
      */
     setRing:function(ring) {
         this.points = ring;
@@ -54,7 +54,7 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
     /**
      * 获取多边形坐标值
      * @return {Array} 多边形坐标数组
-     * @export
+     * @expose
      */
     getRing:function() {
        return this.getPoints();
@@ -76,7 +76,7 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
     /**
      * 获取Polygon的空洞的坐标
      * @return {Array} 空洞的坐标二维数组
-     * @export
+     * @expose
      */
     getHoles:function() {
         if (this.hasHoles()) {
@@ -88,7 +88,7 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
     /**
      * Polygon是否有空洞
      * @return {Boolean} 是否有空洞
-     * @export
+     * @expose
      */
     hasHoles:function() {
         if (Z.Util.isArrayHasData(this.holes)) {

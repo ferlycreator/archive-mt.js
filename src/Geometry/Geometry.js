@@ -35,7 +35,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
          * 将json字符串或json对象转化为Geometry对象
          * @param  {String | Object | [Object]} json json对象
          * @return {Geometry | [Geometry]}      转化的Geometry对象或数组
-         * @export
+         * @expose
          */
         fromJson:function(json) {
             if (Z.Util.isString(json)) {
@@ -182,11 +182,11 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     //默认标注样式
     defaultIcon:{
-        /*"type":"picture",*/
-        "marker-file" : Z.host + "/engine/images/marker.png",
-        "marker-height" : 30,
-        "marker-width" : 22,
-        "marker-offset" : {
+        "type":"picture",
+        "url" : Z.host + "/engine/images/marker.png",
+        "height" : 30,
+        "width" : 20,
+        "offset" : {
             "x" : 0,
             "y" : 0
         }
@@ -194,9 +194,9 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     // 默认线样式
     defaultSymbol:{
-        "line-color" : "#474cf8",
-        "line-width" : 3,
-        "line-opacity" : 1
+        "lineColor" : "#474cf8",
+        "lineWidth" : 3,
+        "lineOpacity" : 1
     },
 
     initialize:function() {
@@ -257,7 +257,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     /**
      * returns Geometry's ID
      * @return {Object} Geometry's id
-     * @export
+     * @expose
      */
     getId:function() {
         return this.identifier;
@@ -266,7 +266,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     /**
      * set ID
      * @param {Object} id set Geometry's id
-     * @export
+     * @expose
      */
     setId:function(id) {
         var oldId = this.getId();
@@ -278,7 +278,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     /**
      * 获取Geometry的Layer
      * @return {Layer} Geometry所属的Layer
-     * @export
+     * @expose
      */
     getLayer:function() {
         if (!this.layer) {return null;}
@@ -288,7 +288,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     /**
      * 获取Geometry所属的地图对象
      * @return {Map} 地图对象
-     * @export
+     * @expose
      */
     getMap:function() {
         if (!this.layer) {return null;}
@@ -298,7 +298,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     /**
      * 获取Geometry的类型
      * @return {int} Geometry的类型
-     * @export
+     * @expose
      */
     getType:function() {
         return this.type;
@@ -307,16 +307,16 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     /**
      * 是否是矢量图形
      * @return {Boolean} true|false
-     * @export
+     * @expose
      */
     isVector:function() {
-        return (Z.Geometry.TYPE_POINT !== this.type);
+        return (Z.Geometry['TYPE_POINT'] !== this.type);
     },
 
     /**
      * 获取Geometry的Symbol
      * @return {Symbol} Geometry的Symbol
-     * @export
+     * @expose
      */
     getSymbol:function() {
         if (!this.symbol) {
@@ -328,7 +328,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     /**
      * 设置Geometry的symbol
      * @param {Symbol} symbol 新的Symbol
-     * @export
+     * @expose
      */
     setSymbol:function(symbol) {
         if (!symbol) {
@@ -345,7 +345,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     /**
      * 计算Geometry的外接矩形范围
      * @return {Extent} [Geometry的外接矩形范围]
-     * @export
+     * @expose
      */
     getExtent:function() {
         if (this.extent) {
@@ -357,7 +357,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     /**
      * 返回Geometry的像素长宽, 像素长宽只在当前比例尺上有效, 比例尺变化后, 其值也会发生变化
      * @return {Size}     Size.width, Size.height
-     * @export
+     * @expose
      */
     getSize: function() {
         var map = this.getMap();
@@ -392,7 +392,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     /**
      * 计算图形的中心点坐标
      * @return {Coordinate} [中心点坐标]
-     * @export
+     * @expose
      */
     getCenter:function() {
         return this.computeCenter(this.getProjection());
@@ -405,7 +405,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     /**
      * 获取Geometry的Properties
      * @return {Object} 自定义属性
-     * @export
+     * @expose
      */
     getProperties:function() {
         if (!this.properties) {return null;}
@@ -415,7 +415,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     /**
      * 设置Geometry的Properties
      * @param {Object} properties 自定义属性
-     * @export
+     * @expose
      */
     setProperties:function(properties) {
         this.properties = properties;
@@ -424,7 +424,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     /**
      * 显示Geometry
-     * @export
+     * @expose
      */
     show:function() {
         this.visible = true;
@@ -436,7 +436,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     /**
      * 隐藏Geometry
-     * @export
+     * @expose
      */
     hide:function() {
         this.visible = false;
@@ -449,7 +449,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     /**
      * 是否可见
      * @return {Boolean} true|false
-     * @export
+     * @expose
      */
     isVisible:function() {
         if (Z.Util.isNil(this.visible)) {
@@ -461,7 +461,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     /**
      * 克隆一个不在任何图层上的属性相同的Geometry,但不包含事件注册
      * @return {Geometry} 克隆的Geometry
-     * @export
+     * @expose
      */
     copy:function() {
         var json = this.toJson();
@@ -472,7 +472,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     /**
      * 将自身从图层中移除
      * @return {[type]} [description]
-     * @export
+     * @expose
      */
     remove:function() {
         var layer = this.getLayer();
@@ -604,7 +604,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * 生成JSON对象
      * @param  {Object} opts 输出配置
      * @return {Object}      JSON对象
-     * @export
+     * @expose
      */
     toJson:function(opts) {
         if (!opts) {

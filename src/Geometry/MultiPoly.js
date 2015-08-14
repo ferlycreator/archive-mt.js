@@ -25,7 +25,7 @@ Z.MultiPoly = Z.GeometryCollection.extend({
     /**
      * 获取MultiPolygon的坐标数组
      * @return {Coordinate[][][]} MultiPolygon的坐标数组
-     * @export
+     * @expose
      */
     getCoordinates:function() {
         var coordinates = [];
@@ -42,7 +42,7 @@ Z.MultiPoly = Z.GeometryCollection.extend({
     /**
      * 设置MultiPolygon
      * @param {Coordinate[][][]} MultiPolygon的坐标数组
-     * @export
+     * @expose
      */
     setCoordinates:function(coordinates) {
         if (!Z.Util.isArrayHasData(coordinates)) {

@@ -1,7 +1,7 @@
 Z.Geometry.include({
     /**
      *  开始编辑Geometry
-     * @export
+     * @expose
      */
     startEdit: function(opts) {
         this.endEdit();
@@ -12,7 +12,7 @@ Z.Geometry.include({
 
     /**
      * 结束编辑
-     * @export
+     * @expose
      */
     endEdit: function() {
         if (this.editor) {
@@ -23,7 +23,7 @@ Z.Geometry.include({
     /**
      * Geometry是否处于编辑状态中
      * @return {Boolean} 是否处于编辑状态
-     * @export
+     * @expose
      */
     isEditing: function() {
         if (this.editor) {
@@ -34,7 +34,7 @@ Z.Geometry.include({
 
     /**
      * 开始移动Geometry, 进入移动模式
-     * @export   
+     * @expose   
      */
     startDrag: function() {
         this._map = this.getMap();
@@ -72,9 +72,9 @@ Z.Geometry.include({
 
             }
         } else {//线与面图形
-            var strokeSymbol = this.getStrokeSymbol();
-            strokeSymbol['stroke'] = '#ff0000';
-            this._dragGeometry.setStrokeSymbol(strokeSymbol);
+            var strokeSymbol = this.getSymbol();
+            strokeSymbol['line-color'] = '#ff0000';
+            this._dragGeometry.setSymbol(strokeSymbol);
         }
         var _dragLayer = this._getDragLayer();
         _dragLayer.addGeometry(this._dragGeometry);
@@ -125,7 +125,7 @@ Z.Geometry.include({
      * Geometry是否处于移动模式中
      * @return
       {Boolean} 是否处于移动模式中
-     * @export
+     * @expose
      */
     isDragging: function() {
         if (this.isDragging) {

@@ -19,7 +19,7 @@ Z['Sector']=Z.Sector=Z.Polygon.extend({
     /**
      * 返回圆形的半径
      * @return {Number} [圆形半径]
-     * @export
+     * @expose
      */
     getRadius:function() {
         return this.radius;
@@ -28,7 +28,7 @@ Z['Sector']=Z.Sector=Z.Polygon.extend({
     /**
      * 设置圆形半径
      * @param {Number} radius [新的半径]
-     * @export
+     * @expose
      */
     setRadius:function(radius) {
         this.radius = radius;
@@ -39,7 +39,7 @@ Z['Sector']=Z.Sector=Z.Polygon.extend({
     /**
      * 返回扇形的开始角
      * @return {Number} 开始角
-     * @export
+     * @expose
      */
     getStartAngle:function() {
         return this.startAngle;
@@ -48,7 +48,7 @@ Z['Sector']=Z.Sector=Z.Polygon.extend({
     /**
      * 设定扇形的开始角
      * @param {Number} startAngle 扇形开始角
-     * @export
+     * @expose
      */
     setStartAngle:function(startAngle) {
         this.startAngle = startAngle;
@@ -59,7 +59,7 @@ Z['Sector']=Z.Sector=Z.Polygon.extend({
     /**
      * 返回扇形的结束角
      * @return {Number} 结束角
-     * @export
+     * @expose
      */
     getEndAngle:function() {
         return this.endAngle;
@@ -68,7 +68,7 @@ Z['Sector']=Z.Sector=Z.Polygon.extend({
     /**
      * 设定扇形的结束角
      * @param {Number} endAngle 扇形结束角
-     * @export
+     * @expose
      */
     setEndAngle:function(endAngle) {
         this.endAngle = endAngle;
@@ -89,7 +89,7 @@ Z['Sector']=Z.Sector=Z.Polygon.extend({
     /**
      * do nothing for circle
      * @param {Array} ring [ring for polygon]
-     * @export
+     * @expose
      */
     setRing:function(ring) {
         //do nothing for circle as a polygon.

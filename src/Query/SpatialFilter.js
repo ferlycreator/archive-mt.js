@@ -16,7 +16,7 @@ Z['SpatialFilter']=Z.SpatialFilter=Z.Class.extend({
     /**
      * 获取SpatialFilter中的geometry
      * @return {Geometry} SpatialFilter的Geometry
-     * @export
+     * @expose
      */
     getGeometry: function() {
         return this.geometry;
@@ -25,7 +25,7 @@ Z['SpatialFilter']=Z.SpatialFilter=Z.Class.extend({
     /**
      * 获取SpatialFilter的json
      * @return {String} spatialfilter
-     * @export
+     * @expose
      */
     toJson: function() {
         var jsonObj = {

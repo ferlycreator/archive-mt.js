@@ -12,7 +12,7 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
     /**
      * 返回矩形左上角坐标
      * @return {Coordinate} [左上角坐标]
-     * @export
+     * @expose
      */
     getNw:function() {
         return this.nw;
@@ -21,7 +21,7 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
     /**
      * 设置新的center
      * @param {Coordinate} center 新的center
-     * @export
+     * @expose
      */
     setNw:function(nw){
         this.nw = nw;
@@ -57,7 +57,7 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
     /**
      * 返回矩形的宽度
      * @return {Number} [矩形宽度]
-     * @export
+     * @expose
      */
     getWidth:function() {
         return this.width;
@@ -66,7 +66,7 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
     /**
      * 设置矩形宽度
      * @param {Number} width [新的半径]
-     * @export
+     * @expose
      */
     setWidth:function(width) {
         this.width = width;
@@ -77,7 +77,7 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
     /**
      * 返回矩形的高度
      * @return {Number} [矩形高度]
-     * @export
+     * @expose
      */
     getHeight:function() {
         return this.height;
@@ -86,7 +86,7 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
     /**
      * 设置矩形高度
      * @param {Number} height [矩形高度]
-     * @export
+     * @expose
      */
     setHeight:function(height) {
         this.height = height;
@@ -138,7 +138,7 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
     /**
      * do nothing for Ellipse
      * @param {Array} ring [ring for polygon]
-     * @export
+     * @expose
      */
     setRing:function(ring) {
         //do nothing for Ellipse as a polygon.

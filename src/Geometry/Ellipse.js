@@ -18,7 +18,7 @@ Z['Ellipse']=Z.Ellipse = Z.Polygon.extend({
     /**
      * 返回椭圆的宽度
      * @return {Number} [椭圆宽度]
-     * @export
+     * @expose
      */
     getWidth:function() {
         return this.width;
@@ -27,7 +27,7 @@ Z['Ellipse']=Z.Ellipse = Z.Polygon.extend({
     /**
      * 设置椭圆宽度
      * @param {Number} width [新的半径]
-     * @export
+     * @expose
      */
     setWidth:function(width) {
         this.width = width;
@@ -38,7 +38,7 @@ Z['Ellipse']=Z.Ellipse = Z.Polygon.extend({
     /**
      * 返回椭圆的高度
      * @return {Number} [椭圆高度]
-     * @export
+     * @expose
      */
     getHeight:function() {
         return this.height;
@@ -47,7 +47,7 @@ Z['Ellipse']=Z.Ellipse = Z.Polygon.extend({
     /**
      * 设置椭圆高度
      * @param {Number} height [椭圆高度]
-     * @export
+     * @expose
      */
     setHeight:function(height) {
         this.height = height;
@@ -63,7 +63,7 @@ Z['Ellipse']=Z.Ellipse = Z.Polygon.extend({
     /**
      * do nothing for Ellipse
      * @param {Array} ring [ring for polygon]
-     * @export
+     * @expose
      */
     setRing:function(ring) {
         //do nothing for Ellipse as a polygon.

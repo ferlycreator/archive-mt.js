@@ -77,28 +77,28 @@ Z.Painter = Z.Class.extend({
         return fillSymbol;
     },
 
+    //TODO 临时兼容老的样式
     prepareIcon:function(symbol) {
         var icon = null;
         if (!this.geometry.isVector()) {
-            if (symbol['markerFile']) {
+            /*if (symbol['markerFile']) {
                 icon = {
                     'type':'picture',
                     'url':symbol['markerFile'],
                     'width':symbol['markerWidth'],
                     'height':symbol['markerHeight']
-                };
+                }; 
             } else if (symbol['text-name']){
                 //文字
                 icon = {
                     'type':'text'
                 };
+            } else if (symbol['icon']) {
+                icon = this.prepareIcon(symbol['icon']);
             } else {
-                icon = {
-                    'type':'vector',
-                    'style':symbol['markerType'],
-                    'size':symbol['markerWidth']
-                };
-            }
+                return symbol;
+            }*/
+            return symbol['icon'];
         }
         return icon;
     },

@@ -77,7 +77,7 @@ Z['Control'] = Z.Control = Z.Class.extend({
 	},
 
 	/**
-	* @export
+	* @expose
 	*/
 	setOption: function(options) {
 		if (options) {
@@ -87,21 +87,21 @@ Z['Control'] = Z.Control = Z.Class.extend({
 	},
 
 	/**
-	* @export
+	* @expose
 	*/
 	getOption: function(options) {
 		return this.options;
 	},
 
 	/**
-	* @export
+	* @expose
 	*/
 	getPosition: function () {
 		return this.options['position'];
 	},
 
 	/**
-	* @export
+	* @expose
 	*/
 	setPosition: function (position) {
 		var map = this._map;
@@ -155,7 +155,7 @@ Z['Control'] = Z.Control = Z.Class.extend({
 Z.Map.include({
 	/*
 	* 添加control
-	* @export
+	* @expose
 	*/
 	'addControl': function (control) {
 		control.addTo(this);
@@ -164,7 +164,7 @@ Z.Map.include({
 
 	/*
 	* 删除control
-	* @export
+	* @expose
 	*/
 	'removeControl': function (control) {
 		control.remove();

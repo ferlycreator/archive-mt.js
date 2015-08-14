@@ -17,7 +17,7 @@ Z.OverlayLayer=Z.Layer.extend({
      * 通过geometry的id取得Geometry
      * @param  {[String|Integer]} id [Geometry的id]
      * @return {[Geometry]}    [Geometry]
-     * @export
+     * @expose
      */
     getGeometryById:function(id) {
         if (Z.Util.isNil(id) || id === '') {
@@ -33,7 +33,7 @@ Z.OverlayLayer=Z.Layer.extend({
     /**
      * 返回图层上所有的Geometry
      * @return {Array} [Geometry数组]
-     * @export
+     * @expose
      */
     getAllGeometries:function() {
         var cache = this._geoCache;
@@ -50,7 +50,7 @@ Z.OverlayLayer=Z.Layer.extend({
      * 向图层中添加geometry
      * @param {Geometry|[Geometry]} geometries 添加的geometry
      * @param {[type]} fitView    添加后是否聚焦到geometry上
-     * @export
+     * @expose
      */
     addGeometry:function(geometries,fitView) {
         if (!geometries) {return;}
@@ -119,7 +119,7 @@ Z.OverlayLayer=Z.Layer.extend({
     /**
      * 从图层上移除Geometry
      * @param  {Geometry} geometry 要移除的Geometry
-     * @export
+     * @expose
      */
     removeGeometry:function(geometry) {
         if (!(geometry instanceof Z.Geometry)) {
@@ -135,7 +135,7 @@ Z.OverlayLayer=Z.Layer.extend({
 
     /**
      * clear all geometries in this layer
-     * @export
+     * @expose
      */
     clear:function() {
         this.eachGeometry(function(geo) {

@@ -2,9 +2,9 @@ Z.Geometry.include({
 	/*
     * 添加标签
     * @param {Object} options/Z.Label
-    * @export
+    * @expose
     */
-    'addLabel': function (options) {
+    addLabel: function (options) {
         if(options instanceof Z.Label) {
             label = options;
             label.options['target'] = this;
@@ -20,9 +20,9 @@ Z.Geometry.include({
     /*
     * 删除标签
     * @param {Object} id or Z.Label
-    * @export
+    * @expose
     */
-    'removeLabel': function (obj) {
+    removeLabel: function (obj) {
         label = this._getLabel(obj);
         label.removeLable();
         return this;
@@ -31,9 +31,9 @@ Z.Geometry.include({
     /*
     * 删除标签
     * @param {Object} id or Z.Label
-    * @export
+    * @expose
     */
-    'hideLabel': function(obj) {
+    hideLabel: function(obj) {
         label = this._getLabel(obj);
         label.hide();
         return this;
@@ -42,9 +42,9 @@ Z.Geometry.include({
     /*
     * 删除标签
     * @param {Object} id or Z.Label
-    * @export
+    * @expose
     */
-    'showLabel': function(obj) {
+    showLabel: function(obj) {
         label = this._getLabel(obj);
         label.show();
         return this;
@@ -53,9 +53,9 @@ Z.Geometry.include({
     /*
     * 获取标签
     * @param {String} id
-    * @export
+    * @expose
     */
-    'getLabel': function(id) {
+    getLabel: function(id) {
         return Z.Label['getLabel'](id);
     },
 

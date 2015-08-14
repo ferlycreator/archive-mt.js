@@ -16,7 +16,7 @@ Z.Geometry.Center={
     /**
      * 获取Marker的center
      * @return {Coordinate} Marker的center
-     * @export
+     * @expose
      */
     getCenter:function() {
         return this.center;
@@ -25,7 +25,7 @@ Z.Geometry.Center={
     /**
      * 设置新的center
      * @param {Coordinate} center 新的center
-     * @export
+     * @expose
      */
     setCenter:function(center){
         this.center = center;

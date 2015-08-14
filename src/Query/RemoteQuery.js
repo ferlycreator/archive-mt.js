@@ -2,7 +2,7 @@ Z['RemoteQuery']=Z.RemoteQuery=Z.Class.extend({
     /**
      * 查询远程服务器上的数据
      * @param  {[type]} opts [description]
-     * @constructor
+     * @constructor 
      */
     initialize:function(opts) {
         if (!opts) {
@@ -30,7 +30,7 @@ Z['RemoteQuery']=Z.RemoteQuery=Z.Class.extend({
     /**
      * Identify
      * @param  {Object} opts 查询参数
-     * @export
+     * @expose
      */
     identify:function(opts) {
         if (!opts) {
@@ -59,7 +59,7 @@ Z['RemoteQuery']=Z.RemoteQuery=Z.Class.extend({
     /**
      * query
      * @param  {Object} opts 查询参数
-     * @export
+     * @expose
      */
     query:function(opts) {
         if (!opts || !this.check()) {

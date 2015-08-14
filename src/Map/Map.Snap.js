@@ -2,7 +2,7 @@ Z.Map.include({
 	/**
      * 截图
      * @param  {Object} config 截图设置
-     * @export
+     * @expose
      */
     snap:function(config) {
         var callback = config['success'];
