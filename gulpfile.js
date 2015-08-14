@@ -5,23 +5,19 @@ var runSequence = require('run-sequence');
 var gcc = require('gulp-closure-compiler');
 var karma = require('karma').server;
 
-//--------------ATTENTION HERE!!------------------
-//  set variables your_*_path to your own to dist.
-//  if not, default dist to ./dist/
-//------------------------------------------------
-var your_engine_front_path = '../MapTalks/engine-front/';
-var your_css_dist_path = your_engine_front_path+'webroot/css/';
-var your_js_dist_path = your_engine_front_path+'webroot/js/build/v2/';
+
 
 var minimist = require('minimist');
 
 var knownOptions = {
+  //maptalks's engine_front module's path
+  maptalks: 'maptalks',
   string: 'browsers',
   boolean: 'coverage',
   alias: {
     'coverage': 'cov'
   },
-  default: { browsers: 'PhantomJS', coverage: false }
+  default: { browsers: 'PhantomJS', coverage: false, maptalks: null }
 };
 
 var options = minimist(process.argv.slice(2), knownOptions);
@@ -35,6 +31,14 @@ browsers = browsers.map(function(name) {
     return lname[0].toUpperCase() + lname.substr(1);
   }
 });
+
+//the path to distribute css and javascript, normally in maptalks's engine_front module
+var maptalks_css_dist_path,maptalks_js_dist_path;
+var root_dist_path = options.maptalks;
+if (root_dist_path) {
+    maptalks_css_dist_path = root_dist_path+'/webroot/css/';
+    maptalks_js_dist_path = root_dist_path+'/webroot/js/build/v2/';
+}
 
 gulp.task('jshint', function () {
   return gulp.src('src/**/*.js')
@@ -111,8 +115,8 @@ gulp.task('build', ['clean'], function (done) {
 
 //
 gulp.task('dist',['build'],function() {
-  var css_path = your_css_dist_path;
-  var js_path = your_js_dist_path;
+  var css_path = maptalks_css_dist_path;
+  var js_path = maptalks_js_dist_path;
   if (!css_path) {
     css_path = './dist/';
   }
