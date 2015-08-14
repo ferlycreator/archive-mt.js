@@ -3,6 +3,15 @@ dist/
 .idea/
 .iml
 
+### *tags
+GPATH
+GRTAGS
+GTAGS
+TAGS
+
+### OSX template
+.DS_Store
+
 # Created by .ignore support plugin (hsz.mobi)
 ### Node template
 # Logs
