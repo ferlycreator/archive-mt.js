@@ -32,7 +32,11 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
      */
     initialize:function(id,opts) {
         this.setId(id);
-        this.lodConfig = new Z.LodConfig(opts['crs']);
+        if (!opts['crs']) {
+            this.lodConfig = new Z.LodConfig(Z.LodConfig['defaultCRS']);
+        } else {
+            this.lodConfig = new Z.LodConfig(opts['crs']);    
+        }
         delete opts['crs'];
         //将其他设置存入this.options中
         Z.Util.setOptions(this,opts);

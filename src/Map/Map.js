@@ -6,7 +6,9 @@ Z['Map']=Z.Map=Z.Class.extend({
         'enableMapSliding':true,
         'enableZoom':true,
         'enableInfoWindow':true,
-        'zoomMode':'pointer'
+        'zoomMode':'pointer',
+        'supportCoordinateTypes':['gcj02','bd09ll','wgs94','pixel'],
+        'defaultCoordinateTypes':'gcj02'
     },
 
     events:{
@@ -81,7 +83,12 @@ Z['Map']=Z.Map=Z.Class.extend({
 
         this.allowSlideMap = true;
 
-
+        //坐标类型
+        this.coordinateType = options['coordinateType'];
+        if (!this.coordinateType || Z.Util.searchInArray(this.coordinateType, this.options['supportCoordinateTypes'])<0) {
+            //默认采用GCJ02
+            this.coordinateType = this.options['defaultCoordinateTypes'];
+        }
 
         this.initContainer();
     },
@@ -598,12 +605,17 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {String} 坐标类型
      * @expose
      */
-    getCoordinateType:function() {
-        var result = this.options['coordinateType'];
-        if (!result) {
-            result = 'gcj02';
+    getCoordinateType:function() {        
+        return this.coordinateType;
+    },
+
+    setCoordinateType:function(coordinateType) {
+        //判断coordinateType是否有效
+        if (!coordinateType || Z.Util.searchInArray(coordinateType, this.options['supportCoordinateTypes'] < 0)) {
+            return;
         }
-        return result;
+        this.coordinateType = coordinateType;
+        this.fireEvent('coordinatetypechanged');
     },
 
 
