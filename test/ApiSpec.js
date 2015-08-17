@@ -19,6 +19,7 @@ describe('API', function () {
             subdomains: [0,1,2,3],
         });
         map.setBaseTileLayer(tile);
+        map.Load();
     });
 
     afterEach(function () {
@@ -363,6 +364,489 @@ describe('API', function () {
 
         });
 
+    });
+
+    describe('Map.UI.InfoWindow', function() {
+
+        it('setOption', function() {
+            var win = new Z.InfoWindow();
+            var options = {
+                title: 'title',
+                content: 'content'
+            };
+
+            expect(function() {
+                win.setOption(options);
+            }).to.not.throwException();
+        });
+
+        it('show/hide/isOpen', function() {
+            var win = new Z.InfoWindow();
+            var options = {
+                title: 'title',
+                content: 'content'
+            };
+            win.setOption(options);
+            win.addTo(map);
+            var pos = {x: 10, y: 10};
+
+            expect(function () {
+                win.show(pos);
+                win.isOpen();
+                win.hide();
+            }).to.not.throwException();
+        });
+
+    });
+
+    describe('Map.UI.Menu', function() {
+
+        it('setOption', function() {
+            var menu = new Z.Menu();
+            var options = {
+                items: [
+                    {item: 'item1'},
+                    {item: 'item2'}
+                ],
+                width: 0
+            };
+
+            expect(function () {
+                menu.setOption(options);
+            }).to.not.throwException();
+        });
+
+        it('getOption', function() {
+            var menu = new Z.Menu();
+            var options = {
+                items: [
+                    {item: 'item1'},
+                    {item: 'item2'}
+                ],
+                width: 0
+            };
+            menu.setOption(options);
+
+            var got = menu.getOption();
+
+            expect(got).to.eql(options);
+        });
+
+        it('addTo', function() {
+            var menu = new Z.Menu();
+            var options = {
+                items: [
+                    {item: 'item1'},
+                    {item: 'item2'}
+                ],
+                width: 0
+            };
+            menu.setOption(options);
+
+            expect(function () {
+                menu.addTo(map);
+            }).to.not.throwException();
+        });
+
+        it('setItems', function() {
+            var menu = new Z.Menu();
+            var items = [
+                {item: 'item1'},
+                {item: 'item2'}
+            ];
+
+            expect(function () {
+                menu.setItems(items);
+            }).to.not.throwException();
+        });
+
+        it('closeMenu/removeMenu', function() {
+            var options = {
+                items: [
+                    {item: 'item1'},
+                    {item: 'item2'}
+                ],
+                width: 0
+            };
+            var menu = new Z.Menu(options);
+            menu.addTo(map);
+            var pos = {x: 10, y: 10};
+            menu.show(pos);
+
+            expect(function () {
+                menu.closeMenu();
+                menu.removeMenu();
+            }).to.not.throwException();
+        });
+
+        it('show/hide/isOpen', function() {
+            var options = {
+                items: [
+                    {item: 'item1'},
+                    {item: 'item2'}
+                ],
+                width: 0
+            };
+            var menu = new Z.Menu(options);
+            menu.addTo(map);
+            var pos = {x: 10, y: 10};
+
+            expect(function () {
+                menu.show(pos);
+                menu.hide();
+                menu.isOpen();
+            }).to.not.throwException();
+        });
+
+    });
+
+    describe('Map.UI.Tip', function() {
+        // TODO
+    });
+
+    describe('Map.UI.Label', function() {
+        // TODO
+    });
+
+    describe('Control', function() {
+
+        function buildOn() {
+            return Z.DomUtil.createEl('div');
+        }
+
+        it('setOption');
+
+        it('getOption');
+
+        it('addTo', function() {
+            var control = new Z.Control({id: 'id1'});
+            control.buildOn = buildOn;
+
+            expect(function () {
+                control.addTo(map);
+            }).to.not.throwException();
+        });
+
+        it('setPosition', function() {
+            var control = new Z.Control({
+                id: 'id1',
+                position: {'top': '10','left': '10'}
+            });
+            control.buildOn = buildOn;
+            control.addTo(map);
+            var pos = {
+                top: 20,
+                left: 30
+            };
+
+            expect(function () {
+                control.setPosition(pos);
+            }).to.not.throwException();
+        });
+
+        it('getPosition', function() {
+            var control = new Z.Control({id: 'id1'});
+            var undef;
+
+            expect(control.getPosition()).to.not.eql(undef);
+        });
+
+    });
+
+    describe('Control.Attribution', function() {
+
+        it('setContent', function() {
+            var attribution = new Z.Control.Attribution({
+                id: 'id',
+                position: {
+                    bottom: 10,
+                    right: 10
+                }
+            });
+            attribution.addTo(map);
+
+            expect(function () {
+                attribution.setContent('new content');
+            }).to.not.throwException();
+        });
+
+    });
+
+    describe('OverlayLayer', function() {
+
+        function paint(geometries) {}
+
+        it('setId');
+
+        it('getId');
+
+        it('getExtent');
+
+        it('bringToFront');
+
+        it('bringToBack');
+
+        it('addGeometry', function() {
+            var layer = new Z.OverlayLayer();
+            layer.paintGeometries = paint;
+            layer.setId('id');
+            // map.addLayer(layer);
+            var geometry = new Z.Polygon([
+                {x: 121.111, y: 30.111},
+                {x: 121.222, y: 30.222},
+                {x: 121.333, y: 30.333}
+            ]);
+
+            expect(function () {
+                layer.addGeometry(geometry);
+                layer.addGeometry(geometry, true);
+            }).to.not.throwException();
+        });
+
+        it('getAllGeometries', function() {
+            var layer = new Z.OverlayLayer();
+            layer.paintGeometries = paint;
+            layer.setId('id');
+            // map.addLayer(layer);
+            var geometry = new Z.Polygon([
+                {x: 121.111, y: 30.111},
+                {x: 121.222, y: 30.222},
+                {x: 121.333, y: 30.333}
+            ]);
+            var count = 10;
+            for (var i = 0; i < count; i++) {
+                layer.addGeometry(geometry);
+            }
+            var geometries = layer.getAllGeometries();
+
+            expect(geometries).to.have.length(count);
+        });
+
+        it('getGeometryById', function() {
+            var layer = new Z.OverlayLayer();
+            layer.paintGeometries = paint;
+            layer.setId('id');
+            // map.addLayer(layer);
+            var geometry = new Z.Polygon([
+                {x: 121.111, y: 30.111},
+                {x: 121.222, y: 30.222},
+                {x: 121.333, y: 30.333}
+            ]);
+            geometry.setId('id');
+            layer.addGeometry(geometry);
+
+            expect(layer.getGeometryById('id')).to.not.be(null);
+            expect(layer.getGeometryById(null)).to.be(null);
+            expect(layer.getGeometryById('')).to.be(null);
+        });
+
+        it('removeGeometry', function() {
+            var layer = new Z.OverlayLayer();
+            layer.paintGeometries = paint;
+            layer.setId('id');
+            // map.addLayer(layer);
+            var polygon = new Z.Polygon([
+                {x: 121.111, y: 30.111},
+                {x: 121.222, y: 30.222},
+                {x: 121.333, y: 30.333}
+            ]);
+            polygon.setId('polygon');
+            var polyline = new Z.Polyline([
+                {x: 121.111, y: 30.111},
+                {x: 121.222, y: 30.222}
+            ]);
+            polyline.setId('polyline');
+            layer.addGeometry(polygon);
+            layer.addGeometry(polyline);
+
+            layer.removeGeometry('polyline');
+            expect(layer.getGeometryById('polyline')).to.be(null);
+
+            layer.removeGeometry(polygon);
+            expect(layer.getGeometryById('polygon')).to.be(null);
+        });
+
+        it('clear', function() {
+            var layer = new Z.OverlayLayer();
+            layer.paintGeometries = paint;
+            layer.setId('id');
+            // map.addLayer(layer);
+            var polygon = new Z.Polygon([
+                {x: 121.111, y: 30.111},
+                {x: 121.222, y: 30.222},
+                {x: 121.333, y: 30.333}
+            ]);
+            polygon.setId('polygon');
+            var polyline = new Z.Polyline([
+                {x: 121.111, y: 30.111},
+                {x: 121.222, y: 30.222}
+            ]);
+            polyline.setId('polyline');
+            layer.addGeometry(polygon);
+            layer.addGeometry(polyline);
+
+            layer.clear();
+
+            var geometries = layer.getAllGeometries();
+            expect(geometries).to.be.empty();
+        });
+
+    });
+
+    describe('OverLayer.SVGLayer', function() {
+        it('show/hide/isVisible', function() {
+            var layer = new Z.SVGLayer('svg');
+            map.addLayer(layer);
+            var geometry = new Z.Polygon([
+                {x: 121.111, y: 30.111},
+                {x: 121.222, y: 30.222},
+                {x: 121.333, y: 30.333}
+            ]);
+            layer.addGeometry(geometry);
+
+            expect(function () {
+                layer.show();
+                layer.hide();
+                layer.isVisible();
+            }).to.not.throwException();
+        });
+    });
+
+    describe('OverLayer.CanvasLayer', function() {
+        it('show/hide/isVisible', function() {
+            var layer = new Z.CanvasLayer('canvas');
+            map.addLayer(layer);
+            var geometry = new Z.Polygon([
+                {x: 121.111, y: 30.111},
+                {x: 121.222, y: 30.222},
+                {x: 121.333, y: 30.333}
+            ]);
+            layer.addGeometry(geometry);
+
+            expect(function () {
+                layer.show();
+                layer.hide();
+                layer.isVisible();
+            }).to.not.throwException();
+        });
+    });
+
+    describe('TileLayer', function() {
+    });
+
+    describe('DynamicLayer', function() {
+    });
+
+    describe('DrawTool', function() {
+
+        it('addTo', function() {
+            var drawTool = new Z.DrawTool({
+                mode: Z.Geometry.TYPE_POLYLINE,
+                symbol: {
+                    strokeSymbol: {
+                        stroke: '#ff0000',
+                        'stroke-width': 3,
+                        opacity: 0.6
+                    }
+                }
+            });
+
+            expect(function () {
+                drawTool.addTo(map);
+            }).to.not.throwException();
+        });
+
+        it('enable/disable', function() {
+            var drawTool = new Z.DrawTool({
+                mode: Z.Geometry.TYPE_POLYLINE,
+                symbol: {
+                    strokeSymbol: {
+                        stroke: '#ff0000',
+                        'stroke-width': 3,
+                        opacity: 0.6
+                    }
+                }
+            });
+            drawTool.addTo(map);
+
+            expect(function () {
+                 drawTool.disable();
+                 drawTool.enable();
+             }).to.not.throwException();
+        });
+
+        it('setMode', function() {
+            var drawTool = new Z.DrawTool({
+                mode: Z.Geometry.TYPE_POLYLINE
+            });
+            drawTool.addTo(map);
+
+            expect(function () {
+                drawTool.setMode(Z.Geometry.TYPE_POLYGON);
+            }).to.not.throwException();
+        });
+
+        it('setSymbol', function() {
+            var drawTool = new Z.DrawTool({
+                mode: Z.Geometry.TYPE_POLYLINE
+            });
+            drawTool.addTo(map);
+            var symbol = {
+                strokeSymbol: {
+                    stroke: '#ff0000',
+                    'stroke-width': 3,
+                    opacity: 0.6
+                }
+            };
+
+            expect(function () {
+                drawTool.setSymbol(symbol);
+            }).to.not.throwException();
+        });
+
+        it('getSymbol', function() {
+            var drawTool = new Z.DrawTool({
+                mode: Z.Geometry.TYPE_POLYLINE
+            });
+            drawTool.addTo(map);
+
+            expect(function () {
+                drawTool.getSymbol();
+            }).to.not.be(null);
+        });
+
+    });
+
+    describe('ComputeAreaTool', function() {
+        it('enable/disable', function() {
+            var tool = new Z.ComputeAreaTool();
+
+            expect(function () {
+                tool.addTo(map);
+                tool.enable();
+                tool.disable();
+            }).to.not.throwException();
+        });
+    });
+
+    describe('DistanceTool', function() {
+        it('enable/disable', function() {
+            var tool = new Z.DistanceTool();
+
+            expect(function () {
+                tool.addTo(map);
+                tool.enable();
+                tool.disable();
+            }).to.not.throwException();
+        });
+    });
+
+    describe('Query', function() {
+        // TODO
+    });
+
+    describe('Geometry', function() {
+        // TODO
     });
 
 });
