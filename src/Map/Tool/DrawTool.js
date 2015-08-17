@@ -210,12 +210,13 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         if (path.length < 2) {return;}
         //去除重复的端点
         var nIndexes = [];
-        for (var i=1,len=path.length;i<len;i++) {
+        var i, len;
+        for (i=1,len=path.length;i<len;i++) {
             if (path[i].x === path[i-1].x && path[i].y === path[i-1].y) {
                 nIndexes.push(i);
             }
         }
-        for (var i=nIndexes.length-1;i>=0;i--) {
+        for (i=nIndexes.length-1;i>=0;i--) {
             path.splice(nIndexes[i],1);
         }
 
@@ -247,6 +248,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
             var geometry = me.geometry;
             var drawLayer = me.getDrawLayer();
             var _map = me.map;
+            var center;
             switch (me.mode) {
             case Z.Geometry['TYPE_CIRCLE']:
                 if (!geometry) {
@@ -255,7 +257,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
                     drawLayer.addGeometry(geometry);
                     break;
                 }
-                var center =geometry.getCenter();
+                center =geometry.getCenter();
                 var radius = _map.computeDistance(center,coordinate);
                 geometry.setRadius(radius);
             break;
@@ -266,7 +268,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
                     drawLayer.addGeometry(geometry);
                     break;
                 }
-                var center = geometry.getCenter();
+                center = geometry.getCenter();
                 var rx = _map.computeDistance(center,{x:coordinate.x, y:center.y});
                 var ry = _map.computeDistance(center,{x:center.x, y:coordinate.y});
                 geometry.setWidth(rx);

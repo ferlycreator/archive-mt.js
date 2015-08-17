@@ -33,21 +33,23 @@ Z['ComputeAreaTool'] = Z.ComputeAreaTool = Z.Class.extend({
 	* @expose
 	*/
 	enable: function() {
-		if (!this.map) return;
+		if (!this.map) {
+			return;
+		}
 		this.drawLayer = this.map.getLayer(this.layerId);
-		if (this.drawLayer != null && this.drawTool != null) {
+		if (this.drawLayer !== null && this.drawTool !== null) {
 			this.drawTool.enable();
 			return;
 		}
-		if (this.drawLayer != null) {
+		if (this.drawLayer !== null) {
 			this.map.removeLayer(this.layerId);
 		}
-		var _canvas = this.map.canvasDom;
+		// var _canvas = this.map.canvasDom;
 
 		this.drawLayer = new Z.SVGLayer(this.layerId);
 		this.map.addLayer(this.drawLayer);
 
-		drawTool = new Z.DrawTool({
+		var drawTool = new Z.DrawTool({
 			'mode':Z.Geometry.TYPE_POLYGON,
 			'symbol': {
 				'strokeSymbol':{'stroke':'#ff0000', 'stroke-width':2, 'opacity':1},
@@ -60,6 +62,8 @@ Z['ComputeAreaTool'] = Z.ComputeAreaTool = Z.Class.extend({
 		drawTool.on('drawring', Z.Util.bind(this.measureRing, this));
 		drawTool.on('afterdraw', Z.Util.bind(this.afterMeasure, this));
 
+		this.drawTool = drawTool;
+
 		this.counter = 0;
 		this.pointCounter = 0;
 		this.tmpMarkers = [];
@@ -71,7 +75,7 @@ Z['ComputeAreaTool'] = Z.ComputeAreaTool = Z.Class.extend({
 	*/
 	disable: function() {
 		this.clear();
-		if (this.drawTool != null) {
+		if (this.drawTool !== null) {
 			this.drawTool.disable();
 		}
 	},
@@ -118,13 +122,16 @@ Z['ComputeAreaTool'] = Z.ComputeAreaTool = Z.Class.extend({
 	 * @expose
 	 */
 	clear:function(){
-		if (!this.map) return;
-		if (this.drawLayer != null) {
+		if (!this.map) {
+			return;
+		}
+		if (this.drawLayer !== null) {
 			this.drawLayer.clear();
 		}
 		var _canvas = this.map.canvasDom;
-		if (!_canvas)
+		if (!_canvas) {
 			this.changeCursor('default');
+		}
 		this.rings = [];
 	},
 

@@ -27,17 +27,19 @@ Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
 	},
 
 	enable:function() {
-		if (!this.map) return;
+		if (!this.map) {
+			return;
+		}
 		var drawTool = this.drawTool;
 		this.drawLayer = this.map.getLayer(this.layerId);
-		if (this.drawLayer != null && drawTool != null) {
+		if (this.drawLayer !== null && drawTool !== null) {
 			drawTool.enable();
 			return;
 		}
-		if (this.drawLayer != null) {
+		if (this.drawLayer !== null) {
 			this.map.removeLayer(this.layerId);
 		}
-		var _canvas = this.map.panels.canvasLayerContainer;
+		// var _canvas = this.map.panels.canvasLayerContainer;
 
 		this.drawLayer = new Z.SVGLayer(this.layerId);
 
@@ -53,6 +55,8 @@ Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
 		drawTool.on('drawring', Z.Util.bind(this.measureRing, this));
 		drawTool.on('afterdraw', Z.Util.bind(this.afterMeasure, this));
 
+		this.drawTool = drawTool;
+
 		this.counter = 0;
 		this.rings = [];
 		this.tmpMarkers = [];
@@ -63,15 +67,18 @@ Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
 	 * @expose
 	 */
 	disable:function() {
-		if (!this.map) return;
+		if (!this.map) {
+			return;
+		}
 		this.clear();
-		var drawTool =this.drawTool;
+		var drawTool = this.drawTool;
 		var _canvas = this.map.canvasDom;
-		if (!_canvas)
+		if (!_canvas) {
 			this.changeCursor('default');
-		if (drawTool != null)
+		}
+		if (drawTool !== null) {
 			drawTool.disable();
-
+		}
 	},
 
 	startMeasure : function(param) {
@@ -93,7 +100,7 @@ Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
 	measureRing : function(param) {
 		var content = null;
 		var coordinate = param['coordinate'];
-		rings.push(coordinate);
+		this.rings.push(coordinate);
 		var lenSum = this.caculateLenSum();
 		if (lenSum>1000) {
 			content = (lenSum/1000).toFixed(1)+'公里';
@@ -102,7 +109,7 @@ Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
 		}
 		var measureDiv = this.outline(content, 50);
 		var point = this.genMesurePoint(coordinate, this.layerId + '_ringp_' + this.rings.length+'_' + this.counter);
-		var marker = new Z.Marker(coordinate, _this.layerId + '_ring_' + this.rings.length + '_' + this.counter);
+		var marker = new Z.Marker(coordinate, this.layerId + '_ring_' + this.rings.length + '_' + this.counter);
 		marker.setIcon({
 			'type' : 'html',
 			'content' : measureDiv
@@ -137,7 +144,9 @@ Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
 
 	caculateLenSum : function() {
 		var rings = this.rings;
-		if (rings.length <= 1) return 0;
+		if (rings.length <= 1) {
+			return 0;
+		}
 		var lenSum = 0;
 		var projection = this.map.getProjection();
 		for (var i=1,len=rings.length;i<len;i++){
@@ -169,7 +178,7 @@ Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
 	 * @expose
 	 */
 	clear: function(){
-		if (this.drawLayer != null && this.map!=null) {
+		if (this.drawLayer !== null && this.map !== null) {
 			this.drawLayer.clear();
 		}
 		this.rings = [];
@@ -178,17 +187,21 @@ Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
 	},
 
 	outline: function(content,width,top,left) {
-		if (top==null) top=-10;
-		if (left==null) left = 10;
-		return '<div class="MAP_CONTROL_PointTip" style="top:'
-				+top+'px;left:'+left+'px;width:'+width+'px">'+content+'</div>';
+		if (top===null) {
+			top=-10;
+		}
+		if (left===null) {
+			left = 10;
+		}
+		return '<div class="MAP_CONTROL_PointTip" style="top:'+
+			top+'px;left:'+left+'px;width:'+width+'px">'+content+'</div>';
 	},
 
 	endMeasure: function(coordinate, divContent, geo) {
 		var _geo = geo;
 		var counter = this.counter;
 		var tmpMarkers = this.tmpMarkers;
-		var map = this.map;
+		// var map = this.map;
 		var point = this.genMesurePoint(coordinate, this.layerId+'_endp_'+counter);
 
 		var rings;
@@ -237,8 +250,9 @@ Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
 		closeBtn.on('click',function() {
 			_geo.remove();
 			for (var i = 0, len = tmpMarkers.length;i<len;i++) {
-				if (strEndWith(this.tmpMarkers[i].getId(),"_"+closeBtn.getAttributes()))
+				if (strEndWith(this.tmpMarkers[i].getId(),"_"+closeBtn.getAttributes())) {
 					this.tmpMarkers[i].remove();
+				}
 			}
 		});
 
@@ -247,14 +261,15 @@ Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
 			var center = tmpMarkers[tmpMarkers.length-1].getCenter();
 
 			var endIndexes = [tmpMarkers.length-1];
-			for (var i=tmpMarkers.length-3;i>0;i-=2) {
+			var i, len;
+			for (i=tmpMarkers.length-3;i>0;i-=2) {
 				if (tmpMarkers[i].center.x === center.x && tmpMarkers[i].center.y === center.y) {
 					endIndexes.push(i);
 				} else {
 					break;
 				}
 			}
-			for (var i=0, len=endIndexes.length;i<len;i++) {
+			for (i=0, len=endIndexes.length;i<len;i++) {
 				tmpMarkers[endIndexes[i]].remove();
 			}
 		}
@@ -265,15 +280,16 @@ Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
 		tmpMarkers.push(point);
 		tmpMarkers.push(closeBtn);
 		function strEndWith(str, end) {
-			if (str==null||str==''||str.length==0||end.length>str.length)
+			if (str===null||str===''||str.length===0||end.length>str.length) {
 			 return false;
-			if (str.substring(str.length-end.length)===end)
+			}
+			if (str.substring(str.length-end.length)===end) {
 			 return true;
-			else
+			} else {
 			 return false;
+			}
 			return true;
 		}
-
 	},
 
 	changeCursor:function(cursorStyle) {

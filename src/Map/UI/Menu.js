@@ -195,6 +195,7 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
 
     /**
     *  判断菜单是否打开
+    *  @expose
     *  @returns {Boolean}
     */
     isOpen:function() {
@@ -203,6 +204,7 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
 
     /**
     * 显示菜单
+    * @expose
     * @param {Coordinate} 坐标
     */
     show:function(coordinate) {
