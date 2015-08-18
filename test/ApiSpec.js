@@ -842,11 +842,411 @@ describe('API', function () {
     });
 
     describe('Query', function() {
-        // TODO
+        it('query');
+    });
+
+    describe('RemoteQuery', function() {
+
+        it('query');
+
+        it('identify');
+
     });
 
     describe('Geometry', function() {
-        // TODO
+
+        it('fromJson', function() {
+            // TODO
+        });
+
+        it('fromGeoJson', function() {
+            // TODO
+        });
+
+        it('setId/getId', function() {
+            var geometry = new Z.Geometry();
+            var undef;
+
+            expect(geometry.getId()).to.equal(undef);
+
+            geometry.setId('id');
+
+            expect(geometry.getId()).to.eql('id');
+        });
+
+        it('setSymbol/getSymbol', function() {
+            var geometry = new Z.Geometry();
+            var symbol = {
+                strokeSymbol: {
+                    stroke: '#ff0000',
+                    'stroke-width': 3,
+                    opacity: 0.6
+                }
+            };
+
+            expect(geometry.getSymbol()).to.be(null);
+
+            geometry.setSymbol(symbol);
+            var got = geometry.getSymbol();
+
+            expect(got).to.not.be(null);
+            var stroke = sym.strokeSymbol;
+            expect(stroke).to.only.have.keys([
+                'stroke',
+                'strokeWidth',
+                'opacity'
+                ]);
+        });
+
+        it('[set|get]Properties');
+
+        it('getLayer');
+
+        it('getMap');
+
+        it('getType');
+
+        it('isVector');
+
+    });
+
+    describe('Geometry.Marker', function() {
+
+        it('setCenter', function() {
+        });
+
+        it('getCenter', function() {
+        });
+
+        it('getExtent', function() {
+        });
+
+        it('getSize', function() {
+        });
+
+        it('show/hide/isVisible', function() {
+        });
+
+        it('remove', function() {
+        });
+
+        it('copy');
+
+        it('toJson', function() {
+        });
+
+        it('toGeoJson', function() {
+        });
+
+    });
+
+    describe('Geometry.Circle', function() {
+
+        it('setCenter', function() {
+        });
+
+        it('getCenter', function() {
+        });
+
+        it('getExtent', function() {
+        });
+
+        it('getSize', function() {
+        });
+
+        it('show/hide/isVisible', function() {
+        });
+
+        it('remove', function() {
+        });
+
+        it('copy');
+
+        it('toJson', function() {
+        });
+
+        it('toGeoJson', function() {
+        });
+
+    });
+
+    describe('Geometry.Ellipse', function() {
+
+        it('setCenter', function() {
+        });
+
+        it('getCenter', function() {
+        });
+
+        it('getExtent', function() {
+        });
+
+        it('getSize', function() {
+        });
+
+        it('show/hide/isVisible', function() {
+        });
+
+        it('remove', function() {
+        });
+
+        it('copy');
+
+        it('toJson', function() {
+        });
+
+        it('toGeoJson', function() {
+        });
+
+    });
+
+    describe('Geometry.Sector', function() {
+
+        it('setCenter', function() {
+        });
+
+        it('getCenter', function() {
+        });
+
+        it('getExtent', function() {
+        });
+
+        it('getSize', function() {
+        });
+
+        it('show/hide/isVisible', function() {
+        });
+
+        it('remove', function() {
+        });
+
+        it('copy');
+
+        it('toJson', function() {
+        });
+
+        it('toGeoJson', function() {
+        });
+
+    });
+
+    describe('Geometry.Rectangle', function() {
+
+        it('getCenter', function() {
+        });
+
+        it('getExtent', function() {
+        });
+
+        it('getSize', function() {
+        });
+
+        it('show/hide/isVisible', function() {
+        });
+
+        it('remove', function() {
+        });
+
+        it('copy');
+
+        it('toJson', function() {
+        });
+
+        it('toGeoJson', function() {
+        });
+
+    });
+
+    describe('Geometry.Polyline', function() {
+
+        it('getCenter', function() {
+        });
+
+        it('getExtent', function() {
+        });
+
+        it('getSize', function() {
+        });
+
+        it('show/hide/isVisible', function() {
+        });
+
+        it('remove', function() {
+        });
+
+        it('copy');
+
+        it('toJson', function() {
+        });
+
+        it('toGeoJson', function() {
+        });
+
+    });
+
+    describe('Geometry.Polygon', function() {
+
+        it('getCenter', function() {
+        });
+
+        it('getExtent', function() {
+        });
+
+        it('getSize', function() {
+        });
+
+        it('show/hide/isVisible', function() {
+        });
+
+        it('remove', function() {
+        });
+
+        it('copy');
+
+        it('toJson', function() {
+        });
+
+        it('toGeoJson', function() {
+        });
+
+    });
+
+    describe('Geometry.GeometryCollection', function() {
+
+        it('getCenter', function() {
+        });
+
+        it('getExtent', function() {
+        });
+
+        it('getSize', function() {
+        });
+
+        it('show/hide/isVisible', function() {
+        });
+
+        it('remove', function() {
+        });
+
+        it('copy');
+
+        it('toJson', function() {
+        });
+
+        it('toGeoJson', function() {
+        });
+
+    });
+
+    describe('Geometry.MultiPoint', function() {
+
+        it('getCenter', function() {
+        });
+
+        it('getExtent', function() {
+        });
+
+        it('getSize', function() {
+        });
+
+        it('show/hide/isVisible', function() {
+        });
+
+        it('remove', function() {
+        });
+
+        it('copy');
+
+        it('toJson', function() {
+        });
+
+        it('toGeoJson', function() {
+        });
+
+    });
+
+    describe('Geometry.MultiPolyline', function() {
+
+        it('getCenter', function() {
+        });
+
+        it('getExtent', function() {
+        });
+
+        it('getSize', function() {
+        });
+
+        it('show/hide/isVisible', function() {
+        });
+
+        it('remove', function() {
+        });
+
+        it('copy');
+
+        it('toJson', function() {
+        });
+
+        it('toGeoJson', function() {
+        });
+
+    });
+
+    describe('Geometry.MultiPolygon', function() {
+
+        it('setCenter', function() {
+        });
+
+        it('getCenter', function() {
+        });
+
+        it('getExtent', function() {
+        });
+
+        it('getSize', function() {
+        });
+
+        it('show/hide/isVisible', function() {
+        });
+
+        it('remove', function() {
+        });
+
+        it('copy');
+
+        it('toJson', function() {
+        });
+
+        it('toGeoJson', function() {
+        });
+
+    });
+
+    describe('Geometry.Extent', function() {
+
+        it('getCenter', function() {
+        });
+
+        it('getExtent', function() {
+        });
+
+        it('getSize', function() {
+        });
+
+        it('show/hide/isVisible', function() {
+        });
+
+        it('remove', function() {
+        });
+
+        it('copy');
+
+        it('toJson', function() {
+        });
+
+        it('toGeoJson', function() {
+        });
+
     });
 
 });
