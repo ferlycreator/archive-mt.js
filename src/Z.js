@@ -11,4 +11,4 @@ Z.loadModule=function(module,callback,context) {
     Z.Util.Ajax.getScript(url,function() {
             callback.call(context);
         });
-};
+}; 
