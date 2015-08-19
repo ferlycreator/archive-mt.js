@@ -181,22 +181,21 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     },
 
     //默认标注样式
-    defaultIcon:{
-        /*"type":"picture",*/
-        "marker-file" : Z.host + "/engine/images/marker.png",
-        "marker-height" : 30,
-        "marker-width" : 22,
-        "marker-offset" : {
-            "x" : 0,
-            "y" : 0
+    defaultIcon: {
+        'marker-file' : Z.host + '/engine/images/marker.png',
+        'marker-height' : 30,
+        'marker-width' : 22,
+        'marker-offset' : {
+            'x' : 0,
+            'y' : 0
         }
     },
 
     // 默认线样式
     defaultSymbol:{
-        "line-color" : "#474cf8",
-        "line-width" : 3,
-        "line-opacity" : 1
+        'line-color' : '#474cf8',
+        'line-width' : 3,
+        'line-opacity' : 1
     },
 
     initialize:function() {

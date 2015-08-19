@@ -12,31 +12,38 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
      * @return {Boolean} True|False
      * @export
      */
-    isVectorIcon:function() {
+    /**isVectorIcon:function() {
         var icon = this.getIcon();  
         if (icon) {
             return 'vector' === icon['type'];
         }
         return false;
-    },
+    },*/
 
     getDefaultSymbol:function() {
         return {
-            "icon":this.defaultIcon
+            'icon': this.defaultIcon
         };
     },
+
     /**
      * 设置Marker的Icon
      * @param {Icon} icon 新的Icon
      * @export
      */
-    setIcon:function(icon) {
+    setIcon: function(icon) {
         if (!this.symbol) {
             this.symbol = {};
         }
-        this.symbol['icon'] = icon;
+        //属性的变量名转化为驼峰风格
+        var camelSymbol = Z.Util.convertFieldNameStyle(icon,'camel');
+        this.symbol = camelSymbol;
         this.onSymbolChanged();
         return this;
+    },
+
+    setText: function(text) {
+        this.setIcon(text);
     },
 
     /**
@@ -55,7 +62,6 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
         var center = this.getCenter();
         if (!center) {return null;}
         return new Z.Extent({'x':center.x,'y':center.y},{'x':center.x,'y':center.y});
-        // return {'xmin':center.x, 'ymin':center.y, 'xmax':center.x, 'ymax':center.y};
     },
 
     computeVisualExtent:function(projection) {
@@ -72,7 +78,7 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
             icon = geo.defaultIcon;
         }
         var center=geo.getCenter();
-        var offset = icon["offset"];
+        var offset = icon['offset'];
         if (!offset) {
             offset = {
                 'x':0,
@@ -83,11 +89,16 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
         var pnw,pse;
         var width, height;
         var iconType = icon['type'];
-        if (iconType === "picture") {
-            height = (icon["height"]?parseInt(icon["height"],10):0);
-            width = (icon["width"]?parseInt(icon["width"],10):0);
-            pnw = {"top":(height+offset["y"]),"left":(width/2-offset["x"])};
-            pse = {"top":(-offset["y"]),"left":(width/2+offset["x"])};
+        height = (icon['height']?parseInt(icon['height'],10):0);
+        width = (icon['width']?parseInt(icon['width'],10):0);
+        pnw = {'top':(height+offset['y']), 'left':(width/2-offset['x'])};
+        pse = {'top':(-offset['y']), 'left':(width/2+offset['x'])};
+
+        /**if (iconType === "picture") {
+            height = (icon['height']?parseInt(icon['height'],10):0);
+            width = (icon['width']?parseInt(icon['width'],10):0);
+            pnw = {'top':(height+offset['y']), 'left':(width/2-offset['x'])};
+            pse = {'top':(-offset['y']), 'left':(width/2+offset['x'])};
         } else if (iconType === "vector") {
             var radius = icon["size"];
             if (!radius) {return null;}
@@ -115,9 +126,10 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
             width = geo.defaultIcon['width'];
             pnw = {"top":(height+offset["y"]),"left":(width/2-offset["x"])};
             pse = {"top":(-offset["y"]),"left":(width/2+offset["x"])};
-        }
+        }*/
+
         var pcenter = projection.project(center);
-        return map.computeExtentByPixelSize(pcenter,pnw,pse);
+        return map.computeExtentByPixelSize(pcenter, pnw, pse);
     },
 
 

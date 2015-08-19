@@ -5,28 +5,19 @@ Z.Painter.SVG = Z.Painter.extend({
      * @param layer
      * @param config
      */
-    drawVector:function(vectorBean,strokeSymbol, fillSymbol) {
+    drawVector:function(vectorBean, strokeSymbol, fillSymbol, icon) {
         var vectorPaper = this.getVectorPaper();
         if (!vectorBean || !vectorPaper) {return;}
         //样式
-        // Z.Util.extend(vectorBean,this.convertPropToCssStyle(strokeSymbol),this.convertPropToCssStyle(fillSymbol));
         if (this.vector) {
-            // this.vector['remove']();
-            // TODO: only update?           
+            // TODO: only update?
             Z.SVG.removeVector(vectorPaper, this.vector);
         }
-        // var elements = vectorPaper.add([vectorBean]);
-        // if (!elements || elements.length === 0) {return;}Ø
-        // this.vector=elements[0];
-        /*var defaultStrokeSymbol = this.geometry.getDefaultStrokeSymbol();
-        if (!strokeSymbol) {
-            strokeSymbol = defaultStrokeSymbol;
-        }
-        if (!strokeSymbol['stroke']) {
-            strokeSymbol['stroke'] = defaultStrokeSymbol['stroke'];
-        }*/
-        var path = Z.SVG.addVector(vectorPaper, vectorBean, Z.Util.convertFieldNameStyle(strokeSymbol,'minus'), Z.Util.convertFieldNameStyle(fillSymbol,'minus'));
-        this.vector=path;
+        var path = Z.SVG.addVector(vectorPaper, vectorBean,
+                                   Z.Util.convertFieldNameStyle(strokeSymbol,'minus'),
+                                   Z.Util.convertFieldNameStyle(fillSymbol,'minus'),
+                                   Z.Util.convertFieldNameStyle(icon,'minus'));
+        this.vector = path;
         return this.vector;
     },
 

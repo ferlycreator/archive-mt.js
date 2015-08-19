@@ -38,10 +38,9 @@ Z.Util = {
         
     },
 
-    GUID:function() {
+    GUID: function() {
         return '___GLOBAL_'+(Z.Util.globalCounter++);
     },
-
 
     lastId: 0,
 

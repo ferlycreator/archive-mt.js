@@ -1,4 +1,4 @@
-Z.Marker.SVG=Z.Painter.SVG.extend({
+Z.Marker.SVG = Z.Painter.SVG.extend({
     includes: Z.Marker.PaintUtils,
 
     initialize:function(geometry) {
@@ -15,18 +15,14 @@ Z.Marker.SVG=Z.Painter.SVG.extend({
         this.layerContainer = layerContainer;
         this.setSymbol(symbol);
         var icon = this.getGeoIcon();
-        //普通图形标注
-        var iconType = icon['type'];
-        if (this.geometry.isVectorIcon()) {
+        var type = icon['type'];
+        if(type) {
             this.paintVectorMarker();
-            return;
+        } else {
+            var picMarker =  this.createPictureMarker();
+            this.paintDomMarker(picMarker, layerContainer);
         }
-        var markerGraphic = this.createMarkerDom(icon);
-        this.paintDomMarker(markerGraphic,layerContainer);
         this.setZIndex(zIndex);
-        if ('text' === iconType) {
-            this.fire('_textadded',{});
-        }
     },
 
     /**
@@ -35,12 +31,11 @@ Z.Marker.SVG=Z.Painter.SVG.extend({
      * @param config
      */
     refreshMarker:function() {
-        var icon = this.getGeoIcon();//this.geometry.getIcon();
-        
+        var icon = this.getGeoIcon();
         var iconType = icon['type'];
-        if ("vector" === iconType) {
+        if (iconType) {
             if (!this.vector) {return;}
-            var vectorMarker = this.createSVGObj(this.geometry);
+            var vectorMarker = this.createSVGObj();
             Z.SVG.refreshVector(this.vector, vectorMarker);
         } else {
             if (!this.markerDom) {return;}
@@ -53,20 +48,6 @@ Z.Marker.SVG=Z.Painter.SVG.extend({
 
     refreshMarkerSymbol:function() {
         this._paint(this.layerContainer, this.markerDom.style.zIndex, this.geometry.getSymbol());
-    },
-
-    createMarkerDom:function(icon) {
-        var iconType = icon['type'];
-        this.markerDom = null;
-        var geometry = this.geometry;
-        if ("picture" === iconType) {
-            this.markerDom =  this.createPictureMarker(geometry);
-        } else if ("html" === iconType) {
-            this.markerDom = this.createHtmlMarker(this.getMarkerDomOffset(),icon["content"]);
-        } else if ("text" === iconType) {
-            this.markerDom = this.createTextMarker(geometry);
-        }
-        return this.markerDom;
     },
 
     paintDomMarker:function(markerGraphic,layerContainer) {
@@ -87,113 +68,32 @@ Z.Marker.SVG=Z.Painter.SVG.extend({
         return this.visualSize;
     },
 
-    paintVectorMarker:function() {
-        var strokeSymbol = this.strokeSymbol,
-            fillSymbol = this.fillSymbol;
-        //矢量标注绘制        
-        var vectorMarker = this.createSVGObj(this.geometry);
-        this.drawVector(vectorMarker,strokeSymbol,fillSymbol);
-    },
-
-
     /**
-     * 生成文字标注
-     */
-    createTextMarker:function() {
-        var gCenter = this.getMarkerDomOffset();
-        if (!gCenter) {return null;}
-        var iconSymbol = this.getGeoIcon();
-        var text = iconSymbol["content"];
-        var option = iconSymbol["textStyle"];
-        if (Z.Util.isNil(text) || !gCenter) {return null;}
-        var cssText = "position:relative;";
-        var fontSize = 12;  
-        if (option) {
-            var cssArr = [];
-            if (option["size"] !== null && option['size'] !== undefined) {
-                fontSize = option["size"];
-            } 
-            cssArr.push("font-size:"+fontSize+"px");
-            cssArr.push("line-height:"+(fontSize+1)+"px");
-            
-            if (option["font"]) {
-                cssArr.push("font-family:"+option["font"]);
-            }
-            if (option["fontstyle"]) {
-                cssArr.push("font-style:"+option["fontstyle"]);
-            }
-            if (option["textStrokeWidth"] !== null && option["textStrokeWidth"] !== undefined) {
-                cssArr.push("-webkit-text-stroke-width:"+option["textStrokeWidth"]);
-            }
-            if (option["textStrokeColor"]) {
-                cssArr.push("-webkit-text-stroke-color:"+option["textStrokeColor"]);
-                if (option["color"]) {
-                    cssArr.push("-webkit-text-fill-color:"+option["color"]);
-                }
-            } else {
-                if (option["color"]) {
-                    cssArr.push("color:"+option["color"]);
-                }
-            }
-            var p = option["padding"];
-            if (p === null || p === undefined) {
-                p = 3;
-            }
-            cssArr.push("padding:"+p+"px");
-            var back = option["background"];
-            if (back) {         
-                cssArr.push("background:"+back);
-            }
-            var strokeWidth = option["strokewidth"];
-            if (strokeWidth) {
-                var c = option["stroke"];
-                if (!c) {
-                    c = "#000000";
-                }
-                cssArr.push("border:"+strokeWidth+"px solid "+c);
-            }
-            if (cssArr.length) {
-                cssText += cssArr.join(";");
-            }
-        }
-        var custom = Z.DomUtil.createEl("div");
-        custom.style.cssText = cssText;
-        custom.innerHTML = '<pre style="display:inline;">'+text+'</pre>';
-        var me = this;
-        function offsetText() {
-            var width = custom.offsetWidth;
-            var height = custom.offsetHeight;
-            var labelOffset = me.computeLabelOffset(width,height,option);
-            custom.style.left = labelOffset["x"]+"px";
-            custom.style.top = (-labelOffset["y"])+"px";
-        }
-        this.on('_textadded',function(param) {
-            offsetText();
-        });
-        return this.createHtmlMarker(gCenter, custom);
-
-    },
-
-    /**
-     * 生成html标注
-     * @param gCenter
-     * @returns {___anonymous55461_55471}
-     */
-    createHtmlMarker:function(gCenter,content) {
-        if (!gCenter) {return null;}
-        if (content === null || content === undefined) {return null;}
-        var _graphicDom = null;
-        _graphicDom = Z.DomUtil.createEl("div");
-        _graphicDom.setAttribute("unselectable", "on");
-        _graphicDom.style.cssText = "top:" + gCenter[1] + "px;left:" + gCenter[0]
-            + "px;position: absolute; padding: 0px;-webkit-user-select: none;";
-        var custom = content;
-        if (Z.Util.isString(custom)) {
-            _graphicDom.innerHTML = custom;
-        } else {
-            _graphicDom.appendChild(custom);
-        }
-        return _graphicDom;
+       'url': symbol['markerFile'],
+       'width': symbol['markerWidth'],
+       'height': symbol['markerHeight'],
+       'type': symbol['markerType'],
+       'opacity': symbol['markerOpacity'],
+       'fillOpacity': symbol['markerFillOpacity'],
+       'fill': symbol['markerFill'],
+       'lineColor': symbol['markerLineColor'],
+       'lineOpacity': symbol['markerLineOpacity'],
+       'lineWidth': symbol['markerLineWidth']
+    */
+    paintVectorMarker: function() {
+        var icon = this.getGeoIcon();
+        var strokeSymbol = {
+            'stroke': icon['lineColor'],
+            'strokeOpacity': icon['lineOpacity'],
+            'strokeWidth': icon['lineWidth']
+        };
+        var fillSymbol = {
+            'fill': icon['fill'],
+            'fillOpacity': icon['fillOpacity']
+        };
+        //矢量标注绘制
+        var vectorMarker = this.createSVGObj();
+        this.drawVector(vectorMarker, strokeSymbol, fillSymbol, icon);
     },
 
     /**
@@ -201,19 +101,18 @@ Z.Marker.SVG=Z.Painter.SVG.extend({
      * @param gCenter
      * @returns
      */
-    createSVGObj:function() {
-        // var geometry = this.geometry;
+    createSVGObj: function() {
         var gCenter = this.getMarkerDomOffset();
         if (!gCenter) {return null;}
-        // var iconSymbol = geometry.getIcon();
-        var iconSymbol = this.getGeoIcon();
+        var icon = this.getGeoIcon();
         //矢量标注
-        var vType = iconSymbol["fontstyle"];
-        var radius = iconSymbol["size"];
-        if (!radius) {return null;}
+        var markerType = icon['type'];
+        var width = icon['width'];
+        var height = icon['height'];
+        var radius = (width + height)/2;
         var svgBean = null;
-        var v = this.getVectorArray(gCenter);
-        if ("circle" === vType) {
+        var points = this.getVectorArray(gCenter);
+        if ('circle' === markerType) {
             var path = null;
             if (Z.Browser.vml) {
                 path ='AL ' + gCenter[0]+','+gCenter[1] + ' ' + radius + ',' + radius + ' 0,' + (65535 * 360) + ' x';
@@ -221,45 +120,87 @@ Z.Marker.SVG=Z.Painter.SVG.extend({
                 path = 'M'+gCenter[0]+','+gCenter[1]+' a'+radius+','+radius+' 0,1,0,0,-0.9 Z';
             }
             svgBean = {
-                    "type" : "path",
-                    'path' : path
+                'type' : 'path',
+                'path' : path
             };          
-        } else if ("triangle" === vType) {          
+        } else if ('triangle' === markerType) {
             svgBean = {
-                    "type" : "path",                    
-                    "path" : "M"+v[0][0]+","+v[0][1]+" L"+v[1][0]+","+v[1][1]+" L"+v[2][0]+","+v[2][1]+' '+Z.SVG.closeChar
+                'type' : 'path',
+                'path' : 'M'+points[0][0]+','+points[0][1]+ ' ' +
+                         'L'+points[1][0]+','+points[1][1]+ ' ' +
+                         'L'+points[2][0]+','+points[2][1]+ ' ' +
+                         Z.SVG.closeChar
             };
-        }  else if ("cross" === vType || "x" === vType || "X" === vType) {
+        }  else if ('cross' === markerType || 'x' === markerType || 'X' === markerType) {
             svgBean = {
-                    "type" : "path",                    
-                    "path" : "M"+v[0][0]+","+v[0][1]+" L"+v[1][0]+","+v[1][1]+" M"+v[2][0]+","+v[2][1]+" L"+v[3][0]+","+v[3][1]
+                'type' : 'path',
+                'path' : 'M'+points[0][0]+','+points[0][1]+ ' ' +
+                         'L'+points[1][0]+','+points[1][1]+ ' ' +
+                         'M'+points[2][0]+','+points[2][1]+ ' ' +
+                         'L'+points[3][0]+','+points[3][1]
             };
-        } else if ("diamond" === vType || "square" === vType) {
+        } else if ('diamond' === markerType || 'square' === markerType || 'rectangle' === markerType) {
             svgBean = {
-                    "type" : "path",                    
-                    "path" : "M"+v[0][0]+","+v[0][1]+" L"+v[1][0]+","+v[1][1]+" L"+v[2][0]+","+v[2][1]+" L"+v[3][0]+","+v[3][1]+' '+Z.SVG.closeChar
+                'type' : 'path',
+                'path' : 'M'+points[0][0]+','+points[0][1]+ ' ' +
+                         'L'+points[1][0]+','+points[1][1]+ ' ' +
+                         'L'+points[2][0]+','+points[2][1]+ ' ' +
+                         'L'+points[3][0]+','+points[3][1]+ ' ' +
+                         Z.SVG.closeChar
             };
-        } 
+        } else if ('tip' === markerType) {
+            svgBean = {
+                'type' : 'path',
+                'path' : 'M'+points[0][0]+','+points[0][1]+ ' ' +
+                         'L'+points[1][0]+','+points[1][1]+ ' ' +
+                         'L'+points[2][0]+','+points[2][1]+ ' ' +
+                         'L'+points[3][0]+','+points[3][1]+ ' ' +
+                         'L'+points[4][0]+','+points[4][1]+ ' ' +
+                         'L'+points[5][0]+','+points[5][1]+ ' ' +
+                         'L'+points[6][0]+','+points[6][1]+ ' ' +
+                         Z.SVG.closeChar
+            };
+        }
         if (Z.Browser.vml && svgBean) {
             svgBean['path'] += ' e';
         }
+        svgBean = this.createText(svgBean);
         return svgBean;
     },
-    
-    
 
+    createText: function(svgBean) {
+        var icon = this.getGeoIcon();
+        var geometry = this.geometry;
+        var content = icon['content'];
+        if(content) {
+            var regex = /\[.*\]/gi;
+            if(regex.test(content)) {
+                var arr = content.match(regex);
+                console.log(arr);
+            }
+        }
+        var gCenter = this.getMarkerDomOffset();
+        var textPoint = {
+            'location': gCenter,
+            'content': content
+        };
+        var texts = [];
+        texts.push(textPoint);
+        svgBean['texts'] = texts;
+        return svgBean;
+    },
 
     /**
      * 生成图片标注
      * @param gCenter
      * @returns {___anonymous51875_51903}
      */
-    createPictureMarker:function() {
+    createPictureMarker: function() {
         var geometry = this.geometry;
         var gCenter = this.getMarkerDomOffset();
         if (!gCenter) {return null;}
         var _graphicDom = null;
-        var iconSymbol = this.getGeoIcon();//geometry.getIcon();
+        var iconSymbol = this.getGeoIcon();
         if (!iconSymbol["url"]) {
             iconSymbol["url"] = geometry.defaultIcon["url"];
         }
@@ -280,11 +221,7 @@ Z.Marker.SVG=Z.Painter.SVG.extend({
         markerIcon.style.cssText = markerIcon.originCss;
         
         markerIcon.setAttribute("unselectable", "on");
-    
-        // //png透明
-        /*markerIcon.onload = function() {
-            seegoo.maps.Util.fixPNG(this);
-        };*/
+
         var _this = geometry;
         markerIcon.onerror = function() {
             this.src = _this.defaultIcon["url"];
@@ -299,7 +236,6 @@ Z.Marker.SVG=Z.Painter.SVG.extend({
         
         geometry.markerIcon = markerIcon;
         _graphicDom.appendChild(markerIcon);
-        //_graphicDom.style.zIndex = this.zIndex;
         this.setZIndex(geometry,this.zIndex);
         return _graphicDom;
     }
