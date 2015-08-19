@@ -22,7 +22,7 @@ Z['Control']['Attribution'] = Z.Control.Attribution = Z.Control.extend({
 	},
 
 	/**
-	* @export
+	* @expose
 	*/
 	setContent: function (content) {
 		this.options['content'] = content;

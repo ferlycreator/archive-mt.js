@@ -1,7 +1,7 @@
 Z.Map.include({
     /**
      * 全屏地图
-     * @export
+     * @expose
      */
     openFullscreen: function() {
         this._openFullscreen(this.containerDOM);
@@ -17,7 +17,7 @@ Z.Map.include({
 
     /**
      * 全屏地图
-     * @export
+     * @expose
      */
     exitFullscreen: function() {
         this._exitFullscreen(this.containerDOM);

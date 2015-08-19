@@ -17,7 +17,7 @@ Z['Circle']=Z.Circle=Z.Polygon.extend({
     /**
      * 返回圆形的半径
      * @return {Number} [圆形半径]
-     * @export
+     * @expose
      */
     getRadius:function() {
         return this.radius;
@@ -26,7 +26,7 @@ Z['Circle']=Z.Circle=Z.Polygon.extend({
     /**
      * 设置圆形半径
      * @param {Number} radius [新的半径]
-     * @export
+     * @expose
      */
     setRadius:function(radius) {
         this.radius = radius;
@@ -47,7 +47,7 @@ Z['Circle']=Z.Circle=Z.Polygon.extend({
     /**
      * do nothing for circle
      * @param {Array} ring [ring for polygon]
-     * @export
+     * @expose
      */
     setRing:function(ring) {
         //do nothing for circle as a polygon.

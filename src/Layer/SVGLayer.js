@@ -12,7 +12,7 @@ Z['SVGLayer']=Z.SVGLayer=Z.OverlayLayer.extend({
 
     /**
      * 显示图层
-     * @export
+     * @expose
      */
     show:function() {
         if (this.visible) {
@@ -27,7 +27,7 @@ Z['SVGLayer']=Z.SVGLayer=Z.OverlayLayer.extend({
 
     /**
      * 隐藏图层
-     * @export
+     * @expose
      */
     hide:function() {
         if (!this.visible) {
@@ -43,7 +43,7 @@ Z['SVGLayer']=Z.SVGLayer=Z.OverlayLayer.extend({
     /**
      * 图层是否显示
      * @return {Boolean} 图层是否显示
-     * @export
+     * @expose
      */
     isVisible:function() {
         return this.visible && this.layerDom && this.layerDom.style.display !== 'none';

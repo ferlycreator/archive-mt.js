@@ -2,6 +2,10 @@ Z.LodConfig=Z.Class.extend({
  
         includes:Z.LodUtil.Common, 
 
+        'statics' : {
+            'defaultCRS':'crs3857'
+        },
+
         //根据不同的语言定义不同的错误信息
         'exceptionDefs':{
             'en-US':{
@@ -73,7 +77,7 @@ Z.LodConfig=Z.Class.extend({
                 }
                 return;
             }
-            //TODO arcgis初始化
+            //TODO maptalks和arcgis图层的初始化
         },
 
         equals:function(lodConfig, zoomLevel) {

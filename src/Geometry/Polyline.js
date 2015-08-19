@@ -9,7 +9,7 @@ Z['Polyline']=Z.Polyline = Z.Vector.extend({
     /**
      * 设置多折线的坐标值
      * @param {Array} path 坐标数组
-     * @export
+     * @expose
      */
     setPath:function(path) {
         this.points = path;
@@ -22,7 +22,7 @@ Z['Polyline']=Z.Polyline = Z.Vector.extend({
     /**
      * 获取多折线坐标值
      * @return {Array} 多边形坐标数组
-     * @export
+     * @expose
      */
     getPath:function() {
         return this.getPoints();

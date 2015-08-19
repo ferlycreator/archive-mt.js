@@ -132,7 +132,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         * 设置InfoWindow窗口
         * @param {Array} tipOption 项
         * {"items":[], width:240, beforeopen:fn}
-        * @export
+        * @expose
         */
         setOption: function(tipOption) {
             if (!tipOption) {
@@ -151,7 +151,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
 
         /**
         * 隐藏信息框
-        * @export
+        * @expose
         */
         hide:function() {
             this.visible = false;
@@ -160,6 +160,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
 
         /**
          * 判断信息框是否打开
+         * @expose
          * @returns {Boolean}
          */
         isOpen:function() {
@@ -168,6 +169,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
 
         /**
         * 显示信息框
+        * @expose
         * @param {Coordinate} 信息框打开坐标
         */
         show:function(coordinate) {
@@ -186,7 +188,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
                 tipDom.childNodes[0].style.width = tipOption['width']+'px';
             }
             var titleNode = tipDom.childNodes[0].childNodes[0].childNodes[0];
-            var contentNode =tipDom.childNodes[0].childNodes[1];    
+            var contentNode =tipDom.childNodes[0].childNodes[1];
             if (tipOption['title']) {
                 titleNode.style.display = '';
                 titleNode.innerHTML = tipOption['title'];
@@ -210,13 +212,13 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
                 left=-(absolute["left"]-parseInt(tipDom.clientWidth)/2);
             } else if ((absolute["left"]+parseInt(tipDom.clientWidth)-35)>mapWidth) {
                 left=(mapWidth-(absolute["left"]+parseInt(tipDom.clientWidth)*3/2));
-            } 
+            }
             if (absolute["top"]<0) {
                 top=-absolute["top"]+10;
             } else if (absolute["top"] > mapHeight){
                 top = (mapHeight-absolute["top"]-parseInt(tipDom.clientHeight))-30;
             }
-            
+
             if (top !== 0 || left !== 0) {
                 this.tipSlidingExecutor = map.animatePan({"left":left,"top":top});
             }

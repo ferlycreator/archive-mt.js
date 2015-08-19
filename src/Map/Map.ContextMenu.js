@@ -3,7 +3,7 @@ Z.Map.include({
     * 设置Map的右键菜单
     * @param {Array} menuOption 菜单项
     * {"items":[], width:240, beforeopen:fn}
-    * @export
+    * @expose
     */
     setContextMenu: function(menuOption) {
         this.on('contextmenu', this._beforeOpenContextMenu, this);
@@ -32,7 +32,7 @@ Z.Map.include({
     /**
     * 打开Map右键菜单
     * @param {Coordinate} 坐标
-    * @export
+    * @expose
     */
     openMenu: function(coordinate) {
         if(!coordinate) {
@@ -44,7 +44,7 @@ Z.Map.include({
    /**
     * 添加菜单项目
     * @param {Array} 菜单项数组
-    * @export
+    * @expose
     */
     setMenuItem: function(items) {
         this.menu.setItems(items);
@@ -53,7 +53,7 @@ Z.Map.include({
 
     /**
     * 关闭右键菜单
-    * @export
+    * @expose
     */
     closeMenu: function() {
         this.menu.closeMenu();

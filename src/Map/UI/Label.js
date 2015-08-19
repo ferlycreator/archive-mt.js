@@ -27,7 +27,7 @@ Z['Label'] = Z.Label = Z.Control.extend({
 
 	/**
 	* 隐藏label
-	* @export
+	* @expose
 	*/
 	hide: function() {
 		var parentDom = this._labelContainer['parentNode'];
@@ -39,7 +39,7 @@ Z['Label'] = Z.Label = Z.Control.extend({
 
 	/**
 	* 显示label
-	* @export
+	* @expose
 	*/
 	show: function() {
 		var parentDom = this._labelContainer['parentNode'];
@@ -51,7 +51,7 @@ Z['Label'] = Z.Label = Z.Control.extend({
 
 	/**
 	* 移除label
-	* @export
+	* @expose
 	*/
 	removeLable: function() {
 		this.remove();
@@ -62,7 +62,7 @@ Z['Label'] = Z.Label = Z.Control.extend({
 
 	/**
 	* 根据id获取label
-	* @export
+	* @expose
 	*/
 	getLabel: function(id) {
 		return this.getControl();
@@ -129,7 +129,7 @@ Z['Label'] = Z.Label = Z.Control.extend({
 		var path = [center, nearestPoints[0], nearestPoints[1]];
 		this._link = new Z.Polyline(path);
 		if(this.options['linksymbol']) {
-			this._link.setStrokeSymbol(this.options['linksymbol']);
+			this._link.setSymbol(this.options['linksymbol']);
 		}
 		this._internalLayer.addGeometry(this._link);
 

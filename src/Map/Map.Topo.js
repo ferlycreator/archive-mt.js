@@ -8,7 +8,7 @@ Z.Map.include({
      * @param lonlat1 {seegoo.maps.MLonLat|Object} 坐标1，例如{x:121,y:19}
      * @param lonlat2 {seegoo.maps.MLonLat|Object} 坐标2，例如{x:122,y:19}
      * @returns {Number}
-     * @export
+     * @expose
      */
     computeDistance: function(lonlat1, lonlat2) {
         if (!Z.Util.isCoordinate(lonlat1) || !Z.Util.isCoordinate(lonlat2) || !this.getProjection()) {return null;}
@@ -20,7 +20,7 @@ Z.Map.include({
      * 计算Geometry的地理长度
      * @param  {Geometry} geometry [Geometry]
      * @return {Number}          [地理长度]
-     * @export
+     * @expose
      */
     computeGeodesicLength:function(geometry) {
         return geometry.computeGeodesicLength(this.getProjection());
@@ -30,7 +30,7 @@ Z.Map.include({
      * 计算Geometry的地理面积
      * @param  {Geometry} geometry [Geometry]
      * @return {Number}          [地理面积]
-     * @export
+     * @expose
      */
     computeGeodesicArea:function(geometry) {
         return geometry.computeGeodesicArea(this.getProjection());
@@ -39,7 +39,7 @@ Z.Map.include({
     /**
      * 计算Geometry的外缓冲，该功能需要引擎服务器版的支持
      * 
-     * @export
+     * @expose
      * @param {Geometry} [geometry] [做缓冲的geometry]
      * @param {Number} distance 缓冲距离，单位为米
      * @param {function} callback 计算完成后的回调函数，参数为返回的图形对象
@@ -113,7 +113,7 @@ Z.Map.include({
     /**
      * 判断Geometry和参数中的Geometry数组的空间关系，该功能需要引擎服务器版的支持
      * 
-     * @export
+     * @expose
      * @param {Geometry} [geometry] [被relate的Geometry]
      * @param geometries [seegoo.maps.Geometry] 输入Geometry数组
      * @param relation {Integer} 空间关系，参考seegoo.maps.constant内的常量定义
@@ -147,7 +147,7 @@ Z.Map.include({
     /**
      * Identify
      * @param  {opts} opts 查询参数 {"coordinate": coordinate,"radius": r, "layers": [], "successFn": fn}
-     * @export
+     * @expose
      */
     identify: function(opts) {
         if (!opts) {

@@ -21,7 +21,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
 
     /**
      * 重新载入动态图层，当改变了图层条件时调用
-     * @export
+     * @expose
      */
     reload:function() {
         this.n=this.n+1;
@@ -173,7 +173,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
     /**
      * 获取图层瓦片的padding设置
      * @return {Object} 图层padding设置
-     * @export
+     * @expose
      */
     getPadding:function() {
         var padding = this.options['padding'];
@@ -186,7 +186,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
     /**
      * 设置图层瓦片的padding
      * @param {Object} padding 图层padding设置
-     * @export
+     * @expose
      */
     setPadding:function(padding) {
         this.options['padding'] = padding;
@@ -195,7 +195,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
 
     /**
      * 获取最小显示比例尺级别
-     * @export
+     * @expose
      * @returns {Number}
      */
     getMinZoomLevel:function(){
@@ -208,7 +208,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
     },
     /**
      * 获取最大显示比例尺级别
-     * @export
+     * @expose
      * @returns {Number}
      */
     getMaxZoomLevel:function(){
@@ -221,7 +221,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
     },
     /**
      * 设定动态图层的最小显示比例尺层级
-     * @export
+     * @expose
      * @param zoomLevel {Number}
      *
      */
@@ -237,7 +237,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
     },
     /**
      * 设定动态图层的最大显示比例尺层级
-     * @export
+     * @expose
      * @param zoomLevel {Number}
      */
     setMaxZoomLevel:function(zoomLevel) {
@@ -254,7 +254,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
     /**
      * 设定动态图层的透明度
      * @param opacity
-     * @export
+     * @expose
      */
     setOpacity:function(opacity) {
         this.options['opacity'] = opacity;
@@ -264,7 +264,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
     /**
      * 返回动态图层的透明度
      * @return {Number} 透明度
-     * @export
+     * @expose
      */
     getOpacity:function() {
         return this.options['opacity'];
@@ -273,7 +273,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
     /**
      * 设定查询过滤条件
      * @param {String} condition 查询过滤条件
-     * @export
+     * @expose
      */
     setCondition:function(condition) {
         this.options['condition'] = condition;
@@ -283,7 +283,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
     /**
      * 获取查询过滤条件
      * @return {String} 查询过滤条件
-     * @export
+     * @expose
      */
     getCondition:function() {
         return this.options['condition'];
@@ -292,7 +292,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
     /**
      * 设定空间过滤条件
      * @param {SpatialFilter} spatialFilter 空间过滤条件
-     * @export
+     * @expose
      */
     setSpatialFilter:function(spatialFilter) {
         this.options['spatialFilter'] = spatialFilter;
@@ -302,7 +302,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
     /**
      * 获取空间过滤条件
      * @return {SpatialFilter} 空间过滤条件
-     * @export
+     * @expose
      */
     getSpatialFilter:function() {
         return this.options['spatialFilter'];

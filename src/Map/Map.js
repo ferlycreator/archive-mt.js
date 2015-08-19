@@ -1,12 +1,14 @@
 Z['Map']=Z.Map=Z.Class.extend({
-    
+
     includes: [Z.Eventable/*,Z.MapExt.Pan,Z.MapExt.Zoom,Z.MapExt.Topo,Z.MapExt.ContextMenu, Z.MapExt.DomEvents, Z.MapExt.Snap, Z.MapExt.Fullscreen*/],
 
     options:{
         'enableMapSliding':true,
         'enableZoom':true,
         'enableInfoWindow':true,
-        'zoomMode':'pointer'
+        'zoomMode':'pointer',
+        'supportCoordinateTypes':['gcj02','bd09ll','wgs94','pixel'],
+        'defaultCoordinateTypes':'gcj02'
     },
 
     events:{
@@ -81,14 +83,19 @@ Z['Map']=Z.Map=Z.Class.extend({
 
         this.allowSlideMap = true;
 
+        //坐标类型
+        this.coordinateType = options['coordinateType'];
+        if (!this.coordinateType || Z.Util.searchInArray(this.coordinateType, this.options['supportCoordinateTypes'])<0) {
+            //默认采用GCJ02
+            this.coordinateType = this.options['defaultCoordinateTypes'];
+        }
 
-        
         this.initContainer();
     },
 
     /**
      * Load Map
-     * @export
+     * @expose
      */
     Load:function(){
         if (this.loaded) {return;}
@@ -122,7 +129,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 获取地图容器的宽度和高度
      * @return {{'width':?, 'height':?}}} 地图容器大小,单位像素
-     * @export
+     * @expose
      */
     getSize:function() {
         if (Z.Util.isNil(this.width) || Z.Util.isNil(this.height)) {
@@ -137,7 +144,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 获取地图的Extent
      * @return {Extent} 地图的Extent
-     * @export
+     * @expose
      */
     getExtent:function() {
         var lodConfig = this.getLodConfig();
@@ -164,7 +171,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 获取地图的中心点
      * @return {Coordinate} 坐标
-     * @export
+     * @expose
      */
     getCenter:function() {
         if (!this.lodConfig || !this.loaded) {return this.center;}
@@ -175,7 +182,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 设置地图中心点
      * @param {Coordinate} center [新的中心点坐标]
-     * @export
+     * @expose
      */
     setCenter:function(center) {
         if (!this.lodConfig || !this.loaded) {
@@ -198,7 +205,7 @@ Z['Map']=Z.Map=Z.Class.extend({
                 layer.onMoving(param);
             }
         }
-        
+
         //reduce refresh frequency
         if (2*Math.random() > 1) {map.refreshSVGPaper();}
         if (map.baseTileLayer) {map.baseTileLayer.onMoving();}
@@ -235,7 +242,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 获取地图的缩放级别
      * @return {Number} 地图缩放级别
-     * @export
+     * @expose
      */
     getZoomLevel:function() {
         return this.zoomLevel;
@@ -244,7 +251,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 设置地图的缩放级别
      * @param {Number} z 新的缩放级别
-     * @export
+     * @expose
      */
     setZoomLevel:function(z) {
         this.zoom(z);
@@ -254,7 +261,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 获得地图最大放大级别
      * @return {Number} 最大放大级别
-     * @export
+     * @expose
      */
     getMaxZoomLevel:function() {
         return this.maxZoomLevel;
@@ -263,7 +270,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 设置最大放大级别
      * @param {Number} zoomLevel 最大放大级别
-     * @export
+     * @expose
      */
     setMaxZoomLevel:function(zoomLevel) {
         var lodConfig = this.getLodConfig();
@@ -277,7 +284,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 获得地图最小放大级别
      * @return {Number} 最小放大级别
-     * @export
+     * @expose
      */
     getMinZoomLevel:function() {
         return this.minZoomLevel;
@@ -286,7 +293,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 设置最小放大级别
      * @param {Number} zoomLevel 最小放大级别
-     * @export
+     * @expose
      */
     setMinZoomLevel:function(zoomLevel) {
         var lodConfig = this.getLodConfig();
@@ -299,7 +306,7 @@ Z['Map']=Z.Map=Z.Class.extend({
 
     /**
      * 放大地图
-     * @export
+     * @expose
      */
     zoomIn: function() {
         this.zoom(this.getZoomLevel() + 1);
@@ -308,7 +315,7 @@ Z['Map']=Z.Map=Z.Class.extend({
 
     /**
      * 地图缩小
-     * @export
+     * @expose
      */
     zoomOut: function() {
         this.zoom(this.getZoomLevel() - 1);
@@ -319,7 +326,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * 设置中心点并放大缩小
      * @param {Coordinate} center    [新的中心点]
      * @param {Number} zoomLevel [新的缩放级别]
-     * @export
+     * @expose
      */
     setCenterAndZoom:function(center,zoomLevel) {
         if (!this.lodConfig || !this.loaded) {
@@ -342,7 +349,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @category 工具方法
      * @param extent {Extent} Extent对象
      * @returns
-     * @export
+     * @expose
      */
     getFitZoomLevel: function(extent) {
         if (!extent && !(extent instanceof Z.Extent)) {
@@ -391,7 +398,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 返回基础地图图层
      * @return {TileLayer} [基础地图图层]
-     * @export
+     * @expose
      */
     getBaseTileLayer:function() {
         return this.baseTileLayer;
@@ -400,7 +407,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 设定地图的基础瓦片图层
      * @param  {TileLayer} baseTileLayer 瓦片图层
-     * @export
+     * @expose
      */
     setBaseTileLayer:function(baseTileLayer) {
         if (!baseTileLayer || !baseTileLayer.getLodConfig) {
@@ -435,7 +442,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * 获取图层
      * @param  {String} id 图层id
      * @return {Layer}  图层
-     * @export
+     * @expose
      */
     getLayer:function(id) {
         if (!id || !this.layerCache || !this.layerCache[id]) {
@@ -447,7 +454,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 向地图里添加图层
      * @param  {Layer} layer 图层对象
-     * @export
+     * @expose
      */
     addLayer:function(layers){
         if (!layers) {
@@ -521,7 +528,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 移除图层
      * @param  {Layer | id} layer 图层或图层id
-     * @export
+     * @expose
      */
     removeLayer: function(layer) {
         if (!(layer instanceof Z.Layer)) {
@@ -570,7 +577,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * [addHandler description]
      * @param {[type]} name         [description]
      * @param {[type]} HandlerClass [description]
-     * @export
+     * @expose
      */
     addHandler: function (name, HandlerClass) {
         if (!HandlerClass) { return this; }
@@ -591,19 +598,24 @@ Z['Map']=Z.Map=Z.Class.extend({
         }
     },
 
-    
+
 
     /**
      * 获取地图的坐标类型
      * @return {String} 坐标类型
-     * @export
+     * @expose
      */
-    getCoordinateType:function() {
-        var result = this.options['coordinateType'];
-        if (!result) {
-            result = 'gcj02';
+    getCoordinateType:function() {        
+        return this.coordinateType;
+    },
+
+    setCoordinateType:function(coordinateType) {
+        //判断coordinateType是否有效
+        if (!coordinateType || Z.Util.searchInArray(coordinateType, this.options['supportCoordinateTypes'] < 0)) {
+            return;
         }
-        return result;
+        this.coordinateType = coordinateType;
+        this.fireEvent('coordinatetypechanged');
     },
 
 
@@ -612,7 +624,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * 将地理坐标转化为屏幕像素坐标
      * @param {Coordinate} 地理坐标
      * @return {Point}
-     * @export
+     * @expose
      */
     coordinateToScreenPoint: function(coordinate) {
         var projection = this.getProjection();
@@ -625,7 +637,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * 将屏幕像素坐标转化为地理坐标
      * @param {screenPoint} 屏幕坐标
      * @return {coordinate} 地理坐标
-     * @export
+     * @expose
      */
     screenPointToCoordinate: function(screenPoint) {
         //var domOffset = this.screenToDomOffset(screenPoint);
@@ -659,8 +671,8 @@ Z['Map']=Z.Map=Z.Class.extend({
 
     _Load:function() {
         this.originZoomLevel = this.zoomLevel;
-        
-        this.initContainerWatcher();        
+
+        this.initContainerWatcher();
         this._registerDomEvents();
         this.loadAllLayers();
         // this.callInitHooks();
@@ -779,7 +791,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         this.pcenter = projection.project(this.center);
     },
 
-    
+
 
     getContainerDomSize:function(){
         if (!this.containerDOM) {return null;}
@@ -831,7 +843,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 以像素距离移动地图中心点
      * @param  {Object} pixel 像素距离,偏移量的正负值关系如下:
-     * -1,1|1,1 
+     * -1,1|1,1
      *-1,-1|1,-1
      */
     offsetCenterByPixel:function(pixel) {
@@ -841,7 +853,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         this.setPCenter(pCenter);
     },
 
-    
+
     /**
      * 获取地图容器偏移量或增加容器的偏移量
      * @param  {Pixel} offset 增加的偏移量,如果为null,则直接返回容器的偏移量
@@ -859,7 +871,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         }
     },
 
-    
+
 
     /**
      * transform dom position to geodesic projected coordinate
@@ -895,7 +907,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         // var _canvasDom = this.canvasDom;
         var centerTop = this.dy*(pcenter.y - pCoordinate.y) / res;
         var centerLeft = this.dx*(pCoordinate.x - pcenter.x) /res;
-        
+
         var result = {
             "top" : Math.round(this.height / 2 + centerTop),
             "left" : Math.round(this.width / 2 + centerLeft)
@@ -916,7 +928,7 @@ Z['Map']=Z.Map=Z.Class.extend({
 
     /**
      * 屏幕坐标到地图容器偏移坐标
-     * 
+     *
      * @param screenXY
      * @returns {domOffset}
      */
@@ -925,14 +937,14 @@ Z['Map']=Z.Map=Z.Class.extend({
         var platformOffset = this.offsetPlatform();
         return {
             'left' : screenXY['left'] - platformOffset['left'],
-            'top' : screenXY['top'] - platformOffset['top']         
+            'top' : screenXY['top'] - platformOffset['top']
         };
-        
+
     },
-    
+
     /**
      * 地图容器偏移坐标到屏幕坐标的转换
-     * 
+     *
      * @param domOffset
      * @returns {screenXY}
      */
@@ -978,7 +990,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         var projection = lodConfig.getProjectionInstance();
         if (!projection) {
             return null;
-        }       
+        }
         //计算前刷新scales
         var center = this.getCenter(),
             target = projection.locate(center,x,y),
@@ -1003,7 +1015,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         var projection = lodConfig.getProjectionInstance();
         if (!projection) {
             return null;
-        }       
+        }
         //计算前刷新scales
         var center = this.getCenter(),
             pcenter = this.getPCenter(),
@@ -1020,7 +1032,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     createSVGPaper: function(){
         var map = this;
         if (map.vectorPaper) {return;}
-        var svgContainer = this.panels.svgContainer;        
+        var svgContainer = this.panels.svgContainer;
         map.vectorPaper = Z.SVG.createContainer();
         this.refreshSVGPaper();
         svgContainer.appendChild(map.vectorPaper);
@@ -1031,9 +1043,9 @@ Z['Map']=Z.Map=Z.Class.extend({
         var paper = map.vectorPaper;
         if (paper) {
             Z.SVG.refreshContainer(map,paper);
-        }        
+        }
     },
-    
+
     /**
      * initialize container DOM of panels
      */
@@ -1086,7 +1098,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         var _contextCtrlContainer = _mapContainer.cloneNode(false);
         var _svgContainer = _mapContainer.cloneNode(false);
         var _canvasLayerContainer = _mapContainer.cloneNode(false);
-        
+
         _mapContainer.style.zIndex = 10;
         _mapContainer.id='mapContainer';
         _canvasLayerContainer.style.zIndex=100;
@@ -1094,7 +1106,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         _popMenuContainer.style.zIndex = 3000;
         _contextCtrlContainer.style.zIndex = 3000;
         _tipContainer.style.zIndex = 3001;
-        
+
         _mapViewPort.appendChild(_mapContainer);
 
         _contextCtrlContainer.appendChild(_tipContainer);
@@ -1110,26 +1122,26 @@ Z['Map']=Z.Map=Z.Class.extend({
             };
             _mapViewPort['ondragstart'] = function(e) { return false; };
             _mapViewPort.setAttribute('unselectable', 'on');
-            
+
             _mapContainer['onselectstart'] = function(e) {
                 return false;
             };
             _mapContainer['ondragstart'] = function(e) { return false; };
             _mapContainer.setAttribute('unselectable', 'on');
-            
-            
+
+
             controlWrapper['onselectstart'] = function(e) {
                 return false;
             };
             controlWrapper['ondragstart'] = function(e) { return false; };
             controlWrapper.setAttribute('unselectable', 'on');
-            
+
             mapWrapper.setAttribute('unselectable', 'on');
             _mapPlatform.setAttribute('unselectable', 'on');
-        } 
+        }
 
 
-        //store panels 
+        //store panels
         var panels = this.panels;
         panels.controlWrapper = controlWrapper;
         panels.mapWrapper = mapWrapper;
@@ -1140,8 +1152,8 @@ Z['Map']=Z.Map=Z.Class.extend({
         panels.popMenuContainer = _popMenuContainer;
         panels.svgContainer = _svgContainer;
         panels.canvasLayerContainer = _canvasLayerContainer;
-//      
-//      
+//
+//
         //初始化mapPlatform的偏移量, 适用css3 translate时设置初始值
         this.offsetPlatform({
             'left':0,
@@ -1183,14 +1195,14 @@ Z['Map']=Z.Map=Z.Class.extend({
                     'target' : map
                 });
             }
-        },800); 
+        },800);
     }
 });
 
 //--------------地图载入完成后的钩子处理----------------
 
-Z.Map.prototype._callOnLoadHooks=function() {     
-    var proto = Z.Map.prototype;   
+Z.Map.prototype._callOnLoadHooks=function() {
+    var proto = Z.Map.prototype;
     for (var i = 0, len = proto._onLoadHooks.length; i < len; i++) {
         proto._onLoadHooks[i].call(this);
     }
@@ -1199,7 +1211,7 @@ Z.Map.prototype._callOnLoadHooks=function() {
 /**
  * 添加底图加载完成后的钩子
  * @param {Function} fn 执行回调函数
- * @export
+ * @expose
  */
 Z.Map.addOnLoadHook = function (fn) { // (Function) || (String, args...)
     var args = Array.prototype.slice.call(arguments, 1);

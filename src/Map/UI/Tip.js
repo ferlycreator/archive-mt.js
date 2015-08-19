@@ -6,10 +6,10 @@ Z['Tip'] = Z.Tip = Z.Control.extend({
 	*/
 	'exceptionDefs':{
 		'en-US':{
-			'NEED_TARGET':'You must set target to Tip.'
+			'INVALID_TARGET':'You must set target to Tip.'
 		},
 		'zh-CN':{
-			'NEED_TARGET':'你必须设置Tip绑定的Geometry目标。'
+			'INVALID_TARGET':'你必须设置Tip绑定的Geometry目标。'
 		}
 	},
 
@@ -70,7 +70,7 @@ Z['Tip'] = Z.Tip = Z.Control.extend({
 
 	/**
 	* 隐藏tip
-	* @export
+	* @expose
 	*/
 	hideTip: function() {
 		this._tip.hide();
@@ -82,7 +82,7 @@ Z['Tip'] = Z.Tip = Z.Control.extend({
 
 	/**
 	* 显示tip
-	* @export
+	* @expose
 	*/
 	showTip: function() {
 		this._tip.show();
@@ -94,7 +94,7 @@ Z['Tip'] = Z.Tip = Z.Control.extend({
 
 	/**
 	* 移除tip
-	* @export
+	* @expose
 	*/
 	removeTip: function() {
 		this._tip.remove();
@@ -105,12 +105,13 @@ Z['Tip'] = Z.Tip = Z.Control.extend({
 	},
 
 	buildOn: function (map) {
-		if(!map || !this.options || !this.options['content']) return;
+		if(!map || !this.options || !this.options['content']) {return;}
 		this._tipContrainer = map.containerDOM;
 
 		this._target = this.options['target'];
-		if(!this._target) throw new Error(this.exceptions['NEED_TARGET']);
+		if(!this._target) {throw new Error(this.exceptions['INVALID_TARGET']);}
 		var layerId = '__mt__layer_tip';
+		// tip的图层类型可以只用svg
 		var canvas = false;
 		var targetLayer = this._target.getLayer();
 		if(targetLayer && targetLayer instanceof Z.CanvasLayer) {
@@ -122,10 +123,10 @@ Z['Tip'] = Z.Tip = Z.Control.extend({
 		this._tip = new Z.Marker(targetCenter);
 		this._tip['target'] = this._target;
 		this._tip.setIcon({
-			type: 'text',
-			textStyle: this.options['style'],
-			content: this.options['content'],
-			offset: {x:0, y:0}
+			'type': 'text',
+			'textStyle': this.options['style'],
+			'content': this.options['content'],
+			'offset': {x:0, y:0}
 		});
 		this._internalLayer.addGeometry(this._tip);
 		this._tip.hide();
@@ -213,10 +214,10 @@ Z['Tip'] = Z.Tip = Z.Control.extend({
 		var path = [center, nearestPoints[0], nearestPoints[1]];
 		this._link = new Z.Polyline(path);
 		var strokeSymbol = {
-			'stroke': this.options['style']['stroke'],
-			'stroke-width': this.options['style']['strokewidth']
+			'line-color': this.options['style']['line-color'],
+			'line-width': this.options['style']['line-width']
 		};
-		this._link.setStrokeSymbol(strokeSymbol);
+		this._link.setSymbol(strokeSymbol);
 		this._internalLayer.addGeometry(this._link);
 		geometry.on('positionchanged', this._changeLinkPath, this)
 				.on('remove', this.remove, this);
@@ -347,9 +348,9 @@ Z['Tip'] = Z.Tip = Z.Control.extend({
 		var center = geometry.getCenter();
 		var nearestPoints = this._getNearestPoint(center);
 		var path = [center, nearestPoints[0], nearestPoints[1]];
-		var strokeSymbol = this._link.getStrokeSymbol();
-		strokeSymbol['stroke'] = '#ff0000';
-		this._link.setStrokeSymbol(strokeSymbol);
+		var strokeSymbol = this._link.getSymbol();
+		strokeSymbol['line-color'] = '#ff0000';
+		this._link.setSymbol(strokeSymbol);
 		this._link.setPath(path);
 	},
 
@@ -374,11 +375,11 @@ Z['Tip'] = Z.Tip = Z.Control.extend({
 		if(this.options['link']) {
 			this._map.off('mousemove zoomend resize moving', this._changeLinkPath, this);
 			var strokeSymbol = {
-				'stroke': this.options['style']['stroke'],
-				'stroke-width': this.options['style']['strokewidth']
+				'line-color': this.options['style']['stroke'],
+				'line-width': this.options['style']['strokewidth']
 			};
 			if(this._link) {
-				this._link.setStrokeSymbol(strokeSymbol);
+				this._link.setSymbol(strokeSymbol);
 			}
 		}
 		this.fire('dragend', {'target': this});

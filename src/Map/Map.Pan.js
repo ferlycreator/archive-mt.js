@@ -3,7 +3,7 @@ Z.Map.include({
     /**
      * 将地图移动到指定的坐标
      * @param  {Coordinate} coordinate 指定的坐标
-     * @export
+     * @expose
      */
     panTo:function(coordinate) {
         if (!Z.Util.isCoordinate(coordinate)) {
@@ -19,7 +19,7 @@ Z.Map.include({
     /**
      * 按指定的像素距离移动地图
      * @param  {Point} point [description]
-     * @export
+     * @expose
      */
     panBy:function(offset) {
         this.offsetPlatform({'left':offset['left'],'top':offset['top']});

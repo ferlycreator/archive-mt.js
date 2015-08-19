@@ -1,4 +1,4 @@
-MapTalks:
+MapTalks [![Build Status](https://travis-ci.org/MapTalks/MapTalks.js.svg?branch=master)](https://travis-ci.org/MapTalks/MapTalks.js)
 ------
 
 MapTalks地图引擎前端Javascript SDK库

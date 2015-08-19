@@ -10,7 +10,7 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
     /**
      * 判断Marker是否是矢量标注
      * @return {Boolean} True|False
-     * @export
+     * @expose
      */
     /**isVectorIcon:function() {
         var icon = this.getIcon();  
@@ -29,7 +29,7 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
     /**
      * 设置Marker的Icon
      * @param {Icon} icon 新的Icon
-     * @export
+     * @expose
      */
     setIcon: function(icon) {
         if (!this.symbol) {
@@ -49,7 +49,7 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
     /**
      * 获取Marker的Icon
      * @return {Icon} Marker的Icon
-     * @export
+     * @expose
      */
     getIcon:function() {
         if (!this.symbol || !this.symbol['icon']) {

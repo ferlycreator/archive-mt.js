@@ -37,7 +37,7 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
     /**
     * 将菜单添加到目标对象上
     * @param {Object} map/geometry
-    * @export
+    * @expose
     */
     addTo: function(target) {
         var map;
@@ -108,7 +108,7 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
     * 设置Map的右键菜单
     * @param {Array} menuOption 菜单项
     * {"items":[], width:240, beforeopen:fn}
-    * @export
+    * @expose
     */
     setOption: function(menuOption) {
         if (!menuOption) {
@@ -132,7 +132,7 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
     * 设置菜单项目
     * @param {Array} menuItems 菜单项
     * @return {Menu} 菜单
-    * @export
+    * @expose
     */
     setItems: function(items) {
         if (!items) {
@@ -145,7 +145,7 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
    /**
     * 返回Map的菜单设置
     * @return {Object} 菜单设置
-    * @export
+    * @expose
     */
     getOption: function() {
         return this.menuOption;
@@ -154,7 +154,7 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
     /**
      * 关闭Map的右键菜单
      * @return {[type]} [description]
-     * @export
+     * @expose
      */
     closeMenu:function() {
         if (this.menu) {
@@ -165,7 +165,7 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
 
     /**
      * 移除Map的右键菜单设置
-     * @export
+     * @expose
      */
     removeMenu:function() {
         delete this.menuOption;
@@ -177,7 +177,7 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
 
     /**
     * 隐藏菜单
-    * @export
+    * @expose
     */
     hide: function() {
         if (this.isOpen()) {
@@ -195,6 +195,7 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
 
     /**
     *  判断菜单是否打开
+    *  @expose
     *  @returns {Boolean}
     */
     isOpen:function() {
@@ -203,6 +204,7 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
 
     /**
     * 显示菜单
+    * @expose
     * @param {Coordinate} 坐标
     */
     show:function(coordinate) {

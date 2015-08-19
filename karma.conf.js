@@ -3,13 +3,15 @@
 // Generated on 2015-05-27 using
 // generator-karma 1.0.0
 
+/* jshint node: true */
+
 module.exports = function(config) {
   'use strict';
 
   var srcFiles = require(__dirname + '/build/getFiles.js').getFiles();
   var files = srcFiles.concat([
     'test/**/*.js',
-    {pattern: '.tmp/css/**/*.css', watched: true, included: false, served: true},
+    {pattern: 'assets/css/**/*.css', watched: true, included: false, served: true},
     {pattern: 'assets/images/**/*.png', watched: false, included: false, served: true}
   ]);
 
@@ -22,7 +24,7 @@ module.exports = function(config) {
 
     proxies: {
       '/engine/': '/base/assets/',
-      '/engine/css/controls.min.css': '/base/.tmp/css/controls.css'
+      '/engine/css/controls.min.css': '/base/assets/css/controls.css'
     },
 
     // testing framework to use (jasmine/mocha/qunit/...)
