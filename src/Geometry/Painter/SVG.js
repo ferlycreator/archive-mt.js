@@ -213,7 +213,11 @@ Z.SVG.SVG = {
         container.appendChild(path);
         //text
         var texts = vectorBean['texts'];
+        this._addTextToVector(container, texts, iconSymbol);
+        return path;
+    },
 
+    _addTextToVector: function(container, texts, iconSymbol) {
         var font = iconSymbol['font'];
         var size = iconSymbol['size'];
         var width = iconSymbol['width'];
@@ -227,8 +231,8 @@ Z.SVG.SVG = {
         if(!placement) {
             placement = 'point';
         }
-        var dx = iconSymbol['dx'];
-        var dy = iconSymbol['dy'];
+        var dx = parseInt(iconSymbol['dx'],0);
+        var dy = parseInt(iconSymbol['dy'],0);
 
         var textStyle = 'font-family:' + font + ';' +
                         'font-size:' + size + ';' +
@@ -258,7 +262,6 @@ Z.SVG.SVG = {
                 container.appendChild(textElement);
             }
         }
-        return path;
     },
 
     removeVector:function(container, vector) {
@@ -300,17 +303,17 @@ Z.SVG.VML= {
         }
 
         var stroke = Z.SVG.create('stroke');
-        if (strokeSymbol['lineWidth']) {
-            stroke.weight = strokeSymbol['lineWidth'] + 'px';
+        if (strokeSymbol['strokeWidth']) {
+            stroke.weight = strokeSymbol['strokeWidth'] + 'px';
         }
-        if (strokeSymbol['lineColor']) {
-            stroke.color = strokeSymbol['lineColor'];
+        if (strokeSymbol['stroke']) {
+            stroke.color = strokeSymbol['stroke'];
         }
-        if (strokeSymbol['lineOpacity']) {
-            stroke.opacity = strokeSymbol['lineOpacity'];
+        if (strokeSymbol['strokeOpacity']) {
+            stroke.opacity = strokeSymbol['strokeOpacity'];
         }
-        if (strokeSymbol['lineDasharray']) {
-            stroke.dashStyle = strokeSymbol['lineDasharray'];
+        if (strokeSymbol['strokeDasharray']) {
+            stroke.dashStyle = strokeSymbol['strokeDasharray'];
         }
         vmlShape.appendChild(stroke);
         vmlShape.stroke = stroke;
@@ -359,7 +362,7 @@ Z.SVG.VML= {
         vmlShape.path['v'] = path;
     },
 
-    addVector: function(container, vectorBean, strokeSymbol, fillSymbol) {
+    addVector: function(container, vectorBean, strokeSymbol, fillSymbol, iconSymbol) {
         if (!container || !vectorBean) {
             return null;
         }
@@ -376,9 +379,46 @@ Z.SVG.VML= {
         vmlShape.path = _path;
 
         this.refreshVectorSymbol(vmlShape, strokeSymbol, fillSymbol);
-
         container.appendChild(vmlShape);
+
+        //text
+        var texts = vectorBean['texts'];
+        this._addTextToVector(container, texts, iconSymbol);
         return vmlShape;
+    },
+
+    _addTextToVector: function(container, texts, iconSymbol) {
+        var font = iconSymbol['font'];
+        var size = iconSymbol['size'];
+        var width = iconSymbol['width'];
+        var padding = iconSymbol['padding'];
+        var color = iconSymbol['color'];
+        var opacity = iconSymbol['opacity'];
+        var align = iconSymbol['align'];
+        var vertical = iconSymbol['vertical'];
+        var horizontal = iconSymbol['horizontal'];
+        var placement = iconSymbol['placement'];
+        if(!placement) {
+            placement = 'point';
+        }
+        var dx = parseInt(iconSymbol['dx'],0);
+        var dy = parseInt(iconSymbol['dy'],0);
+        if(texts && texts.length>0){
+            for(var i=0,len=texts.length;i<len;i++) {
+                var text = texts[i];
+                var location = text['location'];
+                var content = text['content'];
+                var _textbox = Z.SVG.create('textbox');
+                _textbox.style.fontSize  = size +'px';
+                _textbox.style.color  = color;
+                _textbox.style.width  = width +'px';
+                _textbox.style.textAlign = align;
+                _textbox.style.top = (location[1] + dy)+'px';
+                _textbox.style.left = (location[0] + dx)+'px';
+                _textbox.innerHTML   = content;
+                container.appendChild(_textbox);
+            }
+        }
     },
 
     removeVector:function(container, vector) {
@@ -409,19 +449,6 @@ Z.SVG.VML.create = (function () {
                 };
             }
         }
-        
-
-        /*try {
-            document.namespaces.add('vml', 'urn:schemas-microsoft-com:vml');
-            return function (name) {
-                return document.createElement('<vml:' + name + ' style="behavior: url(#default#VML);display: inline-block;position:absolute;">');
-            };
-        } catch (e) {
-            return function (name) {
-                return document.createElement('<' + name + ' xmlns="urn:schemas-microsoft.com:vml" style="behavior: url(#default#VML);display: inline-block;position:absolute;">');
-            };
-        }*/
-        // return function (name) {return document.createElement('<vml:' + name + ' style="behavior: url(#default#VML);display: inline-block;position:absolute;">');};
     })();
 
 if (Z.Browser.vml) {
