@@ -171,12 +171,21 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
     createText: function(svgBean) {
         var icon = this.getGeoIcon();
         var geometry = this.geometry;
+        var props = geometry.getProperties();
         var content = icon['content'];
         if(content) {
             var regex = /\[.*\]/gi;
             if(regex.test(content)) {
                 var arr = content.match(regex);
-                console.log(arr);
+                if(arr&&arr.length>0) {
+                    var key = arr[0].substring(1,arr[0].length-1);
+                    if(props) {
+                        if(props[key]) {
+                            content = content.replace(regex, props[key]);
+                        }
+                    }
+                    content = content.replace(regex, '');
+                }
             }
         }
         var gCenter = this.getMarkerDomOffset();
