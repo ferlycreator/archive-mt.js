@@ -14,6 +14,28 @@ Z.Geometry.Center={
     },
 
     /**
+     * 返回Geometry的坐标
+     * @return {Coordinate} 图形坐标
+     * @expose
+     */
+    getCoordinates:function() {
+        return this.center;
+    },
+
+    /**
+     * 设置新的坐标
+     * @param {Coordinate} coordinates 新的坐标
+     */
+    setCoordinates:function(coordinates) {        
+        var center = new Z.Coordinate(coordinates);
+        this.center = center;
+        if (!this.center || !this.getMap()) {return;}        
+        var projection = this.getProjection();
+        this.setPCenter(projection.project(this.center));
+        return this;
+    },
+
+    /**
      * 获取Marker的center
      * @return {Coordinate} Marker的center
      * @expose
@@ -22,18 +44,6 @@ Z.Geometry.Center={
         return this.center;
     },
 
-    /**
-     * 设置新的center
-     * @param {Coordinate} center 新的center
-     * @expose
-     */
-    setCenter:function(center){
-        this.center = center;
-        if (!this.center || !this.getMap()) {return;}        
-        var projection = this.getProjection();
-        this.setPCenter(projection.project(this.center));
-        return this;
-    },
 
     getPCenter:function() {
         var projection = this.getProjection();

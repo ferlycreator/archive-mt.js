@@ -3,7 +3,7 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
 
     initialize:function(center,opts) {
         this.type = Z.Geometry['TYPE_POINT'];
-        this.center = center;
+        this.center = new Z.Coordinate(center);
         this.initOptions(opts);
     },
 
@@ -148,13 +148,6 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
         } else if (this.layer instanceof Z.CanvasLayer) {
             return new Z.Marker.Canvas(this);
         }
-    },
-
-    exportJson:function(opts) {
-        return {
-            'type': Z.Geometry['TYPE_POINT'],
-            'center':this.getCenter()
-        };
     },
 
     exportGeoJson:function(opts) {

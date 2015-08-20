@@ -4,7 +4,7 @@ Z['Circle']=Z.Circle=Z.Polygon.extend({
     defaultNumberOfPoints:60,
 
     initialize:function(center,radius,opts) {
-        this.type=Z.Geometry['TYPE_CIRCLE'];
+        //this.type=Z.Geometry['TYPE_CIRCLE'];
         this.center = center;
         this.radius = radius;
         this.initOptions(opts);
@@ -89,10 +89,11 @@ Z['Circle']=Z.Circle=Z.Polygon.extend({
         }
     },
 
-    exportJson:function(opts) {
+    exportGeoJson:function(opts) {
+        var center = this.getCenter();
         return {
-            'type':Z.Geometry['TYPE_CIRCLE'],
-            'center':this.getCenter(),
+            'type':'Circle',
+            'coordinates':[center.x, center.y],
             'radius':this.getRadius()
         };
     }

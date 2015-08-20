@@ -74,7 +74,7 @@ Z.Util = {
     },
     
     /**
-     * 遍历数组中的每个元素,并执行fn操作, 兼容一维数组和二维数组, 如果数组中有null或undefined,则continue不作处理
+     * 遍历数组中的每个元素,并执行fn操作, 兼容N维数组, 如果数组中有null或undefined,则continue不作处理
      * @param  {[type]}   points [description]
      * @param  {Function} fn     [description]
      * @return {[type]}          [description]
@@ -90,7 +90,7 @@ Z.Util = {
                 continue;
             }
             if (Z.Util.isArray(p)) {
-                //二维数组
+               /* //二维数组
                 var p_r = [];
                 for (var j=0,jlen=p.length;j<jlen;j++) {
                     if (Z.Util.isNil(p[j])) {
@@ -98,7 +98,8 @@ Z.Util = {
                     }
                     p_r.push(fn.call(context,p[j]));
                 }
-                result.push(p_r);
+                result.push(p_r);*/
+                result.push(Z.Util.eachInArray(p, context, fn));
             } else {
                 var pp = fn.call(context,p);
                 result.push(pp);   

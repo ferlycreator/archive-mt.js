@@ -108,7 +108,7 @@ gulp.task('clean', del.bind(null, [], {dot: true}));
 gulp.task('build', ['clean'], function (done) {
   runSequence(
     'styles',
-    ['compile'],
+    ['scripts'],
     done);
 });
 

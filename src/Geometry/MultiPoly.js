@@ -1,7 +1,6 @@
 Z.MultiPoly = Z.GeometryCollection.extend({
 
-    initialize:function(data, opts) {
-        this.type=Z.Geometry['TYPE_MULTIPOLYGON'];
+    initialize:function(data, opts) {        
         if (Z.Util.isArrayHasData(data)) {
             if (data[0] instanceof this.GeometryType) {
                 this.setGeometries(data);
@@ -45,7 +44,7 @@ Z.MultiPoly = Z.GeometryCollection.extend({
      * @expose
      */
     setCoordinates:function(coordinates) {
-        if (!Z.Util.isArrayHasData(coordinates)) {
+        if (Z.Util.isArrayHasData(coordinates)) {
             var geometries = [];            
             for (var i=0, len=coordinates.length;i<len;i++) {
                 var p = new this.GeometryType(coordinates[i]);
