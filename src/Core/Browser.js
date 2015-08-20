@@ -88,7 +88,7 @@
 		msPointer: msPointer,
 		pointer: pointer,
 
-		retina: retina,
+		retina: false,
 
 		language:language,
 		translateDom:(any3d && !ie)

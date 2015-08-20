@@ -20,7 +20,14 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
             var picMarker =  this.createPictureMarker();
             this.paintDomMarker(picMarker, layerContainer);
         }
-        this.paintVectorMarker();
+        var markerType = icon['type'];
+        if(markerType&&markerType.length>0) {
+            this.paintVectorMarker();
+        }
+        var textName = icon['content'];
+        if(textName&&textName.length>0) {
+            this.paintTextMarker();
+        }
         this.setZIndex(zIndex);
     },
 
@@ -39,8 +46,17 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
             this.markerDom.style.left = gCenter[0] + "px";
             this.markerDom.style.top =gCenter[1] + "px";
         }
-        var vectorMarker = this.createSVGObj();
-        Z.SVG.refreshVector(this.vector, vectorMarker);
+
+        var markerType = icon['type'];
+        if(markerType&&markerType.length>0) {
+            var vectorMarker = this._createVectorObj();
+            Z.SVG.refreshVector(this.vector, vectorMarker);
+        }
+        var textName = icon['content'];
+        if(textName&&textName.length>0) {
+            var vectorMarker = this._createTextObj();
+            Z.SVG.refreshTextVector(this.vector, vectorMarker);
+        }
     },
 
     refreshMarkerSymbol:function() {
@@ -78,8 +94,15 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
             'fillOpacity': icon['fillOpacity']
         };
         //矢量标注绘制
-        var vectorMarker = this.createSVGObj();
-        this.drawVector(vectorMarker, strokeSymbol, fillSymbol, icon);
+        var vectorMarker = this._createVectorObj();
+        this.drawVector(vectorMarker, strokeSymbol, fillSymbol);
+    },
+
+    paintTextMarker: function() {
+        var icon = this.getGeoIcon();
+        //文本标注绘制
+        var textMarker = this._createTextObj();
+        this.drawVector(textMarker, null, null, icon);
     },
 
     /**
@@ -87,7 +110,7 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
      * @param gCenter
      * @returns
      */
-    createSVGObj: function() {
+    _createVectorObj: function() {
         var gCenter = this.getMarkerDomOffset();
         if (!gCenter) {return null;}
         var icon = this.getGeoIcon();
@@ -150,12 +173,11 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
         if (Z.Browser.vml && svgBean) {
             svgBean['path'] += ' e';
         }
-        svgBean = this.createText(svgBean);
         return svgBean;
     },
 
-    createText: function(svgBean) {
-        if(!svgBean) svgBean = {};
+    _createTextObj: function(svgBean) {
+        var svgBean = {};
         var icon = this.getGeoIcon();
         var geometry = this.geometry;
         var props = geometry.getProperties();
@@ -176,6 +198,10 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
             }
         }
         var gCenter = this.getMarkerDomOffset();
+
+        var dx = parseInt(icon['dx'],0);
+        var dy = parseInt(icon['dy'],0);
+        gCenter = [gCenter[0] + dx, gCenter[1] + dy];
         var textPoint = {
             'location': gCenter,
             'content': content

@@ -22,7 +22,6 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
         }
         var offset = this.getMarkerDomOffset();
         var pt = map.domOffsetToScreen({'left':offset[0],top:offset[1]});
-        console.log(pt);
         var icon = this.getGeoIcon();
         var url = icon['url'];
         if (url&&url.length>0) {

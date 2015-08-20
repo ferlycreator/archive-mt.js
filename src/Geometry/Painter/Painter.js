@@ -70,6 +70,26 @@ Z.Painter = Z.Class.extend({
     },
 
     prepareIcon: function(symbol) {
+        for(var attr in symbol) {
+            var url = symbol['markerFile'];
+            if (url&&url.length>0) {
+               symbol['markerType'] = null;
+               symbol['textName'] = null;
+               break;
+            }
+            var markerType = symbol['markerType'];
+            if(markerType&&markerType.length>0) {
+                symbol['markerFile'] = null;
+                symbol['textName'] = null;
+                break;
+            }
+            var textName = symbol['textName'];
+            if(textName&&textName.length>0) {
+                symbol['markerFile'] = null;
+                symbol['markerType'] = null;
+                break;
+            }
+        }
         var icon = {
             ////icon
            'url': symbol['markerFile'],
@@ -88,10 +108,10 @@ Z.Painter = Z.Class.extend({
            'content': symbol['textName'],
            'font': symbol['textFaceName'],
            'size': symbol['textSize'],
-           'textWidth': symbol['textWrapWidth'],
+           'textwidth': symbol['textWrapWidth'],
            'padding': symbol['textSpacing'],
            'color': symbol['textFill'],
-           'opacity': symbol['textOpacity'],
+           'textopacity': symbol['textOpacity'],
            'align': symbol['textAlign'],
            'vertical': symbol['textVerticalAlignment'],
            'horizontal': symbol['textHorizontalAlignment'],

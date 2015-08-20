@@ -36,7 +36,12 @@ Z.Painter.SVG = Z.Painter.extend({
     refreshSymbol:function() {
         if (!this.geometry) {return;}
         if (Z.Geometry['TYPE_POINT'] === this.geometry.getType()) {
-            this.refreshMarkerSymbol();
+            var icon = this.getGeoIcon();
+            if(icon['url'] && icon['url'].length>0) {
+                this.refreshMarkerSymbol();
+            } else {
+                this.refreshMarker();
+            }
         } else {
             this.refreshVectorSymbol();
         }
@@ -46,8 +51,13 @@ Z.Painter.SVG = Z.Painter.extend({
      * 刷新Graphic的位置,主要用在缩放地图
      */
     refresh:function() {
-        if (this.geometry.type === Z.Geometry["TYPE_POINT"]) {
-            this.refreshMarker();
+        if (this.geometry.type === Z.Geometry['TYPE_POINT']) {
+            var icon = this.getGeoIcon();
+            if(icon['url'] && icon['url'].length>0) {
+                this.refreshMarkerSymbol();
+            } else {
+                this.refreshMarker();
+            }
         } else {
             var vectorBean = this.createSVGObj();
             Z.SVG.refreshVector(this.vector, vectorBean);

@@ -34,6 +34,8 @@ Z.SVG = {
 
     refreshVector:function() {},
 
+    refreshTextVector:function() {},
+
     refreshVectorSymbol:function() {},
 
     addVector:function(){},
@@ -83,6 +85,23 @@ Z.SVG.SVG = {
             return;
         }
         vector.setAttribute('d', path);
+    },
+
+    refreshTextVector:function(vector, vectorBean) {
+        if (!vector || !vectorBean) {
+            return;
+        }
+        var texts = vectorBean['texts'];
+        if (!texts&&texts.length==0) {
+            return;
+        }
+
+        for(var i=0,len=texts.length;i<len;i++) {
+            var text = texts[i];
+            var location = text['location'];
+            vector.setAttribute('x', location[0]);
+            vector.setAttribute('y', location[1]);
+        }
     },
 
     refreshVectorSymbol:function(vector, strokeSymbol, fillSymbol, paper) {
@@ -204,26 +223,32 @@ Z.SVG.SVG = {
     },
 
     addVector:function(container, vectorBean, strokeSymbol, fillSymbol, iconSymbol) {
+        var vector;
         //path
-        var pathId = Z.Util.GUID() + '_VECTOR_PATH_ID';
-        var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        path.setAttribute('id', pathId);
-        path.setAttribute('d', vectorBean['path']);
-        Z.SVG.refreshVectorSymbol(path, strokeSymbol, fillSymbol, container);
-        container.appendChild(path);
+        if(vectorBean['path']) {
+            var pathId = Z.Util.GUID() + '_VECTOR_PATH_ID';
+            vector = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            vector.setAttribute('id', pathId);
+            vector.setAttribute('d', vectorBean['path']);
+            Z.SVG.refreshVectorSymbol(vector, strokeSymbol, fillSymbol, container);
+            container.appendChild(vector);
+        }
         //text
         var texts = vectorBean['texts'];
-        this._addTextToVector(container, texts, iconSymbol);
-        return path;
+        if(texts) {
+            vector = this._addTextToVector(container, texts, iconSymbol);
+        }
+        return vector;
     },
 
     _addTextToVector: function(container, texts, iconSymbol) {
+        var textElement;
         var font = iconSymbol['font'];
         var size = iconSymbol['size'];
-        var width = iconSymbol['width'];
+        var width = iconSymbol['textwidth'];
         var padding = iconSymbol['padding'];
         var color = iconSymbol['color'];
-        var opacity = iconSymbol['opacity'];
+        var opacity = iconSymbol['textopacity'];
         var align = iconSymbol['align'];
         var vertical = iconSymbol['vertical'];
         var horizontal = iconSymbol['horizontal'];
@@ -231,8 +256,6 @@ Z.SVG.SVG = {
         if(!placement) {
             placement = 'point';
         }
-        var dx = parseInt(iconSymbol['dx'],0);
-        var dy = parseInt(iconSymbol['dy'],0);
 
         var textStyle = 'font-family:' + font + ';' +
                         'font-size:' + size + ';' +
@@ -247,9 +270,9 @@ Z.SVG.SVG = {
                 var location = text['location'];
                 var content = text['content'];
                 var textNode = document.createTextNode(content);
-                var textElement = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                textElement.setAttribute('x', location[0] + dx);
-                textElement.setAttribute('y', location[1] + dy);
+                textElement = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                textElement.setAttribute('x', location[0]);
+                textElement.setAttribute('y', location[1]);
                 textElement.setAttribute('style', textStyle);
                 if ('line' === placement) {
                     var textPathElement = document.createElementNS('http://www.w3.org/2000/svg', 'textPath');
@@ -262,6 +285,7 @@ Z.SVG.SVG = {
                 container.appendChild(textElement);
             }
         }
+        return textElement;
     },
 
     removeVector:function(container, vector) {
@@ -362,38 +386,61 @@ Z.SVG.VML= {
         vmlShape.path['v'] = path;
     },
 
+    refreshTextVector:function(vector, vectorBean) {
+        if (!vector || !vectorBean) {
+            return;
+        }
+        var texts = vectorBean['texts'];
+        if (!texts&&texts.length==0) {
+            return;
+        }
+
+        for(var i=0,len=texts.length;i<len;i++) {
+            var text = texts[i];
+            var location = text['location'];
+            vector.style.top = (location[1])+'px';
+            vector.style.left = (location[0])+'px';
+        }
+    },
+
     addVector: function(container, vectorBean, strokeSymbol, fillSymbol, iconSymbol) {
+        var vector;
         if (!container || !vectorBean) {
             return null;
         }
-        var vmlShape = Z.SVG.create('shape');
+        vector = Z.SVG.create('shape');
         //以下三行不设置的话, IE8无法显示vml图形,原因不明
-        vmlShape.style.width='1px';
-        vmlShape.style.height='1px';
-        vmlShape['coordsize'] = '1 1';
-        vmlShape['coordorigin'] = '0 0';
+        vector.style.width='1px';
+        vector.style.height='1px';
+        vector['coordsize'] = '1 1';
+        vector['coordorigin'] = '0 0';
 
         var _path = Z.SVG.create('path');
-        _path.v = vectorBean['path'];
-        vmlShape.appendChild(_path);
-        vmlShape.path = _path;
+        if(_path) {
+            _path.v = vectorBean['path'];
+            vector.appendChild(_path);
+            vector.path = _path;
 
-        this.refreshVectorSymbol(vmlShape, strokeSymbol, fillSymbol);
-        container.appendChild(vmlShape);
+            this.refreshVectorSymbol(vector, strokeSymbol, fillSymbol);
+            container.appendChild(vector);
+        }
 
         //text
         var texts = vectorBean['texts'];
-        this._addTextToVector(container, texts, iconSymbol);
-        return vmlShape;
+        if(texts&&texts.length>0) {
+            vector = this._addTextToVector(container, texts, iconSymbol);
+        }
+        return vector;
     },
 
     _addTextToVector: function(container, texts, iconSymbol) {
+        var textElement;
         var font = iconSymbol['font'];
         var size = iconSymbol['size'];
-        var width = iconSymbol['width'];
+        var width = iconSymbol['textwidth'];
         var padding = iconSymbol['padding'];
         var color = iconSymbol['color'];
-        var opacity = iconSymbol['opacity'];
+        var opacity = iconSymbol['textopacity'];
         var align = iconSymbol['align'];
         var vertical = iconSymbol['vertical'];
         var horizontal = iconSymbol['horizontal'];
@@ -408,17 +455,18 @@ Z.SVG.VML= {
                 var text = texts[i];
                 var location = text['location'];
                 var content = text['content'];
-                var _textbox = Z.SVG.create('textbox');
-                _textbox.style.fontSize  = size +'px';
-                _textbox.style.color  = color;
-                _textbox.style.width  = width +'px';
-                _textbox.style.textAlign = align;
-                _textbox.style.top = (location[1] + dy)+'px';
-                _textbox.style.left = (location[0] + dx)+'px';
-                _textbox.innerHTML   = content;
-                container.appendChild(_textbox);
+                textElement = Z.SVG.create('textbox');
+                textElement.style.fontSize  = size +'px';
+                textElement.style.color  = color;
+                textElement.style.width  = width +'px';
+                textElement.style.textAlign = align;
+                textElement.style.top = (location[1])+'px';
+                textElement.style.left = (location[0])+'px';
+                textElement.innerHTML   = content;
+                container.appendChild(textElement);
             }
         }
+        return textElement;
     },
 
     removeVector:function(container, vector) {
