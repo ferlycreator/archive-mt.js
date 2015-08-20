@@ -38,15 +38,18 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
     },
 
     paintPictureMarker:function(context, pt, icon, resources) {
-        var width = icon['width'];
-        var height = icon['height'];
         var url = icon['url'];
         var img = resources.getImage(url);
+        var ratio = Z.Browser.retina ? 2:1;
+        var left = pt.left*ratio;
+        var top = pt.top*ratio;
+        var width = icon['width']*ratio;
+        var height = icon['height']*ratio;
         icon['url'] = img['src'];
         if (width && height) {
-            context.drawImage(img,pt.left,pt.top,width,height); 
+            context.drawImage(img,left,top,width,height);
          } else {
-            context.drawImage(img,pt.left,pt.top);
+            context.drawImage(img,left,top);
          }
          return pt;
     },
