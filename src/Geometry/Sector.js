@@ -5,7 +5,7 @@ Z['Sector']=Z.Sector=Z.Polygon.extend({
 
     initialize:function(center,radius,startAngle,endAngle,opts) {        
         this.type=Z.Geometry['TYPE_SECTOR'];
-        this.center = center;
+        this.center = new Z.Coordinate(center);
         this.radius = radius;
         this.startAngle = startAngle;
         this.endAngle = endAngle;
@@ -131,10 +131,11 @@ Z['Sector']=Z.Sector=Z.Polygon.extend({
         }
     },
 
-    exportJson:function(opts) {
+    exportGeoJson:function(opts) {
+        var center  = this.getCenter();
         return {
-            'type':         Z.Geometry['TYPE_SECTOR'],
-            'center':       this.getCenter(),
+            'type':         "Sector",
+            'coordinates':  [center.x,center.y],
             'radius':       this.getRadius(),
             'startAngle':   this.getStartAngle(),
             'endAngle':     this.getEndAngle()

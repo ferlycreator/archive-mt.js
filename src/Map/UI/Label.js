@@ -98,7 +98,13 @@ Z['Label'] = Z.Label = Z.Control.extend({
 		if(this.options['title']) {
         	var _titleDom = Z.DomUtil.createEl('div');
         	Z.DomUtil.addClass(_titleDom, titleCss);
-        	_titleDom.innerHTML = this.options['title'];
+        	var titleContent = this.options['title'];
+        	if (Z.Util.isString(titleContent)) {
+        		_titleDom.innerHTML = this.options['title'];	
+        	} else {
+        		_titleDom.appendChild(this.options['title']);
+        	}
+        	
 			this._labelContainer.appendChild(_titleDom);
 		}
 	},

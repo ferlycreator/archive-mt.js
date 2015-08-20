@@ -1,8 +1,8 @@
 Z['Polyline']=Z.Polyline = Z.Vector.extend({
     includes:[Z.Geometry.Poly],
-    initialize:function(path, opts) {
-        this.type=Z.Geometry['TYPE_POLYLINE'];
-        this.setPath(path);
+    initialize:function(coordinates, opts) {        
+        var _coords = Z.GeoJson.fromGeoJsonCoordinates(coordinates);
+        this.setCoordinates(_coords);
         this.initOptions(opts);
     },
 
@@ -11,7 +11,7 @@ Z['Polyline']=Z.Polyline = Z.Vector.extend({
      * @param {Array} path 坐标数组
      * @expose
      */
-    setPath:function(path) {
+    setCoordinates:function(path) {
         this.points = path;
         if (this.getMap()) {
             this.setPrjPoints(this.projectPoints(this.points));
@@ -24,7 +24,7 @@ Z['Polyline']=Z.Polyline = Z.Vector.extend({
      * @return {Array} 多边形坐标数组
      * @expose
      */
-    getPath:function() {
+    getCoordinates:function() {
         return this.getPoints();
     },
 
@@ -40,13 +40,6 @@ Z['Polyline']=Z.Polyline = Z.Vector.extend({
         } else if (this.layer instanceof Z.CanvasLayer) {
             return new Z.Polyline.Canvas(this);
         }
-    },
-
-    exportJson:function(opts) {
-        return {
-            'type':Z.Geometry['TYPE_POLYLINE'],
-            'path':this.getPoints()
-        };
     },
 
     exportGeoJson:function(opts) {

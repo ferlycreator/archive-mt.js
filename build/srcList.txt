@@ -52,8 +52,10 @@
 ../src/Geometry/Rectangle.js
 ../src/Geometry/GeometryCollection.js
 ../src/Geometry/MultiPoly.js
-../src/Geometry/MultiPolygon.js
+../src/Geometry/MultiPoint.js
 ../src/Geometry/MultiPolyline.js
+../src/Geometry/MultiPolygon.js
+../src/Geometry/Geometry.GeoJson.js
 ../src/Geometry/Painter/SVG.js
 ../src/Geometry/Painter/Painter.js
 ../src/Geometry/Painter/Painter.SVG.js

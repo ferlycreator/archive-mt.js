@@ -1,8 +1,8 @@
 Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({    
 
     initialize:function(nw,width,height,opts) {        
-        this.type=Z.Geometry['TYPE_RECT'];
-        this.nw = nw;
+        this.type=Z.Geometry['TYPE_RECT'];        
+        this.nw = new Z.Coordinate(nw);
         this.width = width;
         this.height = height;
         this.initOptions(opts);        
@@ -14,7 +14,7 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
      * @return {Coordinate} [左上角坐标]
      * @expose
      */
-    getNw:function() {
+    getCoordinates:function() {
         return this.nw;
     },
 
@@ -23,8 +23,8 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
      * @param {Coordinate} center 新的center
      * @expose
      */
-    setNw:function(nw){
-        this.nw = nw;
+    setCoordinates:function(nw){
+        this.nw = new Z.Coordinate(nw);
         
         if (!this.nw || !this.getMap()) {
             return;
@@ -180,10 +180,11 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
         }
     },
 
-    exportJson:function(opts) {
+    exportGeoJson:function(opts) {
+        var nw =this.getNw();
         return {
-            'type':Z.Geometry['TYPE_RECT'],
-            'nw':this.getNw(),
+            'type':"Rectangle",
+            'coordinates':[nw.x,nw.y],
             'width':this.getWidth(),
             'height':this.getHeight()
         };

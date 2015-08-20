@@ -4,13 +4,12 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
 
     /**
      * [多边形构造函数]
-     * @param  {一维数组 | 二维数组} ring [description]
+     * @param  {坐标数组} coordinates [description]
      * @param  {[type]} opts [description]
      * @return {[type]}      [description]
      */
-    initialize:function(ring, opts) {
-        this.type=Z.Geometry['TYPE_POLYGON'];
-        this.setRing(ring);
+    initialize:function(coordinates, opts) {
+        this.setCoordinates(coordinates);
         this.initOptions(opts);
         if (opts) {
             if (opts['holes']) {
@@ -18,6 +17,19 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
             }
         }
     },    
+
+    /**
+     * 设置新的coordinates 
+     * @param {[坐标数组]} coordinates [description]
+     */
+    setCoordinates:function(coordinates) {
+        var _coord = Z.GeoJson.fromGeoJsonCoordinates(coordinates);
+
+    },
+
+    getCoordinates:function() {
+
+    },
 
     getPoints:function() {
         return this.points;
@@ -126,19 +138,6 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
         } else if (this.layer instanceof Z.CanvasLayer) {
             return new Z.Polygon.Canvas(this);
         }
-    },
-
-    exportJson:function(opts) {
-        var shell = this.getPoints();
-        var holes = this.getHoles();
-        var rings = [shell];
-        if (holes) {
-            rings = rings.concat(holes);
-        }
-        return {
-            'type':Z.Geometry['TYPE_POLYGON'],
-            'rings':rings
-        };
     },
 
     exportGeoJson:function(opts) {

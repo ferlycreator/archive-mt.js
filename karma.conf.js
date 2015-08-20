@@ -10,7 +10,8 @@ module.exports = function(config) {
 
   var srcFiles = require(__dirname + '/build/getFiles.js').getFiles();
   var files = srcFiles.concat([
-    'test/**/*.js',
+    //'test/**/*.js',
+    'test/geojson/*.js',
     {pattern: 'assets/css/**/*.css', watched: true, included: false, served: true},
     {pattern: 'assets/images/**/*.png', watched: false, included: false, served: true}
   ]);

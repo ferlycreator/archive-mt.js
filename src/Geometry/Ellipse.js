@@ -109,10 +109,11 @@ Z['Ellipse']=Z.Ellipse = Z.Polygon.extend({
         }
     },
 
-    exportJson:function(opts) {
+    exportGeoJson:function(opts) {
+        var center = this.getCenter();
         return {
-            'type':Z.Geometry['TYPE_ELLIPSE'],
-            'center':this.getCenter(),
+            'type':'Ellipse',
+            'coordinates':[center.x, center.y],
             'width':this.getWidth(),
             'height':this.getHeight()
         };
