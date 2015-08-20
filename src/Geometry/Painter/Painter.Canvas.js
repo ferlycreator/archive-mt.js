@@ -3,15 +3,16 @@ Z.Painter.Canvas = Z.Painter.extend({
         this.geometry = geometry;
     },
 
-    _paint:function(ctx, resources, symbol) {
+    _paint:function(context, resources, symbol) {
         var geometry = this.geometry;
-        if (!geometry || !ctx || !geometry.getMap() || this.deleting) {
+        if (!geometry || !context || !geometry.getMap() || this.deleting) {
             return;
         }
         this.setSymbol(symbol);
-        this.prepareCanvas(ctx,this.strokeSymbol,this.fillSymbol);
+
+        this.prepareCanvas(context,this.strokeSymbol,this.fillSymbol);
         var platformOffset = this.geometry.getMap().offsetPlatform();
-        this.doPaint(ctx,resources,platformOffset);
+        this.doPaint(context,resources,platformOffset);
     },
 
     remove:function() {
@@ -44,7 +45,6 @@ Z.Painter.Canvas = Z.Painter.extend({
         if (!map) {
             return;
         }
-        // var extent = geometry.computeVisualExtent(geometry.getProjection());
         var isRealTime = geometry.isEditing();
         map.repaintBaseCanvasLayer(isRealTime);
         this.registerEvents();
@@ -55,12 +55,9 @@ Z.Painter.Canvas = Z.Painter.extend({
     },
 
     getRgba:function(color, op) {
-        //var rop=1;
         if (Z.Util.isNil(op)) {
-            op = 1;//op=(""+op).replace("0","");
-        } /*else {
             op = 1;
-        }*/
+        }
         var rgb = {
             r: parseInt(color.slice(1, 3), 16),
             g: parseInt(color.slice(3, 5), 16),
@@ -93,14 +90,13 @@ Z.Painter.Canvas = Z.Painter.extend({
         this.setDefaultCanvasSetting(context);
         context.restore();       
         if (strokeSymbol) {
-            var strokeWidth = strokeSymbol["strokeWidth"];
+            var strokeWidth = strokeSymbol['strokeWidth'];
             if (!Z.Util.isNil(strokeWidth)) {context.lineWidth = strokeWidth;}
-            var strokeOpacity = strokeSymbol["strokeOpacity"];
+            var strokeOpacity = strokeSymbol['strokeOpacity'];
             if (strokeWidth === 0) {
                 strokeOpacity = 0;
             }
-
-            var strokeColor=strokeSymbol["stroke"];
+            var strokeColor = strokeSymbol['stroke'];
              if (strokeColor)  {
                  if (Z.Util.isNil(strokeOpacity)) {
                      strokeOpacity = 1;
@@ -109,7 +105,7 @@ Z.Painter.Canvas = Z.Painter.extend({
              }
              //低版本ie不支持该属性
              if (context.setLineDash) {
-                 var strokeDash=(strokeSymbol["strokeDasharray"] || strokeSymbol['strokeDashArray']);
+                 var strokeDash=(strokeSymbol['strokeDasharray'] || strokeSymbol['strokeDashArray']);
                  if (strokeDash && Z.Util.isString(strokeDash) && strokeDash.length>0) {
                      var da = [];
                      for (var i=0, len=strokeDash.length;i<len;i++) {
@@ -129,22 +125,18 @@ Z.Painter.Canvas = Z.Painter.extend({
                      context.setLineDash(da);
                  }
              }
-             
-        }                
+         }
          if (fillSymbol) { 
-             var fill=fillSymbol["fill"];
+             var fill=fillSymbol['fill'];
              if (!fill) {return;}
-             if (Z.Util.isNil(fillSymbol["fillOpacity"])) {
-                 fillSymbol["fillOpacity"] = 1;
+             if (Z.Util.isNil(fillSymbol['fillOpacity'])) {
+                 fillSymbol['fillOpacity'] = 1;
              }
-             if (fill.length>7 && "url" ===fill.substring(0,3)) {
+             if (fill.length>7 && 'url' ===fill.substring(0,3)) {
                  var imgUrl = fill.substring(5,fill.length-2);
-                 var imageTexture = document.createElement('img'); 
-//               imageTexture.onload=function() {
-//                                      
-//               };
+                 var imageTexture = document.createElement('img');
                  imageTexture.src = imgUrl;        
-                 var woodfill = context.createPattern(imageTexture, "repeat"); 
+                 var woodfill = context.createPattern(imageTexture, 'repeat');
                  context.fillStyle = woodfill;
              }else {
                  context.fillStyle =this.getRgba(fill); 
@@ -154,10 +146,10 @@ Z.Painter.Canvas = Z.Painter.extend({
 
     fillGeo:function(context, fillSymbol){
         if (fillSymbol) {
-             if (!Z.Util.isNil(fillSymbol["fillOpacity"])) {
-                 context.globalAlpha = fillSymbol["fillOpacity"];
+             if (!Z.Util.isNil(fillSymbol['fillOpacity'])) {
+                 context.globalAlpha = fillSymbol['fillOpacity'];
              }
-             context.fill("evenodd");
+             context.fill('evenodd');
              context.globalAlpha = 1;
         }
     },

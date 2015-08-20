@@ -7,6 +7,8 @@ describe('API', function () {
 
     beforeEach(function () {
         container = document.createElement('div');
+        container.style.width = '800px';
+        container.style.height = '600px';
         document.body.appendChild(container);
         var option = {
             center: center
@@ -890,7 +892,7 @@ describe('API', function () {
             var got = geometry.getSymbol();
 
             expect(got).to.not.be(null);
-            var stroke = sym.strokeSymbol;
+            var stroke = got.strokeSymbol;
             expect(stroke).to.only.have.keys([
                 'stroke',
                 'strokeWidth',
@@ -912,22 +914,69 @@ describe('API', function () {
 
     describe('Geometry.Marker', function() {
 
+        var layer;
+
+        beforeEach(function () {
+            layer = new Z.SVGLayer('svg');
+            map.addLayer(layer);
+        });
+
+        afterEach(function () {
+            map.removeLayer(layer);
+        });
+
         it('setCenter', function() {
+            var marker = new Z.Marker({x: 0, y: 0});
+
+            expect(function () {
+                marker.setCenter({x: 1, y: 1});
+                layer.addGeometry(marker);
+                marker.setCenter({x: -180, y: 75});
+            }).to.not.throwException();
         });
 
         it('getCenter', function() {
+            var marker = new Z.Marker({x: 0, y: 0});
+
+            expect(function () {
+                marker.getCenter();
+            }).to.not.throwException();
         });
 
         it('getExtent', function() {
+            var marker = new Z.Marker({x: 0, y: 0});
+
+            expect(function () {
+                marker.getExtent();
+            }).to.not.throwException();
         });
 
         it('getSize', function() {
+            var marker = new Z.Marker({x: 0, y: 0});
+            layer.addGeometry(marker);
+            var size = marker.getSize();
+
+            expect(size.width).to.be.above(0);
+            expect(size.height).to.be.above(0);
         });
 
         it('show/hide/isVisible', function() {
+            var marker = new Z.Marker({x: 0, y: 0});
+            layer.addGeometry(marker);
+
+            expect(function () {
+                marker.show();
+                marker.hide();
+                marker.isVisible();
+            }).to.not.throwException();
         });
 
         it('remove', function() {
+            var marker = new Z.Marker({x: 0, y: 0});
+            layer.addGeometry(marker);
+            marker.remove();
+
+            expect(marker.getLayer()).to.be(null);
         });
 
         it('copy');
@@ -942,22 +991,69 @@ describe('API', function () {
 
     describe('Geometry.Circle', function() {
 
+        var layer;
+
+        beforeEach(function () {
+            layer = new Z.SVGLayer('svg');
+            map.addLayer(layer);
+        });
+
+        afterEach(function () {
+            map.removeLayer(layer);
+        });
+
         it('setCenter', function() {
+            var circle = new Z.Circle({x: 0, y: 0}, 1);
+
+            expect(function () {
+                circle.setCenter({x: 1, y: 1});
+                layer.add(circle);
+                circle.setCenter({x:180, y: 75});
+            }).to.not.throwException();
         });
 
         it('getCenter', function() {
+            var circle = new Z.Circle({x: 0, y: 0}, 1);
+            var got = circle.getCenter();
+
+            expect(got.x).to.eql(0);
+            expect(got.y).to.eql(0);
         });
 
         it('getExtent', function() {
+            var circle = new Z.Circle({x: 0, y: 0}, 1);
+
+            expect(function () {
+                circle.getExtent();
+            }).to.not.throwException();
         });
 
         it('getSize', function() {
+            var circle = new Z.Circle({x: 0, y: 0}, 100);
+            layer.addGeometry(circle);
+            var size = circle.getSize();
+
+            expect(size.x).to.be.above(0);
+            expect(size.y).to.be.above(0);
         });
 
         it('show/hide/isVisible', function() {
+            var circle = new Z.Circle({x: 0, y: 0}, 100);
+            layer.addGeometry(circle);
+
+            expect(function () {
+                circle.show();
+                circle.hide();
+                circle.isVisible();
+            }).to.not.throwException();
         });
 
         it('remove', function() {
+            var circle = new Z.Circle({x: 0, y: 0}, 100);
+            layer.addGeometry(circle);
+            circle.remove();
+
+            expect(circle.getlayer()).to.be(null);
         });
 
         it('copy');
@@ -966,28 +1062,91 @@ describe('API', function () {
         });
 
         it('toGeoJson', function() {
+        });
+
+        it('setRadius/getRadius', function() {
+            var circle = new Z.Circle({x: 0, y: 0}, 1);
+
+            expect(circle.getRadius()).to.eql(1);
+
+            circle.setRadius(20);
+
+            expect(circle.getRadius()).to.eql(20);
+        });
+
+        it('setRings');
+
+        it('getPoints', function() {
+            expect().fail('TODO');
         });
 
     });
 
     describe('Geometry.Ellipse', function() {
 
+        var layer;
+
+        beforeEach(function () {
+            layer = new Z.SVGLayer('svg');
+            map.addLayer(layer);
+        });
+
+        afterEach(function () {
+            map.removeLayer(layer);
+        });
+
         it('setCenter', function() {
+            var ellipse = new Z.Ellipse({x: 0, y: 0}, 1, 1);
+
+            expect(function () {
+                ellipse.setCenter({x: -180, y: -75});
+                layer.addGeometry(ellipse);
+                ellipse.setCenter({x: -180, y: 75});
+            }).to.not.throwException();
         });
 
         it('getCenter', function() {
+            var ellipse = new Z.Ellipse({x: 0, y: 0}, 1, 1);
+            var got = ellipse.getCenter();
+
+            expect(got.x).to.eql(0);
+            expect(got.y).to.eql(0);
         });
 
         it('getExtent', function() {
+            var ellipse = new Z.Ellipse({x: 0, y: 0}, 1, 1);
+
+            expect(function () {
+                ellipse.getExtent();
+            }).to.not.throwException();
         });
 
         it('getSize', function() {
+            var ellipse = new Z.Ellipse({x: 0, y: 0}, 1, 1);
+            layer.addGeometry(ellipse);
+            var size = ellipse.getSize();
+
+            expect(size.x).to.be.above(0);
+            expect(size.y).to.be.above(0);
         });
 
         it('show/hide/isVisible', function() {
+            var ellipse = new Z.Ellipse({x: 0, y: 0}, 1, 1);
+            layer.addGeometry(ellipse);
+
+            expect(function () {
+                ellipse.show();
+                ellipse.hide();
+                ellipse.isVisible();
+            }).to.not.throwException();
         });
 
         it('remove', function() {
+            var ellipse = new Z.Ellipse({x: 0, y: 0}, 1, 1);
+            layer.addGeometry(ellipse);
+            ellipse.remove();
+
+            expect(ellipse.getLayer()).to.be(null);
         });
 
         it('copy');
@@ -996,28 +1155,101 @@ describe('API', function () {
         });
 
         it('toGeoJson', function() {
+        });
+
+        it('getWidth/getHeight]', function() {
+            var ellipse = new Z.Ellipse({x: 0, y: 0}, 1, 1);
+            var w = ellipse.getWidth();
+            var h = ellipse.getHeight();
+
+            expect(w).to.eql(1);
+            expect(h).to.eql(1);
+        });
+
+        it('setWidth/setHeight', function() {
+            var ellipse = new Z.Ellipse({x: 0, y: 0}, 1, 1);
+            ellipse.setWidth(100);
+            ellipse.setHeight(200);
+            var w = ellipse.getWidth();
+            var h = ellipse.getHeight();
+
+            expect(w).to.eql(100);
+            expect(h).to.eql(200);
+        });
+
+        it('setRings');
+
+        it('getPoints', function() {
+            expect().fail('TODO');
         });
 
     });
 
     describe('Geometry.Sector', function() {
 
+        var layer;
+
+        beforeEach(function () {
+            layer = new Z.SVGLayer('svg');
+            map.addLayer(layer);
+        });
+
+        afterEach(function () {
+            map.removeLayer(layer);
+        });
+
         it('setCenter', function() {
+            var sector = new Z.Sector({x: 0, y: 0}, 1, 30, 60);
+
+            expect(function () {
+                sector.setCenter({x: 180, y: -75});
+                layer.addGeometry(sector);
+                sector.setCenter({x: 180, y: 75});
+            }).to.not.throwException();
         });
 
         it('getCenter', function() {
+            var sector = new Z.Sector({x: 0, y: 0}, 1, 30, 60);
+            var got = sector.getCenter();
+
+            expect(got.x).to.eql(0);
+            expect(got.y).to.eql(0);
         });
 
         it('getExtent', function() {
+            var sector = new Z.Sector({x: 0, y: 0}, 1, 30, 60);
+
+            expect(function () {
+                sector.getExtent();
+            }).to.not.throwException();
         });
 
         it('getSize', function() {
+            var sector = new Z.Sector({x: 0, y: 0}, 1, 30, 60);
+            layer.addGeometry(sector);
+            var size = sector.getSize();
+
+            expect(size.x).to.be.above(0);
+            expect(size.y).to.be.above(0);
         });
 
         it('show/hide/isVisible', function() {
+            var sector = new Z.Sector({x: 0, y: 0}, 1, 30, 60);
+            layer.addGeometry(sector);
+
+            expect(function () {
+                sector.show();
+                sector.hide();
+                sector.isVisible();
+            }).to.not.throwException();
         });
 
         it('remove', function() {
+            var sector = new Z.Sector({x: 0, y: 0}, 1, 30, 60);
+            layer.addGeometry(sector);
+            sector.remove();
+
+            expect(sector.getLayer()).to.be(null);
         });
 
         it('copy');
@@ -1026,25 +1258,96 @@ describe('API', function () {
         });
 
         it('toGeoJson', function() {
+        });
+
+        it('getRadius/getStartAngle/getEndAngle', function() {
+            var sector = new Z.Sector({x: 0, y: 0}, 1, 30, 60);
+            var r = sector.getRadius();
+            var s = sector.getStartAngle();
+            var e = sector.getEndAngle();
+
+            expect(r).to.eql(1);
+            expect(s).to.eql(30);
+            expect(e).to.eql(60);
+        });
+
+        it('setRadius/setStartAngle/setEndAngle', function() {
+            var sector = new Z.Sector({x: 0, y: 0}, 1, 30, 60);
+            sector.setRadius(2);
+            sector.setStartAngle(60);
+            sector.setEndAngle(120);
+            var r = sector.getRadius();
+            var s = sector.getStartAngle();
+            var e = sector.getEndAngle();
+
+            expect(r).to.eql(2);
+            expect(s).to.eql(60);
+            expect(e).to.eql(120);
+        });
+
+        it('setRings');
+
+        it('getPoints', function() {
+            expect().fail('TODO');
         });
 
     });
 
     describe('Geometry.Rectangle', function() {
 
+        var layer;
+
+        beforeEach(function () {
+            layer = new Z.SVGLayer('svg');
+            map.addLayer(layer);
+        });
+
+        afterEach(function () {
+            map.removeLayer(layer);
+        });
+
         it('getCenter', function() {
+            var rect = new Z.Rectangle({x: 0, y: 0}, 200, 100);
+            var got = rect.getCenter();
+
+            expect(got.x).to.eql(0);
+            expect(got.y).to.eql(0);
         });
 
         it('getExtent', function() {
+            var rect = new Z.Rectangle({x: 0, y: 0}, 200, 100);
+
+            expect(function () {
+                rect.getExtent();
+            }).to.not.throwException();
         });
 
         it('getSize', function() {
+            var rect = new Z.Rectangle({x: 0, y: 0}, 200, 100);
+            layer.addGeometry(rect);
+            var size = rect.getSize();
+
+            expect(size.x).to.be.above(0);
+            expect(size.y).to.be.above(0);
         });
 
         it('show/hide/isVisible', function() {
+            var rect = new Z.Rectangle({x: 0, y: 0}, 200, 100);
+            layer.addGeometry(rect);
+
+            expect(function () {
+                rect.show();
+                rect.hide();
+                rect.isVisible();
+            }).to.not.throwException();
         });
 
         it('remove', function() {
+            var rect = new Z.Rectangle({x: 0, y: 0}, 200, 100);
+            layer.addGeometry(rect);
+            rect.remove();
+
+            expect(rect.getLayer()).to.be(null);
         });
 
         it('copy');
@@ -1053,25 +1356,120 @@ describe('API', function () {
         });
 
         it('toGeoJson', function() {
+        });
+
+        it('getNw/getWidth/getHeight', function() {
+            var rect = new Z.Rectangle({x: 0, y: 0}, 200, 100);
+            var nw = rect.getNw();
+            var w = rect.getWidth();
+            var h = rect.getHeight();
+
+            expect(nw).to.eql({x: 0, y: 0});
+            expect(w).to.eql(200);
+            expect(h).to.eql(100);
+        });
+
+        it('setNw/getWidth/getHeight', function() {
+            var rect = new Z.Rectangle({x: 0, y: 0}, 200, 100);
+            rect.setNw({x: -180, y: 75});
+            rect.setWidth(401);
+            rect.setHeight(201);
+            var nw = rect.getNw();
+            var w = rect.getWidth();
+            var h = rect.getHeight();
+
+            expect(nw).to.eql({x: -180, y: 75});
+            expect(w).to.eql(401);
+            expect(h).to.eql(201);
+        });
+
+        it('setRings');
+
+        it('getPoints', function() {
+            var rect = new Z.Rectangle({x: 0, y: 0}, 200, 100);
+            layer.addGeometry(rect);
+            var points = rect.getRings();
+
+            expect(points).to.have.length(5);
+            expect(points[0]).to.eql(points[4]);
         });
 
     });
 
     describe('Geometry.Polyline', function() {
 
+        var layer;
+
+        beforeEach(function () {
+            layer = new Z.SVGLayer('svg');
+            map.addLayer(layer);
+        });
+
+        afterEach(function () {
+            map.removeLayer(layer);
+        });
+
         it('getCenter', function() {
+            var polyline = new Z.Polyline([
+              {x: 0, y: 0},
+              {x: 120, y: 0}
+            ]);
+            var got = polyline.getCenter();
+
+            // sum ?
+            expect(got.x).to.eql(60);
+            expect(got.y).to.eql(0);
         });
 
         it('getExtent', function() {
+            var polyline = new Z.Polyline([
+              {x: 0, y: 0},
+              {x: 120, y: 0}
+            ]);
+
+            expect(function () {
+                polyline.getExtent();
+            }).to.not.throwException();
         });
 
         it('getSize', function() {
+            var polyline = new Z.Polyline([
+              {x: 0, y: 0},
+              {x: 10, y: 10},
+              {x: 20, y: 30}
+            ]);
+            layer.addGeometry(polyline);
+            var size = polyline.getSize();
+
+            expect(size.x).to.be.above(0);
+            expect(size.y).to.be.above(0);
         });
 
         it('show/hide/isVisible', function() {
+            var polyline = new Z.Polyline([
+              {x: 0, y: 0},
+              {x: 10, y: 10},
+              {x: 20, y: 30}
+            ]);
+            layer.addGeometry(polyline);
+
+            expect(function () {
+                polyline.show();
+                polyline.hide();
+                polyline.isVisible();
+            }).to.not.throwException();
         });
 
         it('remove', function() {
+            var polyline = new Z.Polyline([
+              {x: 0, y: 0},
+              {x: 10, y: 10},
+              {x: 20, y: 30}
+            ]);
+            layer.addGeometry(polyline);
+            polyline.remove();
+
+            expect(polyline.getLayer()).to.be(null);
         });
 
         it('copy');
@@ -1080,25 +1478,120 @@ describe('API', function () {
         });
 
         it('toGeoJson', function() {
+        });
+
+        it('getPath', function() {
+            var path = [
+              {x: 0, y: 0},
+              {x: 10, y: 10},
+              {x: 20, y: 30}
+            ];
+            var polyline = new Z.Polyline(path);
+            layer.addGeometry(polyline);
+
+            expect(polyline.getPath()).to.eql(path);
+        });
+
+        it('setPath', function() {
+            var path = [
+              {x: 0, y: 0},
+              {x: 10, y: 10},
+              {x: 20, y: 30}
+            ];
+            var polyline = new Z.Polyline([]);
+            layer.addGeometry(polyline);
+            polyline.setPath(path);
+
+            expect(polyline.getPath()).to.eql(path);
         });
 
     });
 
     describe('Geometry.Polygon', function() {
 
+        var layer;
+
+        beforeEach(function () {
+            layer = new Z.SVGLayer('svg');
+            map.addLayer(layer);
+        });
+
+        afterEach(function () {
+            map.removeLayer(layer);
+        });
+
         it('getCenter', function() {
+            var rings = [
+                {x: 20, y: 0},
+                {x: 20, y: 10},
+                {x: 0, y: 10},
+                {x: 0, y: 0}
+            ];
+            var polygon = new Z.Polygon(rings);
+            var got = polygon.getCenter();
+
+            expect(got.x).to.eql(10);
+            expect(got.y).to.eql(5);
         });
 
         it('getExtent', function() {
+            var rings = [
+                {x: 20, y: 0},
+                {x: 20, y: 10},
+                {x: 0, y: 10},
+                {x: 0, y: 0}
+            ];
+            var polygon = new Z.Polygon(rings);
+
+            expect(function () {
+                polygon.getExtent();
+            }).to.not.throwException();
         });
 
         it('getSize', function() {
+            var rings = [
+                {x: 20, y: 0},
+                {x: 20, y: 10},
+                {x: 0, y: 10},
+                {x: 0, y: 0}
+            ];
+            var polygon = new Z.Polygon(rings);
+            layer.addGeometry(polygon);
+            var size = polygon.getSize();
+
+            expect(size.x).to.be.above(0);
+            expect(size.y).to.be.above(0);
         });
 
         it('show/hide/isVisible', function() {
+            var rings = [
+                {x: 20, y: 0},
+                {x: 20, y: 10},
+                {x: 0, y: 10},
+                {x: 0, y: 0}
+            ];
+            var polygon = new Z.Polygon(rings);
+            layer.addGeometry(polygon);
+
+            expect(function () {
+                polygon.show();
+                polygon.hide();
+                polygon.isVisible();
+            }).to.not.throwException();
         });
 
         it('remove', function() {
+            var rings = [
+                {x: 20, y: 0},
+                {x: 20, y: 10},
+                {x: 0, y: 10},
+                {x: 0, y: 0}
+            ];
+            var polygon = new Z.Polygon(rings);
+            layer.addGeometry(polygon);
+            polygon.remove();
+
+            expect(polygon.getLayer()).to.be(null);
         });
 
         it('copy');
@@ -1107,25 +1600,125 @@ describe('API', function () {
         });
 
         it('toGeoJson', function() {
+        });
+
+        it('getRings/getHoles', function() {
+            var rings = [
+                {x: 20, y: 0},
+                {x: 20, y: 10},
+                {x: 0, y: 10},
+                {x: 0, y: 0}
+            ];
+            var holes = [
+                {x: 1, y: 1},
+                {x: 3, y: 2},
+                {x: 2, y: 3}
+            ];
+            var polygon = new Z.Polygon(rings, {holes: holes});
+
+            expect(polygon.getRings()).to.eql(rings);
+            expect(polygon.getHoles()).to.eql(holes);
+        });
+
+        it('setRings/setHoles', function() {
+            var rings = [
+                {x: 20, y: 0},
+                {x: 20, y: 10},
+                {x: 0, y: 10},
+                {x: 0, y: 0}
+            ];
+            var holes = [
+                {x: 1, y: 1},
+                {x: 3, y: 2},
+                {x: 2, y: 3}
+            ];
+            var polygon = new Z.Polygon([]);
+            polygon.setRings(rings);
+            polygon.setHoles(holes);
+
+            expect(polygon.getRings()).to.eql(rings);
+            expect(polygon.getHoles()).to.eql(holes);
+        });
+
+        it('hasHoles', function() {
+            var rings = [
+                {x: 20, y: 0},
+                {x: 20, y: 10},
+                {x: 0, y: 10},
+                {x: 0, y: 0}
+            ];
+            var holes = [
+                {x: 1, y: 1},
+                {x: 3, y: 2},
+                {x: 2, y: 3}
+            ];
+            var polygon = new Z.Polygon(rings);
+
+            expect(polygon.hasHoles()).to.not.be.ok();
+
+            polygon.setHoles(holes);
+
+            expect(polygon.hasHoles()).to.be.ok();
         });
 
     });
 
     describe('Geometry.GeometryCollection', function() {
 
+        var layer;
+
+        beforeEach(function () {
+            layer = new Z.SVGLayer('svg');
+            map.addLayer(layer);
+        });
+
+        afterEach(function () {
+            map.removeLayer(layer);
+        });
+
         it('getCenter', function() {
+            var geometries = genAllTypeGeometries();
+            var collection = new Z.GeometryCollection(geometries);
+
+            expect(collection.getCenter()).to.not.be(null);
         });
 
         it('getExtent', function() {
+            var geometries = genAllTypeGeometries();
+            var collection = new Z.GeometryCollection(geometries);
+
+            expect(collection.getExtent()).to.not.be(null);
         });
 
         it('getSize', function() {
+            var geometries = genAllTypeGeometries();
+            var collection = new Z.GeometryCollection(geometries);
+            layer.addGeometry(collection);
+            var size = collection.getSize();
+
+            expect(size.x).to.be.above(0);
+            expect(size.y).to.be.above(0);
         });
 
         it('show/hide/isVisible', function() {
+            var geometries = genAllTypeGeometries();
+            var collection = new Z.GeometryCollection(geometries);
+            layer.addGeometry(collection);
+
+            expect(function () {
+                collection.show();
+                collection.hide();
+                collection.isVisible();
+            }).to.not.throwException();
         });
 
         it('remove', function() {
+            var geometries = genAllTypeGeometries();
+            var collection = new Z.GeometryCollection(geometries);
+            layer.addGeometry(collection);
+            collection.remove();
+
+            expect(collection.getLayer()).to.be(null);
         });
 
         it('copy');
@@ -1136,9 +1729,42 @@ describe('API', function () {
         it('toGeoJson', function() {
         });
 
+        it('getGeometries/setGeometries', function() {
+            var collection = new Z.GeometryCollection([]);
+
+            expect(collection.getGeometries()).to.be.empty();
+
+            var geometries = genAllTypeGeometries();
+            collection.setGeometries(geometries);
+
+            expect(collection.getGeometries()).to.eql(geometries);
+        });
+
+        it('isEmpty', function() {
+            var collection = new Z.GeometryCollection([]);
+
+            expect(collection.isEmpty()).to.be.ok();
+
+            var geometries = genAllTypeGeometries();
+            collection.setGeometries(geometries);
+
+            expect(collection.isEmpty()).to.not.be.ok();
+        });
+
     });
 
     describe('Geometry.MultiPoint', function() {
+
+        var layer;
+
+        beforeEach(function () {
+            layer = new Z.SVGLayer('svg');
+            map.addLayer(layer);
+        });
+
+        afterEach(function () {
+            map.removeLayer(layer);
+        });
 
         it('getCenter', function() {
         });
@@ -1167,19 +1793,115 @@ describe('API', function () {
 
     describe('Geometry.MultiPolyline', function() {
 
+        var layer;
+
+        beforeEach(function () {
+            layer = new Z.SVGLayer('svg');
+            map.addLayer(layer);
+        });
+
+        afterEach(function () {
+            map.removeLayer(layer);
+        });
+
         it('getCenter', function() {
+            var mp = new Z.MultiPolyline([]);
+            var coords = [];
+            coords[0] = [
+                {x: 1, y: 2},
+                {x: 3, y: 4},
+                {x: 4, y: 3}
+            ];
+            coords[1] = [
+                {x: 5, y: 6},
+                {x: 7, y: 8},
+                {x: 6, y: 5}
+            ];
+            mp.setCoordinates(coords);
+
+            expect(mp.getCenter()).to.not.be(null);
         });
 
         it('getExtent', function() {
+            var mp = new Z.MultiPolyline([]);
+            var coords = [];
+            coords[0] = [
+                {x: 1, y: 2},
+                {x: 3, y: 4},
+                {x: 4, y: 3}
+            ];
+            coords[1] = [
+                {x: 5, y: 6},
+                {x: 7, y: 8},
+                {x: 6, y: 5}
+            ];
+            mp.setCoordinates(coords);
+
+            expect(mp.getExtent()).to.not.be(null);
         });
 
         it('getSize', function() {
+            var mp = new Z.MultiPolyline([]);
+            var coords = [];
+            coords[0] = [
+                {x: 1, y: 2},
+                {x: 3, y: 4},
+                {x: 4, y: 3}
+            ];
+            coords[1] = [
+                {x: 5, y: 6},
+                {x: 7, y: 8},
+                {x: 6, y: 5}
+            ];
+            mp.setCoordinates(coords);
+            layer.addGeometry(mp);
+            var size = mp.getSize();
+
+            expect(size.x).to.be.above(0);
+            expect(size.y).to.be.above(0);
         });
 
         it('show/hide/isVisible', function() {
+            var mp = new Z.MultiPolyline([]);
+            var coords = [];
+            coords[0] = [
+                {x: 1, y: 2},
+                {x: 3, y: 4},
+                {x: 4, y: 3}
+            ];
+            coords[1] = [
+                {x: 5, y: 6},
+                {x: 7, y: 8},
+                {x: 6, y: 5}
+            ];
+            mp.setCoordinates(coords);
+            layer.addGeometry(mp);
+
+            expect(function () {
+                mp.show();
+                mp.hide();
+                mp.isVisible();
+            }).to.not.throwException();
         });
 
         it('remove', function() {
+            var mp = new Z.MultiPolyline([]);
+            var coords = [];
+            coords[0] = [
+                {x: 1, y: 2},
+                {x: 3, y: 4},
+                {x: 4, y: 3}
+            ];
+            coords[1] = [
+                {x: 5, y: 6},
+                {x: 7, y: 8},
+                {x: 6, y: 5}
+            ];
+            mp.setCoordinates(coords);
+            layer.addGeometry(mp);
+            mp.remove();
+
+            expect(mp.getLayer()).to.be(null);
         });
 
         it('copy');
@@ -1188,28 +1910,142 @@ describe('API', function () {
         });
 
         it('toGeoJson', function() {
+        });
+
+        it('getCoordinates/setCoordinates', function() {
+            var mp = new Z.MultiPolyline([]);
+
+            expect(mp.getCoordinates()).to.be.empty();
+
+            var coords = [];
+            coords[0] = [
+                {x: 1, y: 2},
+                {x: 3, y: 4},
+                {x: 4, y: 3}
+            ];
+            coords[1] = [
+                {x: 5, y: 6},
+                {x: 7, y: 8},
+                {x: 6, y: 5}
+            ];
+            mp.setCoordinates(coords);
+
+            expect(mp.getCoordinates()).to.eql(coords);
         });
 
     });
 
     describe('Geometry.MultiPolygon', function() {
 
-        it('setCenter', function() {
+        var layer;
+
+        beforeEach(function () {
+            layer = new Z.SVGLayer('svg');
+            map.addLayer(layer);
+        });
+
+        afterEach(function () {
+            map.removeLayer(layer);
         });
 
         it('getCenter', function() {
+            var mp = new Z.MultiPolygon([]);
+            var coords = [];
+            coords[0] = [
+                {x: 1, y: 2},
+                {x: 3, y: 4},
+                {x: 4, y: 3}
+            ];
+            coords[1] = [
+                {x: 5, y: 6},
+                {x: 7, y: 8},
+                {x: 6, y: 5}
+            ];
+            mp.setCoordinates(coords);
+
+            expect(mp.getCenter()).to.not.be(null);
         });
 
         it('getExtent', function() {
+            var mp = new Z.MultiPolygon([]);
+            var coords = [];
+            coords[0] = [
+                {x: 1, y: 2},
+                {x: 3, y: 4},
+                {x: 4, y: 3}
+            ];
+            coords[1] = [
+                {x: 5, y: 6},
+                {x: 7, y: 8},
+                {x: 6, y: 5}
+            ];
+            mp.setCoordinates(coords);
+
+            expect(mp.getExtent()).to.not.be(null);
         });
 
         it('getSize', function() {
+            var mp = new Z.MultiPolygon([]);
+            var coords = [];
+            coords[0] = [
+                {x: 1, y: 2},
+                {x: 3, y: 4},
+                {x: 4, y: 3}
+            ];
+            coords[1] = [
+                {x: 5, y: 6},
+                {x: 7, y: 8},
+                {x: 6, y: 5}
+            ];
+            mp.setCoordinates(coords);
+            layer.addGeometry(mp);
+            var size = mp.getSize();
+
+            expect(size.x).to.be.above(0);
+            expect(size.y).to.be.above(0);
         });
 
         it('show/hide/isVisible', function() {
+            var mp = new Z.MultiPolygon([]);
+            var coords = [];
+            coords[0] = [
+                {x: 1, y: 2},
+                {x: 3, y: 4},
+                {x: 4, y: 3}
+            ];
+            coords[1] = [
+                {x: 5, y: 6},
+                {x: 7, y: 8},
+                {x: 6, y: 5}
+            ];
+            mp.setCoordinates(coords);
+            layer.addGeometry(mp);
+
+            expect(function () {
+                mp.show();
+                mp.hide();
+                mp.isVisible();
+            }).to.not.throwException();
         });
 
         it('remove', function() {
+            var mp = new Z.MultiPolygon([]);
+            var coords = [];
+            coords[0] = [
+                {x: 1, y: 2},
+                {x: 3, y: 4},
+                {x: 4, y: 3}
+            ];
+            coords[1] = [
+                {x: 5, y: 6},
+                {x: 7, y: 8},
+                {x: 6, y: 5}
+            ];
+            mp.setCoordinates(coords);
+            layer.addGeometry(mp);
+            mp.remove();
+
+            expect(mp.getLayer()).to.be(null);
         });
 
         it('copy');
@@ -1218,6 +2054,27 @@ describe('API', function () {
         });
 
         it('toGeoJson', function() {
+        });
+
+        it('getCoordinates/setCoordinates', function() {
+            var mp = new Z.MultiPolygon([]);
+
+            expect(mp.getCoordinates()).to.be.empty();
+
+            var coords = [];
+            coords[0] = [
+                {x: 1, y: 2},
+                {x: 3, y: 4},
+                {x: 4, y: 3}
+            ];
+            coords[1] = [
+                {x: 5, y: 6},
+                {x: 7, y: 8},
+                {x: 6, y: 5}
+            ];
+            mp.setCoordinates(coords);
+
+            expect(mp.getCoordinates()).to.eql(coords);
         });
 
     });

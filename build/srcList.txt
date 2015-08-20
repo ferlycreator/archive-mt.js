@@ -102,8 +102,8 @@
 ../src/Map/Control/Control.Scale.js
 ../src/Map/UI/Button.js
 ../src/Map/UI/Toolbar.js
+../src/Map/UI/Panel.js
 ../src/Map/UI/Label.js
-../src/Map/UI/Tip.js
 ../src/Topo/GeoUtils.js
 ../src/Topo/SimplifyUtil.js
 ../src/Query/SpatialFilter.js

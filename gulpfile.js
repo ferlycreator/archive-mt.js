@@ -7,14 +7,10 @@ var runSequence = require('run-sequence');
 var gcc = require('gulp-closure-compiler');
 var karma = require('karma').server;
 
-
-
 var minimist = require('minimist');
 
 var knownOptions = {
-  //maptalks's engine_front module's path
-  maptalks: 'maptalks',
-  string: 'browsers',
+  string: ['browsers', 'maptalks', 'pattern'],
   boolean: 'coverage',
   alias: {
     'coverage': 'cov'
@@ -68,7 +64,7 @@ gulp.task('styles', function () {
     .pipe(gulp.dest('dist'))
     // Concatenate and minify styles
     .pipe($.csso());
-    // .pipe($.sourcemaps.write())    
+    // .pipe($.sourcemaps.write())
 });
 
 gulp.task('scripts', function () {
@@ -126,13 +122,13 @@ gulp.task('dist',['build'],function() {
   if (!js_path) {
     js_path = './dist/';
   }
-  gulp.src('./dist/*.css')    
+  gulp.src('./dist/*.css')
     .pipe(gulp.dest(css_path));
-  gulp.src('./dist/*.css.gz')    
+  gulp.src('./dist/*.css.gz')
     .pipe(gulp.dest(css_path));
-  gulp.src('./dist/*.js')    
+  gulp.src('./dist/*.js')
     .pipe(gulp.dest(js_path));
-    gulp.src('./dist/*.js.gz')    
+    gulp.src('./dist/*.js.gz')
     .pipe(gulp.dest(js_path));
 });
 
@@ -177,6 +173,13 @@ gulp.task('test', ['styles'], function (done) {
     };
     karmaConfig.reporters = ['coverage'];
   }
+  if (options.pattern) {
+    karmaConfig.client = {
+      mocha: {
+        grep: options.pattern
+      }
+    };
+  }
   karma.start(karmaConfig, done);
 });
 
@@ -184,11 +187,19 @@ gulp.task('test', ['styles'], function (done) {
  * Watch for file changes and re-run tests on each change
  */
 gulp.task('tdd', ['styles'], function (done) {
-  karma.start({
+  var karmaConfig = {
     configFile: __dirname + '/karma.conf.js',
     browsers: browsers,
     singleRun: false
-  }, done);
+  };
+  if (options.pattern) {
+    karmaConfig.client = {
+      mocha: {
+        grep: options.pattern
+      }
+    };
+  }
+  karma.start(karmaConfig, done);
 });
 
 gulp.task('default', ['watch-dist']);

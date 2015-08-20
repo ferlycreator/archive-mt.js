@@ -25,7 +25,6 @@ Z.Painter = Z.Class.extend({
                 symbol = Z.Util.convertFieldNameStyle(cartoSymbol,'camel');
             }
         }
-
         this.strokeSymbol = this.prepareStrokeSymbol(symbol);
         this.fillSymbol = this.prepareFillSymbol(symbol);
         this.iconSymbol = this.prepareIcon(symbol);
@@ -36,19 +35,17 @@ Z.Painter = Z.Class.extend({
      */
     prepareStrokeSymbol:function(symbol) {
         var strokeSymbol = {};
-        if (this.geometry.isVector()) {
-            strokeSymbol['stroke'] = symbol['lineColor'];
-            strokeSymbol['strokeWidth'] = symbol['lineWidth'];
+        strokeSymbol['stroke'] = symbol['lineColor'];
+        strokeSymbol['strokeWidth'] = symbol['lineWidth'];
+        strokeSymbol['strokeDasharray'] = symbol['lineDasharray'];
+        strokeSymbol['strokeOpacity'] = symbol['lineOpacity'];
+
+        if (symbol['markerLineWidth'] || symbol['markerLineColor']) {
+            strokeSymbol['stroke'] = symbol['markerLineColor'];
             strokeSymbol['strokeDasharray'] = symbol['lineDasharray'];
-            strokeSymbol['strokeOpacity'] = symbol['lineOpacity'];
-        } else {
-            //如果有marker-file,则忽略其他的样式
-            if (!symbol['markerFile']) {
-                strokeSymbol['stroke'] = symbol['markerLineColor'];
-                strokeSymbol['strokeWidth'] = symbol['markerLineWidth'];
-                //markerOpacity优先级较高
-                strokeSymbol['strokeOpacity'] = (!Z.Util.isNil(symbol['markerOpacity'])?symbol['markerOpacity']:symbol['markerLineOpacity']);
-            }
+            strokeSymbol['strokeWidth'] = symbol['markerLineWidth'];
+            //markerOpacity优先级较高
+            strokeSymbol['strokeOpacity'] = (!Z.Util.isNil(symbol['markerOpacity'])?symbol['markerOpacity']:symbol['markerLineOpacity']);
         }
         return strokeSymbol;
     },
@@ -58,48 +55,50 @@ Z.Painter = Z.Class.extend({
      */
     prepareFillSymbol:function(symbol) {
         var fillSymbol = {};
-        if (this.geometry.isVector()) {
-            fillSymbol['fill'] = symbol['polygonFill'];
+        fillSymbol['fill'] = symbol['polygonFill'];
+        if (symbol['polygonPatternFile']) {
+            fillSymbol['fill'] = symbol['polygonPatternFile'];
+        }
+        fillSymbol['fillOpacity'] = (!Z.Util.isNil(symbol['polygonOpacity'])?symbol['polygonOpacity']:symbol['polygonPatternOpacity']);
 
-            if (symbol['polygonPatternFile']) {
-                fillSymbol['fill'] = symbol['polygonPatternFile'];
-
-            }
-            fillSymbol['fillOpacity'] = (!Z.Util.isNil(symbol['polygonOpacity'])?symbol['polygonOpacity']:symbol['polygonPatternOpacity']);
-        } else {
-            //如果有marker-file,则忽略其他的样式
-            if (!symbol['markerFile']) {
-                fillSymbol['fill'] = symbol['markerFill'];
-                //markerOpacity优先级较高
-                fillSymbol['fillOpacity'] = (!Z.Util.isNil(symbol['markerOpacity'])?symbol['markerOpacity']:symbol['markerFillOpacity']);
-            }
+        if (symbol['markerFill'] || symbol['markerFillOpacity']) {
+            fillSymbol['fill'] = symbol['markerFill'];
+            //markerOpacity优先级较高
+            fillSymbol['fillOpacity'] = (!Z.Util.isNil(symbol['markerOpacity'])?symbol['markerOpacity']:symbol['markerFillOpacity']);
         }
         return fillSymbol;
     },
 
-    //TODO 临时兼容老的样式
-    prepareIcon:function(symbol) {
-        var icon = null;
-        if (!this.geometry.isVector()) {
-            /*if (symbol['markerFile']) {
-                icon = {
-                    'type':'picture',
-                    'url':symbol['markerFile'],
-                    'width':symbol['markerWidth'],
-                    'height':symbol['markerHeight']
-                }; 
-            } else if (symbol['text-name']){
-                //文字
-                icon = {
-                    'type':'text'
-                };
-            } else if (symbol['icon']) {
-                icon = this.prepareIcon(symbol['icon']);
-            } else {
-                return symbol;
-            }*/
-            return symbol['icon'];
-        }
+    prepareIcon: function(symbol) {
+        var icon = {
+            ////icon
+           'url': symbol['markerFile'],
+           'width': symbol['markerWidth'],
+           'height': symbol['markerHeight'],
+           'type': symbol['markerType'],
+           'opacity': symbol['markerOpacity'],
+           'fillOpacity': symbol['markerFillOpacity'],
+           'fill': symbol['markerFill'],
+           'stroke': symbol['markerLineColor'],
+           'strokeWidth': symbol['markerLineWidth'],
+           'strokeDasharray': symbol['markerLineDasharray'],
+           'strokeOpacity': symbol['markerLineOpacity'],
+
+           /////text
+           'content': symbol['textName'],
+           'font': symbol['textFaceName'],
+           'size': symbol['textSize'],
+           'textWidth': symbol['textWrapWidth'],
+           'padding': symbol['textSpacing'],
+           'color': symbol['textFill'],
+           'opacity': symbol['textOpacity'],
+           'align': symbol['textAlign'],
+           'vertical': symbol['textVerticalAlignment'],
+           'horizontal': symbol['textHorizontalAlignment'],
+           'placement': symbol['textPlacement'],//point line vertex interior
+           'dx': symbol['textDx'],
+           'dy' : symbol['textDy']
+        };
         return icon;
     },
 
