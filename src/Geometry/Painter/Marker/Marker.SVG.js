@@ -19,13 +19,8 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
         if(url&&url.length>0) {
             var picMarker =  this.createPictureMarker();
             this.paintDomMarker(picMarker, layerContainer);
-        } else {
-            var markerType = icon['type'];
-            if(!markerType) {
-                this.iconSymbol['type'] = 'circle';
-            }
-            this.paintVectorMarker();
         }
+        this.paintVectorMarker();
         this.setZIndex(zIndex);
     },
 
@@ -43,10 +38,9 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
             if (!gCenter) {return;}
             this.markerDom.style.left = gCenter[0] + "px";
             this.markerDom.style.top =gCenter[1] + "px";
-        }  else {
-            var vectorMarker = this.createSVGObj();
-            Z.SVG.refreshVector(this.vector, vectorMarker);
         }
+        var vectorMarker = this.createSVGObj();
+        Z.SVG.refreshVector(this.vector, vectorMarker);
     },
 
     refreshMarkerSymbol:function() {
@@ -161,6 +155,7 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
     },
 
     createText: function(svgBean) {
+        if(!svgBean) svgBean = {};
         var icon = this.getGeoIcon();
         var geometry = this.geometry;
         var props = geometry.getProperties();
