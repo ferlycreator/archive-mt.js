@@ -112,10 +112,10 @@ Z['Extent']=Z.Extent=Z.Geometry.extend({
         this['ymin'] = null;
         this['ymax'] = null;
         //构造方法一: 参数都是数字
-        if (Z.Util.isNumber(p1)
-        && Z.Util.isNumber(p2)
-        && Z.Util.isNumber(p3)
-        && Z.Util.isNumber(p4)) {
+        if (Z.Util.isNumber(p1) &&
+            Z.Util.isNumber(p2) &&
+            Z.Util.isNumber(p3) &&
+            Z.Util.isNumber(p4)) {
             this['xmin'] = p1;
             this['ymin'] = p2;
             this['xmax'] = p3;
@@ -123,10 +123,11 @@ Z['Extent']=Z.Extent=Z.Geometry.extend({
             return;
         } else {
             //构造方法二: 参数是两个坐标
-            if (p1 && p2 && !Z.Util.isNil(p1.x)
-            && !Z.Util.isNil(p2.x)
-            && !Z.Util.isNil(p1.y)
-            && !Z.Util.isNil(p2.y)) {
+            if (p1 && p2 &&
+                !Z.Util.isNil(p1.x) &&
+                !Z.Util.isNil(p2.x) &&
+                !Z.Util.isNil(p1.y) &&
+                !Z.Util.isNil(p2.y)) {
                 if (p1.x>p2.x) {
                     this['xmin'] = p2.x;
                     this['xmax'] = p1.x;
@@ -143,7 +144,7 @@ Z['Extent']=Z.Extent=Z.Geometry.extend({
                 }
             }
         }
-        
+
     },
 
     toJson:function() {
@@ -156,9 +157,9 @@ Z['Extent']=Z.Extent=Z.Geometry.extend({
     },
 
     isValid:function() {
-        return Z.Util.isNumber(this['xmin'])
-        && Z.Util.isNumber(this['ymin'])
-        && Z.Util.isNumber(this['xmax'])
-        && Z.Util.isNumber(this['ymax']);
+        return Z.Util.isNumber(this['xmin']) &&
+                Z.Util.isNumber(this['ymin']) &&
+                Z.Util.isNumber(this['xmax']) &&
+                Z.Util.isNumber(this['ymax']);
     }
 });

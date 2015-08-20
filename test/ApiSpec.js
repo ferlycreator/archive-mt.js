@@ -2081,27 +2081,106 @@ describe('API', function () {
 
     describe('Geometry.Extent', function() {
 
-        it('getCenter', function() {
+        it('static.combine', function() {
+            var e1 = new Z.Extent(2, 2, 5, 5);
+            var e2 = new Z.Extent(3, 3, 6, 6);
+            var combined = Z.Extent.combine(e1, e2);
+
+            expect(combined.xmin).to.eql(2);
+            expect(combined.ymin).to.eql(2);
+            expect(combined.xmax).to.eql(6);
+            expect(combined.ymax).to.eql(6);
         });
 
-        it('getExtent', function() {
+        it('static.isIntersect', function() {
+            var e1 = new Z.Extent(1, 1, 5, 5);
+            var e2 = new Z.Extent(2, 2, 6, 6);
+
+            expect(Z.Extent.isIntersect(e1, e2)).to.be.ok();
         });
 
-        it('getSize', function() {
+        it('static.contains');
+
+        it('static.expand', function() {
+            var extent = new Z.Extent(2, 2, 6, 6);
+            var e1 = Z.Extent.expand(extent, 1);
+            var e2 = Z.Extent.expand(extent, -2);
+            var e3 = Z.Extent.expand(extent, -3);
+
+            expect(e1.xmin).to.eql(1);
+            expect(e1.ymin).to.eql(1);
+            expect(e1.xmax).to.eql(7);
+            expect(e1.ymax).to.eql(7);
+
+            expect(e2.xmin).to.eql(4);
+            expect(e2.ymin).to.eql(4);
+            expect(e2.xmax).to.eql(4);
+            expect(e2.ymax).to.eql(4);
+
+            expect(e3.xmin).to.eql(4);
+            expect(e3.ymin).to.eql(4);
+            expect(e3.xmax).to.eql(4);
+            expect(e3.ymax).to.eql(4);
         });
 
-        it('show/hide/isVisible', function() {
-        });
+        it('getCenter');
 
-        it('remove', function() {
-        });
+        it('getExtent');
+
+        it('getSize');
+
+        it('show/hide/isVisible');
+
+        it('remove');
 
         it('copy');
 
         it('toJson', function() {
+            var extent = new Z.Extent(1, 1, 2, 2);
+            var json = extent.toJson();
+            expect(json).to.only.have.keys(['xmin', 'xmax', 'ymin', 'ymax']);
         });
 
-        it('toGeoJson', function() {
+        it('toGeoJson');
+
+    });
+
+    describe('Geometry.Edit', function() {
+
+        var layer;
+
+        beforeEach(function () {
+            layer = new Z.SVGLayer('svg');
+            map.addLayer(layer);
+        });
+
+        afterEach(function () {
+            map.removeLayer(layer);
+        });
+
+        it('edit', function() {
+            var geometries = genAllTypeGeometries();
+            layer.addGeometry(geometries);
+
+            expect(function () {
+                for (var i = 0; i < geometries.length; i++) {
+                    var geometry = geometries[i];
+                    geometry.startEdit();
+                    geometry.endEdit();
+                }
+            }).to.not.throwException();
+        });
+
+        it('drag', function() {
+            var geometries = genAllTypeGeometries();
+            layer.addGeometry(geometries);
+
+            expect(function () {
+                for (var i = 0; i < geometries.length; i++) {
+                    var geometry = geometries[i];
+                    geometry.startDrag();
+                }
+            }).to.not.throwException();
         });
 
     });
