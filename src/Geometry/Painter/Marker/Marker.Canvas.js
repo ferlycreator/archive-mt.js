@@ -7,11 +7,11 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
 
     /**
      * 绘制图形
-     * @param  {[type]} ctx       [Canvas Context]
+     * @param  {[type]} context       [Canvas Context]
      * @param  {[type]} resources [图片资源缓存]
      * @return {[type]}           [description]
      */
-    doPaint:function(ctx,resources) {
+    doPaint:function(context, resources) {
         var geometry = this.geometry;
         if (!geometry) {
             return;
@@ -20,29 +20,28 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
         if (!map) {
             return;
         }
-
-        var offset = this.getMarkerDomOffset();        
+        var offset = this.getMarkerDomOffset();
         var pt = map.domOffsetToScreen({'left':offset[0],top:offset[1]});
+        console.log(pt);
         var icon = this.getGeoIcon();
-        var iconType = (icon?icon['type']:null);
-        if ("picture" === iconType) {
-            this.paintPictureMarker(ctx, pt, icon,resources); 
-        } else if ("text" === iconType) {
-            this.paintTextMarker(ctx,pt,false);
-        } else if ("vector" === iconType){
-            //矢量标注绘制                
-            this.paintVectorMarker(ctx, pt, geometry);
+        var url = icon['url'];
+        if (url&&url.length>0) {
+            this.paintPictureMarker(context, pt, icon,resources);
         } else {
-            this.paintPictureMarker(ctx, pt, geometry.getDefaultSymbol(), resources);
+            var markerType = icon['type'];
+            if(!markerType) {
+                this.iconSymbol['type'] = 'circle';
+            }
+            this.paintVectorMarker(context, pt, geometry);
         }
     },
 
-    paintPictureMarker:function(context, pt, icon, resources) {    
-        var width = icon["width"];
-        var height = icon["height"];
-        var url=icon["url"];
+    paintPictureMarker:function(context, pt, icon, resources) {
+        var width = icon['width'];
+        var height = icon['height'];
+        var url = icon['url'];
         var img = resources.getImage(url);
-        icon['url']=img['src'];
+        icon['url'] = img['src'];
         if (width && height) {
             context.drawImage(img,pt.left,pt.top,width,height); 
          } else {
@@ -53,36 +52,42 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
 
     paintVectorMarker:function(context, pt) {
         //矢量标注
-        var options = this.getGeoIcon();
-        var vType = options["fontstyle"];
-        var radius = options["size"];
-        if (!radius) {return null;}
-        var v = this.getVectorArray([pt.left,pt.top]);
+        var icon = this.getGeoIcon();
+        //矢量标注
+        var markerType = icon['type'];
+        if(!markerType) {
+            markerType = 'circle';
+        }
+        var width = icon['width'];
+        var height = icon['height'];
+        var radius = (width + height)/2;
+        var points = this.getVectorArray([pt.left,pt.top]);
         context.beginPath();
-        if ("circle" === vType) {                   
+        if ('circle' === markerType) {
             context.arc(pt.left,pt.top,radius,0,2*Math.PI);
             context.stroke();
             this.fillGeo(context, this.fillSymbol);
-        }  else if ("triangle" === vType || "diamond" === vType || "square" === vType) {            
-             context.moveTo(v[0][0],v[0][1]);
-             for (var i = 1, len = v.length;i<len;i++) {
-                 context.lineTo(v[i][0],v[i][1]); 
+        }  else if ('triangle' === markerType
+                || 'diamond' === markerType
+                || 'square' === markerType
+                || 'tip' === markerType) {
+             context.moveTo(points[0][0],points[0][1]);
+             for (var i = 1, len = points.length;i<len;i++) {
+                 context.lineTo(points[i][0],points[i][1]);
              }
              context.closePath();
              context.stroke();
              this.fillGeo(context, this.fillSymbol);
-        }  else if ("cross" === vType || "x" === vType || "X" === vType) {
-            context.moveTo(v[0][0],v[0][1]);
-            context.lineTo(v[1][0],v[1][1]);
-            context.moveTo(v[2][0],v[2][1]);
-            context.lineTo(v[3][0],v[3][1]);
+        }  else if ('cross' === markerType || 'x' === markerType || 'X' === markerType) {
+            context.moveTo(points[0][0],points[0][1]);
+            context.lineTo(points[1][0],points[1][1]);
+            context.moveTo(points[2][0],points[2][1]);
+            context.lineTo(points[3][0],points[3][1]);
             context.stroke();
-        }               
+        }
     },
 
-
-
-    paintTextMarker:function(context,pt,isTest) {
+    paintTextMarker:function(context, pt, isTest) {
         var icon = this.getGeoIcon();
         var geoLabel = icon["content"];
         if (Z.Util.isNil(geoLabel)) {return null;}
@@ -163,17 +168,6 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
                     context.fillStyle = color;
                     context.fillText(geoLabelLines[i],pt.left+p,pt.top+p+i*(fontSize+2));
                 }
-                /**
-                TODO 0830 wj注释，上面已经绘制了stroke了，这里不需要了。
-                if (stroke) {
-                    context.strokeStyle = stroke;
-                    if (strokewidth) {
-                        context.lineWidth = strokewidth;
-                    } else {
-                        context.lineWidth=1;
-                    }
-                    context.strokeText(geoLabelLines[i],pt.left+p,pt.top+p+i*(fontSize+2));
-                }*/
             }
             
         } else {

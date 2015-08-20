@@ -912,7 +912,6 @@ Z['Map']=Z.Map=Z.Class.extend({
             "top" : Math.round(this.height / 2 + centerTop),
             "left" : Math.round(this.width / 2 + centerLeft)
         };
-        //console.log(browserOffset.left+","+browserOffset.top);
         return result;
     },
 

@@ -40,9 +40,9 @@ Z.Painter = Z.Class.extend({
         strokeSymbol['strokeDasharray'] = symbol['lineDasharray'];
         strokeSymbol['strokeOpacity'] = symbol['lineOpacity'];
 
-        //如果有markerFile,则忽略其他的样式
-        if (!symbol['markerFile']) {
+        if (symbol['markerLineWidth'] || symbol['markerLineColor']) {
             strokeSymbol['stroke'] = symbol['markerLineColor'];
+            strokeSymbol['strokeDasharray'] = symbol['lineDasharray'];
             strokeSymbol['strokeWidth'] = symbol['markerLineWidth'];
             //markerOpacity优先级较高
             strokeSymbol['strokeOpacity'] = (!Z.Util.isNil(symbol['markerOpacity'])?symbol['markerOpacity']:symbol['markerLineOpacity']);
@@ -61,9 +61,8 @@ Z.Painter = Z.Class.extend({
         }
         fillSymbol['fillOpacity'] = (!Z.Util.isNil(symbol['polygonOpacity'])?symbol['polygonOpacity']:symbol['polygonPatternOpacity']);
 
-        //如果有markerFile,则忽略其他的样式
-        if (!symbol['markerFile']) {
-            fillSymbol['fill'] = symbol['markerFile'];
+        if (symbol['markerFill'] || symbol['markerFillOpacity']) {
+            fillSymbol['fill'] = symbol['markerFill'];
             //markerOpacity优先级较高
             fillSymbol['fillOpacity'] = (!Z.Util.isNil(symbol['markerOpacity'])?symbol['markerOpacity']:symbol['markerFillOpacity']);
         }
@@ -80,15 +79,16 @@ Z.Painter = Z.Class.extend({
            'opacity': symbol['markerOpacity'],
            'fillOpacity': symbol['markerFillOpacity'],
            'fill': symbol['markerFill'],
-           'lineColor': symbol['markerLineColor'],
-           'lineOpacity': symbol['markerLineOpacity'],
-           'lineWidth': symbol['markerLineWidth'],
+           'stroke': symbol['markerLineColor'],
+           'strokeWidth': symbol['markerLineWidth'],
+           'strokeDasharray': symbol['markerLineDasharray'],
+           'strokeOpacity': symbol['markerLineOpacity'],
 
            /////text
            'content': symbol['textName'],
            'font': symbol['textFaceName'],
            'size': symbol['textSize'],
-           'width': symbol['textWrapWidth'],
+           'textWidth': symbol['textWrapWidth'],
            'padding': symbol['textSpacing'],
            'color': symbol['textFill'],
            'opacity': symbol['textOpacity'],

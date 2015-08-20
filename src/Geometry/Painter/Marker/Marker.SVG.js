@@ -15,12 +15,16 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
         this.layerContainer = layerContainer;
         this.setSymbol(symbol);
         var icon = this.getGeoIcon();
-        var type = icon['type'];
-        if(type) {
-            this.paintVectorMarker();
-        } else {
+        var url = icon['url'];
+        if(url&&url.length>0) {
             var picMarker =  this.createPictureMarker();
             this.paintDomMarker(picMarker, layerContainer);
+        } else {
+            var markerType = icon['type'];
+            if(!markerType) {
+                this.iconSymbol['type'] = 'circle';
+            }
+            this.paintVectorMarker();
         }
         this.setZIndex(zIndex);
     },
@@ -32,17 +36,16 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
      */
     refreshMarker:function() {
         var icon = this.getGeoIcon();
-        var iconType = icon['type'];
-        if (iconType) {
-            if (!this.vector) {return;}
-            var vectorMarker = this.createSVGObj();
-            Z.SVG.refreshVector(this.vector, vectorMarker);
-        } else {
+        var url = icon['url'];
+        if (url&&url.length>0) {
             if (!this.markerDom) {return;}
             var gCenter = this.getMarkerDomOffset();
             if (!gCenter) {return;}
             this.markerDom.style.left = gCenter[0] + "px";
             this.markerDom.style.top =gCenter[1] + "px";
+        }  else {
+            var vectorMarker = this.createSVGObj();
+            Z.SVG.refreshVector(this.vector, vectorMarker);
         }
     },
 
@@ -68,24 +71,13 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
         return this.visualSize;
     },
 
-    /**
-       'url': symbol['markerFile'],
-       'width': symbol['markerWidth'],
-       'height': symbol['markerHeight'],
-       'type': symbol['markerType'],
-       'opacity': symbol['markerOpacity'],
-       'fillOpacity': symbol['markerFillOpacity'],
-       'fill': symbol['markerFill'],
-       'lineColor': symbol['markerLineColor'],
-       'lineOpacity': symbol['markerLineOpacity'],
-       'lineWidth': symbol['markerLineWidth']
-    */
     paintVectorMarker: function() {
         var icon = this.getGeoIcon();
         var strokeSymbol = {
-            'stroke': icon['lineColor'],
-            'strokeOpacity': icon['lineOpacity'],
-            'strokeWidth': icon['lineWidth']
+            'stroke': icon['stroke'],
+            'strokeWidth': icon['strokeWidth'],
+            'strokeDasharray': icon['strokeDasharray'],
+            'strokeOpacity': icon['strokeOpacity']
         };
         var fillSymbol = {
             'fill': icon['fill'],
@@ -210,38 +202,40 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
         if (!gCenter) {return null;}
         var _graphicDom = null;
         var iconSymbol = this.getGeoIcon();
-        if (!iconSymbol["url"]) {
-            iconSymbol["url"] = geometry.defaultIcon["url"];
+        if (!iconSymbol['url']) {
+            iconSymbol['url'] = geometry.defaultIcon['url'];
         }
-        _graphicDom = Z.DomUtil.createEl("span");
-        //_graphicDom.geometry = this;
-        _graphicDom.setAttribute("unselectable", "on");
+        _graphicDom = Z.DomUtil.createEl('span');
+        _graphicDom.setAttribute('unselectable', 'on');
         //用gCenter的话，会出现标注图片无法显示的问题，原因未知
-        _graphicDom.style.cssText = "top:" + gCenter[1] + "px;left:"+ gCenter[0]+ "px;position: absolute; padding: 0px; margin: 0px; border: 0px; text-align:center;vertical-align:bottom;-webkit-user-select: none;";
+        _graphicDom.style.cssText = 'top:' + gCenter[1] + 'px;left:'+ gCenter[0]+
+                'px;position: absolute; padding: 0px; margin: 0px; border: 0px;'+
+                'text-align:center;vertical-align:bottom;-webkit-user-select: none;';
 
-        var markerIcon = Z.DomUtil.createEl("img");
-        markerIcon.originCss = "border:none; position:absolute;top:0px;left:0px;cursor:pointer;max-width:none;-webkit-user-select: none;";
-        if (iconSymbol["width"] !== null && iconSymbol["width"] !== undefined) {
-            markerIcon["width"] = parseInt(iconSymbol["width"],0); 
+        var markerIcon = Z.DomUtil.createEl('img');
+        markerIcon.originCss = 'border:none; position:absolute;top:0px;left:0px;'+
+                'cursor:pointer;max-width:none;-webkit-user-select: none;';
+        if (iconSymbol['width'] !== null && iconSymbol['width'] !== undefined) {
+            markerIcon['width'] = parseInt(iconSymbol['width'],0);
         }
-        if (iconSymbol["height"] !== null && iconSymbol["height"] !== undefined) {
-            markerIcon["height"] = parseInt(iconSymbol["height"],0); 
+        if (iconSymbol['height'] !== null && iconSymbol['height'] !== undefined) {
+            markerIcon['height'] = parseInt(iconSymbol['height'],0);
         }
         markerIcon.style.cssText = markerIcon.originCss;
         
-        markerIcon.setAttribute("unselectable", "on");
+        markerIcon.setAttribute('unselectable', 'on');
 
         var _this = geometry;
         markerIcon.onerror = function() {
-            this.src = _this.defaultIcon["url"];
+            this.src = _this.defaultIcon['url'];
             
         };
         markerIcon.onabort = function() {
             this.src = markerIcon.src;
         };
-        markerIcon.src = iconSymbol["url"];
+        markerIcon.src = iconSymbol['url'];
         //相对地址转化成绝对地址
-        iconSymbol["url"] = markerIcon.src;
+        iconSymbol['url'] = markerIcon.src;
         
         geometry.markerIcon = markerIcon;
         _graphicDom.appendChild(markerIcon);

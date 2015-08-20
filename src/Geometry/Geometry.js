@@ -182,10 +182,10 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     //默认标注样式
     defaultIcon: {
-        'markerFile' : Z.host + '/engine/images/marker.png',
-        'markerHeight' : 30,
-        'markerWidth' : 22,
-        'markerOffset' : {
+        'url' : Z.host + '/engine/images/marker.png',
+        'height' : 30,
+        'width' : 22,
+        'offset' : {
             'x' : 0,
             'y' : 0
         }
@@ -193,9 +193,12 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     // 默认线样式
     defaultSymbol:{
-        'lineColor' : '#474cf8',
-        'lineWidth' : 3,
-        'lineOpacity' : 1
+        'stroke' : '#ff0000',
+        'strokeWidth' : 3,
+        'strokeOpacity' : 1,
+        'strokeDasharray': '-',
+        'fill' : '#ffffff',
+        'fillOpacity' : 1
     },
 
     initialize:function() {
