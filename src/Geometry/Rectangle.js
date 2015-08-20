@@ -1,8 +1,7 @@
 Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({    
 
-    initialize:function(nw,width,height,opts) {        
-        this.type=Z.Geometry['TYPE_RECT'];        
-        this.nw = new Z.Coordinate(nw);
+    initialize:function(coordinates,width,height,opts) {        
+        this.nw = new Z.Coordinate(coordinates);
         this.width = width;
         this.height = height;
         this.initOptions(opts);        
@@ -19,7 +18,7 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
     },
 
     /**
-     * 设置新的center
+     * 设置新的矩形左上角坐标
      * @param {Coordinate} center 新的center
      * @expose
      */
