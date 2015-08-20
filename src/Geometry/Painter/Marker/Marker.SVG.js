@@ -85,13 +85,13 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
         var icon = this.getGeoIcon();
         var strokeSymbol = {
             'stroke': icon['stroke'],
-            'strokeWidth': icon['strokeWidth'],
-            'strokeDasharray': icon['strokeDasharray'],
-            'strokeOpacity': icon['strokeOpacity']
+            'strokewidth': icon['strokewidth'],
+            'strokedasharray': icon['strokedasharray'],
+            'strokeopacity': icon['strokeopacity']
         };
         var fillSymbol = {
             'fill': icon['fill'],
-            'fillOpacity': icon['fillOpacity']
+            'fillopacity': icon['fillopacity']
         };
         //矢量标注绘制
         var vectorMarker = this._createVectorObj();

@@ -97,12 +97,12 @@ Z.Painter = Z.Class.extend({
            'height': symbol['markerHeight'],
            'type': symbol['markerType'],
            'opacity': symbol['markerOpacity'],
-           'fillOpacity': symbol['markerFillOpacity'],
+           'fillopacity': symbol['markerFillOpacity'],
            'fill': symbol['markerFill'],
            'stroke': symbol['markerLineColor'],
-           'strokeWidth': symbol['markerLineWidth'],
-           'strokeDasharray': symbol['markerLineDasharray'],
-           'strokeOpacity': symbol['markerLineOpacity'],
+           'strokewidth': symbol['markerLineWidth'],
+           'strokedasharray': symbol['markerLineDasharray'],
+           'strokeopacity': symbol['markerLineOpacity'],
 
            /////text
            'content': symbol['textName'],

@@ -30,9 +30,6 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
             this.layerCanvas = layerCanvas;
             this.canvasCtx = this.layerCanvas.getContext("2d");
             this.canvasCtx.translate(0.5, 0.5);
-            if (Z.Browser.retina) {
-                this.canvasCtx['scale'](2,2);
-            }
         }
     },
 

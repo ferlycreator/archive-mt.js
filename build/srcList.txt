@@ -57,6 +57,7 @@
 ../src/Geometry/MultiPolygon.js
 ../src/Geometry/Geometry.GeoJson.js
 ../src/Geometry/Painter/SVG.js
+../src/Geometry/Painter/Canvas.js
 ../src/Geometry/Painter/Painter.js
 ../src/Geometry/Painter/Painter.SVG.js
 ../src/Geometry/Painter/Painter.Canvas.js

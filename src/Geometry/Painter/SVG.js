@@ -19,11 +19,11 @@ Z.Browser.vml = !Z.Browser.svg && (function () {
 Z.SVG = {
     defaultStrokeSymbol:{
         "stroke":"#000000",
-        "stroke-width": 2
+        "strokewidth": 2
     },
 
     defaultFillSymbol:{
-        "fill-opacity":0
+        "fillopacity":0
     },
 
     _ISURL: /^url\(['"]?(.+?)['"]?\)$/i,
@@ -327,17 +327,17 @@ Z.SVG.VML= {
         }
 
         var stroke = Z.SVG.create('stroke');
-        if (strokeSymbol['strokeWidth']) {
-            stroke.weight = strokeSymbol['strokeWidth'] + 'px';
+        if (strokeSymbol['strokewidth']) {
+            stroke.weight = strokeSymbol['strokewidth'] + 'px';
         }
         if (strokeSymbol['stroke']) {
             stroke.color = strokeSymbol['stroke'];
         }
-        if (strokeSymbol['strokeOpacity']) {
-            stroke.opacity = strokeSymbol['strokeOpacity'];
+        if (strokeSymbol['strokeopacity']) {
+            stroke.opacity = strokeSymbol['strokeopacity'];
         }
-        if (strokeSymbol['strokeDasharray']) {
-            stroke.dashStyle = strokeSymbol['strokeDasharray'];
+        if (strokeSymbol['strokedasharray']) {
+            stroke.dashStyle = strokeSymbol['strokedasharray'];
         }
         vmlShape.appendChild(stroke);
         vmlShape.stroke = stroke;
@@ -359,8 +359,8 @@ Z.SVG.VML= {
                     fill.color = fillSymbol['fill'];      
                 }
             }
-            if (!Z.Util.isNil(fillSymbol['fillOpacity'])) {
-                fill.opacity = fillSymbol['fillOpacity'];
+            if (!Z.Util.isNil(fillSymbol['fillopacity'])) {
+                fill.opacity = fillSymbol['fillopacity'];
             }
             // fill.opacity = 1;
             vmlShape.appendChild(fill);

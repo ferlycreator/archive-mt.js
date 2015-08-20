@@ -26,12 +26,14 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
         var url = icon['url'];
         if (url&&url.length>0) {
             this.paintPictureMarker(context, pt, icon,resources);
-        } else {
-            var markerType = icon['type'];
-            if(!markerType) {
-                this.iconSymbol['type'] = 'circle';
-            }
+        }
+        var markerType = icon['type'];
+        if(markerType&&markerType.length>0) {
             this.paintVectorMarker(context, pt, geometry);
+        }
+        var textName = icon['content'];
+        if(textName&&textName.length>0) {
+            this.paintTextMarker(context, pt);
         }
     },
 
@@ -49,7 +51,7 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
          return pt;
     },
 
-    paintVectorMarker:function(context, pt) {
+    paintVectorMarker: function(context, pt) {
         //矢量标注
         var icon = this.getGeoIcon();
         //矢量标注
@@ -86,50 +88,34 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
         }
     },
 
-    paintTextMarker:function(context, pt, isTest) {
+    paintTextMarker: function(context, pt) {
         var icon = this.getGeoIcon();
-        var geoLabel = icon["content"];
-        if (Z.Util.isNil(geoLabel)) {return null;}
-         var option = icon["textStyle"];
-         var fontSize = 12;
-         var cssText = "";  
-         var color = "rgba(0,0,0,1)";
-         var stroke = null;
-         var strokewidth = null;
-        if (!option) {
-            option = {};
+        var content = this._convertContent(icon);
+        if (Z.Util.isNil(content)) {return null;}
+        var fontSize = 12;
+        var color = 'rgba(0,0,0,1)';
+        var stroke = null;
+        var strokewidth = null;
+
+        var cssText = '';
+        if (!Z.Util.isNil(icon['size'])) {
+            fontSize = icon['size'];
         }
-        if (option["fontstyle"]) {
-            cssText += option["fontstyle"];
+        cssText += ' '+fontSize+'px';
+        if (icon['font']) {
+            cssText += ' ' + icon['font'];
         } else {
-            cssText += "normal";
+            cssText += ' arial';
         }
-        if (!Z.Util.isNil(option["size"])) {
-            fontSize = option["size"];
-        }
-        cssText += " "+fontSize+"px";
-        if (option["font"]) {
-            cssText += " "+option["font"];
-        } else {
-            cssText += " SIMHEI";
-        }
-        if (option["strokewidth"]) {
-            strokewidth = option["strokewidth"];
-        }
-        if (option["stroke"]) {
-            stroke = this.getRgba(option["stroke"],1);
-        }
-        if (option["color"]) {
-             color = this.getRgba(option["color"], 1);
-        }
-        context.font=cssText;   
-        var p = option["padding"];
-        if (Z.Util.isNil(p)) {p = 3;}
-        var geoLabelLines = geoLabel.split("\n");
+        context.font =  cssText;
+
+        var padding = icon['padding'];
+        if (Z.Util.isNil(padding)) {padding = 3;}
+        var contentLines = content.split('\n');
         var labelWidth = 0;
         var labelHeight = 0;
-        for (var i=0, len=geoLabelLines.length;i<len;i++) {
-            var lineHeight = context.measureText(geoLabelLines[i])["width"];
+        for (var i=0, len=contentLines.length;i<len;i++) {
+            var lineHeight = context.measureText(contentLines[i])['textwidth'];
             if (lineHeight > labelWidth) {
                 labelWidth = lineHeight;
             }
@@ -139,47 +125,45 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
             }
         }
         //计算偏移量
-        var offset = this.computeLabelOffset(labelWidth+2*p,labelHeight+2*p,option);
-        if (!isTest) {
-            pt = {
-                    left: pt.left+offset["x"],
-                    top:pt.top-offset["y"]
-            };
-            context.beginPath();
-            context.rect(pt.left, pt.top,labelWidth+2*p,labelHeight+2*p);
-            //绘制背景
-            var background = option["background"];
-            if (background) {
-                context.fillStyle =this.getRgba(background);
-                context.fill();                 
+        var offset = this.computeLabelOffset(labelWidth+2*padding,labelHeight+2*padding,icon);
+        pt = {
+                left: pt.left+offset['x'],
+                top:pt.top-offset['y']
+        };
+        context.beginPath();
+
+        if (icon['color']) {
+             color = this.getRgba(icon['color'], 1);
+        }
+        for (var i=0, len=contentLines.length;i<len;i++) {
+            //绘制文字
+            if (color) {
+                context.fillStyle = color;
+                context.fillText(contentLines[i],pt.left+padding,pt.top+padding+i*(fontSize+2));
             }
-            var bStrokeWidth = option["strokewidth"];
-            if (bStrokeWidth) {
-                var bStroke = option["stroke"];
-                if (!bStroke) {bStroke = "#000000";}
-                context.lineWidth = bStrokeWidth;
-                context.strokeStyle = this.getRgba(bStroke,1);
-                context.stroke();
-            }
-            for (var i=0, len=geoLabelLines.length;i<len;i++) {
-                //绘制文字
-                if (color) {
-                    context.fillStyle = color;
-                    context.fillText(geoLabelLines[i],pt.left+p,pt.top+p+i*(fontSize+2));
+        }
+    },
+
+    _convertContent: function(icon) {
+        var geometry = this.geometry;
+        var props = geometry.getProperties();
+        var content = icon['content'];
+        if(content) {
+            var regex = /\[.*\]/gi;
+            if(regex.test(content)) {
+                var arr = content.match(regex);
+                if(arr&&arr.length>0) {
+                    var key = arr[0].substring(1,arr[0].length-1);
+                    if(props) {
+                        if(props[key]) {
+                            content = content.replace(regex, props[key]);
+                        }
+                    }
+                    content = content.replace(regex, '');
                 }
             }
-            
-        } else {
-            var moffset = this.getIconOffset();
-            return {
-                "width":labelWidth,
-                "height":labelHeight,
-                "offset": {
-                    x:offset.x+moffset["left"],
-                    y:offset.y-moffset["top"]
-                }
-            };
-        }        
+        }
+        return content;
     },
 
     measureTextMarker:function() {
