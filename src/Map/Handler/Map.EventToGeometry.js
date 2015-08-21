@@ -24,12 +24,12 @@ Z.Map.EventToGeometry = Z.Handler.extend({
 
 	_queryGeometries: function(event) {
 		var eventType = event['originalEvent']['type'];
-		var mouseOffset = Z.DomUtil.getEventDomCoordinate(event, this.map.containerDOM);
+		var mouseOffset = Z.DomUtil.getEventDomCoordinate(event, this.map._containerDOM);
 		var coordinate = this.map.screenPointToCoordinate(mouseOffset);
 		var radius = this.map.pixelToDistance(10, 0);
 		var layers = [];
 		//2015-07-09 fuzhen dynamiclayer不需要做identify
-		layers = layers.concat(this.map.canvasLayers)/*.concat(this.map.dynLayers)*/;
+		layers = layers.concat(this.map._canvasLayers)/*.concat(this.map._dynLayers)*/;
 
 		this.options = {
 			'coordinate': coordinate,

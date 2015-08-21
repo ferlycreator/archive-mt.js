@@ -66,7 +66,7 @@ Z.Map.include({
         }
         // 点和圆形的buffer直接进行计算
         if (geometry instanceof Z.Marker) {
-            result = new Z.Circle(me.center, distance);
+            result = new Z.Circle(me._center, distance);
             result.setSymbol(defaultOption);
             callback({
                 "success" : true,
@@ -75,7 +75,7 @@ Z.Map.include({
             return;
         } else if (geometry instanceof Z.Circle) {
             var radius = me.radius + distance;
-            result = new Z.Circle(me.center, radius);
+            result = new Z.Circle(me._center, radius);
             result.setSymbol(defaultOption);
             callback({
                 "success" : true,

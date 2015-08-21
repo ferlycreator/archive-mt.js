@@ -4,13 +4,13 @@ Z.DomUtil = {
         return document.createElement(tagName);
     },
 
-    createElOn:function(tagName, style, container) {
+    createElOn:function(tagName, style, _container) {
         var el = this.createEl(tagName);
         if(style) {
             this.setStyle(el, style);
         }
-        if (container) {
-            container.appendChild(el);
+        if (_container) {
+            _container.appendChild(el);
         }
         return el;
     },

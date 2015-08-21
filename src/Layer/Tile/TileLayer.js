@@ -36,9 +36,9 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
     initialize:function(id,opts) {
         this.setId(id);
         /*if (!opts['crs']) {
-            this.lodConfig = new Z.LodConfig(Z.LodConfig['defaultCRS']);
+            this._lodConfig = new Z.LodConfig(Z.LodConfig['defaultCRS']);
         } else {
-            this.lodConfig = new Z.LodConfig(opts['crs']);
+            this._lodConfig = new Z.LodConfig(opts['crs']);
         }
         delete opts['crs'];*/
         //将其他设置存入this.options中
@@ -47,18 +47,18 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
             this.options['urlTemplate'] = this.options['urlTemplate'].replace(/{X}/g,'{x}').replace(/{Y}/g,'{y}').replace(/{Z}/g,'{z}').replace(/{S}/g,'{s}');
         }*/
         Z.Util.setOptions(this,opts);
-        this.lodConfig = new Z.LodConfig(this.options['crs']);
+        this._lodConfig = new Z.LodConfig(this.options['crs']);
         // this.extent = lodInfo['fullExtent'];
     },
 
     _getLodConfig:function(){
-        if (!this.lodConfig) {
+        if (!this._lodConfig) {
             //如果tilelayer本身没有设定lodconfig,则继承地图基础底图的lodconfig
             if (this.map) {
                 return this.map._getLodConfig();
             }
         }
-        return this.lodConfig;
+        return this._lodConfig;
     },
 
     getTileUrl:function(x,y,z) {
@@ -306,9 +306,9 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
 
     /*fillTiles:function() {
         var tileContainer = this.tileContainer;
-        var lodConfig = this.lodConfig;
+        var lodConfig = this._lodConfig;
         var map =this.map;
-        if (!map || !tileContainer || !this.lodConfig) {return;}
+        if (!map || !tileContainer || !this._lodConfig) {return;}
         var _this = this;
         var dSegment = document.createDocumentFragment();
 
@@ -333,7 +333,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
     //  只加中心的瓦片，用做调试
     //  var centerTileImg = this._createTileImage(centerOffset.left,centerOffset.top,this.config.getTileUrl(centerTileInfo["topIndex"],centerTileInfo["leftIndex"],zoomLevel),tileSize["height"],tileSize["width"]);
     //  tileContainer.appendChild(centerTileImg);
-        var padding = this.lodConfig["padding"];
+        var padding = this._lodConfig["padding"];
         if (!padding) {
             padding = {
                 'width':0,
@@ -502,7 +502,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
 
 
     initPanel:function() {
-        var mapContainer = this.map.panels.mapContainer;
+        var mapContainer = this.map._panels.mapContainer;
         if (!mapContainer) {return;}
         //生成地图瓦片装载div
         var tileContainer = Z.DomUtil.createEl('div');

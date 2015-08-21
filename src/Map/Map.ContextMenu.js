@@ -17,7 +17,7 @@ Z.Map.include({
     * @param {Event} event 鼠标右击事件
     */
     _beforeOpenContextMenu: function(event) {
-        var pixel = Z.DomUtil.getEventDomCoordinate(event, this.containerDOM);
+        var pixel = Z.DomUtil.getEventDomCoordinate(event, this._containerDOM);
         var coordinate = this.screenPointToCoordinate(pixel);
         var position = this.coordinateToScreenPoint(coordinate);
         var param = {'coordinate':coordinate, 'pixel':position};

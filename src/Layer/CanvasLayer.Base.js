@@ -11,7 +11,7 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
     load:function() {
         // this._geoCache = [];
         var map = this.getMap();
-        this.layerContainer = map.panels.canvasLayerContainer;
+        this.layerContainer = map._panels.canvasLayerContainer;
         this.createLayerCanvas();
         // this.refreshCache();
         this.repaint();

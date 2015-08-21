@@ -86,8 +86,8 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
             if (!this.map) {
                 return;
             }
-            this.map.panels.tipContainer.innerHTML = Z.InfoWindow['template'];
-            this.tipDom = this.map.panels.tipContainer.childNodes[0];
+            this.map._panels.tipContainer.innerHTML = Z.InfoWindow['template'];
+            this.tipDom = this.map._panels.tipContainer.childNodes[0];
             this.tipDom["m"] = this;
             this.msgBox = this.tipDom.childNodes[0].childNodes[1];
             //onmousedown事件解决弹出框内容无法选中的问题
@@ -117,13 +117,13 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         },
 
         onZoomStart:function() {
-            this.map.panels.tipContainer.style.display='none';
+            this.map._panels.tipContainer.style.display='none';
         },
 
         onZoomEnd:function() {
             if (this.visible) {
                 //style.display=''必须要在调用 offsetTipDom之前, 要不然tipDom.clientHeight和clientWidth取到的值为0
-                this.map.panels.tipContainer.style.display='';
+                this.map._panels.tipContainer.style.display='';
                 this.offsetTipDom();
             }
         },
@@ -182,7 +182,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
             var map = this.map;
             var tipDom = this.tipDom;
             tipDom.style.display='';
-            this.map.panels.tipContainer.style.display='';
+            this.map._panels.tipContainer.style.display='';
             var tipOption = this.tipOption;
             if (tipOption['width']) {
                 tipDom.childNodes[0].style.width = tipOption['width']+'px';

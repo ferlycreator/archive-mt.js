@@ -112,7 +112,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
         var params="";
         params+="guid="+this.guid;
         params+="&nw="+tileNw.x+","+tileNw.y;
-        params+="&z="+map.zoomLevel;
+        params+="&z="+map._zoomLevel;
         params+="&c="+this.n;
         return params;
     },

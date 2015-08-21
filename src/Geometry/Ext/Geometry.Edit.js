@@ -85,7 +85,7 @@ Z.Geometry.include({
 
     _dragging: function(event) {
 		this.isDragging = true;
-		this.endPosition = Z.DomUtil.getEventDomCoordinate(event, this._map.containerDOM);
+		this.endPosition = Z.DomUtil.getEventDomCoordinate(event, this._map._containerDOM);
 		if(!this.startPosition) {
             this.startPosition = this.endPosition;
 		}

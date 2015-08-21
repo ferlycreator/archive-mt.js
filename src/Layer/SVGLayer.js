@@ -79,7 +79,7 @@ Z['SVGLayer']=Z.SVGLayer=Z.OverlayLayer.extend({
 
     load:function() {
         var map = this.getMap();
-        this.layerDom = map.panels.svgContainer;
+        this.layerDom = map._panels.svgContainer;
         map._createSVGPaper();
         this.addTo();
     },

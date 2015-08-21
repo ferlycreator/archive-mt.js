@@ -7,7 +7,7 @@ Z.Map.include({
         }
         var me = this;
 
-        if (me.baseTileLayer) {me.baseTileLayer.onZoomStart(true);}
+        if (me._baseTileLayer) {me._baseTileLayer.onZoomStart(true);}
         me._eachLayer(zoomLayer,me._getAllLayers());
         this._hideOverlayLayers();
         me.animateStart(scale,focusPos);
@@ -22,11 +22,11 @@ Z.Map.include({
         }
 
         this.insertBackgroundDom();
-        if (this.baseTileLayer) {this.baseTileLayer.clear();}
+        if (this._baseTileLayer) {this._baseTileLayer.clear();}
         this.animateEnd();
         this.resetContainer();
-        this.originZoomLevel=nextZoomLevel;
-        if (this.baseTileLayer) {this.baseTileLayer.onZoomEnd();}
+        this._originZoomLevel=nextZoomLevel;
+        if (this._baseTileLayer) {this._baseTileLayer.onZoomEnd();}
         this._eachLayer(zoomLayer,this._getAllLayers());
         this._showOverlayLayers();
         this._fireEvent('zoomend',{'target':this});
@@ -34,7 +34,7 @@ Z.Map.include({
 
     resetContainer:function() {
         var position = this._offsetPlatform();
-        Z.DomUtil.offsetDom(this.panels.mapPlatform,{'left':0,'top':0});
+        Z.DomUtil.offsetDom(this._panels.mapPlatform,{'left':0,'top':0});
         this._refreshSVGPaper();
         if (this.backgroundDOM) {
             //Z.DomUtil.offsetDom(this.backgroundDOM,position);
@@ -44,16 +44,16 @@ Z.Map.include({
     },
 
     insertBackgroundDom:function() {
-        this.backgroundDOM = this.panels.mapContainer.cloneNode(true);
-        this.panels.mapPlatform.insertBefore(this.backgroundDOM,this.panels.mapViewPort);
+        this.backgroundDOM = this._panels.mapContainer.cloneNode(true);
+        this._panels.mapPlatform.insertBefore(this.backgroundDOM,this._panels.mapViewPort);
     },
 
     checkZoomLevel:function(nextZoomLevel) {
-        if (nextZoomLevel < this.minZoomLevel){
-            nextZoomLevel = this.minZoomLevel;
+        if (nextZoomLevel < this._minZoomLevel){
+            nextZoomLevel = this._minZoomLevel;
         }
-        if (nextZoomLevel > this.maxZoomLevel) {
-            nextZoomLevel = this.maxZoomLevel;
+        if (nextZoomLevel > this._maxZoomLevel) {
+            nextZoomLevel = this._maxZoomLevel;
         }
         return nextZoomLevel;
     },
@@ -67,8 +67,8 @@ Z.Map.include({
             }
         }
         var mousePos = param['pixel'];
-        var nextZoomLevel = me.checkZoomLevel(me.zoomLevel+1);
-        if (nextZoomLevel === me.zoomLevel) {
+        var nextZoomLevel = me.checkZoomLevel(me._zoomLevel+1);
+        if (nextZoomLevel === me._zoomLevel) {
             var move = {
                 'top':(mousePos['top']-me.height/2)/2,
                 'left':(me.width/2-mousePos['left'])/2
@@ -76,7 +76,7 @@ Z.Map.include({
             me._offsetCenterByPixel(move);
             me._offsetPlatform(move);
 
-            if (me.baseTileLayer) {me.baseTileLayer.onZoomEnd();}
+            if (me._baseTileLayer) {me._baseTileLayer.onZoomEnd();}
             me._eachLayer(zoomLayer,me._getAllLayers());
             return;
         }
@@ -85,9 +85,9 @@ Z.Map.include({
 
     zoom:function(nextZoomLevel, focusPos) {
         if (!this.options['enableZoom']) {return;}
-        this.allowSlideMap=false;
+        this._allowSlideMap=false;
         nextZoomLevel = this.checkZoomLevel(nextZoomLevel);
-        if (this.originZoomLevel === nextZoomLevel) {
+        if (this._originZoomLevel === nextZoomLevel) {
             return;
         }
         this.zooming = true;
@@ -98,12 +98,12 @@ Z.Map.include({
             };
         }
         this._removeBackGroundDOM();
-        var resolutions=this.lodConfig['resolutions'];
-        this.zoomLevel=nextZoomLevel;
-        var scale = resolutions[this.originZoomLevel]/resolutions[nextZoomLevel];
+        var resolutions=this._lodConfig['resolutions'];
+        this._zoomLevel=nextZoomLevel;
+        var scale = resolutions[this._originZoomLevel]/resolutions[nextZoomLevel];
         var pixelOffset;
         var zScale;
-        if (nextZoomLevel<this.originZoomLevel) {
+        if (nextZoomLevel<this._originZoomLevel) {
             zScale = resolutions[nextZoomLevel+1]/resolutions[nextZoomLevel];
             pixelOffset = {
                 "top":-(focusPos['top']-this.height/2)*(1-zScale),
@@ -133,8 +133,8 @@ Z.Map.include({
         var domOffset = this._offsetPlatform();
         var offsetTop = domOffset['top'];
         var offsetLeft = domOffset['left'];
-        var mapContainer = this.panels.mapContainer;
-        this.panels.mapContainer.className="MAP_ZOOM_ANIMATED";
+        var mapContainer = this._panels.mapContainer;
+        this._panels.mapContainer.className="MAP_ZOOM_ANIMATED";
         var origin = Z.DomUtil.getDomTransformOrigin(mapContainer);
         var originX = Math.round(this.width/2-offsetLeft),
             originY = Math.round(this.height/2-offsetTop);
@@ -156,7 +156,7 @@ Z.Map.include({
 
     animateEnd:function() {
         if (Z.Browser.ielt9) {return;}
-        var mapContainer = this.panels.mapContainer;
+        var mapContainer = this._panels.mapContainer;
         mapContainer.className="";
         Z.DomUtil.setDomTransformOrigin(mapContainer,"");
         Z.DomUtil.setDomTransform(mapContainer,"");
