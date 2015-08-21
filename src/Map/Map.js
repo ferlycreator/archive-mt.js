@@ -42,7 +42,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @param  {String} containerId
      * @param  {Object} options
      */
-    initialize:function(container, options) {
+    initialize:function(_container, options) {
 
         if (!options) {
             throw new Error(this.exceptions['INVALID_OPTION']);
@@ -52,39 +52,39 @@ Z['Map']=Z.Map=Z.Class.extend({
             throw new Error(this.exceptions['INVALID_CENTER']);
         }
 
-        this.loaded=false;
-        this.container = container;
+        this._loaded=false;
+        this._container = _container;
 
-        if (Z.Util.isString(this.container)) {
-            this.containerDOM = document.getElementById(this.container);
+        if (Z.Util.isString(this._container)) {
+            this._containerDOM = document.getElementById(this._container);
         } else {
-            this.containerDOM = container;
+            this._containerDOM = _container;
         }
 
 
         //Layer of Details, always derived from baseTileLayer
-        this.lodConfig=null;
-        this.panels={};
+        this._lodConfig=null;
+        this._panels={};
         //Layers
-        this.baseTileLayer=null;
-        this.tileLayers=[];
-        this.svgLayers=[];
-        this.baseCanvasLayer = null;
-        this.canvasLayers=[];
-        this.dynLayers=[];
+        this._baseTileLayer=null;
+        this._tileLayers=[];
+        this._svgLayers=[];
+        this._baseCanvasLayer = null;
+        this._canvasLayers=[];
+        this._dynLayers=[];
         //handler
         this._handlers = [];
 
-        this.zoomLevel = options['zoomLevel'];
+        this._zoomLevel = options['zoomLevel'];
         delete options['zoomLevel'];
-        this.maxZoomLevel = options['maxZoomLevel'];
+        this._maxZoomLevel = options['maxZoomLevel'];
         delete options['maxZoomLevel'];
-        this.minZoomLevel = options['minZoomLevel'];
+        this._minZoomLevel = options['minZoomLevel'];
         delete options['minZoomLevel'];
-        this.center = options['center'];
+        this._center = options['center'];
         delete options['center'];
 
-        this.allowSlideMap = true;
+        this._allowSlideMap = true;
 
         //坐标类型
         if (!Z.Util.isNil(options['coordinateType']) && Z.Util.searchInArray(options['coordinateType'], this.options['supportCoordinateTypes'])<0) {
@@ -100,11 +100,11 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     Load:function(){
-        if (this.loaded) {return;}
-        if (!this.baseTileLayer || !this.baseTileLayer._getLodConfig) {
+        if (this._loaded) {return;}
+        if (!this._baseTileLayer || !this._baseTileLayer._getLodConfig) {
             throw new Error(this.exceptions['NO_BASE_TILE_LAYER']);
         }
-        var lodConfig = this.baseTileLayer._getLodConfig();
+        var lodConfig = this._baseTileLayer._getLodConfig();
         var _this=this;
         this._setLodConfig(lodConfig,function() {
             _this._Load();
@@ -157,7 +157,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         if (!projection) {
             return null;
         }
-        var res = this.lodConfig['resolutions'][this.zoomLevel];
+        var res = this._lodConfig['resolutions'][this._zoomLevel];
         if (Z.Util.isNil(res)) {
             return null;
         }
@@ -176,9 +176,9 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     getCenter:function() {
-        if (!this.lodConfig || !this.loaded) {return this.center;}
-        var projection = this.lodConfig.getProjectionInstance();
-        return projection.unproject(this.pcenter);
+        if (!this._lodConfig || !this._loaded) {return this._center;}
+        var projection = this._lodConfig.getProjectionInstance();
+        return projection.unproject(this._prjCenter);
     },
 
     /**
@@ -187,8 +187,8 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     setCenter:function(center) {
-        if (!this.lodConfig || !this.loaded) {
-            this.center = center;
+        if (!this._lodConfig || !this._loaded) {
+            this._center = center;
             return this;
         }
         var projection = this._getProjection();
@@ -210,8 +210,8 @@ Z['Map']=Z.Map=Z.Class.extend({
 
         //reduce refresh frequency
         if (2*Math.random() > 1) {map._refreshSVGPaper();}
-        if (map.baseTileLayer) {map.baseTileLayer._onMoving();}
-        map._eachLayer(movingLayer, map.svgLayers);
+        if (map._baseTileLayer) {map._baseTileLayer._onMoving();}
+        map._eachLayer(movingLayer, map._svgLayers);
         map._fireEvent('moving');
     },
 
@@ -222,9 +222,9 @@ Z['Map']=Z.Map=Z.Class.extend({
             }
         }
         var me=this;
-        if (me.baseTileLayer) {me.baseTileLayer._onMoveEnd();}
+        if (me._baseTileLayer) {me._baseTileLayer._onMoveEnd();}
         me._refreshSVGPaper();
-        me._eachLayer(endMoveLayer,me.tileLayers,[me.baseCanvasLayer],me.dynLayers);
+        me._eachLayer(endMoveLayer,me._tileLayers,[me._baseCanvasLayer],me._dynLayers);
         me._fireEvent('moveend');
     },
 
@@ -247,7 +247,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     getZoomLevel:function() {
-        return this.zoomLevel;
+        return this._zoomLevel;
     },
 
     /**
@@ -266,7 +266,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     getMaxZoomLevel:function() {
-        return this.maxZoomLevel;
+        return this._maxZoomLevel;
     },
 
     /**
@@ -279,7 +279,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         if (zoomLevel > lodConfig['maxZoomLevel']) {
             zoomLevel = lodConfig['maxZoomLevel'];
         }
-        this.maxZoomLevel = zoomLevel;
+        this._maxZoomLevel = zoomLevel;
         return this;
     },
 
@@ -289,7 +289,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     getMinZoomLevel:function() {
-        return this.minZoomLevel;
+        return this._minZoomLevel;
     },
 
     /**
@@ -302,7 +302,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         if (zoomLevel < lodConfig['minZoomLevel']) {
             zoomLevel = lodConfig['minZoomLevel'];
         }
-        this.minZoomLevel=zoomLevel;
+        this._minZoomLevel=zoomLevel;
         return this;
     },
 
@@ -331,12 +331,12 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     setCenterAndZoom:function(center,zoomLevel) {
-        if (!this.lodConfig || !this.loaded) {
-            this.center = center;
-            this.zoomLevel = zoomLevel;
+        if (!this._lodConfig || !this._loaded) {
+            this._center = center;
+            this._zoomLevel = zoomLevel;
             return this;
         }
-        if (this.zoomLevel != zoomLevel) {
+        if (this._zoomLevel != zoomLevel) {
             this.setCenter(center);
             this.zoom(zoomLevel);
         } else {
@@ -355,11 +355,11 @@ Z['Map']=Z.Map=Z.Class.extend({
      */
     getFitZoomLevel: function(extent) {
         if (!extent && !(extent instanceof Z.Extent)) {
-            return this.zoomLevel;
+            return this._zoomLevel;
         }
         //点类型
         if (extent['xmin'] == extent['xmax'] && extent['ymin'] == extent['ymax']) {
-            return this.maxZoomLevel;
+            return this._maxZoomLevel;
         }
         try {
             var projection = this._getProjection();
@@ -369,7 +369,7 @@ Z['Map']=Z.Map=Z.Class.extend({
             var resolutions = this._getLodConfig()['resolutions'];
             var xz = -1;
             var yz = -1;
-            for ( var i = this.minZoomLevel, len = this.maxZoomLevel; i < len; i++) {
+            for ( var i = this._minZoomLevel, len = this._maxZoomLevel; i < len; i++) {
                 if (projectedExtent.x / resolutions[i] >= this.width) {
                     if (xz == -1) {
                         xz = i;
@@ -389,7 +389,7 @@ Z['Map']=Z.Map=Z.Class.extend({
                 ret = xz < yz ? yz : xz;
             }
             if (ret === -1) {
-                return this.maxZoomLevel;
+                return this._maxZoomLevel;
             }
             return ret - 2;
         } catch (exception) {
@@ -403,7 +403,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     getBaseTileLayer:function() {
-        return this.baseTileLayer;
+        return this._baseTileLayer;
     },
 
     /**
@@ -416,21 +416,21 @@ Z['Map']=Z.Map=Z.Class.extend({
             //TODO 是否要抛出错误?
             return;
         }
-        if (this.baseTileLayer) {
-            this.layerRemove(this.baseTileLayer);
+        if (this._baseTileLayer) {
+            this.layerRemove(this._baseTileLayer);
             this._removeBackGroundDOM();
         }
         baseTileLayer.prepare(this,-1);
-        this.baseTileLayer = baseTileLayer;
+        this._baseTileLayer = baseTileLayer;
         var _this = this;
         //删除背景
-        this.baseTileLayer.bind(baseTileLayer.events.LAYER_LOADED,function() {
+        this._baseTileLayer.bind(baseTileLayer.events.LAYER_LOADED,function() {
             _this._removeBackGroundDOM();
         });
-        var lodConfig = this.baseTileLayer._getLodConfig();
+        var lodConfig = this._baseTileLayer._getLodConfig();
         this._setLodConfig(lodConfig,function(changed) {
-            if (_this.loaded) {
-                _this.baseTileLayer.load();
+            if (_this._loaded) {
+                _this._baseTileLayer.load();
             }
             if (changed) {
                 _this._fireEvent(_this.events.LODCONFIG_CHANGED);
@@ -447,10 +447,10 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     getLayer:function(id) {
-        if (!id || !this.layerCache || !this.layerCache[id]) {
+        if (!id || !this._layerCache || !this._layerCache[id]) {
             return null;
         }
-        return this.layerCache[id];
+        return this._layerCache[id];
     },
 
     /**
@@ -465,8 +465,8 @@ Z['Map']=Z.Map=Z.Class.extend({
         if (!Z.Util.isArray(layers)) {
             return this.addLayer([layers]);
         }
-        if (!this.layerCache) {
-            this.layerCache = {};
+        if (!this._layerCache) {
+            this._layerCache = {};
         }
         for (var i=0,len=layers.length;i<len;i++) {
             var layer = layers[i];
@@ -474,37 +474,37 @@ Z['Map']=Z.Map=Z.Class.extend({
             if (Z.Util.isNil(id)) {
                 throw new Error(this.exceptions['INVALID_LAYER_ID']+':'+id);
             }
-            if (this.layerCache[id]) {
+            if (this._layerCache[id]) {
                 throw new Error(this.exceptions['DUPLICATE_LAYER_ID']+':'+id);
             }
-            this.layerCache[id] = layer;
+            this._layerCache[id] = layer;
             //DynamicLayer必须要放在前面, 因为dynamiclayer同时也是tilelayer, tilelayer的代码也同时会执行
             if (layer instanceof Z.DynamicLayer) {
-                layer.prepare(this, this.dynLayers.length);
-                this.dynLayers.push(layer);
-                if (this.loaded) {
+                layer.prepare(this, this._dynLayers.length);
+                this._dynLayers.push(layer);
+                if (this._loaded) {
                     layer.load();
                 }
             } else if (layer instanceof Z.TileLayer) {
-                layer.prepare(this, this.tileLayers.length);
-                this.tileLayers.push(layer);
-                if (this.loaded) {
+                layer.prepare(this, this._tileLayers.length);
+                this._tileLayers.push(layer);
+                if (this._loaded) {
                     layer.load();
                 }
             } else if (layer instanceof Z.SVGLayer) {
-                layer.prepare(this,this.svgLayers.length);
-                this.svgLayers.push(layer);
-                if (this.loaded) {
+                layer.prepare(this,this._svgLayers.length);
+                this._svgLayers.push(layer);
+                if (this._loaded) {
                     layer.load();
                 }
             } else if (layer instanceof Z.CanvasLayer) {
-                layer.prepare(this, this.canvasLayers.length);
-                this.canvasLayers.push(layer);
-                if (!this.baseCanvasLayer) {
-                    this.baseCanvasLayer = new Z.CanvasLayer.Base();
-                    this.baseCanvasLayer.prepare(this);
-                    if (this.loaded) {
-                        this.baseCanvasLayer.load();
+                layer.prepare(this, this._canvasLayers.length);
+                this._canvasLayers.push(layer);
+                if (!this._baseCanvasLayer) {
+                    this._baseCanvasLayer = new Z.CanvasLayer.Base();
+                    this._baseCanvasLayer.prepare(this);
+                    if (this._loaded) {
+                        this._baseCanvasLayer.load();
                     }
                 } else {
                     this._repaintBaseCanvasLayer();
@@ -522,8 +522,8 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @param  {Boolean} isRealTime 是否是实时绘制
      */
     _repaintBaseCanvasLayer:function(isRealTime) {
-        if (this.loaded && this.baseCanvasLayer) {
-            this.baseCanvasLayer.repaint(isRealTime);
+        if (this._loaded && this._baseCanvasLayer) {
+            this._baseCanvasLayer.repaint(isRealTime);
         }
     },
 
@@ -544,14 +544,14 @@ Z['Map']=Z.Map=Z.Class.extend({
             return;
         }
         if (layer instanceof Z.SVGLayer) {
-            this._removeLayer(layer, this.svgLayers);
+            this._removeLayer(layer, this._svgLayers);
         } else if (layer instanceof Z.CanvasLayer) {
-            this._removeLayer(layer, this.canvasLayers);
+            this._removeLayer(layer, this._canvasLayers);
         } else if (layer instanceof Z.TileLayer) {
-            this._removeLayer(layer, this.tileLayers);
+            this._removeLayer(layer, this._tileLayers);
         }
         var id = layer.getId();
-        delete this.layerCache[id];
+        delete this._layerCache[id];
         return this;
     },
 
@@ -563,7 +563,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         var index = Z.Util.searchInArray(layer,layerList);
         if (index > -1) {
             layerList.splice(index, 1);
-            if (this.loaded) {
+            if (this._loaded) {
                 layer.onRemove();
             }
             for (var j=0, jlen=layerList.length;j<jlen;j++) {
@@ -663,7 +663,7 @@ Z['Map']=Z.Map=Z.Class.extend({
                 layer._onResize();
             }
         }
-        if (this.baseTileLayer) {this.baseTileLayer._onResize();}
+        if (this._baseTileLayer) {this._baseTileLayer._onResize();}
         this._eachLayer(resizeLayer,this._getAllLayers());
     },
 
@@ -676,13 +676,13 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     _Load:function() {
-        this.originZoomLevel = this.zoomLevel;
+        this._originZoomLevel = this._zoomLevel;
 
         this._initContainerWatcher();
         this._registerDomEvents();
         this._loadAllLayers();
         // this.callInitHooks();
-        this.loaded = true;
+        this._loaded = true;
         this._callOnLoadHooks();
         //this.fire('mapready',{'target':this});
     },
@@ -693,16 +693,16 @@ Z['Map']=Z.Map=Z.Class.extend({
                 layer.load();
             }
         }
-        if (this.baseTileLayer) {this.baseTileLayer.load();}
+        if (this._baseTileLayer) {this._baseTileLayer.load();}
         this._eachLayer(loadLayer,this._getAllLayers());
     },
 
     _getAllLayers:function() {
         var result = [];
-        return result.concat(this.tileLayers)
-        .concat([this.baseCanvasLayer])
-        .concat(this.svgLayers)
-        .concat(this.dynLayers);
+        return result.concat(this._tileLayers)
+        .concat([this._baseCanvasLayer])
+        .concat(this._svgLayers)
+        .concat(this._dynLayers);
     },
 
     _eachLayer:function(fn) {
@@ -722,8 +722,8 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {[type]} [description]
      */
     _showOverlayLayers:function() {
-        this.panels.svgContainer.style.display="";
-        this.panels.canvasLayerContainer.style.display="";
+        this._panels.svgContainer.style.display="";
+        this._panels.canvasLayerContainer.style.display="";
     },
 
     /**
@@ -731,13 +731,13 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {[type]} [description]
      */
     _hideOverlayLayers:function() {
-        this.panels.svgContainer.style.display="none";
-        this.panels.canvasLayerContainer.style.display="none";
-        // me.panels.tipContainer.style.display="none";
+        this._panels.svgContainer.style.display="none";
+        this._panels.canvasLayerContainer.style.display="none";
+        // me._panels.tipContainer.style.display="none";
     },
 
     _getLodConfig:function() {
-        return this.lodConfig;
+        return this._lodConfig;
     },
 
     _getProjection:function() {
@@ -758,13 +758,13 @@ Z['Map']=Z.Map=Z.Class.extend({
             throw new Error(this.exceptions['INVALID_LODCONFIG']);
         }
         //lodConfig相同,无需改变
-        if (this.lodConfig && this.lodConfig.equals(lodConfig, this.getZoomLevel())) {
+        if (this._lodConfig && this._lodConfig.equals(lodConfig, this.getZoomLevel())) {
             callbackFn(false);
             return;
         }
-        this.lodConfig = lodConfig;
-        this.dx = (this.lodConfig['origin']['right']>=this.lodConfig['origin']['left'])?1:-1;
-        this.dy = (this.lodConfig['origin']['top']>=this.lodConfig['origin']['bottom'])?1:-1;
+        this._lodConfig = lodConfig;
+        this.dx = (this._lodConfig['origin']['right']>=this._lodConfig['origin']['left'])?1:-1;
+        this.dy = (this._lodConfig['origin']['top']>=this._lodConfig['origin']['bottom'])?1:-1;
         var _this=this;
         lodConfig.load(function() {
             _this._checkMapStatus();
@@ -777,33 +777,33 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {[type]} [description]
      */
     _checkMapStatus:function(){
-        if (!this.maxZoomLevel || this.maxZoomLevel > this.lodConfig['maxZoomLevel']) {
-            this.maxZoomLevel = this.lodConfig['maxZoomLevel'];
+        if (!this._maxZoomLevel || this._maxZoomLevel > this._lodConfig['maxZoomLevel']) {
+            this._maxZoomLevel = this._lodConfig['maxZoomLevel'];
         }
-        if (!this.minZoomLevel || this.minZoomLevel < this.lodConfig['minZoomLevel']) {
-            this.minZoomLevel = this.lodConfig['minZoomLevel'];
+        if (!this._minZoomLevel || this._minZoomLevel < this._lodConfig['minZoomLevel']) {
+            this._minZoomLevel = this._lodConfig['minZoomLevel'];
         }
-        if (this.maxZoomLevel < this.minZoomLevel) {
-            this.maxZoomLevel = this.minZoomLevel;
+        if (this._maxZoomLevel < this._minZoomLevel) {
+            this._maxZoomLevel = this._minZoomLevel;
         }
-        if (!this.zoomLevel || this.zoomLevel > this.maxZoomLevel) {
-            this.zoomLevel = this.maxZoomLevel;
+        if (!this._zoomLevel || this._zoomLevel > this._maxZoomLevel) {
+            this._zoomLevel = this._maxZoomLevel;
         }
-        if (this.zoomLevel < this.minZoomLevel) {
-            this.zoomLevel = this.minZoomLevel;
+        if (this._zoomLevel < this._minZoomLevel) {
+            this._zoomLevel = this._minZoomLevel;
         }
-        this.center = this.getCenter();
-        var projection = this.lodConfig.getProjectionInstance();
-        this.pcenter = projection.project(this.center);
+        this._center = this.getCenter();
+        var projection = this._lodConfig.getProjectionInstance();
+        this._prjCenter = projection.project(this._center);
     },
 
 
 
     _getContainerDomSize:function(){
-        if (!this.containerDOM) {return null;}
-        var containerDOM = this.containerDOM;
-        var mapWidth = parseInt(containerDOM.offsetWidth,0);
-        var mapHeight = parseInt(containerDOM.offsetHeight,0);
+        if (!this._containerDOM) {return null;}
+        var _containerDOM = this._containerDOM;
+        var mapWidth = parseInt(_containerDOM.offsetWidth,0);
+        var mapHeight = parseInt(_containerDOM.offsetHeight,0);
         return {
             width: mapWidth,
             height:mapHeight
@@ -814,7 +814,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         if (!mSize) {return;}
         this.width = mSize['width'];
         this.height = mSize['height'];
-        var panels = this.panels;
+        var panels = this._panels;
         panels.mapWrapper.style.width = this.width + 'px';
         panels.mapWrapper.style.height = this.height + 'px';
         panels.mapViewPort.style.width = this.width + 'px';
@@ -828,11 +828,11 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {Coordinate} 投影坐标
      */
     _getPrjCenter:function() {
-        return this.pcenter;
+        return this._prjCenter;
     },
 
     _setPrjCenter:function(pcenter) {
-        this.pcenter=pcenter;
+        this._prjCenter=pcenter;
     },
 
     /**
@@ -867,10 +867,10 @@ Z['Map']=Z.Map=Z.Class.extend({
      */
     _offsetPlatform:function(offset) {
         if (!offset) {
-            return Z.DomUtil.offsetDom(this.panels.mapPlatform);
+            return Z.DomUtil.offsetDom(this._panels.mapPlatform);
         } else {
-            var domOffset = Z.DomUtil.offsetDom(this.panels.mapPlatform);
-            Z.DomUtil.offsetDom(this.panels.mapPlatform, {
+            var domOffset = Z.DomUtil.offsetDom(this._panels.mapPlatform);
+            Z.DomUtil.offsetDom(this._panels.mapPlatform, {
                     'left':domOffset['left']+offset['left'],
                     'top':domOffset['top']+offset['top']
             });
@@ -886,7 +886,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {Coordinate}           Coordinate
      */
     _transform:function(domPos) {
-        var res = this.lodConfig['resolutions'][this.zoomLevel];
+        var res = this._lodConfig['resolutions'][this._zoomLevel];
         var pcenter = this._getPrjCenter();
         var y = pcenter.y + this.dy*(this.height / 2 - domPos['top'])* res;
         var x = pcenter.x + this.dx*(domPos['left'] - this.width / 2)* res;
@@ -908,7 +908,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {[type]}             [description]
      */
     _untransform:function(pCoordinate) {
-        var res = this.lodConfig['resolutions'][this.zoomLevel];
+        var res = this._lodConfig['resolutions'][this._zoomLevel];
         var pcenter = this._getPrjCenter();
         // var _canvasDom = this.canvasDom;
         var centerTop = this.dy*(pcenter.y - pCoordinate.y) / res;
@@ -1039,7 +1039,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     _createSVGPaper: function(){
         var map = this;
         if (map.vectorPaper) {return;}
-        var svgContainer = this.panels.svgContainer;
+        var svgContainer = this._panels.svgContainer;
         map.vectorPaper = Z.SVG.createContainer();
         this._refreshSVGPaper();
         svgContainer.appendChild(map.vectorPaper);
@@ -1054,23 +1054,23 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     /**
-     * initialize container DOM of panels
+     * initialize _container DOM of panels
      */
     _initContainer:function() {
-        var containerDOM;
-        if (Z.Util.isString(this.container)) {
-            containerDOM = document.getElementById(this.container);
-            if (!containerDOM) {
-                throw new Error('invalid container id: \''+this.container+'\'');
+        var _containerDOM;
+        if (Z.Util.isString(this._container)) {
+            _containerDOM = document.getElementById(this._container);
+            if (!_containerDOM) {
+                throw new Error('invalid _container id: \''+this._container+'\'');
             }
         } else {
-            if (!this.container || !this.container.appendChild) {
-                throw new Error('invalid container element');
+            if (!this._container || !this._container.appendChild) {
+                throw new Error('invalid _container element');
             }
-            containerDOM = this.container;
+            _containerDOM = this._container;
         }
-        this.containerDOM = containerDOM;
-        containerDOM.innerHTML = '';
+        this._containerDOM = _containerDOM;
+        _containerDOM.innerHTML = '';
 
         var controlWrapper = Z.DomUtil.createEl('div');
 
@@ -1081,7 +1081,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         var mapWrapper = Z.DomUtil.createEl('div');
         mapWrapper.style.cssText = 'position:absolute;overflow:hidden;';
         mapWrapper.className='MAP_TILE_BACK';
-        containerDOM.appendChild(mapWrapper);
+        _containerDOM.appendChild(mapWrapper);
 
         // 最外层的div
         var _mapPlatform = Z.DomUtil.createEl('div');
@@ -1149,7 +1149,7 @@ Z['Map']=Z.Map=Z.Class.extend({
 
 
         //store panels
-        var panels = this.panels;
+        var panels = this._panels;
         panels.controlWrapper = controlWrapper;
         panels.mapWrapper = mapWrapper;
         panels.mapViewPort = _mapViewPort;
@@ -1174,7 +1174,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     * 获取地图容器
     */
     getPanels: function() {
-        return this.panels.mapViewPort;
+        return this._panels.mapViewPort;
     },
 
     /**
@@ -1182,7 +1182,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      */
     _initContainerWatcher:function() {
         var map = this;
-        map.watcher = setInterval(function() {
+        map._watcher = setInterval(function() {
             var watched = map._getContainerDomSize();
             if (map.width !== watched.width || map.height !== watched.height) {
                 var oldHeight = map.height;

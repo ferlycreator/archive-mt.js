@@ -4,7 +4,7 @@ Z.Map.include({
      * @expose
      */
     openFullscreen: function() {
-        this._openFullscreen(this.containerDOM);
+        this._openFullscreen(this._containerDOM);
         var me = this;
         this.onFullscreenStart();
         if (this.fullscreen_timeout) {
@@ -20,7 +20,7 @@ Z.Map.include({
      * @expose
      */
     exitFullscreen: function() {
-        this._exitFullscreen(this.containerDOM);
+        this._exitFullscreen(this._containerDOM);
     },
 
     onFullscreenStart: function() {

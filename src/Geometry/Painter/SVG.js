@@ -222,7 +222,7 @@ Z.SVG.SVG = {
 
     },
 
-    addVector:function(container, vectorBean, strokeSymbol, fillSymbol, iconSymbol) {
+    addVector:function(_container, vectorBean, strokeSymbol, fillSymbol, iconSymbol) {
         var vector;
         //path
         if(vectorBean['path']) {
@@ -230,18 +230,18 @@ Z.SVG.SVG = {
             vector = document.createElementNS('http://www.w3.org/2000/svg', 'path');
             vector.setAttribute('id', pathId);
             vector.setAttribute('d', vectorBean['path']);
-            Z.SVG.refreshVectorSymbol(vector, strokeSymbol, fillSymbol, container);
-            container.appendChild(vector);
+            Z.SVG.refreshVectorSymbol(vector, strokeSymbol, fillSymbol, _container);
+            _container.appendChild(vector);
         }
         //text
         var texts = vectorBean['texts'];
         if(texts) {
-            vector = this._addTextToVector(container, texts, iconSymbol);
+            vector = this._addTextToVector(_container, texts, iconSymbol);
         }
         return vector;
     },
 
-    _addTextToVector: function(container, texts, iconSymbol) {
+    _addTextToVector: function(_container, texts, iconSymbol) {
         var textElement;
         var font = iconSymbol['font'];
         var size = iconSymbol['size'];
@@ -282,19 +282,19 @@ Z.SVG.SVG = {
                 } else if ('point' === placement) {
                     textElement.appendChild(textNode);
                 }
-                container.appendChild(textElement);
+                _container.appendChild(textElement);
             }
         }
         return textElement;
     },
 
-    removeVector:function(container, vector) {
+    removeVector:function(_container, vector) {
         //如果是模式填充, 需要删除模式定义元素
         if (vector._pattern) {
             Z.Util.removeDomNode(vector._pattern);
         }
-        if (container && vector) {
-            container.removeChild(vector);
+        if (_container && vector) {
+            _container.removeChild(vector);
         }
     }
 };
@@ -403,9 +403,9 @@ Z.SVG.VML= {
         }
     },
 
-    addVector: function(container, vectorBean, strokeSymbol, fillSymbol, iconSymbol) {
+    addVector: function(_container, vectorBean, strokeSymbol, fillSymbol, iconSymbol) {
         var vector;
-        if (!container || !vectorBean) {
+        if (!_container || !vectorBean) {
             return null;
         }
         vector = Z.SVG.create('shape');
@@ -422,18 +422,18 @@ Z.SVG.VML= {
             vector.path = _path;
 
             this.refreshVectorSymbol(vector, strokeSymbol, fillSymbol);
-            container.appendChild(vector);
+            _container.appendChild(vector);
         }
 
         //text
         var texts = vectorBean['texts'];
         if(texts&&texts.length>0) {
-            vector = this._addTextToVector(container, texts, iconSymbol);
+            vector = this._addTextToVector(_container, texts, iconSymbol);
         }
         return vector;
     },
 
-    _addTextToVector: function(container, texts, iconSymbol) {
+    _addTextToVector: function(_container, texts, iconSymbol) {
         var textElement;
         var font = iconSymbol['font'];
         var size = iconSymbol['size'];
@@ -463,15 +463,15 @@ Z.SVG.VML= {
                 textElement.style.top = (location[1])+'px';
                 textElement.style.left = (location[0])+'px';
                 textElement.innerHTML   = content;
-                container.appendChild(textElement);
+                _container.appendChild(textElement);
             }
         }
         return textElement;
     },
 
-    removeVector:function(container, vector) {
-        if (container && vector) {
-            container.removeChild(vector);
+    removeVector:function(_container, vector) {
+        if (_container && vector) {
+            _container.removeChild(vector);
         }
     }
 };

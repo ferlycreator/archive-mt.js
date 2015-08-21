@@ -7,22 +7,22 @@ Z.Map.mergeOptions({
 Z.Map.ScrollWheelZoom = Z.Handler.extend({
 	addHooks: function () {
         var map = this.map;
-		var containerDOM = map.containerDOM;
+		var _containerDOM = map._containerDOM;
 		// if(document.addEventListener){
-			Z.DomUtil.addDomEvent(containerDOM, 'mousewheel', this._onWheelScroll, this);
+			Z.DomUtil.addDomEvent(_containerDOM, 'mousewheel', this._onWheelScroll, this);
 		// }
 	},
 
 	removeHooks: function () {
 		var map = this.map;
-		var containerDOM = map.containerDOM;
-		Z.DomUtil.removeDomEvent(containerDOM, 'mousewheel', this._onWheelScroll);
+		var _containerDOM = map._containerDOM;
+		Z.DomUtil.removeDomEvent(_containerDOM, 'mousewheel', this._onWheelScroll);
 	},
 
 	_onWheelScroll: function (evt) {
 		// var wheelExecutor = null;
         var map = this.map;
-		var containerDOM = map.containerDOM;
+		var _containerDOM = map._containerDOM;
 		// if (!map.mouseTool) {return;}
 		if (map.zooming) {return;}
 		// if (!evt) {evt = window.event;}
@@ -32,12 +32,12 @@ Z.Map.ScrollWheelZoom = Z.Handler.extend({
 		if (evt.detail) {
 			_levelValue *= -1;
 		}
-		var mouseOffset = Z.DomUtil.getEventDomCoordinate(evt, containerDOM);
+		var mouseOffset = Z.DomUtil.getEventDomCoordinate(evt, _containerDOM);
 		if (this.wheelExecutor) {
 			clearTimeout(this.wheelExecutor);
 		}
 		this.wheelExecutor = setTimeout(function () {
-			map.zoom(map.zoomLevel + _levelValue, mouseOffset);
+			map.zoom(map._zoomLevel + _levelValue, mouseOffset);
 		},40);
 
 		return false;

@@ -7,7 +7,7 @@ Z.Map.Drag = Z.Handler.extend({
 		if (!this['draggable']) {
             var map = this['map'];
             if (!map) return;
-            this.dom = map.containerDOM;
+            this.dom = map._containerDOM;
             if (!Z.Browser.mobile) {
                 this['draggable'] = new Z.Handler.Drag(this.dom);
             }
@@ -29,7 +29,7 @@ Z.Map.Drag = Z.Handler.extend({
 
 	_onDragStart:function(param) {
         var me = this;
-        me.map.allowSlideMap=false;
+        me.map._allowSlideMap=false;
         var map = me.map;
         me.startDragTime = new Date().getTime();
         var domOffset = me.map._offsetPlatform();
@@ -63,7 +63,7 @@ Z.Map.Drag = Z.Handler.extend({
 
     _onDragEnd:function(param) {
         var me = this;
-        me.map.allowSlideMap=true;
+        me.map._allowSlideMap=true;
         var map = me.map;
         var t = new Date().getTime()-me.startDragTime;
         var domOffset = me.map._offsetPlatform();

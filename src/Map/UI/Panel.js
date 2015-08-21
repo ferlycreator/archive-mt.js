@@ -231,8 +231,8 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
 			left = Z.DomUtil.getPixelValue(domStyle['left']);
 			bottom = Z.DomUtil.getPixelValue(domStyle['bottom']);
 			right = Z.DomUtil.getPixelValue(domStyle['right']);
-		var width = this._map.containerDOM.clientWidth,
-			height = this._map.containerDOM.clientHeight;
+		var width = this._map._containerDOM.clientWidth,
+			height = this._map._containerDOM.clientHeight;
 		var panelWidth = this._panelContainer['clientWidth'],
 			panelHeight = this._panelContainer['clientHeight'];
 		if(left === 0 && right >= 0) {

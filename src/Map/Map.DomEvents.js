@@ -12,15 +12,15 @@ Z.Map.include({
         var events = 'mousedown mouseup ' +
             'mouseover mouseout mousemove click dblclick contextmenu keypress';
         if (remove) {
-            Z.DomUtil.removeDomEvent(this.containerDOM, events, this._handleDOMEvent);
+            Z.DomUtil.removeDomEvent(this._containerDOM, events, this._handleDOMEvent);
         } else {
-            Z.DomUtil.addDomEvent(this.containerDOM, events, this._handleDOMEvent, this);
+            Z.DomUtil.addDomEvent(this._containerDOM, events, this._handleDOMEvent, this);
         }
 
     },
 
     _handleDOMEvent: function (e) {
-        /*if (!this.loaded || Z.DomEvent._skipped(e)) { return; }
+        /*if (!this._loaded || Z.DomEvent._skipped(e)) { return; }
 
         // find the layer the event is propagating from
         var target = this._findEventTarget(e.target || e.srcElement),
@@ -28,7 +28,7 @@ Z.Map.include({
 
         // special case for map mouseover/mouseout events so that they're actually mouseenter/mouseleave
         if (!target && (type === 'mouseover' || type === 'mouseout') &&
-                !Z.DomEvent._checkMouse(this.containerDOM, e)) { return; }
+                !Z.DomEvent._checkMouse(this._containerDOM, e)) { return; }
 
         // prevents outline when clicking on keyboard-focusable element
         if (type === 'mousedown') {
@@ -44,7 +44,7 @@ Z.Map.include({
             if (target) {
                 return target;
             }
-            if (src === this.containerDOM) {
+            if (src === this._containerDOM) {
                 break;
             }
             src = src.parentNode;

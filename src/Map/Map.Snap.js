@@ -53,18 +53,18 @@ Z.Map.include({
                 // params += layerInfo.info+",";
             }
         }
-        if (this.tileLayers.length >0){
+        if (this._tileLayers.length >0){
             var tileLayerSettings=[];
-            var tileLayers =this.tileLayers;
+            var tileLayers =this._tileLayers;
             for (var i=0,len=tileLayers.length;i<len;i++) {
                 tileLayerSettings.push(genLayerInfo(tileLayers[i]).info);
             }
             layerSettings['tilelayers'] = tileLayerSettings;
         }
-        if (this.dynLayers.length>0) {
+        if (this._dynLayers.length>0) {
                 //动态图层
             var dynLayerSettings = [];
-            var dynLayers =this.dynLayers;
+            var dynLayers =this._dynLayers;
             for (var i=0,len=dynLayers.length;i<len;i++) {
                 dynLayerSettings.push(genDynlayerInfo(dynLayers[i]));
             }
@@ -73,11 +73,11 @@ Z.Map.include({
         var geoJson = [];
         var markerJson = [];
         if (!geometries || geometries.length === 0) {
-            if (this.canvasLayers.length>0) {
-                collectLayers(this.canvasLayers);
+            if (this._canvasLayers.length>0) {
+                collectLayers(this._canvasLayers);
             }
-            if (this.svgLayers.length>0) {
-                collectLayers(this.svgLayers);
+            if (this._svgLayers.length>0) {
+                collectLayers(this._svgLayers);
             }
         } else {
             collectGeos(geometries);

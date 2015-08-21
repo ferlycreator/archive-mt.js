@@ -42,7 +42,7 @@ Z['Control'] = Z.Control = Z.Class.extend({
 		if(!id) throw new Error(this.exceptions['NEED_ID']);
 		this.remove();
 		this._map = map;
-		this._controlContainer = map.panels.controlWrapper;
+		this._controlContainer = map._panels.controlWrapper;
 
 		this._container = Z.DomUtil.createEl('div');
 		Z.DomUtil.setStyle(this._container, 'z-index: 3003');

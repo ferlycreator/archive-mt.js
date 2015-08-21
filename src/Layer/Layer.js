@@ -129,13 +129,13 @@ Z['Layer']=Z.Layer=Z.Class.extend({
 	getLayerList:function() {
 		if (!this.map) {return null;}
 		if (this instanceof Z.SVGLayer) {
-			return this.map.svgLayers;
+			return this.map._svgLayers;
 		} else if (this instanceof Z.CanvasLayer) {
-			return this.map.canvasLayers;
+			return this.map._canvasLayers;
 		} else if (this instanceof Z.CanvasLayer.Base) {
-			return this.map.canvasLayers;
+			return this.map._canvasLayers;
 		} else if (this instanceof Z.DynamicLayer) {
-			return this.dynLayers;
+			return this._dynLayers;
 		} else if (this instanceof Z.TileLayer) {
 			return this.overlapLayers;
 		} else if (this instanceof Z.HeatLayer) {

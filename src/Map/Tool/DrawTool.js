@@ -20,7 +20,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
     addTo: function(map) {
         this.map = map;
         if (!this.map) {return;}
-        this.lodConfig = map._getLodConfig();
+        this._lodConfig = map._getLodConfig();
         this.enable();
         return this;
     },
@@ -93,10 +93,10 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
     },
 
     _getProjection:function() {
-        if (!this.lodConfig) {
+        if (!this._lodConfig) {
             return null;
         }
-        return this.lodConfig.getProjectionInstance();
+        return this._lodConfig.getProjectionInstance();
     },
 
     /**
@@ -384,7 +384,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
      */
     getMouseScreenXY:function(event) {
         Z.DomUtil.stopPropagation(event);
-        var result = Z.DomUtil.getEventDomCoordinate(event,this.map.containerDOM);
+        var result = Z.DomUtil.getEventDomCoordinate(event,this.map._containerDOM);
         return result;
     },
 

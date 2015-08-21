@@ -78,8 +78,8 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
     */
     _addEvent:function(map) {
         this.map = map;
-        this.map.panels.popMenuContainer.innerHTML = Z['Menu']['template'];
-        this.menuDom = this.map.panels.popMenuContainer.firstChild;
+        this.map._panels.popMenuContainer.innerHTML = Z['Menu']['template'];
+        this.menuDom = this.map._panels.popMenuContainer.firstChild;
         if(!this.menuDom.addEvent) {
             this.closeMenu();
             this._removeEvent(map);
@@ -273,7 +273,7 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
     * 清理之前的事件，并绑定新的事件
     */
     _clearDomAndBindEvent: function() {
-        var firstChild = this.map.panels.popMenuContainer.firstChild;
+        var firstChild = this.map._panels.popMenuContainer.firstChild;
         Z.DomUtil.removeDomNode(firstChild);
         this._addEvent(this.map);
     },

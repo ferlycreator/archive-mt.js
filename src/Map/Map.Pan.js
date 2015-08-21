@@ -97,8 +97,8 @@ Z.Map.include({
             if (!Z.Util.isArrayHasData(spanArr)) {
                 return;
             }
-            if (!_map.allowSlideMap) {
-                _map.allowSlideMap = true;
+            if (!_map._allowSlideMap) {
+                _map._allowSlideMap = true;
                 _map._onMoveEnd({'target':_map});
                 return;
             }

@@ -23,7 +23,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
             'background': '#ffffff',
             'stroke': '#000000',
             'strokewidth': 1,
-            'placement' : 'top' //top | bottom | left | right | center.
+            'placement' : 'top', //top | bottom | left | right | center.
 
             'shield-type': 'tip',//rectangle tip
             'shield-name': '测试标签:[a-name]',
@@ -99,7 +99,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
 	buildOn: function (geometry) {
         if(!geometry || !this.options || !this.options['style']) return;
         var map = geometry.getMap();
-        this._labelContrainer = map.containerDOM;
+        this._labelContrainer = map._containerDOM;
         this._target = geometry;
         if(!this._target) throw new Error(this.exceptions['NEED_TARGET']);
 

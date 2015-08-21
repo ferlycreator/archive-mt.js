@@ -27,7 +27,7 @@ Z['HeatmapLayer'] = Z.HeatmapLayer = Z.Layer.extend({
         this._el = Z.DomUtil.createEl('div');
         this._data = [];
         this._max = 1;
-        this.cfg.container = this._el;
+        this.cfg._container = this._el;
       },
 
       onAdd: function (map) {

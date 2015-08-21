@@ -16,15 +16,15 @@ Z.Editor=Z.Class.extend({
         if (!map) {return;}
         this.map=map;
         this.geoType = this.geometry.getType();
-        if (!map.panels.editorContainer) {
+        if (!map._panels.editorContainer) {
             var editorContainer = Z.DomUtil.createEl("div");
             //editorContainer.id = "editorContainer";
             editorContainer.style.cssText="position:absolute;top:0px;left:0px;z-index:2000;";
-            map.panels.mapPlatform.appendChild(editorContainer);
-            map.panels.editorContainer = editorContainer;
+            map._panels.mapPlatform.appendChild(editorContainer);
+            map._panels.editorContainer = editorContainer;
         }
 
-        this.container = map.panels.editorContainer;
+        this._container = map._panels.editorContainer;
         //保存原有的Symbol
         /**
          * 保存原有的symbol
@@ -122,7 +122,7 @@ Z.Editor=Z.Class.extend({
             opts = {tip:''};
         }
         var handle = this.createHandleDom(pixel,opts);
-        var containerDOM = this.map.containerDOM;
+        var _containerDOM = this.map._containerDOM;
         Z.DomUtil.addDomEvent(handle,'mousedown',function(event) {
                             var editor = this;
                             if (opts.onDown) {
@@ -142,7 +142,7 @@ Z.Editor=Z.Class.extend({
                             document.onmousemove = function(ev){
                                 ev  = ev || window.event;
                                 editor.hideContext();
-                                var mousePos = Z.DomUtil.getEventDomCoordinate(ev,containerDOM);
+                                var mousePos = Z.DomUtil.getEventDomCoordinate(ev,_containerDOM);
                                 var handleDomOffset = editor.map._screenToDomOffset(mousePos);
                                 handle.style['top']=(handleDomOffset.top-5)+"px";
                                 handle.style['left']=(handleDomOffset.left-5)+"px";
@@ -567,9 +567,9 @@ Z.Editor=Z.Class.extend({
                             }
                         },this);
 
-        Z.DomUtil.addDomEvent(map.containerDOM,'mousemove',function(event) {
+        Z.DomUtil.addDomEvent(map._containerDOM,'mousemove',function(event) {
                         var res = map._getLodConfig()['resolutions'][map.getZoomLevel()];
-                        var eventOffset = Z.DomUtil.getEventDomCoordinate(event,map.containerDOM);
+                        var eventOffset = Z.DomUtil.getEventDomCoordinate(event,map._containerDOM);
                         var plonlat = map._transform(eventOffset);
                         var tolerance = pxTolerance*res;
                         var interIndex = Z.GeoUtils._isPointOnPath(plonlat, geometry,tolerance);
@@ -592,7 +592,7 @@ Z.Editor=Z.Class.extend({
      * refresh开始前逻辑
      */
     onRefreshStart:function() {
-        this.container.style.display="none";
+        this._container.style.display="none";
     },
 
     /**
@@ -600,7 +600,7 @@ Z.Editor=Z.Class.extend({
      */
     onRefreshEnd:function() {
         this.refresh();
-        this.container.style.display="";
+        this._container.style.display="";
     },
 
     refresh:function() {
@@ -642,7 +642,7 @@ Z.Editor=Z.Class.extend({
         }
         handle.onRefresh = opts.onRefresh;
         this.editHandlers.push(handle);
-        this.container.appendChild(handle);
+        this._container.appendChild(handle);
     },
 
     removeHandler:function(handle) {
