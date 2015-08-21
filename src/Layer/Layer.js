@@ -1,14 +1,14 @@
 /**
  * 所有图层的基类
  * 供Map调用的图层方法有:
- * load,onMoving, onMoveEnd, onResize, onZoomStart, onZoomEnd
+ * load,_onMoving, _onMoveEnd, _onResize, onZoomStart, onZoomEnd
  * @param  {[type]} map             [description]
  * @param  {[type]} zIndex)         {		if        (!map) {return;}		this.map [description]
  * @param  {[type]} getId:function( [description]
  * @return {[type]}                 [description]
  */
 Z['Layer']=Z.Layer=Z.Class.extend({
-	
+
 	includes: Z.Eventable,
 
 	events:{
@@ -29,7 +29,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
 	getZIndex:function() {
 		return this.zIndex;
 	},
-	
+
 	/**
 	 * 获取图层id
 	 * @returns
@@ -86,7 +86,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
 			layers[i].setZIndex(layers[i].baseZIndex+i);
 		}
 	},
-	
+
 	/**
 	 * 将图层置底
 	 * @expose
@@ -105,7 +105,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
 			layers[i].setZIndex(layers[i].baseZIndex+i);
 		}
 	},
-	
+
 	/**
 	 * 获取图层在图层列表中的index
 	 * @param layers
@@ -122,7 +122,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
 		}
 		return hit;
 	},
-	
+
 	/**
 	 * 获取该图层所属的list
 	 */

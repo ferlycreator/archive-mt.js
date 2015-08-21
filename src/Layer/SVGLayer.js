@@ -8,7 +8,7 @@ Z['SVGLayer']=Z.SVGLayer=Z.OverlayLayer.extend({
      */
     initialize:function(id) {
         this.identifier = id;
-    },  
+    },
 
     /**
      * 显示图层
@@ -47,7 +47,7 @@ Z['SVGLayer']=Z.SVGLayer=Z.OverlayLayer.extend({
      */
     isVisible:function() {
         return this.visible && this.layerDom && this.layerDom.style.display !== 'none';
-    },    
+    },
 
     /**
      * 绘制Geometry
@@ -61,14 +61,14 @@ Z['SVGLayer']=Z.SVGLayer=Z.OverlayLayer.extend({
                 continue;
             }
             if (geo.getPainter()) {
-                geo.getPainter().paint(this.layerDom,  this.zIndex);    
+                geo.getPainter().paint(this.layerDom,  this.zIndex);
             }
         }
     },
 
-    
 
-    addTo:function() {        
+
+    addTo:function() {
         this.eachGeometry(function(geo) {
             if (geo.getPainter()) {
                 geo.getPainter().paint(this.layerDom,  this.zIndex);
@@ -80,7 +80,7 @@ Z['SVGLayer']=Z.SVGLayer=Z.OverlayLayer.extend({
     load:function() {
         var map = this.getMap();
         this.layerDom = map.panels.svgContainer;
-        map.createSVGPaper();
+        map._createSVGPaper();
         this.addTo();
     },
 
@@ -88,7 +88,7 @@ Z['SVGLayer']=Z.SVGLayer=Z.OverlayLayer.extend({
         this.zIndex=zIndex;
         this.eachGeometry(function(geo) {
             if (geo.getPainter()) {
-                geo.getPainter().setZIndex(zIndex);    
+                geo.getPainter().setZIndex(zIndex);
             }
         });
     },
@@ -100,11 +100,11 @@ Z['SVGLayer']=Z.SVGLayer=Z.OverlayLayer.extend({
     /**
      * 地图中心点变化时的响应函数
      */
-    onMoving:function() {
-        //nothing to do 
+    _onMoving:function() {
+        //nothing to do
     },
 
-    onMoveEnd:function() {
+    _onMoveEnd:function() {
         //nothing to do
     },
 
@@ -116,16 +116,16 @@ Z['SVGLayer']=Z.SVGLayer=Z.OverlayLayer.extend({
         //this.hide();
     },
 
-    onZoomEnd:function() {      
+    onZoomEnd:function() {
         this.eachGeometry(function(geo) {
             geo.onZoomEnd();
         });
         //this.show();
     },
 
-    onResize:function() {
+    _onResize:function() {
         //nothing to do
     }
-    
+
 
 });

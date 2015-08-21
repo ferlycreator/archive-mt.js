@@ -16,7 +16,7 @@ Z.Map.include({
         } else {
             this.loadCartoCSS(css);
         }
-        
+
     },
 
     loadCartoCSS:function(css) {
@@ -34,7 +34,7 @@ Z.Map.include({
     rendCartoCSS:function(cssContent) {
         var shader = new window['carto']['RendererJS']()['render'](cssContent);
         this.cartoCSSShader = shader;
-        this.fireEvent('cartocssloaded');
+        this._fireEvent('cartocssloaded');
     },
 
     /**

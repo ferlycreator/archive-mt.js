@@ -65,7 +65,7 @@ Z.SVG.SVG = {
     },
 
     refreshContainer:function(map, paper) {
-        var domOffset = map.offsetPlatform();
+        var domOffset = map._offsetPlatform();
         var x = -domOffset['left'],
             y = -domOffset['top'];
         var mapSize =   map.getSize();
@@ -119,7 +119,7 @@ Z.SVG.SVG = {
                 vector.setAttribute(key, strokeSymbol[key]);
             }
         }
-    
+
         for (key in fillSymbol) {
             if (fillSymbol.hasOwnProperty(key)) {
                 if (key.toLowerCase() === 'fill') {
@@ -133,8 +133,8 @@ Z.SVG.SVG = {
                         var pattern = Z.SVG.SVG.fillWithPattern(isUrl, vector, paper);
                         vector.setAttribute(key, pattern);
                         continue;
-                    } 
-                } 
+                    }
+                }
                 vector.setAttribute(key, fillSymbol[key]);
             }
         }
@@ -150,7 +150,7 @@ Z.SVG.SVG = {
     fillWithPattern:function(isUrl,vector,paper) {
         function setAttributes(el, attr) {
             var xlink = "http://www.w3.org/1999/xlink";
-            if (attr) {            
+            if (attr) {
                 for (var key in attr) {
                     if (attr.hasOwnProperty(key)) {
                         if (key.substring(0, 6) == "xlink:") {
@@ -189,7 +189,7 @@ Z.SVG.SVG = {
             'x':0,
             'y':0,
             'patternUnits':'userSpaceOnUse',
-            'height': 1, 
+            'height': 1,
             'width': 1
         });
         var image = create('image');
@@ -200,9 +200,9 @@ Z.SVG.SVG = {
         });
 
         pattern.appendChild(image);
-       
+
         vector._pattern = pattern;
-        
+
         (function () {
         _preload(isUrl[1], function() {
             var w = this.offsetWidth,
@@ -219,7 +219,7 @@ Z.SVG.SVG = {
         })();
         paper.defs.appendChild(pattern);
         return "url(#" + uid + ")";
-        
+
     },
 
     addVector:function(container, vectorBean, strokeSymbol, fillSymbol, iconSymbol) {
@@ -351,12 +351,12 @@ Z.SVG.VML= {
             var fill = Z.SVG.create('fill');
             if (fillSymbol['fill']) {
                 var isUrl = fillSymbol['fill'].match(Z.SVG._ISURL);
-                if (isUrl) {                    
+                if (isUrl) {
                     fill.rotate = true;
                     fill.src = isUrl[1];
-                    fill.type = "tile";                   
+                    fill.type = "tile";
                 } else {
-                    fill.color = fillSymbol['fill'];      
+                    fill.color = fillSymbol['fill'];
                 }
             }
             if (!Z.Util.isNil(fillSymbol['fillopacity'])) {

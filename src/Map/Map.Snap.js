@@ -12,13 +12,13 @@ Z.Map.include({
         var geometries = config['geometries'];
         var resultType = config['resultType'];
         var ignoreBase = config['ignoreBase'];
-        var lodConfig = this.getLodConfig();
+        var lodConfig = this._getLodConfig();
         if (!lodConfig) {
             return;
         }
-        var projection = this.getProjection();
+        var projection = this._getProjection();
         if (!extent) {
-            extent = this.getExtent();              
+            extent = this.getExtent();
         }
         if (Z.Util.isNil(zoomLevel)) {
             zoomLevel = this.getZoomLevel();
@@ -31,10 +31,10 @@ Z.Map.include({
         var snapSettings = {
             'projection':lodConfig['projection'],
             'res':lodConfig['resolutions'][zoomLevel],
-            'extent': extent.toJson()            
-        };   
+            'extent': extent.toJson()
+        };
         var layerSettings = {};
-        var baseTileLayer = this.getBaseTileLayer();            
+        var baseTileLayer = this.getBaseTileLayer();
         if (baseTileLayer) {
             var layerInfo = genLayerInfo(baseTileLayer);
             var tileNum = layerInfo.num;
@@ -58,7 +58,7 @@ Z.Map.include({
             var tileLayers =this.tileLayers;
             for (var i=0,len=tileLayers.length;i<len;i++) {
                 tileLayerSettings.push(genLayerInfo(tileLayers[i]).info);
-            }                       
+            }
             layerSettings['tilelayers'] = tileLayerSettings;
         }
         if (this.dynLayers.length>0) {
@@ -67,10 +67,10 @@ Z.Map.include({
             var dynLayers =this.dynLayers;
             for (var i=0,len=dynLayers.length;i<len;i++) {
                 dynLayerSettings.push(genDynlayerInfo(dynLayers[i]));
-            }                       
+            }
             layerSettings['dynlayers'] = dynLayerSettings;
         }
-        var geoJson = [];   
+        var geoJson = [];
         var markerJson = [];
         if (!geometries || geometries.length === 0) {
             if (this.canvasLayers.length>0) {
@@ -82,11 +82,11 @@ Z.Map.include({
         } else {
             collectGeos(geometries);
         }
-        
+
         layerSettings['geos'] = geoJson.concat(markerJson);
         snapSettings['layers'] = layerSettings;
-        
-        
+
+
         var url = Z.host + "/snapservice/snap";
         var queryString = "config="+encodeURIComponent(JSON.stringify(snapSettings));
         var ajax = new Z.Util.Ajax(url, 0, queryString, function(resultText) {
@@ -94,7 +94,7 @@ Z.Map.include({
             var result = Z.Util.parseJson(resultText);
             if (!result || !result['success']) {
                 if (onErrorFn) {
-                    onErrorFn(result);                          
+                    onErrorFn(result);
                 }
                 return;
             }
@@ -105,12 +105,12 @@ Z.Map.include({
                 } else {
                     url = Z.host + "/snapservice/snapshots/fetch.html?url="+result["data"];
                 }
-                callback(url); 
+                callback(url);
             }
-            
+
         });
         ajax.post();
-        
+
         function collectLayers(layerList) {
             for (var i=0, len=layerList.length;i<len;i++) {
                 if (!layerList[i] || !layerList[i].isVisible()) {continue;}
@@ -118,7 +118,7 @@ Z.Map.include({
                 collectGeos(geos);
             }
         }
-        
+
         function collectGeos(geos) {
             if (!geos) {return;}
             for (var j=0, jLen = geos.length;j<jLen;j++) {
@@ -128,12 +128,12 @@ Z.Map.include({
                     continue;
                 }
                 var layer = geos[j].getLayer();
-                if (layer instanceof Z.SVGLayer && 
+                if (layer instanceof Z.SVGLayer &&
                     Z.Geometry["TYPE_POINT"] === geos[j].getType()) {
-                    var jStr =geos[j].toJson({'attributes':false});
+                    var jStr =geos[j].toJson({'properties':false});
                     markerJson.push(jStr);
                 } else {
-                    var jStr = geos[j].toJson({'attributes':false});
+                    var jStr = geos[j].toJson({'properties':false});
                     geoJson.push(jStr);
                 }
             }
@@ -152,7 +152,7 @@ Z.Map.include({
                 },
                 'padding':{
                     'height':lodConfig["padding"]["height"],
-                    'width':lodConfig["padding"]["width"]  
+                    'width':lodConfig["padding"]["width"]
                 },
                 'nw':{
                     'x':nwTileInfo['x'],
@@ -167,22 +167,22 @@ Z.Map.include({
                     'oy':seTileInfo['offsetTop']
                 }
 
-            };         
-            
+            };
+
             var xFactor = nwTileInfo["x"]<seTileInfo["x"];
             var yFactor = nwTileInfo["y"]<seTileInfo["y"];
-            
+
             var tileParams = [];
             for (var i=nwTileInfo["x"];(xFactor?i<=seTileInfo["x"]:i>=seTileInfo["x"]);(xFactor?i++:i--)) {
                 for (var j=nwTileInfo["y"];(yFactor?j<=seTileInfo["y"]:j>=seTileInfo["y"]);(yFactor?j++:j--)) {
-                    tileParams.push("\""+layer._getRequestUrlParams(j,i,zoomLevel)+"\"");   
-                    
+                    tileParams.push("\""+layer._getRequestUrlParams(j,i,zoomLevel)+"\"");
+
                 }
             }
             dynLayerSettings['tiles']=tileParams;
             return dynLayerSettings;
         }
-        
+
         function genLayerInfo(layer) {
             var nwTileInfo = lodConfig.getCenterTileInfo(projection.project({x:extent['xmin'],y:extent['ymax']}), zoomLevel);
             var seTileInfo = lodConfig.getCenterTileInfo(projection.project({x:extent['xmax'],y:extent['ymin']}), zoomLevel);
@@ -193,7 +193,7 @@ Z.Map.include({
                 },
                 'padding':{
                     'height':lodConfig["padding"]["height"],
-                    'width':lodConfig["padding"]["width"]  
+                    'width':lodConfig["padding"]["width"]
                 },
                 'zoomLevel':zoomLevel,
                 'url':layer.getTileUrl("%s","%s","%s"),
@@ -211,7 +211,7 @@ Z.Map.include({
                 }
 
             };
-          
+
             return {info:tileLayerSettings,num:tileNum};
         }
 

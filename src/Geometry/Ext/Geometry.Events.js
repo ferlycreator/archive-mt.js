@@ -19,8 +19,8 @@ Z.Geometry.include({
             }
         }
         var params = this.getEventParams(originalEvent);
-        this.fireEvent(eventFired, params);
-    },  
+        this._fireEvent(eventFired, params);
+    },
 
     /**
      * 生成事件参数
@@ -30,7 +30,7 @@ Z.Geometry.include({
     getEventParams: function(event) {
         var map = this.getMap();
         var pixel = Z.DomUtil.getEventDomCoordinate(event, map.containterDom);
-        var coordinate = map.transform(pixel);      
+        var coordinate = map._transform(pixel);
         //统一的参数, target是geometry引用, pixel是事件的屏幕坐标, coordinate是事件的经纬度坐标
         return {'target':this, 'pixel':pixel, 'coordinate':coordinate};
     },
@@ -41,7 +41,7 @@ Z.Geometry.include({
         }
         var originalEvent = event.originalEvent || event;
         var params = this.getEventParams(originalEvent);
-        this.fireEvent('mouseover', params);
+        this._fireEvent('mouseover', params);
     },
 
     onMouseOut: function(event) {
@@ -50,6 +50,6 @@ Z.Geometry.include({
         }
         var originalEvent = event.originalEvent || event;
         var params = this.getEventParams(originalEvent);
-        this.fireEvent('mouseout', params);
+        this._fireEvent('mouseout', params);
     }
 });

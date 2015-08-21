@@ -10,7 +10,7 @@ Z.Geometry.Center={
         if (!map) {
             return null;
         }
-        return map.untransformToOffset(pcenter);
+        return map._untransformToOffset(pcenter);
     },
 
     /**
@@ -26,11 +26,11 @@ Z.Geometry.Center={
      * 设置新的坐标
      * @param {Coordinate} coordinates 新的坐标
      */
-    setCoordinates:function(coordinates) {        
+    setCoordinates:function(coordinates) {
         var center = new Z.Coordinate(coordinates);
         this.coordinates = center;
-        if (!this.coordinates || !this.getMap()) {return;}        
-        var projection = this.getProjection();
+        if (!this.coordinates || !this.getMap()) {return;}
+        var projection = this._getProjection();
         this.setPCenter(projection.project(this.coordinates));
         return this;
     },
@@ -46,9 +46,9 @@ Z.Geometry.Center={
 
 
     getPCenter:function() {
-        var projection = this.getProjection();
+        var projection = this._getProjection();
         if (!projection) {return null;}
-        if (!this.pcenter) {            
+        if (!this.pcenter) {
             if (this.coordinates) {
                 this.pcenter = projection.project(this.coordinates);
             }
@@ -64,13 +64,13 @@ Z.Geometry.Center={
         this.pcenter=pcenter;
         this.onPositionChanged();
     },
-    
+
     /**
      * 修改投影坐标后调用该方法更新经纬度坐标缓存.
      * @return {[type]} [description]
      */
     updateCache:function() {
-        var projection = this.getProjection();
+        var projection = this._getProjection();
         if (this.pcenter && projection) {
             this.coordinates = projection.unproject(this.pcenter);
         }

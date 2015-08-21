@@ -1,6 +1,6 @@
 Z.CanvasLayer.Base=Z.OverlayLayer.extend({
-    //load,onMoving, onMoveEnd, onResize, onZoomStart, onZoomEnd
-    
+    //load,_onMoving, _onMoveEnd, _onResize, onZoomStart, onZoomEnd
+
     //GeometryID的counter
     _stamp:0,
 
@@ -68,7 +68,7 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
             }
             var geos = layers[i].getAllGeometries();
             if (Z.Util.isArrayHasData(geos)) {
-                cache = cache.concat(geos);   
+                cache = cache.concat(geos);
             }
         }
         this._geoCache=cache;
@@ -92,21 +92,21 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
                 me.doRepaint();
             },10);
         }
-        
-        
+
+
     },
 
     doRepaint:function() {
         this.loadResource(function(){
             var me = this;
             var map = me.getMap();
-            var mapSize = map.getSize();            
+            var mapSize = map.getSize();
             me.canvasCtx.clearRect(0, 0, mapSize['width'], mapSize['height']);
-            var mapExtent = map.getExtent();                    
+            var mapExtent = map.getExtent();
             /*me.layerCanvas.width = mapSize.width;
             me.layerCanvas.height = mapSize.height;*/
             me._updateCanvasSize(me.layerCanvas);
-            var containerOffset = map.offsetPlatform();
+            var containerOffset = map._offsetPlatform();
             me.layerCanvas.style.left=(-containerOffset['left'])+"px";
             me.layerCanvas.style.top=(-containerOffset['top'])+"px";
             //载入资源后再进行绘制
@@ -129,23 +129,23 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
                 if (!geo || !geo.isVisible()) {
                     return;
                 }
-                var ext = geo.computeVisualExtent(geo.getProjection());
+                var ext = geo.computeVisualExtent(geo._getProjection());
                 if (!ext || !Z.Extent.isIntersect(ext,extent)) {
                     return;
                 }
-                geo.getPainter().paint(me.canvasCtx,me.resourceLoader);                 
+                geo.getPainter().paint(me.canvasCtx,me.resourceLoader);
             });
         }
     },
 
     clearCanvas:function(extent) {
         var map = this.getMap(),
-            projection = map.getProjection();
+            projection = map._getProjection();
         var p1 = projection.project({x:extent['xmin'],y:extent['ymin']}),
             p2 = projection.project({x:extent['xmax'],y:extent['ymax']});
-        var px1 = map.untransform(p1),
-            px2 = map.untransform(p2);
-        this.canvasCtx.clearRect(Math.min(px1['left'],px2['left']), Math.min(px1['top'],px2['top']), 
+        var px1 = map._untransform(p1),
+            px2 = map._untransform(p2);
+        this.canvasCtx.clearRect(Math.min(px1['left'],px2['left']), Math.min(px1['top'],px2['top']),
                                     Math.abs(px1['left']-px2['left']), Math.abs(px1['top']-px2['top']));
     },
 
@@ -166,7 +166,7 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
                 var resource = geo.getExternalResource();
                 if (resource) {
                     me.resourceLoader.addResource(resource);
-                }                    
+                }
             });
             me.resourceLoader.load(function() {
                 me.resourceLoaded = true;
@@ -175,7 +175,7 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
         //} else {
             //onComplete.call(me);
         //}
-        
+
     },
 
     /**
@@ -218,21 +218,21 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
         }
     },
 
-    onMoving:function(param) {
+    _onMoving:function(param) {
         //nothing to do
     },
 
-    onMoveEnd:function(param) {
+    _onMoveEnd:function(param) {
         this.repaint();
     },
 
-    onResize:function(param) {
+    _onResize:function(param) {
         this.repaint();
     },
 
     onZoomStart:function(param) {
-        this.hide();        
-        var mapSize = this.getMap().getSize();            
+        this.hide();
+        var mapSize = this.getMap().getSize();
         this.canvasCtx.clearRect(0, 0, mapSize['width'], mapSize['height']);
     },
 

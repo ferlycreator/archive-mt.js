@@ -2,22 +2,17 @@ Z['Sector']=Z.Sector=Z.Polygon.extend({
     includes:[Z.Geometry.Center],
 
     options:{
-        'defaultNumberOfPoints':60
+        'numberOfPoints':60
     },
 
     type:Z.Geometry['TYPE_SECTOR'],
 
-    initialize:function(coordinates,radius,startAngle,endAngle,opts) {        
-        // this.type=Z.Geometry['TYPE_SECTOR'];
+    initialize:function(coordinates,radius,startAngle,endAngle,opts) {
         this.coordinates = new Z.Coordinate(coordinates);
         this.radius = radius;
         this.startAngle = startAngle;
         this.endAngle = endAngle;
         this.initOptions(opts);
-        this.numberOfPoints = this.options['defaultNumberOfPoints'];
-        if (opts && opts['numberOfPoints']) {
-            this.numberOfPoints = opts['numberOfPoints'];
-        }
     },
 
     /**
@@ -57,7 +52,7 @@ Z['Sector']=Z.Sector=Z.Polygon.extend({
     setStartAngle:function(startAngle) {
         this.startAngle = startAngle;
         this.onShapeChanged();
-        return this;  
+        return this;
     },
 
     /**
@@ -77,7 +72,7 @@ Z['Sector']=Z.Sector=Z.Polygon.extend({
     setEndAngle:function(endAngle) {
         this.endAngle = endAngle;
         this.onShapeChanged();
-        return this;  
+        return this;
     },
 
     /**
@@ -86,9 +81,9 @@ Z['Sector']=Z.Sector=Z.Polygon.extend({
      * @expose
      */
     getShell:function() {
-        //var proj = this.getProjection();
+        //var proj = this._getProjection();
         //TODO
-        
+
     },
 
     /**
@@ -110,7 +105,7 @@ Z['Sector']=Z.Sector=Z.Polygon.extend({
         var p2 = projection.locate(this.coordinates,-radius,-radius);
         return new Z.Extent(p1,p2);
     },
-    
+
     computeGeodesicLength:function(projection) {
         if (Z.Util.isNil(this.radius)) {
             return 0;

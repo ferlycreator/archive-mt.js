@@ -8,11 +8,11 @@ Z.Class.extend = function (props) {
     // extended class with the new prototype
     var NewClass = function () {
         //将类上的options定义复制到对象上
-        if (this.options) {
+        /*if (this.options) {
             var classOptions = this.options;
             this.options = {};
             Z.Util.extend(this.options, classOptions);
-        }
+        }*/
         // call the constructor
         if (this.initialize) {
             this.initialize.apply(this, arguments);
@@ -56,12 +56,13 @@ Z.Class.extend = function (props) {
         props.options = Z.Util.extend(Z.Util.create(proto.options), props.options);
     }
 
+    // exception definitions
     if (props.exceptionDefs) {
         var lang = Z.Browser.language;
         if ( lang !== 'zh-CN') {
             lang = 'en-US'; //only support chinese and english now;
         }
-        Z.Util.extend(proto, {exceptions:props.exceptionDefs[lang]}); 
+        Z.Util.extend(proto, {exceptions:props.exceptionDefs[lang]});
         delete props.exceptionDefs;
     }
 

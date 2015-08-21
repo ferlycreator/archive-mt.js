@@ -1,12 +1,12 @@
-Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({    
+Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
 
     type:Z.Geometry['TYPE_RECT'],
 
-    initialize:function(coordinates,width,height,opts) {        
+    initialize:function(coordinates,width,height,opts) {
         this.coordinates = new Z.Coordinate(coordinates);
         this.width = width;
         this.height = height;
-        this.initOptions(opts);        
+        this.initOptions(opts);
     },
 
 
@@ -26,19 +26,19 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
      */
     setCoordinates:function(nw){
         this.coordinates = new Z.Coordinate(nw);
-        
+
         if (!this.coordinates || !this.getMap()) {
             return;
         }
-        var projection = this.getProjection();
+        var projection = this._getProjection();
         this.setPNw(projection.project(this.coordinates));
         return this;
     },
 
     getPNw:function() {
-        var projection = this.getProjection();
+        var projection = this._getProjection();
         if (!projection) {return null;}
-        if (!this.pnw) {            
+        if (!this.pnw) {
             if (this.coordinates) {
                 this.pnw = projection.project(this.coordinates);
             }
@@ -100,7 +100,7 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
      * @return {[type]} [description]
      */
     updateCache:function() {
-        var projection = this.getProjection();
+        var projection = this._getProjection();
         if (this.pnw && projection) {
             this.coordinates = projection.unproject(this.pnw);
         }
@@ -116,7 +116,7 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
      * @return {[type]}            [description]
      */
     computeCenter:function(projection) {
-        
+
         return projection.locate(this.coordinates,this.width/2,-this.height/2);
     },
 
@@ -126,8 +126,8 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
      * @expose
      */
     getShell:function() {
-        var projection = this.getProjection();
-        var nw =this.coordinates;    
+        var projection = this._getProjection();
+        var nw =this.coordinates;
         var points = [];
         points.push(nw);
         points.push(projection.locate(nw,this.width,0));
@@ -135,7 +135,7 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
         points.push(projection.locate(nw,0,this.height));
         points.push(nw);
         return points;
-        
+
     },
 
     /**
@@ -154,7 +154,7 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
         }
         var width = this.getWidth(),
             height = this.getHeight();
-        var p1 = projection.locate(this.coordinates,width,-height);        
+        var p1 = projection.locate(this.coordinates,width,-height);
         return new Z.Extent(p1,this.coordinates);
     },
 

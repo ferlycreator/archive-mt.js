@@ -32,14 +32,14 @@ Z.Map.Drag = Z.Handler.extend({
         me.map.allowSlideMap=false;
         var map = me.map;
         me.startDragTime = new Date().getTime();
-        var domOffset = me.map.offsetPlatform();
+        var domOffset = me.map._offsetPlatform();
         me.startLeft = domOffset['left'];
         me.startTop = domOffset['top'];
         me.preX = param['mousePos']['left'];
         me.preY = param['mousePos']['top'];
         me.startX = me.preX;
         me.startY = me.preY;
-        map.fireEvent('movestart');
+        map._fireEvent('movestart');
     },
 
     _onDragging:function(param) {
@@ -49,32 +49,32 @@ Z.Map.Drag = Z.Handler.extend({
             my = param['mousePos']['top'];
         var currentDomLeft = (me.startLeft + mx - me.startX);
         var currentDomTop = (me.startTop + my - me.startY);
-        var domOffset = me.map.offsetPlatform();
-        me.map.offsetPlatform({
+        var domOffset = me.map._offsetPlatform();
+        me.map._offsetPlatform({
             'left':currentDomLeft-domOffset['left'],
             'top':currentDomTop-domOffset['top']
         });
-        map.offsetCenterByPixel({"left":-(currentDomLeft-domOffset['left']),"top":-(currentDomTop-domOffset['top'])});
-        me.map.onMoving({'target':map});
-        map.fireEvent('moving');
+        map._offsetCenterByPixel({"left":-(currentDomLeft-domOffset['left']),"top":-(currentDomTop-domOffset['top'])});
+        me.map._onMoving({'target':map});
+        map._fireEvent('moving');
     },
 
-    
+
 
     _onDragEnd:function(param) {
         var me = this;
         me.map.allowSlideMap=true;
         var map = me.map;
         var t = new Date().getTime()-me.startDragTime;
-        var domOffset = me.map.offsetPlatform();
+        var domOffset = me.map._offsetPlatform();
         var xSpan =  domOffset['left'] - me.startLeft;
         var ySpan =  domOffset['top'] - me.startTop;
         if (t<280 && Math.abs(ySpan) > 5 && Math.abs(xSpan) > 5) {
             map.animatePan({"top":ySpan*Math.ceil(500/t), "left":xSpan*Math.ceil(500/t)});
         } else {
-            map.onMoveEnd({'target':map});
+            map._onMoveEnd({'target':map});
         }
-        map.fireEvent('moveend');
+        map._fireEvent('moveend');
     }
 });
 

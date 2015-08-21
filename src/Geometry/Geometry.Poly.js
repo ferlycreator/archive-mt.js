@@ -4,7 +4,7 @@ Z.Geometry.Poly={
      * @param  {[type]} points [description]
      * @return {[type]}        [description]
      */
-    untransformToOffset:function(points) {
+    _untransformToOffset:function(points) {
         var map = this.getMap();
         if (!map || !Z.Util.isArrayHasData(points)) {
             return null;
@@ -24,13 +24,13 @@ Z.Geometry.Poly={
                     if (Z.Util.isNil(p[j])) {
                         continue;
                     }
-                    p_r.push(map.untransformToOffset(p[j]));
+                    p_r.push(map._untransformToOffset(p[j]));
                 }
                 var simplifiedPoints = Z.Simplify.simplify(p_r, 2, false);
                 result.push(simplifiedPoints);
-            } else {                
-                var pp = map.untransformToOffset(p);
-                result.push(pp);   
+            } else {
+                var pp = map._untransformToOffset(p);
+                result.push(pp);
             }
         }
         if (!is2D) {
@@ -40,7 +40,7 @@ Z.Geometry.Poly={
         return result;
     },
 
-    setPrjPoints:function(prjPoints) {        
+    setPrjPoints:function(prjPoints) {
         this.prjPoints = prjPoints;
         this.onShapeChanged();
     },
@@ -57,7 +57,7 @@ Z.Geometry.Poly={
      * 直接修改Geometry的投影坐标后调用该方法, 更新经纬度坐标缓存
      */
     updateCache:function() {
-        var projection = this.getProjection();
+        var projection = this._getProjection();
         if (!projection) {
             return;
         }
@@ -75,7 +75,7 @@ Z.Geometry.Poly={
     },
 
     projectPoints:function(points) {
-        var projection = this.getProjection();
+        var projection = this._getProjection();
         if (projection) {
             return projection.projectPoints(points);
         }
@@ -83,7 +83,7 @@ Z.Geometry.Poly={
     },
 
     unprojectPoints:function(prjPoints) {
-        var projection = this.getProjection();
+        var projection = this._getProjection();
         if (projection) {
             return projection.unprojectPoints(prjPoints);
         }
@@ -93,13 +93,13 @@ Z.Geometry.Poly={
     computeCenter:function(projection) {
         var ring=this.points;
         if (!Z.Util.isArrayHasData(ring)) {
-            return null;            
+            return null;
         }
         var sumx=0,sumy=0;
         var counter = 0;
         for (var i=0,len=ring.length;i<len;i++) {
             if (ring[i]) {
-                if (Z.Util.isNumber(ring[i].x) && Z.Util.isNumber(ring[i].y)) {                    
+                if (Z.Util.isNumber(ring[i].x) && Z.Util.isNumber(ring[i].y)) {
                         sumx += ring[i].x;
                         sumy += ring[i].y;
                         counter++;
@@ -109,18 +109,18 @@ Z.Geometry.Poly={
         return new Z.Coordinate(sumx/counter, sumy/counter);
     },
 
-    computeExtent:function(projection) {    
-        var ring = this.points;    
+    computeExtent:function(projection) {
+        var ring = this.points;
         if (!Z.Util.isArrayHasData(ring)) {
-            return null;            
-        }        
+            return null;
+        }
         var rings = ring;
         if (this.hasHoles && this.hasHoles()) {
             rings = rings.concat(this.getHoles());
-        }        
+        }
         return this.computePointsExtent(rings,projection);
     },
-    
+
     /**
      * 计算坐标数组的extent, 数组内的元素可以坐标或者坐标数组,坐标为经纬度坐标,而不是投影坐标
      * @param  {[type]} points     [description]
@@ -132,8 +132,8 @@ Z.Geometry.Poly={
         var ext;
         for ( var i = 0, len = points.length; i < len; i++) {
             if (Z.Util.isArray(points[i])) {
-                for ( var j = 0, jlen = points[i].length; j < jlen; j++) {       
-                    ext = new Z.Extent(points[i][j]);             
+                for ( var j = 0, jlen = points[i].length; j < jlen; j++) {
+                    ext = new Z.Extent(points[i][j]);
                     result = Z.Extent.combine(result, ext);
                 }
             } else {

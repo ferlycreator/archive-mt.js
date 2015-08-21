@@ -3,7 +3,20 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
 
     type: Z.Geometry['TYPE_POINT'],
 
-    initialize:function(coordinates,opts) {        
+    options:{
+        //TODO 应该更新为cartoCSS风格的icon
+        'symbol':{
+            'url' : Z.host + '/engine/images/marker.png',
+            'height' : 30,
+            'width' : 22,
+            'offset' : {
+                'x' : 0,
+                'y' : 0
+            }
+        }
+    },
+
+    initialize:function(coordinates,opts) {
         this.coordinates = new Z.Coordinate(coordinates);
         this.initOptions(opts);
     },
@@ -14,7 +27,7 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
      * @expose
      */
     /**isVectorIcon:function() {
-        var icon = this.getIcon();  
+        var icon = this.getIcon();
         if (icon) {
             return 'vector' === icon['type'];
         }
@@ -72,12 +85,10 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
             return null;
         }
         if(!projection) {
-            projection = map.getProjection();
+            projection = map._getProjection();
         }
-        var icon=geo.getIcon();
-        if (!icon) {
-            icon = geo.defaultIcon;
-        }
+        var icon=geo.getSymbol();
+
         var coordinates=geo.getCenter();
         var offset = icon['offset'];
         if (!offset) {
@@ -85,7 +96,7 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
                 'x':0,
                 'y':0
             };
-        }       
+        }
         if (!coordinates) {return null;}
         var pnw,pse;
         var width, height;
@@ -110,7 +121,7 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
             var textSize = painter.measureTextMarker();
             if (!textSize) {
                 pnw={"top":0,"left":0};
-                pse={"top":0,"left":0}; 
+                pse={"top":0,"left":0};
             } else {
                 var padding = 0;
                 try {
@@ -120,7 +131,7 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
                 pnw = {"top":(textSize["offset"].y),"left":(-textSize["offset"].x)};
                 pse = {"top":(textSize["height"]-textSize["offset"].y+2*padding),"left":(textSize["width"]+textSize["offset"].x+2*padding)};
             }
-            
+
         } else {
             icon = geo.defaultIcon;
             height = geo.defaultIcon['height'];
@@ -130,7 +141,7 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
         }*/
 
         var pcenter = projection.project(coordinates);
-        return map.computeExtentByPixelSize(pcenter, pnw, pse);
+        return map._computeExtentByPixelSize(pcenter, pnw, pse);
     },
 
 
@@ -150,12 +161,4 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
             return new Z.Marker.Canvas(this);
         }
     }
-    /*exportGeoJson:function(opts) {
-        var coordinates = this.getCenter();
-        return {
-            'type':'Point',
-            'coordinates':[coordinates.x, coordinates.y]
-        };
-    }*/
-
 });

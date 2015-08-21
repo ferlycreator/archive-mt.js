@@ -1,6 +1,6 @@
 /**
  * [initialize description]
- * 
+ *
  */
 Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
 
@@ -8,12 +8,15 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
     baseDomZIndex:15,
 
     options: {
-        'opacity':1,      
+        'opacity':1,
         'errorTileUrl':Z.host+'/engine/images/error.png',
+        'urlTemplate':Z.host+'/engine/images/blank.png',
+        'subdomains':[''],
         //是否检查
-        'showOnTileLoadComplete':true
+        'showOnTileLoadComplete':true,
+        'crs':'crs3857'
     },
-    
+
     /**
      * <pre>
      * 瓦片图层类构造函数
@@ -26,32 +29,33 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
      * crs的值可为字符串类型的预定义配置或属性对象:
      *      预定义配置有:"crs3857","crs4326","baidu"
      *      如果是属性对象,则需要指定
-     * </pre>     
+     * </pre>
      * @param  {String} id 图层identifier
      * @param  {Object} opts 图层配置
      */
     initialize:function(id,opts) {
         this.setId(id);
-        if (!opts['crs']) {
+        /*if (!opts['crs']) {
             this.lodConfig = new Z.LodConfig(Z.LodConfig['defaultCRS']);
         } else {
-            this.lodConfig = new Z.LodConfig(opts['crs']);    
+            this.lodConfig = new Z.LodConfig(opts['crs']);
         }
-        delete opts['crs'];
+        delete opts['crs'];*/
         //将其他设置存入this.options中
-        Z.Util.setOptions(this,opts);
-        //替换url模板中的大写变量为小写
-        if (this.options['urlTemplate']) {
+        ////替换url模板中的大写变量为小写
+        /*if (settings['urlTemplate']) {
             this.options['urlTemplate'] = this.options['urlTemplate'].replace(/{X}/g,'{x}').replace(/{Y}/g,'{y}').replace(/{Z}/g,'{z}').replace(/{S}/g,'{s}');
-        }
+        }*/
+        Z.Util.setOptions(this,opts);
+        this.lodConfig = new Z.LodConfig(this.options['crs']);
         // this.extent = lodInfo['fullExtent'];
     },
 
-    getLodConfig:function(){
+    _getLodConfig:function(){
         if (!this.lodConfig) {
             //如果tilelayer本身没有设定lodconfig,则继承地图基础底图的lodconfig
             if (this.map) {
-                return this.map.getLodConfig();
+                return this.map._getLodConfig();
             }
         }
         return this.lodConfig;
@@ -66,33 +70,33 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         if (this.options['subdomains']) {
             var subdomains = this.options['subdomains'];
             if (Z.Util.isArray(subdomains) && subdomains.length>0) {
-                var rand = Math.round(Math.random()*(subdomains.length-1));    
+                var rand = Math.round(Math.random()*(subdomains.length-1));
                 domain = subdomains[rand];
             }
         }
-        return urlTemplate.replace(/{x}/g,x).replace(/{y}/g,y).replace(/{z}/g,z).replace(/{s}/g,domain);        
+        return urlTemplate.replace(/{x}/g,x).replace(/{y}/g,y).replace(/{z}/g,z).replace(/{s}/g,domain);
     },
 
     /**
      * 设置图层的层级
      * @param zIndex
      */
-    setZIndex:function(zIndex) {    
+    setZIndex:function(zIndex) {
         this.zIndex = zIndex;
         if (this.tileContainer) {
             this.tileContainer.style.zIndex = (this.baseDomZIndex+zIndex);
         }
     },
 
-    
+
     /**
      * 地图中心点变化时的响应函数
      */
-    onMoving:function() {
+    _onMoving:function() {
         this.fillTiles(false);
     },
 
-    onMoveEnd:function() {
+    _onMoveEnd:function() {
         this.fillTiles(false);
     },
 
@@ -112,12 +116,12 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         this.load();
     },
 
-    onResize:function() {
+    _onResize:function() {
         this.fillTiles(false);
     },
 
     /**
-     * 载入前的准备操作     
+     * 载入前的准备操作
      */
     prepareLoad:function() {
         //nothing to do here, just return true
@@ -130,13 +134,13 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
     load:function(){
         if (!this.getMap()) {return;}
         if (!this.tileContainer) {
-            this.initPanel();    
+            this.initPanel();
         }
         this.clear();
         if (this.prepareLoad()) {
             this.clearExecutors();
             var me = this;
-            this.tileLoadExecutor = setTimeout(function() {                
+            this.tileLoadExecutor = setTimeout(function() {
                 me.fillTiles(me.options['showOnTileLoadComplete']);
             },20);
         }
@@ -148,11 +152,11 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
     },
 
     getTileSize:function() {
-        return this.getLodConfig()['tileSize'];
+        return this._getLodConfig()['tileSize'];
     },
 
     getPadding:function() {
-        var padding = this.getLodConfig()['padding'];
+        var padding = this._getLodConfig()['padding'];
         if (!padding) {
             padding = {
                 'width':0,
@@ -187,13 +191,13 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         var map =this.map;
         if (!map) {
             return;
-        }        
+        }
         var tileContainer = this.tileContainer;
-        var lodConfig = this.getLodConfig();        
+        var lodConfig = this._getLodConfig();
         if (!tileContainer || !lodConfig) {return;}
         var me = this;
         var tileImages = [];
-        var dSegment = document.createDocumentFragment(); 
+        var dSegment = document.createDocumentFragment();
         function checkAndLoad() {
             var len = tileImages.length;
             var counter = 0;
@@ -202,7 +206,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
                     counter ++;
                 }
             }
-            
+
             if (counter > len*2/3) {
                 if (me.completeExecutor) {
                     clearTimeout(me.completeExecutor);
@@ -224,22 +228,22 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
                     me.fireEventExecutor=setTimeout(function() {
                         // me.executeListeners("layerloaded");
                         me.fire(this.events.LAYER_LOADED,{'target':this});
-                    },500);                
+                    },500);
                 }   */
             }
-        }        
+        }
         var tileSize = this.getTileSize(),
-            zoomLevel = map.getZoomLevel(),         
-            mapDomOffset = map.offsetPlatform();
+            zoomLevel = map.getZoomLevel(),
+            mapDomOffset = map._offsetPlatform();
         var holderLeft=mapDomOffset["left"],
             holderTop = mapDomOffset["top"],
             mapWidth = map.width,
             mapHeight = map.height;
             //中心瓦片信息,包括瓦片编号,和中心点在瓦片上相对左上角的位置
-        var centerTileInfo =  lodConfig.getCenterTileInfo(map.getPCenter(), zoomLevel);
+        var centerTileInfo =  lodConfig.getCenterTileInfo(map._getPrjCenter(), zoomLevel);
 
-        //计算中心瓦片的top和left偏移值    
-        var centerOffset={};    
+        //计算中心瓦片的top和left偏移值
+        var centerOffset={};
         centerOffset.top=Math.round(parseFloat(mapHeight/2-centerTileInfo["offsetTop"]));
         centerOffset.left=Math.round(parseFloat(mapWidth/2-centerTileInfo["offsetLeft"]));
         //中心瓦片上下左右的瓦片数
@@ -247,16 +251,16 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
             tileLeftNum=Math.ceil(Math.abs(centerOffset.left)/tileSize["height"]),
             tileBottomNum=Math.ceil(Math.abs(mapHeight-centerOffset.top)/tileSize["height"]),
             tileRightNum=Math.ceil(Math.abs(mapWidth-centerOffset.left)/tileSize["width"]);
-        
+
     //  只加中心的瓦片，用做调试
     //  var centerTileImg = this._createTileImage(centerOffset.left,centerOffset.top,this.config.getTileUrl(centerTileInfo["topIndex"],centerTileInfo["leftIndex"],zoomLevel),tileSize["height"],tileSize["width"]);
-    //  tileContainer.appendChild(centerTileImg);   
-        
-        var currentTiles = this.tileMap;        
+    //  tileContainer.appendChild(centerTileImg);
+
+        var currentTiles = this.tileMap;
         //TODO 瓦片从中心开始加起
         for (var i=-(tileLeftNum);i<tileRightNum;i++){
-            for (var j=-(tileTopNum);j<=tileBottomNum;j++){                 
-                    var tileIndex = lodConfig.getNeighorTileIndex(centerTileInfo["y"], centerTileInfo["x"], j,i);               
+            for (var j=-(tileTopNum);j<=tileBottomNum;j++){
+                    var tileIndex = lodConfig.getNeighorTileIndex(centerTileInfo["y"], centerTileInfo["x"], j,i);
                     var tileId=tileIndex["y"]+","+tileIndex["x"];
                     var tileLeft = centerOffset.left + tileSize["width"]*i-holderLeft;
                     var tileTop = centerOffset.top +tileSize["height"]*j-holderTop;
@@ -269,8 +273,8 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
                         tileImage.id = tileId;
                         if (isCheckTileLoad) {
                             tileImages.push(tileImage);
-                        } 
-                        dSegment.appendChild(tileImage);                        
+                        }
+                        dSegment.appendChild(tileImage);
                         currentTiles[tileId] = {left:tileLeft, top:tileTop, tile:tileImage};
                     } else {
                         var image = currentTiles[tileId].tile;
@@ -288,16 +292,16 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         } else {
             tileContainer.appendChild(dSegment);
         }
-        
+
         if (this.removeout_timeout) {
             clearTimeout(this.removeout_timeout);
         }
         this.removeout_timeout = setTimeout(function() {
             me.removeTilesOutOfHolder();
         },500);
-        
-        
-        
+
+
+
     },
 
     /*fillTiles:function() {
@@ -306,18 +310,18 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         var map =this.map;
         if (!map || !tileContainer || !this.lodConfig) {return;}
         var _this = this;
-        var dSegment = document.createDocumentFragment(); 
-        
+        var dSegment = document.createDocumentFragment();
+
         var tileSize = lodConfig["tileSize"],
-            zoomLevel = map.getZoomLevel(),         
-            mapDomOffset = map.offsetPlatform();
+            zoomLevel = map.getZoomLevel(),
+            mapDomOffset = map._offsetPlatform();
         var holderLeft=mapDomOffset["left"],
             holderTop = mapDomOffset["top"],
             mapWidth = map.width,
             mapHeight = map.height;
-        var centerTileInfo =  lodConfig.getCenterTileInfo(map.getPCenter(), zoomLevel);
-        //计算中心瓦片的top和left偏移值    
-        var centerOffset={};    
+        var centerTileInfo =  lodConfig.getCenterTileInfo(map._getPrjCenter(), zoomLevel);
+        //计算中心瓦片的top和left偏移值
+        var centerOffset={};
         centerOffset.top=Math.round(parseFloat(mapHeight/2-centerTileInfo["offsetTop"]));
         centerOffset.left=Math.round(parseFloat(mapWidth/2-centerTileInfo["offsetLeft"]));
         //中心瓦片上下左右的瓦片数
@@ -325,10 +329,10 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
             tileLeftNum=Math.ceil(Math.abs(centerOffset.left)/tileSize["height"]),
             tileBottomNum=Math.ceil(Math.abs(mapHeight-centerOffset.top)/tileSize["height"]),
             tileRightNum=Math.ceil(Math.abs(mapWidth-centerOffset.left)/tileSize["width"]);
-        
+
     //  只加中心的瓦片，用做调试
     //  var centerTileImg = this._createTileImage(centerOffset.left,centerOffset.top,this.config.getTileUrl(centerTileInfo["topIndex"],centerTileInfo["leftIndex"],zoomLevel),tileSize["height"],tileSize["width"]);
-    //  tileContainer.appendChild(centerTileImg);   
+    //  tileContainer.appendChild(centerTileImg);
         var padding = this.lodConfig["padding"];
         if (!padding) {
             padding = {
@@ -336,14 +340,14 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
                 'height':0
             };
         }
-        var currentTiles = this.tileMap;        
+        var currentTiles = this.tileMap;
         var tileIndexes = [];
 
 
         //TODO 瓦片从中心开始加起
         for (var i=-(tileLeftNum);i<tileRightNum;i++){
             for (var j=-(tileTopNum);j<=tileBottomNum;j++){
-                    var tileIndex = lodConfig.getNeighorTileIndex(centerTileInfo["y"], centerTileInfo["x"], j,i);                                   
+                    var tileIndex = lodConfig.getNeighorTileIndex(centerTileInfo["y"], centerTileInfo["x"], j,i);
                     var tileLeft = centerOffset.left + tileSize["width"]*i-holderLeft;
                     var tileTop = centerOffset.top +tileSize["height"]*j-holderTop;
                     var tileId=tileIndex["x"]+","+tileIndex["y"];
@@ -367,7 +371,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
                 return;
             }
             tileImage.id = tileId;
-            dSegment.appendChild(tileImage);                        
+            dSegment.appendChild(tileImage);
             currentTiles[tileId] = {left:tileLeft, top:tileTop, tile:tileImage};
         }
         //sort tiles to append from center
@@ -381,17 +385,17 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
 
 
         tileContainer.appendChild(dSegment);
-        
+
         this.fire(this.events.LAYER_LOADED,{'target':this});
-        
+
         if (this.removeout_timeout) {
             clearTimeout(this.removeout_timeout);
         }
         this.removeout_timeout = setTimeout(function() {
             _this.removeTilesOutOfHolder();
         },1000);
-        
-        
+
+
     },*/
 
     /**
@@ -402,11 +406,11 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
      * @param  {Fn}     loadcallback 额外的瓦片图片onload回调
      * @return {Image}              瓦片图片对象
      */
-    createTileImage:function(_tileLeft, _tileTop, url,  onloadFn) {        
+    createTileImage:function(_tileLeft, _tileTop, url,  onloadFn) {
         var tileImage = new Image(),
             tileSize = this.getTileSize();
         var padding = this.getPadding();
-        
+
 
         var width = tileSize['width']+padding['width'],
             height = tileSize['height']+padding['height'],
@@ -427,7 +431,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
             this.onload=null;
             this.onerror=null;
             this.onabort=null;
-            this.src=defaultTileUrl;            
+            this.src=defaultTileUrl;
             Z.Util.fixPNG(this);
             if (onloadFn) {
                 onloadFn();
@@ -455,14 +459,14 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         if (this.map.isBusy) {
             //console.log("blocked");
             return;
-        }       
+        }
         var tileContainer = this.tileContainer;
         if (!tileContainer) {return;}
         var map = this.map;
         var mapHeight = map.height,
             mapWidth = map.width,
-            mapDomOffset = map.offsetPlatform(),
-            lodConfig = this.getLodConfig();
+            mapDomOffset = map._offsetPlatform(),
+            lodConfig = this._getLodConfig();
         var _holderLeft = mapDomOffset["left"],
             _holderTop = mapDomOffset["top"],
             _tileSize = lodConfig["tileSize"],
@@ -471,9 +475,9 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         try {
             currentTile = tileContainer.firstChild;
         } catch (err) {
-            
+
         }
-        
+
         if (!currentTile) {return;}
         var tilesToRemove = [];
         while (currentTile) {
@@ -484,14 +488,14 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
             var tileLeft = this.tileMap[currentTile.id].left+padding["width"]/2+_holderLeft,
                 tileTop = this.tileMap[currentTile.id].top+padding["height"]/2+_holderTop;
             if ( tileLeft >=mapWidth ||  tileLeft <= -_tileSize["width"] || tileTop > mapHeight || tileTop <  -_tileSize["height"]) {
-                tilesToRemove.push(currentTile);            
+                tilesToRemove.push(currentTile);
                 delete this.tileMap[currentTile.id];
-            } 
+            }
             currentTile = currentTile.nextSibling;
         }
         var count = tilesToRemove.length;
         if ( count === 0) {return;}
-        for (var i=0;i<count;i++) {     
+        for (var i=0;i<count;i++) {
             Z.DomUtil.removeDomNode(tilesToRemove[i]);
         }
     },
@@ -500,12 +504,12 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
     initPanel:function() {
         var mapContainer = this.map.panels.mapContainer;
         if (!mapContainer) {return;}
-        //生成地图瓦片装载div       
-        var tileContainer = Z.DomUtil.createEl('div');     
+        //生成地图瓦片装载div
+        var tileContainer = Z.DomUtil.createEl('div');
         tileContainer.style.cssText = 'position:absolute;top:0px;left:0px;z-index:'+(this.baseDomZIndex+this.getZIndex());
         var currentTileContainers = mapContainer.childNodes;
         if (currentTileContainers && currentTileContainers.length > 0) {
-            var firstChild = currentTileContainers[0];              
+            var firstChild = currentTileContainers[0];
             mapContainer.insertBefore(tileContainer,firstChild);
         } else {
             mapContainer.appendChild(tileContainer);
@@ -517,6 +521,6 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
             tileContainer.setAttribute('unselectable', 'on');
             tileContainer['ondragstart'] = function(e) { return false; };
         }
-        this.tileContainer = tileContainer;     
+        this.tileContainer = tileContainer;
     }
 });

@@ -3,7 +3,7 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
 
     initialize:function(geometry) {
         this.geometry = geometry;
-    },    
+    },
 
     /**
      * 绘制图形
@@ -21,7 +21,7 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
             return;
         }
         var offset = this.getMarkerDomOffset();
-        var pt = map.domOffsetToScreen({'left':offset[0],top:offset[1]});
+        var pt = map._domOffsetToScreen({'left':offset[0],top:offset[1]});
         var icon = this.getGeoIcon();
         var url = icon['url'];
         if (url&&url.length>0) {
@@ -184,8 +184,8 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
             testCanvas.width=10;
             testCanvas.height=10;
             testContext=testCanvas.getContext("2d");
-            map.testContext=testContext;          
-        }        
+            map.testContext=testContext;
+        }
         return this.paintTextMarker(testContext,{'left':0,'top':0},true);
     }
 });

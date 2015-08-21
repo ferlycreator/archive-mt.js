@@ -24,11 +24,11 @@ Z.Map.include({
     },
 
     onFullscreenStart: function() {
-        this.fireEvent('fullscreenStart',{'target':this});
+        this._fireEvent('fullscreenStart',{'target':this});
     },
 
     onFullscreenEnd: function() {
-        this.fireEvent('fullscreenEnd',{'target':this});
+        this._fireEvent('fullscreenEnd',{'target':this});
     },
 
     _openFullscreen: function(dom) {

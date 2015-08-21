@@ -2,20 +2,16 @@ Z['Ellipse']=Z.Ellipse = Z.Polygon.extend({
     includes:[Z.Geometry.Center],
 
     options:{
-        'defaultNumberOfPoints':60,
+        'numberOfPoints':60
     },
 
     type:Z.Geometry['TYPE_ELLIPSE'],
 
-    initialize:function(coordinates,width,height,opts) {        
+    initialize:function(coordinates,width,height,opts) {
         this.coordinates = new Z.Coordinate(coordinates);
         this.width = width;
         this.height = height;
         this.initOptions(opts);
-        this.numberOfPoints = this.options['defaultNumberOfPoints'];
-        if (opts && opts['numberOfPoints']) {
-            this.numberOfPoints = opts['numberOfPoints'];
-        }
     },
 
     /**
@@ -64,9 +60,9 @@ Z['Ellipse']=Z.Ellipse = Z.Polygon.extend({
      * @expose
      */
     getShell:function() {
-        //var proj = this.getProjection();
+        //var proj = this._getProjection();
         //TODO
-        
+
     },
 
     /**

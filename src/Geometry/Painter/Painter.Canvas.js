@@ -11,7 +11,7 @@ Z.Painter.Canvas = Z.Painter.extend({
         this.setSymbol(symbol);
 
         this.prepareCanvas(context,this.strokeSymbol,this.fillSymbol);
-        var platformOffset = this.geometry.getMap().offsetPlatform();
+        var platformOffset = this.geometry.getMap()._offsetPlatform();
         this.doPaint(context,resources,platformOffset);
     },
 
@@ -46,7 +46,7 @@ Z.Painter.Canvas = Z.Painter.extend({
             return;
         }
         var isRealTime = geometry.isEditing();
-        map.repaintBaseCanvasLayer(isRealTime);
+        map._repaintBaseCanvasLayer(isRealTime);
         this.registerEvents();
     },
 
@@ -88,7 +88,7 @@ Z.Painter.Canvas = Z.Painter.extend({
      */
     prepareCanvas:function(context, strokeSymbol, fillSymbol){
         this.setDefaultCanvasSetting(context);
-        context.restore();       
+        context.restore();
         if (strokeSymbol) {
             var strokeWidth = strokeSymbol['strokeWidth'];
             if (!Z.Util.isNil(strokeWidth)) {context.lineWidth = strokeWidth;}
@@ -126,7 +126,7 @@ Z.Painter.Canvas = Z.Painter.extend({
                  }
              }
          }
-         if (fillSymbol) { 
+         if (fillSymbol) {
              var fill=fillSymbol['fill'];
              if (!fill) {return;}
              if (Z.Util.isNil(fillSymbol['fillOpacity'])) {
@@ -135,12 +135,12 @@ Z.Painter.Canvas = Z.Painter.extend({
              if (fill.length>7 && 'url' ===fill.substring(0,3)) {
                  var imgUrl = fill.substring(5,fill.length-2);
                  var imageTexture = document.createElement('img');
-                 imageTexture.src = imgUrl;        
+                 imageTexture.src = imgUrl;
                  var woodfill = context.createPattern(imageTexture, 'repeat');
                  context.fillStyle = woodfill;
              }else {
-                 context.fillStyle =this.getRgba(fill); 
-             }               
+                 context.fillStyle =this.getRgba(fill);
+             }
          }
     },
 
@@ -157,5 +157,5 @@ Z.Painter.Canvas = Z.Painter.extend({
     registerEvents:function(){
 
     }
-    
+
 });

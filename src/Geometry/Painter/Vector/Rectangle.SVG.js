@@ -8,14 +8,14 @@ Z.Rectangle.SVG=Z.Polygon.SVG.extend({
             return null;
         }
         var geometry = this.geometry;
-        var map = geometry.getMap();         
-        var domNw = map.untransformToOffset(geometry.getPNw());
-        var pr = this.getPixelSize();        
+        var map = geometry.getMap();
+        var domNw = map._untransformToOffset(geometry.getPNw());
+        var pr = this.getPixelSize();
         var start = domNw['left']+','+domNw['top'];
         var path = 'M'+start+' L'+(domNw['left']+pr['px'])+','+domNw['top']+
             ' L'+(domNw['left']+pr['px'])+','+(domNw['top']+pr['py'])+
             ' L'+domNw['left']+','+(domNw['top']+pr['py'])+
-            ' '+Z.SVG.closeChar;        
+            ' '+Z.SVG.closeChar;
         var holePathes = this.getHolePathes();
         if (Z.Util.isArrayHasData(holePathes)) {
             path = path + ' ' + holePathes.join(' ');
@@ -23,7 +23,7 @@ Z.Rectangle.SVG=Z.Polygon.SVG.extend({
         if (Z.Browser.vml) {
             //vml图形需要在末尾加个e表示图形结束
             path = path +' e';
-        }        
+        }
         return {
             'type' : 'path',
             'path' : path

@@ -18,7 +18,7 @@ Z.Geometry.include({
         if (this.editor) {
             this.editor.stop();
         }
-    },      
+    },
 
     /**
      * Geometry是否处于编辑状态中
@@ -34,7 +34,7 @@ Z.Geometry.include({
 
     /**
      * 开始移动Geometry, 进入移动模式
-     * @expose   
+     * @expose
      */
     startDrag: function() {
         this._map = this.getMap();
@@ -94,13 +94,13 @@ Z.Geometry.include({
 		    'top'  : this.endPosition['top'] - this.startPosition['top']
 		};
 		var geometryPixel = this._map.coordinateToScreenPoint(this._dragGeometry.getCenter());
-		var mapOffset = this._map.offsetPlatform();
+		var mapOffset = this._map._offsetPlatform();
 		var newPosition = {
             'left': geometryPixel['left'] + dragOffset['left'] - mapOffset['left'],
             'top' : geometryPixel['top'] + dragOffset['top'] - mapOffset['top']
 		};
 		this.startPosition = newPosition;
-		var pcenter = this._map.transformFromOffset(newPosition);
+		var pcenter = this._map._transformFromOffset(newPosition);
         this._dragGeometry.setPCenter(pcenter);
         this._dragGeometry.updateCache();
         this.setPCenter(pcenter);
@@ -109,7 +109,7 @@ Z.Geometry.include({
     },
 
     /**
-     * 结束移动Geometry, 退出移动模式  
+     * 结束移动Geometry, 退出移动模式
      */
     _endDrag: function(event) {
 		this._dragGeometry.remove();

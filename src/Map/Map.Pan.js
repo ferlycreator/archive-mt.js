@@ -1,5 +1,5 @@
 Z.Map.include({
-    
+
     /**
      * 将地图移动到指定的坐标
      * @param  {Coordinate} coordinate 指定的坐标
@@ -9,9 +9,9 @@ Z.Map.include({
         if (!Z.Util.isCoordinate(coordinate)) {
             return;
         }
-        var projection = this.getProjection();
+        var projection = this._getProjection();
         var p = projection.project(coordinate);
-        var span = this.getPixelDistance(p);
+        var span = this._getPixelDistance(p);
         this.panBy(span);
         return this;
     },
@@ -22,10 +22,10 @@ Z.Map.include({
      * @expose
      */
     panBy:function(offset) {
-        this.offsetPlatform({'left':offset['left'],'top':offset['top']});
-        this.offsetCenterByPixel({'left':-offset['left'],'top':-offset['top']});
-        this.fireEvent('moving');
-        this.onMoveEnd({'target':this});
+        this._offsetPlatform({'left':offset['left'],'top':offset['top']});
+        this._offsetCenterByPixel({'left':-offset['left'],'top':-offset['top']});
+        this._fireEvent('moving');
+        this._onMoveEnd({'target':this});
         return this;
     },
 
@@ -35,7 +35,7 @@ Z.Map.include({
             moveOffset['left'] = 0;
         }
         if (!moveOffset['top']) {
-            moveOffset['top'] = 0;   
+            moveOffset['top'] = 0;
         }
         var xfactor = moveOffset["left"] >= 0 ? 1 : -1;
         var yfactor = moveOffset["top"] >= 0 ? 1 : -1;
@@ -52,7 +52,7 @@ Z.Map.include({
         if (yd <= 0) {
             yd = 1;
         }
-        
+
         // 移动距离在这个数组里记录下来
         var spanArr = [];
         var currX = 1, currY = 1;
@@ -61,7 +61,7 @@ Z.Map.include({
         while (true) {
             // 等差计算移动距离
             currX = lastx - spanCounter * xd;
-            currY = lasty - spanCounter * yd;       
+            currY = lasty - spanCounter * yd;
             if (currX < 0 || spanX>xSum) {
                 currX = 0;
             }
@@ -91,28 +91,28 @@ Z.Map.include({
         }
         _map.isBusy = true;
         var _this=this;
-        slideMap(); 
-        
+        slideMap();
+
         function slideMap() {
             if (!Z.Util.isArrayHasData(spanArr)) {
                 return;
             }
             if (!_map.allowSlideMap) {
                 _map.allowSlideMap = true;
-                _map.onMoveEnd({'target':_map});
+                _map._onMoveEnd({'target':_map});
                 return;
             }
             var ySpan = spanArr[counter].y;
             var xSpan = spanArr[counter].x;
-            _map.offsetPlatform({'left':xSpan,'top':ySpan});
-            _map.offsetCenterByPixel({'left':-xSpan,'top':-ySpan});
+            _map._offsetPlatform({'left':xSpan,'top':ySpan});
+            _map._offsetCenterByPixel({'left':-xSpan,'top':-ySpan});
             counter++;
             // 每移动3次draw一次
             if (counter <= counterLimit - 1) {
                 if (counter % 3 === 0) {
                     if (!Z.Browser.ie6) {
                        // _map.fire('moving',{'target':_map});
-                       _map.onMoving({'target':_map});
+                       _map._onMoving({'target':_map});
                     }
                 }
                 setTimeout(slideMap, 8 + counter);
@@ -120,12 +120,12 @@ Z.Map.include({
                 // 用setTimeout方式调用解决了地图滑动结束时，如果添加有动态图层，或者canvasLayer上有大量数据时，地图会发生顿卡现象的问题
                 _map.dynLayerSlideTimeout = setTimeout(function() {
                     //_map._drawTileLayers();
-                     _map.onMoveEnd({'target':_map});
+                     _map._onMoveEnd({'target':_map});
                     _map.isBusy = false;
-                },50);                      
-                
+                },50);
+
             }
-            
+
         }
     }
 

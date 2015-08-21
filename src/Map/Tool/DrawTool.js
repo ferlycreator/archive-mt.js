@@ -20,7 +20,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
     addTo: function(map) {
         this.map = map;
         if (!this.map) {return;}
-        this.lodConfig = map.getLodConfig();
+        this.lodConfig = map._getLodConfig();
         this.enable();
         return this;
     },
@@ -92,7 +92,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         }
     },
 
-    getProjection:function() {
+    _getProjection:function() {
         if (!this.lodConfig) {
             return null;
         }
@@ -141,7 +141,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         if(this.afterdraw){
             this.afterdraw(param);
         }
-        this.fireEvent('afterdraw', param);
+        this._fireEvent('afterdraw', param);
         if(this.afterdrawdisable) {
            this.disable();
         }
@@ -163,7 +163,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
             * @param coordinate {seegoo.maps.MLonLat} 初始坐标
             * @param pixel {Pixel} 初始像素坐标
             */
-            this.fireEvent('startdraw', {'coordinate':coordinate,'pixel':screenXY});
+            this._fireEvent('startdraw', {'coordinate':coordinate,'pixel':screenXY});
         } else {
             var path = this.getLonlats();
             path.push(coordinate);
@@ -176,7 +176,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
                  * @param coordinate {seegoo.maps.MLonLat} 新端点的地理坐标
                  * @param pixel {Pixel} 新端点的像素坐标
                  */
-                this.fireEvent('drawring',{'target':this.geometry,'coordinate':coordinate,'pixel':screenXY});
+                this._fireEvent('drawring',{'target':this.geometry,'coordinate':coordinate,'pixel':screenXY});
             }
         }
     },
@@ -323,7 +323,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
          * @param coordinate {seegoo.maps.MLonLat} 初始坐标
          * @param pixel {Pixel} 初始像素坐标
          */
-        this.fireEvent('startdraw',{'coordinate':coordinate,'pixel':screenXY});
+        this._fireEvent('startdraw',{'coordinate':coordinate,'pixel':screenXY});
         genGeometry(coordinate);
         this.map.on('mousemove',onMouseMove,this);
         this.map.on('mouseup',onMouseUp,this);
@@ -347,7 +347,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
          if(this.afterdraw){
             this.afterdraw(param);
          }
-         this.fireEvent('afterdraw', param);
+         this._fireEvent('afterdraw', param);
          if(this.afterdrawdisable) {
            this.disable();
          }
@@ -394,11 +394,11 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
      * @return {[type]}       [description]
      */
     screenXYToLonlat:function(screenXY) {
-        var projection = this.getProjection(),
+        var projection = this._getProjection(),
             map = this.map;
 
         //projected pLonlat
-        var pLonlat = map.transform(screenXY);
+        var pLonlat = map._transform(screenXY);
         return projection.unproject(pLonlat);
     },
 
@@ -424,7 +424,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         return drawToolLayer;
     },
 
-    fireEvent:function(eventName, param) {
+    _fireEvent:function(eventName, param) {
         if (!param) {
             param = {};
         }

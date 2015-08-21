@@ -109,22 +109,22 @@ Z.Painter.SVG = Z.Painter.extend({
             }
         }
         return option;
-        
+
     },
 
     setVectorPaper:function(paper) {
         this.vectorPaper = paper;
     },
 
-    getVectorPaper:function() {     
+    getVectorPaper:function() {
         if (this.vectorPaper) {
             return this.vectorPaper;
         }
         if (!this.geometry || !this.geometry.getMap()) {
             return null;
-        }        
+        }
         var map = this.geometry.getMap();
-        map.createSVGPaper();
+        map._createSVGPaper();
         return map.vectorPaper;
     }
 });

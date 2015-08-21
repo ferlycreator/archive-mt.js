@@ -80,9 +80,7 @@ Z['Control'] = Z.Control = Z.Class.extend({
 	* @expose
 	*/
 	setOption: function(options) {
-		if (options) {
-			this.options = options;
-		}
+		Z.Util.setOptions(this, options);
 		return this;
 	},
 

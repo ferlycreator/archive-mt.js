@@ -4,17 +4,17 @@
 Z.Map.include({
     /**
      * 计算两坐标间距离，计算结果单位为米，如果返回-1，则说明参数不合法
-     * 
+     *
      * @param lonlat1 {seegoo.maps.MLonLat|Object} 坐标1，例如{x:121,y:19}
      * @param lonlat2 {seegoo.maps.MLonLat|Object} 坐标2，例如{x:122,y:19}
      * @returns {Number}
      * @expose
      */
     computeDistance: function(lonlat1, lonlat2) {
-        if (!Z.Util.isCoordinate(lonlat1) || !Z.Util.isCoordinate(lonlat2) || !this.getProjection()) {return null;}
+        if (!Z.Util.isCoordinate(lonlat1) || !Z.Util.isCoordinate(lonlat2) || !this._getProjection()) {return null;}
         if (Z.Coordinate.equals(lonlat1,lonlat2)) {return 0;}
-        return this.getProjection().getGeodesicLength(lonlat1, lonlat2);
-    },    
+        return this._getProjection().getGeodesicLength(lonlat1, lonlat2);
+    },
 
     /**
      * 计算Geometry的地理长度
@@ -23,7 +23,7 @@ Z.Map.include({
      * @expose
      */
     computeGeodesicLength:function(geometry) {
-        return geometry.computeGeodesicLength(this.getProjection());
+        return geometry.computeGeodesicLength(this._getProjection());
     },
 
     /**
@@ -33,12 +33,12 @@ Z.Map.include({
      * @expose
      */
     computeGeodesicArea:function(geometry) {
-        return geometry.computeGeodesicArea(this.getProjection());
+        return geometry.computeGeodesicArea(this._getProjection());
     },
 
     /**
      * 计算Geometry的外缓冲，该功能需要引擎服务器版的支持
-     * 
+     *
      * @expose
      * @param {Geometry} [geometry] [做缓冲的geometry]
      * @param {Number} distance 缓冲距离，单位为米
@@ -74,7 +74,7 @@ Z.Map.include({
             });
             return;
         } else if (geometry instanceof Z.Circle) {
-            var radius = me.radius + distance;      
+            var radius = me.radius + distance;
             result = new Z.Circle(me.center, radius);
             result.setSymbol(defaultOption);
             callback({
@@ -107,12 +107,12 @@ Z.Map.include({
             });
             ajax.post();
         }
-    
+
     },
 
     /**
      * 判断Geometry和参数中的Geometry数组的空间关系，该功能需要引擎服务器版的支持
-     * 
+     *
      * @expose
      * @param {Geometry} [geometry] [被relate的Geometry]
      * @param geometries [seegoo.maps.Geometry] 输入Geometry数组
@@ -128,7 +128,7 @@ Z.Map.include({
             var geoJsons = [];
             for (var i=0, len=geometries.length;i<len;i++) {
                 geoJsons.push(JSON.stringify(geometries[i].toJson()));
-            }       
+            }
             var ret = "geo1=" + JSON.stringify(_geometry.toJson());
             ret += "&geos=[" + geoJsons.join(",")+"]";
             ret += "&relation=" + relation;
@@ -315,7 +315,7 @@ Z.Map.include({
     _circleAndRectIntersection: function(circle, rect) {
         if(this._visualExtentIntersection(circle, rect)){
             var center = circle.getCenter();
-            var projection = this.getProjection();
+            var projection = this._getProjection();
             if (!rect ||!projection) {return false;}
             var extent = rect.computeExtent(projection);
             if(Z.GeoUtils.isPointInRect(center, extent)) {return true;}
@@ -468,7 +468,7 @@ Z.Map.include({
      * @return {Boolean} true，相交；false，不相交
      */
      _visualExtentIntersection: function(circle, geometry) {
-         var projection = this.getProjection();
+         var projection = this._getProjection();
          if (!projection) {
              return null;
          }
@@ -505,7 +505,7 @@ Z.Map.include({
         }
         return result;
     },
-    
+
    /**
     * 希望筛选出靠近圆形外接矩形坐标范围内的坐标点
     * @param {Circle} 圆形
@@ -519,7 +519,7 @@ Z.Map.include({
     */
     _filterRingsInCircleScope: function(circle, rings) {
          var result = [];
-         var projection = this.getProjection();
+         var projection = this._getProjection();
          if (!projection) {
               return null;
          }
@@ -588,7 +588,7 @@ Z.Map.include({
     * @return {Coordinate} 线段垂线经过的点
     */
     _pointOnVerticalLine: function(startCoordinate, endPointCoordinate, pointCoordinate) {
-        var projection = this.getProjection();
+        var projection = this._getProjection();
         if (!startCoordinate || !endPointCoordinate || !pointCoordinate ||!projection) return null;
         var startPoint = projection.project(startCoordinate);
         var endPoint = projection.project(endPointCoordinate);
@@ -654,7 +654,7 @@ Z.Map.include({
     _computeSectorEndpoint: function(angle, radius, vertex, extend) {
         var y = radius*Math.sin(angle) + extend;
         var x = radius*Math.cos(angle) + extend;
-        var projection = this.getProjection();
+        var projection = this._getProjection();
         return projection.locate(vertex, x, y);
    },
 
@@ -665,7 +665,7 @@ Z.Map.include({
   * @return {Boolean} true：点在园内；false：点不在园内
   */
   _isPointInCircle: function(point, circle) {
-       var projection = this.getProjection();
+       var projection = this._getProjection();
        var distance = projection.getGeodesicLength(point,circle.getCenter())
        return distance<=circle.getRadius();
   },
@@ -681,7 +681,7 @@ Z.Map.include({
         var focusPoints = this._computeEllipseFocusPoints(ellipse);
         var leftFocus = focusPoints["leftFocus"];
         var rightFocus = focusPoints["rightFocus"];
-        var projection = this.getProjection();
+        var projection = this._getProjection();
         var distance = projection.getGeodesicLength(point,leftFocus) +
                        projection.getGeodesicLength(point, rightFocus);
         return distance<=defaultDistance;
@@ -706,7 +706,7 @@ Z.Map.include({
        var focusPoints = this._computeEllipseFocusPoints(ellipse);
        var leftFocus = focusPoints["leftFocus"];
        var rightFocus = focusPoints["rightFocus"];
-       var projection = this.getProjection();
+       var projection = this._getProjection();
        var c = projection.getGeodesicLength(leftFocus, rightFocus)/2;
        var b = Math.sqrt(a*a-c*c);
        var result = (circleX*circleX)/(a+circleRadius)*(a+circleRadius) +
@@ -724,7 +724,7 @@ Z.Map.include({
         var width = ellipse.getWidth();
         var height = ellipse.getHeight();
         var radius = width/2;
-        var projection = this.getProjection();
+        var projection = this._getProjection();
         var pointOnEllipse = projection.locate(center, -radius, 0);
         if(width<height) {
             radius = height/2;
@@ -749,7 +749,7 @@ Z.Map.include({
         var height = ellipse.getHeight();
         var longAxis = width/2;
         var shortAxis = height/2;
-        var projection = this.getProjection();
+        var projection = this._getProjection();
         var focusDistance = Math.sqrt(longAxis*longAxis-shortAxis*shortAxis);
         var leftFocus = projection.locate(center, -focusDistance, 0);
         var rightFocus = projection.locate(center, focusDistance, 0);

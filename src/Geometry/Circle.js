@@ -2,19 +2,19 @@ Z['Circle']=Z.Circle=Z.Polygon.extend({
     includes:[Z.Geometry.Center],
 
     options:{
-        'defaultNumberOfPoints':60
-    },    
-    
+        'numberOfPoints':60
+    },
+
     type:Z.Geometry['TYPE_CIRCLE'],
 
     initialize:function(coordinates,radius,opts) {
         this.coordinates = new Z.Coordinate(coordinates);
         this.radius = radius;
         this.initOptions(opts);
-        this.numberOfPoints = this.options['defaultNumberOfPoints'];
+        /*this.numberOfPoints = this.options['defaultNumberOfPoints'];
         if (opts && opts['numberOfPoints']) {
             this.numberOfPoints = opts['numberOfPoints'];
-        }
+        }*/
     },
 
     /**
@@ -43,9 +43,9 @@ Z['Circle']=Z.Circle=Z.Polygon.extend({
      * @expose
      */
     getShell:function() {
-        //var proj = this.getProjection();
+        //var proj = this._getProjection();
         //TODO
-        
+
     },
 
     /**
@@ -67,7 +67,7 @@ Z['Circle']=Z.Circle=Z.Polygon.extend({
         var p2 = projection.locate(this.coordinates,-radius,-radius);
         return new Z.Extent(p1,p2);
     },
-    
+
     computeGeodesicLength:function(projection) {
         if (Z.Util.isNil(this.radius)) {
             return 0;

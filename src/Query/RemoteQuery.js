@@ -2,7 +2,7 @@ Z['RemoteQuery']=Z.RemoteQuery=Z.Class.extend({
     /**
      * 查询远程服务器上的数据
      * @param  {[type]} opts [description]
-     * @constructor 
+     * @constructor
      */
     initialize:function(opts) {
         if (!opts) {
@@ -116,20 +116,20 @@ Z['RemoteQuery']=Z.RemoteQuery=Z.Class.extend({
                     if (!Z.Util.isArrayHasData(datas)) {
                         opts['success']({"success":true,"data":[]});
                     } else {
-                        var geos = Z.Geometry.fromJson(datas);                         
+                        var geos = Z.Geometry.fromJson(datas);
                         opts['success']({"success":true,"data":geos});
                     }
-                }                           
+                }
             }
-            
+
             ajax = null;
-        }); 
-        
+        });
+
         ajax.post();
     },
 
     formQueryString:function(queryFilter) {
-        var ret = "encoding=utf-8";        
+        var ret = "encoding=utf-8";
         //ret+="&method=add";
         ret+="&mapdb="+this.mapdb;
         if (queryFilter['toCoordinateType']) {
@@ -155,7 +155,7 @@ Z['RemoteQuery']=Z.RemoteQuery=Z.Class.extend({
                 }
                 ret += ("&spatialFilter="+encodeURIComponent(JSON.stringify(queryFilter['spatialFilter'].toJson())));
             }
-            
+
         }
         if (queryFilter['condition']) {
             ret += ("&attributeCond="+encodeURIComponent(queryFilter['condition']));

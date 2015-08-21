@@ -43,7 +43,7 @@ Z.DomUtil = {
             if (!type) {
                 continue;
             }
-            
+
             if (!obj['Z__'+type]) {
                 obj['Z__'+type]=[];
 
@@ -341,7 +341,7 @@ Z.DomUtil = {
              dom.style.cssText = css + newStyle;
          }
     },
-     
+
      hasClass: function (el, name) {
         if (el.classList !== undefined) {
             return el.classList.contains(name);

@@ -30,7 +30,12 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         'TYPE_SECTOR' : 'Sector',
     },
 
-    //默认标注样式
+    options:{
+        'draggable':false,
+        'editable':true
+    },
+
+    /*//默认标注样式
     defaultIcon: {
         'url' : Z.host + '/engine/images/marker.png',
         'height' : 30,
@@ -49,12 +54,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         'strokeDasharray': '-',
         'fill' : '#ffffff',
         'fillOpacity' : 1
-    },
-
-    initialize:function() {
-        //this.identifier = Z.Util.GUID();
-
-    },
+    },*/
 
     /**
      * 初始化传入的option参数
@@ -64,7 +64,8 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (!opts) {
             return;
         }
-        this.opts = opts;
+        Z.Util.setOptions(this,opts);
+        /*this.opts = opts;
         if (opts['symbol']) {
             this.setSymbol(opts['symbol']);
         }
@@ -79,11 +80,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
         if (opts['properties']) {
             this.setProperties(opts['properties']);
-        }
-        if (opts['crs']) {
-            //设置CRS
-            //不需设置crs
-        }
+        }*/
     },
 
     /**
@@ -123,7 +120,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     setId:function(id) {
         var oldId = this.getId();
         this.identifier=id;
-        this.fireEvent('_idchanged',{'target':this,'oldId':oldId,'newId':id});
+        this._fireEvent('_idchanged',{'target':this,'oldId':oldId,'newId':id});
         return this;
     },
 
@@ -163,10 +160,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     getSymbol:function() {
-        if (!this.symbol) {
-            return null;
-        }
-        return this.symbol;
+        return this.options.symbol;
     },
 
     /**
@@ -176,11 +170,11 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      */
     setSymbol:function(symbol) {
         if (!symbol) {
-            this.symbol = null;
+            this.options.symbol = null;
         } else {
             //属性的变量名转化为驼峰风格
             var camelSymbol = Z.Util.convertFieldNameStyle(symbol,'camel');
-            this.symbol = camelSymbol;
+            this.options.symbol = camelSymbol;
         }
         this.onSymbolChanged();
         return this;
@@ -195,7 +189,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (this.extent) {
             return this.extent;
         }
-        return this.computeExtent(this.getProjection());
+        return this.computeExtent(this._getProjection());
     },
 
     /**
@@ -208,7 +202,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (!map) {
             return null;
         }
-        var projection = this.getProjection();
+        var projection = this._getProjection();
         var extent = this.computeVisualExtent(projection);
         var xmin = extent['xmin'];
         var xmax = extent['xmax'];
@@ -225,7 +219,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     getPrjExtent:function() {
         var ext = this.getExtent();
-        var p = this.getProjection();
+        var p = this._getProjection();
         if (ext) {
             return new Z.Extent(p.project({x:ext['xmin'],y:ext['ymin']}), p.project({x:ext['xmax'],y:ext['ymax']}));
         } else {
@@ -239,7 +233,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     getCenter:function() {
-        return this.computeCenter(this.getProjection());
+        return this.computeCenter(this._getProjection());
     },
 
     getDefaultSymbol:function() {
@@ -309,7 +303,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      */
     copy:function() {
         var json = this.toJson();
-        var ret = Z.Geometry.fromJson(json);
+        var ret = Z.GeoJson.fromGeoJson(json);
         return ret;
     },
 
@@ -338,7 +332,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         layer.onGeometryRemove(this);
         delete this.layer;
 
-        this.fireEvent('remove',{'target':this});
+        this._fireEvent('remove',{'target':this});
 
     },
 
@@ -355,10 +349,10 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     },
 
 
-    getProjection:function() {
+    _getProjection:function() {
         var map = this.getMap();
         if (map) {
-            return map.getProjection();
+            return map._getProjection();
         }
         return Z.Projection.getDefault();
         // return null;
@@ -412,7 +406,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
         this.extent = null;
         if (!this.isEditing || !this.isEditing()) {
-            this.fireEvent('shapechanged',{'target':this});
+            this._fireEvent('shapechanged',{'target':this});
         }
     },
 
@@ -423,7 +417,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
         this.extent = null;
         if (!this.isEditing || !this.isEditing()) {
-            this.fireEvent('positionchanged',{'target':this});
+            this._fireEvent('positionchanged',{'target':this});
         }
     },
 
@@ -432,10 +426,10 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (painter) {
             painter.refreshSymbol();
         }
-        this.fireEvent('symbolchanged',{'target':this});
+        this._fireEvent('symbolchanged',{'target':this});
     },
 
-    fireEvent:function(eventName, param) {
+    _fireEvent:function(eventName, param) {
         if (!param) {
             param = {};
         }
@@ -457,7 +451,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @param  {[type]} opts 输出配置
      * @return {Object}      GeoJson对象
      */
-    toGeoJson:function(opts) {
+    toJson:function(opts) {
         if (!opts) {
             opts = {};
         }

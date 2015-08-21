@@ -3,14 +3,20 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
     baseDomZIndex:50,
 
     options:{
-        'showOnTileLoadComplete':false
+        'showOnTileLoadComplete':false,
+        'padding' : 0,
+        'minZoomLevel' : -1, //-1 means no limit
+        'maxZoomLevel' : -1, //-1 means no limit
+        'condition' : null,
+        'spatialFilter' : null
+
     },
 
     initialize:function(id, opts) {
         this.setId(id);
         // this.options={};
         this.guid=this.GUID();
-        Z.Util.extend(this.options, opts);
+        Z.Util.setOptions(this, opts);
         //reload时n会增加,改变瓦片请求参数,以刷新浏览器缓存
         this.n=0;
     },
@@ -101,7 +107,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
 
     getRequestUrlParams:function(topIndex,leftIndex,zoomLevel) {
         var map = this.getMap();
-        var lodConfig = map.getLodConfig();
+        var lodConfig = map._getLodConfig();
         var tileNw = lodConfig.getTileProjectedNw(topIndex,leftIndex,zoomLevel);
         var params="";
         params+="guid="+this.guid;
@@ -113,7 +119,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
 
     formQueryString:function(condition,spatialFilter) {
         var map = this.getMap();
-        var lodConfig = map.getLodConfig();
+        var lodConfig = map._getLodConfig();
         var padding = this.getPadding();
         var config = {
             'coordinateType':(Z.Util.isNil(this.options['coordinateType'])?null:this.options['coordinateType']),
@@ -151,7 +157,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
 
         if (map) {
             ret+="&r="+lodConfig['resolutions'][map.getZoomLevel()];
-            var nt = (map.getProjection().srs != 'ESPG:4326');
+            var nt = (map._getProjection().srs != 'ESPG:4326');
             ret+="&nt="+nt;
         }
 

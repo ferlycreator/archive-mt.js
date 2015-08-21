@@ -54,6 +54,6 @@ Z['CanvasLayer']=Z.CanvasLayer=Z.OverlayLayer.extend({
      */
     paintGeometries:function(geometries) {
         var map = this.getMap();
-        map.repaintBaseCanvasLayer();
+        map._repaintBaseCanvasLayer();
     }
 });

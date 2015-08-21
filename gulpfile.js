@@ -6,6 +6,8 @@ var del = require('del');
 var runSequence = require('run-sequence');
 var gcc = require('gulp-closure-compiler');
 var karma = require('karma').server;
+var uglify = require('gulp-uglify');
+var rename = require('gulp-rename');
 
 var minimist = require('minimist');
 
@@ -83,8 +85,10 @@ gulp.task('compile',function () {
   return gulp.src(sources)
     .pipe($.concat('maptalks.js'))
     .pipe(gulp.dest('./dist/'))
-    // .pipe($.uglify({preserveComments: 'some'}))
-    .pipe(gcc({
+    .pipe(rename({suffix: '.min'}))
+    .pipe(gulp.dest('./dist/'))
+    .pipe($.uglify({preserveComments: 'some'}))
+    /*.pipe(gcc({
       compilerPath: 'build/compiler.jar',
       compilerFlags: {
         formatting: 'PRETTY_PRINT',
@@ -96,7 +100,7 @@ gulp.task('compile',function () {
       maxBuffer: 10000,
       continueWithWarnings: true,
       fileName: 'maptalks.min.js'
-    }))
+    }))*/
     // Output files
     .pipe(gulp.dest('dist'))
     .pipe($.gzip())
@@ -108,7 +112,7 @@ gulp.task('clean', del.bind(null, [], {dot: true}));
 gulp.task('build', ['clean'], function (done) {
   runSequence(
     'styles',
-    ['scripts'],
+    ['compile'],
     done);
 });
 

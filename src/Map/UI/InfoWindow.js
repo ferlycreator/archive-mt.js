@@ -205,7 +205,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
                 mapHeight = size['height'];
             if (0 === mapWidth || 0 === mapHeight) {return;}
             //只有当tip不是地图打开的时候，才做tip打开滑动操作
-            var absolute = map.domOffsetToScreen(tipCoord);
+            var absolute = map._domOffsetToScreen(tipCoord);
             var left = 0;
             var top=0;
             if ((absolute["left"])<0) {
@@ -260,10 +260,10 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
                 }
             } else {
                 var center = this.target.getCenter();
-                var projection = this.map.getProjection();
+                var projection = this.map._getProjection();
                 if (!center || !projection) return null;
                 var pcenter = projection.project(center);
-                var geoTipPos = this.map.untransformToOffset(pcenter);
+                var geoTipPos = this.map._untransformToOffset(pcenter);
                 position = {
                     'left': geoTipPos['left'],
                     'top' : geoTipPos['top']
