@@ -1,9 +1,10 @@
 Z['Marker']=Z.Marker=Z.Geometry.extend({
     includes:[Z.Geometry.Center],
 
-    initialize:function(center,opts) {
-        this.type = Z.Geometry['TYPE_POINT'];
-        this.center = new Z.Coordinate(center);
+    type: Z.Geometry['TYPE_POINT'],
+
+    initialize:function(coordinates,opts) {        
+        this.coordinates = new Z.Coordinate(coordinates);
         this.initOptions(opts);
     },
 
@@ -59,9 +60,9 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
     },
 
     computeExtent:function(projection) {
-        var center = this.getCenter();
-        if (!center) {return null;}
-        return new Z.Extent({'x':center.x,'y':center.y},{'x':center.x,'y':center.y});
+        var coordinates = this.getCenter();
+        if (!coordinates) {return null;}
+        return new Z.Extent({'x':coordinates.x,'y':coordinates.y},{'x':coordinates.x,'y':coordinates.y});
     },
 
     computeVisualExtent:function(projection) {
@@ -77,7 +78,7 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
         if (!icon) {
             icon = geo.defaultIcon;
         }
-        var center=geo.getCenter();
+        var coordinates=geo.getCenter();
         var offset = icon['offset'];
         if (!offset) {
             offset = {
@@ -85,7 +86,7 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
                 'y':0
             };
         }       
-        if (!center) {return null;}
+        if (!coordinates) {return null;}
         var pnw,pse;
         var width, height;
         var iconType = icon['type'];
@@ -128,7 +129,7 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
             pse = {"top":(-offset["y"]),"left":(width/2+offset["x"])};
         }*/
 
-        var pcenter = projection.project(center);
+        var pcenter = projection.project(coordinates);
         return map.computeExtentByPixelSize(pcenter, pnw, pse);
     },
 
@@ -148,14 +149,13 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
         } else if (this.layer instanceof Z.CanvasLayer) {
             return new Z.Marker.Canvas(this);
         }
-    },
-
-    exportGeoJson:function(opts) {
-        var center = this.getCenter();
+    }
+    /*exportGeoJson:function(opts) {
+        var coordinates = this.getCenter();
         return {
             'type':'Point',
-            'coordinates':[center.x, center.y]
+            'coordinates':[coordinates.x, coordinates.y]
         };
-    }
+    }*/
 
 });

@@ -1,16 +1,20 @@
 Z['Sector']=Z.Sector=Z.Polygon.extend({
     includes:[Z.Geometry.Center],
 
-    defaultNumberOfPoints:60,
+    options:{
+        'defaultNumberOfPoints':60
+    },
 
-    initialize:function(center,radius,startAngle,endAngle,opts) {        
-        this.type=Z.Geometry['TYPE_SECTOR'];
-        this.center = new Z.Coordinate(center);
+    type:Z.Geometry['TYPE_SECTOR'],
+
+    initialize:function(coordinates,radius,startAngle,endAngle,opts) {        
+        // this.type=Z.Geometry['TYPE_SECTOR'];
+        this.coordinates = new Z.Coordinate(coordinates);
         this.radius = radius;
         this.startAngle = startAngle;
         this.endAngle = endAngle;
         this.initOptions(opts);
-        this.numberOfPoints = this.defaultNumberOfPoints;
+        this.numberOfPoints = this.options['defaultNumberOfPoints'];
         if (opts && opts['numberOfPoints']) {
             this.numberOfPoints = opts['numberOfPoints'];
         }
@@ -77,33 +81,33 @@ Z['Sector']=Z.Sector=Z.Polygon.extend({
     },
 
     /**
-     * 获取点
-     * @return {Array} ring
+     * 将扇形转化为Polygon的外环坐标数组
+     * @return {[Coordinate]} 转换后的坐标数组
+     * @expose
      */
-    getPoints:function() {
+    getShell:function() {
         //var proj = this.getProjection();
         //TODO
         
     },
 
     /**
-     * do nothing for circle
-     * @param {Array} ring [ring for polygon]
+     * 返回空洞
+     * @return {[type]} [description]
      * @expose
      */
-    setRing:function(ring) {
-        //do nothing for circle as a polygon.
-        return this;
+    getHoles:function() {
+        return null;
     },
 
     computeExtent:function(projection) {
-        if (!projection || !this.center || Z.Util.isNil(this.radius)) {
+        if (!projection || !this.coordinates || Z.Util.isNil(this.radius)) {
             return null;
         }
 
         var radius = this.radius;
-        var p1 = projection.locate(this.center,radius,radius);
-        var p2 = projection.locate(this.center,-radius,-radius);
+        var p1 = projection.locate(this.coordinates,radius,radius);
+        var p2 = projection.locate(this.coordinates,-radius,-radius);
         return new Z.Extent(p1,p2);
     },
     

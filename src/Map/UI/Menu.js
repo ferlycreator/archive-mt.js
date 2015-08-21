@@ -5,7 +5,7 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
     /**
     * 异常信息定义
     */
-    'exceptionDefs':{
+    exceptionDefs:{
         'en-US':{
             'ONLY_MAP_OR_GEOMETRY_CAN_ADD_MENU':'The menu only can add to  map or geometry.'
         },

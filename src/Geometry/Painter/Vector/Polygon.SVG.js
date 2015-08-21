@@ -36,7 +36,7 @@ Z.Polygon.SVG=Z.Vector.SVG.extend({
             return null;
         }
         var geometry=this.geometry;
-        var prjHoles = geometry.getPrjHoles();
+        var prjHoles = geometry._getPrjHoles();
         var result = [];
         for (var i=0,len=prjHoles.length;i<len;i++) {
             var holeOffset = geometry.untransformToOffset(prjHoles[i]);

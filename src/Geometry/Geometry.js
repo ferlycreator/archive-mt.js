@@ -3,7 +3,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     includes: [Z.Eventable],
 
     //根据不同的语言定义不同的错误信息
-    'exceptionDefs':{
+    exceptionDefs:{
         'en-US':{
             'DUPLICATE_LAYER':'Geometry cannot be added to two or more layers at the same time.',
             'INVALID_GEOMETRY_IN_COLLECTION':'Geometry is not valid for collection,index:'
@@ -15,8 +15,19 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     },
 
     statics:{
-
-
+         //--TYPES of geometry
+        'TYPE_POINT' : 'Point',
+        'TYPE_LINESTRING' : 'LineString',
+        'TYPE_POLYGON' : 'Polygon',
+        'TYPE_MULTIPOINT' : 'MultiPoint',
+        'TYPE_MULTILINESTRING' : 'MultiLineString',
+        'TYPE_MULTIPOLYGON' : 'MultiPolygon',
+        'TYPE_GEOMETRYCOLLECTION' : 'GeometryCollection',
+        //extented types
+        'TYPE_RECT' : 'Rectangle',
+        'TYPE_CIRCLE' : 'Circle',
+        'TYPE_ELLIPSE' : 'Ellipse',
+        'TYPE_SECTOR' : 'Sector',
     },
 
     //默认标注样式
@@ -145,14 +156,6 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         return this.type;
     },
 
-    /**
-     * 是否是矢量图形
-     * @return {Boolean} true|false
-     * @expose
-     */
-    isVector:function() {
-        return (Z.Geometry['TYPE_POINT'] !== this.type);
-    },
 
     /**
      * 获取Geometry的Symbol
@@ -440,41 +443,13 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         this.fire(eventName,param);
     },
 
-    //----------JSON相关方法-----------------
-    /**
-     * 生成JSON对象
-     * @param  {Object} opts 输出配置
-     * @return {Object}      JSON对象
-     * @expose
-     */
-    toJson:function(opts) {
-        if (!opts) {
-            opts = {};
-        }
-        var jsonObject = {};
-        if (opts['geometry'] === undefined || opts['geometry']) {
-            jsonObject = this.exportJson(opts);
-        }
-        if (!jsonObject) {
-            jsonObject = {};
-        }
-        //opts没有设定symbol或者设定的symbol值为true,则导出symbol
-        if (opts['symbol'] === undefined || opts['symbol']) {
-            var symbol = this.getSymbol();
-            if (symbol) {
-                jsonObject['symbol']=symbol;
-            }
-        }
-        //opts没有设定properties或者设定的properties值为true,则导出properties
-        if (opts['properties'] === undefined || opts['properties']) {
-            var properties = this.getProperties();
-            if (properties) {
-                jsonObject['properties'] = properties;
-            }
-        }
-        //TODO 临时代码待服务端relate接口不再需要空间坐标系后移除
-        //jsonObject['spatialReference'] = {"coordinateType":"gcj02"};
-        return jsonObject;
+    exportGeoJson:function(opts) {
+        var points = this.getCoordinates();
+        var coordinates = Z.GeoJson.toGeoJsonCoordinates(points);
+        return {
+            'type':this.getType(),
+            'coordinates': coordinates
+        };
     },
 
     /**

@@ -207,8 +207,8 @@ Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
 		var rings;
 		if(geo.getPath) {
 			rings = geo.getPath();
-		} else if(geo.getRing) {
-			rings = geo.getRing();
+		} else if(geo.getShell) {
+			rings = geo.getShell();
 		}
 		var offsetX,offsetY;
 		//TODO 不清楚map.incre是什么？

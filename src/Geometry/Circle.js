@@ -1,14 +1,17 @@
 Z['Circle']=Z.Circle=Z.Polygon.extend({
     includes:[Z.Geometry.Center],
 
-    defaultNumberOfPoints:60,
+    options:{
+        'defaultNumberOfPoints':60
+    },    
+    
+    type:Z.Geometry['TYPE_CIRCLE'],
 
-    initialize:function(center,radius,opts) {
-        //this.type=Z.Geometry['TYPE_CIRCLE'];
-        this.center = center;
+    initialize:function(coordinates,radius,opts) {
+        this.coordinates = new Z.Coordinate(coordinates);
         this.radius = radius;
         this.initOptions(opts);
-        this.numberOfPoints = this.defaultNumberOfPoints;
+        this.numberOfPoints = this.options['defaultNumberOfPoints'];
         if (opts && opts['numberOfPoints']) {
             this.numberOfPoints = opts['numberOfPoints'];
         }
@@ -35,33 +38,33 @@ Z['Circle']=Z.Circle=Z.Polygon.extend({
     },
 
     /**
-     * 获取点
-     * @return {Array} ring
+     * 覆盖Polygon的getShell方法, 将圆形转化为多边形的外环坐标数组
+     * @return {[Coordinate]} 外环坐标数组
+     * @expose
      */
-    getPoints:function() {
+    getShell:function() {
         //var proj = this.getProjection();
         //TODO
         
     },
 
     /**
-     * do nothing for circle
-     * @param {Array} ring [ring for polygon]
+     * 覆盖Polygon的getHoles方法
+     * @return {[Coordinate]} 空洞坐标
      * @expose
      */
-    setRing:function(ring) {
-        //do nothing for circle as a polygon.
-        return this;
+    getHoles:function() {
+        return null;
     },
 
     computeExtent:function(projection) {
-        if (!projection || !this.center || Z.Util.isNil(this.radius)) {
+        if (!projection || !this.coordinates || Z.Util.isNil(this.radius)) {
             return null;
         }
 
         var radius = this.radius;
-        var p1 = projection.locate(this.center,radius,radius);
-        var p2 = projection.locate(this.center,-radius,-radius);
+        var p1 = projection.locate(this.coordinates,radius,radius);
+        var p2 = projection.locate(this.coordinates,-radius,-radius);
         return new Z.Extent(p1,p2);
     },
     

@@ -1,18 +1,21 @@
 Z['Polyline']=Z.Polyline = Z.Vector.extend({
     includes:[Z.Geometry.Poly],
-    initialize:function(coordinates, opts) {        
-        var _coords = Z.GeoJson.fromGeoJsonCoordinates(coordinates);
-        this.setCoordinates(_coords);
+
+    type:Z.Geometry['TYPE_LINESTRING'],
+
+    initialize:function(coordinates, opts) {                
+        
+        this.setCoordinates(coordinates);
         this.initOptions(opts);
     },
 
     /**
      * 设置多折线的坐标值
-     * @param {Array} path 坐标数组
+     * @param {Array} coordinates 坐标数组
      * @expose
      */
-    setCoordinates:function(path) {
-        this.points = path;
+    setCoordinates:function(coordinates) {
+        this.points = Z.GeoJson.fromGeoJsonCoordinates(coordinates);
         if (this.getMap()) {
             this.setPrjPoints(this.projectPoints(this.points));
         }
@@ -25,13 +28,8 @@ Z['Polyline']=Z.Polyline = Z.Vector.extend({
      * @expose
      */
     getCoordinates:function() {
-        return this.getPoints();
-    },
-
-    getPoints:function() {
         return this.points;
     },
-
 
     assignPainter:function() {
         if (!this.layer) {return;}
@@ -40,14 +38,6 @@ Z['Polyline']=Z.Polyline = Z.Vector.extend({
         } else if (this.layer instanceof Z.CanvasLayer) {
             return new Z.Polyline.Canvas(this);
         }
-    },
-
-    exportGeoJson:function(opts) {
-        var points = this.getPoints();
-        return {
-            'type':'LineString',
-            'coordinates':this.toGeoJsonCoordinates(points)
-        };
     }
 
 });

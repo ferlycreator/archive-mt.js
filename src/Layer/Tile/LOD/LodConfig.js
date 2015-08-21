@@ -2,12 +2,12 @@ Z.LodConfig=Z.Class.extend({
  
         includes:Z.LodUtil.Common, 
 
-        'statics' : {
+        statics : {
             'defaultCRS':'crs3857'
         },
 
         //根据不同的语言定义不同的错误信息
-        'exceptionDefs':{
+        exceptionDefs:{
             'en-US':{
                 'INVALID_CRS':'Invalid CRS'
             },

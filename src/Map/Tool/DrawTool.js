@@ -358,18 +358,23 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
      * @return {[type]} [description]
      */
     getLonlats:function() {
-        if (this.geometry.getRing) {
-            return this.geometry.getRing();
+        if (this.geometry.getShell) {
+            return this.geometry.getShell();
         }
         return this.geometry.getPath();
     },
 
     setLonlats:function(lonlats) {
-        if (this.geometry.setRing) {
+        if (this.geometry instanceof Z.Polygon) {
+            this.geometry.setCoordinates([lonlats]);
+        } else if (this.geometry instanceof Z.Polyline) {
+            this.geometry.setCoordinates(lonlats);
+        }
+        /*if (this.geometry.setRing) {
             this.geometry.setRing(lonlats);
         } else {
             this.geometry.setPath(lonlats);
-        }
+        }*/
     },
 
     /**

@@ -1,6 +1,7 @@
 Z['Polygon']=Z.Polygon = Z.Vector.extend({
     includes:[Z.Geometry.Poly],
 
+    type:Z.Geometry['TYPE_POLYGON'],
 
     /**
      * [多边形构造函数]
@@ -8,14 +9,9 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
      * @param  {[type]} opts [description]
      * @return {[type]}      [description]
      */
-    initialize:function(coordinates, opts) {
+    initialize:function(coordinates, opts) {        
         this.setCoordinates(coordinates);
-        this.initOptions(opts);
-        if (opts) {
-            if (opts['holes']) {
-                this.setHoles(opts['holes']);
-            }
-        }
+        this.initOptions(opts);        
     },    
 
     /**
@@ -23,67 +19,68 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
      * @param {[坐标数组]} coordinates [description]
      */
     setCoordinates:function(coordinates) {
-        var _coord = Z.GeoJson.fromGeoJsonCoordinates(coordinates);
-
-    },
-
-    getCoordinates:function() {
-
-    },
-
-    getPoints:function() {
-        return this.points;
+        var rings = Z.GeoJson.fromGeoJsonCoordinates(coordinates);
+        var len = rings.length;
+        this.points = rings[0];
+        this._checkRing(this.points);
+        if (len > 1) {
+            var holes = [];
+            for (var i=1; i<len;i++) {
+                if (!rings[i]) {
+                    continue;
+                }
+                this._checkRing(rings[i]);
+                holes.push(rings[i]);
+            }
+            this.holes = holes;
+        }
+        this._projectRings();
     },
 
     /**
-     * 设置多边形的坐标值
-     * @param {Array} ring 坐标数组
-     * @expose
+     * 返回多边形的坐标数组
+     * @return {[Coordinate]} 坐标数组
      */
-    setRing:function(ring) {
-        this.points = ring;
-        this.checkRing();
-        if (!this.getMap()) {
-            return this;
+    getCoordinates:function() {
+        if (this.holes) {
+            return [this.points].concat(this.holes);    
         }
-        this.setPrjPoints(this.projectPoints(this.points));        
-        return this;
+        return [this.points];
     },
 
-    checkRing:function() {
-        if (!Z.Util.isArray(this.points) || this.points.length < 3) {
+    _projectRings:function() {
+        if (!this.getMap()) {
             return;
         }
-        var lastPoint = this.points[this.points.length-1];
-        if (!lastPoint) {
-            lastPoint = this.points[this.points.length-2];
+        this.prjPoints = this.projectPoints(this.points);
+        this.prjHoles = this.projectPoints(this.holes);
+    },
+
+    /**
+     * 保证Ring都是闭合的
+     */
+    _checkRing:function(ring) {
+        if (!Z.Util.isArray(ring) || ring.length < 3) {
+            return;
         }
-        if (this.points[0].x != lastPoint.x || this.points[0].y != lastPoint.y ) {
-            this.points.push({x:this.points[0].x,y:this.points[0].y});
+        var lastPoint = ring[ring.length-1];
+        if (!lastPoint) {
+            lastPoint = ring[ring.length-2];
+        }
+        if (ring[0].x != lastPoint.x || ring[0].y != lastPoint.y ) {
+            ring.push({x:ring[0].x,y:ring[0].y});
         }
     },
 
     /**
-     * 获取多边形坐标值
+     * 获取多边形的外环
      * @return {Array} 多边形坐标数组
      * @expose
      */
-    getRing:function() {
-       return this.getPoints();
+    getShell:function() {
+       return this.points;
     },
     
-    /**
-     * 设置多边形内部的空洞
-     * @param {Array} holes 空洞的坐标二维数组
-     */
-    setHoles:function(holes) {
-        this.holes = holes;
-        if (!this.getMap()) {
-            return this;
-        }
-        this.setPrjHoles(this.projectPoints(this.holes));
-        return this;
-    },
 
     /**
      * 获取Polygon的空洞的坐标
@@ -111,12 +108,8 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
         return false;
     },
 
-    setPrjHoles:function(prjHoles) {
-        this.prjHoles = prjHoles;
-        this.onShapeChanged();
-    },
 
-    getPrjHoles:function() {
+    _getPrjHoles:function() {
         if (!this.prjHoles) {
             this.prjHoles = this.projectPoints(this.holes);
         }
@@ -138,13 +131,14 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
         } else if (this.layer instanceof Z.CanvasLayer) {
             return new Z.Polygon.Canvas(this);
         }
-    },
+    }
 
+    /*
     exportGeoJson:function(opts) {
-        var points = this.getPoints();
+        var coordinates = this.getCoordinates();
         return {
             'type':'Polygon',
-            'coordinates':this.toGeoJsonCoordinates(points)
+            'coordinates':this.toGeoJsonCoordinates(coordinates)
         };
-    }
+    }*/
 });

@@ -41,13 +41,13 @@ Z.Geometry.Poly={
     },
 
     setPrjPoints:function(prjPoints) {        
-        this.prjPoints = prjPoints;    
-        this.onShapeChanged();    
+        this.prjPoints = prjPoints;
+        this.onShapeChanged();
     },
 
     getPrjPoints:function() {
         if (!this.prjPoints) {
-            var points = this.getPoints();
+            var points = this.points;
             this.prjPoints = this.projectPoints(points);
         }
         return this.prjPoints;
@@ -63,7 +63,7 @@ Z.Geometry.Poly={
         }
         this.points = this.unprojectPoints(this.getPrjPoints());
         if (this.holes) {
-            this.holes = this.unprojectPoints(this.getPrjHoles());
+            this.holes = this.unprojectPoints(this._getPrjHoles());
         }
     },
 
@@ -91,7 +91,7 @@ Z.Geometry.Poly={
     },
 
     computeCenter:function(projection) {
-        var ring=this.getPoints();
+        var ring=this.points;
         if (!Z.Util.isArrayHasData(ring)) {
             return null;            
         }
@@ -106,11 +106,11 @@ Z.Geometry.Poly={
                 }
             }
         }
-        return {'x':sumx/counter, 'y':sumy/counter};
+        return new Z.Coordinate(sumx/counter, sumy/counter);
     },
 
     computeExtent:function(projection) {    
-        var ring = this.getPoints();    
+        var ring = this.points;    
         if (!Z.Util.isArrayHasData(ring)) {
             return null;            
         }        

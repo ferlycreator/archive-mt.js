@@ -19,7 +19,7 @@ Z.Geometry.Center={
      * @expose
      */
     getCoordinates:function() {
-        return this.center;
+        return this.coordinates;
     },
 
     /**
@@ -28,10 +28,10 @@ Z.Geometry.Center={
      */
     setCoordinates:function(coordinates) {        
         var center = new Z.Coordinate(coordinates);
-        this.center = center;
-        if (!this.center || !this.getMap()) {return;}        
+        this.coordinates = center;
+        if (!this.coordinates || !this.getMap()) {return;}        
         var projection = this.getProjection();
-        this.setPCenter(projection.project(this.center));
+        this.setPCenter(projection.project(this.coordinates));
         return this;
     },
 
@@ -41,7 +41,7 @@ Z.Geometry.Center={
      * @expose
      */
     getCenter:function() {
-        return this.center;
+        return this.coordinates;
     },
 
 
@@ -49,8 +49,8 @@ Z.Geometry.Center={
         var projection = this.getProjection();
         if (!projection) {return null;}
         if (!this.pcenter) {            
-            if (this.center) {
-                this.pcenter = projection.project(this.center);
+            if (this.coordinates) {
+                this.pcenter = projection.project(this.coordinates);
             }
         }
         return this.pcenter;
@@ -72,7 +72,7 @@ Z.Geometry.Center={
     updateCache:function() {
         var projection = this.getProjection();
         if (this.pcenter && projection) {
-            this.center = projection.unproject(this.pcenter);
+            this.coordinates = projection.unproject(this.pcenter);
         }
     },
 
@@ -81,6 +81,6 @@ Z.Geometry.Center={
     },
 
     computeCenter:function(projection) {
-        return this.center;
+        return this.coordinates;
     }
 };
