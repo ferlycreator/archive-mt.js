@@ -1,6 +1,6 @@
 Z.Geometry.include({
 	/*
-    * 添加标签
+    * 添加面板
     * @param {Object} options/Z.Panel
     * @expose
     */
@@ -18,7 +18,7 @@ Z.Geometry.include({
     },
 
     /*
-    * 删除标签
+    * 删除面板
     * @param {Object} id or Z.Panel
     * @expose
     */
@@ -29,7 +29,7 @@ Z.Geometry.include({
     },
 
     /*
-    * 删除标签
+    * 删除面板
     * @param {Object} id or Z.Panel
     * @expose
     */
@@ -40,7 +40,7 @@ Z.Geometry.include({
     },
 
     /*
-    * 删除标签
+    * 删除面板
     * @param {Object} id or Z.Panel
     * @expose
     */
@@ -51,7 +51,7 @@ Z.Geometry.include({
     },
 
     /*
-    * 获取标签
+    * 获取面板
     * @param {String} id
     * @expose
     */
