@@ -1,35 +1,33 @@
 Z.Geometry.include({
 	/*
-    * 添加标签
+    * 添加label
     * @param {Object} options/Z.Label
     * @expose
     */
     addLabel: function (options) {
         if(options instanceof Z.Label) {
             label = options;
-            label.options['target'] = this;
-            label.addTo(this.getMap());
+            label.addTo(this);
         } else {
-            options['target'] = this;
             var label = new Z.Label(options);
-            label.addTo(this.getMap());
+            label.addTo(this);
         }
         return this;
     },
 
     /*
-    * 删除标签
+    * 删除label
     * @param {Object} id or Z.Label
     * @expose
     */
     removeLabel: function (obj) {
         label = this._getLabel(obj);
-        label.removeLable();
+        label.removeLabel();
         return this;
     },
 
     /*
-    * 删除标签
+    * 删除label
     * @param {Object} id or Z.Label
     * @expose
     */
@@ -40,7 +38,7 @@ Z.Geometry.include({
     },
 
     /*
-    * 删除标签
+    * 删除label
     * @param {Object} id or Z.Label
     * @expose
     */
@@ -51,7 +49,7 @@ Z.Geometry.include({
     },
 
     /*
-    * 获取标签
+    * 获取label
     * @param {String} id
     * @expose
     */
