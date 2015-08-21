@@ -5,6 +5,16 @@ Z.Geometry.include({
     * @expose
     */
     addLabel: function (options) {
+        if(this.getMap()) {
+            this._addLabel(options);
+        } else {
+            this.on('afterAdd', function() {
+                this._addLabel(options);
+            });
+        }
+    },
+
+    _addLabel: function(options) {
         if(options instanceof Z.Label) {
             label = options;
             label.addTo(this);

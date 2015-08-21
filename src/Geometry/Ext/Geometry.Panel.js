@@ -5,14 +5,24 @@ Z.Geometry.include({
     * @expose
     */
     addPanel: function (options) {
+        if(this.getMap()) {
+            this._addPanel(options);
+        } else {
+            this.on('afterAdd', function() {
+                this._addPanel(options);
+            });
+        }
+    },
+
+    _addPanel: function(options) {
         if(options instanceof Z.Panel) {
-            label = options;
-            label.options['target'] = this;
-            label.addTo(this.getMap());
+            panel = options;
+            panel.options['target'] = this;
+            panel.addTo(this.getMap());
         } else {
             options['target'] = this;
-            var label = new Z.Panel(options);
-            label.addTo(this.getMap());
+            var panel = new Z.Panel(options);
+            panel.addTo(this.getMap());
         }
         return this;
     },
@@ -23,8 +33,8 @@ Z.Geometry.include({
     * @expose
     */
     removePanel: function (obj) {
-        label = this._getPanel(obj);
-        label.removeLable();
+        panel = this._getPanel(obj);
+        panel.removeLable();
         return this;
     },
 
@@ -34,8 +44,8 @@ Z.Geometry.include({
     * @expose
     */
     hidePanel: function(obj) {
-        label = this._getPanel(obj);
-        label.hide();
+        panel = this._getPanel(obj);
+        panel.hide();
         return this;
     },
 
@@ -45,8 +55,8 @@ Z.Geometry.include({
     * @expose
     */
     showPanel: function(obj) {
-        label = this._getPanel(obj);
-        label.show();
+        panel = this._getPanel(obj);
+        panel.show();
         return this;
     },
 

@@ -14,30 +14,20 @@ Z['Label'] = Z.Label = Z.Class.extend({
 	},
 
 	options:{
-		'style': {
-            'color': '#000000',
-            'padding': 1,
-            'size': 12,
-            'font': '',
-            'weight': '',
-            'background': '#ffffff',
-            'stroke': '#000000',
-            'strokewidth': 1,
-            'placement' : 'top' //top | bottom | left | right | center.
-
+		'symbol': {
             'shield-type': 'tip',//rectangle tip
             'shield-name': '测试标签:[a-name]',
             'shield-opacity': 1,
             'shield-line-color': '#000000',
             'shield-line-width': 1,
             'shield-line-opacity': 1,
-            'shield-polygon-fill': '#ff0000',
-            'shield-polygon-opacity': 1,
+            'shield-fill': '#ff0000',
+            'shield-fill-opacity': 1,
             'shield-file': '',
             'shield-face-name': 'Serif',
             'shield-unlock-image' : false,
             'shield-size': 10,
-            'shield-fill': '#ff0000',
+            'shield-text-fill': '#ff0000',
             'shield-placement': 'point', //point line vertex interior
             'shield-spacing': 30,
             'shield-wrap-width': 100,
@@ -51,7 +41,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
             'shield-dy': 0,
             'shield-text-opacity': 1,
             'shield-horizontal-alignment': 'auto',//left middle right auto
-            'shield-vertical-alignment': 'middle',//top middle bottom auto
+            'shield-vertical-alignment': 'top',//top middle bottom auto
             'shield-justify-alignment': 'auto'//left center right auto
 		},
 		'type': 'rectangle',//tip
@@ -59,6 +49,22 @@ Z['Label'] = Z.Label = Z.Class.extend({
 		'draggable': true,
 		'trigger': 'hover'//click|hover
 	},
+
+    /**
+    * @expose
+    */
+	initialize: function (options) {
+		this.setOption(options);
+		return this;
+	},
+
+	/**
+    * @expose
+    */
+    setOption: function(options) {
+        Z.Util.setOptions(this, options);
+        return this;
+    },
 
 	/**
 	* 隐藏label
@@ -96,10 +102,10 @@ Z['Label'] = Z.Label = Z.Class.extend({
         this.fire('remove', {'target': this});
 	},
 
-	buildOn: function (geometry) {
-        if(!geometry || !this.options || !this.options['style']) return;
-        var map = geometry.getMap();
-        this._labelContrainer = map.containerDOM;
+	addTo: function (geometry) {
+        if(!geometry || !this.options || !this.options['symbol']) return;
+        this._map = geometry.getMap();
+        this._labelContrainer = this._map.containerDOM;
         this._target = geometry;
         if(!this._target) throw new Error(this.exceptions['NEED_TARGET']);
 
@@ -109,17 +115,11 @@ Z['Label'] = Z.Label = Z.Class.extend({
         if(targetLayer && targetLayer instanceof Z.CanvasLayer) {
             canvas = true;
         }
-        this._internalLayer = this._getInternalLayer(map, layerId, canvas);
-        this._map = map;
+        this._internalLayer = this._getInternalLayer(this._map, layerId, canvas);
         var targetCenter = this._target.getCenter();
         this._label = new Z.Marker(targetCenter);
         this._label['target'] = this._target;
-        this._label.setIcon({
-            type: 'text',
-            textStyle: this.options['style'],
-            content: this.options['content'],
-            offset: {x:0, y:0}
-        });
+        this._label.setIcon(this._getShieldSymbol());
         this._internalLayer.addGeometry(this._label);
         this._label.hide();
 
@@ -129,7 +129,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
             'top' : targetOffset['top'] - labelOffset['top'],
             'left' : targetOffset['left'] + labelOffset['left']
         });
-        this._label.setCenter(targetCenter);
+        this._label.setCoordinates(targetCenter);
         this._target.on('shapechanged positionchanged symbolchanged', Z.Util.bind(this._changeLabelPosition, this), this)
                     .on('remove', this.removeLabel, this);
         this._label.on('click dblclick rightclick', Z.DomUtil.stopPropagation, this);
@@ -166,20 +166,56 @@ Z['Label'] = Z.Label = Z.Class.extend({
         return null;
 	},
 
-	_afterAdd: function() {
-
+    /**
+    'shield-type': 'tip',//rectangle tip
+    'shield-name': '测试标签:[a-name]',
+    'shield-opacity': 1,
+    'shield-line-color': '#000000',
+    'shield-line-width': 1,
+    'shield-line-opacity': 1,
+    'shield-fill': '#ff0000',
+    'shield-fill-opacity': 1,
+    'shield-file': '',
+    */
+	_getShieldSymbol: function() {
+        var symbol = this.options['symbol'];
+        var shieldSymbol = {};
+        for(var attr in symbol) {
+            if('shield-type' === attr) {
+                shieldSymbol['marker-type'] = symbol[attr];
+            }
+            if('shield-opacity' === attr) {
+                shieldSymbol['marker-opacity'] = symbol[attr];
+            }
+            if('shield-line-color' === attr) {
+                shieldSymbol['marker-line-color'] = symbol[attr];
+            }
+            if('shield-line-width' === attr) {
+                shieldSymbol['marker-line-width'] = symbol[attr];
+            }
+            if('shield-line-opacity' === attr) {
+                shieldSymbol['marker-line-opacity'] = symbol[attr];
+            }
+            if('shield-fill' === attr) {
+                shieldSymbol['marker-fill'] = symbol[attr];
+            }
+            if('shield-fill-opacity' === attr) {
+                shieldSymbol['marker-fill-opacity'] = symbol[attr];
+            }
+        }
+        return shieldSymbol;
 	},
 
 	_computeLabelOffset: function() {
 		var painter = this._label.getPainter();
 		var textSize = painter.measureTextMarker();
-		var width = textSize['width'],
-			height = textSize['height'];
-		var geoSide = this._target.computeVisualSide(this._map);
+		var width =  0; //textSize['width'],
+			height = 0; //textSize['height'];
+		var geoSide = this._target.getSize();
 		var sideWidth = geoSide['width'];
 		var sideHeight = geoSide['height'];
 		if (this.options) {
-			var placement = this.options['style']['placement'];
+			var placement = this.options['symbol']['shield-vertical-alignment'];
 			var left = 0, top = 0;
 			if('left' === placement) {
 				left = -sideWidth/2;
@@ -202,8 +238,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
 	},
 
 	_linkToTarget: function() {
-		var geometry = this.options['target'];
-		var center = geometry.getCenter();
+		var center = this._target.getCenter();
 		var nearestPoints = this._getNearestPoint(center);
 		var path = [center, nearestPoints[0], nearestPoints[1]];
 		this._link = new Z.Polyline(path);
@@ -228,8 +263,8 @@ Z['Label'] = Z.Label = Z.Class.extend({
 
 		var painter = this._label.getPainter();
 		var textSize = painter.measureTextMarker();
-		var width = textSize['width'],
-			height = textSize['height'];
+		var width = 0; //textSize['width'],
+			height = 0; //textSize['height'];
 
 		var screenPoint = this._topLeftPoint(width, height);
 
@@ -310,7 +345,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
 	},
 
 	_topLeftPoint: function(width, height) {
-		var placement = this.options['style']['placement'];
+		var placement = this.options['symbol']['shield-vertical-alignment'];
 		var center = this._label.getCenter();
 		var point = this._map.coordinateToScreenPoint(center);
 		var mapOffset = this._map.offsetPlatform();
@@ -343,8 +378,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
 	},
 
 	_changeLinkPath: function() {
-		var geometry = this.options['target'];
-		var center = geometry.getCenter();
+		var center = this._target.getCenter();
 		var nearestPoints = this._getNearestPoint(center);
 		var path = [center, nearestPoints[0], nearestPoints[1]];
 		var strokeSymbol = this._link.getStrokeSymbol();
@@ -355,7 +389,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
 
 	_changeLabelPosition: function(event) {
 		this._target = event['target'];
-		this._label.setCenter(this._target.getCenter());
+		this._label.setCoordinates(this._target.getCenter());
 	},
 
 	_onMouseDown: function(event) {
@@ -387,5 +421,20 @@ Z['Label'] = Z.Label = Z.Class.extend({
 	_recoverMapEvents: function() {
 		this._map.enableDragPropagation();
 		this._map.enableDoubleClickZoom();
-	}
+	},
+
+    _getInternalLayer: function(map, layerId, canvas) {
+        if(!map) return;
+        var layer = map.getLayer(layerId);
+        if(!layer) {
+            if(canvas) {
+                layer = new Z.CanvasLayer(layerId);
+            } else {
+                layer = new Z.SVGLayer(layerId);
+            }
+            map.addLayer(layer);
+        }
+        return layer;
+    }
+
 });

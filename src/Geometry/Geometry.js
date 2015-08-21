@@ -307,6 +307,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         return ret;
     },
 
+
     /**
      * 将自身从图层中移除
      * @return {[type]} [description]

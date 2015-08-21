@@ -87,6 +87,8 @@ Z.OverlayLayer=Z.Layer.extend({
                     fitCounter++;
                 }
             }
+            //图形添加到layer
+            geo._fireEvent('afterAdd', {'target':geo});
         }
         var map = this.getMap();
         if (map) {
