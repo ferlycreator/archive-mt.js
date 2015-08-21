@@ -1,15 +1,18 @@
 Z['Ellipse']=Z.Ellipse = Z.Polygon.extend({
     includes:[Z.Geometry.Center],
 
-    defaultNumberOfPoints:60,
+    options:{
+        'defaultNumberOfPoints':60,
+    },
 
-    initialize:function(center,width,height,opts) {        
-        this.type=Z.Geometry['TYPE_ELLIPSE'];
-        this.center = center;
+    type:Z.Geometry['TYPE_ELLIPSE'],
+
+    initialize:function(coordinates,width,height,opts) {        
+        this.coordinates = new Z.Coordinate(coordinates);
         this.width = width;
         this.height = height;
         this.initOptions(opts);
-        this.numberOfPoints = this.defaultNumberOfPoints;
+        this.numberOfPoints = this.options['defaultNumberOfPoints'];
         if (opts && opts['numberOfPoints']) {
             this.numberOfPoints = opts['numberOfPoints'];
         }
@@ -55,29 +58,34 @@ Z['Ellipse']=Z.Ellipse = Z.Polygon.extend({
         return this;
     },
 
-    getPoints:function() {
+    /**
+     * 覆盖Polygon的getShell方法, 将椭圆形转化为多边形的外环坐标数组
+     * @return {[Coordinate]} 外环坐标数组
+     * @expose
+     */
+    getShell:function() {
         //var proj = this.getProjection();
-        //TODO 获取ellipse的ring
+        //TODO
+        
     },
 
     /**
-     * do nothing for Ellipse
-     * @param {Array} ring [ring for polygon]
+     * 覆盖Polygon的getHoles方法
+     * @return {[Coordinate]} 空洞坐标
      * @expose
      */
-    setRing:function(ring) {
-        //do nothing for Ellipse as a polygon.
-        return this;
+    getHoles:function() {
+        return null;
     },
 
     computeExtent:function(projection) {
-        if (!projection || !this.center || Z.Util.isNil(this.width) || Z.Util.isNil(this.height)) {
+        if (!projection || !this.coordinates || Z.Util.isNil(this.width) || Z.Util.isNil(this.height)) {
             return null;
         }
         var width = this.getWidth(),
             height = this.getHeight();
-        var p1 = projection.locate(this.center,width/2,height/2);
-        var p2 = projection.locate(this.center,-width/2,-height/2);
+        var p1 = projection.locate(this.coordinates,width/2,height/2);
+        var p2 = projection.locate(this.coordinates,-width/2,-height/2);
         return new Z.Extent(p1,p2);
     },
 

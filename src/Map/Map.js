@@ -18,7 +18,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     //根据不同的语言定义不同的错误信息
-    'exceptionDefs':{
+    exceptionDefs:{
         'en-US':{
             'NO_BASE_TILE_LAYER':'Map has no baseTileLayer, pls specify a baseTileLayer by setBaseTileLayer method before loading.',
             'INVALID_LODCONFIG':'LodConfig of Map is invalid.',

@@ -1,4 +1,4 @@
-Z['GeoJSON']=Z['GeoJson']=Z.GeoJson={
+Z['GeoJSON']=Z.GeoJson={
         /**
          * 将geoJson字符串或geoJson对象转化为Geometry对象
          * @param  {String | Object | [Object]} json json对象
@@ -24,29 +24,17 @@ Z['GeoJSON']=Z['GeoJson']=Z.GeoJson={
 
         /**
          * 将Coordinate数组转化为GeoJson坐标数组
-         * @param  {[Coordinate]} geoJsonCoords Coordinate数组
+         * @param  {[Coordinate]} coordinates Coordinate数组
          * @return {number[]..}               GeoJson数组
          * @expose
          */
-        toGeoJsonCoordinates:function(geoJsonCoords) {
-            if (!Z.Util.isArray(geoJsonCoords)) {
-                return null;
+        toGeoJsonCoordinates:function(coordinates) {
+            if (!Z.Util.isArray(coordinates)) {
+                return [coordinates.x, coordinates.y];
             }
-            return Z.Util.eachInArray(geoJsonCoords, this, function(coord) {
+            return Z.Util.eachInArray(coordinates, this, function(coord) {
                 return [coord.x, coord.y];
             });
-            /*var result = [];
-            for (var i=0, len=coordinates.length;i<len;i++) {
-                var child = coordinates[i];
-                if (!Z.Util.isArray(child) && !Z.Util.isNil(child.x) && !Z.Util.isNil(child.y)) {
-                    result.push([child.x, child.y]);
-                } else if (Z.Util.isArray(child)) {
-                    result.push(this.toGeoJsonCoordinates(child));
-                } else {
-                    result.push(null);
-                }
-            }
-            return result;*/
         },
 
         /**
@@ -55,8 +43,8 @@ Z['GeoJSON']=Z['GeoJson']=Z.GeoJson={
          * @return {[type]}             [description]
          */
         fromGeoJsonCoordinates:function(coordinates) {
-            if (!Z.Util.isArray(coordinates)) {
-                return null;
+            if (Z.Util.isNumber(coordinates[0]) && Z.Util.isNumber(coordinates[1])) {
+                return new Z.Coordinate(coordinates);
             }
             var result = [];
             for (var i=0, len=coordinates.length;i<len;i++) {
@@ -92,7 +80,7 @@ Z['GeoJSON']=Z['GeoJson']=Z.GeoJson={
                     geoId = geoId.toString();
                 }
                 //TODO symbol和coordinateType的处理
-                var geometry = this.fromGeoJsonObject(geoJsonGeo);
+                var geometry = this._fromGeoJsonInstance(geoJsonGeo);
                 if (!geometry) {
                     return null;
                 }

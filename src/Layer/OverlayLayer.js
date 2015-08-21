@@ -4,7 +4,7 @@
  */
 Z.OverlayLayer=Z.Layer.extend({
     //根据不同的语言定义不同的错误信息
-    'exceptionDefs':{
+    exceptionDefs:{
         'en-US':{
             'DUPLICATE_GEOMETRY_ID':'Duplicate ID for the geometry'
         },

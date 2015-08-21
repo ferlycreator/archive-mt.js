@@ -39,8 +39,8 @@ Z.Geometry.include({
     startDrag: function() {
         this._map = this.getMap();
         this.hide();
-        var type = this.getType();
-        if(type === Z.Geometry['TYPE_POINT']) {
+        // var type = this.getType();
+        if(this instanceof Z.Marker) {
             this._dragGeometry = new Z.Marker(this.getCenter());
             var targetIcon = this.getIcon();
             var iconType = (targetIcon?targetIcon['type']:null);

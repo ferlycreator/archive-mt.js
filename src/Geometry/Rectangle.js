@@ -1,7 +1,9 @@
 Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({    
 
+    type:Z.Geometry['TYPE_RECT'],
+
     initialize:function(coordinates,width,height,opts) {        
-        this.nw = new Z.Coordinate(coordinates);
+        this.coordinates = new Z.Coordinate(coordinates);
         this.width = width;
         this.height = height;
         this.initOptions(opts);        
@@ -14,7 +16,7 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
      * @expose
      */
     getCoordinates:function() {
-        return this.nw;
+        return this.coordinates;
     },
 
     /**
@@ -23,13 +25,13 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
      * @expose
      */
     setCoordinates:function(nw){
-        this.nw = new Z.Coordinate(nw);
+        this.coordinates = new Z.Coordinate(nw);
         
-        if (!this.nw || !this.getMap()) {
+        if (!this.coordinates || !this.getMap()) {
             return;
         }
         var projection = this.getProjection();
-        this.setPNw(projection.project(this.nw));
+        this.setPNw(projection.project(this.coordinates));
         return this;
     },
 
@@ -37,8 +39,8 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
         var projection = this.getProjection();
         if (!projection) {return null;}
         if (!this.pnw) {            
-            if (this.nw) {
-                this.pnw = projection.project(this.nw);
+            if (this.coordinates) {
+                this.pnw = projection.project(this.coordinates);
             }
         }
         return this.pnw;
@@ -100,7 +102,7 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
     updateCache:function() {
         var projection = this.getProjection();
         if (this.pnw && projection) {
-            this.nw = projection.unproject(this.pnw);
+            this.coordinates = projection.unproject(this.pnw);
         }
     },
 
@@ -115,16 +117,17 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
      */
     computeCenter:function(projection) {
         
-        return projection.locate(this.nw,this.width/2,-this.height/2);
+        return projection.locate(this.coordinates,this.width/2,-this.height/2);
     },
 
     /**
-     * 获取ring
-     * @return {Array} ring     
+     * 覆盖Polygon的getShell方法, 将矩形转化为多边形的外环坐标数组
+     * @return {[Coordinate]} 外环坐标数组
+     * @expose
      */
-    getPoints:function() {
+    getShell:function() {
         var projection = this.getProjection();
-        var nw =this.nw;    
+        var nw =this.coordinates;    
         var points = [];
         points.push(nw);
         points.push(projection.locate(nw,this.width,0));
@@ -132,26 +135,27 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
         points.push(projection.locate(nw,0,this.height));
         points.push(nw);
         return points;
+        
     },
 
     /**
-     * do nothing for Ellipse
-     * @param {Array} ring [ring for polygon]
+     * 覆盖Polygon的getHoles方法
+     * @return {[Coordinate]} 空洞坐标
      * @expose
      */
-    setRing:function(ring) {
-        //do nothing for Ellipse as a polygon.
-        return this;
+    getHoles:function() {
+        return null;
     },
 
+
     computeExtent:function(projection) {
-        if (!projection || !this.nw || Z.Util.isNil(this.width) || Z.Util.isNil(this.height)) {
+        if (!projection || !this.coordinates || Z.Util.isNil(this.width) || Z.Util.isNil(this.height)) {
             return null;
         }
         var width = this.getWidth(),
             height = this.getHeight();
-        var p1 = projection.locate(this.nw,width,-height);        
-        return new Z.Extent(p1,this.nw);
+        var p1 = projection.locate(this.coordinates,width,-height);        
+        return new Z.Extent(p1,this.coordinates);
     },
 
     computeGeodesicLength:function(projection) {
@@ -180,7 +184,7 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
     },
 
     exportGeoJson:function(opts) {
-        var nw =this.getNw();
+        var nw =this.getCoordinates();
         return {
             'type':"Rectangle",
             'coordinates':[nw.x,nw.y],

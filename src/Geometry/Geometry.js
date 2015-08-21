@@ -3,7 +3,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     includes: [Z.Eventable],
 
     //根据不同的语言定义不同的错误信息
-    'exceptionDefs':{
+    exceptionDefs:{
         'en-US':{
             'DUPLICATE_LAYER':'Geometry cannot be added to two or more layers at the same time.',
             'INVALID_GEOMETRY_IN_COLLECTION':'Geometry is not valid for collection,index:'
@@ -15,169 +15,19 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     },
 
     statics:{
-        //--TYPES of geometry
-        'TYPE_POINT' : 1,
-        'TYPE_POLYLINE' : 2,
-        'TYPE_POLYGON' : 3,
-        'TYPE_MULTIPOINT' : 4,
-        'TYPE_MULTIPOLYLINE' : 5,
-        'TYPE_MULTIPOLYGON' : 6,
-        'TYPE_GEOMETRYCOLLECTION' : 7,
-
-        'TYPE_RECT' : 100,
-        'TYPE_CIRCLE' : 101,
-        'TYPE_ELLIPSE' : 102,
-        'TYPE_SECTOR' : 103,
-        // TYPE_PATH : 7,
-
-
-        /**
-         * 将json字符串或json对象转化为Geometry对象
-         * @param  {String | Object | [Object]} json json对象
-         * @return {Geometry | [Geometry]}      转化的Geometry对象或数组
-         * @expose
-         */
-        fromJson:function(json) {
-            if (Z.Util.isString(json)) {
-                json = Z.Util.parseJson(json);
-            }
-            if (Z.Util.isArray(json)) {
-                var result = [];
-                var jsons = json;
-                for (var i=0,len=jsons.length;i<len;i++) {
-                    var geo = this.fromJsonObject(jsons[i]);
-                    result.push(geo);
-                }
-                return result;
-            } else {
-                return this.fromJsonObject(json);
-            }
-        },
-
-        fromGeoJson:function(geoJson) {
-            if (Z.Util.isString(geoJson)) {
-                geoJson = Z.Util.parseJson(geoJson);
-            }
-            if (Z.Util.isArray(geoJson)) {
-                var result = [];
-                for (var i=0,len=geoJson.length;i<len;i++) {
-                    //TODO 从geojson对象解析Geometry对象
-                    result.push(geo);
-                }
-                return result;
-            } else {
-                //return this.fromJsonObject(geoJson);
-            }
-
-        },
-
-
-
-        fromJsonObject:function(jsonObj) {
-            if (!jsonObj || Z.Util.isNil(jsonObj['type'])) {
-                return null;
-            }
-            switch (jsonObj['type']) {
-                case this['TYPE_POINT']:
-                    var center = jsonObj['center'];
-                    delete jsonObj['center'];
-                    return new Z.Marker(center,jsonObj);
-                case this['TYPE_POLYGON']:
-                    var rings = jsonObj['rings'];
-                    delete jsonObj['rings'];
-                    if (!Z.Util.isArrayHasData(rings)) {
-                        return new Z.Polygon([],jsonObj);
-                    }
-                    var shell = rings.shift();
-                    jsonObj['holes'] = rings;
-                    return new Z.Polygon(shell,jsonObj);
-                case this['TYPE_POLYLINE']:
-                    var path = jsonObj['path'];
-                    delete jsonObj['path'];
-                    return new Z.Polyline(path,jsonObj);
-                case this['TYPE_RECT']:
-                    var nw = jsonObj['nw'],
-                        width = jsonObj['width'],
-                        height = jsonObj['height'];
-                    delete jsonObj['nw'];
-                    delete jsonObj['width'];
-                    delete jsonObj['height'];
-                    return new Z.Rectangle(nw,width,height,jsonObj);
-                case this['TYPE_CIRCLE']:
-                    var center = jsonObj['center'],
-                        radius = jsonObj['radius'];
-                    delete jsonObj['center'];
-                    delete jsonObj['radius'];
-                    return new Z.Circle(center,radius,jsonObj);
-                case this['TYPE_ELLIPSE']:
-                    var center = jsonObj['center'],
-                        width = jsonObj['width'],
-                        height = jsonObj['height'];
-                    delete jsonObj['center'];
-                    delete jsonObj['width'];
-                    delete jsonObj['height'];
-                    return new Z.Ellipse(center,width,height,jsonObj);
-                case this['TYPE_SECTOR']:
-                    var center = jsonObj['center'],
-                        radius = jsonObj['radius'],
-                        startAngle = jsonObj['startAngle'],
-                        endAngle = jsonObj['endAngle'];
-                    delete jsonObj['center'];
-                    delete jsonObj['radius'];
-                    delete jsonObj['startAngle'];
-                    delete jsonObj['endAngle'];
-                    return new Z.Sector(center,radius,startAngle,endAngle,jsonObj);
-                case this['TYPE_MULTIPOINT']:
-                    var multiPoints = jsonObj['multiPoints'];
-                    delete jsonObj['multiPoints'];
-                    return new Z.MultiPoint(multiPoints,jsonObj);
-                case this['TYPE_MULTIPOLYGON']:
-                    var multiRings = jsonObj['multiRings'];
-                    delete jsonObj['multiRings'];
-                    return new Z.MultiPolygon(multiRings, jsonObj);
-                case this['TYPE_MULTIPOLYLINE']:
-                    var multiPaths = jsonObj['multiPaths'];
-                    delete jsonObj['multiPaths'];
-                    return new Z.MultiPolyline(multiPaths,jsonObj);
-                case this['TYPE_GEOMETRYCOLLECTION']:
-                    var geometries = jsonObj['geometries'];
-                    delete jsonObj['geometries'];
-                    return new Z.GeometryCollection(geometries,jsonObj);
-            }
-            return null;
-        },
-
-        fromGeoJsonObject:function(geoJsonObj) {
-            if (!geoJsonObj || Z.Util.isNil(geoJsonObj['type'])) {
-                return null;
-            }
-            switch (geoJsonObj['type']) {
-                case this['TYPE_POINT']:
-                    return new Z.Marker(new Z.Coordinate(geoJsonObj['coordinates']),geoJsonObj);
-                case this['TYPE_POLYGON']:
-                    return new Z.Polygon(geoJsonObj['rings'],geoJsonObj);
-                case this['TYPE_POLYLINE']:
-                    return new Z.Polyline(geoJsonObj['path'],geoJsonObj);
-                case this['TYPE_RECT']:
-                    return new Z.Rectangle(geoJsonObj['nw'],geoJsonObj['width'],geoJsonObj['height'],geoJsonObj);
-                case this['TYPE_CIRCLE']:
-                    return new Z.Circle(geoJsonObj['center'],geoJsonObj['radius'],geoJsonObj);
-                case this['TYPE_ELLIPSE']:
-                    return new Z.Ellipse(geoJsonObj['center'],geoJsonObj['width'],geoJsonObj['height'],geoJsonObj);
-                case this['TYPE_SECTOR']:
-                    return new Z.Sector(geoJsonObj['center'],geoJsonObj['radius'],geoJsonObj['startAngle'],geoJsonObj['endAngle'],geoJsonObj);
-                case this['TYPE_MULTIPOINT']:
-                    return new Z.MultiPoint(geoJsonObj['multiPoints'],geoJsonObj);
-                case this['TYPE_MULTIPOLYGON']:
-                    return new Z.MultiPolygon(geoJsonObj['multiRings'], geoJsonObj);
-                case this['TYPE_MULTIPOLYLINE']:
-                    return new Z.MultiPolyline(geoJsonObj['multiPaths'],geoJsonObj);
-                case this['TYPE_GEOMETRYCOLLECTION']:
-                    return new Z.GeometryCollection(geoJsonObj['geometries'],geoJsonObj);
-            }
-            return null;
-        }
-
+         //--TYPES of geometry
+        'TYPE_POINT' : 'Point',
+        'TYPE_LINESTRING' : 'LineString',
+        'TYPE_POLYGON' : 'Polygon',
+        'TYPE_MULTIPOINT' : 'MultiPoint',
+        'TYPE_MULTILINESTRING' : 'MultiLineString',
+        'TYPE_MULTIPOLYGON' : 'MultiPolygon',
+        'TYPE_GEOMETRYCOLLECTION' : 'GeometryCollection',
+        //extented types
+        'TYPE_RECT' : 'Rectangle',
+        'TYPE_CIRCLE' : 'Circle',
+        'TYPE_ELLIPSE' : 'Ellipse',
+        'TYPE_SECTOR' : 'Sector',
     },
 
     //默认标注样式
@@ -306,14 +156,6 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         return this.type;
     },
 
-    /**
-     * 是否是矢量图形
-     * @return {Boolean} true|false
-     * @expose
-     */
-    isVector:function() {
-        return (Z.Geometry['TYPE_POINT'] !== this.type);
-    },
 
     /**
      * 获取Geometry的Symbol
@@ -601,41 +443,13 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         this.fire(eventName,param);
     },
 
-    //----------JSON相关方法-----------------
-    /**
-     * 生成JSON对象
-     * @param  {Object} opts 输出配置
-     * @return {Object}      JSON对象
-     * @expose
-     */
-    toJson:function(opts) {
-        if (!opts) {
-            opts = {};
-        }
-        var jsonObject = {};
-        if (opts['geometry'] === undefined || opts['geometry']) {
-            jsonObject = this.exportJson(opts);
-        }
-        if (!jsonObject) {
-            jsonObject = {};
-        }
-        //opts没有设定symbol或者设定的symbol值为true,则导出symbol
-        if (opts['symbol'] === undefined || opts['symbol']) {
-            var symbol = this.getSymbol();
-            if (symbol) {
-                jsonObject['symbol']=symbol;
-            }
-        }
-        //opts没有设定properties或者设定的properties值为true,则导出properties
-        if (opts['properties'] === undefined || opts['properties']) {
-            var properties = this.getProperties();
-            if (properties) {
-                jsonObject['properties'] = properties;
-            }
-        }
-        //TODO 临时代码待服务端relate接口不再需要空间坐标系后移除
-        //jsonObject['spatialReference'] = {"coordinateType":"gcj02"};
-        return jsonObject;
+    exportGeoJson:function(opts) {
+        var points = this.getCoordinates();
+        var coordinates = Z.GeoJson.toGeoJsonCoordinates(points);
+        return {
+            'type':this.getType(),
+            'coordinates': coordinates
+        };
     },
 
     /**

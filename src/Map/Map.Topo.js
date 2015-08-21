@@ -65,17 +65,17 @@ Z.Map.include({
             return ret;
         }
         // 点和圆形的buffer直接进行计算
-        if (me.type === me['TYPE_POINT']) {
-            result = new Z['Circle'](me.center, distance);
+        if (geometry instanceof Z.Marker) {
+            result = new Z.Circle(me.center, distance);
             result.setSymbol(defaultOption);
             callback({
                 "success" : true,
                 "data" : result
             });
             return;
-        } else if (me.type === me['TYPE_CIRCLE']) {
+        } else if (geometry instanceof Z.Circle) {
             var radius = me.radius + distance;      
-            result = new Z["Circle"](me.center, radius);
+            result = new Z.Circle(me.center, radius);
             result.setSymbol(defaultOption);
             callback({
                 "success" : true,
@@ -284,7 +284,7 @@ Z.Map.include({
         if(this._visualExtentIntersection(circle, polygon)){
             var center = circle.getCenter();
             if(Z.GeoUtils.isPointInPolygon(center, polygon)) return true;
-            var rings = polygon.getRing();
+            var rings = polygon.getShell();
             if(this._circleAndRingsIntersection(circle, rings)) return true;
             return false;
         }
@@ -300,7 +300,7 @@ Z.Map.include({
     _circleAndPolylineIntersection: function(circle, polyline) {
         if(this._visualExtentIntersection(circle, polyline)){
             var paths = polyline.getPath();
-            if(this._circleAndRingsIntersection(circle, paths)) return true;
+            if(this._circleAndRingsIntersection(circle, paths)) {return true;}
             return false;
         }
         return false;
@@ -316,10 +316,10 @@ Z.Map.include({
         if(this._visualExtentIntersection(circle, rect)){
             var center = circle.getCenter();
             var projection = this.getProjection();
-            if (!rect ||!projection) return false;
+            if (!rect ||!projection) {return false;}
             var extent = rect.computeExtent(projection);
-            if(Z.GeoUtils.isPointInRect(center, extent)) return true;
-            if(this._circleAndRingsIntersection(circle, rect.getPoints())) return true;
+            if(Z.GeoUtils.isPointInRect(center, extent)) {return true;}
+            if(this._circleAndRingsIntersection(circle, rect.getShell())) {return true;}
             return false;
         }
         return false;
@@ -332,7 +332,7 @@ Z.Map.include({
     * @return {Boolean} true，相交；false，不相交
     */
     _circleAndCircleIntersection: function(circle, aCircle) {
-        if(this._isPointInCircle(circle.getCenter(), aCircle)) return true;
+        if(this._isPointInCircle(circle.getCenter(), aCircle)) {return true;}
         if(this._visualExtentIntersection(circle, aCircle)){
             var radius = circle.getRadius();
             var aRadius = aCircle.getRadius();

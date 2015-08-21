@@ -22,10 +22,6 @@ Z.Class.extend = function (props) {
         if(this._initHooks) {
             this.callInitHooks();
         }
-
-        if (this['exceptionDefs']) {
-            this.exceptions = this['exceptionDefs'][Z.Browser.language];
-        }
     };
 
     var parentProto = NewClass.__super__ = this.prototype;
@@ -60,6 +56,15 @@ Z.Class.extend = function (props) {
         props.options = Z.Util.extend(Z.Util.create(proto.options), props.options);
     }
 
+    if (props.exceptionDefs) {
+        var lang = Z.Browser.language;
+        if ( lang !== 'zh-CN') {
+            lang = 'en-US'; //only support chinese and english now;
+        }
+        Z.Util.extend(proto, {exceptions:props.exceptionDefs[lang]}); 
+        delete props.exceptionDefs;
+    }
+
     // mix given properties into the prototype
     Z.Util.extend(proto, props);
 
@@ -68,7 +73,7 @@ Z.Class.extend = function (props) {
     // add method for calling all hooks
     proto.callInitHooks = function () {
 
-        if (this._initHooksCalled) { return; }
+        if (this._initHooksCalled ) { return; }
 
         if (parentProto.callInitHooks) {
             parentProto.callInitHooks.call(this);

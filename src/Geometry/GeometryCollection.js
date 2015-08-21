@@ -1,6 +1,7 @@
 Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
-    initialize:function(geometries, opts) {
-        this.type=Z.Geometry['TYPE_GEOMETRYCOLLECTION'];
+    type:Z.Geometry['TYPE_GEOMETRYCOLLECTION'],
+
+    initialize:function(geometries, opts) {       
         this.setGeometries(geometries);
         this.initOptions(opts);
     },
@@ -13,14 +14,14 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
      */
     prepare:function(layer) {
         this.rootPrepare(layer);
-        this.prepareGeometries();
+        this._prepareGeometries();
     },
 
     /**
      * prepare the geometries, 在geometries发生改变时调用
      * @return {[type]} [description]
      */
-    prepareGeometries:function() {
+    _prepareGeometries:function() {
         var layer = this.getLayer();
         var geometries = this.getGeometries();
         for (var i=0,len=geometries.length;i<len;i++) {
@@ -37,7 +38,10 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
     setGeometries:function(geometries) {
         this.checkGeometries(geometries);
         this.geometries = geometries;
-        this.prepareGeometries();
+        if (!this.getLayer()) {
+            return;
+        }
+        this._prepareGeometries();
         this.onShapeChanged();
         return this;
     },
@@ -134,27 +138,12 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         return new Z.GeometryCollection.Painter(this);
     },
 
-    exportJson:function(opts) {
+   exportGeoJson:function(opts) {
         var geoJsons = [];
         var geometries = this.getGeometries();
         if (Z.Util.isArray(geometries)) {
             for (var i=0,len=geometries.length;i<len;i++) {
-                geoJsons.push(geometries.exportJson(opts));
-            }
-        }
-        return {
-            'type':         Z.Geometry['TYPE_GEOMETRYCOLLECTION'],
-            'geometries':   geoJsons
-        };
-    },
-
-
-    exportGeoJson:function(opts) {
-        var geoJsons = [];
-        var geometries = this.getGeometries();
-        if (Z.Util.isArray(geometries)) {
-            for (var i=0,len=geometries.length;i<len;i++) {
-                geoJsons.push(geometries.exportGeoJson(opts));
+                geoJsons.push(geometries[i].exportGeoJson(opts));
             }
         }
         return {

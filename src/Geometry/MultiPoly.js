@@ -33,7 +33,7 @@ Z.MultiPoly = Z.GeometryCollection.extend({
             return null;
         }
         for (var i = 0,len=geometries.length;i<len;i++) {
-            coordinates.push(geometries.getCoordinates());
+            coordinates.push(geometries[i].getCoordinates());
         }
         return coordinates;
     },
@@ -55,5 +55,15 @@ Z.MultiPoly = Z.GeometryCollection.extend({
             this.setGeometries([]);
         }
         return this;
+    },
+
+    //override exportGeoJson in GeometryCollection
+    exportGeoJson:function(opts) {
+        var points = this.getCoordinates();
+        var coordinates = Z.GeoJson.toGeoJsonCoordinates(points);
+        return {
+            'type':this.getType(),
+            'coordinates': coordinates
+        };
     }
 });

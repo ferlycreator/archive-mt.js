@@ -32,7 +32,6 @@
 ../src/Layer/VisualizerLayer.js
 ../src/Layer/HeatmapLayer.js
 ../src/Geometry/Geometry.js
-../src/Geometry/Ext/Geometry.Util.js
 ../src/Geometry/Ext/Geometry.Edit.js
 ../src/Geometry/Ext/Geometry.InfoWindow.js
 ../src/Geometry/Ext/Geometry.Menu.js
@@ -55,7 +54,7 @@
 ../src/Geometry/MultiPoint.js
 ../src/Geometry/MultiPolyline.js
 ../src/Geometry/MultiPolygon.js
-../src/Geometry/Geometry.GeoJson.js
+../src/Geometry/GeoJson.js
 ../src/Geometry/Painter/SVG.js
 ../src/Geometry/Painter/Canvas.js
 ../src/Geometry/Painter/Painter.js

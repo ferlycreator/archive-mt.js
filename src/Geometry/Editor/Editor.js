@@ -391,7 +391,11 @@ Z.Editor=Z.Class.extend({
         var tmpHandle = null;
         var title = ((geometry instanceof Z.Polygon)?'多边形':'多折线');
         function getLonlats() {
-            return geometry.getPrjPoints();
+            if (geometry instanceof Z.Polygon) {
+                return geometry.getPrjShell();
+            } else if (geometry instanceof Z.Polyline) {
+                return geometry.getPrjPath();
+            }            
         }        
         function createVertexHandle(vertex) {
             //vertex是个引用
@@ -569,7 +573,7 @@ Z.Editor=Z.Class.extend({
                         var plonlat = map.transform(eventOffset);
                         var tolerance = pxTolerance*res; 
                         var interIndex = Z.GeoUtils._isPointOnPath(plonlat, geometry,tolerance);
-                        var prjPoints = geometry.getPrjPoints();
+                        var prjPoints = getLonlats();
                         //不与端点重叠,如果重叠则不显示
                         if (interIndex >= 0 && !isPointOverlapped(plonlat,prjPoints[interIndex],tolerance) && !isPointOverlapped(plonlat,prjPoints[interIndex+1],tolerance)) {
                             var domOffset = map.screenToDomOffset(eventOffset);

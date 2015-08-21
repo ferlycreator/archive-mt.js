@@ -3,7 +3,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         /**
         * 异常信息定义
         */
-        'exceptionDefs':{
+        exceptionDefs:{
             'en-US':{
                 'MUST_PROVIDE_OBJECT':'You must provide object which infowindow add to.'
             },

@@ -3,7 +3,7 @@ Z['Control'] = Z.Control = Z.Class.extend({
 	/**
 	* 异常信息定义
 	*/
-	'exceptionDefs':{
+	exceptionDefs:{
 		'en-US':{
 			'NEED_ID':'You must set id to Control.'
 		},
