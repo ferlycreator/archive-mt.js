@@ -1,17 +1,17 @@
 Z.Geometry.include({
 	/*
     * 添加标签
-    * @param {Object} options/Z.Label
+    * @param {Object} options/Z.Panel
     * @expose
     */
-    addLabel: function (options) {
-        if(options instanceof Z.Label) {
+    addPanel: function (options) {
+        if(options instanceof Z.Panel) {
             label = options;
             label.options['target'] = this;
             label.addTo(this.getMap());
         } else {
             options['target'] = this;
-            var label = new Z.Label(options);
+            var label = new Z.Panel(options);
             label.addTo(this.getMap());
         }
         return this;
@@ -19,33 +19,33 @@ Z.Geometry.include({
 
     /*
     * 删除标签
-    * @param {Object} id or Z.Label
+    * @param {Object} id or Z.Panel
     * @expose
     */
-    removeLabel: function (obj) {
-        label = this._getLabel(obj);
+    removePanel: function (obj) {
+        label = this._getPanel(obj);
         label.removeLable();
         return this;
     },
 
     /*
     * 删除标签
-    * @param {Object} id or Z.Label
+    * @param {Object} id or Z.Panel
     * @expose
     */
-    hideLabel: function(obj) {
-        label = this._getLabel(obj);
+    hidePanel: function(obj) {
+        label = this._getPanel(obj);
         label.hide();
         return this;
     },
 
     /*
     * 删除标签
-    * @param {Object} id or Z.Label
+    * @param {Object} id or Z.Panel
     * @expose
     */
-    showLabel: function(obj) {
-        label = this._getLabel(obj);
+    showPanel: function(obj) {
+        label = this._getPanel(obj);
         label.show();
         return this;
     },
@@ -55,16 +55,16 @@ Z.Geometry.include({
     * @param {String} id
     * @expose
     */
-    getLabel: function(id) {
-        return Z.Label['getLabel'](id);
+    getPanel: function(id) {
+        return Z.Panel.getPanel(id);
     },
 
-    _getLabel: function(obj) {
+    _getPanel: function(obj) {
         if(!obj) return;
-        if(obj instanceof Z.Label) {
+        if(obj instanceof Z.Panel) {
             return obj;
         } else {
-            return Z.Label['getLabel'](obj);
+            return Z.Panel.getPanel(obj);
         }
     }
 

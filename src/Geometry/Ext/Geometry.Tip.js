@@ -1,17 +1,17 @@
 Z.Geometry.include({
 	/*
     * 添加tip
-    * @param {Object} options/Z.Tip
+    * @param {Object} options/Z.Label
     * @expose
     */
-    'addTip': function (options) {
-        if(options instanceof Z.Tip) {
+    addTip: function (options) {
+        if(options instanceof Z.Label) {
             tip = options;
             tip.options['target'] = this;
             tip.addTo(this.getMap());
         } else {
             options['target'] = this;
-            var tip = new Z.Tip(options);
+            var tip = new Z.Label(options);
             tip.addTo(this.getMap());
         }
         return this;
@@ -19,7 +19,7 @@ Z.Geometry.include({
 
     /*
     * 删除tip
-    * @param {Object} id or Z.Tip
+    * @param {Object} id or Z.Label
     * @expose
     */
     removeTip: function (obj) {
@@ -30,7 +30,7 @@ Z.Geometry.include({
 
     /*
     * 删除tip
-    * @param {Object} id or Z.Tip
+    * @param {Object} id or Z.Label
     * @expose
     */
     hideTip: function(obj) {
@@ -41,7 +41,7 @@ Z.Geometry.include({
 
     /*
     * 删除tip
-    * @param {Object} id or Z.Tip
+    * @param {Object} id or Z.Label
     * @expose
     */
     showTip: function(obj) {
@@ -56,15 +56,15 @@ Z.Geometry.include({
     * @expose
     */
     getTip: function(id) {
-        return Z.Tip['getTip'](id);
+        return Z.Label['getTip'](id);
     },
 
     _getTip: function(obj) {
         if(!obj) return;
-        if(obj instanceof Z.Tip) {
+        if(obj instanceof Z.Label) {
             return obj;
         } else {
-            return Z.Tip['getTip'](obj);
+            return Z.Label['getTip'](obj);
         }
     }
 

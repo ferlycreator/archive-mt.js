@@ -37,8 +37,8 @@
 ../src/Geometry/Ext/Geometry.InfoWindow.js
 ../src/Geometry/Ext/Geometry.Menu.js
 ../src/Geometry/Ext/Geometry.Events.js
+../src/Geometry/Ext/Geometry.Panel.js
 ../src/Geometry/Ext/Geometry.Label.js
-../src/Geometry/Ext/Geometry.Tip.js
 ../src/Geometry/Extent.js
 ../src/Geometry/Vector.js
 ../src/Geometry/Geometry.Center.js

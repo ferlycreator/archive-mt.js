@@ -2,7 +2,7 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
 	includes: [Z.Eventable],
 
 	statics: {
-		'getLabel': function(id) {
+		getPanel: function(id) {
 			return Z['Control']['getControl'](id);
 		}
 	},
@@ -19,18 +19,19 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
 		'content': '',
 		'target': null,
 		'linksymbol': {
-			'stroke' : '#474cf8',
-			'stroke-width' : 3,
-			'stroke-opacity' : 1
+			'line-color' : '#474cf8',
+			'line-width' : 3,
+			'line-dasharray' : null,
+			'line-opacity' : 1
 		}
 	},
 
 	/**
-	* 隐藏label
+	* 隐藏panel
 	* @expose
 	*/
 	hide: function() {
-		var parentDom = this._labelContainer['parentNode'];
+		var parentDom = this._panelContainer['parentNode'];
 		Z.DomUtil.setStyle(parentDom, 'display: none');
 		if(this.options['target']) {
 			this._link.hide();
@@ -38,11 +39,11 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
 	},
 
 	/**
-	* 显示label
+	* 显示panel
 	* @expose
 	*/
 	show: function() {
-		var parentDom = this._labelContainer['parentNode'];
+		var parentDom = this._panelContainer['parentNode'];
 		Z.DomUtil.setStyle(parentDom, 'display: block');
 		if(this.options['target']) {
 			this._link.show();
@@ -50,10 +51,10 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
 	},
 
 	/**
-	* 移除label
+	* 移除panel
 	* @expose
 	*/
-	removeLable: function() {
+	removePanel: function() {
 		this.remove();
 		if(this.options['target']) {
 			this._link.remove();
@@ -61,37 +62,36 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
 	},
 
 	/**
-	* 根据id获取label
+	* 根据id获取panel
 	* @expose
 	*/
-	getLabel: function(id) {
+	getPanel: function(id) {
 		return this.getControl();
 	},
 
 	buildOn: function (map) {
 		if(!map || !this.options || !this.options['content']) return;
 		this._map = map;
-		var layerId =
-		this._internalLayer = this._getInternalLayer(map, '__mt__internal_layer_label_link');
-		this._labelContainer = Z.DomUtil.createElOn('div', 'cursor:default;');
-		var divCss = 'label-default';
-		var titleCss = 'label-title-default';
-		var contentCss = 'label-content-default';
+		this._internalLayer = this._getInternalLayer(map, '__mt__internal_layer_panel_link');
+		this._panelContainer = Z.DomUtil.createElOn('div', 'cursor:default;');
+		var divCss = 'panel-default';
+		var titleCss = 'panel-title-default';
+		var contentCss = 'panel-content-default';
 		var style = this.options['style'];
 		if(style) {
-			divCss = 'label-' + style;
-			titleCss = 'label-title-' + style;
-			contentCss = 'label-content-' + style;
+			divCss = 'panel-' + style;
+			titleCss = 'panel-title-' + style;
+			contentCss = 'panel-content-' + style;
 		}
-		Z.DomUtil.addClass(this._labelContainer, divCss);
+		Z.DomUtil.addClass(this._panelContainer, divCss);
 		this._appendTitleDom(titleCss);
 		this._appendContentDom(contentCss);
-        Z.DomUtil.on(this._labelContainer, 'click dblclick contextmenu mousemove mousedown mouseup', Z.DomUtil.stopPropagation);
+        Z.DomUtil.on(this._panelContainer, 'click dblclick contextmenu mousemove mousedown mouseup', Z.DomUtil.stopPropagation);
         if(this.options['draggable']) {
-        	Z.DomUtil.on(this._labelContainer, 'mousedown', this._onMouseDown, this)
-        		 	 .on(this._labelContainer, 'mouseup', this._disableMove, this);
+        	Z.DomUtil.on(this._panelContainer, 'mousedown', this._onMouseDown, this)
+        		 	 .on(this._panelContainer, 'mouseup', this._disableMove, this);
         }
-		return this._labelContainer;
+		return this._panelContainer;
 	},
 
 	_appendTitleDom: function(titleCss) {
@@ -99,7 +99,7 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
         	var _titleDom = Z.DomUtil.createEl('div');
         	Z.DomUtil.addClass(_titleDom, titleCss);
         	_titleDom.innerHTML = this.options['title'];
-			this._labelContainer.appendChild(_titleDom);
+			this._panelContainer.appendChild(_titleDom);
 		}
 	},
 
@@ -112,7 +112,7 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
 			} else {
 				_contentDom.innerTEXT = this.options['content'];
 			}
-			this._labelContainer.appendChild(_contentDom);
+			this._panelContainer.appendChild(_contentDom);
 		}
 	},
 
@@ -140,15 +140,15 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
 	},
 
 	/**
-	*获取距离coordinate最近的label上的点
+	*获取距离coordinate最近的panel上的点
 	* @param {Coordinate}
 	* @return {Coordinate}
 	*/
 	_getNearestPoint: function(coordinate) {
 		var points = [];
 		var screenPoint = this._topLeftPoint();
-		var width = this._labelContainer['clientWidth'],
-			height = this._labelContainer['clientHeight'];
+		var width = this._panelContainer['clientWidth'],
+			height = this._panelContainer['clientHeight'];
 		var topLeftPoint = this._map.screenPointToCoordinate(screenPoint);
 		var topCenterPoint = this._map.screenPointToCoordinate({
 			'top' : screenPoint['top'],
@@ -225,7 +225,7 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
 	},
 
 	_topLeftPoint: function() {
-		var parentDom = this._labelContainer['parentNode'];
+		var parentDom = this._panelContainer['parentNode'];
 		var domStyle = parentDom['style'];
 		var top = Z.DomUtil.getPixelValue(domStyle['top']);
 			left = Z.DomUtil.getPixelValue(domStyle['left']);
@@ -233,13 +233,13 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
 			right = Z.DomUtil.getPixelValue(domStyle['right']);
 		var width = this._map.containerDOM.clientWidth,
 			height = this._map.containerDOM.clientHeight;
-		var labelWidth = this._labelContainer['clientWidth'],
-			labelHeight = this._labelContainer['clientHeight'];
+		var panelWidth = this._panelContainer['clientWidth'],
+			panelHeight = this._panelContainer['clientHeight'];
 		if(left === 0 && right >= 0) {
-			left = width - right - labelWidth;
+			left = width - right - panelWidth;
 		}
 		if(top === 0 && bottom >= 0) {
-			top = height - bottom - labelHeight;
+			top = height - bottom - panelHeight;
 		}
 		return {'left':left, 'top':top};
 	},
@@ -249,13 +249,13 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
 		var center = geometry.getCenter();
 		var nearestPoints = this._getNearestPoint(center);
 		var path = [center, nearestPoints[0], nearestPoints[1]];
-		this._link.setPath(path);
+		this._link.setCoordinates(path);
 	},
 
 	_onMouseDown: function(event) {
-		Z.DomUtil.setStyle(this._labelContainer, 'cursor: move');
+		Z.DomUtil.setStyle(this._panelContainer, 'cursor: move');
 		this._map.disableDragPropagation();
-		Z.DomUtil.on(this._labelContainer, 'mousemove', this._onMouseMove, this);
+		Z.DomUtil.on(this._panelContainer, 'mousemove', this._onMouseMove, this);
 		this._startOffset = {
 			'left': parseInt(event.offsetX,0),
 			'top': parseInt(event.offsetY,0)
@@ -271,7 +271,7 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
 		};
 		var offsetTop = this._endOffset['top'] - this._startOffset['top'];
 		var offsetLeft = this._endOffset['left'] - this._startOffset['left'];
-		var parentDom = this._labelContainer['parentNode'];
+		var parentDom = this._panelContainer['parentNode'];
 		var domStyle = parentDom['style'];
 		var domTop = Z.DomUtil.getPixelValue(domStyle['top']);
 		var domLeft = Z.DomUtil.getPixelValue(domStyle['left']);
@@ -302,9 +302,9 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
 	},
 
 	_disableMove: function() {
-		Z.DomUtil.setStyle(this._labelContainer, 'cursor: ' +  'default');
+		Z.DomUtil.setStyle(this._panelContainer, 'cursor: ' +  'default');
 		this._map.enableDragPropagation();
-        Z.DomUtil.off(this._labelContainer, 'mousemove', this._onMouseMove, this);
+        Z.DomUtil.off(this._panelContainer, 'mousemove', this._onMouseMove, this);
         /**if(this.options['target']) {
         	this._target.off('positionchanged', this._changeLinkPath, this)
 					.off('remove', this.remove, this);

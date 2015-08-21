@@ -1,22 +1,8 @@
-Z['Label'] = Z.Label = Z.Control.extend({
+Z['Label'] = Z.Label = Z.Class.extend({
 	includes: [Z.Eventable],
 
-	statics: {
-		'getLabel': function(id) {
-			return Z['Control']['getControl'](id);
-		}
-	},
-
 	options:{
-		'position' : {
-			'top': '0',
-			'right': '0'
-		},
-		'style': 'default',
 		'draggable': true,
-		'title': '',
-		'html': true,
-		'content': '',
 		'target': null,
 		'linksymbol': {
 			'stroke' : '#474cf8',
