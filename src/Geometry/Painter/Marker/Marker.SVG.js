@@ -14,19 +14,27 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
         if (!this.geometry) {return;}
         this.layerContainer = layerContainer;
         this.setSymbol(symbol);
-        var icon = this.getGeoIcon();
-        var url = icon['url'];
-        if(url&&url.length>0) {
-            var picMarker =  this.createPictureMarker();
-            this.paintDomMarker(picMarker, layerContainer);
-        }
-        var markerType = icon['type'];
-        if(markerType&&markerType.length>0) {
-            this.paintVectorMarker();
-        }
-        var textName = icon['content'];
-        if(textName&&textName.length>0) {
-            this.paintTextMarker();
+        var icon = this.iconSymbol;
+        if(icon) {
+            var url = icon['url'];
+            if(url&&url.length>0) {
+                var picMarker =  this.createPictureMarker();
+                this.paintDomMarker(picMarker, layerContainer);
+            }
+            var markerType = icon['type'];
+            if(markerType&&markerType.length>0) {
+                this.paintVectorMarker();
+            }
+            var textName = icon['content'];
+            if(textName&&textName.length>0) {
+                this.paintTextMarker();
+            }
+        } else {
+            icon = this.shieldSymbol;
+            var shieldType = icon['type'];
+            if(shieldType&&shieldType.length>0) {
+                this.paintShieldMarker();
+            }
         }
         this.setZIndex(zIndex);
     },
@@ -49,12 +57,12 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
 
         var markerType = icon['type'];
         if(markerType&&markerType.length>0) {
-            var vectorMarker = this._createVectorObj();
+            var vectorMarker = this._createVectorObj(icon);
             Z.SVG.refreshVector(this.vector, vectorMarker);
         }
         var textName = icon['content'];
         if(textName&&textName.length>0) {
-            var vectorMarker = this._createTextObj();
+            var vectorMarker = this._createTextObj(icon);
             Z.SVG.refreshTextVector(this.vector, vectorMarker);
         }
     },
@@ -82,7 +90,7 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
     },
 
     paintVectorMarker: function() {
-        var icon = this.getGeoIcon();
+        var icon = this.iconSymbol;
         var strokeSymbol = {
             'stroke': icon['stroke'],
             'strokewidth': icon['strokewidth'],
@@ -94,15 +102,8 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
             'fillopacity': icon['fillopacity']
         };
         //矢量标注绘制
-        var vectorMarker = this._createVectorObj();
+        var vectorMarker = this._createVectorObj(icon);
         this.drawVector(vectorMarker, strokeSymbol, fillSymbol);
-    },
-
-    paintTextMarker: function() {
-        var icon = this.getGeoIcon();
-        //文本标注绘制
-        var textMarker = this._createTextObj();
-        this.drawVector(textMarker, null, null, icon);
     },
 
     /**
@@ -110,10 +111,9 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
      * @param gCenter
      * @returns
      */
-    _createVectorObj: function() {
+    _createVectorObj: function(icon) {
         var gCenter = this.getMarkerDomOffset();
         if (!gCenter) {return null;}
-        var icon = this.getGeoIcon();
         //矢量标注
         var markerType = icon['type'];
         var width = icon['width'];
@@ -176,9 +176,65 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
         return svgBean;
     },
 
-    _createTextObj: function(svgBean) {
+     /**
+     * 生成标签矢量对象
+     * @param gCenter
+     * @returns
+     */
+    _createLabelVectorObj: function(icon) {
+        var svgBean = null;
+        var points = this.getLabelVectorArray(icon);
+        var labelType = icon['type'];
+        if ('label' === labelType) {
+            svgBean = {
+                'type' : 'path',
+                'path' : 'M'+points[0][0]+','+points[0][1]+ ' ' +
+                         'L'+points[1][0]+','+points[1][1]+ ' ' +
+                         'L'+points[2][0]+','+points[2][1]+ ' ' +
+                         'L'+points[3][0]+','+points[3][1]+ ' ' +
+                         Z.SVG.closeChar
+            };
+        } else if ('tip' === labelType) {
+            svgBean = {
+                'type' : 'path',
+                'path' : 'M'+points[0][0]+','+points[0][1]+ ' ' +
+                         'L'+points[1][0]+','+points[1][1]+ ' ' +
+                         'L'+points[2][0]+','+points[2][1]+ ' ' +
+                         'L'+points[3][0]+','+points[3][1]+ ' ' +
+                         'L'+points[4][0]+','+points[4][1]+ ' ' +
+                         'L'+points[5][0]+','+points[5][1]+ ' ' +
+                         'L'+points[6][0]+','+points[6][1]+ ' ' +
+                         Z.SVG.closeChar
+            };
+        }
+        if (Z.Browser.vml && svgBean) {
+            svgBean['path'] += ' e';
+        }
+        return svgBean;
+    },
+
+    paintTextMarker: function() {
+        var iconSymbol = this.iconSymbol;
+        //文本标注绘制
+        iconSymbol['content'] = this._convertContent(iconSymbol);
+        var textMarker = this._createTextObj(iconSymbol);
+        this.drawTextVector(textMarker, iconSymbol);
+    },
+
+    _createTextObj: function(icon) {
         var svgBean = {};
-        var icon = this.getGeoIcon();
+        var location = this.getTextVectorLocation(icon);
+        var textPoint = {
+            'location': location,
+            'content': icon['content']
+        };
+        var texts = [];
+        texts.push(textPoint);
+        svgBean['texts'] = texts;
+        return svgBean;
+    },
+
+    _convertContent: function(icon) {
         var geometry = this.geometry;
         var props = geometry.getProperties();
         var content = icon['content'];
@@ -197,19 +253,27 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
                 }
             }
         }
-        var gCenter = this.getMarkerDomOffset();
+        return content;
+    },
 
-        var dx = parseInt(icon['dx'],0);
-        var dy = parseInt(icon['dy'],0);
-        gCenter = [gCenter[0] + dx, gCenter[1] + dy];
-        var textPoint = {
-            'location': gCenter,
-            'content': content
+    paintShieldMarker: function() {
+        var shieldSymbol = this.shieldSymbol;
+        var strokeSymbol = {
+            'stroke': shieldSymbol['stroke'],
+            'strokeWidth': shieldSymbol['strokeWidth'],
+            'strokeDasharray': shieldSymbol['strokeDasharray'],
+            'strokeOpacity': shieldSymbol['strokeOpacity']
         };
-        var texts = [];
-        texts.push(textPoint);
-        svgBean['texts'] = texts;
-        return svgBean;
+        var fillSymbol = {
+            'fill': shieldSymbol['fill'],
+            'fillOpacity': shieldSymbol['fillOpacity']
+        };
+
+        shieldSymbol['content'] = this._convertContent(shieldSymbol);
+        var vector = this._createLabelVectorObj(shieldSymbol);
+        var shieldMarker = this._createTextObj(shieldSymbol);
+        shieldMarker['path'] = vector['path'];
+        this.drawShieldVector(shieldMarker, strokeSymbol, fillSymbol, shieldSymbol);
     },
 
     /**

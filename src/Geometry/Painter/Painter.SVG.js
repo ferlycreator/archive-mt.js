@@ -5,7 +5,27 @@ Z.Painter.SVG = Z.Painter.extend({
      * @param layer
      * @param config
      */
-    drawVector:function(vectorBean, strokeSymbol, fillSymbol, icon) {
+    drawVector: function(vectorBean, strokeSymbol, fillSymbol) {
+        var vectorPaper = this._getVectorPaper(vectorBean);
+        this.vector = Z.SVG.addVector(vectorPaper, vectorBean,
+                                   Z.Util.convertFieldNameStyle(strokeSymbol,'minus'),
+                                   Z.Util.convertFieldNameStyle(fillSymbol,'minus'));
+        return this.vector;
+    },
+
+    drawTextVector: function(vectorBean, iconSymbol) {
+        var vectorPaper = this.getVectorPaper(vectorBean);
+        this.vector = Z.SVG.addTextVector(vectorPaper, vectorBean, iconSymbol);
+        return this.vector;
+    },
+
+    drawShieldVector: function(vectorBean, strokeSymbol, fillSymbol, shieldSymbol) {
+        var vectorPaper = this.getVectorPaper(vectorBean);
+        this.vector = Z.SVG.addShieldVector(vectorPaper, vectorBean, strokeSymbol, fillSymbol, shieldSymbol);
+        return this.vector;
+    },
+
+    _getVectorPaper: function(vectorBean) {
         var vectorPaper = this.getVectorPaper();
         if (!vectorBean || !vectorPaper) {return;}
         //样式
@@ -13,12 +33,7 @@ Z.Painter.SVG = Z.Painter.extend({
             // TODO: only update?
             Z.SVG.removeVector(vectorPaper, this.vector);
         }
-        var path = Z.SVG.addVector(vectorPaper, vectorBean,
-                                   Z.Util.convertFieldNameStyle(strokeSymbol,'minus'),
-                                   Z.Util.convertFieldNameStyle(fillSymbol,'minus'),
-                                   Z.Util.convertFieldNameStyle(icon,'minus'));
-        this.vector = path;
-        return this.vector;
+        return vectorPaper;
     },
 
     remove:function() {
@@ -104,7 +119,7 @@ Z.Painter.SVG = Z.Painter.extend({
         var option = {};
         for (var p in symbol) {
             if (symbol.hasOwnProperty(p)) {
-                if (p === "") {continue;}
+                if (p === '') {continue;}
                 option[Z.Util.convertCamelToMinus(p)]=symbol[p];
             }
         }

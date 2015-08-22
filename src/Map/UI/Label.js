@@ -15,18 +15,18 @@ Z['Label'] = Z.Label = Z.Class.extend({
 
 	options:{
 		'symbol': {
-            'shield-type': 'tip',//rectangle tip
-            'shield-name': '测试标签:[a-name]',
+            'shield-type': 'label',//label tip
+            'shield-name': '',
             'shield-opacity': 1,
             'shield-line-color': '#000000',
             'shield-line-width': 1,
             'shield-line-opacity': 1,
-            'shield-fill': '#ff0000',
+            'shield-fill': '#ffffff',
             'shield-fill-opacity': 1,
             'shield-file': '',
             'shield-face-name': 'Serif',
             'shield-unlock-image' : false,
-            'shield-size': 10,
+            'shield-size': 12,
             'shield-text-fill': '#ff0000',
             'shield-placement': 'point', //point line vertex interior
             'shield-spacing': 30,
@@ -34,17 +34,16 @@ Z['Label'] = Z.Label = Z.Class.extend({
             'shield-wrap-before': false,
             'shield-wrap-character': '',
             'shield-character-spacing': 0,
-            'shield-line-spacing': 0,
+            'shield-line-spacing': 8,
             'shield-text-dx': 0,
             'shield-text-dy': 0,
             'shield-dx': 0,
             'shield-dy': 0,
             'shield-text-opacity': 1,
-            'shield-horizontal-alignment': 'auto',//left middle right auto
-            'shield-vertical-alignment': 'top',//top middle bottom auto
-            'shield-justify-alignment': 'auto'//left center right auto
+            'shield-horizontal-alignment': 'right',//left middle right
+            'shield-vertical-alignment': 'top',//top middle bottom
+            'shield-justify-alignment': 'center'//left center right
 		},
-		'type': 'rectangle',//tip
 		'link': true,
 		'draggable': true,
 		'trigger': 'hover'//click|hover
@@ -70,7 +69,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
 	* 隐藏label
 	* @expose
 	*/
-	hideLabel: function() {
+	hide: function() {
 		this._label.hide();
 		if(this.options['link']) {
 			this._link.hide();
@@ -82,7 +81,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
 	* 显示label
 	* @expose
 	*/
-	showLabel: function() {
+	show: function() {
 		this._label.show();
 		if(this.options['link']) {
 	        this._linkToTarget();
@@ -94,7 +93,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
 	* 移除label
 	* @expose
 	*/
-	removeLabel: function() {
+	remove: function() {
 		this._label.remove();
 		if(this.options['link']) {
 			this._link.remove();
@@ -118,10 +117,11 @@ Z['Label'] = Z.Label = Z.Class.extend({
         this._internalLayer = this._getInternalLayer(this._map, layerId, canvas);
         var targetCenter = this._target.getCenter();
         this._label = new Z.Marker(targetCenter);
+        this._label.setProperties(geometry.getProperties());
         this._label['target'] = this._target;
-        this._label.setIcon(this._getShieldSymbol());
+        this._label.setSymbol(this.options['symbol']);
         this._internalLayer.addGeometry(this._label);
-        this._label.hide();
+        //this._label.hide();
 
         var targetOffset = this._map.coordinateToScreenPoint(targetCenter);
         var labelOffset = this._computeLabelOffset();
@@ -164,46 +164,6 @@ Z['Label'] = Z.Label = Z.Class.extend({
                       .on('mouseout', this._recoverMapEvents, this);
         }
         return null;
-	},
-
-    /**
-    'shield-type': 'tip',//rectangle tip
-    'shield-name': '测试标签:[a-name]',
-    'shield-opacity': 1,
-    'shield-line-color': '#000000',
-    'shield-line-width': 1,
-    'shield-line-opacity': 1,
-    'shield-fill': '#ff0000',
-    'shield-fill-opacity': 1,
-    'shield-file': '',
-    */
-	_getShieldSymbol: function() {
-        var symbol = this.options['symbol'];
-        var shieldSymbol = {};
-        for(var attr in symbol) {
-            if('shield-type' === attr) {
-                shieldSymbol['marker-type'] = symbol[attr];
-            }
-            if('shield-opacity' === attr) {
-                shieldSymbol['marker-opacity'] = symbol[attr];
-            }
-            if('shield-line-color' === attr) {
-                shieldSymbol['marker-line-color'] = symbol[attr];
-            }
-            if('shield-line-width' === attr) {
-                shieldSymbol['marker-line-width'] = symbol[attr];
-            }
-            if('shield-line-opacity' === attr) {
-                shieldSymbol['marker-line-opacity'] = symbol[attr];
-            }
-            if('shield-fill' === attr) {
-                shieldSymbol['marker-fill'] = symbol[attr];
-            }
-            if('shield-fill-opacity' === attr) {
-                shieldSymbol['marker-fill-opacity'] = symbol[attr];
-            }
-        }
-        return shieldSymbol;
 	},
 
 	_computeLabelOffset: function() {

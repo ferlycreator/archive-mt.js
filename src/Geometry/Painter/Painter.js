@@ -27,7 +27,8 @@ Z.Painter = Z.Class.extend({
         }
         this.strokeSymbol = this.prepareStrokeSymbol(symbol);
         this.fillSymbol = this.prepareFillSymbol(symbol);
-        this.iconSymbol = this.prepareIcon(symbol);
+        this.iconSymbol = this.prepareIconSymbol(symbol);
+        this.shieldSymbol = this.prepareShieldSymbol(symbol);
     },
 
     /**
@@ -69,7 +70,13 @@ Z.Painter = Z.Class.extend({
         return fillSymbol;
     },
 
-    prepareIcon: function(symbol) {
+    prepareIconSymbol: function(symbol) {
+        var url = symbol['markerFile'];
+        var markerType = symbol['markerType'];
+        var textName = symbol['textName'];
+        if(!url&&!markerType&&!textName) {
+            return null;
+        }
         for(var attr in symbol) {
             var url = symbol['markerFile'];
             if (url&&url.length>0) {
@@ -90,6 +97,18 @@ Z.Painter = Z.Class.extend({
                 break;
             }
         }
+        var width = symbol['markerWidth'];
+        if(!width) {
+            width = 30;
+        }
+        var height = symbol['markerHeight'];
+        if(!height) {
+            height = 30;
+        }
+        var textPlacement = symbol['textPlacement'];
+        if(!textPlacement) {
+            textPlacement = 'point';
+        }
         var icon = {
             ////icon
            'url': symbol['markerFile'],
@@ -97,29 +116,77 @@ Z.Painter = Z.Class.extend({
            'height': symbol['markerHeight'],
            'type': symbol['markerType'],
            'opacity': symbol['markerOpacity'],
-           'fillopacity': symbol['markerFillOpacity'],
+           'fillOpacity': symbol['markerFillOpacity'],
            'fill': symbol['markerFill'],
            'stroke': symbol['markerLineColor'],
-           'strokewidth': symbol['markerLineWidth'],
-           'strokedasharray': symbol['markerLineDasharray'],
-           'strokeopacity': symbol['markerLineOpacity'],
+           'strokeWidth': symbol['markerLineWidth'],
+           'strokeDasharray': symbol['markerLineDasharray'],
+           'strokeOpacity': symbol['markerLineOpacity'],
 
            /////text
            'content': symbol['textName'],
            'font': symbol['textFaceName'],
            'size': symbol['textSize'],
-           'textwidth': symbol['textWrapWidth'],
+           'textWidth': symbol['textWrapWidth'],
            'padding': symbol['textSpacing'],
            'color': symbol['textFill'],
-           'textopacity': symbol['textOpacity'],
-           'align': symbol['textAlign'],
+           'textOpacity': symbol['textOpacity'],
+           'textAlign': symbol['textAlign'],
            'vertical': symbol['textVerticalAlignment'],
            'horizontal': symbol['textHorizontalAlignment'],
-           'placement': symbol['textPlacement'],//point line vertex interior
+           'placement': textPlacement,//point line vertex interior
            'dx': symbol['textDx'],
            'dy' : symbol['textDy']
         };
         return icon;
+    },
+
+    prepareShieldSymbol: function(symbol) {
+        var shieldSymbol = {
+            'type': symbol['shieldType'],//label tip
+            'content': symbol['shieldName'],
+            'opacity': symbol['shieldOpacity'],
+            'stroke': symbol['shieldLineColor'],
+            'strokeWidth': symbol['shieldLineWidth'],
+            'strokeOpacity': symbol['shieldLineOpacity'],
+            'strokeDasharray': symbol['shieldLineDasharray'],
+            'fill': symbol['shieldFill'],
+            'fillOpacity': symbol['shieldFillOpacity'],
+            'image': symbol['shieldFile'],
+            'unlockImage': symbol['shieldUnlockImage'],
+            'font': symbol['shieldFaceName'],
+            'size': symbol['shieldSize'],
+            'color': symbol['shieldTextFill'],
+            'textOpacity': symbol['shieldTextOpacity'],
+            'placement': symbol['shieldPlacement'],//point line vertex interior
+            'lineSpacing': symbol['shieldLineSpacing'],
+            'textWidth': symbol['shieldWrapWidth'],
+            'wrapbefore': symbol['shieldWrapBefore'],
+            'wrapCharacter': symbol['shieldWrapCharacter'],
+            'textDx': symbol['shieldTextDx'],
+            'textDy': symbol['shieldTextDy'],
+            'dx': symbol['shieldDx'],
+            'dy': symbol['shieldDy'],
+            'horizontal': symbol['shieldHorizontalAlignment'], //left middle right
+            'vertical': symbol['shieldVerticalAlignment'], //top middle bottom
+            'textAlign':symbol['shieldJustifyAlignment'] //left center right
+        };
+        var width = symbol['shieldWrapWidth'];
+        if(!width) {
+            width = 30;
+        }
+        var height = symbol['size'];
+        if(!height) {
+            height = 30;
+        }
+        var textPlacement = symbol['textPlacement'];
+        if(!textPlacement) {
+            textPlacement = 'point';
+        }
+        shieldSymbol['width'] = width;
+        shieldSymbol['height'] = height;
+        shieldSymbol['placement'] = textPlacement;
+        return shieldSymbol;
     },
 
     //需要实现的接口方法
