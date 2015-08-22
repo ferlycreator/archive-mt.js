@@ -6,7 +6,7 @@ Z.Painter = Z.Class.extend({
             return;
         }
         this._paint.apply(this,arguments);
-        this.registerEvents();
+        this._registerEvents();
     },
 
     setSymbol:function(_symbol) {
@@ -20,7 +20,7 @@ Z.Painter = Z.Class.extend({
         //如果有cartoCSS定义, 则优先载入cartoCSS中的symbol
         var map = this.geometry.getMap();
         if (map.options['enableCartoCSS']) {
-            var cartoSymbol = map.cartoCSSGeometry(this.geometry);
+            var cartoSymbol = map._cartoCSSGeometry(this.geometry);
             if (cartoSymbol) {
                 symbol = Z.Util.convertFieldNameStyle(cartoSymbol,'camel');
             }
@@ -123,7 +123,7 @@ Z.Painter = Z.Class.extend({
     },
 
     //需要实现的接口方法
-    setZIndex:function(change) {
+    _setZIndex:function(change) {
         throw new Error("not implemented");
     },
 
@@ -145,9 +145,9 @@ Z.Painter = Z.Class.extend({
 
     addDomEvents:function(dom){
         var geometry = this.geometry;
-        Z.DomUtil.on(dom, 'mousedown mouseup click dblclick contextmenu', geometry.onEvent, geometry);
-        Z.DomUtil.on(dom, 'mouseover', geometry.onMouseOver, geometry);
-        Z.DomUtil.on(dom, 'mouseout', geometry.onMouseOut, geometry);
+        Z.DomUtil.on(dom, 'mousedown mouseup click dblclick contextmenu', geometry._onEvent, geometry);
+        Z.DomUtil.on(dom, 'mouseover', geometry._onMouseOver, geometry);
+        Z.DomUtil.on(dom, 'mouseout', geometry._onMouseOut, geometry);
     }
 
 });

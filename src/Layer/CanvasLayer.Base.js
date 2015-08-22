@@ -1,5 +1,5 @@
 Z.CanvasLayer.Base=Z.OverlayLayer.extend({
-    //load,_onMoving, _onMoveEnd, _onResize, onZoomStart, onZoomEnd
+    //load,_onMoving, _onMoveEnd, _onResize, _onZoomStart, _onZoomEnd
 
     //GeometryID的counter
     _stamp:0,
@@ -12,12 +12,12 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
         // this._geoCache = [];
         var map = this.getMap();
         this.layerContainer = map._panels.canvasLayerContainer;
-        this.createLayerCanvas();
+        this._createLayerCanvas();
         // this.refreshCache();
         this.repaint();
     },
 
-    createLayerCanvas:function() {
+    _createLayerCanvas:function() {
         if (!this.layerCanvas) {
             var map = this.getMap();
             if (!this.layerContainer || !map) {return;}
@@ -129,11 +129,11 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
                 if (!geo || !geo.isVisible()) {
                     return;
                 }
-                var ext = geo.computeVisualExtent(geo._getProjection());
+                var ext = geo._computeVisualExtent(geo._getProjection());
                 if (!ext || !Z.Extent.isIntersect(ext,extent)) {
                     return;
                 }
-                geo.getPainter().paint(me.canvasCtx,me.resourceLoader);
+                geo._getPainter().paint(me.canvasCtx,me.resourceLoader);
             });
         }
     },
@@ -163,7 +163,7 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
                 if (!ext || !Z.Extent.isIntersect(ext,mapExtent)) {
                     return;
                 }
-                var resource = geo.getExternalResource();
+                var resource = geo._getExternalResource();
                 if (resource) {
                     me.resourceLoader.addResource(resource);
                 }
@@ -230,18 +230,18 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
         this.repaint();
     },
 
-    onZoomStart:function(param) {
+    _onZoomStart:function(param) {
         this.hide();
         var mapSize = this.getMap().getSize();
         this.canvasCtx.clearRect(0, 0, mapSize['width'], mapSize['height']);
     },
 
-    onZoomEnd:function(param) {
+    _onZoomEnd:function(param) {
         this.repaint();
         this.show();
     },
 
-    setZIndex:function() {
+    _setZIndex:function() {
        //nothing to do
     }
 });

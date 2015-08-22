@@ -17,22 +17,9 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
     },
 
     initialize:function(coordinates,opts) {
-        this.coordinates = new Z.Coordinate(coordinates);
+        this._coordinates = new Z.Coordinate(coordinates);
         this.initOptions(opts);
     },
-
-    /**
-     * 判断Marker是否是矢量标注
-     * @return {Boolean} True|False
-     * @expose
-     */
-    /**isVectorIcon:function() {
-        var icon = this.getIcon();
-        if (icon) {
-            return 'vector' === icon['type'];
-        }
-        return false;
-    },*/
 
     getDefaultSymbol:function() {
         return {
@@ -45,19 +32,20 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
      * @param {Icon} icon 新的Icon
      * @expose
      */
-    setIcon: function(icon) {
-        if (!this.symbol) {
+    _setIcon: function(icon) {
+        /*if (!this.symbol) {
             this.symbol = {};
         }
         //属性的变量名转化为驼峰风格
         var camelSymbol = Z.Util.convertFieldNameStyle(icon,'camel');
         this.symbol = camelSymbol;
-        this.onSymbolChanged();
-        return this;
+        this._onSymbolChanged();
+        return this;*/
+        return this.setSymbol(icon);
     },
 
     setText: function(text) {
-        this.setIcon(text);
+        this._setIcon(text);
     },
 
     /**
@@ -65,20 +53,20 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
      * @return {Icon} Marker的Icon
      * @expose
      */
-    getIcon:function() {
+    /*getIcon:function() {
         if (!this.symbol || !this.symbol['icon']) {
             return null;
         }
         return this.symbol['icon'];
-    },
+    },*/
 
-    computeExtent:function(projection) {
+    _computeExtent:function(projection) {
         var coordinates = this.getCenter();
         if (!coordinates) {return null;}
         return new Z.Extent({'x':coordinates.x,'y':coordinates.y},{'x':coordinates.x,'y':coordinates.y});
     },
 
-    computeVisualExtent:function(projection) {
+    _computeVisualExtent:function(projection) {
         var geo = this;
         var map = geo.getMap();
         if (!map) {
@@ -117,7 +105,7 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
             pnw = {"top":radius+offset["y"],"left":radius-offset["x"]};
             pse = {"top":radius-offset["y"],"left":radius+offset["x"]};
         } else if (iconType === "text") {
-            var painter = this.getPainter();
+            var painter = this._getPainter();
             var textSize = painter.measureTextMarker();
             if (!textSize) {
                 pnw={"top":0,"left":0};
@@ -145,15 +133,15 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
     },
 
 
-    computeGeodesicLength:function(projection) {
+    _computeGeodesicLength:function(projection) {
         return 0;
     },
 
-    computeGeodesicArea:function(projection) {
+    _computeGeodesicArea:function(projection) {
         return 0;
     },
 
-    assignPainter:function() {
+    _assignPainter:function() {
         if (!this.layer) {return;}
         if (this.layer instanceof Z.SVGLayer) {
             return new Z.Marker.SVG(this);

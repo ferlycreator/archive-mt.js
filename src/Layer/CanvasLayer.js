@@ -43,7 +43,7 @@ Z['CanvasLayer']=Z.CanvasLayer=Z.OverlayLayer.extend({
         return this.visible;
     },
 
-    setZIndex:function(zindex) {
+    _setZIndex:function(zindex) {
         this.zindex=zindex;
     },
 

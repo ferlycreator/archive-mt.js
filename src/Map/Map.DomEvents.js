@@ -38,20 +38,6 @@ Z.Map.include({
         this._fireDOMEvent(this, e, type);
     },
 
-   /* _findEventTarget: function (src) {
-        while (src) {
-            var target = this._targets[Z.Util.stamp(src)];
-            if (target) {
-                return target;
-            }
-            if (src === this._containerDOM) {
-                break;
-            }
-            src = src.parentNode;
-        }
-        return null;
-    },*/
-
     _fireDOMEvent: function (target, e, type) {
     	//TODO DOM事件参数属性应该统一起来
         var data = {
@@ -72,11 +58,11 @@ Z.Map.include({
         target.fire(type, data, true);
     },
 
-    enableDragPropagation: function() {
+    enableDrag: function() {
         this['dragging'].draggable.enable();
     },
 
-    disableDragPropagation: function() {
+    disableDrag: function() {
         this['dragging'].draggable.disable();
     },
 

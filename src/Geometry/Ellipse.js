@@ -8,7 +8,7 @@ Z['Ellipse']=Z.Ellipse = Z.Polygon.extend({
     type:Z.Geometry['TYPE_ELLIPSE'],
 
     initialize:function(coordinates,width,height,opts) {
-        this.coordinates = new Z.Coordinate(coordinates);
+        this._coordinates = new Z.Coordinate(coordinates);
         this.width = width;
         this.height = height;
         this.initOptions(opts);
@@ -30,7 +30,7 @@ Z['Ellipse']=Z.Ellipse = Z.Polygon.extend({
      */
     setWidth:function(width) {
         this.width = width;
-        this.onShapeChanged();
+        this._onShapeChanged();
         return this;
     },
 
@@ -50,7 +50,7 @@ Z['Ellipse']=Z.Ellipse = Z.Polygon.extend({
      */
     setHeight:function(height) {
         this.height = height;
-        this.onShapeChanged();
+        this._onShapeChanged();
         return this;
     },
 
@@ -74,18 +74,18 @@ Z['Ellipse']=Z.Ellipse = Z.Polygon.extend({
         return null;
     },
 
-    computeExtent:function(projection) {
-        if (!projection || !this.coordinates || Z.Util.isNil(this.width) || Z.Util.isNil(this.height)) {
+    _computeExtent:function(projection) {
+        if (!projection || !this._coordinates || Z.Util.isNil(this.width) || Z.Util.isNil(this.height)) {
             return null;
         }
         var width = this.getWidth(),
             height = this.getHeight();
-        var p1 = projection.locate(this.coordinates,width/2,height/2);
-        var p2 = projection.locate(this.coordinates,-width/2,-height/2);
+        var p1 = projection.locate(this._coordinates,width/2,height/2);
+        var p2 = projection.locate(this._coordinates,-width/2,-height/2);
         return new Z.Extent(p1,p2);
     },
 
-    computeGeodesicLength:function(projection) {
+    _computeGeodesicLength:function(projection) {
         if (Z.Util.isNil(this.width) || Z.Util.isNil(this.height)) {
             return 0;
         }
@@ -95,7 +95,7 @@ Z['Ellipse']=Z.Ellipse = Z.Polygon.extend({
         return 2*Math.PI*longer/2-4*Math.abs(this.width-this.height);
     },
 
-    computeGeodesicArea:function(projection) {
+    _computeGeodesicArea:function(projection) {
         if (Z.Util.isNil(this.width) || Z.Util.isNil(this.height)) {
             return 0;
         }
@@ -103,7 +103,7 @@ Z['Ellipse']=Z.Ellipse = Z.Polygon.extend({
     },
 
 
-    assignPainter:function() {
+    _assignPainter:function() {
         var layer = this.getLayer();
         if (!layer) {return;}
         if (layer instanceof Z.SVGLayer) {
@@ -113,7 +113,7 @@ Z['Ellipse']=Z.Ellipse = Z.Polygon.extend({
         }
     },
 
-    exportGeoJson:function(opts) {
+    _exportGeoJson:function(opts) {
         var center = this.getCenter();
         return {
             'type':'Ellipse',

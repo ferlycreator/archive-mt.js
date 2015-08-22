@@ -1,7 +1,7 @@
 Z.Marker.PaintUtils = {
 
     getMarkerDomOffset:function() {
-        var domOffset = this.geometry.getCenterDomOffset();
+        var domOffset = this.geometry._getCenterDomOffset();
         if (!domOffset) {return null;}
         var moffset = this.getIconOffset();
         var gCenter = [(domOffset["left"] + moffset["left"]), (domOffset["top"] + moffset["top"])];
@@ -32,7 +32,7 @@ Z.Marker.PaintUtils = {
         };
     },
 
-    getVectorArray:function(gCenter) {  
+    getVectorArray:function(gCenter) {
         var icon = this.getGeoIcon();
         var markerType = icon['type'];
         var width = icon['width'];
@@ -114,7 +114,7 @@ Z.Marker.PaintUtils = {
             return this.iconSymbol;
         }
         if (this.geometry) {
-            return this.geometry.getIcon();
+            return this.geometry.getSymbol();
         }
     }
 };

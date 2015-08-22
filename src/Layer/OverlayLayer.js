@@ -64,7 +64,7 @@ Z.OverlayLayer=Z.Layer.extend({
         for (var i=0, len=geometries.length;i<len;i++) {
             var geo = geometries[i];
             if (!geo) {continue;}
-            
+
             var geoId = geo.getId();
             if (geoId) {
                 if (!Z.Util.isNil(this._geoMap[geoId])) {
@@ -74,13 +74,13 @@ Z.OverlayLayer=Z.Layer.extend({
             }
             var internalId = Z.Util.GUID();
             //内部全局唯一的id
-            geo.setInternalId(internalId);
+            geo._setInternalId(internalId);
             this._geoCache[internalId] = geo;
-            geo.prepare(this);
+            geo._prepare(this);
             if (fitView) {
                 var geoCenter = geo.getCenter();
                 var geoExtent = geo.getExtent();
-                if (geoCenter && geoExtent) {                    
+                if (geoCenter && geoExtent) {
                     centerSum.x += geoCenter.x;
                     centerSum.y += geoCenter.y;
                     extent = Z.Extent.combine(extent,geoExtent);
@@ -159,7 +159,7 @@ Z.OverlayLayer=Z.Layer.extend({
         if (this != geometry.getLayer()) {
             return;
         }
-        var internalId = geometry.getInternalId();
+        var internalId = geometry._getInternalId();
         if (Z.Util.isNil(internalId)) {
             return;
         }
@@ -168,10 +168,10 @@ Z.OverlayLayer=Z.Layer.extend({
             delete this._geoMap[geoId];
         }
         delete this._geoCache[internalId];
-    }, 
+    },
 
     onRemove:function() {
-        this.clear();       
+        this.clear();
         delete this.map;
     },
 

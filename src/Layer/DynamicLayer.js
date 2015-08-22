@@ -37,7 +37,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
     /**
      * 载入前的准备, 由父类中的load方法调用
      */
-    prepareLoad:function() {
+    _prepareLoad:function() {
         var map = this.getMap();
         var zoomLevel=map.getZoomLevel();
         var min = this.getMinZoomLevel();
@@ -62,7 +62,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
         var ajax = new Z.Util.Ajax(url,0,queryString,function(responseText){
             var result = Z.Util.parseJson(responseText);
             if (result && result["success"]) {
-                me.fillTiles(me.options['showOnTileLoadComplete']);
+                me._fillTiles(me.options['showOnTileLoadComplete']);
             }
         });
         //保证在高频率load时，dynamicLayer总能在zoom结束时只调用一次
@@ -79,7 +79,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
                     me.heartBeator.get();
                 },60*1000);
             }
-        },map.getZoomMillisecs()+80);
+        },map._getZoomMillisecs()+80);
         //通知父类先不载入瓦片
         return false;
     },
@@ -88,7 +88,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
         return this.options['padding'];
     },
 
-    getTileUrl:function(x,y,z) {
+    _getTileUrl:function(x,y,z) {
         return this.getRequestUrl(y,x,z);
     },
 
@@ -120,7 +120,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
     formQueryString:function(condition,spatialFilter) {
         var map = this.getMap();
         var lodConfig = map._getLodConfig();
-        var padding = this.getPadding();
+        var padding = this._getPadding();
         var config = {
             'coordinateType':(Z.Util.isNil(this.options['coordinateType'])?null:this.options['coordinateType']),
             'projection':lodConfig['projection'],
@@ -181,7 +181,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
      * @return {Object} 图层padding设置
      * @expose
      */
-    getPadding:function() {
+    _getPadding:function() {
         var padding = this.options['padding'];
         if (!padding) {
             padding = {'width':0, 'height':0};

@@ -8,7 +8,7 @@ Z['Circle']=Z.Circle=Z.Polygon.extend({
     type:Z.Geometry['TYPE_CIRCLE'],
 
     initialize:function(coordinates,radius,opts) {
-        this.coordinates = new Z.Coordinate(coordinates);
+        this._coordinates = new Z.Coordinate(coordinates);
         this.radius = radius;
         this.initOptions(opts);
         /*this.numberOfPoints = this.options['defaultNumberOfPoints'];
@@ -33,7 +33,7 @@ Z['Circle']=Z.Circle=Z.Polygon.extend({
      */
     setRadius:function(radius) {
         this.radius = radius;
-        this.onShapeChanged();
+        this._onShapeChanged();
         return this;
     },
 
@@ -57,32 +57,32 @@ Z['Circle']=Z.Circle=Z.Polygon.extend({
         return null;
     },
 
-    computeExtent:function(projection) {
-        if (!projection || !this.coordinates || Z.Util.isNil(this.radius)) {
+    _computeExtent:function(projection) {
+        if (!projection || !this._coordinates || Z.Util.isNil(this.radius)) {
             return null;
         }
 
         var radius = this.radius;
-        var p1 = projection.locate(this.coordinates,radius,radius);
-        var p2 = projection.locate(this.coordinates,-radius,-radius);
+        var p1 = projection.locate(this._coordinates,radius,radius);
+        var p2 = projection.locate(this._coordinates,-radius,-radius);
         return new Z.Extent(p1,p2);
     },
 
-    computeGeodesicLength:function(projection) {
+    _computeGeodesicLength:function(projection) {
         if (Z.Util.isNil(this.radius)) {
             return 0;
         }
         return Math.PI*2*this.radius;
     },
 
-    computeGeodesicArea:function(projection) {
+    _computeGeodesicArea:function(projection) {
         if (Z.Util.isNil(this.radius)) {
             return 0;
         }
         return Math.PI*Math.pow(this.radius,2);
     },
 
-    assignPainter:function() {
+    _assignPainter:function() {
         var layer = this.getLayer();
         if (!layer) {return;}
         if (layer instanceof Z.SVGLayer) {
@@ -92,7 +92,7 @@ Z['Circle']=Z.Circle=Z.Polygon.extend({
         }
     },
 
-    exportGeoJson:function(opts) {
+    _exportGeoJson:function(opts) {
         var center = this.getCenter();
         return {
             'type':'Circle',

@@ -1,6 +1,6 @@
 Z.Geometry.include({
 
-    onEvent: function(event) {
+    _onEvent: function(event) {
         //还没加载到地图上时, 不处理事件
         if (!this.getMap()) {
             return;
@@ -18,7 +18,7 @@ Z.Geometry.include({
                 eventFired = 'rightclick';
             }
         }
-        var params = this.getEventParams(originalEvent);
+        var params = this._getEventParams(originalEvent);
         this._fireEvent(eventFired, params);
     },
 
@@ -27,7 +27,7 @@ Z.Geometry.include({
      * @param  {[type]} event [description]
      * @return {[type]}       [description]
      */
-    getEventParams: function(event) {
+    _getEventParams: function(event) {
         var map = this.getMap();
         var pixel = Z.DomUtil.getEventDomCoordinate(event, map.containterDom);
         var coordinate = map._transform(pixel);
@@ -35,21 +35,21 @@ Z.Geometry.include({
         return {'target':this, 'pixel':pixel, 'coordinate':coordinate};
     },
 
-    onMouseOver: function(event) {
+    _onMouseOver: function(event) {
         if (!this.getMap()) {
             return;
         }
         var originalEvent = event.originalEvent || event;
-        var params = this.getEventParams(originalEvent);
+        var params = this._getEventParams(originalEvent);
         this._fireEvent('mouseover', params);
     },
 
-    onMouseOut: function(event) {
+    _onMouseOut: function(event) {
         if (!this.getMap()) {
             return;
         }
         var originalEvent = event.originalEvent || event;
-        var params = this.getEventParams(originalEvent);
+        var params = this._getEventParams(originalEvent);
         this._fireEvent('mouseout', params);
     }
 });

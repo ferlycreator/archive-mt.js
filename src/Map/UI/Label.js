@@ -119,7 +119,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
         var targetCenter = this._target.getCenter();
         this._label = new Z.Marker(targetCenter);
         this._label['target'] = this._target;
-        this._label.setIcon(this._getShieldSymbol());
+        this._label._setIcon(this._getShieldSymbol());
         this._internalLayer.addGeometry(this._label);
         this._label.hide();
 
@@ -139,20 +139,20 @@ Z['Label'] = Z.Label = Z.Class.extend({
         if(trigger === 'hover') {
             this._target.on('mouseover', function showLabel() {
                          me.showLabel();
-                         map.disableDragPropagation();
+                         map.disableDrag();
                          map.disableDoubleClickZoom();
                      }, this)
                      .on('mouseout', function hideLabel() {
                         setTimeout(function(){
                             me.hideLabel();
-                            map.enableDragPropagation();
+                            map.enableDrag();
                             map.enableDoubleClickZoom();
                         }, 1000);
                      }, this);
         } else if(trigger === 'click') {
             this._target.on('click', function showLabel() {
                          me.showLabel();
-                         map.disableDragPropagation();
+                         map.disableDrag();
                          map.disableDoubleClickZoom();
                      }, this);
         } else {
@@ -207,7 +207,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
 	},
 
 	_computeLabelOffset: function() {
-		var painter = this._label.getPainter();
+		var painter = this._label._getPainter();
 		var textSize = painter.measureTextMarker();
 		var width =  0; //textSize['width'],
 			height = 0; //textSize['height'];
@@ -261,7 +261,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
 	_getNearestPoint: function(coordinate) {
 		var points = [];
 
-		var painter = this._label.getPainter();
+		var painter = this._label._getPainter();
 		var textSize = painter.measureTextMarker();
 		var width = 0; //textSize['width'],
 			height = 0; //textSize['height'];
@@ -395,7 +395,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
 	_onMouseDown: function(event) {
 		Z.DomUtil.setStyle(this._labelContrainer, 'cursor: move');
 		this._label.startDrag();
-		this._map.disableDragPropagation();
+		this._map.disableDrag();
 		this._map.disableDoubleClickZoom();
 		if(this.options['link']) {
 			this._map.on('mousemove zoomend resize moving', this._changeLinkPath, this);
@@ -419,7 +419,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
 	},
 
 	_recoverMapEvents: function() {
-		this._map.enableDragPropagation();
+		this._map.enableDrag();
 		this._map.enableDoubleClickZoom();
 	},
 

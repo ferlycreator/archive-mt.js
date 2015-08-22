@@ -62,15 +62,15 @@ Z.Painter.SVG = Z.Painter.extend({
             var vectorBean = this.createSVGObj();
             Z.SVG.refreshVector(this.vector, vectorBean);
         }
-        this.registerEvents();
+        this._registerEvents();
     },
 
-    registerEvents:function(){
+    _registerEvents:function(){
         var targetDom = this.vector || this.markerDom;
         targetDom && this.addDomEvents(targetDom);
     },
 
-    setZIndex:function(change) {
+    _setZIndex:function(change) {
         if (this.markerDom) {
             this.markerDom.style.zIndex = change;
         }

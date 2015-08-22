@@ -6,7 +6,7 @@ Z['LodInfo']={
         'resolutions':[
             156543.0339,
             78271.51695,
-            39135.758475,                                             
+            39135.758475,
             19567.8792375,
             9783.93961875,
             4891.969809375,
@@ -96,10 +96,3 @@ Z['LodInfo']={
         }
     }
 };
-
-//其他类似google地图结构的地图lodinfo的初始化
-// Z['LodInfo']['mapabc']={};
-// Z.Util.extend(Z['LodInfo']['mapabc'],Z['LodInfo']['google']);
-// Z['LodInfo']['mapabc']['getTileUrl']=function(x,y,z) {
-//  return "http://emap"+Math.round(Math.random()*(3-1)+1)+".mapabc.com/mapabc/maptile?&x=" + x + "&y=" + y + "&z=" + z;
-// };

@@ -22,8 +22,8 @@ Z.Map.include({
      * @return {Number}          [地理长度]
      * @expose
      */
-    computeGeodesicLength:function(geometry) {
-        return geometry.computeGeodesicLength(this._getProjection());
+    _computeGeodesicLength:function(geometry) {
+        return geometry._computeGeodesicLength(this._getProjection());
     },
 
     /**
@@ -32,8 +32,8 @@ Z.Map.include({
      * @return {Number}          [地理面积]
      * @expose
      */
-    computeGeodesicArea:function(geometry) {
-        return geometry.computeGeodesicArea(this._getProjection());
+    _computeGeodesicArea:function(geometry) {
+        return geometry._computeGeodesicArea(this._getProjection());
     },
 
     /**
@@ -317,7 +317,7 @@ Z.Map.include({
             var center = circle.getCenter();
             var projection = this._getProjection();
             if (!rect ||!projection) {return false;}
-            var extent = rect.computeExtent(projection);
+            var extent = rect._computeExtent(projection);
             if(Z.GeoUtils.isPointInRect(center, extent)) {return true;}
             if(this._circleAndRingsIntersection(circle, rect.getShell())) {return true;}
             return false;
@@ -477,8 +477,8 @@ Z.Map.include({
          }
          //TODO 这个circle是临时构造的，没有添加到任何图层上，但是computeVisualExtent需要map对象，而geometry也没有了
          //TODO setMap方法，所以目前只能使用computeExtent来该临时圆的外接矩形
-         var cExtent = circle.computeExtent(projection);
-         var geoExtent = geometry.computeVisualExtent(projection);
+         var cExtent = circle._computeExtent(projection);
+         var geoExtent = geometry._computeVisualExtent(projection);
          return Z.Extent.isIntersect(cExtent, geoExtent);
      },
 
@@ -523,7 +523,7 @@ Z.Map.include({
          if (!projection) {
               return null;
          }
-         var circleExtent = circle.computeExtent(projection);
+         var circleExtent = circle._computeExtent(projection);
          for(var i=0,len=rings.length;i<len;i++) {
             if(i<len-1) {
                 var startPoint = rings[i];

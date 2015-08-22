@@ -10,7 +10,7 @@ Z.Vector = Z.Geometry.extend({
         }
     },
 
-    computeVisualExtent:function(projection) {
+    _computeVisualExtent:function(projection) {
     	/*var strokeSymbol = this.getStrokeSymbol();*/
     	var width = 0;
     	/*if (!strokeSymbol) {
@@ -25,7 +25,7 @@ Z.Vector = Z.Geometry.extend({
     	if (!width) {
     		width = 1;
     	}    	*/
-        var extent = this.getPrjExtent();
+        var extent = this._getPrjExtent();
         var map = this.getMap();
         var res = map._getLodConfig().getResolution(map.getZoomLevel());
         var expanded =  Z.Extent.expand(extent,res*width);

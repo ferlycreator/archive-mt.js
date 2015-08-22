@@ -75,24 +75,24 @@ Z.Map.EventToGeometry = Z.Handler.extend({
 								}
 							}
 							if(mouseout) {
-								oldTarget.onMouseOut(event);
+								oldTarget._onMouseOut(event);
 							}
 						} else {//鼠标新的位置不包含任何geometry，将触发之前target的mouseOut事件
-							oldTarget.onMouseOut(event);
+							oldTarget._onMouseOut(event);
 						}
 					}
 				}
 				if(!geometries) {return;}
 				for(var i=0,len=geometries.length; i<len; i++) {
 					var geometry = geometries[i];
-					geometry.onMouseOver(event);
+					geometry._onMouseOver(event);
 				}
 				me.map.options['mouseoverTarget'] = geometries;
 			} else {
 				if(!geometries) {return;}
 				for(var i=0,len=geometries.length; i<len; i++) {
 					var geometry = geometries[i];
-					geometry.onEvent(event);
+					geometry._onEvent(event);
 				}
 			}
 		};

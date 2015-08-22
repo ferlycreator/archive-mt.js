@@ -95,8 +95,8 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
                 this._removeEvent();
                 Z.DomUtil.addDomEvent(this.msgBox,'mousedown', this.stopPropagation);
                 Z.DomUtil.addDomEvent(this.msgBox,'dblclick', this.stopPropagation);
-                this.map.on('zoomstart', this.onZoomStart, this);
-                this.map.on('zoomend', this.onZoomEnd, this);
+                this.map.on('zoomstart', this._onZoomStart, this);
+                this.map.on('zoomend', this._onZoomEnd, this);
                 this.msgBox.addEvent = true;
             }
         },
@@ -108,19 +108,19 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         _removeEvent:function() {
             Z.DomUtil.removeDomEvent(this.msgBox,'mousedown', this.stopPropagation);
             Z.DomUtil.removeDomEvent(this.msgBox,'dblclick', this.stopPropagation);
-            this.map.off('zoomstart', this.onZoomStart, this);
-            this.map.off('zoomend', this.onZoomEnd, this);
+            this.map.off('zoomstart', this._onZoomStart, this);
+            this.map.off('zoomend', this._onZoomEnd, this);
         },
 
         stopPropagation: function(event) {
             Z.DomUtil.stopPropagation(event);
         },
 
-        onZoomStart:function() {
+        _onZoomStart:function() {
             this.map._panels.tipContainer.style.display='none';
         },
 
-        onZoomEnd:function() {
+        _onZoomEnd:function() {
             if (this.visible) {
                 //style.display=''必须要在调用 offsetTipDom之前, 要不然tipDom.clientHeight和clientWidth取到的值为0
                 this.map._panels.tipContainer.style.display='';
@@ -220,7 +220,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
             }
 
             if (top !== 0 || left !== 0) {
-                this.tipSlidingExecutor = map.animatePan({"left":left,"top":top});
+                this.tipSlidingExecutor = map._animatePan({"left":left,"top":top});
             }
             return this;
         },

@@ -10,7 +10,7 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
      * @param  {[type]} layerContainer [description]
      * @param  {[type]} zIndex         [description]
      */
-    _paint:function(layerContainer, zIndex, symbol) {        
+    _paint:function(layerContainer, zIndex, symbol) {
         if (!this.geometry) {return;}
         this.layerContainer = layerContainer;
         this.setSymbol(symbol);
@@ -28,7 +28,7 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
         if(textName&&textName.length>0) {
             this.paintTextMarker();
         }
-        this.setZIndex(zIndex);
+        this._setZIndex(zIndex);
     },
 
     /**
@@ -67,7 +67,7 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
         if (this.markerDom) {
             Z.DomUtil.removeDomNode(this.markerDom);
             delete this.markerDom;
-        }       
+        }
         if (!layerContainer || !markerGraphic) {return;}
         this.markerDom = markerGraphic;
         layerContainer.appendChild(this.markerDom);
@@ -131,7 +131,7 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
             svgBean = {
                 'type' : 'path',
                 'path' : path
-            };          
+            };
         } else if ('triangle' === markerType) {
             svgBean = {
                 'type' : 'path',
@@ -243,13 +243,13 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
             markerIcon['height'] = parseInt(iconSymbol['height'],0);
         }
         markerIcon.style.cssText = markerIcon.originCss;
-        
+
         markerIcon.setAttribute('unselectable', 'on');
 
         var _this = geometry;
         markerIcon.onerror = function() {
             this.src = _this.defaultIcon['url'];
-            
+
         };
         markerIcon.onabort = function() {
             this.src = markerIcon.src;
@@ -257,11 +257,11 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
         markerIcon.src = iconSymbol['url'];
         //相对地址转化成绝对地址
         iconSymbol['url'] = markerIcon.src;
-        
+
         geometry.markerIcon = markerIcon;
         _graphicDom.appendChild(markerIcon);
-        this.setZIndex(geometry,this.zIndex);
+        this._setZIndex(geometry,this.zIndex);
         return _graphicDom;
     }
-    
+
 });

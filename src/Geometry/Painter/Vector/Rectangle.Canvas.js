@@ -2,7 +2,7 @@ Z.Rectangle.Canvas = Z.Polygon.Canvas.extend({
     doPaint:function(context,resources,platformOffset) {
         var geometry = this.geometry;
         var map = geometry.getMap();
-        var nw = map._untransformToOffset(geometry.getPNw());
+        var nw = map._untransformToOffset(geometry._getPNw());
         var pixelSize = this.getPixelSize();
 
         var pt = {

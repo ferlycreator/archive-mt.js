@@ -29,7 +29,7 @@ Z.Map.include({
         return this;
     },
 
-    animatePan:function(moveOffset) {
+    _animatePan:function(moveOffset) {
         if (!moveOffset) {moveOffset = {'left':0, 'top':0};}
         if (!moveOffset['left']) {
             moveOffset['left'] = 0;

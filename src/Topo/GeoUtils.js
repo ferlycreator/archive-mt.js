@@ -10,12 +10,12 @@ Z['GeoUtils']=Z.GeoUtils={
                 tolerance = Math.abs(tolerance);
             }
             //首先判断点是否在线的外包矩形内，如果在，则进一步判断，否则返回false
-            var extent = geo.getPrjExtent();
+            var extent = geo._getPrjExtent();
             extent = Z.Extent.expand(extent,tolerance);
             if(!this.isPointInRect(point, extent)){
                 return -1;
             }
-            var pts = geo.getPrjPoints();
+            var pts = geo._getPrjPoints();
             //判断点是否在线段上，设点为Q，线段为P1P2 ，
             //判断点Q在该线段上的依据是：( Q - P1 ) × ( P2 - P1 ) = 0，且 Q 在以 P1，P2为对角顶点的矩形内
             //var pts = polyline.getPath();
@@ -24,7 +24,7 @@ Z['GeoUtils']=Z.GeoUtils={
                 var nextPt = pts[i + 1];
                 var cond_x = (point.x >= Math.min(curPt.x, nextPt.x)-tolerance && point.x <= Math.max(curPt.x, nextPt.x)+tolerance),
                     cond_y = (point.y >= Math.min(curPt.y, nextPt.y)-tolerance && point.y <= Math.max(curPt.y, nextPt.y)+tolerance);
-                var precision = null; 
+                var precision = null;
                 if (curPt.x === nextPt.x) {
                     if (cond_y) {
                         precision = curPt.x - point.x;
@@ -37,22 +37,22 @@ Z['GeoUtils']=Z.GeoUtils={
                     //首先判断point是否在curPt和nextPt之间，即：此判断该点是否在该线段的外包矩形内
                     if ( cond_x && cond_y ){
                         //判断点是否在直线上公式
-                         //根据数学,求出直接的表达示:y=kx+b  
-                        var k = (curPt.y-nextPt.y)/(curPt.x-nextPt.x);  
-                        var b = curPt.y-k*curPt.x;  
+                         //根据数学,求出直接的表达示:y=kx+b
+                        var k = (curPt.y-nextPt.y)/(curPt.x-nextPt.x);
+                        var b = curPt.y-k*curPt.x;
                         if (Math.abs(nextPt.x-curPt.x) - Math.abs(nextPt.y-curPt.y) > 0) {
-                            //将点的x坐标代入表达示中,判断该点是否在直线上  
-                            var py = point.x*k+b;  
-                            precision = point.y-py;  
+                            //将点的x坐标代入表达示中,判断该点是否在直线上
+                            var py = point.x*k+b;
+                            precision = point.y-py;
                         } else {
                             var px = (point.y-b)/k;
-                            precision = point.x-px;  
+                            precision = point.x-px;
                         }
-                        
+
                         //console.log(precision);
-                        // var precision = (curPt.x - point.x) * (nextPt.y - point.y) - 
+                        // var precision = (curPt.x - point.x) * (nextPt.y - point.y) -
                         //     (nextPt.x - point.x) * (curPt.y - point.y);
-                                        
+
                     }
                 }
                 // console.log(precision);
@@ -60,7 +60,7 @@ Z['GeoUtils']=Z.GeoUtils={
                     return i;
                 }
             }
-            
+
             return -1;
         },
         isPointInRect:function(point, extent) {

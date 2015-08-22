@@ -4,6 +4,10 @@
  */
 
 Z.Map.include({
+    /**
+     * 为地图载入CartoCSS样式
+     * @param  {String|URL} css css样式或者mss文件链接
+     */
     cartoCSS:function(css) {
         if (!Z.Util.isString(css) || css.length===0) {
             return;
@@ -11,27 +15,27 @@ Z.Map.include({
         if (!window['carto']) {
             //载入carto.js
            Z.loadModule('carto',function() {
-                this.loadCartoCSS(css);
+                this._loadCartoCSS(css);
            },this);
         } else {
-            this.loadCartoCSS(css);
+            this._loadCartoCSS(css);
         }
 
     },
 
-    loadCartoCSS:function(css) {
+    _loadCartoCSS:function(css) {
         var suffix = '.mss';
         var isMss=css.indexOf(suffix, css.length - suffix.length) !== -1;
         if (isMss) {
             Z.Util.Ajax.getResource(css,function(resource) {
-                this.rendCartoCSS(resource);
+                this._rendCartoCSS(resource);
             },this);
         } else {
-            this.rendCartoCSS(css);
+            this._rendCartoCSS(css);
         }
     },
 
-    rendCartoCSS:function(cssContent) {
+    _rendCartoCSS:function(cssContent) {
         var shader = new window['carto']['RendererJS']()['render'](cssContent);
         this.cartoCSSShader = shader;
         this._fireEvent('cartocssloaded');
@@ -42,7 +46,7 @@ Z.Map.include({
      * @param  {Geometry} geometry Geometry对象
      * @return {Object}          cartoCSS中定义的样式
      */
-    cartoCSSGeometry:function(geometry) {
+    _cartoCSSGeometry:function(geometry) {
         if (!this.cartoCSSShader || !geometry || !geometry.getLayer()) {
             return null;
         }

@@ -8,7 +8,7 @@ Z.Polygon.SVG=Z.Vector.SVG.extend({
             return null;
         }
         var geometry = this.geometry;
-        var offsets = geometry._untransformToOffset(geometry.getPrjPoints());
+        var offsets = geometry._untransformToOffset(geometry._getPrjPoints());
         var pathString = this.domOffsetsToSVGPath(offsets,true,false);
         if (!pathString) {
             return null;

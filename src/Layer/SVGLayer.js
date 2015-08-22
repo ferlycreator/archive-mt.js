@@ -60,8 +60,8 @@ Z['SVGLayer']=Z.SVGLayer=Z.OverlayLayer.extend({
             if (!geo) {
                 continue;
             }
-            if (geo.getPainter()) {
-                geo.getPainter().paint(this.layerDom,  this.zIndex);
+            if (geo._getPainter()) {
+                geo._getPainter().paint(this.layerDom,  this.zIndex);
             }
         }
     },
@@ -70,8 +70,8 @@ Z['SVGLayer']=Z.SVGLayer=Z.OverlayLayer.extend({
 
     addTo:function() {
         this.eachGeometry(function(geo) {
-            if (geo.getPainter()) {
-                geo.getPainter().paint(this.layerDom,  this.zIndex);
+            if (geo._getPainter()) {
+                geo._getPainter().paint(this.layerDom,  this.zIndex);
             }
         });
     },
@@ -84,11 +84,11 @@ Z['SVGLayer']=Z.SVGLayer=Z.OverlayLayer.extend({
         this.addTo();
     },
 
-    setZIndex:function(zIndex) {
+    _setZIndex:function(zIndex) {
         this.zIndex=zIndex;
         this.eachGeometry(function(geo) {
-            if (geo.getPainter()) {
-                geo.getPainter().setZIndex(zIndex);
+            if (geo._getPainter()) {
+                geo._getPainter()._setZIndex(zIndex);
             }
         });
     },
@@ -112,13 +112,13 @@ Z['SVGLayer']=Z.SVGLayer=Z.OverlayLayer.extend({
      * 地图放大缩小时的响应函数
      * @return {[type]} [description]
      */
-    onZoomStart:function() {
+    _onZoomStart:function() {
         //this.hide();
     },
 
-    onZoomEnd:function() {
+    _onZoomEnd:function() {
         this.eachGeometry(function(geo) {
-            geo.onZoomEnd();
+            geo._onZoomEnd();
         });
         //this.show();
     },

@@ -29,17 +29,17 @@ Z.Sector.SVG=Z.Circle.SVG.extend({
             }
 
             if (Z.Browser.svg) {
-                 return ["M", cx, cy, "L", x1, y1, "A", r, r, 0, 
-            +(endAngle - startAngle > 180), 0, x2, y2, "z"].join(' ');    
+                 return ["M", cx, cy, "L", x1, y1, "A", r, r, 0,
+            +(endAngle - startAngle > 180), 0, x2, y2, "z"].join(' ');
             } else if (Z.Browser.vml) {
-                return "M "+cx+','+cy+'AE ' + cx+','+cy + ' ' + r + ',' + r + ' '+65535 * startAngle+',' 
+                return "M "+cx+','+cy+'AE ' + cx+','+cy + ' ' + r + ',' + r + ' '+65535 * startAngle+','
                 + (65535 * (endAngle-startAngle))+' x e';
-                /*return ["M", cx, cy, "AL", cx, cy, r, r, 65535 * startAngle, 
+                /*return ["M", cx, cy, "AL", cx, cy, r, r, 65535 * startAngle,
             65535 * endAngle,  'x e'].join(' ');*/
             }
         }
         var geometry = this.geometry;
-        var domCenter = geometry.getCenterDomOffset();
+        var domCenter = geometry._getCenterDomOffset();
         var pr = this.getPixelSize();
         var ret = {
             type : "path",

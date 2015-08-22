@@ -1,54 +1,54 @@
 Z.Map.include({
-    onZoomStart:function(scale,focusPos,nextZoomLevel) {
+    _onZoomStart:function(scale,focusPos,nextZoomLevel) {
         function zoomLayer(layer) {
-            if (layer&&layer.onZoomStart) {
-                layer.onZoomStart();
+            if (layer&&layer._onZoomStart) {
+                layer._onZoomStart();
             }
         }
         var me = this;
 
-        if (me._baseTileLayer) {me._baseTileLayer.onZoomStart(true);}
+        if (me._baseTileLayer) {me._baseTileLayer._onZoomStart(true);}
         me._eachLayer(zoomLayer,me._getAllLayers());
         this._hideOverlayLayers();
-        me.animateStart(scale,focusPos);
+        me._animateStart(scale,focusPos);
         me._fireEvent('zoomstart',{'target':this});
     },
 
-    onZoomEnd:function(nextZoomLevel) {
+    _onZoomEnd:function(nextZoomLevel) {
         function zoomLayer(layer) {
-            if (layer&&layer.onZoomEnd) {
-                layer.onZoomEnd();
+            if (layer&&layer._onZoomEnd) {
+                layer._onZoomEnd();
             }
         }
 
-        this.insertBackgroundDom();
+        this._insertBackgroundDom();
         if (this._baseTileLayer) {this._baseTileLayer.clear();}
-        this.animateEnd();
-        this.resetContainer();
+        this._animateEnd();
+        this._resetContainer();
         this._originZoomLevel=nextZoomLevel;
-        if (this._baseTileLayer) {this._baseTileLayer.onZoomEnd();}
+        if (this._baseTileLayer) {this._baseTileLayer._onZoomEnd();}
         this._eachLayer(zoomLayer,this._getAllLayers());
         this._showOverlayLayers();
         this._fireEvent('zoomend',{'target':this});
     },
 
-    resetContainer:function() {
+    _resetContainer:function() {
         var position = this._offsetPlatform();
         Z.DomUtil.offsetDom(this._panels.mapPlatform,{'left':0,'top':0});
         this._refreshSVGPaper();
-        if (this.backgroundDOM) {
-            //Z.DomUtil.offsetDom(this.backgroundDOM,position);
-            this.backgroundDOM.style.left=position["left"]+"px";
-            this.backgroundDOM.style.top=position["top"]+"px";
+        if (this._backgroundDOM) {
+            //Z.DomUtil.offsetDom(this._backgroundDOM,position);
+            this._backgroundDOM.style.left=position["left"]+"px";
+            this._backgroundDOM.style.top=position["top"]+"px";
         }
     },
 
-    insertBackgroundDom:function() {
-        this.backgroundDOM = this._panels.mapContainer.cloneNode(true);
-        this._panels.mapPlatform.insertBefore(this.backgroundDOM,this._panels.mapViewPort);
+    _insertBackgroundDom:function() {
+        this._backgroundDOM = this._panels.mapContainer.cloneNode(true);
+        this._panels.mapPlatform.insertBefore(this._backgroundDOM,this._panels.mapViewPort);
     },
 
-    checkZoomLevel:function(nextZoomLevel) {
+    _checkZoomLevel:function(nextZoomLevel) {
         if (nextZoomLevel < this._minZoomLevel){
             nextZoomLevel = this._minZoomLevel;
         }
@@ -58,16 +58,16 @@ Z.Map.include({
         return nextZoomLevel;
     },
 
-    zoomOnDblClick:function(param) {
+    _zoomOnDblClick:function(param) {
         var me = this;
         if (!me.options['enableZoom'])  {return;}
         function zoomLayer(layer) {
             if (layer) {
-                layer.onZoomEnd();
+                layer._onZoomEnd();
             }
         }
         var mousePos = param['pixel'];
-        var nextZoomLevel = me.checkZoomLevel(me._zoomLevel+1);
+        var nextZoomLevel = me._checkZoomLevel(me._zoomLevel+1);
         if (nextZoomLevel === me._zoomLevel) {
             var move = {
                 'top':(mousePos['top']-me.height/2)/2,
@@ -76,17 +76,17 @@ Z.Map.include({
             me._offsetCenterByPixel(move);
             me._offsetPlatform(move);
 
-            if (me._baseTileLayer) {me._baseTileLayer.onZoomEnd();}
+            if (me._baseTileLayer) {me._baseTileLayer._onZoomEnd();}
             me._eachLayer(zoomLayer,me._getAllLayers());
             return;
         }
-        me.zoom(nextZoomLevel, param['pixel']);
+        me._zoom(nextZoomLevel, param['pixel']);
     },
 
-    zoom:function(nextZoomLevel, focusPos) {
+    _zoom:function(nextZoomLevel, focusPos) {
         if (!this.options['enableZoom']) {return;}
         this._allowSlideMap=false;
-        nextZoomLevel = this.checkZoomLevel(nextZoomLevel);
+        nextZoomLevel = this._checkZoomLevel(nextZoomLevel);
         if (this._originZoomLevel === nextZoomLevel) {
             return;
         }
@@ -117,18 +117,18 @@ Z.Map.include({
                 };
         }
         this._offsetCenterByPixel(pixelOffset);
-        this.onZoomStart(scale,focusPos,nextZoomLevel);
+        this._onZoomStart(scale,focusPos,nextZoomLevel);
         var me = this;
         if (this.zoom_timeout) {
             clearTimeout(this.zoom_timeout);
         }
         this.zoom_timeout=setTimeout(function() {
             me.zooming = false;
-            me.onZoomEnd(nextZoomLevel);
-        },this.getZoomMillisecs());
+            me._onZoomEnd(nextZoomLevel);
+        },this._getZoomMillisecs());
     },
 
-    animateStart:function(scale,pixelOffset){
+    _animateStart:function(scale,pixelOffset){
         if (Z.Browser.ielt9) {return;}
         var domOffset = this._offsetPlatform();
         var offsetTop = domOffset['top'];
@@ -154,7 +154,7 @@ Z.Map.include({
     },
 
 
-    animateEnd:function() {
+    _animateEnd:function() {
         if (Z.Browser.ielt9) {return;}
         var mapContainer = this._panels.mapContainer;
         mapContainer.className="";
@@ -164,7 +164,7 @@ Z.Map.include({
         mapContainer.style.left=0+"px";
     },
 
-    getZoomMillisecs:function() {
+    _getZoomMillisecs:function() {
         return 150;
     }
 });

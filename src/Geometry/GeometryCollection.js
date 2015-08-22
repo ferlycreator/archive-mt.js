@@ -1,31 +1,31 @@
 Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
     type:Z.Geometry['TYPE_GEOMETRYCOLLECTION'],
 
-    initialize:function(geometries, opts) {       
+    initialize:function(geometries, opts) {
         this.setGeometries(geometries);
         this.initOptions(opts);
     },
 
     /**
-     * prepare this geometry collection
+     * _prepare this geometry collection
      * @param  {Z.Layer} layer [description]
      * @return {[type]}       [description]
      * @override
      */
-    prepare:function(layer) {
-        this.rootPrepare(layer);
+    _prepare:function(layer) {
+        this._rootPrepare(layer);
         this._prepareGeometries();
     },
 
     /**
-     * prepare the geometries, 在geometries发生改变时调用
+     * _prepare the geometries, 在geometries发生改变时调用
      * @return {[type]} [description]
      */
     _prepareGeometries:function() {
         var layer = this.getLayer();
         var geometries = this.getGeometries();
         for (var i=0,len=geometries.length;i<len;i++) {
-            this.geometries[i].prepare(layer);
+            this.geometries[i]._prepare(layer);
         }
     },
 
@@ -36,13 +36,13 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
      *
      */
     setGeometries:function(geometries) {
-        this.checkGeometries(geometries);
+        this._checkGeometries(geometries);
         this.geometries = geometries;
         if (!this.getLayer()) {
             return;
         }
         this._prepareGeometries();
-        this.onShapeChanged();
+        this._onShapeChanged();
         return this;
     },
 
@@ -62,7 +62,7 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
      * 供GeometryCollection的子类调用, 检查geometries是否符合规则
      * @param  {Geometry[]} geometries [供检查的Geometry]
      */
-    checkGeometries:function(geometries) {
+    _checkGeometries:function(geometries) {
 
     },
 
@@ -75,15 +75,15 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         return !Z.Util.isArrayHasData(this.geometries);
     },
 
-    updateCache:function() {
+    _updateCache:function() {
         for (var i=0, len=this.geometries.length;i<len;i++) {
-            if (this.geometries[i] && this.geometries[i].updateCache) {
-                this.geometries[i].updateCache();
+            if (this.geometries[i] && this.geometries[i]._updateCache) {
+                this.geometries[i]._updateCache();
             }
         }
     },
 
-    computeCenter:function(projection) {
+    _computeCenter:function(projection) {
         if (!projection || this.isEmpty()) {
             return null;
         }
@@ -92,7 +92,7 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
             if (!this.geometries[i]) {
                 continue;
             }
-            var center = this.geometries[i].computeCenter(projection);
+            var center = this.geometries[i]._computeCenter(projection);
             sumX += center.x;
             sumY += center.y;
             counter++;
@@ -100,50 +100,50 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         return new Z.Coordinate(sumX/counter, sumY/counter);
     },
 
-    computeExtent:function(projection) {
+    _computeExtent:function(projection) {
         if (!projection || this.isEmpty()) {
             return null;
         }
         var result = null;
         for (var i=0, len=this.geometries.length;i<len;i++) {
-            result = Z.Extent.combine(this.geometries[i].computeExtent(projection),result);
+            result = Z.Extent.combine(this.geometries[i]._computeExtent(projection),result);
         }
         return result;
     },
 
-    computeGeodesicLength:function(projection) {
+    _computeGeodesicLength:function(projection) {
         if (!projection || this.isEmpty()) {
             return 0;
         }
         var result = 0;
         for (var i=0, len=this.geometries.length;i<len;i++) {
-            result += this.geometries[i].computeGeodesicLength(projection);
+            result += this.geometries[i]._computeGeodesicLength(projection);
         }
         return result;
     },
 
-    computeGeodesicArea:function(projection) {
+    _computeGeodesicArea:function(projection) {
         if (!projection || this.isEmpty()) {
             return 0;
         }
         var result = 0;
         for (var i=0, len=this.geometries.length;i<len;i++) {
-            result += this.geometries[i].computeGeodesicArea(projection);
+            result += this.geometries[i]._computeGeodesicArea(projection);
         }
         return result;
     },
 
 
-    assignPainter:function() {
+    _assignPainter:function() {
         return new Z.GeometryCollection.Painter(this);
     },
 
-   exportGeoJson:function(opts) {
+   _exportGeoJson:function(opts) {
         var geoJsons = [];
         var geometries = this.getGeometries();
         if (Z.Util.isArray(geometries)) {
             for (var i=0,len=geometries.length;i<len;i++) {
-                geoJsons.push(geometries[i].exportGeoJson(opts));
+                geoJsons.push(geometries[i]._exportGeoJson(opts));
             }
         }
         return {
@@ -152,11 +152,11 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         };
     },
 
-    clearProjection:function() {
+    _clearProjection:function() {
         var geometries = this.getGeometries();
         if (Z.Util.isArrayHasData(geometries)) {
             for (var i=0,len=geometries.length;i<len;i++) {
-                this.geometries[i].clearProjection();
+                this.geometries[i]._clearProjection();
             }
         }
     },

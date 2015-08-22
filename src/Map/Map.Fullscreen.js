@@ -6,12 +6,12 @@ Z.Map.include({
     openFullscreen: function() {
         this._openFullscreen(this._containerDOM);
         var me = this;
-        this.onFullscreenStart();
+        this._onFullscreenStart();
         if (this.fullscreen_timeout) {
             clearTimeout(this.fullscreen_timeout);
         }
         this.fullscreen_timeout = setTimeout(function() {
-            me.onFullscreenEnd();
+            me._onFullscreenEnd();
         }, 100);
     },
 
@@ -23,11 +23,11 @@ Z.Map.include({
         this._exitFullscreen(this._containerDOM);
     },
 
-    onFullscreenStart: function() {
+    _onFullscreenStart: function() {
         this._fireEvent('fullscreenStart',{'target':this});
     },
 
-    onFullscreenEnd: function() {
+    _onFullscreenEnd: function() {
         this._fireEvent('fullscreenEnd',{'target':this});
     },
 

@@ -3,7 +3,7 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
     type:Z.Geometry['TYPE_RECT'],
 
     initialize:function(coordinates,width,height,opts) {
-        this.coordinates = new Z.Coordinate(coordinates);
+        this._coordinates = new Z.Coordinate(coordinates);
         this.width = width;
         this.height = height;
         this.initOptions(opts);
@@ -16,7 +16,7 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
      * @expose
      */
     getCoordinates:function() {
-        return this.coordinates;
+        return this._coordinates;
     },
 
     /**
@@ -25,22 +25,22 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
      * @expose
      */
     setCoordinates:function(nw){
-        this.coordinates = new Z.Coordinate(nw);
+        this._coordinates = new Z.Coordinate(nw);
 
-        if (!this.coordinates || !this.getMap()) {
+        if (!this._coordinates || !this.getMap()) {
             return;
         }
         var projection = this._getProjection();
-        this.setPNw(projection.project(this.coordinates));
+        this._setPNw(projection.project(this._coordinates));
         return this;
     },
 
-    getPNw:function() {
+    _getPNw:function() {
         var projection = this._getProjection();
         if (!projection) {return null;}
         if (!this.pnw) {
-            if (this.coordinates) {
-                this.pnw = projection.project(this.coordinates);
+            if (this._coordinates) {
+                this.pnw = projection.project(this._coordinates);
             }
         }
         return this.pnw;
@@ -50,9 +50,9 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
      * 设置投影坐标
      * @param {Coordinate} pnw 投影坐标
      */
-    setPNw:function(pnw) {
+    _setPNw:function(pnw) {
         this.pnw=pnw;
-        this.onPositionChanged();
+        this._onPositionChanged();
     },
 
     /**
@@ -71,7 +71,7 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
      */
     setWidth:function(width) {
         this.width = width;
-        this.onShapeChanged();
+        this._onShapeChanged();
         return this;
     },
 
@@ -91,7 +91,7 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
      */
     setHeight:function(height) {
         this.height = height;
-        this.onShapeChanged();
+        this._onShapeChanged();
         return this;
     },
 
@@ -99,14 +99,14 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
      * 修改投影坐标后调用该方法更新经纬度坐标缓存.
      * @return {[type]} [description]
      */
-    updateCache:function() {
+    _updateCache:function() {
         var projection = this._getProjection();
         if (this.pnw && projection) {
-            this.coordinates = projection.unproject(this.pnw);
+            this._coordinates = projection.unproject(this.pnw);
         }
     },
 
-    clearProjection:function() {
+    _clearProjection:function() {
         this.pnw = null;
     },
 
@@ -115,9 +115,9 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
      * @param  {[type]} projection [description]
      * @return {[type]}            [description]
      */
-    computeCenter:function(projection) {
+    _computeCenter:function(projection) {
 
-        return projection.locate(this.coordinates,this.width/2,-this.height/2);
+        return projection.locate(this._coordinates,this.width/2,-this.height/2);
     },
 
     /**
@@ -127,7 +127,7 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
      */
     getShell:function() {
         var projection = this._getProjection();
-        var nw =this.coordinates;
+        var nw =this._coordinates;
         var points = [];
         points.push(nw);
         points.push(projection.locate(nw,this.width,0));
@@ -148,24 +148,24 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
     },
 
 
-    computeExtent:function(projection) {
-        if (!projection || !this.coordinates || Z.Util.isNil(this.width) || Z.Util.isNil(this.height)) {
+    _computeExtent:function(projection) {
+        if (!projection || !this._coordinates || Z.Util.isNil(this.width) || Z.Util.isNil(this.height)) {
             return null;
         }
         var width = this.getWidth(),
             height = this.getHeight();
-        var p1 = projection.locate(this.coordinates,width,-height);
-        return new Z.Extent(p1,this.coordinates);
+        var p1 = projection.locate(this._coordinates,width,-height);
+        return new Z.Extent(p1,this._coordinates);
     },
 
-    computeGeodesicLength:function(projection) {
+    _computeGeodesicLength:function(projection) {
         if (Z.Util.isNil(this.width) || Z.Util.isNil(this.height)) {
             return 0;
         }
         return 2*(this.width+this.height);
     },
 
-    computeGeodesicArea:function(projection) {
+    _computeGeodesicArea:function(projection) {
         if (Z.Util.isNil(this.width) || Z.Util.isNil(this.height)) {
             return 0;
         }
@@ -173,7 +173,7 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
     },
 
 
-    assignPainter:function() {
+    _assignPainter:function() {
         var layer = this.getLayer();
         if (!layer) {return;}
         if (layer instanceof Z.SVGLayer) {
@@ -183,7 +183,7 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
         }
     },
 
-    exportGeoJson:function(opts) {
+    _exportGeoJson:function(opts) {
         var nw =this.getCoordinates();
         return {
             'type':"Rectangle",

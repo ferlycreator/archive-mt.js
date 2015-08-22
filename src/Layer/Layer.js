@@ -1,7 +1,7 @@
 /**
  * 所有图层的基类
  * 供Map调用的图层方法有:
- * load,_onMoving, _onMoveEnd, _onResize, onZoomStart, onZoomEnd
+ * load,_onMoving, _onMoveEnd, _onResize, _onZoomStart, _onZoomEnd
  * @param  {[type]} map             [description]
  * @param  {[type]} zIndex)         {		if        (!map) {return;}		this.map [description]
  * @param  {[type]} getId:function( [description]
@@ -16,10 +16,10 @@ Z['Layer']=Z.Layer=Z.Class.extend({
 	},
 
 
-	prepare:function(map,zIndex) {
+	_prepare:function(map,zIndex) {
 		if (!map) {return;}
 		this.map = map;
-		this.setZIndex(zIndex);
+		this._setZIndex(zIndex);
 		if (Z.Util.isNil(this.visible)) {
 			this.visible = true;
 		}
@@ -83,7 +83,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
 			layers.push(this);
 		}
 		for (var i=0, len=layers.length;i<len;i++) {
-			layers[i].setZIndex(layers[i].baseZIndex+i);
+			layers[i]._setZIndex(layers[i].baseZIndex+i);
 		}
 	},
 
@@ -102,7 +102,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
 			layers.push(this);
 		}
 		for (var i=0, len=layers.length;i<len;i++) {
-			layers[i].setZIndex(layers[i].baseZIndex+i);
+			layers[i]._setZIndex(layers[i].baseZIndex+i);
 		}
 	},
 

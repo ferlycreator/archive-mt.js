@@ -65,7 +65,7 @@ Z.Geometry.include({
                     'content': targetIcon['content'],
                     'offset': targetIcon['offset']
                 };
-                this._dragGeometry.setIcon(icon);
+                this._dragGeometry._setIcon(icon);
             } else if ("vector" === iconType){
 
             } else {
@@ -101,10 +101,10 @@ Z.Geometry.include({
 		};
 		this.startPosition = newPosition;
 		var pcenter = this._map._transformFromOffset(newPosition);
-        this._dragGeometry.setPCenter(pcenter);
-        this._dragGeometry.updateCache();
-        this.setPCenter(pcenter);
-        this.updateCache();
+        this._dragGeometry._setPCenter(pcenter);
+        this._dragGeometry._updateCache();
+        this._setPCenter(pcenter);
+        this._updateCache();
         this.fire('dragging', {'target': this});
     },
 

@@ -188,7 +188,7 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
                  * @event closemenu
                  * @param target {seegoo.maps.Geometry} 产生事件的Geometry
                  */
-                this.executeListeners('closemenu',{"target":this});
+                this._executeListeners('closemenu',{"target":this});
             }
         }
     },

@@ -9,13 +9,13 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
      * @param  {[type]} opts [description]
      * @return {[type]}      [description]
      */
-    initialize:function(coordinates, opts) {        
+    initialize:function(coordinates, opts) {
         this.setCoordinates(coordinates);
-        this.initOptions(opts);        
-    },    
+        this.initOptions(opts);
+    },
 
     /**
-     * 设置新的coordinates 
+     * 设置新的coordinates
      * @param {[坐标数组]} coordinates [description]
      */
     setCoordinates:function(coordinates) {
@@ -43,7 +43,7 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
      */
     getCoordinates:function() {
         if (this.holes) {
-            return [this.points].concat(this.holes);    
+            return [this.points].concat(this.holes);
         }
         return [this.points];
     },
@@ -52,8 +52,8 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
         if (!this.getMap()) {
             return;
         }
-        this.prjPoints = this.projectPoints(this.points);
-        this.prjHoles = this.projectPoints(this.holes);
+        this.prjPoints = this._projectPoints(this.points);
+        this.prjHoles = this._projectPoints(this.holes);
     },
 
     /**
@@ -80,7 +80,7 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
     getShell:function() {
        return this.points;
     },
-    
+
 
     /**
      * 获取Polygon的空洞的坐标
@@ -111,20 +111,20 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
 
     _getPrjHoles:function() {
         if (!this.prjHoles) {
-            this.prjHoles = this.projectPoints(this.holes);
+            this.prjHoles = this._projectPoints(this.holes);
         }
         return this.prjHoles;
     },
 
-    computeGeodesicLength:function(projection) {
+    _computeGeodesicLength:function(projection) {
         return 0;
     },
 
-    computeGeodesicArea:function(projection) {
+    _computeGeodesicArea:function(projection) {
         return 0;
     },
 
-    assignPainter:function() {
+    _assignPainter:function() {
         if (!this.layer) {return;}
         if (this.layer instanceof Z.SVGLayer) {
             return new Z.Polygon.SVG(this);
@@ -132,13 +132,4 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
             return new Z.Polygon.Canvas(this);
         }
     }
-
-    /*
-    exportGeoJson:function(opts) {
-        var coordinates = this.getCoordinates();
-        return {
-            'type':'Polygon',
-            'coordinates':this.toGeoJsonCoordinates(coordinates)
-        };
-    }*/
 });
