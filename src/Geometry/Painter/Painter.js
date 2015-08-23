@@ -143,7 +143,7 @@ Z.Painter = Z.Class.extend({
 
     prepareShieldSymbol: function(symbol) {
         var shieldSymbol = {
-            'type': symbol['shieldType'],//label tip
+            'shieldType': symbol['shieldType'],//label tip
             'content': symbol['shieldName'],
             'opacity': symbol['shieldOpacity'],
             'stroke': symbol['shieldLineColor'],

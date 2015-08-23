@@ -18,12 +18,13 @@ Z.Browser.vml = !Z.Browser.svg && (function () {
 
 Z.SVG = {
     defaultStrokeSymbol:{
-        "stroke":"#000000",
-        "strokewidth": 2
+        'stroke':'#000000',
+        'strokeWidth': 2
     },
 
     defaultFillSymbol:{
-        "fillopacity":0
+        'fill': '#ffffff',
+        'fillOpacity': 0
     },
 
     _ISURL: /^url\(['"]?(.+?)['"]?\)$/i,
@@ -38,7 +39,7 @@ Z.SVG = {
 
     refreshVectorSymbol:function() {},
 
-    refreshShieldSymbol:function() {},
+    refreshShieldVector:function() {},
 
     addVector:function(){},
 
@@ -60,11 +61,11 @@ Z.SVG.closeChar = (function() {
 
 Z.SVG.SVG = {
     createContainer:function() {
-        var paper = document['createElementNS']('http://www.w3.org/2000/svg', 'svg');
+        var paper = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         paper.style.overflow = '';
         paper.style.position = 'absolute';
         paper.setAttribute('xmlns','http://www.w3.org/2000/svg');
-        var defs = document['createElementNS']('http://www.w3.org/2000/svg', 'defs');
+        var defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
         paper.appendChild(defs);
         paper.defs = defs;
         return paper;
@@ -93,20 +94,34 @@ Z.SVG.SVG = {
         vector.setAttribute('d', path);
     },
 
-    refreshTextVector:function(vector, vectorBean) {
-        if (!vector || !vectorBean) {
+    refreshTextVector:function(textVector, vectorBean) {
+        if (!textVector || !vectorBean) {
             return;
         }
-        var texts = vectorBean['texts'];
-        if (!texts&&texts.length==0) {
+        var text = vectorBean['text'];
+        if (!text) {
             return;
         }
-
-        for(var i=0,len=texts.length;i<len;i++) {
-            var text = texts[i];
-            var location = text['location'];
-            vector.setAttribute('x', location[0]);
-            vector.setAttribute('y', location[1]);
+        var location = text['location'];
+        if(textVector.nodeName === 'text') {
+            var newX = location[0];
+            var newY = location[1];
+            var textX = textVector.getAttribute('x');
+            var textY = textVector.getAttribute('y');
+            var textChildren = textVector.childNodes;
+            if(textChildren) {
+                for(var i=0,len=textChildren.length;i<len;i++) {
+                    var childNode = textChildren[i];
+                    if(childNode.nodeName === 'tspan') {
+                        var spanX = childNode.getAttribute('x');
+                        var spanY = childNode.getAttribute('y');
+                        childNode.setAttribute('x', newX+(spanX-textX));
+                        childNode.setAttribute('y', newY+(spanY-textY));
+                    }
+                }
+            }
+            textVector.setAttribute('x', newX);
+            textVector.setAttribute('y', newY);
         }
     },
 
@@ -114,21 +129,20 @@ Z.SVG.SVG = {
         if (!vector || !vectorBean) {
             return;
         }
-        var texts = vectorBean['texts'];
-        if (!texts&&texts.length==0) {
+        var path = vectorBean['path'];
+        if (!path) {
             return;
         }
-
-        for(var i=0,len=texts.length;i<len;i++) {
-            var text = texts[i];
-            var location = text['location'];
-            vector.setAttribute('x', location[0]);
-            vector.setAttribute('y', location[1]);
+        var pathVector = vector.firstChild;
+        if(pathVector) {
+            pathVector.setAttribute('d', path);
+            var textVector = pathVector.nextSibling;
+            this.refreshTextVector(textVector, vectorBean);
         }
     },
 
     refreshVectorSymbol:function(vector, strokeSymbol, fillSymbol, paper) {
-        var key;
+        /**var key;
         if (!strokeSymbol) {
             strokeSymbol = Z.SVG.defaultStrokeSymbol;
         }
@@ -160,7 +174,7 @@ Z.SVG.SVG = {
                 }
                 vector.setAttribute(key, fillSymbol[key]);
             }
-        }
+        }*/
     },
 
     /**
@@ -245,19 +259,34 @@ Z.SVG.SVG = {
 
     },
 
-
     addVector:function(container, vectorBean, strokeSymbol, fillSymbol) {
+        var vector = this._addVector(vectorBean, strokeSymbol, fillSymbol);
+//        Z.SVG.refreshVectorSymbol(vector, strokeSymbol, fillSymbol, container);
+        if(vector) {
+            container.appendChild(vector);
+        }
+    },
+
+
+    _addVector:function(vectorBean, strokeSymbol, fillSymbol) {
         var vector;
         if(vectorBean['path']) {
             vector = document.createElementNS('http://www.w3.org/2000/svg', 'path');
             vector.setAttribute('d', vectorBean['path']);
-            Z.SVG.refreshVectorSymbol(vector, strokeSymbol, fillSymbol, container);
-            container.appendChild(vector);
         }
         return vector;
     },
 
     addTextVector: function(container, vectorBean, iconSymbol) {
+        var textVector = this._addTextVector(vectorBean, iconSymbol);
+        if(textVector) {
+            container.appendChild(textVector);
+        }
+        return textVector;
+    },
+
+    _addTextVector: function(vectorBean, iconSymbol) {
+        var textElement = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         var font = iconSymbol['font'];
         var size = iconSymbol['size'];
         var width = iconSymbol['textWidth'];
@@ -282,61 +311,64 @@ Z.SVG.SVG = {
                         'opacity:' + opacity + ';' +
                         'padding:' + padding + ';' +
                         'text-align:' + align + ';';
-        var texts = vectorBean['texts'];
-        if(texts && texts.length>0){
-            for(var i=0,len=texts.length;i<len;i++) {
-                var text = texts[i];
-                var location = text['location'];
-                var content = text['content'];
-                var fontSize = iconSymbol['size'];
-                var size = fontSize/2;
-                var textWidth = Z.Util.getLength(content)*size;
+        var text = vectorBean['text'];
+        if(text){
+            var location = text['location'];
+            var content = text['content'];
+            var fontSize = iconSymbol['size'];
+            var size = fontSize/2;
+            var textWidth = Z.Util.getLength(content)*size;
 
-                var textElement = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                textElement.setAttribute('x', location[0]);
-                textElement.setAttribute('y', location[1] + lineSpacing + size);
-                textElement.setAttribute('style', textStyle);
-                if(textWidth>width){
-                     var contents = Z.Util.splitContent(content, textWidth, size, width);
-                     var result = '';
-                     for(var i=0,len=contents.length;i<len;i++){
-                        var content = contents[i];
-                        var tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
-                        tspan.setAttribute('x', location[0]);
-                        tspan.setAttribute('y', location[1] + (lineSpacing + size)*(i+1));
-                        var textNode = document.createTextNode(content);
-                        tspan.appendChild(textNode);
-                        textElement.appendChild(tspan);
-                     }
-                } else {
+            textElement.setAttribute('x', location[0]);
+            textElement.setAttribute('y', location[1] + lineSpacing + size);
+            textElement.setAttribute('style', textStyle);
+            if(textWidth>width){
+                 var contents = Z.Util.splitContent(content, textWidth, size, width);
+                 var result = '';
+                 for(var i=0,len=contents.length;i<len;i++){
+                    var content = contents[i];
+                    var tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+                    tspan.setAttribute('x', location[0]);
+                    tspan.setAttribute('y', location[1] + (lineSpacing + size)*(i+1));
                     var textNode = document.createTextNode(content);
-                    textElement.appendChild(textNode);
-                }
-                container.appendChild(textElement);
-                /**
-                *沿线绘制文本
-                var startX = location[0],startY = location[1];
-                var endX = startX + width + padding, endY = startY;
-                var pathStr = 'M'+startX+','+startY+' L'+endX+','+endY+' '+Z.SVG.closeChar;
-                var pathId =  'PATH_ID';
-                var textLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                textLine.setAttribute('id', pathId);
-                textLine.setAttribute('d', pathStr);
-                var defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
-                defs.appendChild(textLine);
-                container.appendChild(defs);
-                var textPathElement = document.createElementNS('http://www.w3.org/2000/svg', 'textPath');
-                textPathElement.appendChild(textNode);
-                */
+                    tspan.appendChild(textNode);
+                    textElement.appendChild(tspan);
+                 }
+            } else {
+                var textNode = document.createTextNode(content);
+                textElement.appendChild(textNode);
             }
+            /**
+            *沿线绘制文本
+            var startX = location[0],startY = location[1];
+            var endX = startX + width + padding, endY = startY;
+            var pathStr = 'M'+startX+','+startY+' L'+endX+','+endY+' '+Z.SVG.closeChar;
+            var pathId =  'PATH_ID';
+            var textLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            textLine.setAttribute('id', pathId);
+            textLine.setAttribute('d', pathStr);
+            var defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+            defs.appendChild(textLine);
+            container.appendChild(defs);
+            var textPathElement = document.createElementNS('http://www.w3.org/2000/svg', 'textPath');
+            textPathElement.appendChild(textNode);
+            */
         }
-        return container;
+        return textElement;
     },
 
     addShieldVector:function(container, vectorBean, strokeSymbol, fillSymbol, shieldSymbol) {
-        this.addVector(container, vectorBean, strokeSymbol, fillSymbol);
-        this.addTextVector(container, vectorBean, shieldSymbol);
-        return container;
+        var group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        var vector =  this._addVector(vectorBean, strokeSymbol, fillSymbol);
+        var textVector = this._addTextVector(vectorBean, shieldSymbol);
+        if(vector&&textVector) {
+            group.setAttribute('fill', fillSymbol['fill']);
+            group.setAttribute('z-index', 100);
+            group.appendChild(vector);
+            group.appendChild(textVector);
+            container.appendChild(group);
+        }
+        return group;
     },
 
     removeVector:function(_container, vector) {
@@ -345,7 +377,11 @@ Z.SVG.SVG = {
             Z.Util.removeDomNode(vector._pattern);
         }
         if (_container && vector) {
-            _container.removeChild(vector);
+            if(_container === vector) {
+                vector.parentNode.removeChild(vector);
+            } else {
+                _container.removeChild(vector);
+            }
         }
     }
 };
@@ -441,17 +477,13 @@ Z.SVG.VML= {
         if (!vector || !vectorBean) {
             return;
         }
-        var texts = vectorBean['texts'];
-        if (!texts&&texts.length==0) {
+        var text = vectorBean['text'];
+        if (!text&&text.length==0) {
             return;
         }
-
-        for(var i=0,len=texts.length;i<len;i++) {
-            var text = texts[i];
-            var location = text['location'];
-            vector.style.top = (location[1])+'px';
-            vector.style.left = (location[0])+'px';
-        }
+        var location = text['location'];
+        vector.style.top = (location[1])+'px';
+        vector.style.left = (location[0])+'px';
     },
 
     addVector: function(_container, vectorBean, strokeSymbol, fillSymbol, iconSymbol) {
@@ -475,16 +507,15 @@ Z.SVG.VML= {
             this.refreshVectorSymbol(vector, strokeSymbol, fillSymbol);
             _container.appendChild(vector);
         }
-
         //text
-        var texts = vectorBean['texts'];
-        if(texts&&texts.length>0) {
-            vector = this._addTextToVector(_container, texts, iconSymbol);
+        var text = vectorBean['text'];
+        if(text) {
+            vector = this._addTextToVector(_container, text, iconSymbol);
         }
         return vector;
     },
 
-    _addTextToVector: function(container, texts, iconSymbol) {
+    _addTextToVector: function(container, text, iconSymbol) {
         var textElement;
         var font = iconSymbol['font'];
         var size = iconSymbol['size'];
@@ -501,28 +532,29 @@ Z.SVG.VML= {
         }
         var dx = parseInt(iconSymbol['dx'],0);
         var dy = parseInt(iconSymbol['dy'],0);
-        if(texts && texts.length>0){
-            for(var i=0,len=texts.length;i<len;i++) {
-                var text = texts[i];
-                var location = text['location'];
-                var content = text['content'];
-                textElement = Z.SVG.create('textbox');
-                textElement.style.fontSize  = size +'px';
-                textElement.style.color  = color;
-                textElement.style.width  = width +'px';
-                textElement.style.textAlign = align;
-                textElement.style.top = (location[1])+'px';
-                textElement.style.left = (location[0])+'px';
-                textElement.innerHTML   = content;
-                container.appendChild(textElement);
-            }
+        if(text){
+            var location = text['location'];
+            var content = text['content'];
+            textElement = Z.SVG.create('textbox');
+            textElement.style.fontSize  = size +'px';
+            textElement.style.color  = color;
+            textElement.style.width  = width +'px';
+            textElement.style.textAlign = align;
+            textElement.style.top = (location[1])+'px';
+            textElement.style.left = (location[0])+'px';
+            textElement.innerHTML   = content;
+            container.appendChild(textElement);
         }
         return container;
     },
 
     removeVector:function(_container, vector) {
         if (_container && vector) {
-            _container.removeChild(vector);
+            if(_container === vector) {
+                vector.parentNode.removeChild(vector);
+            } else {
+                _container.removeChild(vector);
+            }
         }
     }
 };

@@ -356,7 +356,6 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
             return map._getProjection();
         }
         return Z.Projection.getDefault();
-        // return null;
     },
 
     /**
@@ -462,7 +461,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         };
         if (opts['geometry'] === undefined || opts['geometry']) {
             var geoJson = this.exportGeoJson(opts);
-            feature['geometry']=geoJson;
+            feature['geometry'] = geoJson;
         }
         var id = this.getId();
         if (!Z.Util.isNil(id)) {
@@ -490,5 +489,4 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         feature['properties'] = properties;
         return feature;
     }
-
 });

@@ -91,6 +91,7 @@ Z.Painter.SVG = Z.Painter.extend({
         }
         if (this.vector) {
             this.vector.style.zIndex = change;
+
         }
     },
 
@@ -99,7 +100,7 @@ Z.Painter.SVG = Z.Painter.extend({
             this.markerDom.style.display='';
         }
         if (this.vector) {
-            this.vector.show();
+            this.vector.style.display = '';
         }
     },
 
@@ -108,7 +109,7 @@ Z.Painter.SVG = Z.Painter.extend({
             this.markerDom.style.display = 'none';
         }
         if (this.vector) {
-            this.vector.hide();
+            this.vector.style.display = 'none';
         }
     },
 

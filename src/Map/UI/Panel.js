@@ -20,7 +20,7 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
 		'target': null,
 		'linksymbol': {
 			'line-color' : '#474cf8',
-			'line-width' : 3,
+			'line-width' : 1,
 			'line-dasharray' : null,
 			'line-opacity' : 1
 		}

@@ -80,7 +80,7 @@ Z.Marker.PaintUtils = {
     },
 
     getLabelVectorArray:function(icon) {
-        var labelType = icon['type'];
+        var labelType = icon['shieldType'];
         if ('label' === labelType) {
             return this._getLabelPoints(icon);
         } else if ('tip' === labelType) {
@@ -108,7 +108,8 @@ Z.Marker.PaintUtils = {
         var align = icon['textAlign'];
         if(!align) align ='left';
         var content = icon['content'];
-        var size = icon['size']/2;
+        var fontSize = icon['size'];
+        var size = fontSize/2;
         var textWidth = Z.Util.getLength(content)*size;
         var left= leftTopPoint[0] + padding, top = leftTopPoint[1] + padding;
         if ('center' === align) {
@@ -126,7 +127,9 @@ Z.Marker.PaintUtils = {
     _getLabelPoints: function(icon) {
         var domOffset = this.geometry.getCenterDomOffset();
         if (!domOffset) {return null;}
-        var gCenter = [(domOffset['left']), (domOffset['top'])];
+        var map = this.geometry.getMap();
+        var mapOffset = map._offsetPlatform();
+        var gCenter = [(domOffset['left']+mapOffset['left']), (domOffset['top']+ mapOffset['top'])];
 
         if(!gCenter) return;
         var left = gCenter[0];

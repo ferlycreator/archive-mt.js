@@ -72,7 +72,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
 	hide: function() {
 		this._label.hide();
 		if(this.options['link']) {
-			this._link.hide();
+		    this._link.hide();
 		}
         this.fire('hide', {'target': this});
 	},
@@ -96,7 +96,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
 	remove: function() {
 		this._label.remove();
 		if(this.options['link']) {
-			this._link.remove();
+		    this._link.remove();
 		}
         this.fire('remove', {'target': this});
 	},
@@ -104,7 +104,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
 	addTo: function (geometry) {
         if(!geometry || !this.options || !this.options['symbol']) return;
         this._map = geometry.getMap();
-        this._labelContrainer = this._map.containerDOM;
+        this._labelContrainer = this._map._containerDOM;
         this._target = geometry;
         if(!this._target) throw new Error(this.exceptions['NEED_TARGET']);
 
@@ -121,80 +121,44 @@ Z['Label'] = Z.Label = Z.Class.extend({
         this._label['target'] = this._target;
         this._label.setSymbol(this.options['symbol']);
         this._internalLayer.addGeometry(this._label);
-        //this._label.hide();
+        this._label.hide();
 
-        var targetOffset = this._map.coordinateToScreenPoint(targetCenter);
-        var labelOffset = this._computeLabelOffset();
-        targetCenter = this._map.screenPointToCoordinate({
-            'top' : targetOffset['top'] - labelOffset['top'],
-            'left' : targetOffset['left'] + labelOffset['left']
-        });
-        this._label.setCoordinates(targetCenter);
         this._target.on('shapechanged positionchanged symbolchanged', Z.Util.bind(this._changeLabelPosition, this), this)
                     .on('remove', this.removeLabel, this);
+
         this._label.on('click dblclick rightclick', Z.DomUtil.stopPropagation, this);
+
 
         var trigger = this.options['trigger'];
         var me = this;
         if(trigger === 'hover') {
             this._target.on('mouseover', function showLabel() {
-                         me.showLabel();
-                         map.disableDragPropagation();
-                         map.disableDoubleClickZoom();
+                         me.show();
+                         me._map.disableDragPropagation();
+                         me._map.disableDoubleClickZoom();
                      }, this)
                      .on('mouseout', function hideLabel() {
                         setTimeout(function(){
-                            me.hideLabel();
-                            map.enableDragPropagation();
-                            map.enableDoubleClickZoom();
+                            me.hide();
+                            me._map.enableDragPropagation();
+                            me._map.enableDoubleClickZoom();
                         }, 1000);
                      }, this);
         } else if(trigger === 'click') {
             this._target.on('click', function showLabel() {
-                         me.showLabel();
-                         map.disableDragPropagation();
-                         map.disableDoubleClickZoom();
+                         me.show();
+                         me._map.disableDragPropagation();
+                         me._map.disableDoubleClickZoom();
                      }, this);
         } else {
-            me.showLabel();
+            this.show();
         }
         if(this.options['draggable']) {
              this._label.on('mousedown', this._onMouseDown, this)
-                      .on('dragend', this._endMove, this)
-                      .on('mouseout', this._recoverMapEvents, this);
+                        .on('dragend', this._endMove, this)
+                        .on('mouseout', this._recoverMapEvents, this);
         }
         return null;
-	},
-
-	_computeLabelOffset: function() {
-		var painter = this._label.getPainter();
-		var textSize = painter.measureTextMarker();
-		var width =  0; //textSize['width'],
-			height = 0; //textSize['height'];
-		var geoSide = this._target.getSize();
-		var sideWidth = geoSide['width'];
-		var sideHeight = geoSide['height'];
-		if (this.options) {
-			var placement = this.options['symbol']['shield-vertical-alignment'];
-			var left = 0, top = 0;
-			if('left' === placement) {
-				left = -sideWidth/2;
-				top = sideHeight/2;
-			} else if('right' === placement) {
-				left = sideWidth/2;
-				top = sideHeight/2;
-			} else if('top' === placement) {
-				left = 0;
-				top = height + sideHeight/2;
-			} else if('bottom' === placement) {
-				left = 0;
-				top = 0;
-			} else {//center
-				left = 0;
-				top = sideHeight/2;
-			}
-		}
-		return {'left':left, 'top':top};
 	},
 
 	_linkToTarget: function() {
@@ -202,13 +166,15 @@ Z['Label'] = Z.Label = Z.Class.extend({
 		var nearestPoints = this._getNearestPoint(center);
 		var path = [center, nearestPoints[0], nearestPoints[1]];
 		this._link = new Z.Polyline(path);
+
 		var strokeSymbol = {
-			'stroke': this.options['style']['stroke'],
-			'stroke-width': this.options['style']['strokewidth']
+			'line-color': this.options['symbol']['shield-line-color'],
+			'line-width': this.options['symbol']['shield-line-width']
 		};
-		this._link.setStrokeSymbol(strokeSymbol);
+		this._link.setSymbol(strokeSymbol);
+
 		this._internalLayer.addGeometry(this._link);
-		geometry.on('positionchanged', this._changeLinkPath, this)
+		this._target.on('positionchanged', this._changeLinkPath, this)
 				.on('remove', this.remove, this);
 
 	},
@@ -308,7 +274,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
 		var placement = this.options['symbol']['shield-vertical-alignment'];
 		var center = this._label.getCenter();
 		var point = this._map.coordinateToScreenPoint(center);
-		var mapOffset = this._map.offsetPlatform();
+		var mapOffset = this._map._offsetPlatform();
 		if (placement === 'left') {
 			return {
 				'left': point['left'] - width + mapOffset['left'],
@@ -341,10 +307,12 @@ Z['Label'] = Z.Label = Z.Class.extend({
 		var center = this._target.getCenter();
 		var nearestPoints = this._getNearestPoint(center);
 		var path = [center, nearestPoints[0], nearestPoints[1]];
-		var strokeSymbol = this._link.getStrokeSymbol();
-		strokeSymbol['stroke'] = '#ff0000';
-		this._link.setStrokeSymbol(strokeSymbol);
-		this._link.setPath(path);
+		var strokeSymbol = {
+            'line-color': '#ff0000',
+            'line-width': this.options['symbol']['shield-line-width']
+        };
+		this._link.setSymbol(strokeSymbol);
+		this._link.setCoordinates(path);
 	},
 
 	_changeLabelPosition: function(event) {
@@ -368,11 +336,11 @@ Z['Label'] = Z.Label = Z.Class.extend({
 		if(this.options['link']) {
 			this._map.off('mousemove zoomend resize moving', this._changeLinkPath, this);
 			var strokeSymbol = {
-				'stroke': this.options['style']['stroke'],
-				'stroke-width': this.options['style']['strokewidth']
+				'line-color': this.options['symbol']['shield-line-color'],
+				'line-width': this.options['symbol']['shield-line-width']
 			};
 			if(this._link) {
-				this._link.setStrokeSymbol(strokeSymbol);
+				this._link.setSymbol(strokeSymbol);
 			}
 		}
 		this.fire('dragend', {'target': this});

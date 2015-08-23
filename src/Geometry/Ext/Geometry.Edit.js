@@ -39,43 +39,19 @@ Z.Geometry.include({
     startDrag: function() {
         this._map = this.getMap();
         this.hide();
-        // var type = this.getType();
+        var symbol = Z.Util.convertFieldNameStyle(this.getSymbol(), 'minus');
         if(this instanceof Z.Marker) {
-            this._dragGeometry = new Z.Marker(this.getCenter());
-            var targetIcon = this.getIcon();
-            var iconType = (targetIcon?targetIcon['type']:null);
-            if ("picture" === iconType) {
-
-            } else if ("text" === iconType) {
-                var targetTextStyle = targetIcon['textStyle'];
-                var textStyle = {
-                    'color': targetTextStyle['color'],
-                    'padding': targetTextStyle['padding'],
-                    'size': targetTextStyle['size'],
-                    'font': targetTextStyle['font'],
-                    'weight': targetTextStyle['weight'],
-                    'background': targetTextStyle['background'],
-                    'stroke': '#ff0000',
-                    'strokewidth': targetTextStyle['strokewidth'],
-                    'placement': targetTextStyle['placement']
-                };
-                var icon = {
-                    'type': 'text',
-                    'textStyle': textStyle,
-                    'content': targetIcon['content'],
-                    'offset': targetIcon['offset']
-                };
-                this._dragGeometry.setIcon(icon);
-            } else if ("vector" === iconType){
-
-            } else {
-
+            this._dragGeometry = new Z.Marker(this.getCoordinates());
+        } else { //线与面图形
+            symbol['line-color'] = '#ff0000';
+            if (this instanceof Z.Polyline) {
+                this._dragGeometry = new Z.Polyline(this.getCoordinates());
+            } else if (this instanceof Z.Polygon) {
+                this._dragGeometry = new Z.Polygon(this.getCoordinates());
             }
-        } else {//线与面图形
-            var strokeSymbol = this.getSymbol();
-            strokeSymbol['line-color'] = '#ff0000';
-            this._dragGeometry.setSymbol(strokeSymbol);
         }
+        this._dragGeometry.setProperties(this.getProperties());
+        this._dragGeometry.setSymbol(symbol);
         var _dragLayer = this._getDragLayer();
         _dragLayer.addGeometry(this._dragGeometry);
         this._map.on('mousemove', this._dragging, this)

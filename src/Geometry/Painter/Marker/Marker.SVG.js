@@ -31,7 +31,7 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
             }
         } else {
             icon = this.shieldSymbol;
-            var shieldType = icon['type'];
+            var shieldType = icon['shieldType'];
             if(shieldType&&shieldType.length>0) {
                 this.paintShieldMarker();
             }
@@ -45,25 +45,37 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
      * @param config
      */
     refreshMarker:function() {
-        var icon = this.getGeoIcon();
-        var url = icon['url'];
-        if (url&&url.length>0) {
-            if (!this.markerDom) {return;}
-            var gCenter = this.getMarkerDomOffset();
-            if (!gCenter) {return;}
-            this.markerDom.style.left = gCenter[0] + "px";
-            this.markerDom.style.top =gCenter[1] + "px";
-        }
+        var icon = this.iconSymbol;
+        if(icon) {
+            var url = icon['url'];
+            if (url&&url.length>0) {
+                if (!this.markerDom) {return;}
+                var gCenter = this.getMarkerDomOffset();
+                if (!gCenter) {return;}
+                this.markerDom.style.left = gCenter[0] + "px";
+                this.markerDom.style.top =gCenter[1] + "px";
+            }
 
-        var markerType = icon['type'];
-        if(markerType&&markerType.length>0) {
-            var vectorMarker = this._createVectorObj(icon);
-            Z.SVG.refreshVector(this.vector, vectorMarker);
-        }
-        var textName = icon['content'];
-        if(textName&&textName.length>0) {
-            var vectorMarker = this._createTextObj(icon);
-            Z.SVG.refreshTextVector(this.vector, vectorMarker);
+            var markerType = icon['type'];
+            if(markerType&&markerType.length>0) {
+                var vectorMarker = this._createVectorObj(icon);
+                Z.SVG.refreshVector(this.vector, vectorMarker);
+            }
+            var textName = icon['content'];
+            if(textName&&textName.length>0) {
+                var vectorMarker = this._createTextObj(icon);
+                Z.SVG.refreshTextVector(this.vector, vectorMarker);
+            }
+        } else {
+            icon = this.shieldSymbol;
+            var shieldType = icon['shieldType'];
+            if(shieldType&&shieldType.length>0) {
+               var shieldVector = this._createShieldObj(icon);
+                var fontSize = icon['size'];
+                var location = shieldVector['text']['location'];
+                shieldVector['text']['location'][1] = location[1]+fontSize;
+               Z.SVG.refreshShieldVector(this.vector, shieldVector);
+            }
         }
     },
 
@@ -184,7 +196,7 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
     _createLabelVectorObj: function(icon) {
         var svgBean = null;
         var points = this.getLabelVectorArray(icon);
-        var labelType = icon['type'];
+        var labelType = icon['shieldType'];
         if ('label' === labelType) {
             svgBean = {
                 'type' : 'path',
@@ -228,9 +240,7 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
             'location': location,
             'content': icon['content']
         };
-        var texts = [];
-        texts.push(textPoint);
-        svgBean['texts'] = texts;
+        svgBean['text'] = textPoint;
         return svgBean;
     },
 
@@ -270,10 +280,16 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
         };
 
         shieldSymbol['content'] = this._convertContent(shieldSymbol);
-        var vector = this._createLabelVectorObj(shieldSymbol);
-        var shieldMarker = this._createTextObj(shieldSymbol);
-        shieldMarker['path'] = vector['path'];
+        var shieldMarker = this._createShieldObj(shieldSymbol);
         this.drawShieldVector(shieldMarker, strokeSymbol, fillSymbol, shieldSymbol);
+    },
+
+    _createShieldObj: function(shieldSymbol) {
+        var svgBean = {};
+        var vector = this._createLabelVectorObj(shieldSymbol);
+        svgBean = this._createTextObj(shieldSymbol);
+        svgBean['path'] = vector['path'];
+        return svgBean;
     },
 
     /**
