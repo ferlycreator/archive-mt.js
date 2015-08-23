@@ -124,12 +124,18 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
         return 0;
     },
 
+    _containsPoint: function(point) {
+        // TODO
+        return false;
+    },
+
     _assignPainter:function() {
-        if (!this.layer) {return;}
+        if (!this.layer) {return null;}
         if (this.layer instanceof Z.SVGLayer) {
             return new Z.Polygon.SVG(this);
         } else if (this.layer instanceof Z.CanvasLayer) {
             return new Z.Polygon.Canvas(this);
         }
+        return null;
     }
 });

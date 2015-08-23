@@ -148,6 +148,11 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
     },
 
 
+    _containsPoint: function(point) {
+        // TODO
+        return false;
+    },
+
     _computeExtent:function(projection) {
         if (!projection || !this._coordinates || Z.Util.isNil(this.width) || Z.Util.isNil(this.height)) {
             return null;
@@ -175,12 +180,13 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
 
     _assignPainter:function() {
         var layer = this.getLayer();
-        if (!layer) {return;}
+        if (!layer) {return null;}
         if (layer instanceof Z.SVGLayer) {
             return new Z.Rectangle.SVG(this);
         } else if (layer instanceof Z.CanvasLayer) {
             return new Z.Rectangle.Canvas(this);
         }
+        return null;
     },
 
     _exportGeoJson:function(opts) {

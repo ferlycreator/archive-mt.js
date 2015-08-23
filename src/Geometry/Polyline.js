@@ -31,13 +31,24 @@ Z['Polyline']=Z.Polyline = Z.Vector.extend({
         return this.points;
     },
 
+    _containsPoint: function(point) {
+        // TODO
+        // get pixel extent
+
+        // screen points
+        var points = this._untransformToOffset(this._getPrjPoints());
+
+        return false;
+    },
+
     _assignPainter:function() {
-        if (!this.layer) {return;}
+        if (!this.layer) {return null;}
         if (this.layer instanceof Z.SVGLayer) {
             return new Z.Polyline.SVG(this);
         } else if (this.layer instanceof Z.CanvasLayer) {
             return new Z.Polyline.Canvas(this);
         }
+        return null;
     }
 
 });

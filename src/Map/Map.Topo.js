@@ -146,7 +146,7 @@ Z.Map.include({
 
     /**
      * Identify
-     * @param  {opts} opts 查询参数 {"coordinate": coordinate,"radius": r, "layers": [], "successFn": fn}
+     * @param  {opts} opts 查询参数 {point: point, "layers": [], "successFn": fn}
      * @expose
      */
     identify: function(opts) {
@@ -154,26 +154,29 @@ Z.Map.include({
             return;
         }
         var layers = opts['layers'];
-        if(!layers||layers.length==0) {
+        if(!layers||layers.length===0) {
             return;
         }
-        var coordinate = opts['coordinate'];
-        var radius = opts['radius'];
+        var point = opts.point;
         var fn = opts['success'];
-        var circle = new Z.Circle(coordinate, radius);
-        var geometries = [];
+        var hits = [];
         for (var i=0, len=layers.length; i<len; i++) {
             var layer = layers[i];
             var layerId = layer.getId();
 
-            if(!layer || !layer.getMap() || layerId.indexOf('mt__internal_layer') >= 0) continue;
+            if(!layer || !layer.getMap() || layerId.indexOf('mt__internal_layer') >= 0) {
+                continue;
+            }
+
             var allGeos = layers[i].getAllGeometries();
             for (var j=0, length = allGeos.length; j<length; j++) {
-                geometries.push(allGeos[j]);
+                var geo = allGeos[i];
+                if (geo._containsPoint(point)) {
+                    hits.push(geo);
+                }
             }
         }
-        var data = this.intersectWithCircle(circle, geometries);
-        return fn.call(this, {'success':true,'data':data});
+        fn.call(this, {success: hits.length > 0, data: hits});
     },
 
     /**

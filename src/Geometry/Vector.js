@@ -11,20 +11,20 @@ Z.Vector = Z.Geometry.extend({
     },
 
     _computeVisualExtent:function(projection) {
-    	/*var strokeSymbol = this.getStrokeSymbol();*/
-    	var width = 0;
-    	/*if (!strokeSymbol) {
-    		strokeSymbol = this.getDefaultStrokeSymbol();
-    	}
-    	if (strokeSymbol) {
-    		width = strokeSymbol['strokeWidth'];
-    		if (!width) {
-    			width = strokeSymbol['stroke-width'];
-    		}
-    	}
-    	if (!width) {
-    		width = 1;
-    	}    	*/
+        /*var strokeSymbol = this.getStrokeSymbol();*/
+        var width = 0;
+        /*if (!strokeSymbol) {
+            strokeSymbol = this.getDefaultStrokeSymbol();
+        }
+        if (strokeSymbol) {
+            width = strokeSymbol['strokeWidth'];
+            if (!width) {
+                width = strokeSymbol['stroke-width'];
+            }
+        }
+        if (!width) {
+            width = 1;
+        }       */
         var extent = this._getPrjExtent();
         var map = this.getMap();
         var res = map._getLodConfig().getResolution(map.getZoomLevel());

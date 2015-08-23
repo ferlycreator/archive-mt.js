@@ -60,6 +60,11 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
         return this.symbol['icon'];
     },*/
 
+    _containsPoint: function(point) {
+        // TODO
+        return false;
+    },
+
     _computeExtent:function(projection) {
         var coordinates = this.getCenter();
         if (!coordinates) {return null;}
@@ -132,7 +137,6 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
         return map._computeExtentByPixelSize(pcenter, pnw, pse);
     },
 
-
     _computeGeodesicLength:function(projection) {
         return 0;
     },
@@ -142,11 +146,12 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
     },
 
     _assignPainter:function() {
-        if (!this.layer) {return;}
+        if (!this.layer) {return null;}
         if (this.layer instanceof Z.SVGLayer) {
             return new Z.Marker.SVG(this);
         } else if (this.layer instanceof Z.CanvasLayer) {
             return new Z.Marker.Canvas(this);
         }
+        return null;
     }
 });

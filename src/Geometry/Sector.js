@@ -95,6 +95,11 @@ Z['Sector']=Z.Sector=Z.Polygon.extend({
         return null;
     },
 
+    _containsPoint: function(point) {
+        // TODO
+        return false;
+    },
+
     _computeExtent:function(projection) {
         if (!projection || !this._coordinates || Z.Util.isNil(this.radius)) {
             return null;
@@ -122,12 +127,13 @@ Z['Sector']=Z.Sector=Z.Polygon.extend({
 
     _assignPainter:function() {
         var layer = this.getLayer();
-        if (!layer) {return;}
+        if (!layer) {return null;}
         if (layer instanceof Z.SVGLayer) {
             return new Z.Sector.SVG(this);
         } else if (layer instanceof Z.CanvasLayer) {
             return new Z.Sector.Canvas(this);
         }
+        return null;
     },
 
     _exportGeoJson:function(opts) {

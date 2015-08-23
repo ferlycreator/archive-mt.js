@@ -57,6 +57,16 @@ Z['Circle']=Z.Circle=Z.Polygon.extend({
         return null;
     },
 
+    _containsPoint: function(point) {
+        var center = this._getCenterDomOffset(),
+            size = this.getSize(),
+            pc = new Z.Point(center.left, center.top),
+            pp = new Z.Point(point.left, point.top);
+
+        // TODO: tolerance
+        return pp.distanceTo(pc) <= size.width;
+    },
+
     _computeExtent:function(projection) {
         if (!projection || !this._coordinates || Z.Util.isNil(this.radius)) {
             return null;
@@ -84,12 +94,13 @@ Z['Circle']=Z.Circle=Z.Polygon.extend({
 
     _assignPainter:function() {
         var layer = this.getLayer();
-        if (!layer) {return;}
+        if (!layer) {return null;}
         if (layer instanceof Z.SVGLayer) {
             return new Z.Circle.SVG(this);
         } else if (layer instanceof Z.CanvasLayer) {
             return new Z.Circle.Canvas(this);
         }
+        return null;
     },
 
     _exportGeoJson:function(opts) {

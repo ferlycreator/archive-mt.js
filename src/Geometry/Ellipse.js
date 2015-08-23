@@ -74,6 +74,11 @@ Z['Ellipse']=Z.Ellipse = Z.Polygon.extend({
         return null;
     },
 
+    _containsPoint: function(point) {
+        // TODO
+        return false;
+    },
+
     _computeExtent:function(projection) {
         if (!projection || !this._coordinates || Z.Util.isNil(this.width) || Z.Util.isNil(this.height)) {
             return null;
@@ -105,12 +110,13 @@ Z['Ellipse']=Z.Ellipse = Z.Polygon.extend({
 
     _assignPainter:function() {
         var layer = this.getLayer();
-        if (!layer) {return;}
+        if (!layer) {return null;}
         if (layer instanceof Z.SVGLayer) {
             return new Z.Ellipse.SVG(this);
         } else if (layer instanceof Z.CanvasLayer) {
             return new Z.Ellipse.Canvas(this);
         }
+        return null;
     },
 
     _exportGeoJson:function(opts) {

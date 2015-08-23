@@ -100,6 +100,11 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         return new Z.Coordinate(sumX/counter, sumY/counter);
     },
 
+    _containsPoint: function(point) {
+        // TODO
+        return false;
+    },
+
     _computeExtent:function(projection) {
         if (!projection || this.isEmpty()) {
             return null;
