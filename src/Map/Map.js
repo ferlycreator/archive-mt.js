@@ -523,7 +523,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      */
     _repaintBaseCanvasLayer:function(isRealTime) {
         if (this._loaded && this._baseCanvasLayer) {
-            this._baseCanvasLayer._repaint(isRealTime);
+            this._baseCanvasLayer.repaint(isRealTime);
         }
     },
 

@@ -1,9 +1,6 @@
 Z.CanvasLayer.Base=Z.OverlayLayer.extend({
     //load,_onMoving, _onMoveEnd, _onResize, _onZoomStart, _onZoomEnd
 
-    //GeometryID的counter
-    _stamp:0,
-
     initialize:function() {
         this.resourceLoader = new Z.ResourceLoader();
     },
@@ -12,12 +9,12 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
         // this._geoCache = [];
         var map = this.getMap();
         this.layerContainer = map._panels.canvasLayerContainer;
-        this._createLayerCanvas();
+        this.createLayerCanvas();
         // this.refreshCache();
-        this._repaint();
+        this.repaint();
     },
 
-    _createLayerCanvas:function() {
+    createLayerCanvas:function() {
         if (!this.layerCanvas) {
             var map = this.getMap();
             if (!this.layerContainer || !map) {return;}
@@ -25,7 +22,7 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
             //初始化
             var layerCanvas = Z.DomUtil.createEl('canvas');
             layerCanvas.style.cssText = 'position:absolute;top:0px;left:0px;';
-            this._updateCanvasSize(layerCanvas);
+            this.updateCanvasSize(layerCanvas);
             this.layerContainer.appendChild(layerCanvas);
             this.layerCanvas = layerCanvas;
             this.canvasCtx = this.layerCanvas.getContext("2d");
@@ -33,7 +30,7 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
         }
     },
 
-    _updateCanvasSize:function(canvas) {
+    updateCanvasSize:function(canvas) {
         var mapSize = this.map.getSize();
         //retina屏支持
         var r = Z.Browser.retina ? 2:1;
@@ -79,25 +76,25 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
      * @param  {boolean} isRealTime 是否是实时绘制
      * @return {[type]}        [description]
      */
-    _repaint:function(isRealTime) {
+    repaint:function(isRealTime) {
         //延迟执行,减少刷新次数
         var me = this;
         if (isRealTime) {
-            me._doRepaint();
+            me.doRepaint();
         } else {
             if (this.repaintTimeout) {
                 clearTimeout(this.repaintTimeout);
             }
             this.repaintTimeout = setTimeout(function() {
-                me._doRepaint();
+                me.doRepaint();
             },10);
         }
 
 
     },
 
-    _doRepaint:function() {
-        this._loadResource(function(){
+    doRepaint:function() {
+        this.loadResource(function(){
             var me = this;
             var map = me.getMap();
             var mapSize = map.getSize();
@@ -105,12 +102,12 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
             var mapExtent = map.getExtent();
             /*me.layerCanvas.width = mapSize.width;
             me.layerCanvas.height = mapSize.height;*/
-            me._updateCanvasSize(me.layerCanvas);
+            me.updateCanvasSize(me.layerCanvas);
             var containerOffset = map._offsetPlatform();
             me.layerCanvas.style.left=(-containerOffset['left'])+"px";
             me.layerCanvas.style.top=(-containerOffset['top'])+"px";
             //载入资源后再进行绘制
-            me._repaintInExtent(mapExtent);
+            me.repaintInExtent(mapExtent);
         });
     },
 
@@ -119,13 +116,13 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
      * @param  {[type]} extent [description]
      * @return {[type]}        [description]
      */
-    _repaintInExtent:function(extent) {
+    repaintInExtent:function(extent) {
         var me = this;
         var map = me.getMap();
         var mapExtent = map.getExtent();
         if (extent && Z.Extent.isIntersect(extent, mapExtent)) {
-            this._clearCanvas(extent);
-            me._eachGeometry(function(geo) {
+            this.clearCanvas(extent);
+            me.eachGeometry(function(geo) {
                 if (!geo || !geo.isVisible()) {
                     return;
                 }
@@ -138,7 +135,7 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
         }
     },
 
-    _clearCanvas:function(extent) {
+    clearCanvas:function(extent) {
         var map = this.getMap(),
             projection = map._getProjection();
         var p1 = projection.project({x:extent['xmin'],y:extent['ymin']}),
@@ -149,13 +146,13 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
                                     Math.abs(px1['left']-px2['left']), Math.abs(px1['top']-px2['top']));
     },
 
-    _loadResource:function(onComplete) {
+    loadResource:function(onComplete) {
         var me = this;
         //20150530 loadResource不加载canvasLayer中的geometry icon资源，故每次绘制canvas都去重新检查并下载资源
         //if (!me.resourceLoaded) {
             var map = me.getMap();
             var mapExtent = map.getExtent();
-            me._eachGeometry(function(geo) {
+            me.eachGeometry(function(geo) {
                 if (!geo || !geo.isVisible()) {
                     return;
                 }
@@ -182,7 +179,7 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
      * 遍历geometry
      * @param  {Function} fn 回调函数
      */
-    _eachGeometry:function(fn,obj) {
+    eachGeometry:function(fn,obj) {
         var layers = this._getLayerList();
         if (!Z.Util.isArrayHasData(layers)) {
             return;
@@ -223,11 +220,11 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
     },
 
     _onMoveEnd:function(param) {
-        this._repaint();
+        this.repaint();
     },
 
     _onResize:function(param) {
-        this._repaint();
+        this.repaint();
     },
 
     _onZoomStart:function(param) {
@@ -237,7 +234,7 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
     },
 
     _onZoomEnd:function(param) {
-        this._repaint();
+        this.repaint();
         this.show();
     },
 
