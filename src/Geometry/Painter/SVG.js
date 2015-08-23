@@ -529,7 +529,6 @@ Z.SVG.VML= {
         var strokeOpacity = (!iconSymbol['strokeOpacity'])?1:iconSymbol['strokeOpacity'];
         var fill = (!iconSymbol['fill'])?'#ffffff':iconSymbol['fill'];
         var fillOpacity = (!iconSymbol['fillOpacity'])?1:iconSymbol['fillOpacity'];
-        var stroke = iconSymbol['stroke'];
 
         var dx = parseInt(iconSymbol['dx'],0);
         var dy = parseInt(iconSymbol['dy'],0);

@@ -22,18 +22,26 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
         }
         var offset = this.getMarkerDomOffset();
         var pt = map._domOffsetToScreen({'left':offset[0],top:offset[1]});
-        var icon = this.getGeoIcon();
-        var url = icon['url'];
-        if (url&&url.length>0) {
-            this.paintPictureMarker(context, pt, icon,resources);
-        }
-        var markerType = icon['type'];
-        if(markerType&&markerType.length>0) {
-            this.paintVectorMarker(context, pt, geometry);
-        }
-        var textName = icon['content'];
-        if(textName&&textName.length>0) {
-            this.paintTextMarker(context, pt);
+        var icon = this.iconSymbol;
+        if(icon) {
+            var url = icon['url'];
+            if(url&&url.length>0) {
+                this.paintPictureMarker(context, pt, icon,resources);
+            }
+            var markerType = icon['type'];
+            if(markerType&&markerType.length>0) {
+                this.paintVectorMarker(context, pt, geometry);
+            }
+            var textName = icon['content'];
+            if(textName&&textName.length>0) {
+                this.paintTextMarker(context, pt);
+            }
+        } else {
+            icon = this.shieldSymbol;
+            var shieldType = icon['shieldType'];
+            if(shieldType&&shieldType.length>0) {
+                this.paintShieldMarker(context, pt);
+            }
         }
     },
 
@@ -113,19 +121,34 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
         context.font =  cssText;
 
         var padding = icon['padding'];
-        if (Z.Util.isNil(padding)) {padding = 3;}
-        var contentLines = content.split('\n');
-        var labelWidth = 0;
-        var labelHeight = 0;
-        for (var i=0, len=contentLines.length;i<len;i++) {
-            var lineHeight = context.measureText(contentLines[i])['textwidth'];
-            if (lineHeight > labelWidth) {
-                labelWidth = lineHeight;
-            }
-            labelHeight += (fontSize);
-            if (i !== 0) {
-                labelHeight += 2;
-            }
+        if (Z.Util.isNil(padding)) {padding = 8;}
+        var stroke = (!icon['stroke'])?'#000000':icon['stroke'];
+        var strokeWidth = icon['strokeWidth'];
+        var strokeOpacity = (!icon['strokeOpacity'])?1:icon['strokeOpacity'];
+        var fill = (!icon['fill'])?'#ffffff':icon['fill'];
+        var fillOpacity = (!icon['fillOpacity'])?1:icon['fillOpacity'];
+
+        var fontSize = (!icon['size'])?12:icon['size'];
+        var width = icon['textWidth'];
+        var padding = (!icon['padding'])?0:icon['padding'];
+        var lineSpacing = (!icon['lineSpacing'])?8:icon['lineSpacing'];
+        var size = fontSize/2;
+        var textWidth = Z.Util.getLength(content)*size;
+
+        var height = icon['height'];
+        var width = icon['width'];
+        var rowNum = 0;
+        if(textWidth>width){
+            rowNum = Math.ceil(textWidth/width)-1;
+        }
+        var labelHeight = height + rowNum*(fontSize+lineSpacing)/2;
+        var labelWidth = width + fontSize;
+
+        var contents = [];
+        if(textWidth>width){
+             contents = Z.Util.splitContent(content, textWidth, size, width);
+        } else {
+            contents.push[content];
         }
         //计算偏移量
         var offset = this.computeLabelOffset(labelWidth+2*padding,labelHeight+2*padding,icon);
@@ -138,13 +161,17 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
         if (icon['color']) {
              color = this.getRgba(icon['color'], 1);
         }
-        for (var i=0, len=contentLines.length;i<len;i++) {
+        for (var i=0, len=contents.length;i<len;i++) {
             //绘制文字
             if (color) {
                 context.fillStyle = color;
-                context.fillText(contentLines[i],pt.left+padding,pt.top+padding+i*(fontSize+2));
+                context.fillText(contents[i],pt.left+padding,pt.top+padding+i*(fontSize+2));
             }
         }
+    },
+
+    paintShieldMarker: function(context, pt) {
+        this.paintTextMarker(context, pt);
     },
 
     _convertContent: function(icon) {
