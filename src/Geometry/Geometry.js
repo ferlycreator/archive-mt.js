@@ -27,7 +27,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         'TYPE_RECT' : 'Rectangle',
         'TYPE_CIRCLE' : 'Circle',
         'TYPE_ELLIPSE' : 'Ellipse',
-        'TYPE_SECTOR' : 'Sector',
+        'TYPE_SECTOR' : 'Sector'
     },
 
     options:{

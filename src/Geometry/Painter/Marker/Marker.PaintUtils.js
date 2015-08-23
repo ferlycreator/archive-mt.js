@@ -125,7 +125,7 @@ Z.Marker.PaintUtils = {
     },
 
     _getLabelPoints: function(icon) {
-        var domOffset = this.geometry.getCenterDomOffset();
+        var domOffset = this.geometry._getCenterDomOffset();
         if (!domOffset) {return null;}
         var map = this.geometry.getMap();
         var mapOffset = map._offsetPlatform();

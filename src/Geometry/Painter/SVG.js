@@ -377,11 +377,7 @@ Z.SVG.SVG = {
             Z.Util.removeDomNode(vector._pattern);
         }
         if (_container && vector) {
-            if(_container === vector) {
-                vector.parentNode.removeChild(vector);
-            } else {
-                _container.removeChild(vector);
-            }
+            _container.removeChild(vector);
         }
     }
 };
@@ -397,7 +393,7 @@ Z.SVG.VML= {
 
     //更新矢量图形样式
     refreshVectorSymbol:function(vmlShape, strokeSymbol, fillSymbol) {
-        if (!vmlShape) {
+       /** if (!vmlShape) {
             return null;
         }
         if (!strokeSymbol) {
@@ -452,7 +448,7 @@ Z.SVG.VML= {
             // fill.opacity = 1;
             vmlShape.appendChild(fill);
             vmlShape.fill=fill;
-        }
+        }*/
     },
 
     /**
@@ -486,9 +482,13 @@ Z.SVG.VML= {
         vector.style.left = (location[0])+'px';
     },
 
-    addVector: function(_container, vectorBean, strokeSymbol, fillSymbol, iconSymbol) {
+    refreshShieldVector: function(vector, vectorBean) {
+        this.refreshTextVector(vector, vectorBean);
+    },
+
+    addVector: function(container, vectorBean, strokeSymbol, fillSymbol) {
         var vector;
-        if (!_container || !vectorBean) {
+        if (!container || !vectorBean) {
             return null;
         }
         vector = Z.SVG.create('shape');
@@ -503,58 +503,83 @@ Z.SVG.VML= {
             _path.v = vectorBean['path'];
             vector.appendChild(_path);
             vector.path = _path;
-
-            this.refreshVectorSymbol(vector, strokeSymbol, fillSymbol);
-            _container.appendChild(vector);
-        }
-        //text
-        var text = vectorBean['text'];
-        if(text) {
-            vector = this._addTextToVector(_container, text, iconSymbol);
+            //this.refreshVectorSymbol(vector, strokeSymbol, fillSymbol);
+            container.appendChild(vector);
         }
         return vector;
     },
 
-    _addTextToVector: function(container, text, iconSymbol) {
-        var textElement;
+
+    addTextVector: function(container, vectorBean, iconSymbol) {
+        var rectElement;
         var font = iconSymbol['font'];
-        var size = iconSymbol['size'];
+        var fontSize = (!iconSymbol['size'])?12:iconSymbol['size'];
         var width = iconSymbol['textWidth'];
-        var padding = iconSymbol['padding'];
+        var padding = (!iconSymbol['padding'])?0:iconSymbol['padding'];
         var color = iconSymbol['color'];
         var opacity = iconSymbol['textOpacity'];
-        var align = iconSymbol['align'];
+        var align = iconSymbol['textAlign'];
         var vertical = iconSymbol['vertical'];
         var horizontal = iconSymbol['horizontal'];
-        var placement = iconSymbol['placement'];
-        if(!placement) {
-            placement = 'point';
-        }
+        var placement = (!iconSymbol['placement'])?'point':iconSymbol['placement'];
+        var lineSpacing = (!iconSymbol['lineSpacing'])?8:iconSymbol['lineSpacing'];
+
+        var stroke = (!iconSymbol['stroke'])?'#000000':iconSymbol['stroke'];
+        var strokeWidth = iconSymbol['strokeWidth'];
+        var strokeOpacity = (!iconSymbol['strokeOpacity'])?1:iconSymbol['strokeOpacity'];
+        var fill = (!iconSymbol['fill'])?'#ffffff':iconSymbol['fill'];
+        var fillOpacity = (!iconSymbol['fillOpacity'])?1:iconSymbol['fillOpacity'];
+        var stroke = iconSymbol['stroke'];
+
         var dx = parseInt(iconSymbol['dx'],0);
         var dy = parseInt(iconSymbol['dy'],0);
+        var text = vectorBean['text'];
         if(text){
             var location = text['location'];
             var content = text['content'];
-            textElement = Z.SVG.create('textbox');
-            textElement.style.fontSize  = size +'px';
+            var size = fontSize/2;
+            var textWidth = Z.Util.getLength(content)*size;
+
+            var textElement = Z.SVG.create('textbox');
+            textElement.style.fontSize  = fontSize +'px';
             textElement.style.color  = color;
-            textElement.style.width  = width +'px';
+            textElement.style.width  = textWidth +'px';
             textElement.style.textAlign = align;
-            textElement.style.top = (location[1])+'px';
-            textElement.style.left = (location[0])+'px';
-            textElement.innerHTML   = content;
-            container.appendChild(textElement);
+            var resultStr = content;
+            if(textWidth>width){
+                 var contents = Z.Util.splitContent(content, textWidth, size, width);
+                 var result = '';
+                 for(var i=0,len=contents.length;i<len;i++){
+                    var content = contents[i];
+                    resultStr += content+'<br/>';
+                 }
+            }
+            textElement.innerHTML   = resultStr;
+            if(stroke || fill) {
+                rectElement = Z.SVG.create('rect');
+                rectElement.style.fillColor  = fill;
+                rectElement.style.strokeColor  = stroke;
+                rectElement.style.strokeWeight  = strokeWidth +'px';
+                rectElement.style.left = (location[0])+'px';
+                rectElement.style.top = (location[1] + lineSpacing + size)+'px';
+                rectElement.appendChild(textElement);
+            } else {
+                textElement.style.left = (location[0])+'px';
+                textElement.style.top = (location[1] + lineSpacing + size)+'px';
+                rectElement = textElement;
+            }
+            container.appendChild(rectElement);
         }
-        return container;
+        return rectElement;
+    },
+
+    addShieldVector: function(container, vectorBean, strokeSymbol, fillSymbol, shieldSymbol) {
+        return this.addTextVector(container, vectorBean, shieldSymbol);
     },
 
     removeVector:function(_container, vector) {
         if (_container && vector) {
-            if(_container === vector) {
-                vector.parentNode.removeChild(vector);
-            } else {
-                _container.removeChild(vector);
-            }
+             _container.removeChild(vector);
         }
     }
 };

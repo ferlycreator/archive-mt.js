@@ -134,20 +134,20 @@ Z['Label'] = Z.Label = Z.Class.extend({
         if(trigger === 'hover') {
             this._target.on('mouseover', function showLabel() {
                          me.show();
-                         me._map.disableDragPropagation();
+                         me._map.disableDrag();
                          me._map.disableDoubleClickZoom();
                      }, this)
                      .on('mouseout', function hideLabel() {
                         setTimeout(function(){
                             me.hide();
-                            me._map.enableDragPropagation();
+                            me._map.enableDrag();
                             me._map.enableDoubleClickZoom();
                         }, 1000);
                      }, this);
         } else if(trigger === 'click') {
             this._target.on('click', function showLabel() {
                          me.show();
-                         me._map.disableDragPropagation();
+                         me._map.disableDrag();
                          me._map.disableDoubleClickZoom();
                      }, this);
         } else {
