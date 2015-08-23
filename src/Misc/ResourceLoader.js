@@ -20,10 +20,10 @@ Z.ResourceLoader=Z.Class.extend({
 				this.defaultIconImg.onload=function() {
 					_this.loadImages();
 				};
-				this.defaultIconImg.src=Z.host +this.defaultIconUrl;				
+				this.defaultIconImg.src=Z.host +this.defaultIconUrl;
 			} else {
 				this.loadImages();
-			}						
+			}
 		},
 		addResource:function(url) {
 			if (!Z.Util.isString(url)) {
@@ -45,7 +45,7 @@ Z.ResourceLoader=Z.Class.extend({
 				}
 				if (image && image["in"]) {
 					_this.resourcesCache[image["in"]] = image;
-				}				
+				}
 				_this.check();
 			}
 			function onResourceFail() {
@@ -76,7 +76,7 @@ Z.ResourceLoader=Z.Class.extend({
 			if (!hasNew) {
 				this.check();
 			}
-			
+
 		},
 		getImage:function(url) {
 			if (!this.resourcesCache || !url) {
@@ -98,7 +98,7 @@ Z.ResourceLoader=Z.Class.extend({
 			}
 			if (allLoaded) {
 				this.onComplete();
-				
+
 			}
 		},
 		onComplete:function() {
@@ -107,7 +107,7 @@ Z.ResourceLoader=Z.Class.extend({
 			}
 			var _this = this;
 			this.completeExecutor=setTimeout(function() {
-				//_this.executeListeners("loadcomplete");
+				//_this._executeListeners("loadcomplete");
 				if (_this.successFn) {
 					if (this.successFnInvoker) {
 						_this.successFn.call(this.successFnInvoker);

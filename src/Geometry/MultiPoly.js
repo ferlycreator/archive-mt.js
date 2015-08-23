@@ -1,6 +1,6 @@
 Z.MultiPoly = Z.GeometryCollection.extend({
 
-    initialize:function(data, opts) {        
+    initialize:function(data, opts) {
         if (Z.Util.isArrayHasData(data)) {
             if (data[0] instanceof this.GeometryType) {
                 this.setGeometries(data);
@@ -11,7 +11,7 @@ Z.MultiPoly = Z.GeometryCollection.extend({
         this.initOptions(opts);
     },
 
-    checkGeometries:function(geometries) {
+    _checkGeometries:function(geometries) {
         if (Z.Util.isArray(geometries)) {
             for (var i=0,len=geometries.length;i<len;i++) {
                 if (geometries[i] && !(geometries[i] instanceof this.GeometryType)) {
@@ -19,7 +19,7 @@ Z.MultiPoly = Z.GeometryCollection.extend({
                 }
             }
         }
-    }, 
+    },
 
     /**
      * 获取MultiPolygon的坐标数组
@@ -45,7 +45,7 @@ Z.MultiPoly = Z.GeometryCollection.extend({
      */
     setCoordinates:function(coordinates) {
         if (Z.Util.isArrayHasData(coordinates)) {
-            var geometries = [];            
+            var geometries = [];
             for (var i=0, len=coordinates.length;i<len;i++) {
                 var p = new this.GeometryType(coordinates[i]);
                 geometries.push(p);
@@ -57,8 +57,8 @@ Z.MultiPoly = Z.GeometryCollection.extend({
         return this;
     },
 
-    //override exportGeoJson in GeometryCollection
-    exportGeoJson:function(opts) {
+    //override _exportGeoJson in GeometryCollection
+    _exportGeoJson:function(opts) {
         var points = this.getCoordinates();
         var coordinates = Z.GeoJson.toGeoJsonCoordinates(points);
         return {

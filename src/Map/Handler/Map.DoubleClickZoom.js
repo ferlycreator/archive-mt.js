@@ -16,7 +16,7 @@ Z.Map.DoubleClickZoom = Z.Handler.extend({
 			var oldZoom = this.map.getZoomLevel(),
 				zoom = e['originalEvent']['shiftKey'] ? Math.ceil(oldZoom) - 1 : Math.floor(oldZoom) + 1;
 			var mouseOffset = Z.DomUtil.getEventDomCoordinate(e, this.map._containerDOM);
-			this.map.zoom(zoom, mouseOffset);
+			this.map._zoom(zoom, mouseOffset);
 		}
 	}
 });

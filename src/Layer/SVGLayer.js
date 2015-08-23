@@ -15,13 +15,13 @@ Z['SVGLayer']=Z.SVGLayer=Z.OverlayLayer.extend({
      * @expose
      */
     show:function() {
-        if (this.visible) {
+        if (this._visible) {
             return;
         }
-        this.eachGeometry(function(geo) {
+        this._eachGeometry(function(geo) {
             geo.show();
         });
-        this.visible=true;
+        this._visible=true;
         return this;
     },
 
@@ -30,13 +30,13 @@ Z['SVGLayer']=Z.SVGLayer=Z.OverlayLayer.extend({
      * @expose
      */
     hide:function() {
-        if (!this.visible) {
+        if (!this._visible) {
             return;
         }
-        this.eachGeometry(function(geo) {
+        this._eachGeometry(function(geo) {
             geo.hide();
         });
-        this.visible=false;
+        this._visible=false;
         return this;
     },
 
@@ -46,7 +46,7 @@ Z['SVGLayer']=Z.SVGLayer=Z.OverlayLayer.extend({
      * @expose
      */
     isVisible:function() {
-        return this.visible && this.layerDom && this.layerDom.style.display !== 'none';
+        return this._visible && this.layerDom && this.layerDom.style.display !== 'none';
     },
 
     /**
@@ -54,14 +54,14 @@ Z['SVGLayer']=Z.SVGLayer=Z.OverlayLayer.extend({
      * @param  {[type]} geometries [description]
      * @return {[type]}            [description]
      */
-    paintGeometries:function(geometries) {
+    _paintGeometries:function(geometries) {
         for (var i=0,len=geometries.length;i<len;i++) {
             var geo = geometries[i];
             if (!geo) {
                 continue;
             }
-            if (geo.getPainter()) {
-                geo.getPainter().paint(this.layerDom,  this.zIndex);
+            if (geo._getPainter()) {
+                geo._getPainter().paint(this.layerDom,  this.zIndex);
             }
         }
     },
@@ -69,9 +69,9 @@ Z['SVGLayer']=Z.SVGLayer=Z.OverlayLayer.extend({
 
 
     addTo:function() {
-        this.eachGeometry(function(geo) {
-            if (geo.getPainter()) {
-                geo.getPainter().paint(this.layerDom,  this.zIndex);
+        this._eachGeometry(function(geo) {
+            if (geo._getPainter()) {
+                geo._getPainter().paint(this.layerDom,  this.zIndex);
             }
         });
     },
@@ -84,16 +84,16 @@ Z['SVGLayer']=Z.SVGLayer=Z.OverlayLayer.extend({
         this.addTo();
     },
 
-    setZIndex:function(zIndex) {
+    _setZIndex:function(zIndex) {
         this.zIndex=zIndex;
-        this.eachGeometry(function(geo) {
-            if (geo.getPainter()) {
-                geo.getPainter().setZIndex(zIndex);
+        this._eachGeometry(function(geo) {
+            if (geo._getPainter()) {
+                geo._getPainter()._setZIndex(zIndex);
             }
         });
     },
 
-    onMoveStart:function() {
+    _onMoveStart:function() {
         //nothing to do
     },
 
@@ -112,13 +112,13 @@ Z['SVGLayer']=Z.SVGLayer=Z.OverlayLayer.extend({
      * 地图放大缩小时的响应函数
      * @return {[type]} [description]
      */
-    onZoomStart:function() {
+    _onZoomStart:function() {
         //this.hide();
     },
 
-    onZoomEnd:function() {
-        this.eachGeometry(function(geo) {
-            geo.onZoomEnd();
+    _onZoomEnd:function() {
+        this._eachGeometry(function(geo) {
+            geo._onZoomEnd();
         });
         //this.show();
     },

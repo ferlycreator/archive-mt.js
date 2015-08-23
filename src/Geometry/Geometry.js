@@ -86,21 +86,21 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     /**
      * 调用prepare时,layer已经注册到map上
      */
-    prepare:function(layer) {
-        this.rootPrepare(layer);
+    _prepare:function(layer) {
+        this._rootPrepare(layer);
     },
 
-    rootPrepare:function(layer) {
+    _rootPrepare:function(layer) {
         //Geometry不允许被重复添加到多个图层上
         if (this.getLayer()) {
             throw new Error(this.exception['DUPLICATE_LAYER']);
         }
         //更新缓存
-        this.updateCache();
+        this._updateCache();
         this.layer = layer;
         //如果投影发生改变,则清除掉所有的投影坐标属性
-        this.clearProjection();
-        this.painter = this.assignPainter();
+        this._clearProjection();
+        this.painter = this._assignPainter();
     },
 
     /**
@@ -176,7 +176,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
             var camelSymbol = Z.Util.convertFieldNameStyle(symbol,'camel');
             this.options.symbol = camelSymbol;
         }
-        this.onSymbolChanged();
+        this._onSymbolChanged();
         return this;
     },
 
@@ -189,7 +189,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (this.extent) {
             return this.extent;
         }
-        return this.computeExtent(this._getProjection());
+        return this._computeExtent(this._getProjection());
     },
 
     /**
@@ -203,7 +203,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
             return null;
         }
         var projection = this._getProjection();
-        var extent = this.computeVisualExtent(projection);
+        var extent = this._computeVisualExtent(projection);
         var xmin = extent['xmin'];
         var xmax = extent['xmax'];
         var ymin = extent['ymin'];
@@ -217,7 +217,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         return {'width': result['px'], 'height': result['py']};
     },
 
-    getPrjExtent:function() {
+    _getPrjExtent:function() {
         var ext = this.getExtent();
         var p = this._getProjection();
         if (ext) {
@@ -233,7 +233,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     getCenter:function() {
-        return this.computeCenter(this._getProjection());
+        return this._computeCenter(this._getProjection());
     },
 
     getDefaultSymbol:function() {
@@ -265,7 +265,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     show:function() {
-        this.visible = true;
+        this._visible = true;
         if (this.painter) {
             this.painter.show();
         }
@@ -277,7 +277,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     hide:function() {
-        this.visible = false;
+        this._visible = false;
         if (this.painter) {
             this.painter.hide();
         }
@@ -290,10 +290,10 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     isVisible:function() {
-        if (Z.Util.isNil(this.visible)) {
+        if (Z.Util.isNil(this._visible)) {
             return true;
         }
-        return this.visible;
+        return this._visible;
     },
 
     /**
@@ -324,20 +324,20 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         //infowindow
         this.closeInfoWindow();
 
-        var painter = this.getPainter();
+        var painter = this._getPainter();
         if (painter) {
             painter.remove();
         }
         delete this.painter;
 
-        layer.onGeometryRemove(this);
+        layer._onGeometryRemove(this);
         delete this.layer;
 
         this._fireEvent('remove',{'target':this});
 
     },
 
-    getInternalId:function() {
+    _getInternalId:function() {
         return this.internalId;
     },
 
@@ -345,7 +345,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * 只能被图层调用
      * @param {String} id [内部id]
      */
-    setInternalId:function(id) {
+    _setInternalId:function(id) {
         this.internalId = id;
     },
 
@@ -356,6 +356,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
             return map._getProjection();
         }
         return Z.Projection.getDefault();
+        // return null;
     },
 
     /**
@@ -363,7 +364,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @param  {[type]} geometry [description]
      * @return {[type]}          [description]
      */
-    getExternalResource:function() {
+    _getExternalResource:function() {
         var geometry = this;
         var symbol = geometry.getSymbol();
         if (!symbol) {
@@ -385,22 +386,22 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         return null;
     },
 
-    getPainter:function() {
+    _getPainter:function() {
         return this.painter;
     },
 
-    removePainter:function() {
+    _removePainter:function() {
         delete this.painter;
     },
 
-    onZoomEnd:function() {
+    _onZoomEnd:function() {
         if (this.painter) {
             this.painter.refresh();
         }
     },
 
-    onShapeChanged:function() {
-        var painter = this.getPainter();
+    _onShapeChanged:function() {
+        var painter = this._getPainter();
         if (painter) {
             painter.refresh();
         }
@@ -410,8 +411,8 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
     },
 
-    onPositionChanged:function() {
-        var painter = this.getPainter();
+    _onPositionChanged:function() {
+        var painter = this._getPainter();
         if (painter) {
             painter.refresh();
         }
@@ -421,8 +422,8 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
     },
 
-    onSymbolChanged:function() {
-        var painter = this.getPainter();
+    _onSymbolChanged:function() {
+        var painter = this._getPainter();
         if (painter) {
             painter.refreshSymbol();
         }
@@ -437,7 +438,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         this.fire(eventName,param);
     },
 
-    exportGeoJson:function(opts) {
+    _exportGeoJson:function(opts) {
         var points = this.getCoordinates();
         var coordinates = Z.GeoJson.toGeoJsonCoordinates(points);
         return {
@@ -450,6 +451,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * 按照GeoJson规范生成GeoJson对象
      * @param  {[type]} opts 输出配置
      * @return {Object}      GeoJson对象
+     * @expose
      */
     toJson:function(opts) {
         if (!opts) {
@@ -460,8 +462,8 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
             'geometry':null
         };
         if (opts['geometry'] === undefined || opts['geometry']) {
-            var geoJson = this.exportGeoJson(opts);
-            feature['geometry'] = geoJson;
+            var geoJson = this._exportGeoJson(opts);
+            feature['geometry']=geoJson;
         }
         var id = this.getId();
         if (!Z.Util.isNil(id)) {
@@ -489,4 +491,5 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         feature['properties'] = properties;
         return feature;
     }
+
 });

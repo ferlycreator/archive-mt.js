@@ -1,8 +1,5 @@
 Z.CanvasLayer.Base=Z.OverlayLayer.extend({
-    //load,_onMoving, _onMoveEnd, _onResize, onZoomStart, onZoomEnd
-
-    //GeometryID的counter
-    _stamp:0,
+    //load,_onMoving, _onMoveEnd, _onResize, _onZoomStart, _onZoomEnd
 
     initialize:function() {
         this.resourceLoader = new Z.ResourceLoader();
@@ -25,7 +22,7 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
             //初始化
             var layerCanvas = Z.DomUtil.createEl('canvas');
             layerCanvas.style.cssText = 'position:absolute;top:0px;left:0px;';
-            this._updateCanvasSize(layerCanvas);
+            this.updateCanvasSize(layerCanvas);
             this.layerContainer.appendChild(layerCanvas);
             this.layerCanvas = layerCanvas;
             this.canvasCtx = this.layerCanvas.getContext("2d");
@@ -33,7 +30,7 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
         }
     },
 
-    _updateCanvasSize:function(canvas) {
+    updateCanvasSize:function(canvas) {
         var mapSize = this.map.getSize();
         //retina屏支持
         var r = Z.Browser.retina ? 2:1;
@@ -56,7 +53,7 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
      * @return {[type]} [description]
      */
     /*refreshCache:function() {
-        var layers = this.getLayerList();
+        var layers = this._getLayerList();
         this.clearCache();
         if (!Z.Util.isArrayHasData(layers)) {
             return;
@@ -105,7 +102,7 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
             var mapExtent = map.getExtent();
             /*me.layerCanvas.width = mapSize.width;
             me.layerCanvas.height = mapSize.height;*/
-            me._updateCanvasSize(me.layerCanvas);
+            me.updateCanvasSize(me.layerCanvas);
             var containerOffset = map._offsetPlatform();
             me.layerCanvas.style.left=(-containerOffset['left'])+"px";
             me.layerCanvas.style.top=(-containerOffset['top'])+"px";
@@ -129,11 +126,11 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
                 if (!geo || !geo.isVisible()) {
                     return;
                 }
-                var ext = geo.computeVisualExtent(geo._getProjection());
+                var ext = geo._computeVisualExtent(geo._getProjection());
                 if (!ext || !Z.Extent.isIntersect(ext,extent)) {
                     return;
                 }
-                geo.getPainter().paint(me.canvasCtx,me.resourceLoader);
+                geo._getPainter().paint(me.canvasCtx,me.resourceLoader);
             });
         }
     },
@@ -163,7 +160,7 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
                 if (!ext || !Z.Extent.isIntersect(ext,mapExtent)) {
                     return;
                 }
-                var resource = geo.getExternalResource();
+                var resource = geo._getExternalResource();
                 if (resource) {
                     me.resourceLoader.addResource(resource);
                 }
@@ -183,7 +180,7 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
      * @param  {Function} fn 回调函数
      */
     eachGeometry:function(fn,obj) {
-        var layers = this.getLayerList();
+        var layers = this._getLayerList();
         if (!Z.Util.isArrayHasData(layers)) {
             return;
         }
@@ -194,7 +191,7 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
             if (!layers[i] || !layers[i].isVisible()) {
                 continue;
             }
-            var cache = layers[i].getGeoCache();
+            var cache = layers[i]._getGeoCache();
             if (!cache) {
                 continue;
             }
@@ -230,18 +227,18 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
         this.repaint();
     },
 
-    onZoomStart:function(param) {
+    _onZoomStart:function(param) {
         this.hide();
         var mapSize = this.getMap().getSize();
         this.canvasCtx.clearRect(0, 0, mapSize['width'], mapSize['height']);
     },
 
-    onZoomEnd:function(param) {
+    _onZoomEnd:function(param) {
         this.repaint();
         this.show();
     },
 
-    setZIndex:function() {
+    _setZIndex:function() {
        //nothing to do
     }
 });

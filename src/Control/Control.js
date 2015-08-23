@@ -39,7 +39,7 @@ Z['Control'] = Z.Control = Z.Class.extend({
 
 	addTo: function (map) {
 		var id = this.options['id'];
-		if(!id) throw new Error(this.exceptions['NEED_ID']);
+		if(!id) {throw new Error(this.exceptions['NEED_ID']);}
 		this.remove();
 		this._map = map;
 		this._controlContainer = map._panels.controlWrapper;
@@ -104,11 +104,11 @@ Z['Control'] = Z.Control = Z.Class.extend({
 	setPosition: function (position) {
 		var map = this._map;
 		if (map) {
-			map['removeControl'](this);
+			map.removeControl(this);
 		}
 		this.options['position'] = position;
 		if (map) {
-			map['addControl'](this);
+			map.addControl(this);
 		}
 		this._updateContainerPosition();
 		return this;
@@ -123,8 +123,8 @@ Z['Control'] = Z.Control = Z.Class.extend({
 			return this;
 		}
 		Z.DomUtil.removeDomNode(this._container);
-		if (this.onRemove) {
-			this.onRemove(this._map);
+		if (this._onRemove) {
+			this._onRemove(this._map);
 		}
 		this._map = null;
 		return this;
@@ -135,7 +135,7 @@ Z['Control'] = Z.Control = Z.Class.extend({
     },
 
 	_getInternalLayer: function(map, layerId, canvas) {
-		if(!map) return;
+		if(!map) {return;}
         var layer = map.getLayer(layerId);
         if(!layer) {
         	if(canvas) {
@@ -155,7 +155,7 @@ Z.Map.include({
 	* 添加control
 	* @expose
 	*/
-	'addControl': function (control) {
+	addControl: function (control) {
 		control.addTo(this);
 		return this;
 	},
@@ -164,7 +164,7 @@ Z.Map.include({
 	* 删除control
 	* @expose
 	*/
-	'removeControl': function (control) {
+	removeControl: function (control) {
 		control.remove();
 		return this;
 	}

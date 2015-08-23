@@ -3,8 +3,8 @@ Z['Polyline']=Z.Polyline = Z.Vector.extend({
 
     type:Z.Geometry['TYPE_LINESTRING'],
 
-    initialize:function(coordinates, opts) {                
-        
+    initialize:function(coordinates, opts) {
+
         this.setCoordinates(coordinates);
         this.initOptions(opts);
     },
@@ -17,7 +17,7 @@ Z['Polyline']=Z.Polyline = Z.Vector.extend({
     setCoordinates:function(coordinates) {
         this.points = Z.GeoJson.fromGeoJsonCoordinates(coordinates);
         if (this.getMap()) {
-            this.setPrjPoints(this.projectPoints(this.points));
+            this._setPrjPoints(this._projectPoints(this.points));
         }
         return this;
     },
@@ -31,13 +31,24 @@ Z['Polyline']=Z.Polyline = Z.Vector.extend({
         return this.points;
     },
 
-    assignPainter:function() {
-        if (!this.layer) {return;}
+    _containsPoint: function(point) {
+        // TODO
+        // get pixel extent
+
+        // screen points
+        var points = this._untransformToOffset(this._getPrjPoints());
+
+        return false;
+    },
+
+    _assignPainter:function() {
+        if (!this.layer) {return null;}
         if (this.layer instanceof Z.SVGLayer) {
             return new Z.Polyline.SVG(this);
         } else if (this.layer instanceof Z.CanvasLayer) {
             return new Z.Polyline.Canvas(this);
         }
+        return null;
     }
 
 });

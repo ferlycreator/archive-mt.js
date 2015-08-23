@@ -144,7 +144,7 @@ Z.Map.include({
              var nwTileInfo = lodConfig.getCenterTileInfo(projection.project({x:extent['xmin'],y:extent['ymax']}), zoomLevel);
              var seTileInfo = lodConfig.getCenterTileInfo(projection.project({x:extent['xmax'],y:extent['ymin']}), zoomLevel);
             var dynLayerSetting = {
-                'url':layer.getTileUrl("%s","%s","%s"),
+                'url':layer._getTileUrl("%s","%s","%s"),
                 'session':layer.sessionId,
                 'tileSize': {
                     'height':lodConfig["tileSize"]["height"],
@@ -196,7 +196,7 @@ Z.Map.include({
                     'width':lodConfig["padding"]["width"]
                 },
                 'zoomLevel':zoomLevel,
-                'url':layer.getTileUrl("%s","%s","%s"),
+                'url':layer._getTileUrl("%s","%s","%s"),
                 'nw':{
                     'x':nwTileInfo['x'],
                     'y':nwTileInfo['y'],

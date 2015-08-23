@@ -47,7 +47,7 @@ Z.Painter.Canvas = Z.Painter.extend({
         }
         var isRealTime = geometry.isEditing();
         map._repaintBaseCanvasLayer(isRealTime);
-        this.registerEvents();
+        this._registerEvents();
     },
 
     refreshSymbol:function() {
@@ -154,7 +154,7 @@ Z.Painter.Canvas = Z.Painter.extend({
         }
     },
 
-    registerEvents:function(){
+    _registerEvents:function(){
 
     }
 

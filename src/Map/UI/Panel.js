@@ -254,7 +254,7 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
 
 	_onMouseDown: function(event) {
 		Z.DomUtil.setStyle(this._panelContainer, 'cursor: move');
-		this._map.disableDragPropagation();
+		this._map.disableDrag();
 		Z.DomUtil.on(this._panelContainer, 'mousemove', this._onMouseMove, this);
 		this._startOffset = {
 			'left': parseInt(event.offsetX,0),
@@ -303,7 +303,7 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
 
 	_disableMove: function() {
 		Z.DomUtil.setStyle(this._panelContainer, 'cursor: ' +  'default');
-		this._map.enableDragPropagation();
+		this._map.enableDrag();
         Z.DomUtil.off(this._panelContainer, 'mousemove', this._onMouseMove, this);
         /**if(this.options['target']) {
         	this._target.off('positionchanged', this._changeLinkPath, this)

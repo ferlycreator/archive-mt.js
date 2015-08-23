@@ -61,7 +61,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         return this._lodConfig;
     },
 
-    getTileUrl:function(x,y,z) {
+    _getTileUrl:function(x,y,z) {
         if (!this.options['urlTemplate']) {
             return this.options['errorTileUrl'];
         }
@@ -81,10 +81,10 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
      * 设置图层的层级
      * @param zIndex
      */
-    setZIndex:function(zIndex) {
+    _setZIndex:function(zIndex) {
         this.zIndex = zIndex;
-        if (this.tileContainer) {
-            this.tileContainer.style.zIndex = (this.baseDomZIndex+zIndex);
+        if (this._tileContainer) {
+            this._tileContainer.style.zIndex = (this.baseDomZIndex+zIndex);
         }
     },
 
@@ -93,37 +93,37 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
      * 地图中心点变化时的响应函数
      */
     _onMoving:function() {
-        this.fillTiles(false);
+        this._fillTiles(false);
     },
 
     _onMoveEnd:function() {
-        this.fillTiles(false);
+        this._fillTiles(false);
     },
 
     /**
      * 地图放大缩小时的响应函数
      * @return {[type]} [description]
      */
-    onZoomStart:function(donotRemoveTiles) {
-        this.clearExecutors();
-        if (!donotRemoveTiles && this.tileContainer) {
+    _onZoomStart:function(donotRemoveTiles) {
+        this._clearExecutors();
+        if (!donotRemoveTiles && this._tileContainer) {
             this.clear();
         }
     },
 
-    onZoomEnd:function() {
-        //this.fillTiles(true);
+    _onZoomEnd:function() {
+        //this._fillTiles(true);
         this.load();
     },
 
     _onResize:function() {
-        this.fillTiles(false);
+        this._fillTiles(false);
     },
 
     /**
      * 载入前的准备操作
      */
-    prepareLoad:function() {
+    _prepareLoad:function() {
         //nothing to do here, just return true
         return true;
     },
@@ -133,25 +133,25 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
      */
     load:function(){
         if (!this.getMap()) {return;}
-        if (!this.tileContainer) {
-            this.initPanel();
+        if (!this._tileContainer) {
+            this._initPanel();
         }
         this.clear();
-        if (this.prepareLoad()) {
-            this.clearExecutors();
+        if (this._prepareLoad()) {
+            this._clearExecutors();
             var me = this;
             this.tileLoadExecutor = setTimeout(function() {
-                me.fillTiles(me.options['showOnTileLoadComplete']);
+                me._fillTiles(me.options['showOnTileLoadComplete']);
             },20);
         }
     },
 
     clear:function() {
         this.tileMap = {};
-        this.tileContainer.innerHTML="";
+        this._tileContainer.innerHTML="";
     },
 
-    getTileSize:function() {
+    _getTileSize:function() {
         return this._getLodConfig()['tileSize'];
     },
 
@@ -170,7 +170,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
      * 清除瓦片加载的执行器
      * @return {[type]} [description]
      */
-    clearExecutors:function() {
+    _clearExecutors:function() {
         if (this.tileLoadExecutor) {
             clearTimeout(this.tileLoadExecutor);
         }
@@ -186,13 +186,13 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
      * 载入瓦片
      * @param  {Boolean} isCheckTileLoad 检查瓦片是否载入完,如果为true,则在瓦片载入完后再显示图层容器元素
      */
-    fillTiles:function(isCheckTileLoad) {
+    _fillTiles:function(isCheckTileLoad) {
         // isCheckTileLoad = false;
         var map =this.map;
         if (!map) {
             return;
         }
-        var tileContainer = this.tileContainer;
+        var tileContainer = this._tileContainer;
         var lodConfig = this._getLodConfig();
         if (!tileContainer || !lodConfig) {return;}
         var me = this;
@@ -217,7 +217,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
                 me.completeExecutor=setTimeout(function() {
                     tileContainer.appendChild(dSegment);
                     me.fireEventExecutor=setTimeout(function() {
-                        // me.executeListeners("layerloaded");
+                        // me._executeListeners("layerloaded");
                         me.fire(me.events.LAYER_LOADED,{'target':this});
                     },500);
                 },10);
@@ -226,13 +226,13 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
                         clearTimeout(me.fireEventExecutor);
                     }
                     me.fireEventExecutor=setTimeout(function() {
-                        // me.executeListeners("layerloaded");
+                        // me._executeListeners("layerloaded");
                         me.fire(this.events.LAYER_LOADED,{'target':this});
                     },500);
                 }   */
             }
         }
-        var tileSize = this.getTileSize(),
+        var tileSize = this._getTileSize(),
             zoomLevel = map.getZoomLevel(),
             mapDomOffset = map._offsetPlatform();
         var holderLeft=mapDomOffset["left"],
@@ -253,7 +253,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
             tileRightNum=Math.ceil(Math.abs(mapWidth-centerOffset.left)/tileSize["width"]);
 
     //  只加中心的瓦片，用做调试
-    //  var centerTileImg = this._createTileImage(centerOffset.left,centerOffset.top,this.config.getTileUrl(centerTileInfo["topIndex"],centerTileInfo["leftIndex"],zoomLevel),tileSize["height"],tileSize["width"]);
+    //  var centerTileImg = this._createTileImage(centerOffset.left,centerOffset.top,this.config._getTileUrl(centerTileInfo["topIndex"],centerTileInfo["leftIndex"],zoomLevel),tileSize["height"],tileSize["width"]);
     //  tileContainer.appendChild(centerTileImg);
 
         var currentTiles = this.tileMap;
@@ -265,8 +265,8 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
                     var tileLeft = centerOffset.left + tileSize["width"]*i-holderLeft;
                     var tileTop = centerOffset.top +tileSize["height"]*j-holderTop;
                     if (!currentTiles[tileId]) {
-                        var tileUrl = this.getTileUrl(tileIndex["x"],tileIndex["y"],zoomLevel);
-                        var tileImage = this.createTileImage(tileLeft,tileTop, tileUrl,(isCheckTileLoad?checkAndLoad:null));
+                        var tileUrl = this._getTileUrl(tileIndex["x"],tileIndex["y"],zoomLevel);
+                        var tileImage = this._createTileImage(tileLeft,tileTop, tileUrl,(isCheckTileLoad?checkAndLoad:null));
                         if (!tileImage) {
                             continue;
                         }
@@ -297,15 +297,15 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
             clearTimeout(this.removeout_timeout);
         }
         this.removeout_timeout = setTimeout(function() {
-            me.removeTilesOutOfHolder();
+            me._removeTilesOutOfContainer();
         },500);
 
 
 
     },
 
-    /*fillTiles:function() {
-        var tileContainer = this.tileContainer;
+    /*_fillTiles:function() {
+        var tileContainer = this._tileContainer;
         var lodConfig = this._lodConfig;
         var map =this.map;
         if (!map || !tileContainer || !this._lodConfig) {return;}
@@ -331,7 +331,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
             tileRightNum=Math.ceil(Math.abs(mapWidth-centerOffset.left)/tileSize["width"]);
 
     //  只加中心的瓦片，用做调试
-    //  var centerTileImg = this._createTileImage(centerOffset.left,centerOffset.top,this.config.getTileUrl(centerTileInfo["topIndex"],centerTileInfo["leftIndex"],zoomLevel),tileSize["height"],tileSize["width"]);
+    //  var centerTileImg = this._createTileImage(centerOffset.left,centerOffset.top,this.config._getTileUrl(centerTileInfo["topIndex"],centerTileInfo["leftIndex"],zoomLevel),tileSize["height"],tileSize["width"]);
     //  tileContainer.appendChild(centerTileImg);
         var padding = this._lodConfig["padding"];
         if (!padding) {
@@ -365,8 +365,8 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
 
         function genTile(tileIndex,tileLeft,tileTop) {
             var tileId=tileIndex["x"]+","+tileIndex["y"];
-            var tileUrl = lodConfig["getTileUrl"](tileIndex["x"],tileIndex["y"],zoomLevel);
-            var tileImage = this.createTileImage(tileLeft,tileTop,tileUrl);
+            var tileUrl = lodConfig["_getTileUrl"](tileIndex["x"],tileIndex["y"],zoomLevel);
+            var tileImage = this._createTileImage(tileLeft,tileTop,tileUrl);
             if (!tileImage) {
                 return;
             }
@@ -392,7 +392,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
             clearTimeout(this.removeout_timeout);
         }
         this.removeout_timeout = setTimeout(function() {
-            _this.removeTilesOutOfHolder();
+            _this._removeTilesOutOfContainer();
         },1000);
 
 
@@ -406,9 +406,9 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
      * @param  {Fn}     loadcallback 额外的瓦片图片onload回调
      * @return {Image}              瓦片图片对象
      */
-    createTileImage:function(_tileLeft, _tileTop, url,  onloadFn) {
+    _createTileImage:function(_tileLeft, _tileTop, url,  onloadFn) {
         var tileImage = new Image(),
-            tileSize = this.getTileSize();
+            tileSize = this._getTileSize();
         var padding = this.getPadding();
 
 
@@ -454,13 +454,13 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
     /**
      * 移除tileContainer之外的瓦片
      */
-    removeTilesOutOfHolder:function() {
+    _removeTilesOutOfContainer:function() {
         //var _mapContainer = this.map.mapContainer;
         if (this.map.isBusy) {
             //console.log("blocked");
             return;
         }
-        var tileContainer = this.tileContainer;
+        var tileContainer = this._tileContainer;
         if (!tileContainer) {return;}
         var map = this.map;
         var mapHeight = map.height,
@@ -501,7 +501,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
     },
 
 
-    initPanel:function() {
+    _initPanel:function() {
         var mapContainer = this.map._panels.mapContainer;
         if (!mapContainer) {return;}
         //生成地图瓦片装载div
@@ -521,6 +521,6 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
             tileContainer.setAttribute('unselectable', 'on');
             tileContainer['ondragstart'] = function(e) { return false; };
         }
-        this.tileContainer = tileContainer;
+        this._tileContainer = tileContainer;
     }
 });

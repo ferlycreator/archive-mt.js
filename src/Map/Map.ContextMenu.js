@@ -38,7 +38,10 @@ Z.Map.include({
         if(!coordinate) {
             coordinate = this.showPostion;
         }
-        this.menu.showMenu(coordinate);
+        if (this.menu)  {
+            this.menu.showMenu(coordinate);
+        }
+        return this;
     },
 
    /**
@@ -47,7 +50,9 @@ Z.Map.include({
     * @expose
     */
     setMenuItem: function(items) {
-        this.menu.setItems(items);
+        if (this.menu) {
+            this.menu.setItems(items);
+        }
         return this;
     },
 
@@ -56,6 +61,8 @@ Z.Map.include({
     * @expose
     */
     closeMenu: function() {
-        this.menu.closeMenu();
+        if (this.menu) {
+            this.menu.close();
+        }
     }
 });

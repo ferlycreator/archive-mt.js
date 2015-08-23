@@ -172,7 +172,7 @@ Z.Editor=Z.Class.extend({
         }
         var geometry = this.geometry;
         var map = this.map;
-        var pxCenter = map._untransformToOffset(geometry.getPCenter());
+        var pxCenter = map._untransformToOffset(geometry._getPCenter());
         //------------------------拖动标注--------------------------
         this.createHandle(pxCenter, {
                         tip:"拖动以移动图形",
@@ -183,8 +183,8 @@ Z.Editor=Z.Class.extend({
                         },
                         onMove:function(handleDomOffset) {
                             var pcenter = map._transformFromOffset(handleDomOffset);
-                            geometry.setPCenter(pcenter);
-                            geometry.updateCache();
+                            geometry._setPCenter(pcenter);
+                            geometry._updateCache();
                             if (opts.onMove) {
                                 opts.onMove.call(this);
                             }
@@ -198,7 +198,7 @@ Z.Editor=Z.Class.extend({
                             this.fireEditEvent('positionchanged');
                         },
                         onRefresh:function() {
-                            return map._untransformToOffset(geometry.getPCenter());
+                            return map._untransformToOffset(geometry._getPCenter());
                         }
                     });
 
@@ -218,7 +218,7 @@ Z.Editor=Z.Class.extend({
         var geometry = this.geometry;
         var map = this.map;
         function radiusHandleOffset() {
-            var pxCenter = map._untransformToOffset(geometry.getPCenter());
+            var pxCenter = map._untransformToOffset(geometry._getPCenter());
             var r = geometry.getRadius();
             var p = map.distanceToPixel(r,0);
             var rPx={'left':pxCenter['left']+p['px'],'top':pxCenter['top']};
@@ -228,7 +228,7 @@ Z.Editor=Z.Class.extend({
         var radiusHandle = this.createHandle(rPx, {
                                 tip:"拖动以调整圆形半径",
                                 onMove:function(handleDomOffset) {
-                                    var pxCenter = map._untransformToOffset(geometry.getPCenter());
+                                    var pxCenter = map._untransformToOffset(geometry._getPCenter());
                                     var rPx = handleDomOffset['left']-pxCenter['left'];
                                     var rPy = handleDomOffset['top']-pxCenter['top'];
                                     //if (rPx >= 0 && rPy >= 0) {
@@ -265,7 +265,7 @@ Z.Editor=Z.Class.extend({
         var geometry = this.geometry;
         var map = this.map;
         function radiusHandleOffset() {
-            var pxCenter = map._untransformToOffset(geometry.getPCenter());
+            var pxCenter = map._untransformToOffset(geometry._getPCenter());
             var rx = Math.round(geometry.getWidth()/2);
             var rh = Math.round(geometry.getHeight()/2);
             var p = map.distanceToPixel(rx,rh);
@@ -277,7 +277,7 @@ Z.Editor=Z.Class.extend({
         var rHandle = this.createHandle(rPx, {
                                 tip:"拖动以调整椭圆大小",
                                 onMove:function(handleDomOffset) {
-                                    var pxCenter = map._untransformToOffset(geometry.getPCenter());
+                                    var pxCenter = map._untransformToOffset(geometry._getPCenter());
                                     var rxPx = handleDomOffset.left-pxCenter.left;
                                     var ryPx = handleDomOffset.top-pxCenter.top;
                                     if (rxPx >= 0 && ryPx>=0) {
@@ -317,7 +317,7 @@ Z.Editor=Z.Class.extend({
         var geometry = this.geometry;
         var map = this.map;
         function radiusHandleOffset() {
-            var pxNw = map._untransformToOffset(geometry.getPNw());
+            var pxNw = map._untransformToOffset(geometry._getPNw());
             var rw = Math.round(geometry.getWidth());
             var rh = Math.round(geometry.getHeight());
             var p = map.distanceToPixel(rw,rh);
@@ -329,7 +329,7 @@ Z.Editor=Z.Class.extend({
         var rHandle = this.createHandle(rPx, {
                                 tip:"拖动以调整矩形大小",
                                 onMove:function(handleDomOffset) {
-                                    var pxNw = map._untransformToOffset(geometry.getPNw());
+                                    var pxNw = map._untransformToOffset(geometry._getPNw());
                                     var rxPx = handleDomOffset['left']-pxNw['left'];
                                     var ryPx = handleDomOffset['top']-pxNw['top'];
                                     if (rxPx >= 0 && ryPx>=0) {
@@ -350,7 +350,7 @@ Z.Editor=Z.Class.extend({
                                     return radiusHandleOffset();
                                 }
                             });
-        var pxNw = map._untransformToOffset(geometry.getPNw());
+        var pxNw = map._untransformToOffset(geometry._getPNw());
         //------------------------拖动标注--------------------------
         this.createHandle(pxNw, {
             tip:"拖动以移动图形",
@@ -359,8 +359,8 @@ Z.Editor=Z.Class.extend({
             },
             onMove:function(handleDomOffset) {
                 var pnw = map._transformFromOffset(handleDomOffset);
-                geometry.setPNw(pnw);
-                geometry.updateCache();
+                geometry._setPNw(pnw);
+                geometry._updateCache();
                 this.fireEditEvent('positionchanging');
                 // geometry.fire("positionchanging",{"target":geometry});
             },
@@ -373,7 +373,7 @@ Z.Editor=Z.Class.extend({
                 // geometry.fire("positionchanged",{"target":geometry});
             },
             onRefresh:function() {
-                return map._untransformToOffset(geometry.getPNw());
+                return map._untransformToOffset(geometry._getPNw());
             }
         });
     },
@@ -408,8 +408,8 @@ Z.Editor=Z.Class.extend({
                                 var nVertex = map._transformFromOffset(handleDomOffset);
                                 vertex.x = nVertex.x;
                                 vertex.y = nVertex.y;
-                                geometry.updateCache();
-                                geometry.onShapeChanged();
+                                geometry._updateCache();
+                                geometry._onShapeChanged();
                                 this.fireEditEvent('shapechanging');
                                 // geometry.fire("shapechanging",{"target":geometry});
                                 // geometry.fire("shapechanging",{"target":geometry});
@@ -466,8 +466,8 @@ Z.Editor=Z.Class.extend({
                 vertexHandles.splice(hit,1);
 
                 Z.DomUtil.removeDomNode(ringhandle);
-                geometry.updateCache();
-                geometry.onShapeChanged();
+                geometry._updateCache();
+                geometry._onShapeChanged();
                 if (centerHandle) {
                     this.refreshHandles([centerHandle]);
                 }
@@ -512,8 +512,8 @@ Z.Editor=Z.Class.extend({
                                     lonlats[i].x = n.x;
                                     lonlats[i].y = n.y;
                                 }
-                                geometry.updateCache();
-                                geometry.onPositionChanged();
+                                geometry._updateCache();
+                                geometry._onPositionChanged();
                                 this.fireEditEvent('positionchanging');
                                 // geometry.fire("positionchanging",{"target":geometry});
                             },
@@ -561,8 +561,8 @@ Z.Editor=Z.Class.extend({
                             if (interIndex >= 0) {
                                 vertexHandles.splice(interIndex+1,0,createVertexHandle.call(this,plonlat));
                                 lonlats.splice(interIndex+1,0,plonlat);
-                                geometry.setPrjPoints(lonlats);
-                                geometry.updateCache();
+                                geometry._setPrjPoints(lonlats);
+                                geometry._updateCache();
                                 this.fireEditEvent('shapechanged');
                             }
                         },this);

@@ -3,11 +3,17 @@
  */
 Z['ComputeAreaTool'] = Z.ComputeAreaTool = Z.Class.extend({
 	includes: [Z.Eventable],
+
+	options:{
+
+	},
+
 	/**
 	* 初始化测面积工具
 	* options:{aftermeasure: fn}
 	*/
 	initialize: function(options, map) {
+		//TODO options应该设置到this.options中
 		Z.Util.extend(this, options);
 		if(map) {
 			this.addTo(map);
@@ -58,9 +64,9 @@ Z['ComputeAreaTool'] = Z.ComputeAreaTool = Z.Class.extend({
 			'afterdrawdisable': true
 		}).addTo(this.map);
 
-		drawTool.on('startdraw', Z.Util.bind(this.startMeasure, this));
-		drawTool.on('drawring', Z.Util.bind(this.measureRing, this));
-		drawTool.on('afterdraw', Z.Util.bind(this.afterMeasure, this));
+		drawTool.on('startdraw', Z.Util.bind(this._startMeasure, this));
+		drawTool.on('drawring', Z.Util.bind(this._measureRing, this));
+		drawTool.on('afterdraw', Z.Util.bind(this._afterMeasure, this));
 
 		this.drawTool = drawTool;
 
@@ -80,43 +86,6 @@ Z['ComputeAreaTool'] = Z.ComputeAreaTool = Z.Class.extend({
 		}
 	},
 
-	measureRing: function (param) {
-		var coordinate = param['coordinate'];
-		this.pointCounter ++;
-		var point = this.genMesurePoint(coordinate,this.layerId + '_ringp_' + this.pointCounter + '_' + this.counter);
-		this.drawLayer.addGeometry([point]);
-		this.tmpMarkers.push(point);
-	},
-
-	startMeasure: function(param) {
-		var coordinate = param['coordinate'];
-		var point = this.genMesurePoint(coordinate,this.layerId + '_ringp_' + this.pointCounter +'_' + this.counter);
-		this.drawLayer.addGeometry([point]);
-		this.tmpMarkers.push(point);
-	},
-
-	afterMeasure: function(param) {
-		var coordinate = param['coordinate'];
-		var polygon = param['target'];
-		var area = this.map.computeGeodesicArea(polygon);
-		var divContent = null;
-		if (area > 1000000) {
-			divContent = (area/1000000).toFixed(1)+'平方公里';
-		} else {
-			divContent = area.toFixed(1)+'平方米';
-		}
-
-		this.endMeasure(coordinate, divContent, polygon);
-		this.changeCursor('default');
-		this.counter++;
-		/**
-		 * 面积量算结束事件
-		 * @event aftermeasure
-		 * @param result: 总面积
-		 */
-		this.fire('aftermeasure', {'result' : area});
-	},
-
 	/**
 	 * 清除测量过程中产生的标注
 	 * @expose
@@ -130,13 +99,52 @@ Z['ComputeAreaTool'] = Z.ComputeAreaTool = Z.Class.extend({
 		}
 		var _canvas = this.map.canvasDom;
 		if (!_canvas) {
-			this.changeCursor('default');
+			this._changeCursor('default');
 		}
 		this.rings = [];
 	},
 
-	outline: Z.DistanceTool.prototype.outline,
-	genMesurePoint: Z.DistanceTool.prototype.genMesurePoint,
-	endMeasure: Z.DistanceTool.prototype.endMeasure,
-	changeCursor: Z.DistanceTool.prototype.changeCursor
+	_measureRing: function (param) {
+		var coordinate = param['coordinate'];
+		this.pointCounter ++;
+		var point = this._genMeasurePoint(coordinate,this.layerId + '_ringp_' + this.pointCounter + '_' + this.counter);
+		this.drawLayer.addGeometry([point]);
+		this.tmpMarkers.push(point);
+	},
+
+	_startMeasure: function(param) {
+		var coordinate = param['coordinate'];
+		var point = this._genMeasurePoint(coordinate,this.layerId + '_ringp_' + this.pointCounter +'_' + this.counter);
+		this.drawLayer.addGeometry([point]);
+		this.tmpMarkers.push(point);
+	},
+
+	_afterMeasure: function(param) {
+		var coordinate = param['coordinate'];
+		var polygon = param['target'];
+		var area = this.map._computeGeodesicArea(polygon);
+		var divContent = null;
+		if (area > 1000000) {
+			divContent = (area/1000000).toFixed(1)+'平方公里';
+		} else {
+			divContent = area.toFixed(1)+'平方米';
+		}
+
+		this._endMeasure(coordinate, divContent, polygon);
+		this._changeCursor('default');
+		this.counter++;
+		/**
+		 * 面积量算结束事件
+		 * @event aftermeasure
+		 * @param result: 总面积
+		 */
+		this.fire('aftermeasure', {'result' : area});
+	},
+
+
+
+	_outline: Z.DistanceTool.prototype._outline,
+	_genMeasurePoint: Z.DistanceTool.prototype._genMeasurePoint,
+	_endMeasure: Z.DistanceTool.prototype._endMeasure,
+	_changeCursor: Z.DistanceTool.prototype._changeCursor
 });

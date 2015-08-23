@@ -6,7 +6,8 @@ Z['Extent']=Z.Extent=Z.Geometry.extend({
             }
             return (ext1['xmin'] == ext2['xmin'] && ext1['xmax'] == ext2['xmax'] && ext1['ymin'] == ext2['ymin'] && ext1['ymax'] == ext2['ymax']);
         },
-         /**
+
+        /**
          * 合并两个extent
          */
         combine:function(ext1,ext2) {
@@ -81,14 +82,28 @@ Z['Extent']=Z.Extent=Z.Geometry.extend({
             var intersects = !((rxmin > rxmax) || (rymin > rymax));
             return intersects;
         },
+
         /**
         * 判断点是否在矩形中
         *
         *
         */
         contains: function(extent, coordinate) {
+            var x, y;
 
+            if (coordinate instanceof Z.Coordinate) {
+                x = coordinate.x;
+                y = coordinate.y;
+            } else if (coordinate instanceof Z.Point) {
+                x = coordinate.left;
+                y = coordinate.top;
+            }
+            return (x >= extent.xmin) &&
+                (x <= extent.xmax) &&
+                (y >= extent.ymin) &&
+                (y <= extent.ymax);
         },
+
         /**
          * 扩大Extent
          * @param  {[type]} ext      [description]

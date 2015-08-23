@@ -40,15 +40,15 @@ Z.Geometry.Poly={
         return result;
     },
 
-    setPrjPoints:function(prjPoints) {
+    _setPrjPoints:function(prjPoints) {
         this.prjPoints = prjPoints;
-        this.onShapeChanged();
+        this._onShapeChanged();
     },
 
-    getPrjPoints:function() {
+    _getPrjPoints:function() {
         if (!this.prjPoints) {
             var points = this.points;
-            this.prjPoints = this.projectPoints(points);
+            this.prjPoints = this._projectPoints(points);
         }
         return this.prjPoints;
     },
@@ -56,25 +56,25 @@ Z.Geometry.Poly={
     /**
      * 直接修改Geometry的投影坐标后调用该方法, 更新经纬度坐标缓存
      */
-    updateCache:function() {
+    _updateCache:function() {
         var projection = this._getProjection();
         if (!projection) {
             return;
         }
-        this.points = this.unprojectPoints(this.getPrjPoints());
+        this.points = this._unprojectPoints(this._getPrjPoints());
         if (this.holes) {
-            this.holes = this.unprojectPoints(this._getPrjHoles());
+            this.holes = this._unprojectPoints(this._getPrjHoles());
         }
     },
 
-    clearProjection:function() {
+    _clearProjection:function() {
         this.prjPoints = null;
         if (this.prjHoles) {
             this.prjHoles = null;
         }
     },
 
-    projectPoints:function(points) {
+    _projectPoints:function(points) {
         var projection = this._getProjection();
         if (projection) {
             return projection.projectPoints(points);
@@ -82,7 +82,7 @@ Z.Geometry.Poly={
         return null;
     },
 
-    unprojectPoints:function(prjPoints) {
+    _unprojectPoints:function(prjPoints) {
         var projection = this._getProjection();
         if (projection) {
             return projection.unprojectPoints(prjPoints);
@@ -90,7 +90,7 @@ Z.Geometry.Poly={
         return null;
     },
 
-    computeCenter:function(projection) {
+    _computeCenter:function(projection) {
         var ring=this.points;
         if (!Z.Util.isArrayHasData(ring)) {
             return null;
@@ -109,7 +109,7 @@ Z.Geometry.Poly={
         return new Z.Coordinate(sumx/counter, sumy/counter);
     },
 
-    computeExtent:function(projection) {
+    _computeExtent:function(projection) {
         var ring = this.points;
         if (!Z.Util.isArrayHasData(ring)) {
             return null;
@@ -118,7 +118,7 @@ Z.Geometry.Poly={
         if (this.hasHoles && this.hasHoles()) {
             rings = rings.concat(this.getHoles());
         }
-        return this.computePointsExtent(rings,projection);
+        return this._computePointsExtent(rings,projection);
     },
 
     /**
@@ -127,7 +127,7 @@ Z.Geometry.Poly={
      * @param  {[type]} projection [description]
      * @return {[type]}            [description]
      */
-    computePointsExtent:function(points, projection) {
+    _computePointsExtent:function(points, projection) {
         var result=null;
         var ext;
         for ( var i = 0, len = points.length; i < len; i++) {

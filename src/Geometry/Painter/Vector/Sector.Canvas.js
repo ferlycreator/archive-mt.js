@@ -1,16 +1,16 @@
 Z.Sector.Canvas = Z.Polygon.Canvas.extend({
     doPaint:function(context,resources,platformOffset) {
         var geometry = this.geometry;
-        var center = geometry.getCenterDomOffset();
+        var center = geometry._getCenterDomOffset();
         var pt = {
              left:center["left"]+platformOffset['left'],
              top:center["top"]+platformOffset['top']
-        };        
+        };
         var pr = this.getPixelSize();
         this.sector(context, pt['left'],pt['top'],pr['px'],geometry.getStartAngle(),geometry.getEndAngle());
         context.stroke();
-        this.fillGeo(context, this.fillSymbol);    
-        
+        this.fillGeo(context, this.fillSymbol);
+
     },
 
     sector:function(ctx, x, y, radius, startAngle, endAngle) {

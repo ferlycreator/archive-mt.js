@@ -187,7 +187,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
 	_getNearestPoint: function(coordinate) {
 		var points = [];
 
-		var painter = this._label.getPainter();
+		var painter = this._label._getPainter();
 		var textSize = painter.measureTextMarker();
 		var width = 0; //textSize['width'],
 			height = 0; //textSize['height'];
@@ -323,7 +323,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
 	_onMouseDown: function(event) {
 		Z.DomUtil.setStyle(this._labelContrainer, 'cursor: move');
 		this._label.startDrag();
-		this._map.disableDragPropagation();
+		this._map.disableDrag();
 		this._map.disableDoubleClickZoom();
 		if(this.options['link']) {
 			this._map.on('mousemove zoomend resize moving', this._changeLinkPath, this);
@@ -347,7 +347,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
 	},
 
 	_recoverMapEvents: function() {
-		this._map.enableDragPropagation();
+		this._map.enableDrag();
 		this._map.enableDoubleClickZoom();
 	},
 

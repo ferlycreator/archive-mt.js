@@ -256,7 +256,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     setZoomLevel:function(z) {
-        this.zoom(z);
+        this._zoom(z);
         return this;
     },
 
@@ -311,7 +311,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     zoomIn: function() {
-        this.zoom(this.getZoomLevel() + 1);
+        this._zoom(this.getZoomLevel() + 1);
         return this;
     },
 
@@ -320,7 +320,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     zoomOut: function() {
-        this.zoom(this.getZoomLevel() - 1);
+        this._zoom(this.getZoomLevel() - 1);
         return this;
     },
 
@@ -338,7 +338,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         }
         if (this._zoomLevel != zoomLevel) {
             this.setCenter(center);
-            this.zoom(zoomLevel);
+            this._zoom(zoomLevel);
         } else {
             this.setCenter(center);
         }
@@ -420,7 +420,7 @@ Z['Map']=Z.Map=Z.Class.extend({
             this.layerRemove(this._baseTileLayer);
             this._removeBackGroundDOM();
         }
-        baseTileLayer.prepare(this,-1);
+        baseTileLayer._prepare(this,-1);
         this._baseTileLayer = baseTileLayer;
         var _this = this;
         //删除背景
@@ -480,29 +480,29 @@ Z['Map']=Z.Map=Z.Class.extend({
             this._layerCache[id] = layer;
             //DynamicLayer必须要放在前面, 因为dynamiclayer同时也是tilelayer, tilelayer的代码也同时会执行
             if (layer instanceof Z.DynamicLayer) {
-                layer.prepare(this, this._dynLayers.length);
+                layer._prepare(this, this._dynLayers.length);
                 this._dynLayers.push(layer);
                 if (this._loaded) {
                     layer.load();
                 }
             } else if (layer instanceof Z.TileLayer) {
-                layer.prepare(this, this._tileLayers.length);
+                layer._prepare(this, this._tileLayers.length);
                 this._tileLayers.push(layer);
                 if (this._loaded) {
                     layer.load();
                 }
             } else if (layer instanceof Z.SVGLayer) {
-                layer.prepare(this,this._svgLayers.length);
+                layer._prepare(this,this._svgLayers.length);
                 this._svgLayers.push(layer);
                 if (this._loaded) {
                     layer.load();
                 }
             } else if (layer instanceof Z.CanvasLayer) {
-                layer.prepare(this, this._canvasLayers.length);
+                layer._prepare(this, this._canvasLayers.length);
                 this._canvasLayers.push(layer);
                 if (!this._baseCanvasLayer) {
                     this._baseCanvasLayer = new Z.CanvasLayer.Base();
-                    this._baseCanvasLayer.prepare(this);
+                    this._baseCanvasLayer._prepare(this);
                     if (this._loaded) {
                         this._baseCanvasLayer.load();
                     }
@@ -564,11 +564,11 @@ Z['Map']=Z.Map=Z.Class.extend({
         if (index > -1) {
             layerList.splice(index, 1);
             if (this._loaded) {
-                layer.onRemove();
+                layer._onRemove();
             }
             for (var j=0, jlen=layerList.length;j<jlen;j++) {
-                if (layerList[j].setZIndex) {
-                    layerList[j].setZIndex(layerList[j].baseZIndex+j);
+                if (layerList[j]._setZIndex) {
+                    layerList[j]._setZIndex(layerList[j].baseZIndex+j);
                 }
             }
         }
@@ -839,10 +839,10 @@ Z['Map']=Z.Map=Z.Class.extend({
      * 移除背景Dom对象
      */
     _removeBackGroundDOM:function() {
-        if (this.backgroundDOM) {
-            this.backgroundDOM.innerHTML='';
-            Z.DomUtil.removeDomNode(this.backgroundDOM);
-            delete this.backgroundDOM;
+        if (this._backgroundDOM) {
+            this._backgroundDOM.innerHTML='';
+            Z.DomUtil.removeDomNode(this._backgroundDOM);
+            delete this._backgroundDOM;
         }
     },
 

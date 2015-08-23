@@ -25,7 +25,7 @@ Z.Geometry.include({
         var param = {'coordinate':coordinate, 'pixel':position};
         this.menu.showPosition = position;
         this.menu.beforeOpen(param);
-        return this; 
+        return this;
     },
 
     /**
@@ -55,7 +55,8 @@ Z.Geometry.include({
     * @expose
     */
     closeMenu: function() {
-        if(this.menu)
-            this.menu.closeMenu();
+        if(this.menu) {
+            this.menu.close();
+        }
     }
 });

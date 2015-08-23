@@ -7,11 +7,11 @@ Z.Vector.SVG = Z.Painter.SVG.extend({
             return null;
         }
         var seperator=',';
-                
+
         var coords = [];
         //TODO 这里可以做simplify
-        
-        for ( var i = 0, len = offsets.length; i < len; i++) {                               
+
+        for ( var i = 0, len = offsets.length; i < len; i++) {
             coords.push(offsets[i]['left']+seperator+offsets[i]['top']);
         }
         var ret = null;
@@ -24,7 +24,7 @@ Z.Vector.SVG = Z.Painter.SVG.extend({
             //如果是空洞,则逆时针绘制
             ret = 'M'+coords.reverse().join('L')+Z.SVG.closeChar;
         }
-        
+
         return ret;
     },
 
@@ -36,7 +36,7 @@ Z.Vector.SVG = Z.Painter.SVG.extend({
     _paint:function(layerContainer, zIndex, symbol) {
         if (!this.geometry) {return;}
         this.setSymbol(symbol);
-        //矢量标注绘制        
+        //矢量标注绘制
         var vObj = this.createSVGObj();
         this.drawVector(vObj,this.strokeSymbol,this.fillSymbol);
     },
@@ -50,7 +50,7 @@ Z.Vector.SVG = Z.Painter.SVG.extend({
         Z.SVG.refreshVectorSymbol(this.vector, this.strokeSymbol, this.fillSymbol);
     }/*,
 
-    registerEvents:function(){
+    _registerEvents:function(){
         this.addDomEvents(this.vector);
     }*/
 });

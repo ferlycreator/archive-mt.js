@@ -64,7 +64,7 @@ Z.OverlayLayer=Z.Layer.extend({
         for (var i=0, len=geometries.length;i<len;i++) {
             var geo = geometries[i];
             if (!geo) {continue;}
-            
+
             var geoId = geo.getId();
             if (geoId) {
                 if (!Z.Util.isNil(this._geoMap[geoId])) {
@@ -74,13 +74,13 @@ Z.OverlayLayer=Z.Layer.extend({
             }
             var internalId = Z.Util.GUID();
             //内部全局唯一的id
-            geo.setInternalId(internalId);
+            geo._setInternalId(internalId);
             this._geoCache[internalId] = geo;
-            geo.prepare(this);
+            geo._prepare(this);
             if (fitView) {
                 var geoCenter = geo.getCenter();
                 var geoExtent = geo.getExtent();
-                if (geoCenter && geoExtent) {                    
+                if (geoCenter && geoExtent) {
                     centerSum.x += geoCenter.x;
                     centerSum.y += geoCenter.y;
                     extent = Z.Extent.combine(extent,geoExtent);
@@ -92,7 +92,7 @@ Z.OverlayLayer=Z.Layer.extend({
         }
         var map = this.getMap();
         if (map) {
-            this.paintGeometries(geometries);
+            this._paintGeometries(geometries);
             if (fitView) {
                 var z = map.getFitZoomLevel(extent);
                 var center = {x:centerSum.x/fitCounter, y:centerSum.y/fitCounter};
@@ -106,7 +106,7 @@ Z.OverlayLayer=Z.Layer.extend({
      * 遍历geometry
      * @param  {Function} fn 回调函数
      */
-    eachGeometry:function(fn,obj) {
+    _eachGeometry:function(fn,obj) {
         var cache = this._geoCache;
         if (!obj) {
             obj=this;
@@ -140,7 +140,7 @@ Z.OverlayLayer=Z.Layer.extend({
      * @expose
      */
     clear:function() {
-        this.eachGeometry(function(geo) {
+        this._eachGeometry(function(geo) {
             geo.remove();
         });
         this._geoMap={};
@@ -153,13 +153,13 @@ Z.OverlayLayer=Z.Layer.extend({
      * @param  {[type]} geometry [description]
      * @return {[type]}          [description]
      */
-    onGeometryRemove:function(geometry) {
+    _onGeometryRemove:function(geometry) {
         if (!geometry) {return;}
         //考察geometry是否属于该图层
         if (this != geometry.getLayer()) {
             return;
         }
-        var internalId = geometry.getInternalId();
+        var internalId = geometry._getInternalId();
         if (Z.Util.isNil(internalId)) {
             return;
         }
@@ -168,14 +168,14 @@ Z.OverlayLayer=Z.Layer.extend({
             delete this._geoMap[geoId];
         }
         delete this._geoCache[internalId];
-    }, 
+    },
 
-    onRemove:function() {
-        this.clear();       
+    _onRemove:function() {
+        this.clear();
         delete this.map;
     },
 
-    getGeoCache:function() {
+    _getGeoCache:function() {
         return this._geoCache;
     }
 });

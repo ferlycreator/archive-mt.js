@@ -15,13 +15,13 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
     initialize:function(id, opts) {
         this.setId(id);
         // this.options={};
-        this.guid=this.GUID();
+        this.guid=this._GUID();
         Z.Util.setOptions(this, opts);
         //reload时n会增加,改变瓦片请求参数,以刷新浏览器缓存
         this.n=0;
     },
 
-    GUID:function() {
+    _GUID:function() {
         return new Date().getTime()+""+(((1 + Math.random()) * 0x10000 + new Date().getTime()) | 0).toString(16).substring(1);
     },
 
@@ -37,7 +37,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
     /**
      * 载入前的准备, 由父类中的load方法调用
      */
-    prepareLoad:function() {
+    _prepareLoad:function() {
         var map = this.getMap();
         var zoomLevel=map.getZoomLevel();
         var min = this.getMinZoomLevel();
@@ -58,11 +58,11 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
         if (spatialFilter) {
             param_spatialFilter = JSON.stringify(spatialFilter.toJson());
         }
-        var queryString=this.formQueryString( this.getCondition(), param_spatialFilter);
+        var queryString=this._formQueryString( this.getCondition(), param_spatialFilter);
         var ajax = new Z.Util.Ajax(url,0,queryString,function(responseText){
             var result = Z.Util.parseJson(responseText);
             if (result && result["success"]) {
-                me.fillTiles(me.options['showOnTileLoadComplete']);
+                me._fillTiles(me.options['showOnTileLoadComplete']);
             }
         });
         //保证在高频率load时，dynamicLayer总能在zoom结束时只调用一次
@@ -79,17 +79,13 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
                     me.heartBeator.get();
                 },60*1000);
             }
-        },map.getZoomMillisecs()+80);
+        },map._getZoomMillisecs()+80);
         //通知父类先不载入瓦片
         return false;
     },
 
-    getTilePadding:function() {
-        return this.options['padding'];
-    },
-
-    getTileUrl:function(x,y,z) {
-        return this.getRequestUrl(y,x,z);
+    _getTileUrl:function(x,y,z) {
+        return this._getRequestUrl(y,x,z);
     },
 
     /**
@@ -99,13 +95,13 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
      * @param zoomLevel
      * @returns
      */
-    getRequestUrl:function(topIndex,leftIndex,zoomLevel){
+    _getRequestUrl:function(topIndex,leftIndex,zoomLevel){
             var src= Z.host+"/dynamic/tile?";
-            src+=this.getRequestUrlParams(topIndex,leftIndex,zoomLevel);
+            src+=this._getRequestUrlParams(topIndex,leftIndex,zoomLevel);
             return src;
     },
 
-    getRequestUrlParams:function(topIndex,leftIndex,zoomLevel) {
+    _getRequestUrlParams:function(topIndex,leftIndex,zoomLevel) {
         var map = this.getMap();
         var lodConfig = map._getLodConfig();
         var tileNw = lodConfig.getTileProjectedNw(topIndex,leftIndex,zoomLevel);
@@ -117,7 +113,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
         return params;
     },
 
-    formQueryString:function(condition,spatialFilter) {
+    _formQueryString:function(condition,spatialFilter) {
         var map = this.getMap();
         var lodConfig = map._getLodConfig();
         var padding = this.getPadding();

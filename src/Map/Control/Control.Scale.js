@@ -23,7 +23,7 @@ Z['Control']['Scale'] = Z.Control.Scale = Z.Control.extend({
         return this._scaleContainer;
     },
 
-    onRemove: function (map) {
+    _onRemove: function (map) {
         map.off('moveend', this._update, this)
            .off('move', this._update, this);
     },

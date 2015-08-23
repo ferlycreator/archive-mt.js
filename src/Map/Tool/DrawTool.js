@@ -18,6 +18,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
     defaultStrokeSymbol:{'strokeSymbol' : {'stroke':'#474cf8', 'strokeWidth':3, 'strokeOpacity':1}},
 
     addTo: function(map) {
+        //TODO options应该设置到this.options中
         this.map = map;
         if (!this.map) {return;}
         this._lodConfig = map._getLodConfig();
@@ -31,9 +32,9 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
      */
     enable:function() {
         if (!this.map) {return;}
-        this.drawToolLayer = this.getDrawLayer();
-        this.clearEvents();
-        this.registerEvents();
+        this.drawToolLayer = this._getDrawLayer();
+        this._clearEvents();
+        this._registerEvents();
         return this;
     },
 
@@ -45,9 +46,9 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         if (!this.map) {
             return;
         }
-        this.endDraw();
-        this.map.removeLayer(this.getDrawLayer());
-        this.clearEvents();
+        this._endDraw();
+        this.map.removeLayer(this._getDrawLayer());
+        this._clearEvents();
     },
 
     /**
@@ -61,8 +62,8 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
             delete this.geometry;
         }
         this['mode'] = mode;
-        this.clearEvents();
-        this.registerEvents();
+        this._clearEvents();
+        this._registerEvents();
     },
 
     /**
@@ -102,41 +103,41 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
     /**
      * 注册鼠标响应事件
      */
-    registerEvents: function() {
-        this.preventEvents();
+    _registerEvents: function() {
+        this._preventEvents();
         var mode = this['mode'];
         if (Z.Util.isNil(mode)) {
             mode = Z.Geometry['TYPE_CIRCLE'];
         }
         if (Z.Geometry['TYPE_POLYGON'] == mode || Z.Geometry['TYPE_POLYLINE'] == mode) {
-            this.map.on('click',this.clickForPath, this);
-            this.map.on('mousemove',this.mousemoveForPath,this);
-            this.map.on('dblclick',this.dblclickForPath,this);
+            this.map.on('click',this._clickForPath, this);
+            this.map.on('mousemove',this._mousemoveForPath,this);
+            this.map.on('dblclick',this._dblclickForPath,this);
         } else if (Z.Geometry['TYPE_POINT'] == mode) {
-            this.map.on('click',this.clickForPoint, this);
+            this.map.on('click',this._clickForPoint, this);
         } else {
-            this.map.on('mousedown',this.mousedownToDraw, this);
+            this.map.on('mousedown',this._mousedownToDraw, this);
         }
     },
 
-    preventEvents: function() {
-        this.map.disableDragPropagation();
+    _preventEvents: function() {
+        this.map.disableDrag();
         this.map['doubleClickZoom'] = false;
     },
 
-    clearEvents: function() {
-        this.map.off('click',this.clickForPath, this);
-        this.map.off('click',this.clickForPoint, this);
-        this.map.off('mousemove',this.mousemoveForPath,this);
-        this.map.off('dblclick',this.dblclickForPath,this);
-        this.map.off('mousedown',this.mousedownToDraw,this);
-        this.map.enableDragPropagation();
+    _clearEvents: function() {
+        this.map.off('click',this._clickForPath, this);
+        this.map.off('click',this._clickForPoint, this);
+        this.map.off('mousemove',this._mousemoveForPath,this);
+        this.map.off('dblclick',this._dblclickForPath,this);
+        this.map.off('mousedown',this._mousedownToDraw,this);
+        this.map.enableDrag();
         this.map['doubleClickZoom'] = true;
     },
 
-    clickForPoint: function(event) {
-        var screenXY = this.getMouseScreenXY(event);
-        var coordinate = this.screenXYToLonlat(screenXY);
+    _clickForPoint: function(event) {
+        var screenXY = this._getMouseScreenXY(event);
+        var coordinate = this._screenXYToLonlat(screenXY);
         var param = {'coordinate':coordinate, 'pixel':screenXY};
         if(this.afterdraw){
             this.afterdraw(param);
@@ -147,9 +148,9 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         }
     },
 
-    clickForPath:function(event) {
-        var screenXY = this.getMouseScreenXY(event);
-        var coordinate = this.screenXYToLonlat(screenXY);
+    _clickForPath:function(event) {
+        var screenXY = this._getMouseScreenXY(event);
+        var coordinate = this._screenXYToLonlat(screenXY);
         if (!this.geometry) {
             //无论画线还是多边形, 都是从线开始的
             this.geometry = new Z.Polyline([coordinate]);
@@ -165,10 +166,10 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
             */
             this._fireEvent('startdraw', {'coordinate':coordinate,'pixel':screenXY});
         } else {
-            var path = this.getLonlats();
+            var path = this._getLonlats();
             path.push(coordinate);
             //这一行代码取消注册后, 会造成dblclick无法响应, 可能是存在循环调用,造成浏览器无法正常响应事件
-            // this.setLonlats(path);
+            // this._setLonlats(path);
             if (this.map.hasListeners('drawring')) {
                 /**
                  * 端点绘制事件，当为多边形或者多折线绘制了一个新的端点后会触发此事件
@@ -181,13 +182,13 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         }
     },
 
-    mousemoveForPath : function(event) {
+    _mousemoveForPath : function(event) {
         if (!this.geometry) {return;}
-        var screenXY = this.getMouseScreenXY(event);
-        if (!this.isValidScreenXY(screenXY)) {return;}
-        var coordinate = this.screenXYToLonlat(screenXY);
-        var drawLayer = this.getDrawLayer();
-        var path = this.getLonlats();
+        var screenXY = this._getMouseScreenXY(event);
+        if (!this._isValidScreenXY(screenXY)) {return;}
+        var coordinate = this._screenXYToLonlat(screenXY);
+        var drawLayer = this._getDrawLayer();
+        var path = this._getLonlats();
         if (path.length === 1) {
             path.push(coordinate);
              drawLayer.addGeometry(this.geometry);
@@ -196,16 +197,16 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
             //path.push(coordinate);
         }
         // this.drawToolLayer.removeGeometry(this.geometry);
-        this.setLonlats(path);
+        this._setLonlats(path);
         // this.drawToolLayer.addGeometry(this.geometry);
     },
 
-    dblclickForPath:function(event) {
+    _dblclickForPath:function(event) {
         if (!this.geometry) {return;}
-        var screenXY = this.getMouseScreenXY(event);
-        if (!this.isValidScreenXY(screenXY)) {return;}
-        var coordinate = this.screenXYToLonlat(screenXY);
-        var path = this.getLonlats();
+        var screenXY = this._getMouseScreenXY(event);
+        if (!this._isValidScreenXY(screenXY)) {return;}
+        var coordinate = this._screenXYToLonlat(screenXY);
+        var path = this._getLonlats();
         path.push(coordinate);
         if (path.length < 2) {return;}
         //去除重复的端点
@@ -237,16 +238,16 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
             this.geometry.setPath(path);
         }
         //<--
-        this.endDraw(coordinate, screenXY);
+        this._endDraw(coordinate, screenXY);
     },
 
-    mousedownToDraw : function(event) {
+    _mousedownToDraw : function(event) {
         var me = this;
         var onMouseUp;
         function genGeometry(coordinate) {
             var symbol = me.getSymbol();
             var geometry = me.geometry;
-            var drawLayer = me.getDrawLayer();
+            var drawLayer = me._getDrawLayer();
             var _map = me.map;
             var center;
             switch (me.mode) {
@@ -295,9 +296,9 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
             if (!this.geometry) {
                 return false;
             }
-            var screenXY = this.getMouseScreenXY(_event);
-            if (!this.isValidScreenXY(screenXY)) {return;}
-            var coordinate = this.screenXYToLonlat(screenXY);
+            var screenXY = this._getMouseScreenXY(_event);
+            if (!this._isValidScreenXY(screenXY)) {return;}
+            var coordinate = this._screenXYToLonlat(screenXY);
             genGeometry(coordinate);
             return false;
         }
@@ -305,18 +306,18 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
             if (!this.geometry) {
                 return false;
             }
-            var screenXY = this.getMouseScreenXY(_event);
-            if (!this.isValidScreenXY(screenXY)) {return;}
-            var coordinate = this.screenXYToLonlat(screenXY);
+            var screenXY = this._getMouseScreenXY(_event);
+            if (!this._isValidScreenXY(screenXY)) {return;}
+            var coordinate = this._screenXYToLonlat(screenXY);
             genGeometry(coordinate);
             this.map.off('mousemove',onMouseMove, this);
             this.map.off('mouseup',onMouseUp, this);
-            this.endDraw(coordinate, screenXY);
+            this._endDraw(coordinate, screenXY);
             return false;
         };
-        var screenXY = this.getMouseScreenXY(event);
-        if (!this.isValidScreenXY(screenXY)) {return;}
-        var coordinate = this.screenXYToLonlat(screenXY);
+        var screenXY = this._getMouseScreenXY(event);
+        if (!this._isValidScreenXY(screenXY)) {return;}
+        var coordinate = this._screenXYToLonlat(screenXY);
         /**
          * 绘制开始事件
          * @event startdraw
@@ -330,7 +331,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         return false;
     },
 
-    endDraw : function(coordinate, screenXY) {
+    _endDraw : function(coordinate, screenXY) {
         if (!this.geometry) {
             return;
         }
@@ -357,14 +358,14 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
      * 返回多边形或多折线的坐标数组
      * @return {[type]} [description]
      */
-    getLonlats:function() {
+    _getLonlats:function() {
         if (this.geometry.getShell) {
             return this.geometry.getShell();
         }
         return this.geometry.getPath();
     },
 
-    setLonlats:function(lonlats) {
+    _setLonlats:function(lonlats) {
         if (this.geometry instanceof Z.Polygon) {
             this.geometry.setCoordinates([lonlats]);
         } else if (this.geometry instanceof Z.Polyline) {
@@ -382,7 +383,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
      * @param  {[type]} event [description]
      * @return {[type]}       [description]
      */
-    getMouseScreenXY:function(event) {
+    _getMouseScreenXY:function(event) {
         Z.DomUtil.stopPropagation(event);
         var result = Z.DomUtil.getEventDomCoordinate(event,this.map._containerDOM);
         return result;
@@ -393,7 +394,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
      * @param  {[type]} event [description]
      * @return {[type]}       [description]
      */
-    screenXYToLonlat:function(screenXY) {
+    _screenXYToLonlat:function(screenXY) {
         var projection = this._getProjection(),
             map = this.map;
 
@@ -402,7 +403,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         return projection.unproject(pLonlat);
     },
 
-    isValidScreenXY:function(screenXY) {
+    _isValidScreenXY:function(screenXY) {
         var mapSize = this.map.getSize();
         var w = mapSize['width'],
             h = mapSize['height'];
@@ -414,7 +415,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         return true;
     },
 
-    getDrawLayer:function() {
+    _getDrawLayer:function() {
         var drawLayerId = '____system_layer_drawtool';
         var drawToolLayer = this.map.getLayer(drawLayerId);
         if (!drawToolLayer) {

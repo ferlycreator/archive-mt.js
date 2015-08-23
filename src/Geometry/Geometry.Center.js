@@ -3,8 +3,8 @@ Z.Geometry.Center={
      * 计算Geometry中心点在地图容器中的相对坐标
      * @return {[type]} [description]
      */
-    getCenterDomOffset:function() {
-        var pcenter = this.getPCenter();
+    _getCenterDomOffset:function() {
+        var pcenter = this._getPCenter();
         if (!pcenter) {return null;}
         var map=this.getMap();
         if (!map) {
@@ -19,7 +19,7 @@ Z.Geometry.Center={
      * @expose
      */
     getCoordinates:function() {
-        return this.coordinates;
+        return this._coordinates;
     },
 
     /**
@@ -28,10 +28,10 @@ Z.Geometry.Center={
      */
     setCoordinates:function(coordinates) {
         var center = new Z.Coordinate(coordinates);
-        this.coordinates = center;
-        if (!this.coordinates || !this.getMap()) {return;}
+        this._coordinates = center;
+        if (!this._coordinates || !this.getMap()) {return;}
         var projection = this._getProjection();
-        this.setPCenter(projection.project(this.coordinates));
+        this._setPCenter(projection.project(this._coordinates));
         return this;
     },
 
@@ -41,46 +41,46 @@ Z.Geometry.Center={
      * @expose
      */
     getCenter:function() {
-        return this.coordinates;
+        return this._coordinates;
     },
 
 
-    getPCenter:function() {
+    _getPCenter:function() {
         var projection = this._getProjection();
         if (!projection) {return null;}
-        if (!this.pcenter) {
-            if (this.coordinates) {
-                this.pcenter = projection.project(this.coordinates);
+        if (!this._pcenter) {
+            if (this._coordinates) {
+                this._pcenter = projection.project(this._coordinates);
             }
         }
-        return this.pcenter;
+        return this._pcenter;
     },
 
     /**
      * 设置投影坐标
      * @param {Coordinate} pcenter 投影坐标
      */
-    setPCenter:function(pcenter) {
-        this.pcenter=pcenter;
-        this.onPositionChanged();
+    _setPCenter:function(pcenter) {
+        this._pcenter=pcenter;
+        this._onPositionChanged();
     },
 
     /**
      * 修改投影坐标后调用该方法更新经纬度坐标缓存.
      * @return {[type]} [description]
      */
-    updateCache:function() {
+    _updateCache:function() {
         var projection = this._getProjection();
-        if (this.pcenter && projection) {
-            this.coordinates = projection.unproject(this.pcenter);
+        if (this._pcenter && projection) {
+            this._coordinates = projection.unproject(this._pcenter);
         }
     },
 
-    clearProjection:function() {
-        this.pcenter = null;
+    _clearProjection:function() {
+        this._pcenter = null;
     },
 
-    computeCenter:function(projection) {
-        return this.coordinates;
+    _computeCenter:function(projection) {
+        return this._coordinates;
     }
 };
