@@ -37,7 +37,7 @@ Z.Map.include({
 
     _rendCartoCSS:function(cssContent) {
         var shader = new window['carto']['RendererJS']()['render'](cssContent);
-        this.cartoCSSShader = shader;
+        this._cartoCSSShader = shader;
         this._fireEvent('cartocssloaded');
     },
 
@@ -47,14 +47,14 @@ Z.Map.include({
      * @return {Object}          cartoCSS中定义的样式
      */
     _cartoCSSGeometry:function(geometry) {
-        if (!this.cartoCSSShader || !geometry || !geometry.getLayer()) {
+        if (!this._cartoCSSShader || !geometry || !geometry.getLayer()) {
             return null;
         }
         var layerId = geometry.getLayer().getId();
         if (!layerId) {
             return null;
         }
-        var layerShader = this.cartoCSSShader['findLayer']({'name':'#'+layerId});
+        var layerShader = this._cartoCSSShader['findLayer']({'name':'#'+layerId});
         var symbol = layerShader['getStyle'](geometry.getProperties(), { 'zoom': this.getZoomLevel() });
         return symbol;
     }

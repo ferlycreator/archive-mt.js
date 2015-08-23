@@ -121,7 +121,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         },
 
         _onZoomEnd:function() {
-            if (this.visible) {
+            if (this._visible) {
                 //style.display=''必须要在调用 offsetTipDom之前, 要不然tipDom.clientHeight和clientWidth取到的值为0
                 this.map._panels.tipContainer.style.display='';
                 this.offsetTipDom();
@@ -154,7 +154,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         * @expose
         */
         hide:function() {
-            this.visible = false;
+            this._visible = false;
             this.tipDom.style.display="none";
         },
 
@@ -164,7 +164,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
          * @returns {Boolean}
          */
         isOpen:function() {
-            return this.visible;
+            return this._visible;
         },
 
         /**
@@ -178,7 +178,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
             }
             if (!this.map.options['enableInfoWindow']) return;
             this.hide();
-            this.visible = true;
+            this._visible = true;
             var map = this.map;
             var tipDom = this.tipDom;
             tipDom.style.display='';

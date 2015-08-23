@@ -81,7 +81,7 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
         this.map._panels.popMenuContainer.innerHTML = Z['Menu']['template'];
         this.menuDom = this.map._panels.popMenuContainer.firstChild;
         if(!this.menuDom.addEvent) {
-            this.closeMenu();
+            this.close();
             this._removeEvent(map);
             map.on('zoomstart', this.hide, this);
             map.on('zoomend', this.hide, this);
@@ -156,22 +156,17 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
      * @return {[type]} [description]
      * @expose
      */
-    closeMenu:function() {
-        if (this.menu) {
-            this.menu.hide();
-        }
-        return this;
+    close:function() {
+        return this.hide();
     },
 
     /**
      * 移除Map的右键菜单设置
      * @expose
      */
-    removeMenu:function() {
+    remove:function() {
+        this.hide();
         delete this.menuOption;
-        if (this.menu) {
-            this.menu.hide();
-        }
         return this;
     },
 

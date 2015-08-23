@@ -16,7 +16,7 @@ Z['Control']['Zoom'] = Z.Control.Zoom = Z.Control.extend({
 		return this._zoomControlContainer;
 	},
 
-	onRemove: function (map) {
+	_onRemove: function (map) {
 		map.off('zoomend zoomlevelschange', this._updateDisabled, this);
 	},
 

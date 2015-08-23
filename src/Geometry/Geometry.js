@@ -265,7 +265,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     show:function() {
-        this.visible = true;
+        this._visible = true;
         if (this.painter) {
             this.painter.show();
         }
@@ -277,7 +277,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     hide:function() {
-        this.visible = false;
+        this._visible = false;
         if (this.painter) {
             this.painter.hide();
         }
@@ -290,10 +290,10 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     isVisible:function() {
-        if (Z.Util.isNil(this.visible)) {
+        if (Z.Util.isNil(this._visible)) {
             return true;
         }
-        return this.visible;
+        return this._visible;
     },
 
     /**
@@ -330,7 +330,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
         delete this.painter;
 
-        layer.onGeometryRemove(this);
+        layer._onGeometryRemove(this);
         delete this.layer;
 
         this._fireEvent('remove',{'target':this});

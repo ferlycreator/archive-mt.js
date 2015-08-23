@@ -20,8 +20,8 @@ Z['Layer']=Z.Layer=Z.Class.extend({
 		if (!map) {return;}
 		this.map = map;
 		this._setZIndex(zIndex);
-		if (Z.Util.isNil(this.visible)) {
-			this.visible = true;
+		if (Z.Util.isNil(this._visible)) {
+			this._visible = true;
 		}
 	},
 
@@ -75,8 +75,8 @@ Z['Layer']=Z.Layer=Z.Class.extend({
 	 * @expose
 	 */
 	bringToFront:function() {
-		var layers = this.getLayerList();
-		var hit=this.getLayerIndexOfList(layers);
+		var layers = this._getLayerList();
+		var hit=this._getLayerIndexOfList(layers);
 		if (hit === layers.length-1) {return;}
 		if (hit >= 0) {
 			layers.splice(hit,1);
@@ -92,8 +92,8 @@ Z['Layer']=Z.Layer=Z.Class.extend({
 	 * @expose
 	 */
 	bringToBack:function(){
-		var layers = this.getLayerList();
-		var hit=this.getLayerIndexOfList(layers);
+		var layers = this._getLayerList();
+		var hit=this._getLayerIndexOfList(layers);
 		if (hit === 0) {
 			return;
 		}
@@ -111,7 +111,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
 	 * @param layers
 	 * @returns {Number}
 	 */
-	getLayerIndexOfList:function(layers) {
+	_getLayerIndexOfList:function(layers) {
 		if (!layers) {return -1;}
 		var hit = -1;
 		for (var i =0, len=layers.length;i<len;i++) {
@@ -126,7 +126,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
 	/**
 	 * 获取该图层所属的list
 	 */
-	getLayerList:function() {
+	_getLayerList:function() {
 		if (!this.map) {return null;}
 		if (this instanceof Z.SVGLayer) {
 			return this.map._svgLayers;
@@ -135,11 +135,11 @@ Z['Layer']=Z.Layer=Z.Class.extend({
 		} else if (this instanceof Z.CanvasLayer.Base) {
 			return this.map._canvasLayers;
 		} else if (this instanceof Z.DynamicLayer) {
-			return this._dynLayers;
+			return this.map._dynLayers;
 		} else if (this instanceof Z.TileLayer) {
-			return this.overlapLayers;
+			return this.map._tileLayers;
 		} else if (this instanceof Z.HeatLayer) {
-			return this.map.heatLayers;
+			return this.map._heatLayers;
 		}
 		return null;
 	}

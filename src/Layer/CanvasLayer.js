@@ -13,11 +13,11 @@ Z['CanvasLayer']=Z.CanvasLayer=Z.OverlayLayer.extend({
      * @expose
      */
     show:function() {
-        if (this.visible) {
+        if (this._visible) {
             return;
         }
-        this.visible=true;
-        this.paintGeometries();
+        this._visible=true;
+        this._paintGeometries();
         return this;
     },
 
@@ -26,11 +26,11 @@ Z['CanvasLayer']=Z.CanvasLayer=Z.OverlayLayer.extend({
      * @expose
      */
     hide:function() {
-        if (!this.visible) {
+        if (!this._visible) {
             return;
         }
-        this.visible=false;
-        this.paintGeometries();
+        this._visible=false;
+        this._paintGeometries();
         return this;
     },
 
@@ -40,7 +40,7 @@ Z['CanvasLayer']=Z.CanvasLayer=Z.OverlayLayer.extend({
      * @expose
      */
     isVisible:function() {
-        return this.visible;
+        return this._visible;
     },
 
     _setZIndex:function(zindex) {
@@ -52,7 +52,7 @@ Z['CanvasLayer']=Z.CanvasLayer=Z.OverlayLayer.extend({
      * @param  {[type]} geometries [description]
      * @return {[type]}            [description]
      */
-    paintGeometries:function(geometries) {
+    _paintGeometries:function(geometries) {
         var map = this.getMap();
         map._repaintBaseCanvasLayer();
     }

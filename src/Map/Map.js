@@ -523,7 +523,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      */
     _repaintBaseCanvasLayer:function(isRealTime) {
         if (this._loaded && this._baseCanvasLayer) {
-            this._baseCanvasLayer.repaint(isRealTime);
+            this._baseCanvasLayer._repaint(isRealTime);
         }
     },
 
@@ -564,7 +564,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         if (index > -1) {
             layerList.splice(index, 1);
             if (this._loaded) {
-                layer.onRemove();
+                layer._onRemove();
             }
             for (var j=0, jlen=layerList.length;j<jlen;j++) {
                 if (layerList[j]._setZIndex) {

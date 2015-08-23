@@ -155,7 +155,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         return this._getLodConfig()['tileSize'];
     },
 
-    _getPadding:function() {
+    getPadding:function() {
         var padding = this._getLodConfig()['padding'];
         if (!padding) {
             padding = {
@@ -409,7 +409,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
     _createTileImage:function(_tileLeft, _tileTop, url,  onloadFn) {
         var tileImage = new Image(),
             tileSize = this._getTileSize();
-        var padding = this._getPadding();
+        var padding = this.getPadding();
 
 
         var width = tileSize['width']+padding['width'],
@@ -470,7 +470,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         var _holderLeft = mapDomOffset["left"],
             _holderTop = mapDomOffset["top"],
             _tileSize = lodConfig["tileSize"],
-            padding = this._getPadding();
+            padding = this.getPadding();
         var currentTile = null;
         try {
             currentTile = tileContainer.firstChild;

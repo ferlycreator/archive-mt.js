@@ -3,11 +3,17 @@
  */
 Z['ComputeAreaTool'] = Z.ComputeAreaTool = Z.Class.extend({
 	includes: [Z.Eventable],
+
+	options:{
+
+	},
+
 	/**
 	* 初始化测面积工具
 	* options:{aftermeasure: fn}
 	*/
 	initialize: function(options, map) {
+		//TODO options应该设置到this.options中
 		Z.Util.extend(this, options);
 		if(map) {
 			this.addTo(map);

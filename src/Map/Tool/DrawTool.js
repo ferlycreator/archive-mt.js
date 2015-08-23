@@ -18,6 +18,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
     defaultStrokeSymbol:{'strokeSymbol' : {'stroke':'#474cf8', 'strokeWidth':3, 'strokeOpacity':1}},
 
     addTo: function(map) {
+        //TODO options应该设置到this.options中
         this.map = map;
         if (!this.map) {return;}
         this._lodConfig = map._getLodConfig();

@@ -92,7 +92,7 @@ Z.OverlayLayer=Z.Layer.extend({
         }
         var map = this.getMap();
         if (map) {
-            this.paintGeometries(geometries);
+            this._paintGeometries(geometries);
             if (fitView) {
                 var z = map.getFitZoomLevel(extent);
                 var center = {x:centerSum.x/fitCounter, y:centerSum.y/fitCounter};
@@ -106,7 +106,7 @@ Z.OverlayLayer=Z.Layer.extend({
      * 遍历geometry
      * @param  {Function} fn 回调函数
      */
-    eachGeometry:function(fn,obj) {
+    _eachGeometry:function(fn,obj) {
         var cache = this._geoCache;
         if (!obj) {
             obj=this;
@@ -140,7 +140,7 @@ Z.OverlayLayer=Z.Layer.extend({
      * @expose
      */
     clear:function() {
-        this.eachGeometry(function(geo) {
+        this._eachGeometry(function(geo) {
             geo.remove();
         });
         this._geoMap={};
@@ -153,7 +153,7 @@ Z.OverlayLayer=Z.Layer.extend({
      * @param  {[type]} geometry [description]
      * @return {[type]}          [description]
      */
-    onGeometryRemove:function(geometry) {
+    _onGeometryRemove:function(geometry) {
         if (!geometry) {return;}
         //考察geometry是否属于该图层
         if (this != geometry.getLayer()) {
@@ -170,12 +170,12 @@ Z.OverlayLayer=Z.Layer.extend({
         delete this._geoCache[internalId];
     },
 
-    onRemove:function() {
+    _onRemove:function() {
         this.clear();
         delete this.map;
     },
 
-    getGeoCache:function() {
+    _getGeoCache:function() {
         return this._geoCache;
     }
 });

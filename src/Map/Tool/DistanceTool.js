@@ -16,6 +16,7 @@ Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
     },
 
     addTo: function(map) {
+        //TODO options应该设置到this.options中
         this.map = map;
         if (!this.map) {return;}
         this.layerId = '____system_layer_distancetool';

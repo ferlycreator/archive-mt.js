@@ -123,8 +123,8 @@ Z['Control'] = Z.Control = Z.Class.extend({
 			return this;
 		}
 		Z.DomUtil.removeDomNode(this._container);
-		if (this.onRemove) {
-			this.onRemove(this._map);
+		if (this._onRemove) {
+			this._onRemove(this._map);
 		}
 		this._map = null;
 		return this;
