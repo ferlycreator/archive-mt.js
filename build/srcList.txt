@@ -18,8 +18,8 @@
 ../src/Map/Tool/DrawTool.js
 ../src/Map/Tool/DistanceTool.js
 ../src/Map/Tool/ComputeAreaTool.js
+../src/Layer/Tile/LOD/TileSystem.js
 ../src/Layer/Tile/LOD/LodInfo.js
-../src/Layer/Tile/LOD/LodUtil.js
 ../src/Layer/Tile/LOD/LodConfig.js
 ../src/Misc/ResourceLoader.js
 ../src/Layer/Layer.js

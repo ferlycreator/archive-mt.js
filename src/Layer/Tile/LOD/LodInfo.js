@@ -35,8 +35,9 @@ Z['LodInfo']={
             'height':256
         }
     },
-    'globalmercator':{
+    'global-mercator':{
         'projection':'ESPG:3857', //gcj02 | gcj02ll | 4326 | 3857 | bd09
+        'tileSystem':'TMS-GLOBAL-MERCATOR',
         'maxZoomLevel':18,
         'minZoomLevel':1,
         'resolutions':[
@@ -73,6 +74,7 @@ Z['LodInfo']={
     },
     'baidu':{
         'projection':'BAIDU',
+        'tileSystem':'BAIDU',
         'maxZoomLevel':19,
         'minZoomLevel':1,
         'resolutions':(function() {

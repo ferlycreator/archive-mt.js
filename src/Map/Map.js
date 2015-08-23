@@ -417,24 +417,24 @@ Z['Map']=Z.Map=Z.Class.extend({
             return;
         }
         if (this._baseTileLayer) {
-            this.layerRemove(this._baseTileLayer);
             this._removeBackGroundDOM();
+            this._baseTileLayer._onRemove();
         }
         baseTileLayer._prepare(this,-1);
         this._baseTileLayer = baseTileLayer;
-        var _this = this;
+        var me = this;
         //删除背景
         this._baseTileLayer.bind(baseTileLayer.events.LAYER_LOADED,function() {
-            _this._removeBackGroundDOM();
+            me._removeBackGroundDOM();
         });
         var lodConfig = this._baseTileLayer._getLodConfig();
         this._setLodConfig(lodConfig,function(changed) {
-            if (_this._loaded) {
-                _this._baseTileLayer.load();
+            if (me._loaded) {
+                me._baseTileLayer.load();
             }
             if (changed) {
-                _this._fireEvent(_this.events.LODCONFIG_CHANGED);
-                // _this.fire(_this.events.LODCONFIG_CHANGED,{'target':_this});
+                me._fireEvent(me.events.LODCONFIG_CHANGED);
+                // me.fire(me.events.LODCONFIG_CHANGED,{'target':me});
             }
         });
         return this;
