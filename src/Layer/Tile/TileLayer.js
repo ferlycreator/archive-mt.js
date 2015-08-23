@@ -88,6 +88,16 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         }
     },
 
+    /**
+     * TileLayer的删除逻辑
+     */
+    _onRemove:function() {
+        this.clear();
+        this._clearExecutors();
+        if (this._tileContainer) {
+            Z.Util.removeDomNode(this._tileContainer);
+        }
+    },
 
     /**
      * 地图中心点变化时的响应函数
@@ -129,9 +139,13 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
     },
 
     /**
-     * 载入地图
+     * load the tile layer, can be overrided by sub-classes
      */
     load:function(){
+        this._load();
+    },
+
+    _load:function() {
         if (!this.getMap()) {return;}
         if (!this._tileContainer) {
             this._initPanel();
@@ -140,15 +154,17 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         if (this._prepareLoad()) {
             this._clearExecutors();
             var me = this;
-            this.tileLoadExecutor = setTimeout(function() {
+            this._tileLoadExecutor = setTimeout(function() {
                 me._fillTiles(me.options['showOnTileLoadComplete']);
             },20);
         }
     },
 
     clear:function() {
-        this.tileMap = {};
-        this._tileContainer.innerHTML="";
+        this._tileMap = {};
+        if (this._tileContainer) {
+            this._tileContainer.innerHTML="";
+        }
     },
 
     _getTileSize:function() {
@@ -171,14 +187,14 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
      * @return {[type]} [description]
      */
     _clearExecutors:function() {
-        if (this.tileLoadExecutor) {
-            clearTimeout(this.tileLoadExecutor);
+        if (this._tileLoadExecutor) {
+            clearTimeout(this._tileLoadExecutor);
         }
-        if (this.fireEventExecutor) {
-            clearTimeout(this.fireEventExecutor);
+        if (this._fireEventExecutor) {
+            clearTimeout(this._fireEventExecutor);
         }
-        if (this.completeExecutor) {
-            clearTimeout(this.completeExecutor);
+        if (this._completeExecutor) {
+            clearTimeout(this._completeExecutor);
         }
     },
 
@@ -208,24 +224,24 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
             }
 
             if (counter > len*2/3) {
-                if (me.completeExecutor) {
-                    clearTimeout(me.completeExecutor);
+                if (me._completeExecutor) {
+                    clearTimeout(me._completeExecutor);
                 }
-                if (me.fireEventExecutor) {
-                        clearTimeout(me.fireEventExecutor);
+                if (me._fireEventExecutor) {
+                        clearTimeout(me._fireEventExecutor);
                     }
-                me.completeExecutor=setTimeout(function() {
+                me._completeExecutor=setTimeout(function() {
                     tileContainer.appendChild(dSegment);
-                    me.fireEventExecutor=setTimeout(function() {
+                    me._fireEventExecutor=setTimeout(function() {
                         // me._executeListeners("layerloaded");
                         me.fire(me.events.LAYER_LOADED,{'target':this});
                     },500);
                 },10);
                 /*if (counter == len) {
-                    if (me.fireEventExecutor) {
-                        clearTimeout(me.fireEventExecutor);
+                    if (me._fireEventExecutor) {
+                        clearTimeout(me._fireEventExecutor);
                     }
-                    me.fireEventExecutor=setTimeout(function() {
+                    me._fireEventExecutor=setTimeout(function() {
                         // me._executeListeners("layerloaded");
                         me.fire(this.events.LAYER_LOADED,{'target':this});
                     },500);
@@ -256,7 +272,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
     //  var centerTileImg = this._createTileImage(centerOffset.left,centerOffset.top,this.config._getTileUrl(centerTileInfo["topIndex"],centerTileInfo["leftIndex"],zoomLevel),tileSize["height"],tileSize["width"]);
     //  tileContainer.appendChild(centerTileImg);
 
-        var currentTiles = this.tileMap;
+        var currentTiles = this._tileMap;
         //TODO 瓦片从中心开始加起
         for (var i=-(tileLeftNum);i<tileRightNum;i++){
             for (var j=-(tileTopNum);j<=tileBottomNum;j++){
@@ -293,10 +309,10 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
             tileContainer.appendChild(dSegment);
         }
 
-        if (this.removeout_timeout) {
-            clearTimeout(this.removeout_timeout);
+        if (this._removeout_timeout) {
+            clearTimeout(this._removeout_timeout);
         }
-        this.removeout_timeout = setTimeout(function() {
+        this._removeout_timeout = setTimeout(function() {
             me._removeTilesOutOfContainer();
         },500);
 
@@ -340,7 +356,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
                 'height':0
             };
         }
-        var currentTiles = this.tileMap;
+        var currentTiles = this._tileMap;
         var tileIndexes = [];
 
 
@@ -388,10 +404,10 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
 
         this.fire(this.events.LAYER_LOADED,{'target':this});
 
-        if (this.removeout_timeout) {
-            clearTimeout(this.removeout_timeout);
+        if (this._removeout_timeout) {
+            clearTimeout(this._removeout_timeout);
         }
-        this.removeout_timeout = setTimeout(function() {
+        this._removeout_timeout = setTimeout(function() {
             _this._removeTilesOutOfContainer();
         },1000);
 
@@ -481,15 +497,15 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         if (!currentTile) {return;}
         var tilesToRemove = [];
         while (currentTile) {
-            if (!this.tileMap[currentTile.id]) {
+            if (!this._tileMap[currentTile.id]) {
                 currentTile = currentTile.nextSibling;
                 continue;
             }
-            var tileLeft = this.tileMap[currentTile.id].left+padding["width"]/2+_holderLeft,
-                tileTop = this.tileMap[currentTile.id].top+padding["height"]/2+_holderTop;
+            var tileLeft = this._tileMap[currentTile.id].left+padding["width"]/2+_holderLeft,
+                tileTop = this._tileMap[currentTile.id].top+padding["height"]/2+_holderTop;
             if ( tileLeft >=mapWidth ||  tileLeft <= -_tileSize["width"] || tileTop > mapHeight || tileTop <  -_tileSize["height"]) {
                 tilesToRemove.push(currentTile);
-                delete this.tileMap[currentTile.id];
+                delete this._tileMap[currentTile.id];
             }
             currentTile = currentTile.nextSibling;
         }
