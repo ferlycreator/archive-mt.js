@@ -61,8 +61,16 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
     },*/
 
     _containsPoint: function(point) {
-        // TODO
-        return false;
+        var icon = this.getSymbol(),
+            width = icon.width,
+            height = icon.height,
+            offset = icon.offset,
+            center = this._getCenterDomOffset();
+        // TODO: offset ???
+        var pxMin = new Z.Point(center.left - width/2, center.top - height),
+            pxMax = new Z.Point(center.left + width/2, center.top),
+            pxExtent = new Z.Extent(pxMin.left, pxMin.top, pxMax.left, pxMax.top);
+        return Z.Extent.contains(pxExtent, point);
     },
 
     _computeExtent:function(projection) {
@@ -98,40 +106,6 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
         width = (icon['width']?parseInt(icon['width'],10):0);
         pnw = {'top':(height+offset['y']), 'left':(width/2-offset['x'])};
         pse = {'top':(-offset['y']), 'left':(width/2+offset['x'])};
-
-        /**if (iconType === "picture") {
-            height = (icon['height']?parseInt(icon['height'],10):0);
-            width = (icon['width']?parseInt(icon['width'],10):0);
-            pnw = {'top':(height+offset['y']), 'left':(width/2-offset['x'])};
-            pse = {'top':(-offset['y']), 'left':(width/2+offset['x'])};
-        } else if (iconType === "vector") {
-            var radius = icon["size"];
-            if (!radius) {return null;}
-            pnw = {"top":radius+offset["y"],"left":radius-offset["x"]};
-            pse = {"top":radius-offset["y"],"left":radius+offset["x"]};
-        } else if (iconType === "text") {
-            var painter = this._getPainter();
-            var textSize = painter.measureTextMarker();
-            if (!textSize) {
-                pnw={"top":0,"left":0};
-                pse={"top":0,"left":0};
-            } else {
-                var padding = 0;
-                try {
-                    padding = icon["textStyle"]["padding"];
-                }catch (error) {}
-                if (!padding) {padding = 0;}
-                pnw = {"top":(textSize["offset"].y),"left":(-textSize["offset"].x)};
-                pse = {"top":(textSize["height"]-textSize["offset"].y+2*padding),"left":(textSize["width"]+textSize["offset"].x+2*padding)};
-            }
-
-        } else {
-            icon = geo.defaultIcon;
-            height = geo.defaultIcon['height'];
-            width = geo.defaultIcon['width'];
-            pnw = {"top":(height+offset["y"]),"left":(width/2-offset["x"])};
-            pse = {"top":(-offset["y"]),"left":(width/2+offset["x"])};
-        }*/
 
         var pcenter = projection.project(coordinates);
         return map._computeExtentByPixelSize(pcenter, pnw, pse);

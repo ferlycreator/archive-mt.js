@@ -28,7 +28,7 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
         this._coordinates = new Z.Coordinate(nw);
 
         if (!this._coordinates || !this.getMap()) {
-            return;
+            return this;
         }
         var projection = this._getProjection();
         this._setPNw(projection.project(this._coordinates));
@@ -149,8 +149,14 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
 
 
     _containsPoint: function(point) {
-        // TODO
-        return false;
+        var map = this.getMap(),
+            sp = map.coordinateToScreenPoint(this._coordinates),
+            pxSize = map.distanceToPixel(this.width, this.height);
+        // TODO: tolerance
+        var pxMin = new Z.Point(sp.left, sp.top),
+            pxMax = new Z.Point(sp.left + pxSize.px, sp.top + pxSize.py),
+            pxExtent = new Z.Extent(pxMin.left, pxMin.top, pxMax.left, pxMax.top);
+        return Z.Extent.contains(pxExtent, point);
     },
 
     _computeExtent:function(projection) {
