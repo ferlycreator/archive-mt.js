@@ -105,10 +105,16 @@ Z['Sector']=Z.Sector=Z.Polygon.extend({
             atan2 = Math.atan2(y, x),
             angle = atan2 < 0 ? (atan2 + 2 * Math.PI) * 360 / (2 * Math.PI) :
                 atan2 * 360 / (2 * Math.PI);
+        var sAngle = this.startAngle % 360,
+            eAngle = this.endAngle % 360;
+        if (sAngle > eAngle) {
+            eAngle += 360;
+        }
 
+        // TODO: tolerance
         return pp.distanceTo(pc) <= size.width &&
-            angle >= this.startAngle &&
-            angle <= this.endAngle;
+            angle >= sAngle &&
+            angle <= eAngle;
     },
 
     _computeExtent:function(projection) {
