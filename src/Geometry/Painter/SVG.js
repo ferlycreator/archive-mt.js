@@ -465,7 +465,6 @@ Z.SVG.VML= {
     },
 
     refreshShieldVector: function(vector, vectorBean) {
-        this.refreshTextVector(vector, vectorBean);
         if (!vector || !vectorBean) {
             return;
         }
@@ -473,11 +472,10 @@ Z.SVG.VML= {
         if (!path) {
             return;
         }
-        var pathVector = vector.firstChild;
-        if(pathVector) {
-            pathVector.path['v'] = path;
-            var textVector = pathVector.nextSibling;
-            this.refreshTextVector(textVector, vectorBean);
+        if(vector) {
+            vector.path['v'] = path;
+            //var textVector = vector.lastChild;
+            //this.refreshTextVector(textVector, vectorBean);
         }
     },
 
@@ -497,13 +495,8 @@ Z.SVG.VML= {
         vector = Z.SVG.create('shape');
 
         //以下三行不设置的话, IE8无法显示vml图形,原因不明
-        var width = 1, height = 1;
-        if(shieldSymbol) {
-            width = shieldSymbol['width'];
-            height = shieldSymbol['height'];
-        }
-        vector.style.width = width + 'px';
-        vector.style.height = height + 'px';
+        vector.style.width = '1px';
+        vector.style.height = '1px';
         vector['coordsize'] = '1 1';
         vector['coordorigin'] = '0 0';
         var _path = Z.SVG.create('path');
@@ -555,7 +548,7 @@ Z.SVG.VML= {
                  }
             }
 
-            textElement = Z.SVG.create('textbox');
+            textElement = Z.SVG.create('v:textbox');
             textElement.style.fontSize  = fontSize +'px';
             textElement.style.color  = color;
             textElement.style.width  = textWidth +'px';
@@ -568,15 +561,15 @@ Z.SVG.VML= {
     },
 
     addShieldVector: function(container, vectorBean, strokeSymbol, fillSymbol, shieldSymbol) {
-        var group = Z.SVG.create('group');
         var vector =  this._addVector(vectorBean, strokeSymbol, fillSymbol, shieldSymbol);
         var textVector = this._addTextVector(vectorBean, shieldSymbol);
+        textVector.style.left = '0px';
+        textVector.style.top = '0px';
         if(vector&&textVector) {
-            group.appendChild(vector);
-            group.appendChild(textVector);
-            container.appendChild(group);
+            vector.appendChild(textVector);
+            container.appendChild(vector);
         }
-        return group;
+        return vector;
     },
 
     removeVector:function(_container, vector) {
@@ -590,14 +583,14 @@ Z.SVG.VML.create = (function () {
         if (Z.Browser.vml) {
             var doc = window.document;
             if (doc.styleSheets.length < 31) {
-                doc.createStyleSheet().addRule(".zvml", "behavior:url(#default#VML);display: inline-block;position:absolute;");
+                doc.createStyleSheet().addRule('.zvml', 'behavior:url(#default#VML);display: inline-block;position:absolute;');
             } else {
                 // no more room, add to the existing one
                 // http://msdn.microsoft.com/en-us/library/ms531194%28VS.85%29.aspx
-                doc.styleSheets[0].addRule(".zvml", "behavior:url(#default#VML);display: inline-block;position:absolute;");
+                doc.styleSheets[0].addRule('.zvml', 'behavior:url(#default#VML);display: inline-block;position:absolute;');
             }
             try {
-                !doc.namespaces['zvml'] && doc.namespaces.add("zvml", "urn:schemas-microsoft-com:vml");
+                !doc.namespaces['zvml'] && doc.namespaces.add('zvml', 'urn:schemas-microsoft-com:vml');
                 return function (tagName) {
                     return doc.createElement('<zvml:' + tagName + ' class="zvml">');
                 };
