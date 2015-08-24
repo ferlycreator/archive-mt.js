@@ -1,4 +1,44 @@
 Z['GeoUtils']=Z.GeoUtils={
+    distanceToSegment: function(p, p1, p2) {
+        var x = p.left,
+            y = p.top,
+            x1 = p1.left,
+            y1 = p1.top,
+            x2 = p2.left,
+            y2 = p2.top;
+
+        var cross = (x2 - x1) * (x - x1) + (y2 - y1) * (y - y1);
+        if (cross <= 0) {
+            return Math.sqrt((x - x1) * (x - x1) + (y - y1) * (y - y1));
+        }
+        var d2 = (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1);
+        if (cross >= d2) {
+            return Math.sqrt((x - x2) * (x - x2) + (y - y2) * (y - y2));
+        }
+        var r = cross / d2;
+        var px = x1 + (x2 - x1) * r;
+        var py = y1 + (y2 - y1) * r;
+        return Math.sqrt((x - px) * (x - px) + (py - y1) * (py - y1));
+    },
+
+    pointInsidePolygon: function(p, points) {
+        var i, j, p1, p2,
+            len = points.length;
+        var c = false;
+
+        for (i = 0, j = len - 1; i < len; j = i++) {
+            p1 = points[i];
+            p2 = points[j];
+
+            if (((p1.top > p.top) !== (p2.top > p.top)) &&
+                (p.left < (p2.left - p1.left) * (p.top - p1.top) / (p2.top - p1.top) + p1.left)) {
+                c = !c;
+            }
+        }
+
+        return c;
+    },
+
     _isPointOnPath:function(point, geo, tolerance) {
             //检查类型
             if(!point || !geo){

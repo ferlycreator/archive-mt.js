@@ -150,12 +150,15 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
 
     _containsPoint: function(point) {
         var map = this.getMap(),
+            t = this._hitTestTolerance(),
             sp = map.coordinateToScreenPoint(this._coordinates),
             pxSize = map.distanceToPixel(this.width, this.height);
-        // TODO: tolerance
+
         var pxMin = new Z.Point(sp.left, sp.top),
             pxMax = new Z.Point(sp.left + pxSize.px, sp.top + pxSize.py),
-            pxExtent = new Z.Extent(pxMin.left, pxMin.top, pxMax.left, pxMax.top);
+            pxExtent = new Z.Extent(pxMin.left - t, pxMin.top - t,
+                                    pxMax.left + t, pxMax.top + t);
+
         return Z.Extent.contains(pxExtent, point);
     },
 

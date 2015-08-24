@@ -75,8 +75,9 @@ Z['Ellipse']=Z.Ellipse = Z.Polygon.extend({
     },
 
     _containsPoint: function(point) {
-        var map = this.getMap();
-        var pa = map.distanceToPixel(this.width / 2, 0),
+        var map = this.getMap(),
+            t = this._hitTestTolerance(),
+            pa = map.distanceToPixel(this.width / 2, 0),
             pb = map.distanceToPixel(0, this.height /2),
             a = pa.px,
             b = pb.py,
@@ -95,8 +96,13 @@ Z['Ellipse']=Z.Ellipse = Z.Polygon.extend({
         }
         point = new Z.Point(point.left, point.top);
 
-        // TODO: tolerance
-        return point.distanceTo(f1) + point.distanceTo(f2) <= d;
+        /*
+         L1 + L2 = D
+         L1 + t >= L1'
+         L2 + t >= L2'
+         D + 2t >= L1' + L2'
+         */
+        return point.distanceTo(f1) + point.distanceTo(f2) <= d + 2 * t;
     },
 
     _computeExtent:function(projection) {
