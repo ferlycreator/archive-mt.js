@@ -36,15 +36,15 @@ Z.Painter = Z.Class.extend({
      */
     prepareStrokeSymbol:function(symbol) {
         var strokeSymbol = {};
-        strokeSymbol['stroke'] = symbol['lineColor'];
-        strokeSymbol['strokeWidth'] = symbol['lineWidth'];
+        strokeSymbol['stroke'] = Z.Util.setDefaultValue(symbol['lineColor'], '#000000');
+        strokeSymbol['strokeWidth'] = Z.Util.setDefaultValue(symbol['lineWidth'], 1);
         strokeSymbol['strokeDasharray'] = symbol['lineDasharray'];
-        strokeSymbol['strokeOpacity'] = symbol['lineOpacity'];
+        strokeSymbol['strokeOpacity'] = Z.Util.setDefaultValue(symbol['lineOpacity'], 1);
 
         if (symbol['markerLineWidth'] || symbol['markerLineColor']) {
-            strokeSymbol['stroke'] = symbol['markerLineColor'];
+            strokeSymbol['stroke'] = Z.Util.setDefaultValue(symbol['markerLineColor'], '#000000');
             strokeSymbol['strokeDasharray'] = symbol['lineDasharray'];
-            strokeSymbol['strokeWidth'] = symbol['markerLineWidth'];
+            strokeSymbol['strokeWidth'] = Z.Util.setDefaultValue(symbol['markerLineWidth'], 1);
             //markerOpacity优先级较高
             strokeSymbol['strokeOpacity'] = (!Z.Util.isNil(symbol['markerOpacity'])?symbol['markerOpacity']:symbol['markerLineOpacity']);
         }
@@ -56,14 +56,14 @@ Z.Painter = Z.Class.extend({
      */
     prepareFillSymbol:function(symbol) {
         var fillSymbol = {};
-        fillSymbol['fill'] = symbol['polygonFill'];
+        fillSymbol['fill'] = Z.Util.setDefaultValue(symbol['polygonFill'], '#ffffff');
         if (symbol['polygonPatternFile']) {
             fillSymbol['fill'] = symbol['polygonPatternFile'];
         }
         fillSymbol['fillOpacity'] = (!Z.Util.isNil(symbol['polygonOpacity'])?symbol['polygonOpacity']:symbol['polygonPatternOpacity']);
 
         if (symbol['markerFill'] || symbol['markerFillOpacity']) {
-            fillSymbol['fill'] = symbol['markerFill'];
+            fillSymbol['fill'] = Z.Util.setDefaultValue(symbol['markerFill'], '#ffffff');
             //markerOpacity优先级较高
             fillSymbol['fillOpacity'] = (!Z.Util.isNil(symbol['markerOpacity'])?symbol['markerOpacity']:symbol['markerFillOpacity']);
         }
@@ -97,46 +97,36 @@ Z.Painter = Z.Class.extend({
                 break;
             }
         }
-        var width = symbol['markerWidth'];
-        if(!width) {
-            width = 30;
-        }
-        var height = symbol['markerHeight'];
-        if(!height) {
-            height = 30;
-        }
-        var textPlacement = symbol['textPlacement'];
-        if(!textPlacement) {
-            textPlacement = 'point';
-        }
+
         var icon = {
             ////icon
            'url': symbol['markerFile'],
-           'width': symbol['markerWidth'],
-           'height': symbol['markerHeight'],
+           'width': Z.Util.setDefaultValue(symbol['markerWidth'], 30),
+           'height': Z.Util.setDefaultValue(symbol['markerHeight'], 30),
            'type': symbol['markerType'],
-           'opacity': symbol['markerOpacity'],
-           'fillOpacity': symbol['markerFillOpacity'],
-           'fill': symbol['markerFill'],
-           'stroke': symbol['markerLineColor'],
-           'strokeWidth': symbol['markerLineWidth'],
+           'opacity': Z.Util.setDefaultValue(symbol['markerOpacity'], 1),
+           'fillOpacity': Z.Util.setDefaultValue(symbol['markerFillOpacity'],1 ),
+           'fill': Z.Util.setDefaultValue(symbol['markerFill'],'#ffffff'),
+           'stroke': Z.Util.setDefaultValue(symbol['markerLineColor'], '#000000'),
+           'strokeWidth': Z.Util.setDefaultValue(symbol['markerLineWidth'], 1),
            'strokeDasharray': symbol['markerLineDasharray'],
-           'strokeOpacity': symbol['markerLineOpacity'],
+           'strokeOpacity': Z.Util.setDefaultValue(symbol['markerLineOpacity'], 1),
 
            /////text
            'content': symbol['textName'],
-           'font': symbol['textFaceName'],
-           'size': symbol['textSize'],
-           'textWidth': symbol['textWrapWidth'],
-           'padding': symbol['textSpacing'],
-           'color': symbol['textFill'],
-           'textOpacity': symbol['textOpacity'],
-           'textAlign': symbol['textAlign'],
-           'vertical': symbol['textVerticalAlignment'],
-           'horizontal': symbol['textHorizontalAlignment'],
-           'placement': textPlacement,//point line vertex interior
-           'dx': symbol['textDx'],
-           'dy' : symbol['textDy']
+           'font': Z.Util.setDefaultValue(symbol['textFaceName'], 'arial'),
+           'size': Z.Util.setDefaultValue(symbol['textSize'], 12),
+           'textWidth': Z.Util.setDefaultValue(symbol['textWrapWidth'], 30),
+           'padding': Z.Util.setDefaultValue(symbol['textSpacing'], 0),
+           'color': Z.Util.setDefaultValue( symbol['textFill'], '#000000'),
+           'textOpacity': Z.Util.setDefaultValue(symbol['textOpacity'], 1),
+           'textAlign': Z.Util.setDefaultValue(symbol['textAlign'], 'center'),
+           'vertical': Z.Util.setDefaultValue(symbol['textVerticalAlignment'], 'middle'),
+           'horizontal': Z.Util.setDefaultValue(symbol['textHorizontalAlignment'], 'middle'),
+           'placement': Z.Util.setDefaultValue(symbol['textPlacement'], 'point'),
+           'lineSpacing': Z.Util.setDefaultValue(symbol['shieldLineSpacing'], 8),
+           'dx': Z.Util.setDefaultValue(symbol['textDx'], 0),
+           'dy' : Z.Util.setDefaultValue(symbol['textDy'], 0)
         };
         return icon;
     },
@@ -145,47 +135,34 @@ Z.Painter = Z.Class.extend({
         var shieldSymbol = {
             'shieldType': symbol['shieldType'],//label tip
             'content': symbol['shieldName'],
-            'opacity': symbol['shieldOpacity'],
-            'stroke': symbol['shieldLineColor'],
-            'strokeWidth': symbol['shieldLineWidth'],
-            'strokeOpacity': symbol['shieldLineOpacity'],
+            'opacity': Z.Util.setDefaultValue(symbol['shieldOpacity'], 1),
+            'stroke': Z.Util.setDefaultValue(symbol['shieldLineColor'], '#000000'),
+            'strokeWidth': Z.Util.setDefaultValue(symbol['shieldLineWidth'], 1),
+            'strokeOpacity': Z.Util.setDefaultValue(symbol['shieldLineOpacity'], 1),
             'strokeDasharray': symbol['shieldLineDasharray'],
-            'fill': symbol['shieldFill'],
-            'fillOpacity': symbol['shieldFillOpacity'],
+            'fill': Z.Util.setDefaultValue(symbol['shieldFill'], '#ffffff'),
+            'fillOpacity': Z.Util.setDefaultValue(symbol['shieldFillOpacity'], 1),
             'image': symbol['shieldFile'],
-            'unlockImage': symbol['shieldUnlockImage'],
-            'font': symbol['shieldFaceName'],
-            'size': symbol['shieldSize'],
-            'color': symbol['shieldTextFill'],
-            'textOpacity': symbol['shieldTextOpacity'],
-            'placement': symbol['shieldPlacement'],//point line vertex interior
-            'lineSpacing': symbol['shieldLineSpacing'],
-            'textWidth': symbol['shieldWrapWidth'],
+            'unlockImage': Z.Util.setDefaultValue(symbol['shieldUnlockImage'], false),
+            'font': Z.Util.setDefaultValue(symbol['textFaceName'], 'arial'),
+            'size': Z.Util.setDefaultValue(symbol['shieldSize'], 12),
+            'color': Z.Util.setDefaultValue(symbol['shieldTextFill'], '#000000'),
+            'textOpacity': Z.Util.setDefaultValue(symbol['shieldTextOpacity'], 1),
+            'placement': Z.Util.setDefaultValue(symbol['shieldPlacement'], 'point'),
+            'lineSpacing': Z.Util.setDefaultValue(symbol['shieldLineSpacing'], 8),
+            'textWidth': Z.Util.setDefaultValue(symbol['shieldWrapWidth'], 30),
+            'width': Z.Util.setDefaultValue(symbol['shieldWrapWidth'], 30),
+            'height': Z.Util.setDefaultValue(symbol['shieldSize'], 12),
             'wrapbefore': symbol['shieldWrapBefore'],
             'wrapCharacter': symbol['shieldWrapCharacter'],
-            'textDx': symbol['shieldTextDx'],
-            'textDy': symbol['shieldTextDy'],
-            'dx': symbol['shieldDx'],
-            'dy': symbol['shieldDy'],
-            'horizontal': symbol['shieldHorizontalAlignment'], //left middle right
-            'vertical': symbol['shieldVerticalAlignment'], //top middle bottom
-            'textAlign':symbol['shieldJustifyAlignment'] //left center right
+            'textDx': Z.Util.setDefaultValue(symbol['shieldTextDx'], 0),
+            'textDy': Z.Util.setDefaultValue(symbol['shieldTextDy'], 0),
+            'dx': Z.Util.setDefaultValue(symbol['shieldDx'], 0),
+            'dy': Z.Util.setDefaultValue(symbol['shieldDy'], 0),
+            'horizontal': Z.Util.setDefaultValue(symbol['shieldHorizontalAlignment'], 'middle'),//left middle right
+            'vertical': Z.Util.setDefaultValue(symbol['shieldVerticalAlignment'], 'middle'),//top middle bottom
+            'textAlign': Z.Util.setDefaultValue(symbol['shieldJustifyAlignment'], 'left') //left center right
         };
-        var width = symbol['shieldWrapWidth'];
-        if(!width) {
-            width = 30;
-        }
-        var height = symbol['size'];
-        if(!height) {
-            height = 30;
-        }
-        var textPlacement = symbol['textPlacement'];
-        if(!textPlacement) {
-            textPlacement = 'point';
-        }
-        shieldSymbol['width'] = width;
-        shieldSymbol['height'] = height;
-        shieldSymbol['placement'] = textPlacement;
         return shieldSymbol;
     },
 

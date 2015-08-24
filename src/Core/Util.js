@@ -191,6 +191,10 @@ Z.Util = {
         return result;
     },
 
+    setDefaultValue: function(value, defaultValue) {
+        return (!value)?defaultValue:value;
+    },
+
     /**
      * 数字四舍五入, 效率较高
      * @param  {[type]} num [description]

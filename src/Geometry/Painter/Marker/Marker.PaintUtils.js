@@ -140,13 +140,10 @@ Z.Marker.PaintUtils = {
         var fontSize = icon['size'];
         var size = fontSize/2;
         var lineSpacing = icon['lineSpacing'];
-        if(!lineSpacing) {
-            lineSpacing = 8;
-        }
         var textWidth = Z.Util.getLength(content)*size;
         var rowNum = 0;
         if(textWidth>width){
-            rowNum = Math.ceil(textWidth/width)-1;
+            rowNum = Math.ceil(textWidth/width);
         }
         height += rowNum*(fontSize+lineSpacing)/2;
         width += fontSize;

@@ -142,7 +142,8 @@ Z.SVG.SVG = {
     },
 
     refreshVectorSymbol:function(vector, strokeSymbol, fillSymbol, paper) {
-        /**var key;
+        if(!vector) return;
+        var key;
         if (!strokeSymbol) {
             strokeSymbol = Z.SVG.defaultStrokeSymbol;
         }
@@ -174,7 +175,7 @@ Z.SVG.SVG = {
                 }
                 vector.setAttribute(key, fillSymbol[key]);
             }
-        }*/
+        }
     },
 
     /**
@@ -261,7 +262,7 @@ Z.SVG.SVG = {
 
     addVector:function(container, vectorBean, strokeSymbol, fillSymbol) {
         var vector = this._addVector(vectorBean, strokeSymbol, fillSymbol);
-//        Z.SVG.refreshVectorSymbol(vector, strokeSymbol, fillSymbol, container);
+        Z.SVG.refreshVectorSymbol(vector, strokeSymbol, fillSymbol, container);
         if(vector) {
             container.appendChild(vector);
         }
@@ -298,12 +299,7 @@ Z.SVG.SVG = {
         var horizontal = iconSymbol['horizontal'];
         var placement = iconSymbol['placement'];
         var lineSpacing = iconSymbol['lineSpacing'];
-        if(!padding) {
-            padding = 0;
-        }
-        if(!lineSpacing) {
-            lineSpacing = 8;
-        }
+
         var textStyle = 'font-family:' + font + ';' +
                         'font-size:' + size + ';' +
                         'width:' + width + ';' +
@@ -360,6 +356,7 @@ Z.SVG.SVG = {
     addShieldVector:function(container, vectorBean, strokeSymbol, fillSymbol, shieldSymbol) {
         var group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
         var vector =  this._addVector(vectorBean, strokeSymbol, fillSymbol);
+        Z.SVG.refreshVectorSymbol(vector, strokeSymbol, fillSymbol, container);
         var textVector = this._addTextVector(vectorBean, shieldSymbol);
         if(vector&&textVector) {
             group.setAttribute('fill', fillSymbol['fill']);
@@ -393,7 +390,7 @@ Z.SVG.VML= {
 
     //更新矢量图形样式
     refreshVectorSymbol:function(vmlShape, strokeSymbol, fillSymbol) {
-       /** if (!vmlShape) {
+       if (!vmlShape) {
             return null;
         }
         if (!strokeSymbol) {
@@ -404,31 +401,20 @@ Z.SVG.VML= {
             fillSymbol = Z.SVG.defaultFillSymbol;
         }
 
-        if (vmlShape.stroke) {
-            Z.Util.removeDomNode(vmlShape.stroke);
-            delete vmlShape.stroke;
-        }
-
         var stroke = Z.SVG.create('stroke');
-        if (strokeSymbol['strokewidth']) {
-            stroke.weight = strokeSymbol['strokewidth'] + 'px';
+        if (strokeSymbol['strokeWidth']) {
+            stroke.weight = strokeSymbol['strokeWidth'] + 'px';
         }
         if (strokeSymbol['stroke']) {
             stroke.color = strokeSymbol['stroke'];
         }
-        if (strokeSymbol['strokeopacity']) {
-            stroke.opacity = strokeSymbol['strokeopacity'];
+        if (strokeSymbol['strokeOpacity']) {
+            stroke.opacity = strokeSymbol['strokeOpacity'];
         }
-        if (strokeSymbol['strokedasharray']) {
-            stroke.dashStyle = strokeSymbol['strokedasharray'];
+        if (strokeSymbol['strokeDasharray']) {
+            stroke.dashStyle = strokeSymbol['strokeDasharray'];
         }
         vmlShape.appendChild(stroke);
-        vmlShape.stroke = stroke;
-
-        if (vmlShape.fill) {
-            Z.Util.removeDomNode(vmlShape.fill);
-            delete vmlShape.fill;
-        }
 
         if (fillSymbol) {
             var fill = Z.SVG.create('fill');
@@ -437,18 +423,18 @@ Z.SVG.VML= {
                 if (isUrl) {
                     fill.rotate = true;
                     fill.src = isUrl[1];
-                    fill.type = "tile";
+                    fill.type = 'tile';
                 } else {
                     fill.color = fillSymbol['fill'];
+                    fill.filled = 't';
+
                 }
             }
-            if (!Z.Util.isNil(fillSymbol['fillopacity'])) {
-                fill.opacity = fillSymbol['fillopacity'];
+            if (!Z.Util.isNil(fillSymbol['fillOpacity'])) {
+                fill.opacity = fillSymbol['fillOpacity'];
             }
-            // fill.opacity = 1;
             vmlShape.appendChild(fill);
-            vmlShape.fill=fill;
-        }*/
+        }
     },
 
     /**
@@ -462,10 +448,6 @@ Z.SVG.VML= {
             return;
         }
         var path = vectorBean['path'];
-        if (!path) {
-
-            return;
-        }
         vmlShape.path['v'] = path;
     },
 
@@ -484,51 +466,76 @@ Z.SVG.VML= {
 
     refreshShieldVector: function(vector, vectorBean) {
         this.refreshTextVector(vector, vectorBean);
+        if (!vector || !vectorBean) {
+            return;
+        }
+        var path = vectorBean['path'];
+        if (!path) {
+            return;
+        }
+        var pathVector = vector.firstChild;
+        if(pathVector) {
+            pathVector.path['v'] = path;
+            var textVector = pathVector.nextSibling;
+            this.refreshTextVector(textVector, vectorBean);
+        }
     },
 
     addVector: function(container, vectorBean, strokeSymbol, fillSymbol) {
-        var vector;
-        if (!container || !vectorBean) {
-            return null;
-        }
-        vector = Z.SVG.create('shape');
-        //以下三行不设置的话, IE8无法显示vml图形,原因不明
-        vector.style.width='1px';
-        vector.style.height='1px';
-        vector['coordsize'] = '1 1';
-        vector['coordorigin'] = '0 0';
-
-        var _path = Z.SVG.create('path');
-        if(_path) {
-            _path.v = vectorBean['path'];
-            vector.appendChild(_path);
-            vector.path = _path;
-            //this.refreshVectorSymbol(vector, strokeSymbol, fillSymbol);
+        var vector = this._addVector(vectorBean, strokeSymbol, fillSymbol);
+        if(vector) {
             container.appendChild(vector);
         }
         return vector;
     },
 
+    _addVector: function(vectorBean, strokeSymbol, fillSymbol, shieldSymbol) {
+        var vector;
+        if (!vectorBean) {
+            return null;
+        }
+        vector = Z.SVG.create('shape');
+
+        //以下三行不设置的话, IE8无法显示vml图形,原因不明
+        var width = 1, height = 1;
+        if(shieldSymbol) {
+            width = shieldSymbol['width'];
+            height = shieldSymbol['height'];
+        }
+        vector.style.width = width + 'px';
+        vector.style.height = height + 'px';
+        vector['coordsize'] = '1 1';
+        vector['coordorigin'] = '0 0';
+        var _path = Z.SVG.create('path');
+        _path.v = vectorBean['path'];
+        vector.appendChild(_path);
+        vector.path = _path;
+        this.refreshVectorSymbol(vector, strokeSymbol, fillSymbol);
+        return vector;
+    },
 
     addTextVector: function(container, vectorBean, iconSymbol) {
-        var rectElement;
+        var textVector = this._addTextVector(vectorBean, iconSymbol);
+        if(textVector) {
+            container.appendChild(textVector);
+        }
+        return textVector;
+    },
+
+    _addTextVector: function(vectorBean, iconSymbol) {
+        var textElement;
         var font = iconSymbol['font'];
-        var fontSize = (!iconSymbol['size'])?12:iconSymbol['size'];
+        var fontSize = iconSymbol['size'];
         var width = iconSymbol['textWidth'];
-        var padding = (!iconSymbol['padding'])?0:iconSymbol['padding'];
+        var padding = iconSymbol['padding'];
         var color = iconSymbol['color'];
         var opacity = iconSymbol['textOpacity'];
         var align = iconSymbol['textAlign'];
         var vertical = iconSymbol['vertical'];
         var horizontal = iconSymbol['horizontal'];
-        var placement = (!iconSymbol['placement'])?'point':iconSymbol['placement'];
-        var lineSpacing = (!iconSymbol['lineSpacing'])?8:iconSymbol['lineSpacing'];
+        var placement = iconSymbol['placement'];
+        var lineSpacing = iconSymbol['lineSpacing'];
 
-        var stroke = (!iconSymbol['stroke'])?'#000000':iconSymbol['stroke'];
-        var strokeWidth = iconSymbol['strokeWidth'];
-        var strokeOpacity = (!iconSymbol['strokeOpacity'])?1:iconSymbol['strokeOpacity'];
-        var fill = (!iconSymbol['fill'])?'#ffffff':iconSymbol['fill'];
-        var fillOpacity = (!iconSymbol['fillOpacity'])?1:iconSymbol['fillOpacity'];
 
         var dx = parseInt(iconSymbol['dx'],0);
         var dy = parseInt(iconSymbol['dy'],0);
@@ -538,13 +545,7 @@ Z.SVG.VML= {
             var content = text['content'];
             var size = fontSize/2;
             var textWidth = Z.Util.getLength(content)*size;
-
-            var textElement = Z.SVG.create('textbox');
-            textElement.style.fontSize  = fontSize +'px';
-            textElement.style.color  = color;
-            textElement.style.width  = textWidth +'px';
-            textElement.style.textAlign = align;
-            var resultStr = content;
+            var resultStr = '';
             if(textWidth>width){
                  var contents = Z.Util.splitContent(content, textWidth, size, width);
                  var result = '';
@@ -553,27 +554,29 @@ Z.SVG.VML= {
                     resultStr += content+'<br/>';
                  }
             }
+
+            textElement = Z.SVG.create('textbox');
+            textElement.style.fontSize  = fontSize +'px';
+            textElement.style.color  = color;
+            textElement.style.width  = textWidth +'px';
+            textElement.style.textAlign = align;
             textElement.innerHTML   = resultStr;
-            if(stroke || fill) {
-                rectElement = Z.SVG.create('rect');
-                rectElement.style.fillColor  = fill;
-                rectElement.style.strokeColor  = stroke;
-                rectElement.style.strokeWeight  = strokeWidth +'px';
-                rectElement.style.left = (location[0])+'px';
-                rectElement.style.top = (location[1] + lineSpacing + size)+'px';
-                rectElement.appendChild(textElement);
-            } else {
-                textElement.style.left = (location[0])+'px';
-                textElement.style.top = (location[1] + lineSpacing + size)+'px';
-                rectElement = textElement;
-            }
-            container.appendChild(rectElement);
+            textElement.style.left = (location[0])+'px';
+            textElement.style.top = (location[1] + lineSpacing + size)+'px';
         }
-        return rectElement;
+        return textElement;
     },
 
     addShieldVector: function(container, vectorBean, strokeSymbol, fillSymbol, shieldSymbol) {
-        return this.addTextVector(container, vectorBean, shieldSymbol);
+        var group = Z.SVG.create('group');
+        var vector =  this._addVector(vectorBean, strokeSymbol, fillSymbol, shieldSymbol);
+        var textVector = this._addTextVector(vectorBean, shieldSymbol);
+        if(vector&&textVector) {
+            group.appendChild(vector);
+            group.appendChild(textVector);
+            container.appendChild(group);
+        }
+        return group;
     },
 
     removeVector:function(_container, vector) {
