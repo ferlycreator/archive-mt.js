@@ -23,9 +23,12 @@ Z.LodConfig=Z.Class.extend({
          * @param  {[LodInfo]} lodInfo [图层配置属性,参考LodInfo.js中的例子]
          */
         initialize:function(lodInfo) {
-            if (!this.checkLodInfo(lodInfo)) {return;}
+            if (!this.checkLodInfo(lodInfo)) {
+                throw new Error(this.exceptions['INVALID_CRS']+':'+lodInfo);
+            }
             //lodInfo是预设值的字符串
             var lodName = null;
+            //预定义的lodinfo
             if (Z.Util.isString(lodInfo)) {
                 lodName = lodInfo;
                 lodInfo = Z['LodInfo'][lodInfo.toLowerCase()];
@@ -59,8 +62,8 @@ Z.LodConfig=Z.Class.extend({
             }*/
             var tileSystem;
             if (!lodInfo['tileSystem']) {
-                //默认是谷歌瓦片系统
-                tileSystem = Z.TileSystem['DEFAULT'];
+                //默认是WEB-MERCATOR瓦片系统
+                tileSystem = Z.TileSystem['WEB-MERCATOR'];
             } else if (Z.Util.isString(lodInfo['tileSystem'])){
                 tileSystem = Z.TileSystem.getInstance(lodInfo['tileSystem']);
             } else {
@@ -73,11 +76,11 @@ Z.LodConfig=Z.Class.extend({
             }
             this.tileSystem = tileSystem;
 
-            if (this['origin']) {
+            /*if (this['origin']) {
                 //direction of projected coordinate
                 this.dx = (this['origin']['right']>=this['origin']['left'])?1:-1;
                 this.dy = (this['origin']['top']>=this['origin']['bottom'])?1:-1;
-            }
+            }*/
         },
 
         checkLodInfo:function(lodInfo) {

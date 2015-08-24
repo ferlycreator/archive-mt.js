@@ -1,6 +1,7 @@
 Z['LodInfo']={
     'crs3857':{
-        'projection':'ESPG:3857', //gcj02 | gcj02ll | 4326 | 3857 | bd09
+        'projection':'ESPG:3857', //4326 | 3857 | bd09
+        'tileSystem' : 'WEB-MERCATOR',
         'maxZoomLevel':18,
         'minZoomLevel':1,
         'resolutions':[
@@ -24,7 +25,7 @@ Z['LodInfo']={
             1.1943285667419434,
             0.5971642833709717
         ],
-        'origin': {
+        'fullExtent': {
             "top":20037508.34,
             "left":-20037508.34,
             "bottom":-20037508.34,
@@ -36,9 +37,9 @@ Z['LodInfo']={
         }
     },
     'global-mercator':{
-        'projection':'ESPG:3857', //gcj02 | gcj02ll | 4326 | 3857 | bd09
+        'projection':'ESPG:3857', // 4326 | 3857 | bd09 | pixel
         'tileSystem':'TMS-GLOBAL-MERCATOR',
-        'maxZoomLevel':18,
+        'maxZoomLevel':22,
         'minZoomLevel':1,
         'resolutions':[
             156543.0339,
@@ -61,7 +62,7 @@ Z['LodInfo']={
             1.1943285667419434,
             0.5971642833709717
         ],
-        'origin': {
+        'fullExtent': {
             "top":20037508.34,
             "left":-20037508.34,
             "bottom":-20037508.34,
@@ -86,7 +87,7 @@ Z['LodInfo']={
             }
             return resolutions;
         })(),
-        'origin':{
+        'fullExtent':{
             "top":33554432,
             "left":-33554432,
             "bottom":-33554432,

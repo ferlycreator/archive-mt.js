@@ -81,7 +81,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         delete options['maxZoomLevel'];
         this._minZoomLevel = options['minZoomLevel'];
         delete options['minZoomLevel'];
-        this._center = options['center'];
+        this._center = new Z.Coordinate(options['center']);
         delete options['center'];
 
         this._allowSlideMap = true;
@@ -99,7 +99,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * Load Map
      * @expose
      */
-    Load:function(){
+    /*Load:function(){
         if (this._loaded) {return;}
         if (!this._baseTileLayer || !this._baseTileLayer._getLodConfig) {
             throw new Error(this.exceptions['NO_BASE_TILE_LAYER']);
@@ -110,7 +110,7 @@ Z['Map']=Z.Map=Z.Class.extend({
             _this._Load();
         });
         return this;
-    },
+    },*/
 
     /**
      * 设定地图鼠标跟随提示框内容，设定的提示框会一直跟随鼠标显示
@@ -412,7 +412,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     setBaseTileLayer:function(baseTileLayer) {
-        if (!baseTileLayer || !baseTileLayer._getLodConfig) {
+        if (!baseTileLayer) {
             //TODO 是否要抛出错误?
             return;
         }
@@ -424,18 +424,21 @@ Z['Map']=Z.Map=Z.Class.extend({
         this._baseTileLayer = baseTileLayer;
         var me = this;
         //删除背景
-        this._baseTileLayer.bind(baseTileLayer.events.LAYER_LOADED,function() {
+        this._baseTileLayer.on(baseTileLayer.events.LAYER_LOADED,function() {
             me._removeBackGroundDOM();
         });
-        var lodConfig = this._baseTileLayer._getLodConfig();
-        this._setLodConfig(lodConfig,function(changed) {
+        this._baseTileLayer._loadLodConfig(function() {
+            var lodConfig = me._baseTileLayer._getLodConfig();
+            var changed = me._setLodConfig(lodConfig);
             if (me._loaded) {
                 me._baseTileLayer.load();
+                if (changed) {
+                    me._fireEvent(me.events.LODCONFIG_CHANGED);
+                }
+            } else {
+                me._Load();
             }
-            if (changed) {
-                me._fireEvent(me.events.LODCONFIG_CHANGED);
-                // me.fire(me.events.LODCONFIG_CHANGED,{'target':me});
-            }
+
         });
         return this;
     },
@@ -751,25 +754,26 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 设置地图的lodConfig
      * @param {LodConfig} lodConfig  新的lodConfig
-     * @param {Fn} callbackFn 新的lodConfig载入完后的回调函数
      */
-    _setLodConfig:function(lodConfig,callbackFn) {
+    _setLodConfig:function(lodConfig) {
         if (!lodConfig || !lodConfig.load) {
             throw new Error(this.exceptions['INVALID_LODCONFIG']);
         }
         //lodConfig相同,无需改变
         if (this._lodConfig && this._lodConfig.equals(lodConfig, this.getZoomLevel())) {
-            callbackFn(false);
-            return;
+            // callbackFn(false);
+            return false;
         }
         this._lodConfig = lodConfig;
-        this.dx = (this._lodConfig['origin']['right']>=this._lodConfig['origin']['left'])?1:-1;
-        this.dy = (this._lodConfig['origin']['top']>=this._lodConfig['origin']['bottom'])?1:-1;
-        var _this=this;
-        lodConfig.load(function() {
-            _this._checkMapStatus();
-            callbackFn(true);
-        });
+        this.dx = (this._lodConfig['fullExtent']['right']>=this._lodConfig['fullExtent']['left'])?1:-1;
+        this.dy = (this._lodConfig['fullExtent']['top']>=this._lodConfig['fullExtent']['bottom'])?1:-1;
+        this._checkMapStatus();
+        return true;
+        // callbackFn(true);
+        // lodConfig.load(function() {
+        //     _this._checkMapStatus();
+        //     callbackFn(true);
+        // });
     },
 
     /**
