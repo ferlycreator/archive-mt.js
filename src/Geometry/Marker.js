@@ -65,11 +65,13 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
             width = icon.width,
             height = icon.height,
             offset = icon.offset,
+            x = offset.x,
+            y = offset.y,
             center = this._getCenterDomOffset();
-        // TODO: offset ???
-        var pxMin = new Z.Point(center.left - width/2, center.top - height),
-            pxMax = new Z.Point(center.left + width/2, center.top),
+        var pxMin = new Z.Point(center.left - width/2 + x, center.top - height - y),
+            pxMax = new Z.Point(center.left + width/2 + x, center.top - y),
             pxExtent = new Z.Extent(pxMin.left, pxMin.top, pxMax.left, pxMax.top);
+
         return Z.Extent.contains(pxExtent, point);
     },
 
