@@ -47,8 +47,20 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
             this.options['urlTemplate'] = this.options['urlTemplate'].replace(/{X}/g,'{x}').replace(/{Y}/g,'{y}').replace(/{Z}/g,'{z}').replace(/{S}/g,'{s}');
         }*/
         Z.Util.setOptions(this,opts);
-        this._lodConfig = new Z.LodConfig(this.options['crs']);
+
         // this.extent = lodInfo['fullExtent'];
+    },
+
+    /**
+     * * 加载LodConfig
+     * @param  {fn} onLoaded 加载完成后的回调函数
+     */
+    _loadLodConfig:function(onLoaded) {
+        //TileLayer只支持预定义的CRS
+        this._lodConfig = new Z.LodConfig(this.options['crs']);
+        if (onLoaded) {
+            onLoaded();
+        }
     },
 
     _getLodConfig:function(){
@@ -69,7 +81,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         var domain = '';
         if (this.options['subdomains']) {
             var subdomains = this.options['subdomains'];
-            if (Z.Util.isArray(subdomains) && subdomains.length>0) {
+            if (Z.Util.isArrayHasData(subdomains)) {
                 var rand = Math.round(Math.random()*(subdomains.length-1));
                 domain = subdomains[rand];
             }
