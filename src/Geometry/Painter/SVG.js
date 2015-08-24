@@ -474,8 +474,8 @@ Z.SVG.VML= {
         }
         if(vector) {
             vector.path['v'] = path;
-            //var textVector = vector.lastChild;
-            //this.refreshTextVector(textVector, vectorBean);
+            var textVector = vector.lastChild;
+            this.refreshTextVector(textVector, vectorBean);
         }
     },
 

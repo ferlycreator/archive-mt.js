@@ -116,7 +116,7 @@ Z.Painter = Z.Class.extend({
            'content': symbol['textName'],
            'font': Z.Util.setDefaultValue(symbol['textFaceName'], 'arial'),
            'size': Z.Util.setDefaultValue(symbol['textSize'], 12),
-           'textWidth': Z.Util.setDefaultValue(symbol['textWrapWidth'], 30),
+           'textWidth': symbol['textWrapWidth'],
            'padding': Z.Util.setDefaultValue(symbol['textSpacing'], 0),
            'color': Z.Util.setDefaultValue( symbol['textFill'], '#000000'),
            'textOpacity': Z.Util.setDefaultValue(symbol['textOpacity'], 1),
@@ -124,9 +124,11 @@ Z.Painter = Z.Class.extend({
            'vertical': Z.Util.setDefaultValue(symbol['textVerticalAlignment'], 'middle'),
            'horizontal': Z.Util.setDefaultValue(symbol['textHorizontalAlignment'], 'middle'),
            'placement': Z.Util.setDefaultValue(symbol['textPlacement'], 'point'),
-           'lineSpacing': Z.Util.setDefaultValue(symbol['shieldLineSpacing'], 8),
-           'dx': Z.Util.setDefaultValue(symbol['textDx'], 0),
-           'dy' : Z.Util.setDefaultValue(symbol['textDy'], 0)
+           'lineSpacing': Z.Util.setDefaultValue(symbol['textLineSpacing'], 0),
+           'dx': Z.Util.setDefaultValue(symbol['dx'], 0),
+           'dy' : Z.Util.setDefaultValue(symbol['dy'], 0),
+           'textDx': Z.Util.setDefaultValue(symbol['textDx'], 0),
+           'textDy' : Z.Util.setDefaultValue(symbol['textDy'], 0)
         };
         return icon;
     },
@@ -150,8 +152,8 @@ Z.Painter = Z.Class.extend({
             'textOpacity': Z.Util.setDefaultValue(symbol['shieldTextOpacity'], 1),
             'placement': Z.Util.setDefaultValue(symbol['shieldPlacement'], 'point'),
             'lineSpacing': Z.Util.setDefaultValue(symbol['shieldLineSpacing'], 8),
-            'textWidth': Z.Util.setDefaultValue(symbol['shieldWrapWidth'], 30),
-            'width': Z.Util.setDefaultValue(symbol['shieldWrapWidth'], 30),
+            'textWidth': symbol['shieldWrapWidth'],
+            'width': Z.Util.setDefaultValue(symbol['shieldWrapWidth'],0),
             'height': Z.Util.setDefaultValue(symbol['shieldSize'], 12),
             'wrapbefore': symbol['shieldWrapBefore'],
             'wrapCharacter': symbol['shieldWrapCharacter'],

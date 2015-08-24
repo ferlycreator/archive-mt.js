@@ -9,10 +9,8 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
             'url' : Z.host + '/engine/images/marker.png',
             'height' : 30,
             'width' : 22,
-            'offset' : {
-                'x' : 0,
-                'y' : 0
-            }
+            'dx' : 0,
+            'dy' : 0
         }
     },
 
@@ -61,18 +59,36 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
     },*/
 
     _containsPoint: function(point) {
-        var icon = this.getSymbol(),
-            width = icon.width,
-            height = icon.height,
-            offset = icon.offset,
-            x = offset.x,
-            y = offset.y,
+        var symbol = this.getSymbol();
+        var markerSize = this._getMarkerSize(symbol);
+        var width = markerSize.width,
+            height = markerSize.height,
+            x = symbol.dx,
+            y = symbol.dy,
             center = this._getCenterDomOffset();
         var pxMin = new Z.Point(center.left - width/2 + x, center.top - height - y),
             pxMax = new Z.Point(center.left + width/2 + x, center.top - y),
             pxExtent = new Z.Extent(pxMin.left, pxMin.top, pxMax.left, pxMax.top);
-
         return Z.Extent.contains(pxExtent, point);
+    },
+
+    _getMarkerSize: function(symbol) {
+        var width = 0,height =0;
+        if(symbol['shieldType']) {
+            width = Z.Util.setDefaultValue(symbol['shieldWrapWidth'], 0);
+            height = Z.Util.setDefaultValue(symbol['shieldSize'], 0) +
+                     Z.Util.setDefaultValue(symbol['shieldLineSpacing'], 0);
+        } else {
+            width = Z.Util.setDefaultValue(symbol['markerWidth'], 0);
+            height = Z.Util.setDefaultValue(symbol['markerHeight'], 0);
+            if(symbol['content']) {
+                var textWidth = Z.Util.setDefaultValue(symbol['textWidth'], 0);
+                width = (width>textWidth)?width:textWidth;
+                var textHeight = Z.Util.setDefaultValue(symbol['size'], 0);
+                height = (height>textHeight)?height:textHeight;
+            }
+        }
+        return {'width': width, 'height': height};
     },
 
     _computeExtent:function(projection) {
