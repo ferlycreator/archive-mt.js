@@ -60,11 +60,11 @@ Z['Circle']=Z.Circle=Z.Polygon.extend({
     _containsPoint: function(point) {
         var center = this._getCenterDomOffset(),
             size = this.getSize(),
+            t = this._hitTestTolerance(),
             pc = new Z.Point(center.left, center.top),
             pp = new Z.Point(point.left, point.top);
 
-        // TODO: tolerance
-        return pp.distanceTo(pc) <= size.width;
+        return pp.distanceTo(pc) <= size.width + t;
     },
 
     _computeExtent:function(projection) {

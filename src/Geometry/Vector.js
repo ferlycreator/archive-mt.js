@@ -10,6 +10,11 @@ Z.Vector = Z.Geometry.extend({
         }
     },
 
+    _hitTestTolerance: function() {
+        var w = this.options.symbol.strokeWidth;
+        return w ? w / 2 : 0;
+    },
+
     _computeVisualExtent:function(projection) {
         /*var strokeSymbol = this.getStrokeSymbol();*/
         var width = 0;
