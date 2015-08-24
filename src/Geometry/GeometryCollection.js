@@ -38,11 +38,10 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
     setGeometries:function(geometries) {
         this._checkGeometries(geometries);
         this.geometries = geometries;
-        if (!this.getLayer()) {
-            return;
+        if (this.getLayer()) {
+            this._prepareGeometries();
+            this._onShapeChanged();
         }
-        this._prepareGeometries();
-        this._onShapeChanged();
         return this;
     },
 
@@ -101,7 +100,15 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
     },
 
     _containsPoint: function(point) {
-        // TODO
+        var i, len, geo;
+
+        for (i = 0, len = this.geometries.length; i < len; i++) {
+            geo = this.geometries[i];
+            if (geo._containsPoint(point)) {
+                return true;
+            }
+        }
+
         return false;
     },
 

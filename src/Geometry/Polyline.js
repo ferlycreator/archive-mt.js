@@ -32,11 +32,35 @@ Z['Polyline']=Z.Polyline = Z.Vector.extend({
     },
 
     _containsPoint: function(point) {
-        // TODO
-        // get pixel extent
+        var map = this.getMap(),
+            extent = this.getExtent(),
+            nw = new Z.Coordinate(extent.xmin, extent.ymax),
+            se = new Z.Coordinate(extent.xmax, extent.ymin),
+            pxMin = map.coordinateToScreenPoint(nw),
+            pxMax = map.coordinateToScreenPoint(se),
+            pxExtent = new Z.Extent(pxMin.left, pxMin.top, pxMax.left, pxMax.top);
+
+        point = new Z.Point(point.left, point.top);
+
+        if (!pxExtent.contains(point)) { return false; }
+
+        // TODO: tolerance
+        var tolerance = 0;
 
         // screen points
         var points = this._untransformToOffset(this._getPrjPoints());
+
+        var i, p1, p2,
+            len = points.length;
+
+        for (i = 0, len = points.length; i < len - 1; i++) {
+            p1 = points[i];
+            p2 = points[i + 1];
+
+            if (Z.GeoUtils.distanceToSegment(point, p1, p2) <= tolerance) {
+                return true;
+            }
+        }
 
         return false;
     },
