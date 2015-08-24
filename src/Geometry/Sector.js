@@ -96,8 +96,19 @@ Z['Sector']=Z.Sector=Z.Polygon.extend({
     },
 
     _containsPoint: function(point) {
-        // TODO
-        return false;
+        var center = this._getCenterDomOffset(),
+            size = this.getSize(),
+            pc = new Z.Point(center.left, center.top),
+            pp = new Z.Point(point.left, point.top),
+            x = pp.left - pc.left,
+            y = pc.top - pp.top,
+            atan2 = Math.atan2(y, x),
+            angle = atan2 < 0 ? (atan2 + 2 * Math.PI) * 360 / (2 * Math.PI) :
+                atan2 * 360 / (2 * Math.PI);
+
+        return pp.distanceTo(pc) <= size.width &&
+            angle >= this.startAngle &&
+            angle <= this.endAngle;
     },
 
     _computeExtent:function(projection) {
