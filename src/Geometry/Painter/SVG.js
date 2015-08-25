@@ -301,7 +301,7 @@ Z.SVG.SVG = {
         var lineSpacing = iconSymbol['lineSpacing'];
 
         var textStyle = 'font-family:' + font + ';' +
-                        'font-size:' + size + ';' +
+                        'font-size:' + fontSize + ';' +
                         'width:' + width + ';' +
                         'fill:' + color + ';' +
                         'opacity:' + opacity + ';' +
@@ -314,10 +314,12 @@ Z.SVG.SVG = {
             var fontSize = iconSymbol['size'];
             var size = fontSize/2;
             var textWidth = Z.Util.getLength(content)*size;
-
+            textElement.setAttribute('font-family', font);
+            textElement.setAttribute('font-size', fontSize);
+            textElement.setAttribute('style', textStyle);
             textElement.setAttribute('x', location[0]);
             textElement.setAttribute('y', location[1] + lineSpacing + size);
-            textElement.setAttribute('style', textStyle);
+            //textElement.setAttribute('style', textStyle);
             if(textWidth>width){
                  var contents = Z.Util.splitContent(content, textWidth, size, width);
                  var result = '';
