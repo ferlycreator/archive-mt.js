@@ -171,7 +171,7 @@ Z.Map.include({
             var allGeos = layers[i].getAllGeometries();
             for (var j=0, length = allGeos.length; j<length; j++) {
                 var geo = allGeos[i];
-                if (geo._containsPoint(point)) {
+                if (geo&&geo._containsPoint(point)) {
                     hits.push(geo);
                 }
             }

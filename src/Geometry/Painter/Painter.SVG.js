@@ -7,9 +7,7 @@ Z.Painter.SVG = Z.Painter.extend({
      */
     drawVector: function(vectorBean, strokeSymbol, fillSymbol) {
         var vectorPaper = this._getVectorPaper(vectorBean);
-        this.vector = Z.SVG.addVector(vectorPaper, vectorBean,
-                                   Z.Util.convertFieldNameStyle(strokeSymbol,'minus'),
-                                   Z.Util.convertFieldNameStyle(fillSymbol,'minus'));
+        this.vector = Z.SVG.addVector(vectorPaper, vectorBean, strokeSymbol, fillSymbol);
         return this.vector;
     },
 

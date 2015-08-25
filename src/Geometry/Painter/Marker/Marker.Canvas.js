@@ -22,7 +22,7 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
         }
         var offset = this.getMarkerDomOffset();
         var pt = map._domOffsetToScreen({'left':offset[0],top:offset[1]});
-        var icon = this.iconSymbol;
+        var icon = this.getGeoIcon();
         if(icon) {
             var url = icon['url'];
             if(url&&url.length>0) {
@@ -37,7 +37,7 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
                 this.paintTextMarker(context, pt);
             }
         } else {
-            icon = this.shieldSymbol;
+            icon = this.getGeoIcon();
             var shieldType = icon['shieldType'];
             if(shieldType&&shieldType.length>0) {
                 this.paintShieldMarker(context, pt);

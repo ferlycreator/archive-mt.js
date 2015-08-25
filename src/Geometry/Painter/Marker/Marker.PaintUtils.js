@@ -146,9 +146,9 @@ Z.Marker.PaintUtils = {
         var textWidth = Z.Util.getLength(content)*size;
         var rowNum = 0;
         if(textWidth>width){
-            rowNum = Math.ceil(textWidth/width)-1;
+            rowNum = Math.ceil(textWidth/width);
         }
-        height += rowNum*(fontSize+lineSpacing)/2;
+        height += rowNum*((fontSize+lineSpacing)/2);
         width += fontSize;
         var points = [];
         var point0,point1,point2,point3;

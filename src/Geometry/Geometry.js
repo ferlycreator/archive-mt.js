@@ -35,15 +35,13 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         'editable':true
     },
 
-    /*//默认标注样式
+    //默认标注样式
     defaultIcon: {
         'url' : Z.host + '/engine/images/marker.png',
         'height' : 30,
         'width' : 22,
-        'offset' : {
-            'x' : 0,
-            'y' : 0
-        }
+        'dx': 0,
+        'dy': 0
     },
 
     // 默认线样式
@@ -54,7 +52,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         'strokeDasharray': '-',
         'fill' : '#ffffff',
         'fillOpacity' : 1
-    },*/
+    },
 
     /**
      * 初始化传入的option参数
@@ -65,22 +63,6 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
             return;
         }
         Z.Util.setOptions(this,opts);
-        /*this.opts = opts;
-        if (opts['symbol']) {
-            this.setSymbol(opts['symbol']);
-        }
-        if (!Z.Util.isNil(opts['id'])) {
-            this.setId(opts['id']);
-        }
-        if (opts['infoWindow']) {
-            this.setInfoWindow(opts['infoWindow']);
-        }
-        if (opts['label']) {
-            this.setLabel(opts['label']);
-        }
-        if (opts['properties']) {
-            this.setProperties(opts['properties']);
-        }*/
     },
 
     /**
