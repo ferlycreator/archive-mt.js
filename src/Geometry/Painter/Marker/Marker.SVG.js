@@ -340,7 +340,7 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
 
         geometry.markerIcon = markerIcon;
         _graphicDom.appendChild(markerIcon);
-        this.setZIndex(geometry,this.zIndex);
+        this._setZIndex(geometry,this.zIndex);
         return _graphicDom;
     }
 

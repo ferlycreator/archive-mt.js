@@ -97,6 +97,9 @@ Z['Extent']=Z.Extent=Z.Geometry.extend({
             } else if (coordinate instanceof Z.Point) {
                 x = coordinate.left;
                 y = coordinate.top;
+            } else {
+                x = coordinate.left;
+                y = coordinate.top;
             }
             return (x >= extent.xmin) &&
                 (x <= extent.xmax) &&
