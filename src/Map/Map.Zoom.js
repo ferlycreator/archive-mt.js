@@ -98,7 +98,7 @@ Z.Map.include({
             };
         }
         this._removeBackGroundDOM();
-        var resolutions=this._lodConfig['resolutions'];
+        var resolutions=this._tileConfig['resolutions'];
         this._zoomLevel=nextZoomLevel;
         var scale = resolutions[this._originZoomLevel]/resolutions[nextZoomLevel];
         var pixelOffset;

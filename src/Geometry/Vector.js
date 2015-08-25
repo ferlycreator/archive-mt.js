@@ -32,7 +32,7 @@ Z.Vector = Z.Geometry.extend({
         }       */
         var extent = this._getPrjExtent();
         var map = this.getMap();
-        var res = map._getLodConfig().getResolution(map.getZoomLevel());
+        var res = map._getTileConfig().getResolution(map.getZoomLevel());
         var expanded =  Z.Extent.expand(extent,res*width);
         if (!expanded) {
             return null;

@@ -21,7 +21,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         //TODO options应该设置到this.options中
         this.map = map;
         if (!this.map) {return;}
-        this._lodConfig = map._getLodConfig();
+        this._tileConfig = map._getTileConfig();
         this.enable();
         return this;
     },
@@ -94,10 +94,10 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
     },
 
     _getProjection:function() {
-        if (!this._lodConfig) {
+        if (!this._tileConfig) {
             return null;
         }
-        return this._lodConfig.getProjectionInstance();
+        return this._tileConfig.getProjectionInstance();
     },
 
     /**

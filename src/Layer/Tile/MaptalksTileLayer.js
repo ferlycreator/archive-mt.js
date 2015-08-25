@@ -23,10 +23,10 @@ Z['MaptalksTileLayer'] = Z.MaptalksTileLayer = Z.TileLayer.extend({
     },
 
     /**
-     * * 加载LodConfig
+     * * 加载TileConfig
      * @param  {fn} onLoaded 加载完成后的回调函数
      */
-    _loadLodConfig:function(onLoaded) {
+    _loadTileConfig:function(onLoaded) {
         this._readAndParseServiceInfo(function() {
             if (onLoaded) {
                 onLoaded();
@@ -40,12 +40,12 @@ Z['MaptalksTileLayer'] = Z.MaptalksTileLayer = Z.TileLayer.extend({
      * @param  {fn} onLoadedFn 读取完后的回调
      */
     _readAndParseServiceInfo:function(onLoadedFn) {
-        var url = (this.options['host']?this.options['host']:Z.host)+
-                    '/tileservice/lod?n='+this.options['service'];
+        var remoteHost = (this.options['host']?this.options['host']:Z.host);
+        var url = remoteHost + '/tileservice/tileinfo?n=' + this.options['service'];
         var me = this;
         var ajax = new Z.Util.Ajax(url,0,null,function(responseText){
-            var lodInfo = Z.Util.parseJson(responseText);
-            me._lodConfig = new Z.LodConfig(lodInfo);
+            var tileInfo = Z.Util.parseJson(responseText);
+            me._tileConfig = new Z.TileConfig(tileInfo);
             if (onLoadedFn) {
                 onLoadedFn();
             }

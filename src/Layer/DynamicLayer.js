@@ -103,8 +103,8 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
 
     _getRequestUrlParams:function(topIndex,leftIndex,zoomLevel) {
         var map = this.getMap();
-        var lodConfig = map._getLodConfig();
-        var tileNw = lodConfig.getTileProjectedNw(topIndex,leftIndex,zoomLevel);
+        var tileConfig = map._getTileConfig();
+        var tileNw = tileConfig.getTileProjectedNw(topIndex,leftIndex,zoomLevel);
         var params="";
         params+="guid="+this.guid;
         params+="&nw="+tileNw.x+","+tileNw.y;
@@ -115,17 +115,17 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
 
     _formQueryString:function(condition,spatialFilter) {
         var map = this.getMap();
-        var lodConfig = map._getLodConfig();
+        var tileConfig = map._getTileConfig();
         var padding = this.getPadding();
         var config = {
             'coordinateType':(Z.Util.isNil(this.options['coordinateType'])?null:this.options['coordinateType']),
-            'projection':lodConfig['projection'],
+            'projection':tileConfig['projection'],
             'guid':this.guid,
             'encoding':'utf-8',
             'mapdb':this.options['mapdb'],
             'padding':padding["width"]+","+padding["height"],
-            'len':lodConfig["tileSize"]["width"],
-            'res':lodConfig['resolutions'][map.getZoomLevel()],
+            'len':tileConfig["tileSize"]["width"],
+            'res':tileConfig['resolutions'][map.getZoomLevel()],
             'layers':this.options['layers'],
             'condition':condition,
             'spatialFilter':(Z.Util.isNil(spatialFilter)?null:encodeURIComponent(spatialFilter)),
@@ -139,21 +139,21 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
             }
         }
         return params.join('&');
-        /*var ret = "projection="+lodConfig['projection']+"&guid="+this.guid;
+        /*var ret = "projection="+tileConfig['projection']+"&guid="+this.guid;
         ret+="&encoding=utf-8";
         ret+="&mapdb="+this.options["mapdb"];
         // ret+="&coordinateType="+map.getCoordinateType();
 
         ret+="&padding="+padding["width"]+","+padding["height"];
-        ret+="&len="+lodConfig["tileSize"]["width"];
+        ret+="&len="+tileConfig["tileSize"]["width"];
         var opacity = this.getOpacity();
         if (!Z.Util.isNil(opacity)) {
             ret += "&opacity="+this.opacity;
         }
 
         if (map) {
-            ret+="&r="+lodConfig['resolutions'][map.getZoomLevel()];
-            var nt = (map._getProjection().srs != 'ESPG:4326');
+            ret+="&r="+tileConfig['resolutions'][map.getZoomLevel()];
+            var nt = (map._getProjection().srs != 'EPSG:4326');
             ret+="&nt="+nt;
         }
 

@@ -14,20 +14,20 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         'subdomains':[''],
         //是否检查
         'showOnTileLoadComplete':true,
-        'crs':'crs3857'
+        'tileInfo':'web-mercator'
     },
 
     /**
      * <pre>
      * 瓦片图层类构造函数
      * 图层配置如下:
-     *     crs: 空间参考系设置,例如ESGP:3857
+     *     tileInfo: 空间参考系设置,例如ESGP:3857
      *     opacity:图层透明度
      *     urlTemplate:URL模板,例如http://{s}.example.com/{z}/{y}/{x}.png
      *     subdomains:数组,用来轮流替换url模板中的{s}变量
      *     tileSize:{width:256,height:256}
-     * crs的值可为字符串类型的预定义配置或属性对象:
-     *      预定义配置有:"crs3857","crs4326","baidu"
+     * tileInfo的值可为字符串类型的预定义配置或属性对象:
+     *      预定义配置有:"web-mercator","global-mercator","baidu"
      *      如果是属性对象,则需要指定
      * </pre>
      * @param  {String} id 图层identifier
@@ -35,42 +35,29 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
      */
     initialize:function(id,opts) {
         this.setId(id);
-        /*if (!opts['crs']) {
-            this._lodConfig = new Z.LodConfig(Z.LodConfig['defaultCRS']);
-        } else {
-            this._lodConfig = new Z.LodConfig(opts['crs']);
-        }
-        delete opts['crs'];*/
-        //将其他设置存入this.options中
-        ////替换url模板中的大写变量为小写
-        /*if (settings['urlTemplate']) {
-            this.options['urlTemplate'] = this.options['urlTemplate'].replace(/{X}/g,'{x}').replace(/{Y}/g,'{y}').replace(/{Z}/g,'{z}').replace(/{S}/g,'{s}');
-        }*/
         Z.Util.setOptions(this,opts);
-
-        // this.extent = lodInfo['fullExtent'];
     },
 
     /**
-     * * 加载LodConfig
+     * * 加载TileConfig
      * @param  {fn} onLoaded 加载完成后的回调函数
      */
-    _loadLodConfig:function(onLoaded) {
-        //TileLayer只支持预定义的CRS
-        this._lodConfig = new Z.LodConfig(this.options['crs']);
+    _loadTileConfig:function(onLoaded) {
+        //TileLayer只支持预定义的TILEINFO
+        this._tileConfig = new Z.TileConfig(this.options['tileInfo']);
         if (onLoaded) {
             onLoaded();
         }
     },
 
-    _getLodConfig:function(){
-        if (!this._lodConfig) {
-            //如果tilelayer本身没有设定lodconfig,则继承地图基础底图的lodconfig
+    _getTileConfig:function(){
+        if (!this._tileConfig) {
+            //如果tilelayer本身没有设定tileconfig,则继承地图基础底图的tileconfig
             if (this.map) {
-                return this.map._getLodConfig();
+                return this.map._getTileConfig();
             }
         }
-        return this._lodConfig;
+        return this._tileConfig;
     },
 
     _getTileUrl:function(x,y,z) {
@@ -180,11 +167,11 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
     },
 
     _getTileSize:function() {
-        return this._getLodConfig()['tileSize'];
+        return this._getTileConfig()['tileSize'];
     },
 
     getPadding:function() {
-        var padding = this._getLodConfig()['padding'];
+        var padding = this._getTileConfig()['padding'];
         if (!padding) {
             padding = {
                 'width':0,
@@ -221,8 +208,8 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
             return;
         }
         var tileContainer = this._tileContainer;
-        var lodConfig = this._getLodConfig();
-        if (!tileContainer || !lodConfig) {return;}
+        var tileConfig = this._getTileConfig();
+        if (!tileContainer || !tileConfig) {return;}
         var me = this;
         var tileImages = [];
         var dSegment = document.createDocumentFragment();
@@ -245,19 +232,9 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
                 me._completeExecutor=setTimeout(function() {
                     tileContainer.appendChild(dSegment);
                     me._fireEventExecutor=setTimeout(function() {
-                        // me._executeListeners("layerloaded");
                         me.fire(me.events.LAYER_LOADED,{'target':this});
                     },500);
                 },10);
-                /*if (counter == len) {
-                    if (me._fireEventExecutor) {
-                        clearTimeout(me._fireEventExecutor);
-                    }
-                    me._fireEventExecutor=setTimeout(function() {
-                        // me._executeListeners("layerloaded");
-                        me.fire(this.events.LAYER_LOADED,{'target':this});
-                    },500);
-                }   */
             }
         }
         var tileSize = this._getTileSize(),
@@ -268,12 +245,12 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
             mapWidth = map.width,
             mapHeight = map.height;
             //中心瓦片信息,包括瓦片编号,和中心点在瓦片上相对左上角的位置
-        var centerTileInfo =  lodConfig.getCenterTileInfo(map._getPrjCenter(), zoomLevel);
+        var centerTileIndex =  tileConfig.getCenterTileIndex(map._getPrjCenter(), zoomLevel);
 
         //计算中心瓦片的top和left偏移值
         var centerOffset={};
-        centerOffset.top=Math.round(parseFloat(mapHeight/2-centerTileInfo["offsetTop"]));
-        centerOffset.left=Math.round(parseFloat(mapWidth/2-centerTileInfo["offsetLeft"]));
+        centerOffset.top=Math.round(parseFloat(mapHeight/2-centerTileIndex["offsetTop"]));
+        centerOffset.left=Math.round(parseFloat(mapWidth/2-centerTileIndex["offsetLeft"]));
         //中心瓦片上下左右的瓦片数
         var tileTopNum =Math.ceil(Math.abs(centerOffset.top)/tileSize["width"]),
             tileLeftNum=Math.ceil(Math.abs(centerOffset.left)/tileSize["height"]),
@@ -281,14 +258,14 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
             tileRightNum=Math.ceil(Math.abs(mapWidth-centerOffset.left)/tileSize["width"]);
 
     //  只加中心的瓦片，用做调试
-    //  var centerTileImg = this._createTileImage(centerOffset.left,centerOffset.top,this.config._getTileUrl(centerTileInfo["topIndex"],centerTileInfo["leftIndex"],zoomLevel),tileSize["height"],tileSize["width"]);
+    //  var centerTileImg = this._createTileImage(centerOffset.left,centerOffset.top,this.config._getTileUrl(centerTileIndex["topIndex"],centerTileIndex["leftIndex"],zoomLevel),tileSize["height"],tileSize["width"]);
     //  tileContainer.appendChild(centerTileImg);
 
         var currentTiles = this._tileMap;
         //TODO 瓦片从中心开始加起
         for (var i=-(tileLeftNum);i<tileRightNum;i++){
             for (var j=-(tileTopNum);j<=tileBottomNum;j++){
-                    var tileIndex = lodConfig.getNeighorTileIndex(centerTileInfo["y"], centerTileInfo["x"], j,i);
+                    var tileIndex = tileConfig.getNeighorTileIndex(centerTileIndex["y"], centerTileIndex["x"], j,i);
                     var tileId=tileIndex["y"]+","+tileIndex["x"];
                     var tileLeft = centerOffset.left + tileSize["width"]*i-holderLeft;
                     var tileTop = centerOffset.top +tileSize["height"]*j-holderTop;
@@ -331,100 +308,6 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
 
 
     },
-
-    /*_fillTiles:function() {
-        var tileContainer = this._tileContainer;
-        var lodConfig = this._lodConfig;
-        var map =this.map;
-        if (!map || !tileContainer || !this._lodConfig) {return;}
-        var _this = this;
-        var dSegment = document.createDocumentFragment();
-
-        var tileSize = lodConfig["tileSize"],
-            zoomLevel = map.getZoomLevel(),
-            mapDomOffset = map.offsetPlatform();
-        var holderLeft=mapDomOffset["left"],
-            holderTop = mapDomOffset["top"],
-            mapWidth = map.width,
-            mapHeight = map.height;
-        var centerTileInfo =  lodConfig.getCenterTileInfo(map._getPrjCenter(), zoomLevel);
-        //计算中心瓦片的top和left偏移值
-        var centerOffset={};
-        centerOffset.top=Math.round(parseFloat(mapHeight/2-centerTileInfo["offsetTop"]));
-        centerOffset.left=Math.round(parseFloat(mapWidth/2-centerTileInfo["offsetLeft"]));
-        //中心瓦片上下左右的瓦片数
-        var tileTopNum =Math.ceil(Math.abs(centerOffset.top)/tileSize["width"]),
-            tileLeftNum=Math.ceil(Math.abs(centerOffset.left)/tileSize["height"]),
-            tileBottomNum=Math.ceil(Math.abs(mapHeight-centerOffset.top)/tileSize["height"]),
-            tileRightNum=Math.ceil(Math.abs(mapWidth-centerOffset.left)/tileSize["width"]);
-
-    //  只加中心的瓦片，用做调试
-    //  var centerTileImg = this._createTileImage(centerOffset.left,centerOffset.top,this.config._getTileUrl(centerTileInfo["topIndex"],centerTileInfo["leftIndex"],zoomLevel),tileSize["height"],tileSize["width"]);
-    //  tileContainer.appendChild(centerTileImg);
-        var padding = this._lodConfig["padding"];
-        if (!padding) {
-            padding = {
-                'width':0,
-                'height':0
-            };
-        }
-        var currentTiles = this._tileMap;
-        var tileIndexes = [];
-
-
-        //TODO 瓦片从中心开始加起
-        for (var i=-(tileLeftNum);i<tileRightNum;i++){
-            for (var j=-(tileTopNum);j<=tileBottomNum;j++){
-                    var tileIndex = lodConfig.getNeighorTileIndex(centerTileInfo["y"], centerTileInfo["x"], j,i);
-                    var tileLeft = centerOffset.left + tileSize["width"]*i-holderLeft;
-                    var tileTop = centerOffset.top +tileSize["height"]*j-holderTop;
-                    var tileId=tileIndex["x"]+","+tileIndex["y"];
-                    if (currentTiles[tileId]) {
-                        var image = currentTiles[tileId].tile;
-                        if (tileLeft != currentTiles[tileId].left || tileTop != currentTiles[tileId].top) {
-                            image.style.left = (tileLeft)+"px";
-                            image.style.top = (tileTop)+"px";
-                        }
-                    } else {
-                        tileIndexes.push({index:tileIndex, l:tileLeft,t:tileTop});
-                    }
-            }
-        }
-
-        function genTile(tileIndex,tileLeft,tileTop) {
-            var tileId=tileIndex["x"]+","+tileIndex["y"];
-            var tileUrl = lodConfig["_getTileUrl"](tileIndex["x"],tileIndex["y"],zoomLevel);
-            var tileImage = this._createTileImage(tileLeft,tileTop,tileUrl);
-            if (!tileImage) {
-                return;
-            }
-            tileImage.id = tileId;
-            dSegment.appendChild(tileImage);
-            currentTiles[tileId] = {left:tileLeft, top:tileTop, tile:tileImage};
-        }
-        //sort tiles to append from center
-        tileIndexes.sort(function(a,b) {
-            return (Math.abs((a.index.x-centerTileInfo['x'])*(a.index.y-centerTileInfo['y']))-Math.abs((b.index.x-centerTileInfo['x'])*(b.index.y-centerTileInfo['y'])));
-        });
-
-        for (var n =0, len=tileIndexes.length;n<len;n++) {
-            genTile.call(this,tileIndexes[n].index, tileIndexes[n].l, tileIndexes[n].t);
-        }
-
-
-        tileContainer.appendChild(dSegment);
-
-        this.fire(this.events.LAYER_LOADED,{'target':this});
-
-        if (this._removeout_timeout) {
-            clearTimeout(this._removeout_timeout);
-        }
-        this._removeout_timeout = setTimeout(function() {
-            _this._removeTilesOutOfContainer();
-        },1000);
-
-
-    },*/
 
     /**
      * 生成瓦片图片
@@ -494,10 +377,10 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         var mapHeight = map.height,
             mapWidth = map.width,
             mapDomOffset = map.offsetPlatform(),
-            lodConfig = this._getLodConfig();
+            tileConfig = this._getTileConfig();
         var _holderLeft = mapDomOffset["left"],
             _holderTop = mapDomOffset["top"],
-            _tileSize = lodConfig["tileSize"],
+            _tileSize = tileConfig["tileSize"],
             padding = this.getPadding();
         var currentTile = null;
         try {
