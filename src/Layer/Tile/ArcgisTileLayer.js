@@ -41,29 +41,42 @@ Z['ArcgisTileLayer'] = Z.ArcgisTileLayer = Z.TileLayer.extend({
      */
     _readAndParseServiceInfo:function(onLoadedFn) {
         //http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer?f=pjson
-        var remoteUrl = this.options['service']+'?f=pjson';
-        var url = Z.host+"/engine/proxy?url="+remoteUrl;
-        var me = this;
-        var ajax = new Z.Util.Ajax(url,0,null,function(responseText){
-            var lodInfo = me._parseServiceInfo(responseText);
-            me._lodConfig = new Z.LodConfig(lodInfo);
+        var service = this.options['service'];
+        if (Z.Util.isString(service) && service.indexOf('http') >= 0) {
+            //网址
+            var remoteUrl = service+'?f=pjson';
+            var url = Z.host+"/engine/proxy?url="+remoteUrl;
+            var me = this;
+            var ajax = new Z.Util.Ajax(url,0,null,function(responseText){
+                var serviceInfo = Z.Util.parseJson(responseText);
+                var lodInfo = me._parseServiceInfo(serviceInfo);
+                me._lodConfig = new Z.LodConfig(lodInfo);
+                if (onLoadedFn) {
+                    onLoadedFn();
+                }
+            });
+            ajax.get();
+        } else {
+            //service 也可以直接是arcgis的rest服务json
+            var lodInfo = this._parseServiceInfo(service);
+            this._lodConfig = new Z.LodConfig(lodInfo);
             if (onLoadedFn) {
                 onLoadedFn();
             }
-        });
-        ajax.get();
+        }
     },
+
+
 
     /**
      * 解析ArcGIS Rest服务返回的瓦片服务信息
-     * @param  {[type]} serviceInfoText [description]
+     * @param  {[type]} serviceInfo [description]
      * @return {[type]}                 [description]
      */
-    _parseServiceInfo:function(serviceInfoText) {
-        if (!serviceInfoText) {
+    _parseServiceInfo:function(serviceInfo) {
+        if (!serviceInfo) {
             throw new Error(this.exceptions['INVALID_SERVICE']+':'+this.options['service']);
         }
-        var serviceInfo = Z.Util.parseJson(serviceInfoText);
         var extension = '';
         /*var version = serviceInfo['version'];
         this.options['version'] = version;

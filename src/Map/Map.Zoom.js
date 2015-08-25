@@ -33,7 +33,7 @@ Z.Map.include({
     },
 
     _resetContainer:function() {
-        var position = this._offsetPlatform();
+        var position = this.offsetPlatform();
         Z.DomUtil.offsetDom(this._panels.mapPlatform,{'left':0,'top':0});
         this._refreshSVGPaper();
         if (this._backgroundDOM) {
@@ -74,7 +74,7 @@ Z.Map.include({
                 'left':(me.width/2-mousePos['left'])/2
                 };
             me._offsetCenterByPixel(move);
-            me._offsetPlatform(move);
+            me.offsetPlatform(move);
 
             if (me._baseTileLayer) {me._baseTileLayer._onZoomEnd();}
             me._eachLayer(zoomLayer,me._getAllLayers());
@@ -130,7 +130,7 @@ Z.Map.include({
 
     _animateStart:function(scale,pixelOffset){
         if (Z.Browser.ielt9) {return;}
-        var domOffset = this._offsetPlatform();
+        var domOffset = this.offsetPlatform();
         var offsetTop = domOffset['top'];
         var offsetLeft = domOffset['left'];
         var mapContainer = this._panels.mapContainer;

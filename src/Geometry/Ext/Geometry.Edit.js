@@ -70,7 +70,7 @@ Z.Geometry.include({
 		    'top'  : this.endPosition['top'] - this.startPosition['top']
 		};
 		var geometryPixel = this._map.coordinateToScreenPoint(this._dragGeometry.getCenter());
-		var mapOffset = this._map._offsetPlatform();
+		var mapOffset = this._map.offsetPlatform();
 		var newPosition = {
             'left': geometryPixel['left'] + dragOffset['left'] - mapOffset['left'],
             'top' : geometryPixel['top'] + dragOffset['top'] - mapOffset['top']

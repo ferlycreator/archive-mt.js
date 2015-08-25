@@ -262,7 +262,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         }
         var tileSize = this._getTileSize(),
             zoomLevel = map.getZoomLevel(),
-            mapDomOffset = map._offsetPlatform();
+            mapDomOffset = map.offsetPlatform();
         var holderLeft=mapDomOffset["left"],
             holderTop = mapDomOffset["top"],
             mapWidth = map.width,
@@ -342,7 +342,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
 
         var tileSize = lodConfig["tileSize"],
             zoomLevel = map.getZoomLevel(),
-            mapDomOffset = map._offsetPlatform();
+            mapDomOffset = map.offsetPlatform();
         var holderLeft=mapDomOffset["left"],
             holderTop = mapDomOffset["top"],
             mapWidth = map.width,
@@ -493,7 +493,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         var map = this.map;
         var mapHeight = map.height,
             mapWidth = map.width,
-            mapDomOffset = map._offsetPlatform(),
+            mapDomOffset = map.offsetPlatform(),
             lodConfig = this._getLodConfig();
         var _holderLeft = mapDomOffset["left"],
             _holderTop = mapDomOffset["top"],

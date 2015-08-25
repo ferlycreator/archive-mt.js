@@ -195,7 +195,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         var _pcenter = projection.project(center);
         var span = this._getPixelDistance(_pcenter);
         this._setPrjCenter(_pcenter);
-        this._offsetPlatform(span);
+        this.offsetPlatform(span);
         this._onMoveEnd();
         return this;
     },
@@ -868,8 +868,9 @@ Z['Map']=Z.Map=Z.Class.extend({
      * 获取地图容器偏移量或增加容器的偏移量
      * @param  {Pixel} offset 增加的偏移量,如果为null,则直接返回容器的偏移量
      * @return {[type]}        [description]
+     * @expose
      */
-    _offsetPlatform:function(offset) {
+    offsetPlatform:function(offset) {
         if (!offset) {
             return Z.DomUtil.offsetDom(this._panels.mapPlatform);
         } else {
@@ -943,7 +944,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      */
     _screenToDomOffset: function(screenXY) {
         if (!screenXY) {return null;}
-        var platformOffset = this._offsetPlatform();
+        var platformOffset = this.offsetPlatform();
         return {
             'left' : screenXY['left'] - platformOffset['left'],
             'top' : screenXY['top'] - platformOffset['top']
@@ -959,7 +960,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      */
     _domOffsetToScreen: function(domOffset) {
         if (!domOffset) {return null;}
-        var platformOffset = this._offsetPlatform();
+        var platformOffset = this.offsetPlatform();
         return {
             'left' : domOffset["left"] + platformOffset["left"],
             'top' : domOffset["top"] + platformOffset["top"]
@@ -1166,7 +1167,7 @@ Z['Map']=Z.Map=Z.Class.extend({
 //
 //
         //初始化mapPlatform的偏移量, 适用css3 translate时设置初始值
-        this._offsetPlatform({
+        this.offsetPlatform({
             'left':0,
             'top':0
         });

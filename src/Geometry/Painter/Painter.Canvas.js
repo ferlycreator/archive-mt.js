@@ -11,7 +11,7 @@ Z.Painter.Canvas = Z.Painter.extend({
         this.setSymbol(symbol);
 
         this.prepareCanvas(context,this.strokeSymbol,this.fillSymbol);
-        var platformOffset = this.geometry.getMap()._offsetPlatform();
+        var platformOffset = this.geometry.getMap().offsetPlatform();
         this.doPaint(context,resources,platformOffset);
     },
 
