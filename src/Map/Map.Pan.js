@@ -22,7 +22,7 @@ Z.Map.include({
      * @expose
      */
     panBy:function(offset) {
-        this._offsetPlatform({'left':offset['left'],'top':offset['top']});
+        this.offsetPlatform({'left':offset['left'],'top':offset['top']});
         this._offsetCenterByPixel({'left':-offset['left'],'top':-offset['top']});
         this._fireEvent('moving');
         this._onMoveEnd({'target':this});
@@ -104,7 +104,7 @@ Z.Map.include({
             }
             var ySpan = spanArr[counter].y;
             var xSpan = spanArr[counter].x;
-            _map._offsetPlatform({'left':xSpan,'top':ySpan});
+            _map.offsetPlatform({'left':xSpan,'top':ySpan});
             _map._offsetCenterByPixel({'left':-xSpan,'top':-ySpan});
             counter++;
             // 每移动3次draw一次

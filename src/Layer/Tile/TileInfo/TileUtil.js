@@ -1,5 +1,5 @@
 
-Z.LodUtil={
+Z.TileUtil={
     Common:{
         caculateScales:function(base) {
             var xscales=[];
@@ -27,7 +27,7 @@ Z.LodUtil={
          * @param  {[type]} zoomLevel [description]
          * @return {[type]}           [description]
          */
-        getCenterTileInfo:function( pLonlat, zoomLevel) {
+        getCenterTileIndex:function( pLonlat, zoomLevel) {
             if (!pLonlat || zoomLevel === null || zoomLevel === undefined) {return null;}
             var resolution = this['resolutions'][zoomLevel];
             var tileSize = this['tileSize'];
@@ -82,7 +82,7 @@ Z.LodUtil={
         }
     },
     GLOALMERCATOR:{
-        getCenterTileInfo:function(pLonlat, zoomLevel) {
+        getCenterTileIndex:function(pLonlat, zoomLevel) {
             var tileSize = this['tileSize'];
             var resolution = this['resolutions'][zoomLevel];
             var tileIndex = this.getTileIndex(pLonlat, zoomLevel);
@@ -114,7 +114,7 @@ Z.LodUtil={
         }
     },
     BD09:{
-        getCenterTileInfo:function(pLonlat, zoomLevel) {
+        getCenterTileIndex:function(pLonlat, zoomLevel) {
             var tileSize = this['tileSize'];
             var resolution = this['resolutions'][zoomLevel];
             var tileIndex = this.getTileIndex(pLonlat, zoomLevel);

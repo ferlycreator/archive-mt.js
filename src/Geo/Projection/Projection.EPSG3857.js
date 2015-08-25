@@ -1,5 +1,5 @@
-Z.ProjectionInstance.ESPG3857={
-    srs:'ESPG:3857',
+Z.ProjectionInstance.EPSG3857 = {
+    srs: 'EPSG:3857',
     EARCH_RADIUS: 2.003750834E7,
 
     project: function(lnglat) {
@@ -21,4 +21,4 @@ Z.ProjectionInstance.ESPG3857={
     rad: function(a) { return a * Math.PI / 180; }
 };
 
-Z.Util.extend(Z.ProjectionInstance.ESPG3857, Z.ProjectionInstance.GeoMethods.Geodesic);
+Z.Util.extend(Z.ProjectionInstance.EPSG3857, Z.ProjectionInstance.GeoMethods.Geodesic);

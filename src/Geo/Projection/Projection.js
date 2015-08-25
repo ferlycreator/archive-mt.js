@@ -1,14 +1,14 @@
 
-Z.Projection={    
-    getInstance:function(projection) { 
+Z.Projection={
+    getInstance:function(projection) {
         if (!projection) {return this.getDefault();}
-        var instance = null; 
+        var instance = null;
         for (var p in Z.ProjectionInstance) {
             if (Z.ProjectionInstance.hasOwnProperty(p)) {
                 if ((''+projection).toUpperCase() === Z.ProjectionInstance[p].srs) {
                     instance = Z.ProjectionInstance[p];
                     break;
-                }    
+                }
             }
         }
         if (instance) {
@@ -20,7 +20,7 @@ Z.Projection={
     },
 
     getDefault:function() {
-        return Z.Util.extend(Z.ProjectionInstance.ESPG3857,Z.Projection.Util);
+        return Z.Util.extend(Z.ProjectionInstance.EPSG3857,Z.Projection.Util);
     }
 };
 
@@ -28,7 +28,7 @@ Z.Projection={
  * 所有的Projection类共有的工具方法
  * @type {Object}
  */
-Z.Projection.Util={        
+Z.Projection.Util={
     /**
      * 计算一组坐标的投影坐标
      * @param  {[type]} points [description]

@@ -1,7 +1,7 @@
-Z['LodInfo']={
-    'crs3857':{
-        'projection':'ESPG:3857', //4326 | 3857 | bd09
-        'tileSystem' : 'WEB-MERCATOR',
+Z['TileInfo']={
+    'web-mercator':{
+        'projection':'EPSG:3857', //4326 | 3857 | bd09
+        'tileSystem' : 'web-mercator',
         'maxZoomLevel':18,
         'minZoomLevel':1,
         'resolutions':[
@@ -36,8 +36,8 @@ Z['LodInfo']={
             'height':256
         }
     },
-    'global-mercator':{
-        'projection':'ESPG:3857', // 4326 | 3857 | bd09 | pixel
+    'tms-global-mercator':{
+        'projection':'EPSG:3857', // 4326 | 3857 | bd09 | pixel
         'tileSystem':'TMS-GLOBAL-MERCATOR',
         'maxZoomLevel':22,
         'minZoomLevel':1,

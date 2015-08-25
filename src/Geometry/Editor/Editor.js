@@ -555,7 +555,7 @@ Z.Editor=Z.Class.extend({
         Z.DomUtil.addDomEvent(tmpHandle,'click',function(event) {
                             //临时编辑按钮的点击
                             var handleDomOffset = Z.DomUtil.offsetDom(tmpHandle);
-                            var res = map._getLodConfig()['resolutions'][map.getZoomLevel()];
+                            var res = map._getTileConfig()['resolutions'][map.getZoomLevel()];
                             var plonlat = map._transformFromOffset({'left':handleDomOffset['left']+5,'top':handleDomOffset['top']+5});
                             var interIndex = Z.GeoUtils._isPointOnPath(plonlat, geometry, pxTolerance*res);
                             if (interIndex >= 0) {
@@ -568,7 +568,7 @@ Z.Editor=Z.Class.extend({
                         },this);
 
         Z.DomUtil.addDomEvent(map._containerDOM,'mousemove',function(event) {
-                        var res = map._getLodConfig()['resolutions'][map.getZoomLevel()];
+                        var res = map._getTileConfig()['resolutions'][map.getZoomLevel()];
                         var eventOffset = Z.DomUtil.getEventDomCoordinate(event,map._containerDOM);
                         var plonlat = map._transform(eventOffset);
                         var tolerance = pxTolerance*res;

@@ -32,7 +32,7 @@ Z.Map.Drag = Z.Handler.extend({
         me.map._allowSlideMap=false;
         var map = me.map;
         me.startDragTime = new Date().getTime();
-        var domOffset = me.map._offsetPlatform();
+        var domOffset = me.map.offsetPlatform();
         me.startLeft = domOffset['left'];
         me.startTop = domOffset['top'];
         me.preX = param['mousePos']['left'];
@@ -49,8 +49,8 @@ Z.Map.Drag = Z.Handler.extend({
             my = param['mousePos']['top'];
         var currentDomLeft = (me.startLeft + mx - me.startX);
         var currentDomTop = (me.startTop + my - me.startY);
-        var domOffset = me.map._offsetPlatform();
-        me.map._offsetPlatform({
+        var domOffset = me.map.offsetPlatform();
+        me.map.offsetPlatform({
             'left':currentDomLeft-domOffset['left'],
             'top':currentDomTop-domOffset['top']
         });
@@ -66,7 +66,7 @@ Z.Map.Drag = Z.Handler.extend({
         me.map._allowSlideMap=true;
         var map = me.map;
         var t = new Date().getTime()-me.startDragTime;
-        var domOffset = me.map._offsetPlatform();
+        var domOffset = me.map.offsetPlatform();
         var xSpan =  domOffset['left'] - me.startLeft;
         var ySpan =  domOffset['top'] - me.startTop;
         if (t<280 && Math.abs(ySpan) > 5 && Math.abs(xSpan) > 5) {

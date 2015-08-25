@@ -35,7 +35,7 @@ Z.Util = {
     },
 
     fixPNG:function(img) {
-        
+
     },
 
     GUID: function() {
@@ -46,7 +46,7 @@ Z.Util = {
 
     parseJson:function(str) {
         if (!str || !Z.Util.isString(str)) {
-            return null;
+            return str;
         }
         return JSON.parse(str);
     },
@@ -72,7 +72,7 @@ Z.Util = {
             return fn.apply(obj, args.length ? args.concat(slice.call(arguments)) : arguments);
         };
     },
-    
+
     /**
      * 遍历数组中的每个元素,并执行fn操作, 兼容N维数组, 如果数组中有null或undefined,则continue不作处理
      * @param  {[type]}   points [description]
@@ -102,9 +102,9 @@ Z.Util = {
                 result.push(Z.Util.eachInArray(p, context, fn));
             } else {
                 var pp = fn.call(context,p);
-                result.push(pp);   
+                result.push(pp);
             }
-            
+
         }
         return result;
     },
@@ -119,7 +119,7 @@ Z.Util = {
         if (!obj || arr) {
             return -1;
         }
-        
+
         for (var i = 0, len=arr.length; i < len; i++) {
             if (arr[i] == obj) {
                 return i;
@@ -361,16 +361,16 @@ Z.Util.Ajax=function(sUrl,sRecvTyp,sQueryString,oResultFunc,responseType) {
     this.QueryString = sQueryString;
     this.resultFunc = oResultFunc;
     this.reponseType = responseType;
-    this.XmlHttp = this.createXMLHttpRequest();     
+    this.XmlHttp = this.createXMLHttpRequest();
     if (!this.XmlHttp) {
         alert("error");
         return;
     }
     var objxml = this.XmlHttp;
     var me = this;
-    if((window.XDomainRequest && document["documentMode"] === 8) || objxml.withCredentials!==undefined){    //xhr2直接用onload 
+    if((window.XDomainRequest && document["documentMode"] === 8) || objxml.withCredentials!==undefined){    //xhr2直接用onload
         objxml.onload = function (){me.handleStateChange(objxml,sRecvTyp,oResultFunc);};
-    }else{      
+    }else{
         objxml.onreadystatechange = function (){me.handleStateChange(objxml,sRecvTyp,oResultFunc);};
     }
 };
@@ -385,7 +385,7 @@ Z.Util.Ajax.prototype= {
         try { return new XMLHttpRequest(); } catch(e) {}
         try { return new ActiveXObject("Msxml2.XMLHTTP"); } catch(e) {}
         try { return new ActiveXObject("Microsoft.XMLHTTP"); } catch(e) {}
-        
+
         return null;
     },
 
@@ -403,19 +403,19 @@ Z.Util.Ajax.prototype= {
         if (this.reponseType  && xmlHttp.responseType) {
             xmlHttp.responseType=this.responseType;
         }
-        xmlHttp.send(null); 
+        xmlHttp.send(null);
     },
 
     post : function() {
-        var sUrl = this.Url;    
+        var sUrl = this.Url;
         var queryString = this.createQueryString();
-        this.XmlHttp.open("POST",sUrl,true);    
-        if (this.reponseType && this.XmlHttp.responseType) {        
+        this.XmlHttp.open("POST",sUrl,true);
+        if (this.reponseType && this.XmlHttp.responseType) {
             this.XmlHttp.responseType=this.responseType;
         }
         //alert((typeof this.XmlHttp));
-        if(!window.XDomainRequest){     
-            this.XmlHttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");      
+        if(!window.XDomainRequest){
+            this.XmlHttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
         }
         this.XmlHttp.send(queryString);
     },
@@ -425,7 +425,7 @@ Z.Util.Ajax.prototype= {
             oResultFunc(XmlHttp.responseText);
             //XmlHttp.responseText=null;
             XmlHttp = null;
-        }else{      
+        }else{
             if (XmlHttp.readyState == 4) {
                 if (XmlHttp.status == 200) {
                     oResultFunc(sRecvTyp?XmlHttp.responseXML:XmlHttp.responseText);
