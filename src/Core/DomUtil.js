@@ -79,7 +79,7 @@ Z.DomUtil = {
                 obj.detachEvent('on' + type, callback);
             }
         }
-        if (!obj || !typeArr) {return;}
+        if (!obj || !typeArr) {return this;}
          var types = typeArr.split(' ');
         for (var i = types.length - 1; i >= 0; i--) {
             var type = types[i];
@@ -93,12 +93,12 @@ Z.DomUtil = {
                     doRemove(handlers[i].callback);
                 }
                 delete obj['Z__'+type];
-                return;
+                return this;
             }
             //删除注册的handler事件
             var hit = this.hasDomEvent(obj,type,handler);
             if (hit < 0) {
-                return;
+                return this;
             }
             var hitHandler = obj['Z__'+type][hit];
             doRemove(type,hitHandler.callback);
@@ -177,7 +177,7 @@ Z.DomUtil = {
     offsetDomTranslate:function(dom,offset) {
         var useTranslate = (Z.Browser.translateDom);
         if (!useTranslate) {
-            return;
+            return null;
         }
         if (!offset) {
             return this.parseCssTranslate(dom);
