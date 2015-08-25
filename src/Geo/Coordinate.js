@@ -1,5 +1,5 @@
-Z['Coordinate'] = Z.Coordinate = function(x,y) {
-    
+Z['Coordinate'] = Z.Coordinate = function(x, y) {
+
     if (Z.Util.isArray(x)) {
         //数组
         this.x = parseFloat(x[0]);
@@ -9,8 +9,8 @@ Z['Coordinate'] = Z.Coordinate = function(x,y) {
         this.x = x['x'];
         this.y = x['y'];
     } else {
-        this.x=parseFloat(x);
-        this.y=parseFloat(y);   
+        this.x = parseFloat(x);
+        this.y = parseFloat(y);
     }
 };
 
@@ -23,6 +23,3 @@ Z.Util.extend(Z.Coordinate,{
         return c1.x === c2.x && c1.y === c2.y;
     }
 });
-
-
-
