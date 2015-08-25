@@ -64,7 +64,7 @@ Z['Circle']=Z.Circle=Z.Polygon.extend({
             pc = new Z.Point(center.left, center.top),
             pp = new Z.Point(point.left, point.top);
 
-        return pp.distanceTo(pc) <= size.width + t;
+        return pp.distanceTo(pc) <= size.width / 2 + t;
     },
 
     _computeExtent:function(projection) {
