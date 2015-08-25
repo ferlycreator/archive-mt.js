@@ -23,10 +23,10 @@ Z['ArcgisTileLayer'] = Z.ArcgisTileLayer = Z.TileLayer.extend({
     },
 
     /**
-     * * 加载LodConfig
+     * * 加载TileConfig
      * @param  {fn} onLoaded 加载完成后的回调函数
      */
-    _loadLodConfig:function(onLoaded) {
+    _loadTileConfig:function(onLoaded) {
         this._readAndParseServiceInfo(function() {
             if (onLoaded) {
                 onLoaded();
@@ -41,29 +41,42 @@ Z['ArcgisTileLayer'] = Z.ArcgisTileLayer = Z.TileLayer.extend({
      */
     _readAndParseServiceInfo:function(onLoadedFn) {
         //http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer?f=pjson
-        var remoteUrl = this.options['service']+'?f=pjson';
-        var url = Z.host+"/engine/proxy?url="+remoteUrl;
-        var me = this;
-        var ajax = new Z.Util.Ajax(url,0,null,function(responseText){
-            var lodInfo = me._parseServiceInfo(responseText);
-            me._lodConfig = new Z.LodConfig(lodInfo);
+        var service = this.options['service'];
+        if (Z.Util.isString(service) && service.indexOf('http') >= 0) {
+            //网址
+            var remoteUrl = service+'?f=pjson';
+            var url = Z.host+"/engine/proxy?url="+remoteUrl;
+            var me = this;
+            var ajax = new Z.Util.Ajax(url,0,null,function(responseText){
+                var serviceInfo = Z.Util.parseJson(responseText);
+                var tileInfo = me._parseServiceInfo(serviceInfo);
+                me._tileConfig = new Z.TileConfig(tileInfo);
+                if (onLoadedFn) {
+                    onLoadedFn();
+                }
+            });
+            ajax.get();
+        } else {
+            //service 也可以直接是arcgis的rest服务json
+            var tileInfo = this._parseServiceInfo(service);
+            this._tileConfig = new Z.TileConfig(tileInfo);
             if (onLoadedFn) {
                 onLoadedFn();
             }
-        });
-        ajax.get();
+        }
     },
+
+
 
     /**
      * 解析ArcGIS Rest服务返回的瓦片服务信息
-     * @param  {[type]} serviceInfoText [description]
+     * @param  {[type]} serviceInfo [description]
      * @return {[type]}                 [description]
      */
-    _parseServiceInfo:function(serviceInfoText) {
-        if (!serviceInfoText) {
+    _parseServiceInfo:function(serviceInfo) {
+        if (!serviceInfo) {
             throw new Error(this.exceptions['INVALID_SERVICE']+':'+this.options['service']);
         }
-        var serviceInfo = Z.Util.parseJson(serviceInfoText);
         var extension = '';
         /*var version = serviceInfo['version'];
         this.options['version'] = version;
@@ -78,9 +91,9 @@ Z['ArcgisTileLayer'] = Z.ArcgisTileLayer = Z.TileLayer.extend({
         var _projection;
         var units = serviceInfo['units'];
         if (units.toLowerCase().indexOf('degree') >= 0) {
-            _projection = 'ESPG:4326';
+            _projection = 'EPSG:4326';
         } else {
-            _projection = 'ESPG:3857';
+            _projection = 'EPSG:3857';
         }
 
         var lods = serviceInfo['tileInfo']['lods'];
@@ -112,7 +125,7 @@ Z['ArcgisTileLayer'] = Z.ArcgisTileLayer = Z.TileLayer.extend({
         var _tileSystem = [1, -1, tileInfo['origin']['x'],
             tileInfo['origin']['y']];
 
-        var lodInfo = {
+        var tileInfo = {
             'projection'    : _projection,
             'tileSystem'    : _tileSystem,
             'minZoomLevel'  : _minZoomLevel,
@@ -121,7 +134,7 @@ Z['ArcgisTileLayer'] = Z.ArcgisTileLayer = Z.TileLayer.extend({
             'fullExtent'    : _fullExtent,
             'tileSize'      : _tileSize
         };
-        return lodInfo;
+        return tileInfo;
     }
 
 

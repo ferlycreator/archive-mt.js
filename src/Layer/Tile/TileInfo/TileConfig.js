@@ -1,78 +1,78 @@
-Z.LodConfig=Z.Class.extend({
+Z.TileConfig=Z.Class.extend({
 
-        // includes:Z.LodUtil.Common,
+        // includes:Z.TileUtil.Common,
 
         statics : {
-            'defaultCRS':'crs3857'
+
         },
 
         //根据不同的语言定义不同的错误信息
         exceptionDefs:{
             'en-US':{
-                'INVALID_CRS':'Invalid CRS',
+                'INVALID_TILEINFO':'Invalid TILEINFO',
                 'INVALID_TILESYSTEM':'Invalid tileSystem'
             },
             'zh-CN':{
-                'INVALID_CRS':'无效的CRS',
+                'INVALID_TILEINFO':'无效的TILEINFO',
                 'INVALID_TILESYSTEM':'无效的tileSystem'
             }
         },
 
         /**
          * 初始化方法
-         * @param  {[LodInfo]} lodInfo [图层配置属性,参考LodInfo.js中的例子]
+         * @param  {[TileInfo]} tileInfo [图层配置属性,参考TileInfo.js中的例子]
          */
-        initialize:function(lodInfo) {
-            if (!this.checkLodInfo(lodInfo)) {
-                throw new Error(this.exceptions['INVALID_CRS']+':'+lodInfo);
+        initialize:function(tileInfo) {
+            if (!this.checkTileInfo(tileInfo)) {
+                throw new Error(this.exceptions['INVALID_TILEINFO']+':'+tileInfo);
             }
-            //lodInfo是预设值的字符串
+            //tileInfo是预设值的字符串
             var lodName = null;
             //预定义的lodinfo
-            if (Z.Util.isString(lodInfo)) {
-                lodName = lodInfo;
-                lodInfo = Z['LodInfo'][lodInfo.toLowerCase()];
-                if (!lodInfo) {
-                    throw new Error(this.exceptions['INVALID_CRS']+':'+lodName);
+            if (Z.Util.isString(tileInfo)) {
+                lodName = tileInfo;
+                tileInfo = Z['TileInfo'][tileInfo.toLowerCase()];
+                if (!tileInfo) {
+                    throw new Error(this.exceptions['INVALID_TILEINFO']+':'+lodName);
                 }
             }
-            this.prepareLodInfo(lodInfo);
+            this.prepareTileInfo(tileInfo);
 
         },
 
-        prepareLodInfo:function(lodInfo) {
-            this.lodInfo = lodInfo;
-            Z.Util.extend(this,lodInfo);
+        prepareTileInfo:function(tileInfo) {
+            this.tileInfo = tileInfo;
+            Z.Util.extend(this,tileInfo);
             if (!this['padding']) {
                 this['padding'] = {
                     'width':0,
                     'height':0
                 };
             }
-            this.projectionInstance = Z.Projection.getInstance(lodInfo['projection']);
-            /*if ('baidu' === lodInfo['projection'].toLowerCase()) {
-                Z.Util.extend(this,Z.LodUtil.BD09);
+            this.projectionInstance = Z.Projection.getInstance(tileInfo['projection']);
+            /*if ('baidu' === tileInfo['projection'].toLowerCase()) {
+                Z.Util.extend(this,Z.TileUtil.BD09);
             }  else {
                 if (lodName && 'globalmercator' === lodName) {
-                    Z.Util.extend(this,Z.LodUtil.GLOALMERCATOR);
+                    Z.Util.extend(this,Z.TileUtil.GLOALMERCATOR);
                 } else {
-                    Z.Util.extend(this,Z.LodUtil.Default);
+                    Z.Util.extend(this,Z.TileUtil.Default);
                 }
 
             }*/
             var tileSystem;
-            if (!lodInfo['tileSystem']) {
+            if (!tileInfo['tileSystem']) {
                 //默认是WEB-MERCATOR瓦片系统
-                tileSystem = Z.TileSystem['WEB-MERCATOR'];
-            } else if (Z.Util.isString(lodInfo['tileSystem'])){
-                tileSystem = Z.TileSystem.getInstance(lodInfo['tileSystem']);
+                tileSystem = Z.TileSystem['web-mercator'];
+            } else if (Z.Util.isString(tileInfo['tileSystem'])){
+                tileSystem = Z.TileSystem.getInstance(tileInfo['tileSystem']);
             } else {
-                var tsPrams = lodInfo['tileSystem'];
+                var tsPrams = tileInfo['tileSystem'];
                 tileSystem = new Z.TileSystem(tsPrams);
             }
 
             if (!tileSystem) {
-                throw new Error(this.exceptions['INVALID_TILESYSTEM']+':'+lodInfo['tileSystem']);
+                throw new Error(this.exceptions['INVALID_TILESYSTEM']+':'+tileInfo['tileSystem']);
             }
             this.tileSystem = tileSystem;
 
@@ -83,12 +83,12 @@ Z.LodConfig=Z.Class.extend({
             }*/
         },
 
-        checkLodInfo:function(lodInfo) {
-            if (!lodInfo) {return false;}
-            if (Z.Util.isString(lodInfo) && (Z['LodInfo'][lodInfo.toLowerCase()])) {
+        checkTileInfo:function(tileInfo) {
+            if (!tileInfo) {return false;}
+            if (Z.Util.isString(tileInfo) && (Z['TileInfo'][tileInfo.toLowerCase()])) {
                 return true;
             }
-            if (!lodInfo['projection']) {
+            if (!tileInfo['projection']) {
                 return false;
             }
             return true;
@@ -105,10 +105,10 @@ Z.LodConfig=Z.Class.extend({
             //TODO maptalks和arcgis图层的初始化
         },
 
-        equals:function(lodConfig, zoomLevel) {
+        equals:function(tileConfig, zoomLevel) {
             try {
-                return lodConfig['resolutions'][zoomLevel] === this['resolutions'][zoomLevel] &&
-                this['projection'] === lodConfig['projection'];
+                return tileConfig['resolutions'][zoomLevel] === this['resolutions'][zoomLevel] &&
+                this['projection'] === tileConfig['projection'];
             } catch (error) {
                 return false;
             }
@@ -133,7 +133,7 @@ Z.LodConfig=Z.Class.extend({
          * @param  {[type]} zoomLevel [description]
          * @return {[type]}           [description]
          */
-        getCenterTileInfo:function( pLonlat, zoomLevel) {
+        getCenterTileIndex:function( pLonlat, zoomLevel) {
             var tileSystem = this.tileSystem;
             var resolution = this['resolutions'][zoomLevel];
             var tileSize = this['tileSize'];
@@ -141,7 +141,6 @@ Z.LodConfig=Z.Class.extend({
             var tileY = tileIndex.y;
             var tileX = tileIndex.x;
             var tileLeft = tileSystem['scale']['x']*tileSize['width']*tileX * resolution+tileSystem['origin']['x'];
-            // var tileLeft = tileSize['width']*tileX * resolution+this['origin']['left'];
             var tileTop = tileSystem['origin']['y'] + tileSystem['scale']['y']*tileY* resolution * tileSize['height'];
             var offsetLeft = Math.abs(Math.round((pLonlat.x-tileLeft)/resolution));
             var offsetTop = Math.abs(Math.round((pLonlat.y-tileTop)/resolution));

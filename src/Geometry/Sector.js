@@ -117,7 +117,7 @@ Z['Sector']=Z.Sector=Z.Polygon.extend({
         }
 
         // TODO: tolerance
-        return pp.distanceTo(pc) <= size.width && between;
+        return pp.distanceTo(pc) <= size.width / 2 && between;
     },
 
     _computeExtent:function(projection) {

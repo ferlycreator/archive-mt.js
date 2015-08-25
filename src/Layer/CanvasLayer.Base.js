@@ -103,7 +103,7 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
             /*me.layerCanvas.width = mapSize.width;
             me.layerCanvas.height = mapSize.height;*/
             me.updateCanvasSize(me.layerCanvas);
-            var containerOffset = map._offsetPlatform();
+            var containerOffset = map.offsetPlatform();
             me.layerCanvas.style.left=(-containerOffset['left'])+"px";
             me.layerCanvas.style.top=(-containerOffset['top'])+"px";
             //载入资源后再进行绘制

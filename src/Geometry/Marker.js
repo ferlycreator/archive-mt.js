@@ -48,6 +48,9 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
         var pxMin = new Z.Point(center.left - width/2 + x, center.top - height - y),
             pxMax = new Z.Point(center.left + width/2 + x, center.top - y),
             pxExtent = new Z.Extent(pxMin.left, pxMin.top, pxMax.left, pxMax.top);
+
+        point = new Z.Point(point.left, point.top);
+
         return Z.Extent.contains(pxExtent, point);
     },
 

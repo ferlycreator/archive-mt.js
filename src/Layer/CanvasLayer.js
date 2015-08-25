@@ -2,7 +2,7 @@ Z['CanvasLayer']=Z.CanvasLayer=Z.OverlayLayer.extend({
     /**
      * 构造函数
      * @param  {string} identifier 图层identifier
-     * @param  {lodconfig} lodconfig 图层的lodconfig
+     * @param  {tileconfig} tileconfig 图层的tileconfig
      */
     initialize:function(identifier) {
         this.identifier = identifier;

@@ -12,8 +12,8 @@ Z.Map.include({
         var geometries = config['geometries'];
         var resultType = config['resultType'];
         var ignoreBase = config['ignoreBase'];
-        var lodConfig = this._getLodConfig();
-        if (!lodConfig) {
+        var tileConfig = this._getTileConfig();
+        if (!tileConfig) {
             return;
         }
         var projection = this._getProjection();
@@ -23,14 +23,14 @@ Z.Map.include({
         if (Z.Util.isNil(zoomLevel)) {
             zoomLevel = this.getZoomLevel();
         }
-        if (zoomLevel < lodConfig['minZoomLevel']) {
-            zoomLevel = lodConfig['minZoomLevel'];
-        } else if (zoomLevel > lodConfig['maxZoomLevel']) {
-            zoomLevel = lodConfig['maxZoomLevel'];
+        if (zoomLevel < tileConfig['minZoomLevel']) {
+            zoomLevel = tileConfig['minZoomLevel'];
+        } else if (zoomLevel > tileConfig['maxZoomLevel']) {
+            zoomLevel = tileConfig['maxZoomLevel'];
         }
         var snapSettings = {
-            'projection':lodConfig['projection'],
-            'res':lodConfig['resolutions'][zoomLevel],
+            'projection':tileConfig['projection'],
+            'res':tileConfig['resolutions'][zoomLevel],
             'extent': extent.toJson()
         };
         var layerSettings = {};
@@ -141,40 +141,40 @@ Z.Map.include({
 
         function genDynlayerInfo(layer) {
             //var lConfig = layer.config;
-             var nwTileInfo = lodConfig.getCenterTileInfo(projection.project({x:extent['xmin'],y:extent['ymax']}), zoomLevel);
-             var seTileInfo = lodConfig.getCenterTileInfo(projection.project({x:extent['xmax'],y:extent['ymin']}), zoomLevel);
+             var nwTileIndex = tileConfig.getCenterTileIndex(projection.project({x:extent['xmin'],y:extent['ymax']}), zoomLevel);
+             var seTileIndex = tileConfig.getCenterTileIndex(projection.project({x:extent['xmax'],y:extent['ymin']}), zoomLevel);
             var dynLayerSetting = {
                 'url':layer._getTileUrl("%s","%s","%s"),
                 'session':layer.sessionId,
                 'tileSize': {
-                    'height':lodConfig["tileSize"]["height"],
-                    'width':lodConfig["tileSize"]["width"]
+                    'height':tileConfig["tileSize"]["height"],
+                    'width':tileConfig["tileSize"]["width"]
                 },
                 'padding':{
-                    'height':lodConfig["padding"]["height"],
-                    'width':lodConfig["padding"]["width"]
+                    'height':tileConfig["padding"]["height"],
+                    'width':tileConfig["padding"]["width"]
                 },
                 'nw':{
-                    'x':nwTileInfo['x'],
-                    'y':nwTileInfo['y'],
-                    'ox':nwTileInfo['offsetLeft'],
-                    'oy':nwTileInfo['offsetTop']
+                    'x':nwTileIndex['x'],
+                    'y':nwTileIndex['y'],
+                    'ox':nwTileIndex['offsetLeft'],
+                    'oy':nwTileIndex['offsetTop']
                 },
                 'se':{
-                    'x':seTileInfo['x'],
-                    'y':seTileInfo['y'],
-                    'ox':seTileInfo['offsetLeft'],
-                    'oy':seTileInfo['offsetTop']
+                    'x':seTileIndex['x'],
+                    'y':seTileIndex['y'],
+                    'ox':seTileIndex['offsetLeft'],
+                    'oy':seTileIndex['offsetTop']
                 }
 
             };
 
-            var xFactor = nwTileInfo["x"]<seTileInfo["x"];
-            var yFactor = nwTileInfo["y"]<seTileInfo["y"];
+            var xFactor = nwTileIndex["x"]<seTileIndex["x"];
+            var yFactor = nwTileIndex["y"]<seTileIndex["y"];
 
             var tileParams = [];
-            for (var i=nwTileInfo["x"];(xFactor?i<=seTileInfo["x"]:i>=seTileInfo["x"]);(xFactor?i++:i--)) {
-                for (var j=nwTileInfo["y"];(yFactor?j<=seTileInfo["y"]:j>=seTileInfo["y"]);(yFactor?j++:j--)) {
+            for (var i=nwTileIndex["x"];(xFactor?i<=seTileIndex["x"]:i>=seTileIndex["x"]);(xFactor?i++:i--)) {
+                for (var j=nwTileIndex["y"];(yFactor?j<=seTileIndex["y"]:j>=seTileIndex["y"]);(yFactor?j++:j--)) {
                     tileParams.push("\""+layer._getRequestUrlParams(j,i,zoomLevel)+"\"");
 
                 }
@@ -184,30 +184,30 @@ Z.Map.include({
         }
 
         function genLayerInfo(layer) {
-            var nwTileInfo = lodConfig.getCenterTileInfo(projection.project({x:extent['xmin'],y:extent['ymax']}), zoomLevel);
-            var seTileInfo = lodConfig.getCenterTileInfo(projection.project({x:extent['xmax'],y:extent['ymin']}), zoomLevel);
+            var nwTileIndex = tileConfig.getCenterTileIndex(projection.project({x:extent['xmin'],y:extent['ymax']}), zoomLevel);
+            var seTileIndex = tileConfig.getCenterTileIndex(projection.project({x:extent['xmax'],y:extent['ymin']}), zoomLevel);
             var tileLayerSettings={
                 'tileSize':{
-                     'height':lodConfig["tileSize"]["height"],
-                    'width':lodConfig["tileSize"]["width"]
+                     'height':tileConfig["tileSize"]["height"],
+                    'width':tileConfig["tileSize"]["width"]
                 },
                 'padding':{
-                    'height':lodConfig["padding"]["height"],
-                    'width':lodConfig["padding"]["width"]
+                    'height':tileConfig["padding"]["height"],
+                    'width':tileConfig["padding"]["width"]
                 },
                 'zoomLevel':zoomLevel,
                 'url':layer._getTileUrl("%s","%s","%s"),
                 'nw':{
-                    'x':nwTileInfo['x'],
-                    'y':nwTileInfo['y'],
-                    'ox':nwTileInfo['offsetLeft'],
-                    'oy':nwTileInfo['offsetTop']
+                    'x':nwTileIndex['x'],
+                    'y':nwTileIndex['y'],
+                    'ox':nwTileIndex['offsetLeft'],
+                    'oy':nwTileIndex['offsetTop']
                 },
                 'se':{
-                    'x':seTileInfo['x'],
-                    'y':seTileInfo['y'],
-                    'ox':seTileInfo['offsetLeft'],
-                    'oy':seTileInfo['offsetTop']
+                    'x':seTileIndex['x'],
+                    'y':seTileIndex['y'],
+                    'ox':seTileIndex['offsetLeft'],
+                    'oy':seTileIndex['offsetTop']
                 }
 
             };
