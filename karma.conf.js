@@ -13,7 +13,8 @@ module.exports = function(config) {
     'test/**/*.js',
     // 'test/geojson/GeoJsonSpec.js',
     {pattern: 'assets/css/**/*.css', watched: true, included: false, served: true},
-    {pattern: 'assets/images/**/*.png', watched: false, included: false, served: true}
+    {pattern: 'assets/images/**/*.png', watched: false, included: false, served: true},
+    {pattern: 'assets/images/**/*.gif', watched: false, included: false, served: true}
   ]);
 
   config.set({

@@ -4,7 +4,6 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
     type: Z.Geometry['TYPE_POINT'],
 
     options:{
-        //TODO 应该更新为cartoCSS风格的icon
         'symbol':{
             'url' : Z.host + '/engine/images/marker.png',
             'height' : 30,
@@ -31,32 +30,12 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
      * @expose
      */
     _setIcon: function(icon) {
-        /*if (!this.symbol) {
-            this.symbol = {};
-        }
-        //属性的变量名转化为驼峰风格
-        var camelSymbol = Z.Util.convertFieldNameStyle(icon,'camel');
-        this.symbol = camelSymbol;
-        this._onSymbolChanged();
-        return this;*/
         return this.setSymbol(icon);
     },
 
     setText: function(text) {
         this._setIcon(text);
     },
-
-    /**
-     * 获取Marker的Icon
-     * @return {Icon} Marker的Icon
-     * @expose
-     */
-    /*getIcon:function() {
-        if (!this.symbol || !this.symbol['icon']) {
-            return null;
-        }
-        return this.symbol['icon'];
-    },*/
 
     _containsPoint: function(point) {
         var symbol = this.getSymbol();
@@ -69,24 +48,50 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
         var pxMin = new Z.Point(center.left - width/2 + x, center.top - height - y),
             pxMax = new Z.Point(center.left + width/2 + x, center.top - y),
             pxExtent = new Z.Extent(pxMin.left, pxMin.top, pxMax.left, pxMax.top);
+
+        point = new Z.Point(point.left, point.top);
+
         return Z.Extent.contains(pxExtent, point);
     },
 
     _getMarkerSize: function(symbol) {
         var width = 0,height =0;
+        var fontSize = 0, lineSpacing = 0, content ='';
         if(symbol['shieldType']) {
             width = Z.Util.setDefaultValue(symbol['shieldWrapWidth'], 0);
             height = Z.Util.setDefaultValue(symbol['shieldSize'], 0) +
                      Z.Util.setDefaultValue(symbol['shieldLineSpacing'], 0);
+            fontSize = Z.Util.setDefaultValue(symbol['shieldSize'], 12);
+            lineSpacing = Z.Util.setDefaultValue(symbol['shieldLineSpacing'], 12);
+            shieldName = Z.Util.setDefaultValue(symbol['shieldName'], '');
+
         } else {
             width = Z.Util.setDefaultValue(symbol['markerWidth'], 0);
             height = Z.Util.setDefaultValue(symbol['markerHeight'], 0);
-            if(symbol['content']) {
-                var textWidth = Z.Util.setDefaultValue(symbol['textWidth'], 0);
+            if(symbol['textName']) {
+                fontSize = Z.Util.setDefaultValue(symbol['textSize'], 12);
+                lineSpacing = Z.Util.setDefaultValue(symbol['textLineSpacing'], 12);
+                textName = Z.Util.setDefaultValue(symbol['textName'], '');
+                var textWidth = Z.Util.setDefaultValue(symbol['textWrapWidth'], 0);
                 width = (width>textWidth)?width:textWidth;
                 var textHeight = Z.Util.setDefaultValue(symbol['size'], 0);
                 height = (height>textHeight)?height:textHeight;
             }
+        }
+        return this._getRealSize(height, width, content, fontSize, lineSpacing);
+    },
+
+    _getRealSize: function(height, width, content, fontSize, lineSpacing) {
+        if (content&&content.length>0) {
+            var fontSize = icon['size'];
+            var size = fontSize/2;
+            var textWidth = Z.Util.getLength(content)*size;
+            var rowNum = 0;
+            if(textWidth>width){
+                rowNum = Math.ceil(textWidth/width);
+            }
+            height += rowNum*((fontSize+lineSpacing)/2);
+            width += fontSize;
         }
         return {'width': width, 'height': height};
     },

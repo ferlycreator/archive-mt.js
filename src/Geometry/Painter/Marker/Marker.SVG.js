@@ -53,18 +53,20 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
                 var gCenter = this.getMarkerDomOffset();
                 if (!gCenter) {return;}
                 this.markerDom.style.left = gCenter[0] + "px";
-                this.markerDom.style.top =gCenter[1] + "px";
+                this.markerDom.style.top = gCenter[1] + "px";
+                return;
             }
-
             var markerType = icon['type'];
             if(markerType&&markerType.length>0) {
                 var vectorMarker = this._createVectorObj(icon);
                 Z.SVG.refreshVector(this.vector, vectorMarker);
+                return;
             }
             var textName = icon['content'];
             if(textName&&textName.length>0) {
                 var vectorMarker = this._createTextObj(icon);
                 Z.SVG.refreshTextVector(this.vector, vectorMarker);
+                return;
             }
         } else {
             icon = this.shieldSymbol;
@@ -77,10 +79,6 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
                Z.SVG.refreshShieldVector(this.vector, shieldVector);
             }
         }
-    },
-
-    refreshMarkerSymbol:function() {
-        this._paint(this.layerContainer, this.markerDom.style.zIndex, this.geometry.getSymbol());
     },
 
     paintDomMarker:function(markerGraphic,layerContainer) {
@@ -105,13 +103,13 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
         var icon = this.iconSymbol;
         var strokeSymbol = {
             'stroke': icon['stroke'],
-            'strokewidth': icon['strokewidth'],
-            'strokedasharray': icon['strokedasharray'],
-            'strokeopacity': icon['strokeopacity']
+            'strokeWidth': icon['strokeWidth'],
+            'strokeDasharray': icon['strokeDasharray'],
+            'strokeOpacity': icon['strokeOpacity']
         };
         var fillSymbol = {
             'fill': icon['fill'],
-            'fillopacity': icon['fillopacity']
+            'fillOpacity': icon['fillOpacity']
         };
         //矢量标注绘制
         var vectorMarker = this._createVectorObj(icon);
@@ -340,7 +338,7 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
 
         geometry.markerIcon = markerIcon;
         _graphicDom.appendChild(markerIcon);
-        this.setZIndex(geometry,this.zIndex);
+        this._setZIndex(geometry,this.zIndex);
         return _graphicDom;
     }
 

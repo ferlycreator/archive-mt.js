@@ -11,7 +11,7 @@ Z.Vector = Z.Geometry.extend({
     },
 
     _hitTestTolerance: function() {
-        var w = this.options.symbol.strokeWidth;
+        var w = this.options.symbol.strokeWidth || this.options.symbol.lineWidth;
         return w ? w / 2 : 0;
     },
 

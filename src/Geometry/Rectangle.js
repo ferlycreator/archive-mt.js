@@ -159,6 +159,8 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
             pxExtent = new Z.Extent(pxMin.left - t, pxMin.top - t,
                                     pxMax.left + t, pxMax.top + t);
 
+        point = new Z.Point(point.left, point.top);
+
         return Z.Extent.contains(pxExtent, point);
     },
 

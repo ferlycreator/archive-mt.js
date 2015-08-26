@@ -46,15 +46,10 @@ Z.Painter.SVG = Z.Painter.extend({
         }
     },
 
-    refreshSymbol:function() {
+    refreshSymbol: function() {
         if (!this.geometry) {return;}
         if (Z.Geometry['TYPE_POINT'] === this.geometry.getType()) {
-            var icon = this.getGeoIcon();
-            if(icon['url'] && icon['url'].length>0) {
-                this.refreshMarkerSymbol();
-            } else {
-                this.refreshMarker();
-            }
+            this.refreshMarker();
         } else {
             this.refreshVectorSymbol();
         }
@@ -65,15 +60,9 @@ Z.Painter.SVG = Z.Painter.extend({
      */
     refresh:function() {
         if (this.geometry.type === Z.Geometry['TYPE_POINT']) {
-            var icon = this.getGeoIcon();
-            if(icon['url'] && icon['url'].length>0) {
-                this.refreshMarkerSymbol();
-            } else {
-                this.refreshMarker();
-            }
-        } else {
-            var vectorBean = this.createSVGObj();
-            Z.SVG.refreshVector(this.vector, vectorBean);
+            this.refreshMarker();
+        }  else {
+            this.refreshVectorSymbol();
         }
         this._registerEvents();
     },
