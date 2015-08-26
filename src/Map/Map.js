@@ -891,11 +891,19 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {Coordinate}           Coordinate
      */
     _transform:function(domPos) {
-        var res = this._tileConfig['resolutions'][this._zoomLevel];
+        var transformation =  this._getTileConfig().getTransformationInstance();
+        var res = this._tileConfig.getResolution(this.getZoomLevel());//['resolutions'][this._zoomLevel];
+
         var pcenter = this._getPrjCenter();
+        var centerPoint = transformation.untransform(pcenter);
+
+        var point = [centerPoint[0]]
+        var point = transformation.untransform([domPos['left'], domPos['top']], res);
+
+        /*var pcenter = this._getPrjCenter();
         var y = pcenter.y + this.dy*(this.height / 2 - domPos['top'])* res;
         var x = pcenter.x + this.dx*(domPos['left'] - this.width / 2)* res;
-        return new Z.Coordinate(x, y);
+        return new Z.Coordinate(x, y);*/
     },
 
     /**

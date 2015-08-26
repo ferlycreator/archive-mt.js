@@ -50,6 +50,7 @@ Z.TileConfig=Z.Class.extend({
                 };
             }
             this.projectionInstance = Z.Projection.getInstance(tileInfo['projection']);
+            this.transformation = new Z.Transformation(tileInfo['transformation']);
             /*if ('baidu' === tileInfo['projection'].toLowerCase()) {
                 Z.Util.extend(this,Z.TileUtil.BD09);
             }  else {
@@ -118,6 +119,10 @@ Z.TileConfig=Z.Class.extend({
         getProjectionInstance:function() {
 
             return this.projectionInstance;
+        },
+
+        getTransformationInstance:function() {
+            return this.transformation;
         },
 
         getResolution:function(z) {

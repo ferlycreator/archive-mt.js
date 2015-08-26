@@ -4,7 +4,7 @@
 //---------------------------------------
 Z.ProjectionInstance={};
 Z.ProjectionInstance.GeoMethods={};
-Z.ProjectionInstance.GeoMethods.Geodesic={
+Z.ProjectionInstance.GeoMethods.WGS84Geodesic={
     getGeodesicLength:function(mlonlat1,mlonlat2){
         if (!mlonlat1 || !mlonlat2) {return 0;}
         try {
@@ -13,7 +13,7 @@ Z.ProjectionInstance.GeoMethods.Geodesic={
             return Math.round(b*1E4)/1E4;
         } catch (err) {
             return 0;
-        }   
+        }
     },
     getGeodesicArea:function(rings) {
         var a=6378137*Math.PI/180,
@@ -59,7 +59,7 @@ Z.ProjectionInstance.GeoMethods.Pixel={
             return Math.sqrt(Math.pow(mlonlat1.x-mlonlat2.x,2)+Math.pow(mlonlat1.y-mlonlat2.y,2));
         } catch (err) {
             return 0;
-        }   
+        }
     },
     getGeodesicArea:function(rings) {
         if (!Z.Util.isArrayHasData(rings)) {
