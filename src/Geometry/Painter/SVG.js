@@ -72,9 +72,9 @@ Z.SVG.SVG = {
     },
 
     refreshContainer:function(map, paper) {
-        var domOffset = map._offsetPlatform();
-        var x = -domOffset['left'],
-            y = -domOffset['top'];
+        var domOffset = map.offsetPlatform();
+        var x = domOffset['left'],
+            y = domOffset['top'];
         var mapSize =   map.getSize();
         paper.setAttribute('width', mapSize['width']);
         paper.setAttribute('height', mapSize['height']);
@@ -266,6 +266,7 @@ Z.SVG.SVG = {
         if(vector) {
             container.appendChild(vector);
         }
+        return vector;
     },
 
 

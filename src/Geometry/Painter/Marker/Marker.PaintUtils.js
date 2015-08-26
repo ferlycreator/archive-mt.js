@@ -64,17 +64,6 @@ Z.Marker.PaintUtils = {
             var v2 = [(gCenter[0]+width/2),(gCenter[1]+height/2)];
             var v3 = [(gCenter[0]-width/2),(gCenter[1]+height/2)];
             return [v0,v1,v2,v3];
-        } else if ('tip' === markerType) {
-            var arrowWidth = width/5;
-            var arrowHeight = height/2;
-            var v0 = [(gCenter[0]-width/2),(gCenter[1]-height-arrowHeight)];
-            var v1 = [(gCenter[0]+width/2),(gCenter[1]-height-arrowHeight)];
-            var v2 = [(gCenter[0]+width/2),(gCenter[1]-arrowHeight)];
-            var v3 = [(gCenter[0]+arrowWidth/2),(gCenter[1]-arrowHeight)];
-            var v4 = gCenter;
-            var v5 = [(gCenter[0]-arrowWidth/2),(gCenter[1]-arrowHeight)];
-            var v6 = [(gCenter[0]-width/2),(gCenter[1]-arrowHeight)];
-            return [v0,v1,v2,v3,v4,v5,v6];
         }
         return null;
     },
@@ -125,13 +114,8 @@ Z.Marker.PaintUtils = {
     },
 
     _getLabelPoints: function(icon) {
-        var domOffset = this.geometry._getCenterDomOffset();
-        if (!domOffset) {return null;}
-        var map = this.geometry.getMap();
-        var mapOffset = map._offsetPlatform();
-        var gCenter = [(domOffset['left']+mapOffset['left']), (domOffset['top']+ mapOffset['top'])];
-
-        if(!gCenter) return;
+        var gCenter = this.getMarkerDomOffset();
+        if (!gCenter) {return null;}
         var left = gCenter[0];
         var top = gCenter[1];
         var height = icon['height'];
@@ -157,7 +141,7 @@ Z.Marker.PaintUtils = {
             if('top' === vertical) {
                 point0 = [(left-width),(top-height)];
                 point1 = [(left),(top-height)];
-                point2 = gCenter;
+                point2 = [left, top];
                 point3 = [(left-width),(top)];
             } else if ('middle' === vertical) {
                 point0 = [(left-width),(top-height/2)];
@@ -166,7 +150,7 @@ Z.Marker.PaintUtils = {
                 point3 = [(left-width),(top+height/2)];
             } else if ('bottom' === vertical) {
                 point0 = [(left-width),(top)];
-                point1 = gCenter;
+                point1 = [left, top];
                 point2 = [(left),(top+height)];
                 point3 = [(left-width),(top+height)];
             }
@@ -192,14 +176,14 @@ Z.Marker.PaintUtils = {
                 point0 = [(left),(top-height)];
                 point1 = [(left+width),(top-height)];
                 point2 = [(left+width),(top)];
-                point3 = gCenter;
+                point3 = [left, top];
             } else if ('middle' === vertical) {
                 point0 = [(left),(top-height/2)];
                 point1 = [(left+width),(top-height/2)];
                 point2 = [(left+width),(top+height/2)];
                 point3 = [(left),(top+height/2)];
             } else if ('bottom' === vertical) {
-                point0 = gCenter;
+                point0 = [left, top];
                 point1 = [(left+width),(top)];
                 point2 = [(left+width),(top+height)];
                 point3 = [(left),(top+height)];

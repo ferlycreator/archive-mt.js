@@ -133,10 +133,14 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
         var padding = (!icon['padding'])?0:icon['padding'];
         var lineSpacing = (!icon['lineSpacing'])?8:icon['lineSpacing'];
         var size = fontSize/2;
-        var textWidth = Z.Util.getLength(content)*size;
+        var realTextWidth = Z.Util.getLength(content)*size;
 
         var height = icon['height'];
         var width = icon['width'];
+        var textWidth = icon['textWidth'];
+        if(textWidth>width) {
+            width = textWidth;
+        }
         var rowNum = 0;
         if(textWidth>width){
             rowNum = Math.ceil(textWidth/width)-1;
@@ -145,8 +149,8 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
         var labelWidth = width + fontSize;
 
         var contents = [];
-        if(textWidth>width){
-             contents = Z.Util.splitContent(content, textWidth, size, width);
+        if(realTextWidth>width){
+             contents = Z.Util.splitContent(content, realTextWidth, size, width);
         } else {
             contents.push[content];
         }
