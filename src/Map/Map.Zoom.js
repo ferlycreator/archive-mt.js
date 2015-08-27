@@ -69,10 +69,7 @@ Z.Map.include({
         var mousePos = param['pixel'];
         var nextZoomLevel = me._checkZoomLevel(me._zoomLevel+1);
         if (nextZoomLevel === me._zoomLevel) {
-            var move = {
-                'top':(mousePos['top']-me.height/2)/2,
-                'left':(me.width/2-mousePos['left'])/2
-                };
+            var move = new Z.Point((me.width/2-mousePos['left'])/2,(mousePos['top']-me.height/2)/2 );
             me._offsetCenterByPixel(move);
             me.offsetPlatform(move);
 
@@ -92,10 +89,7 @@ Z.Map.include({
         }
         this.zooming = true;
         if (!focusPos) {
-            focusPos = {
-                'top':this.height/2,
-                'left':this.width/2
-            };
+            focusPos = new Z.Point(this.width/2, this.height/2);
         }
         this._removeBackGroundDOM();
         var resolutions=this._tileConfig['resolutions'];
@@ -105,16 +99,16 @@ Z.Map.include({
         var zScale;
         if (nextZoomLevel<this._originZoomLevel) {
             zScale = resolutions[nextZoomLevel+1]/resolutions[nextZoomLevel];
-            pixelOffset = {
-                "top":-(focusPos['top']-this.height/2)*(1-zScale),
-                "left":-(focusPos['left']-this.width/2)*(1-zScale)
-                };
+            pixelOffset = new Z.Point(
+                    -(focusPos['left']-this.width/2)*(1-zScale),
+                    -(focusPos['top']-this.height/2)*(1-zScale)
+                );
         } else {
             zScale = resolutions[nextZoomLevel-1]/resolutions[nextZoomLevel];
-            pixelOffset = {
-                "top":(focusPos['top']-this.height/2)*(zScale-1),
-                "left":(focusPos['left']-this.width/2)*(zScale-1)
-                };
+            pixelOffset = new Z.Point(
+                    (focusPos['left']-this.width/2)*(zScale-1),
+                    (focusPos['top']-this.height/2)*(zScale-1)
+                );
         }
         this._offsetCenterByPixel(pixelOffset);
         this._onZoomStart(scale,focusPos,nextZoomLevel);
@@ -139,10 +133,10 @@ Z.Map.include({
         var originX = Math.round(this.width/2-offsetLeft),
             originY = Math.round(this.height/2-offsetTop);
         if ((origin===null || ""===origin) && pixelOffset) {
-            var mouseOffset= {
-                    "top":(pixelOffset.top-this.height/2),
-                    "left":(pixelOffset.left-this.width/2)
-                    };
+            var mouseOffset = new Z.Point(
+                    pixelOffset.left-this.width/2,
+                    pixelOffset.top-this.height/2
+                );
             originX += mouseOffset["left"];
             originY += mouseOffset["top"];
             Z.DomUtil.setDomTransformOrigin(mapContainer, originX+"px "+ originY+"px");

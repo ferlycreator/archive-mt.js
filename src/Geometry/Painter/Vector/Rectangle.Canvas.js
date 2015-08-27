@@ -4,11 +4,7 @@ Z.Rectangle.Canvas = Z.Polygon.Canvas.extend({
         var map = geometry.getMap();
         var nw = map._transformToOffset(geometry._getPNw());
         var pixelSize = this.getPixelSize();
-
-        var pt = {
-             left:nw["left"]+platformOffset['left'],
-             top:nw["top"]+platformOffset['top']
-        };
+        var pt = new Z.Point(nw["left"]+platformOffset['left'],nw["top"]+platformOffset['top']);
         context.beginPath();
         context.rect(Z.Util.canvasNumber(pt.left), Z.Util.canvasNumber(pt.top),Z.Util.canvasNumber(pixelSize['width']),Z.Util.canvasNumber(pixelSize['height']));
         // this.drawHoles(context,tileNw,geometry);

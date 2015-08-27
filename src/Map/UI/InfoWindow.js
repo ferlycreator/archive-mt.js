@@ -233,10 +233,10 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         offsetTipDom: function(coordinate) {
             var pxCoord = this._getShowPosition(coordinate);
             var tipDom = this.tipDom;
-            var tipCoord = {
-                'top':parseInt(pxCoord.top-parseInt(tipDom.clientHeight)),
-                'left':parseInt(pxCoord.left-parseInt(tipDom.clientWidth)/2+38)
-            };
+            var tipCoord = new Z.Point(
+                    parseInt(pxCoord.left-parseInt(tipDom.clientWidth)/2+38),
+                    parseInt(pxCoord.top-parseInt(tipDom.clientHeight))
+                );
             tipDom['style']['top'] = tipCoord["top"]+"px";
             tipDom['style']['left'] = tipCoord["left"]+"px";
             return tipCoord;
@@ -261,13 +261,9 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
             } else {
                 var center = this.target.getCenter();
                 var projection = this.map._getProjection();
-                if (!center || !projection) return null;
+                if (!center || !projection) {return null;}
                 var pcenter = projection.project(center);
-                var geoTipPos = this.map._transformToOffset(pcenter);
-                position = {
-                    'left': geoTipPos['left'],
-                    'top' : geoTipPos['top']
-                };
+                position = this.map._transformToOffset(pcenter);
             }
             return position;
         }

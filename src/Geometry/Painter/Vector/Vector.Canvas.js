@@ -4,15 +4,10 @@ Z.Vector.Canvas = Z.Painter.Canvas.extend({
         // var map = this.geometry.getMap();
         var offsets = this.geometry._transformToOffset(prjRings);
         for (var i=0, len=offsets.length;i<len;i++) {
-            /*var px = map._transformToOffset(prjRings[i]);
-             var pt = {
-                     left:(0.5 +px['left']+platformOffset['left'])<<0,
-                     top:(0.5 +px['top']+platformOffset['top'])<<0
-            };*/
-            var pt = {
-                     left:Z.Util.canvasNumber(offsets[i]['left']+platformOffset['left']),
-                     top:Z.Util.canvasNumber(offsets[i]['top']+platformOffset['top'])
-            };
+            var pt = new Z.Point(
+                    Z.Util.canvasNumber(offsets[i]['left']+platformOffset['left']),
+                    Z.Util.canvasNumber(offsets[i]['top']+platformOffset['top'])
+                );
              if (i === 0) {
                  context.moveTo(pt['left'],pt['top']);
              } else {

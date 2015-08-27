@@ -150,50 +150,73 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
         var width = this._panelContainer['clientWidth'],
             height = this._panelContainer['clientHeight'];
         var topLeftPoint = this._map.screenPointToCoordinate(screenPoint);
-        var topCenterPoint = this._map.screenPointToCoordinate({
-            'top' : screenPoint['top'],
-            'left' : screenPoint['left']+ Math.round(width/2)
-        });
-        var topCenterBufferPoint = this._map.screenPointToCoordinate({
-            'top' : screenPoint['top'] - 20,
-            'left' : screenPoint['left']+ Math.round(width/2)
-        });
-        var topRightPoint = this._map.screenPointToCoordinate({
-            'top' : screenPoint['top'],
-            'left' : screenPoint['left']+ width
-        });
-        var bottomLeftPoint = this._map.screenPointToCoordinate({
-            'top' : screenPoint['top'] + height,
-            'left' : screenPoint['left']
-        });
-        var bottomCenterPoint = this._map.screenPointToCoordinate({
-            'top' : screenPoint['top'] + height,
-            'left' : screenPoint['left']+ Math.round(width/2)
-        });
-        var bottomCenterBufferPoint = this._map.screenPointToCoordinate({
-            'top' : screenPoint['top'] + height + 20,
-            'left' : screenPoint['left']+ Math.round(width/2)
-        });
-        var bottomRightPoint = this._map.screenPointToCoordinate({
-            'top' : screenPoint['top'] + height,
-            'left' : screenPoint['left']+ width
-        });
-        var middleLeftPoint = this._map.screenPointToCoordinate({
-            'top' : screenPoint['top'] + Math.round(height/2),
-            'left' : screenPoint['left']
-        });
-        var middleLeftBufferPoint = this._map.screenPointToCoordinate({
-            'top' : screenPoint['top'] + Math.round(height/2),
-            'left' : screenPoint['left'] - 20
-        });
-        var middleRightPoint = this._map.screenPointToCoordinate({
-            'top' : screenPoint['top'] + Math.round(height/2),
-            'left' : screenPoint['left'] + width
-        });
-        var middleRightBufferPoint = this._map.screenPointToCoordinate({
-            'top' : screenPoint['top'] + Math.round(height/2),
-            'left' : screenPoint['left'] + width + 20
-        });
+
+        var topCenterPoint = this._map.screenPointToCoordinate(
+            new Z.Point(
+                screenPoint['left'] + Math.round(width/2),
+                screenPoint['top']
+                )
+        );
+        var topCenterBufferPoint = this._map.screenPointToCoordinate(
+            new Z.Point(
+                screenPoint['left'] + Math.round(width/2),
+                screenPoint['top'] - 20
+                )
+        );
+        var topRightPoint = this._map.screenPointToCoordinate(
+            new Z.Point(
+                screenPoint['left'] + width,
+                screenPoint['top']
+                )
+        );
+        var bottomLeftPoint = this._map.screenPointToCoordinate(
+            new Z.Point(
+                screenPoint['left'],
+                screenPoint['top'] + height
+                )
+        );
+        var bottomCenterPoint = this._map.screenPointToCoordinate(
+            new Z.Point(
+                screenPoint['left'] + Math.round(width/2),
+                screenPoint['top'] + height
+                )
+        );
+        var bottomCenterBufferPoint = this._map.screenPointToCoordinate(
+            new Z.Point(
+                screenPoint['left'] + Math.round(width/2),
+                screenPoint['top'] + height + 20
+                )
+        );
+        var bottomRightPoint = this._map.screenPointToCoordinate(
+            new Z.Point(
+                screenPoint['left'] + width,
+                screenPoint['top'] + height
+                )
+        );
+        var middleLeftPoint = this._map.screenPointToCoordinate(
+            new Z.Point(
+                screenPoint['left'],
+                screenPoint['top'] + Math.round(height/2)
+                )
+        );
+        var middleLeftBufferPoint = this._map.screenPointToCoordinate(
+            new Z.Point(
+                screenPoint['left'] - 20,
+                screenPoint['top'] + Math.round(height/2)
+                )
+        );
+        var middleRightPoint = this._map.screenPointToCoordinate(
+            new Z.Point(
+                screenPoint['left'] + width,
+                screenPoint['top'] + Math.round(height/2)
+                )
+        );
+        var middleRightBufferPoint = this._map.screenPointToCoordinate(
+            new Z.Point(
+                screenPoint['left'] + width + 20,
+                screenPoint['top'] + Math.round(height/2)
+                )
+        );
         var points = [topCenterPoint,middleRightPoint,bottomCenterPoint,middleLeftPoint];
         var lastDistance = 0;
         var nearestPoint;
@@ -241,7 +264,7 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
         if(top === 0 && bottom >= 0) {
             top = height - bottom - panelHeight;
         }
-        return new Z.Point(left, top);//{'left':left, 'top':top};
+        return new Z.Point(left, top);
     },
 
     _changeLinkPath: function() {
@@ -256,19 +279,16 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
         Z.DomUtil.setStyle(this._panelContainer, 'cursor: move');
         this._map.disableDrag();
         Z.DomUtil.on(this._panelContainer, 'mousemove', this._onMouseMove, this);
-        this._startOffset = {
-            'left': parseInt(event.offsetX,0),
-            'top': parseInt(event.offsetY,0)
-        };
+        this._startOffset = new Z.Point(
+            parseInt(event.offsetX,0),
+            parseInt(event.offsetY,0)
+            );
 
         this.fire('dragstart', {'target': this, 'position': this._startOffset});
     },
 
     _onMouseMove: function(event) {
-        this._endOffset = {
-            'left': parseInt(event.offsetX, 0),
-            'top': parseInt(event.offsetY, 0)
-        };
+        this._endOffset = new Z.Point(parseInt(event.offsetX, 0),parseInt(event.offsetY, 0));
         var offsetTop = this._endOffset['top'] - this._startOffset['top'];
         var offsetLeft = this._endOffset['left'] - this._startOffset['left'];
         var parentDom = this._panelContainer['parentNode'];
@@ -280,22 +300,22 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
 
         if(domTop) {
             domTop = domTop + offsetTop;
-            if(domTop <= 0) domTop = 1;
+            if(domTop <= 0) {domTop = 1;}
             Z.DomUtil.setStyle(parentDom, 'top: ' + domTop+'px');
         }
         if(domLeft) {
             domLeft = domLeft + offsetLeft;
-            if(domLeft <= 0) domLeft = 1;
+            if(domLeft <= 0) {domLeft = 1;}
             Z.DomUtil.setStyle(parentDom, 'left: ' + domLeft+'px');
         }
         if(domBottom) {
             domBottom = domBottom - offsetTop;
-            if(domBottom <= 0) domBottom = 1;
+            if(domBottom <= 0) {domBottom = 1;}
             Z.DomUtil.setStyle(parentDom, 'bottom: ' + domBottom+'px');
         }
         if(domRight) {
             domRight = domRight - offsetLeft;
-            if(domRight <= 0) domRight = 1;
+            if(domRight <= 0) {domRight = 1;}
             Z.DomUtil.setStyle(parentDom, 'right:' +  domRight+'px');
         }
         this.fire('dragging', {'target': this, 'position': this._endOffset});

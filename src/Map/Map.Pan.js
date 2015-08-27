@@ -22,15 +22,15 @@ Z.Map.include({
      * @expose
      */
     panBy:function(offset) {
-        this.offsetPlatform(new Z.Point(offset['left'],offset['top']));//{'left':offset['left'],'top':offset['top']}
-        this._offsetCenterByPixel(new Z.Point(-offset['left'],-offset['top']));//{'left':-offset['left'],'top':-offset['top']}
+        this.offsetPlatform(new Z.Point(offset['left'],offset['top']));
+        this._offsetCenterByPixel(new Z.Point(-offset['left'],-offset['top']));
         this._fireEvent('moving');
         this._onMoveEnd({'target':this});
         return this;
     },
 
     _animatePan:function(moveOffset) {
-        if (!moveOffset) {moveOffset = new Z.Point(0,0);}//{'left':0, 'top':0}
+        if (!moveOffset) {moveOffset = new Z.Point(0,0);}
         if (!moveOffset['left']) {
             moveOffset['left'] = 0;
         }

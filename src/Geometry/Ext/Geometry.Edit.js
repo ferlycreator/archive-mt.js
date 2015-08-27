@@ -60,23 +60,23 @@ Z.Geometry.include({
     },
 
     _dragging: function(event) {
-		this.isDragging = true;
-		this.endPosition = Z.DomUtil.getEventDomCoordinate(event, this._map._containerDOM);
-		if(!this.startPosition) {
+        this.isDragging = true;
+        this.endPosition = Z.DomUtil.getEventDomCoordinate(event, this._map._containerDOM);
+        if(!this.startPosition) {
             this.startPosition = this.endPosition;
-		}
-		var dragOffset = {
-		    'left' : this.endPosition['left'] - this.startPosition['left'],
-		    'top'  : this.endPosition['top'] - this.startPosition['top']
-		};
-		var geometryPixel = this._map.coordinateToScreenPoint(this._dragGeometry.getCenter());
-		var mapOffset = this._map.offsetPlatform();
-		var newPosition = {
-            'left': geometryPixel['left'] + dragOffset['left'] - mapOffset['left'],
-            'top' : geometryPixel['top'] + dragOffset['top'] - mapOffset['top']
-		};
-		this.startPosition = newPosition;
-		var pcenter = this._map._untransformFromOffset(newPosition);
+        }
+        var dragOffset = new Z.Point(
+                this.endPosition['left'] - this.startPosition['left'],
+                this.endPosition['top'] - this.startPosition['top']
+            );
+        var geometryPixel = this._map.coordinateToScreenPoint(this._dragGeometry.getCenter());
+        var mapOffset = this._map.offsetPlatform();
+        var newPosition = new Z.Point(
+                geometryPixel['left'] + dragOffset['left'] - mapOffset['left'],
+                geometryPixel['top'] + dragOffset['top'] - mapOffset['top']
+            );
+        this.startPosition = newPosition;
+        var pcenter = this._map._untransformFromOffset(newPosition);
         this._dragGeometry._setPCenter(pcenter);
         this._dragGeometry._updateCache();
         this._setPCenter(pcenter);
@@ -88,13 +88,13 @@ Z.Geometry.include({
      * 结束移动Geometry, 退出移动模式
      */
     _endDrag: function(event) {
-		this._dragGeometry.remove();
-		this._getDragLayer().clear();
-		this.show();
-		this.isDragging = false;
+        this._dragGeometry.remove();
+        this._getDragLayer().clear();
+        this.show();
+        this.isDragging = false;
         this._map.off('mousemove', this._dragging, this)
                  .off('mouseup', this._endDrag, this);
-		this.fire('dragend', {'target': this});
+        this.fire('dragend', {'target': this});
     },
 
     /**

@@ -152,14 +152,11 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
         if(realTextWidth>width){
              contents = Z.Util.splitContent(content, realTextWidth, size, width);
         } else {
-            contents.push[content];
+            contents.push(content);
         }
         //计算偏移量
         var offset = this.computeLabelOffset(labelWidth+2*padding,labelHeight+2*padding,icon);
-        pt = {
-                left: pt.left+offset['x'],
-                top:pt.top-offset['y']
-        };
+        pt = new Z.Point(pt.left+offset['left'],pt.top-offset['top']);
         context.beginPath();
 
         if (icon['color']) {

@@ -241,7 +241,6 @@ Z['Map']=Z.Map=Z.Class.extend({
         var _current = this._getPrjCenter();
         var curr_px = this._transform(_current);
         var _pcenter_px = this._transform(_pcenter);
-        // var span = {'left':(_pcenter_px['left']-curr_px['left']),'top':(curr_px['top']-_pcenter_px['top'])};
         var span = new Z.Point((_pcenter_px['left']-curr_px['left']),(curr_px['top']-_pcenter_px['top']));
         return span;
     },
@@ -855,7 +854,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     _offsetCenterByPixel:function(pixel) {
         var posX = this.width/2+pixel['left'],
             posY = this.height/2+pixel['top'];
-        var pCenter = this._untransform(new Z.Point(posX, posY));//{'left':posX,'top':posY}
+        var pCenter = this._untransform(new Z.Point(posX, posY));
         this._setPrjCenter(pCenter);
     },
 
@@ -871,10 +870,10 @@ Z['Map']=Z.Map=Z.Class.extend({
             return Z.DomUtil.offsetDom(this._panels.mapPlatform);
         } else {
             var domOffset = Z.DomUtil.offsetDom(this._panels.mapPlatform);
-            Z.DomUtil.offsetDom(this._panels.mapPlatform, {
-                    'left':domOffset['left']+offset['left'],
-                    'top':domOffset['top']+offset['top']
-            });
+            Z.DomUtil.offsetDom(this._panels.mapPlatform, new Z.Point(
+                    domOffset['left']+offset['left'],
+                    domOffset['top']+offset['top']
+                ));
         }
     },
 
@@ -925,10 +924,10 @@ Z['Map']=Z.Map=Z.Class.extend({
         var centerPoint = transformation.transform(pcenter, res);
 
         var point = transformation.transform(pCoordinate,res);
-        return {
-            'left'  : Math.round(this.width / 2 + point[0] - centerPoint[0]),
-            'top'   : Math.round(this.height / 2 + point[1] - centerPoint[1])
-        };
+        return new Z.Point(
+            Math.round(this.width / 2 + point[0] - centerPoint[0]),
+            Math.round(this.height / 2 + point[1] - centerPoint[1])
+            );
 
        /* var res = this._tileConfig['resolutions'][this._zoomLevel];
         var pcenter = this._getPrjCenter();
@@ -962,11 +961,10 @@ Z['Map']=Z.Map=Z.Class.extend({
     _screenToDomOffset: function(screenXY) {
         if (!screenXY) {return null;}
         var platformOffset = this.offsetPlatform();
-        return {
-            'left' : screenXY['left'] - platformOffset['left'],
-            'top' : screenXY['top'] - platformOffset['top']
-        };
-
+        return new Z.Point(
+                screenXY['left'] - platformOffset['left'],
+                screenXY['top'] - platformOffset['top']
+            );
     },
 
     /**
@@ -978,10 +976,10 @@ Z['Map']=Z.Map=Z.Class.extend({
     _domOffsetToScreen: function(domOffset) {
         if (!domOffset) {return null;}
         var platformOffset = this.offsetPlatform();
-        return {
-            'left' : domOffset["left"] + platformOffset["left"],
-            'top' : domOffset["top"] + platformOffset["top"]
-        };
+        return new Z.Point(
+                domOffset["left"] + platformOffset["left"],
+                domOffset["top"] + platformOffset["top"]
+            );
     },
 
     /**
@@ -1184,10 +1182,7 @@ Z['Map']=Z.Map=Z.Class.extend({
 //
 //
         //初始化mapPlatform的偏移量, 适用css3 translate时设置初始值
-        this.offsetPlatform({
-            'left':0,
-            'top':0
-        });
+        this.offsetPlatform(new Z.Point(0,0));
         var mapSize = this._getContainerDomSize();
         this._setMapSize(mapSize);
     },
@@ -1210,10 +1205,7 @@ Z['Map']=Z.Map=Z.Class.extend({
                 var oldHeight = map.height;
                 var oldWidth = map.width;
                 map._setMapSize(watched);
-                map._onResize({
-                    'left' : ((watched.width-oldWidth) / 2),
-                    'top' : ((watched.height-oldHeight) / 2)
-                    });
+                map._onResize(new Z.Point((watched.width-oldWidth) / 2,(watched.height-oldHeight) / 2));
                 // 触发_onResize事件
                 /**
                  * 地图容器大小变化事件

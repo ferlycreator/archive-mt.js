@@ -500,10 +500,10 @@ Z.Editor=Z.Class.extend({
                             },
                             onMove:function(handleDomOffset) {
                                 var pxCenter = computePxCenter();
-                                var dragged = {
-                                    'left': handleDomOffset['left']+5-pxCenter['left'],
-                                    'top' : handleDomOffset['top']+5-pxCenter['top']
-                                };
+                                var dragged = new Z.Point(
+                                        handleDomOffset['left']+5-pxCenter['left'],
+                                        handleDomOffset['top']+5-pxCenter['top']
+                                    );
                                 //TODO 移动vertex,重新赋值points
                                 var lonlats = getLonlats();
                                 for (var i=0,len=lonlats.length;i<len;i++) {
@@ -557,7 +557,7 @@ Z.Editor=Z.Class.extend({
                             //临时编辑按钮的点击
                             var handleDomOffset = Z.DomUtil.offsetDom(tmpHandle);
                             var res = map._getTileConfig()['resolutions'][map.getZoomLevel()];
-                            var plonlat = map._untransformFromOffset({'left':handleDomOffset['left']+5,'top':handleDomOffset['top']+5});
+                            var plonlat = map._untransformFromOffset(new Z.Point(handleDomOffset['left']+5,handleDomOffset['top']+5));
                             var interIndex = Z.GeoUtils._isPointOnPath(plonlat, geometry, pxTolerance*res);
                             if (interIndex >= 0) {
                                 vertexHandles.splice(interIndex+1,0,createVertexHandle.call(this,plonlat));
