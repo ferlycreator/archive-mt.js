@@ -50,7 +50,7 @@ Z.TileConfig=Z.Class.extend({
                 };
             }
             this.projectionInstance = Z.Projection.getInstance(tileInfo['projection']);
-            this.transformation = new Z.Transformation(tileInfo['transformation']);
+
             /*if ('baidu' === tileInfo['projection'].toLowerCase()) {
                 Z.Util.extend(this,Z.TileUtil.BD09);
             }  else {
@@ -77,11 +77,13 @@ Z.TileConfig=Z.Class.extend({
             }
             this.tileSystem = tileSystem;
 
-            /*if (this['origin']) {
-                //direction of projected coordinate
-                this.dx = (this['origin']['right']>=this['origin']['left'])?1:-1;
-                this.dy = (this['origin']['top']>=this['origin']['bottom'])?1:-1;
-            }*/
+            //自动计算transformation
+            var fullExtent = tileInfo['fullExtent'];
+            var a = fullExtent['right']>fullExtent['left']?1:-1,
+                b = fullExtent['top']>fullExtent['bottom']?-1:1,
+                c = tileSystem['origin']['x'],
+                d = tileSystem['origin']['y'];
+            this.transformation = new Z.Transformation([a,b,c,d]);
         },
 
         checkTileInfo:function(tileInfo) {

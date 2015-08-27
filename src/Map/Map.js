@@ -765,8 +765,6 @@ Z['Map']=Z.Map=Z.Class.extend({
             return false;
         }
         this._tileConfig = tileConfig;
-        this.dx = (this._tileConfig['fullExtent']['right']>=this._tileConfig['fullExtent']['left'])?1:-1;
-        this.dy = (this._tileConfig['fullExtent']['top']>=this._tileConfig['fullExtent']['bottom'])?1:-1;
         this._checkMapStatus();
         return true;
         // callbackFn(true);
@@ -891,20 +889,20 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {Coordinate}           Coordinate
      */
     _transform:function(domPos) {
-        /*var transformation =  this._getTileConfig().getTransformationInstance();
+        var transformation =  this._getTileConfig().getTransformationInstance();
         var res = this._tileConfig.getResolution(this.getZoomLevel());//['resolutions'][this._zoomLevel];
 
         var pcenter = this._getPrjCenter();
         var centerPoint = transformation.transform(pcenter, res);
-        //容器的像素坐标方向是固定的, 即从左到右增大, 从上到下增大
-        var point = [centerPoint[0]+domPos['left'] - this.width / 2, centerPoint[1]-(this.height / 2 - domPos['top'])];
+        //容器的像素坐标方向是固定方向的, 和html标准一致, 即从左到右增大, 从上到下增大
+        var point = [centerPoint[0]+ domPos['left'] - this.width / 2, centerPoint[1]+domPos['top'] - this.height / 2];
         var result = transformation.untransform(point, res);
-        return new Z.Coordinate(result);*/
-        var res = this._tileConfig.getResolution(this.getZoomLevel());//['resolutions'][this._zoomLevel];
+        return new Z.Coordinate(result);
+       /* var res = this._tileConfig.getResolution(this.getZoomLevel());//['resolutions'][this._zoomLevel];
         var pcenter = this._getPrjCenter();
         var y = pcenter.y + this.dy*(this.height / 2 - domPos['top'])* res;
         var x = pcenter.x + this.dx*(domPos['left'] - this.width / 2)* res;
-        return new Z.Coordinate(x, y);
+        return new Z.Coordinate(x, y);*/
     },
 
     /**
@@ -922,7 +920,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {[type]}             [description]
      */
     _untransform:function(pCoordinate) {
-        /*var transformation =  this._getTileConfig().getTransformationInstance();
+        var transformation =  this._getTileConfig().getTransformationInstance();
         var res = this._tileConfig.getResolution(this.getZoomLevel());//['resolutions'][this._zoomLevel];
 
         var pcenter = this._getPrjCenter();
@@ -931,10 +929,10 @@ Z['Map']=Z.Map=Z.Class.extend({
         var point = transformation.transform(pCoordinate,res);
         return {
             'left'  : Math.round(this.width / 2 + point[0] - centerPoint[0]),
-            'top'   : Math.round(this.height / 2 + centerPoint[1] - point[0])
-        };*/
+            'top'   : Math.round(this.height / 2 + point[1] - centerPoint[1])
+        };
 
-        var res = this._tileConfig['resolutions'][this._zoomLevel];
+       /* var res = this._tileConfig['resolutions'][this._zoomLevel];
         var pcenter = this._getPrjCenter();
         // var _canvasDom = this.canvasDom;
         var centerTop = this.dy*(pcenter.y - pCoordinate.y) / res;
@@ -944,7 +942,7 @@ Z['Map']=Z.Map=Z.Class.extend({
             "top" : Math.round(this.height / 2 + centerTop),
             "left" : Math.round(this.width / 2 + centerLeft)
         };
-        return result;
+        return result;*/
     },
 
     /**

@@ -47,8 +47,9 @@ Z.Transformation.prototype = {
             x = point.x;
             y = point.y;
         }
-        var x_ = (x/matrix[0]*scale-matrix[2]);
-        var y_ = (y/matrix[1]*scale-matrix[3]);
+        //inverse matrix
+        var x_ = (x*scale-matrix[2])/matrix[0];
+        var y_ = (y*scale-matrix[3])/matrix[1];
         return [x_, y_];
     }
 };
