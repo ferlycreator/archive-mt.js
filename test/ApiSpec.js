@@ -3,7 +3,7 @@ describe('API', function () {
     var container;
     var map;
     var tile;
-    var center = new Z.Coordinate(118, 32);
+    var center = new Z.Coordinate(118.846825, 32.046534);
 
     beforeEach(function () {
         container = document.createElement('div');
@@ -11,17 +11,16 @@ describe('API', function () {
         container.style.height = '600px';
         document.body.appendChild(container);
         var option = {
+            zoomLevel: 17,
             center: center
-            // zoomLevel: 12
         };
         map = new Z.Map(container, option);
         tile = new Z.TileLayer('tile', {
-            crs: 'crs3857',
-            urlTemplate: 'http://emap{s}.mapabc.com/mapabc/maptile?&x={X}&y={y}&z={z}',
-            subdomains: [0,1,2,3],
+            tileInfo: 'web-mercator',
+            urlTemplate: 'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',
+            subdomains: [0, 1, 2, 3]
         });
         map.setBaseTileLayer(tile);
-        map.Load();
     });
 
     afterEach(function () {
@@ -594,13 +593,15 @@ describe('API', function () {
             layer.setId('id');
             // map.addLayer(layer);
             var geometry = new Z.Polygon([
-                {x: 121.111, y: 30.111},
-                {x: 121.222, y: 30.222},
-                {x: 121.333, y: 30.333}
+                [
+                    {x: 121.111, y: 30.111},
+                    {x: 121.222, y: 30.222},
+                    {x: 121.333, y: 30.333}
+                ]
             ]);
 
             expect(function () {
-                layer.addGeometry(geometry);
+                // layer.addGeometry(geometry);
                 layer.addGeometry(geometry, true);
             }).to.not.throwException();
         });
@@ -610,13 +611,13 @@ describe('API', function () {
             layer.paintGeometries = paint;
             layer.setId('id');
             // map.addLayer(layer);
-            var geometry = new Z.Polygon([
-                {x: 121.111, y: 30.111},
-                {x: 121.222, y: 30.222},
-                {x: 121.333, y: 30.333}
-            ]);
             var count = 10;
             for (var i = 0; i < count; i++) {
+                var geometry = new Z.Polygon([
+                    {x: 121.111, y: 30.111},
+                    {x: 121.222, y: 30.222},
+                    {x: 121.333, y: 30.333}
+                ]);
                 layer.addGeometry(geometry);
             }
             var geometries = layer.getAllGeometries();

@@ -17,13 +17,11 @@ describe('GeometrySpec', function() {
         };
         map = new Z.Map(container, option);
         tile = new Z.TileLayer('tile', {
-            // crs: 'crs3857',
             tileInfo: 'web-mercator',
             urlTemplate: 'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',
             subdomains: [0, 1, 2, 3]
         });
         map.setBaseTileLayer(tile);
-        // map.Load();
         layer = new Z.CanvasLayer('canvas');
         map.addLayer(layer);
     });
