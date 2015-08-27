@@ -1024,19 +1024,19 @@ Z['Map']=Z.Map=Z.Class.extend({
             target = projection.locate(center,x,y),
             z = this.getZoomLevel(),
             resolutions = tileConfig['resolutions'];
-        var px = !x?0:(projection.project({x:target.x,y:center.y}).x-projection.project(center).x)/resolutions[z];
-        var py = !y?0:(projection.project({x:target.x,y:center.y}).y-projection.project(target).y)/resolutions[z];
-        return {'px':Math.round(Math.abs(px)),'py':Math.round(Math.abs(py))};
+        var width = !x?0:(projection.project({x:target.x,y:center.y}).x-projection.project(center).x)/resolutions[z];
+        var height = !y?0:(projection.project({x:target.x,y:center.y}).y-projection.project(target).y)/resolutions[z];
+        return new Z.Size(Math.round(Math.abs(width)), Math.round(Math.abs(height)));
     },
 
     /**
      * 像素转化为距离
-     * @param  {[type]} px [description]
-     * @param  {[type]} py [description]
+     * @param  {[type]} width [description]
+     * @param  {[type]} height [description]
      * @return {[type]}    [description]
      * @expose
      */
-    pixelToDistance:function(px, py) {
+    pixelToDistance:function(width, height) {
         var tileConfig = this._getTileConfig();
         if (!tileConfig) {
             return null;
@@ -1049,7 +1049,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         var center = this.getCenter(),
             pcenter = this._getPrjCenter(),
             res = tileConfig['resolutions'][this.getZoomLevel()];
-        var pTarget = {x:pcenter.x+px*res, y:pcenter.y+py*res};
+        var pTarget = {x:pcenter.x+width*res, y:pcenter.y+height*res};
         var target = projection.unproject(pTarget);
         return projection.getGeodesicLength(target,center);
     },

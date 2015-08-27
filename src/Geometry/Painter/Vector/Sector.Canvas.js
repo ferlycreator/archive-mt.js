@@ -7,7 +7,7 @@ Z.Sector.Canvas = Z.Polygon.Canvas.extend({
              top:center["top"]+platformOffset['top']
         };
         var pr = this.getPixelSize();
-        this.sector(context, pt['left'],pt['top'],pr['px'],geometry.getStartAngle(),geometry.getEndAngle());
+        this.sector(context, pt['left'],pt['top'],pr['width'],geometry.getStartAngle(),geometry.getEndAngle());
         context.stroke();
         this.fillGeo(context, this.fillSymbol);
 

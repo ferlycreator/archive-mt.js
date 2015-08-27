@@ -196,7 +196,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         var width = map.computeDistance(topLeftPoint, topRightPoint);
         var height = map.computeDistance(topLeftPoint, bottomLeftPoint);
         var result = map.distanceToPixel(width, height);
-        return {'width': result['px'], 'height': result['py']};
+        return result;//{'width': result['width'], 'height': result['height']};
     },
 
     _getPrjExtent:function() {

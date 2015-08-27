@@ -7,8 +7,8 @@ Z.Ellipse.Canvas = Z.Polygon.Canvas.extend({
              top:center["top"]+platformOffset['top']
         };
         var pr = this.getPixelSize();
-        var width = pr['px'];
-        var height = pr['py'];
+        var width = pr['width'];
+        var height = pr['height'];
         this.BezierEllipse(context,pt['left'],pt['top'],width,height);
         // this.drawHoles(context,tileNw,geometry);
 

@@ -10,7 +10,7 @@ Z.Rectangle.Canvas = Z.Polygon.Canvas.extend({
              top:nw["top"]+platformOffset['top']
         };
         context.beginPath();
-        context.rect(Z.Util.canvasNumber(pt.left), Z.Util.canvasNumber(pt.top),Z.Util.canvasNumber(pixelSize['px']),Z.Util.canvasNumber(pixelSize['py']));
+        context.rect(Z.Util.canvasNumber(pt.left), Z.Util.canvasNumber(pt.top),Z.Util.canvasNumber(pixelSize['width']),Z.Util.canvasNumber(pixelSize['height']));
         // this.drawHoles(context,tileNw,geometry);
         context.stroke();
         this.fillGeo(context, this.fillSymbol);

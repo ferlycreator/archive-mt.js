@@ -43,7 +43,7 @@ Z.Sector.SVG=Z.Circle.SVG.extend({
         var pr = this.getPixelSize();
         var ret = {
             type : "path",
-            path : sector_update(domCenter['left'],domCenter['top'],pr['px'],geometry.getStartAngle(),geometry.getEndAngle())
+            path : sector_update(domCenter['left'],domCenter['top'],pr['width'],geometry.getStartAngle(),geometry.getEndAngle())
         };
         return ret;
     }

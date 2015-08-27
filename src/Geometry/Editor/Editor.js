@@ -221,7 +221,7 @@ Z.Editor=Z.Class.extend({
             var pxCenter = map._transformToOffset(geometry._getPCenter());
             var r = geometry.getRadius();
             var p = map.distanceToPixel(r,0);
-            var rPx= new Z.Point(pxCenter['left']+p['px'],pxCenter['top']);// {'left':pxCenter['left']+p['px'],'top':pxCenter['top']};
+            var rPx= new Z.Point(pxCenter['left']+p['width'],pxCenter['top']);// {'left':pxCenter['left']+p['width'],'top':pxCenter['top']};
             return rPx;
         }
         var rPx = radiusHandleOffset();
@@ -269,7 +269,7 @@ Z.Editor=Z.Class.extend({
             var rx = Math.round(geometry.getWidth()/2);
             var rh = Math.round(geometry.getHeight()/2);
             var p = map.distanceToPixel(rx,rh);
-            var rPx={'left':pxCenter['left']+p['px'],'top':pxCenter['top']+p['py']};
+            var rPx={'left':pxCenter['left']+p['width'],'top':pxCenter['top']+p['height']};
             return rPx;
         }
         //this.createCenterEditor();
@@ -321,7 +321,7 @@ Z.Editor=Z.Class.extend({
             var rw = Math.round(geometry.getWidth());
             var rh = Math.round(geometry.getHeight());
             var p = map.distanceToPixel(rw,rh);
-            var rPx= new Z.Point(pxNw['left']+p['px'],pxNw['top']+p['py']);//{'left':pxNw['left']+p['px'],'top':pxNw['top']+p['py']};
+            var rPx= new Z.Point(pxNw['left']+p['width'],pxNw['top']+p['height']);//{'left':pxNw['left']+p['width'],'top':pxNw['top']+p['height']};
             return rPx;
         }
 
