@@ -79,8 +79,8 @@ Z.SVG.SVG = {
         paper.setAttribute('width', mapSize['width']);
         paper.setAttribute('height', mapSize['height']);
         paper.setAttribute('viewBox', [x, y, mapSize['width'], mapSize['height']].join(' '));
-        paper.style.left = x + 'px';
-        paper.style.top = y + 'px';
+        paper.style.left = -x + 'px';
+        paper.style.top = -y + 'px';
     },
 
     refreshVector:function(vector, vectorBean) {

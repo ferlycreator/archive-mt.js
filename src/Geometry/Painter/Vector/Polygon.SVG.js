@@ -8,7 +8,7 @@ Z.Polygon.SVG=Z.Vector.SVG.extend({
             return null;
         }
         var geometry = this.geometry;
-        var offsets = geometry._untransformToOffset(geometry._getPrjPoints());
+        var offsets = geometry._transformToOffset(geometry._getPrjPoints());
         var pathString = this.domOffsetsToSVGPath(offsets,true,false);
         if (!pathString) {
             return null;
@@ -39,7 +39,7 @@ Z.Polygon.SVG=Z.Vector.SVG.extend({
         var prjHoles = geometry._getPrjHoles();
         var result = [];
         for (var i=0,len=prjHoles.length;i<len;i++) {
-            var holeOffset = geometry._untransformToOffset(prjHoles[i]);
+            var holeOffset = geometry._transformToOffset(prjHoles[i]);
             result.push(this.domOffsetsToSVGPath(holeOffset,true,true));
         }
         return result;

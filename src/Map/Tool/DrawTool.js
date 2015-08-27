@@ -399,7 +399,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
             map = this.map;
 
         //projected pLonlat
-        var pLonlat = map._transform(screenXY);
+        var pLonlat = map._untransform(screenXY);
         return projection.unproject(pLonlat);
     },
 

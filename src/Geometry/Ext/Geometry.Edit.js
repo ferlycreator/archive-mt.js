@@ -76,7 +76,7 @@ Z.Geometry.include({
             'top' : geometryPixel['top'] + dragOffset['top'] - mapOffset['top']
 		};
 		this.startPosition = newPosition;
-		var pcenter = this._map._transformFromOffset(newPosition);
+		var pcenter = this._map._untransformFromOffset(newPosition);
         this._dragGeometry._setPCenter(pcenter);
         this._dragGeometry._updateCache();
         this._setPCenter(pcenter);

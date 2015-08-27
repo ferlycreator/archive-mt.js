@@ -140,8 +140,8 @@ Z.CanvasLayer.Base=Z.OverlayLayer.extend({
             projection = map._getProjection();
         var p1 = projection.project({x:extent['xmin'],y:extent['ymin']}),
             p2 = projection.project({x:extent['xmax'],y:extent['ymax']});
-        var px1 = map._untransform(p1),
-            px2 = map._untransform(p2);
+        var px1 = map._transform(p1),
+            px2 = map._transform(p2);
         this.canvasCtx.clearRect(Math.min(px1['left'],px2['left']), Math.min(px1['top'],px2['top']),
                                     Math.abs(px1['left']-px2['left']), Math.abs(px1['top']-px2['top']));
     },

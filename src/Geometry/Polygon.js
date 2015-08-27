@@ -140,7 +140,7 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
         if (!Z.Extent.contains(pxExtent, point)) { return false; }
 
         // screen points
-        var points = this._untransformToOffset(this._getPrjPoints());
+        var points = this._transformToOffset(this._getPrjPoints());
 
         var c = Z.GeoUtils.pointInsidePolygon(point, points);
         if (c) {

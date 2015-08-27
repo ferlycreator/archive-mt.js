@@ -10,7 +10,7 @@ Z.Geometry.Center={
         if (!map) {
             return null;
         }
-        return map._untransformToOffset(pcenter);
+        return map._transformToOffset(pcenter);
     },
 
     /**

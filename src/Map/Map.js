@@ -235,8 +235,8 @@ Z['Map']=Z.Map=Z.Class.extend({
      */
     _getPixelDistance:function(_pcenter) {
         var _current = this._getPrjCenter();
-        var curr_px = this._untransform(_current);
-        var _pcenter_px = this._untransform(_pcenter);
+        var curr_px = this._transform(_current);
+        var _pcenter_px = this._transform(_pcenter);
         var span = {'left':(_pcenter_px['left']-curr_px['left']),'top':(curr_px['top']-_pcenter_px['top'])};
         return span;
     },
@@ -639,7 +639,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         var projection = this._getProjection();
         if (!coordinate || !projection) {return null;}
         var pCoordinate = projection.project(coordinate);
-        return this._untransformToOffset(pCoordinate);
+        return this._transformToOffset(pCoordinate);
     },
 
     /**
@@ -652,7 +652,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         //var domOffset = this._screenToDomOffset(screenPoint);
         var projection = this._getProjection();
         if (!screenPoint || !projection) {return null;}
-        var pCoordinate = this._transform(screenPoint);
+        var pCoordinate = this._untransform(screenPoint);
         var coordinate = projection.unproject(pCoordinate);
         return coordinate;
     },
@@ -857,7 +857,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     _offsetCenterByPixel:function(pixel) {
         var posX = this.width/2+pixel['left'],
             posY = this.height/2+pixel['top'];
-        var pCenter = this._transform({'left':posX,'top':posY});
+        var pCenter = this._untransform({'left':posX,'top':posY});
         this._setPrjCenter(pCenter);
     },
 
@@ -888,7 +888,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @param  {Number} zoomLevel current zoomLevel
      * @return {Coordinate}           Coordinate
      */
-    _transform:function(domPos) {
+    _untransform:function(domPos) {
         var transformation =  this._getTileConfig().getTransformationInstance();
         var res = this._tileConfig.getResolution(this.getZoomLevel());//['resolutions'][this._zoomLevel];
 
@@ -910,8 +910,8 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @param  {[type]} domPos [description]
      * @return {[type]}        [description]
      */
-    _transformFromOffset:function(domPos) {
-        return this._transform(this._domOffsetToScreen(domPos));
+    _untransformFromOffset:function(domPos) {
+        return this._untransform(this._domOffsetToScreen(domPos));
     },
 
     /**
@@ -919,7 +919,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @param  {[type]} pCoordinate [description]
      * @return {[type]}             [description]
      */
-    _untransform:function(pCoordinate) {
+    _transform:function(pCoordinate) {
         var transformation =  this._getTileConfig().getTransformationInstance();
         var res = this._tileConfig.getResolution(this.getZoomLevel());//['resolutions'][this._zoomLevel];
 
@@ -950,8 +950,8 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @param  {Coordinate} pCoordinate 投影坐标
      * @return {Object}             容器相对坐标
      */
-    _untransformToOffset:function(pCoordinate) {
-        var screenXY = this._untransform(pCoordinate);
+    _transformToOffset:function(pCoordinate) {
+        var screenXY = this._transform(pCoordinate);
         return this._screenToDomOffset(screenXY);
     },
 

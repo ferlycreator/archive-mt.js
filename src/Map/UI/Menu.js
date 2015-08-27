@@ -295,7 +295,7 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
             var projection = this.map._getProjection();
             if (!center || !projection) {return null;}
             var pcenter = projection.project(center);
-            var geoTipPos = this.map._untransformToOffset(pcenter);
+            var geoTipPos = this.map._transformToOffset(pcenter);
             position = {
                 'left': geoTipPos['left'],
                 'top' : geoTipPos['top']
