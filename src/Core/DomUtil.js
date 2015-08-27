@@ -163,10 +163,7 @@ Z.DomUtil = {
     offsetDom: function(dom,offset) {
         if (!dom) {return null;}
         if (!offset) {
-            return {
-                'left' : parseInt(dom.style.left,0),
-                'top' : parseInt(dom.style.top,0)
-            };
+            return new Z.Point(parseInt(dom.style.left,0),parseInt(dom.style.top,0));
         } else {
             dom['style']['left']= offset['left']+'px';
             dom['style']['top'] = offset['top']+'px';
@@ -195,18 +192,12 @@ Z.DomUtil = {
     parseCssTranslate:function(dom) {
         var transValue = dom.style[this.TRANSFORM];
         if (!transValue) {
-            return {
-                'left':0,
-                'top':0
-            };
+            return new Z.Point(0,0);
         }
         var splitted = transValue.split(',');
         var left = parseInt(splitted[0].split('(')[1],0),
             top = parseInt(splitted[1],0);
-        return {
-            'left':left,
-            'top':top
-        };
+        return new Z.Point(left,top);
     },
 
     /**
@@ -261,11 +252,7 @@ Z.DomUtil = {
             dom["map_position"] = domScreenPos;
         }*/
         var mousePagePos = Z.DomUtil.getEventPageCoordinate(ev);
-        var ret = {
-            left:mousePagePos.x-domScreenPos['left'],
-            top:mousePagePos.y-domScreenPos['top']
-        };
-        return ret;
+        return new Z.Point(mousePagePos.x-domScreenPos['left'],mousePagePos.y-domScreenPos['top']);
     },
 
     testCssProp: function (props) {

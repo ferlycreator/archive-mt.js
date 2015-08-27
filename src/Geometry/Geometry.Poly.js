@@ -4,7 +4,7 @@ Z.Geometry.Poly={
      * @param  {[type]} points [description]
      * @return {[type]}        [description]
      */
-    _untransformToOffset:function(points) {
+    _transformToOffset:function(points) {
         var map = this.getMap();
         if (!map || !Z.Util.isArrayHasData(points)) {
             return null;
@@ -24,12 +24,12 @@ Z.Geometry.Poly={
                     if (Z.Util.isNil(p[j])) {
                         continue;
                     }
-                    p_r.push(map._untransformToOffset(p[j]));
+                    p_r.push(map._transformToOffset(p[j]));
                 }
                 var simplifiedPoints = Z.Simplify.simplify(p_r, 2, false);
                 result.push(simplifiedPoints);
             } else {
-                var pp = map._untransformToOffset(p);
+                var pp = map._transformToOffset(p);
                 result.push(pp);
             }
         }

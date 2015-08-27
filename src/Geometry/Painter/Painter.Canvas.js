@@ -46,7 +46,8 @@ Z.Painter.Canvas = Z.Painter.extend({
             return;
         }
         var isRealTime = geometry.isEditing();
-        map._repaintBaseCanvasLayer(isRealTime);
+        var baseCanvasRender = Z.Render.Canvas.Base.getBaseCanvasRender(map);
+        baseCanvasRender.repaint(isRealTime);
         this._registerEvents();
     },
 

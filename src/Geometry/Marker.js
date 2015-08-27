@@ -188,8 +188,8 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
         var iconType = icon['type'];
         height = (icon['height']?parseInt(icon['height'],10):0);
         width = (icon['width']?parseInt(icon['width'],10):0);
-        pnw = {'top':(height+offset['y']), 'left':(width/2-offset['x'])};
-        pse = {'top':(-offset['y']), 'left':(width/2+offset['x'])};
+        pnw = new Z.Point((width/2-offset['x']), (height+offset['y']));
+        pse = new Z.Point((width/2+offset['x']), (-offset['y']));
 
         var pcenter = projection.project(coordinates);
         return map._computeExtentByPixelSize(pcenter, pnw, pse);
@@ -205,10 +205,10 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
 
     _assignPainter:function() {
         if (!this.layer) {return null;}
-        if (this.layer instanceof Z.SVGLayer) {
-            return new Z.Marker.SVG(this);
-        } else if (this.layer instanceof Z.CanvasLayer) {
+        if (this.layer.isCanvasRender()) {
             return new Z.Marker.Canvas(this);
+        } else {
+            return new Z.Marker.SVG(this);
         }
         return null;
     }

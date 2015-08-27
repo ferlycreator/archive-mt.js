@@ -21,4 +21,4 @@ Z.ProjectionInstance.EPSG3857 = {
     rad: function(a) { return a * Math.PI / 180; }
 };
 
-Z.Util.extend(Z.ProjectionInstance.EPSG3857, Z.ProjectionInstance.GeoMethods.Geodesic);
+Z.Util.extend(Z.ProjectionInstance.EPSG3857, Z.ProjectionInstance.GeoMethods.WGS84Geodesic);

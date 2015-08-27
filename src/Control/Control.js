@@ -139,10 +139,10 @@ Z['Control'] = Z.Control = Z.Class.extend({
         var layer = map.getLayer(layerId);
         if(!layer) {
         	if(canvas) {
-				layer = new Z.CanvasLayer(layerId);
-        	} else {
-				layer = new Z.SVGLayer(layerId);
-        	}
+                layer = new Z.VectorLayer(layerId,{'render':'canvas'});
+            } else {
+                layer = new Z.VectorLayer(layerId);
+            }
 			map.addLayer(layer);
         }
         return layer;

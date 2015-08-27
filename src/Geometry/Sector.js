@@ -148,10 +148,10 @@ Z['Sector']=Z.Sector=Z.Polygon.extend({
     _assignPainter:function() {
         var layer = this.getLayer();
         if (!layer) {return null;}
-        if (layer instanceof Z.SVGLayer) {
-            return new Z.Sector.SVG(this);
-        } else if (layer instanceof Z.CanvasLayer) {
+        if (this.layer.isCanvasRender()) {
             return new Z.Sector.Canvas(this);
+        } else {
+            return new Z.Sector.SVG(this);
         }
         return null;
     },

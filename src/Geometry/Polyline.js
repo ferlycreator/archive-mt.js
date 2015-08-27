@@ -47,7 +47,7 @@ Z['Polyline']=Z.Polyline = Z.Vector.extend({
         if (!Z.Extent.contains(pxExtent, point)) { return false; }
 
         // screen points
-        var points = this._untransformToOffset(this._getPrjPoints());
+        var points = this._transformToOffset(this._getPrjPoints());
 
         var i, p1, p2,
             len = points.length;
@@ -66,10 +66,10 @@ Z['Polyline']=Z.Polyline = Z.Vector.extend({
 
     _assignPainter:function() {
         if (!this.layer) {return null;}
-        if (this.layer instanceof Z.SVGLayer) {
-            return new Z.Polyline.SVG(this);
-        } else if (this.layer instanceof Z.CanvasLayer) {
+        if (this.layer.isCanvasRender()) {
             return new Z.Polyline.Canvas(this);
+        } else {
+            return new Z.Polyline.SVG(this);
         }
         return null;
     }

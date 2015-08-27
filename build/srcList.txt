@@ -8,6 +8,7 @@
 ../src/Core/Class.js
 ../src/Geo/Coordinate.js
 ../src/Geo/Point.js
+../src/Geo/Transformation/Transformation.js
 ../src/Geo/Projection/Projection.js
 ../src/Geo/Projection/Projection.Common.js
 ../src/Geo/Projection/Projection.EPSG3857.js

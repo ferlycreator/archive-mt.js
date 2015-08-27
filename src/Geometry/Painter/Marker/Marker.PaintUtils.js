@@ -14,10 +14,7 @@ Z.Marker.PaintUtils = {
         if (!width) {width = 0;}
         var height = icon['height'];
         if (!height) {height = 0;}
-        return {
-            'top' : -height,
-            'left' : -Math.round(width/2)
-        };
+        return new Z.Point(-Math.round(width/2), -height);
     },
 
     getVectorArray:function(gCenter) {
@@ -208,7 +205,7 @@ Z.Marker.PaintUtils = {
                 top = 0;
             }
         }
-        return {'x':left, 'y':top};
+        return new Z.Point(left, top);
     },
 
     getGeoIcon: function() {

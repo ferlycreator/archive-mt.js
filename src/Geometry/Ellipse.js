@@ -79,8 +79,8 @@ Z['Ellipse']=Z.Ellipse = Z.Polygon.extend({
             t = this._hitTestTolerance(),
             pa = map.distanceToPixel(this.width / 2, 0),
             pb = map.distanceToPixel(0, this.height /2),
-            a = pa.px,
-            b = pb.py,
+            a = pa.width,
+            b = pb.height,
             c = Math.sqrt(Math.abs(a * a - b * b)),
             xfocus = a >= b;
         var center = this._getCenterDomOffset();
@@ -137,10 +137,10 @@ Z['Ellipse']=Z.Ellipse = Z.Polygon.extend({
     _assignPainter:function() {
         var layer = this.getLayer();
         if (!layer) {return null;}
-        if (layer instanceof Z.SVGLayer) {
-            return new Z.Ellipse.SVG(this);
-        } else if (layer instanceof Z.CanvasLayer) {
+        if (layer.isCanvasRender()) {
             return new Z.Ellipse.Canvas(this);
+        } else {
+            return new Z.Ellipse.SVG(this);
         }
         return null;
     },

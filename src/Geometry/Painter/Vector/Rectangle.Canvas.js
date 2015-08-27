@@ -2,15 +2,11 @@ Z.Rectangle.Canvas = Z.Polygon.Canvas.extend({
     doPaint:function(context,resources,platformOffset) {
         var geometry = this.geometry;
         var map = geometry.getMap();
-        var nw = map._untransformToOffset(geometry._getPNw());
+        var nw = map._transformToOffset(geometry._getPNw());
         var pixelSize = this.getPixelSize();
-
-        var pt = {
-             left:nw["left"]+platformOffset['left'],
-             top:nw["top"]+platformOffset['top']
-        };
+        var pt = new Z.Point(nw["left"]+platformOffset['left'],nw["top"]+platformOffset['top']);
         context.beginPath();
-        context.rect(Z.Util.canvasNumber(pt.left), Z.Util.canvasNumber(pt.top),Z.Util.canvasNumber(pixelSize['px']),Z.Util.canvasNumber(pixelSize['py']));
+        context.rect(Z.Util.canvasNumber(pt.left), Z.Util.canvasNumber(pt.top),Z.Util.canvasNumber(pixelSize['width']),Z.Util.canvasNumber(pixelSize['height']));
         // this.drawHoles(context,tileNw,geometry);
         context.stroke();
         this.fillGeo(context, this.fillSymbol);

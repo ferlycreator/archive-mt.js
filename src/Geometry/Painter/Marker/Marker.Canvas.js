@@ -21,7 +21,7 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
             return;
         }
         var offset = this.getMarkerDomOffset();
-        var pt = map._domOffsetToScreen({'left':offset[0],top:offset[1]});
+        var pt = map._domOffsetToScreen(new Z.Point(offset[0],offset[1])); //{'left':offset[0],top:offset[1]}
         var icon = this.getGeoIcon();
         if(icon) {
             var url = icon['url'];
@@ -154,14 +154,11 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
         if(realTextWidth>width){
              contents = Z.Util.splitContent(content, realTextWidth, size, width);
         } else {
-            contents.push[content];
+            contents.push(content);
         }
         //计算偏移量
         var offset = this.computeLabelOffset(labelWidth+2*padding,labelHeight+2*padding,icon);
-        pt = {
-                left: pt.left+offset['x'],
-                top:pt.top-offset['y']
-        };
+        pt = new Z.Point(pt.left+offset['left'],pt.top-offset['top']);
         context.beginPath();
 
         if (icon['color']) {
@@ -218,6 +215,6 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
             testContext=testCanvas.getContext("2d");
             map.testContext=testContext;
         }
-        return this.paintTextMarker(testContext,{'left':0,'top':0},true);
+        return this.paintTextMarker(testContext,new Z.Point(0,0),true);
     }
 });

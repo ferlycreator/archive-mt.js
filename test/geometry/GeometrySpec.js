@@ -3,7 +3,7 @@ describe('GeometrySpec', function() {
     var container;
     var map;
     var tile;
-    var center = new Z.Coordinate(118, 32);
+    var center = new Z.Coordinate(118.846825, 32.046534);
     var layer;
 
     beforeEach(function() {
@@ -17,12 +17,11 @@ describe('GeometrySpec', function() {
         };
         map = new Z.Map(container, option);
         tile = new Z.TileLayer('tile', {
-            crs: 'crs3857',
+            tileInfo: 'web-mercator',
             urlTemplate: 'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',
             subdomains: [0, 1, 2, 3]
         });
         map.setBaseTileLayer(tile);
-        // map.Load();
         layer = new Z.CanvasLayer('canvas');
         map.addLayer(layer);
     });

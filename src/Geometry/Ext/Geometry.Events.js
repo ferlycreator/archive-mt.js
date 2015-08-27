@@ -30,7 +30,7 @@ Z.Geometry.include({
     _getEventParams: function(event) {
         var map = this.getMap();
         var pixel = Z.DomUtil.getEventDomCoordinate(event, map.containterDom);
-        var coordinate = map._transform(pixel);
+        var coordinate = map._untransform(pixel);
         //统一的参数, target是geometry引用, pixel是事件的屏幕坐标, coordinate是事件的经纬度坐标
         return {'target':this, 'pixel':pixel, 'coordinate':coordinate};
     },

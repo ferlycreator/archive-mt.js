@@ -50,11 +50,8 @@ Z.Map.Drag = Z.Handler.extend({
         var currentDomLeft = (me.startLeft + mx - me.startX);
         var currentDomTop = (me.startTop + my - me.startY);
         var domOffset = me.map.offsetPlatform();
-        me.map.offsetPlatform({
-            'left':currentDomLeft-domOffset['left'],
-            'top':currentDomTop-domOffset['top']
-        });
-        map._offsetCenterByPixel({"left":-(currentDomLeft-domOffset['left']),"top":-(currentDomTop-domOffset['top'])});
+        me.map.offsetPlatform(new Z.Point(currentDomLeft-domOffset['left'],currentDomTop-domOffset['top']));
+        map._offsetCenterByPixel(new Z.Point(-(currentDomLeft-domOffset['left']),-(currentDomTop-domOffset['top'])));
         me.map._onMoving({'target':map});
         map._fireEvent('moving');
     },
@@ -70,7 +67,7 @@ Z.Map.Drag = Z.Handler.extend({
         var xSpan =  domOffset['left'] - me.startLeft;
         var ySpan =  domOffset['top'] - me.startTop;
         if (t<280 && Math.abs(ySpan) > 5 && Math.abs(xSpan) > 5) {
-            map._animatePan({"top":ySpan*Math.ceil(500/t), "left":xSpan*Math.ceil(500/t)});
+            map._animatePan(new Z.Point(ySpan*Math.ceil(500/t), xSpan*Math.ceil(500/t)));
         } else {
             map._onMoveEnd({'target':map});
         }

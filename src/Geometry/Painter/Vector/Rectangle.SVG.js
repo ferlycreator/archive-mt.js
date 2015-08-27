@@ -9,12 +9,12 @@ Z.Rectangle.SVG=Z.Polygon.SVG.extend({
         }
         var geometry = this.geometry;
         var map = geometry.getMap();
-        var domNw = map._untransformToOffset(geometry._getPNw());
+        var domNw = map._transformToOffset(geometry._getPNw());
         var pr = this.getPixelSize();
         var start = domNw['left']+','+domNw['top'];
-        var path = 'M'+start+' L'+(domNw['left']+pr['px'])+','+domNw['top']+
-            ' L'+(domNw['left']+pr['px'])+','+(domNw['top']+pr['py'])+
-            ' L'+domNw['left']+','+(domNw['top']+pr['py'])+
+        var path = 'M'+start+' L'+(domNw['left']+pr['width'])+','+domNw['top']+
+            ' L'+(domNw['left']+pr['width'])+','+(domNw['top']+pr['height'])+
+            ' L'+domNw['left']+','+(domNw['top']+pr['height'])+
             ' '+Z.SVG.closeChar;
         var holePathes = this.getHolePathes();
         if (Z.Util.isArrayHasData(holePathes)) {

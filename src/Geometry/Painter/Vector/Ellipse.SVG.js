@@ -13,10 +13,10 @@ Z.Ellipse.SVG=Z.Polygon.SVG.extend({
         var domCenter = geometry._getCenterDomOffset();
         var pr = this.getPixelSize();
         var direction = 0;
-        var start = (domCenter['left']-pr['px'])+','+domCenter['top'];
-        var path = 'M'+start+' a'+pr['px']+','+pr['py']+' 0,1,'+direction+',0,-0.9Z';
+        var start = (domCenter['left']-pr['width'])+','+domCenter['top'];
+        var path = 'M'+start+' a'+pr['width']+','+pr['height']+' 0,1,'+direction+',0,-0.9Z';
         if (Z.Browser.vml) {
-            path ='AL ' + start + ' ' + pr['px'] + ',' + pr['py'] + ' 0,' + (65535 * 360) + ' x ';
+            path ='AL ' + start + ' ' + pr['width'] + ',' + pr['height'] + ' 0,' + (65535 * 360) + ' x ';
         }
         var holePathes = this.getHolePathes();
         if (Z.Util.isArrayHasData(holePathes)) {

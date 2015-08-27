@@ -155,7 +155,7 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
             pxSize = map.distanceToPixel(this.width, this.height);
 
         var pxMin = new Z.Point(sp.left, sp.top),
-            pxMax = new Z.Point(sp.left + pxSize.px, sp.top + pxSize.py),
+            pxMax = new Z.Point(sp.left + pxSize.width, sp.top + pxSize.height),
             pxExtent = new Z.Extent(pxMin.left - t, pxMin.top - t,
                                     pxMax.left + t, pxMax.top + t);
 
@@ -192,10 +192,10 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
     _assignPainter:function() {
         var layer = this.getLayer();
         if (!layer) {return null;}
-        if (layer instanceof Z.SVGLayer) {
-            return new Z.Rectangle.SVG(this);
-        } else if (layer instanceof Z.CanvasLayer) {
+        if (this.layer.isCanvasRender()) {
             return new Z.Rectangle.Canvas(this);
+        } else  {
+            return new Z.Rectangle.SVG(this);
         }
         return null;
     },

@@ -69,7 +69,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         this._baseTileLayer=null;
         this._tileLayers=[];
         this._svgLayers=[];
-        this._baseCanvasLayer = null;
+
         this._canvasLayers=[];
         this._dynLayers=[];
         //handler
@@ -111,6 +111,10 @@ Z['Map']=Z.Map=Z.Class.extend({
         });
         return this;
     },*/
+
+    isLoaded:function() {
+        return this._loaded;
+    },
 
     /**
      * 设定地图鼠标跟随提示框内容，设定的提示框会一直跟随鼠标显示
@@ -224,7 +228,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         var me=this;
         if (me._baseTileLayer) {me._baseTileLayer._onMoveEnd();}
         me._refreshSVGPaper();
-        me._eachLayer(endMoveLayer,me._tileLayers,[me._baseCanvasLayer],me._dynLayers);
+        me._eachLayer(endMoveLayer,me._tileLayers,me._canvasLayers,me._dynLayers);
         me._fireEvent('moveend');
     },
 
@@ -235,9 +239,9 @@ Z['Map']=Z.Map=Z.Class.extend({
      */
     _getPixelDistance:function(_pcenter) {
         var _current = this._getPrjCenter();
-        var curr_px = this._untransform(_current);
-        var _pcenter_px = this._untransform(_pcenter);
-        var span = {'left':(_pcenter_px['left']-curr_px['left']),'top':(curr_px['top']-_pcenter_px['top'])};
+        var curr_px = this._transform(_current);
+        var _pcenter_px = this._transform(_pcenter);
+        var span = new Z.Point((_pcenter_px['left']-curr_px['left']),(curr_px['top']-_pcenter_px['top']));
         return span;
     },
 
@@ -494,24 +498,21 @@ Z['Map']=Z.Map=Z.Class.extend({
                 if (this._loaded) {
                     layer.load();
                 }
-            } else if (layer instanceof Z.SVGLayer) {
-                layer._prepare(this,this._svgLayers.length);
-                this._svgLayers.push(layer);
-                if (this._loaded) {
-                    layer.load();
-                }
-            } else if (layer instanceof Z.CanvasLayer) {
-                layer._prepare(this, this._canvasLayers.length);
-                this._canvasLayers.push(layer);
-                if (!this._baseCanvasLayer) {
-                    this._baseCanvasLayer = new Z.CanvasLayer.Base();
-                    this._baseCanvasLayer._prepare(this);
-                    if (this._loaded) {
-                        this._baseCanvasLayer.load();
-                    }
+            } else if (layer instanceof Z.VectorLayer) {
+                if (layer.isCanvasRender()) {
+                    // canvas render
+                    layer._prepare(this, this._canvasLayers.length);
+                    this._canvasLayers.push(layer);
+
                 } else {
-                    this._repaintBaseCanvasLayer();
+                    // svg render
+                    layer._prepare(this,this._svgLayers.length);
+                    this._svgLayers.push(layer);
+
                 }
+                if (this._loaded) {
+                        layer.load();
+                    }
             } else {
                 continue;
             }
@@ -520,15 +521,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         return this;
     },
 
-    /**
-     * 刷新绘制baseCanvasLayer
-     * @param  {Boolean} isRealTime 是否是实时绘制
-     */
-    _repaintBaseCanvasLayer:function(isRealTime) {
-        if (this._loaded && this._baseCanvasLayer) {
-            this._baseCanvasLayer.repaint(isRealTime);
-        }
-    },
+
 
     /**
      * 移除图层
@@ -546,10 +539,14 @@ Z['Map']=Z.Map=Z.Class.extend({
         if (!map || map != this) {
             return;
         }
-        if (layer instanceof Z.SVGLayer) {
-            this._removeLayer(layer, this._svgLayers);
-        } else if (layer instanceof Z.CanvasLayer) {
-            this._removeLayer(layer, this._canvasLayers);
+        if (layer instanceof Z.VectorLayer) {
+            if (layer.isCanvasRender()) {
+                this._removeLayer(layer, this._canvasLayers);
+            } else {
+                this._removeLayer(layer, this._svgLayers);
+            }
+        } else if (layer instanceof Z.DynamicLayer) {
+            this._removeLayer(layer, this._dynLayers);
         } else if (layer instanceof Z.TileLayer) {
             this._removeLayer(layer, this._tileLayers);
         }
@@ -639,7 +636,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         var projection = this._getProjection();
         if (!coordinate || !projection) {return null;}
         var pCoordinate = projection.project(coordinate);
-        return this._untransformToOffset(pCoordinate);
+        return this._transformToOffset(pCoordinate);
     },
 
     /**
@@ -652,7 +649,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         //var domOffset = this._screenToDomOffset(screenPoint);
         var projection = this._getProjection();
         if (!screenPoint || !projection) {return null;}
-        var pCoordinate = this._transform(screenPoint);
+        var pCoordinate = this._untransform(screenPoint);
         var coordinate = projection.unproject(pCoordinate);
         return coordinate;
     },
@@ -703,7 +700,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     _getAllLayers:function() {
         var result = [];
         return result.concat(this._tileLayers)
-        .concat([this._baseCanvasLayer])
+        .concat(this._canvasLayers)
         .concat(this._svgLayers)
         .concat(this._dynLayers);
     },
@@ -765,8 +762,6 @@ Z['Map']=Z.Map=Z.Class.extend({
             return false;
         }
         this._tileConfig = tileConfig;
-        this.dx = (this._tileConfig['fullExtent']['right']>=this._tileConfig['fullExtent']['left'])?1:-1;
-        this.dy = (this._tileConfig['fullExtent']['top']>=this._tileConfig['fullExtent']['bottom'])?1:-1;
         this._checkMapStatus();
         return true;
         // callbackFn(true);
@@ -859,7 +854,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     _offsetCenterByPixel:function(pixel) {
         var posX = this.width/2+pixel['left'],
             posY = this.height/2+pixel['top'];
-        var pCenter = this._transform({'left':posX,'top':posY});
+        var pCenter = this._untransform(new Z.Point(posX, posY));
         this._setPrjCenter(pCenter);
     },
 
@@ -875,10 +870,10 @@ Z['Map']=Z.Map=Z.Class.extend({
             return Z.DomUtil.offsetDom(this._panels.mapPlatform);
         } else {
             var domOffset = Z.DomUtil.offsetDom(this._panels.mapPlatform);
-            Z.DomUtil.offsetDom(this._panels.mapPlatform, {
-                    'left':domOffset['left']+offset['left'],
-                    'top':domOffset['top']+offset['top']
-            });
+            Z.DomUtil.offsetDom(this._panels.mapPlatform, new Z.Point(
+                    domOffset['left']+offset['left'],
+                    domOffset['top']+offset['top']
+                ));
         }
     },
 
@@ -890,12 +885,21 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @param  {Number} zoomLevel current zoomLevel
      * @return {Coordinate}           Coordinate
      */
-    _transform:function(domPos) {
-        var res = this._tileConfig['resolutions'][this._zoomLevel];
+    _untransform:function(domPos) {
+        var transformation =  this._getTileConfig().getTransformationInstance();
+        var res = this._tileConfig.getResolution(this.getZoomLevel());//['resolutions'][this._zoomLevel];
+
+        var pcenter = this._getPrjCenter();
+        var centerPoint = transformation.transform(pcenter, res);
+        //容器的像素坐标方向是固定方向的, 和html标准一致, 即从左到右增大, 从上到下增大
+        var point = [centerPoint[0]+ domPos['left'] - this.width / 2, centerPoint[1]+domPos['top'] - this.height / 2];
+        var result = transformation.untransform(point, res);
+        return new Z.Coordinate(result);
+       /* var res = this._tileConfig.getResolution(this.getZoomLevel());//['resolutions'][this._zoomLevel];
         var pcenter = this._getPrjCenter();
         var y = pcenter.y + this.dy*(this.height / 2 - domPos['top'])* res;
         var x = pcenter.x + this.dx*(domPos['left'] - this.width / 2)* res;
-        return new Z.Coordinate(x, y);
+        return new Z.Coordinate(x, y);*/
     },
 
     /**
@@ -903,8 +907,8 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @param  {[type]} domPos [description]
      * @return {[type]}        [description]
      */
-    _transformFromOffset:function(domPos) {
-        return this._transform(this._domOffsetToScreen(domPos));
+    _untransformFromOffset:function(domPos) {
+        return this._untransform(this._domOffsetToScreen(domPos));
     },
 
     /**
@@ -912,8 +916,20 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @param  {[type]} pCoordinate [description]
      * @return {[type]}             [description]
      */
-    _untransform:function(pCoordinate) {
-        var res = this._tileConfig['resolutions'][this._zoomLevel];
+    _transform:function(pCoordinate) {
+        var transformation =  this._getTileConfig().getTransformationInstance();
+        var res = this._tileConfig.getResolution(this.getZoomLevel());//['resolutions'][this._zoomLevel];
+
+        var pcenter = this._getPrjCenter();
+        var centerPoint = transformation.transform(pcenter, res);
+
+        var point = transformation.transform(pCoordinate,res);
+        return new Z.Point(
+            Math.round(this.width / 2 + point[0] - centerPoint[0]),
+            Math.round(this.height / 2 + point[1] - centerPoint[1])
+            );
+
+       /* var res = this._tileConfig['resolutions'][this._zoomLevel];
         var pcenter = this._getPrjCenter();
         // var _canvasDom = this.canvasDom;
         var centerTop = this.dy*(pcenter.y - pCoordinate.y) / res;
@@ -923,7 +939,7 @@ Z['Map']=Z.Map=Z.Class.extend({
             "top" : Math.round(this.height / 2 + centerTop),
             "left" : Math.round(this.width / 2 + centerLeft)
         };
-        return result;
+        return result;*/
     },
 
     /**
@@ -931,8 +947,8 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @param  {Coordinate} pCoordinate 投影坐标
      * @return {Object}             容器相对坐标
      */
-    _untransformToOffset:function(pCoordinate) {
-        var screenXY = this._untransform(pCoordinate);
+    _transformToOffset:function(pCoordinate) {
+        var screenXY = this._transform(pCoordinate);
         return this._screenToDomOffset(screenXY);
     },
 
@@ -945,11 +961,10 @@ Z['Map']=Z.Map=Z.Class.extend({
     _screenToDomOffset: function(screenXY) {
         if (!screenXY) {return null;}
         var platformOffset = this.offsetPlatform();
-        return {
-            'left' : screenXY['left'] - platformOffset['left'],
-            'top' : screenXY['top'] - platformOffset['top']
-        };
-
+        return new Z.Point(
+                screenXY['left'] - platformOffset['left'],
+                screenXY['top'] - platformOffset['top']
+            );
     },
 
     /**
@@ -961,10 +976,10 @@ Z['Map']=Z.Map=Z.Class.extend({
     _domOffsetToScreen: function(domOffset) {
         if (!domOffset) {return null;}
         var platformOffset = this.offsetPlatform();
-        return {
-            'left' : domOffset["left"] + platformOffset["left"],
-            'top' : domOffset["top"] + platformOffset["top"]
-        };
+        return new Z.Point(
+                domOffset["left"] + platformOffset["left"],
+                domOffset["top"] + platformOffset["top"]
+            );
     },
 
     /**
@@ -1007,19 +1022,19 @@ Z['Map']=Z.Map=Z.Class.extend({
             target = projection.locate(center,x,y),
             z = this.getZoomLevel(),
             resolutions = tileConfig['resolutions'];
-        var px = !x?0:(projection.project({x:target.x,y:center.y}).x-projection.project(center).x)/resolutions[z];
-        var py = !y?0:(projection.project({x:target.x,y:center.y}).y-projection.project(target).y)/resolutions[z];
-        return {'px':Math.round(Math.abs(px)),'py':Math.round(Math.abs(py))};
+        var width = !x?0:(projection.project({x:target.x,y:center.y}).x-projection.project(center).x)/resolutions[z];
+        var height = !y?0:(projection.project({x:target.x,y:center.y}).y-projection.project(target).y)/resolutions[z];
+        return new Z.Size(Math.round(Math.abs(width)), Math.round(Math.abs(height)));
     },
 
     /**
      * 像素转化为距离
-     * @param  {[type]} px [description]
-     * @param  {[type]} py [description]
+     * @param  {[type]} width [description]
+     * @param  {[type]} height [description]
      * @return {[type]}    [description]
      * @expose
      */
-    pixelToDistance:function(px, py) {
+    pixelToDistance:function(width, height) {
         var tileConfig = this._getTileConfig();
         if (!tileConfig) {
             return null;
@@ -1032,7 +1047,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         var center = this.getCenter(),
             pcenter = this._getPrjCenter(),
             res = tileConfig['resolutions'][this.getZoomLevel()];
-        var pTarget = {x:pcenter.x+px*res, y:pcenter.y+py*res};
+        var pTarget = {x:pcenter.x+width*res, y:pcenter.y+height*res};
         var target = projection.unproject(pTarget);
         return projection.getGeodesicLength(target,center);
     },
@@ -1167,10 +1182,7 @@ Z['Map']=Z.Map=Z.Class.extend({
 //
 //
         //初始化mapPlatform的偏移量, 适用css3 translate时设置初始值
-        this.offsetPlatform({
-            'left':0,
-            'top':0
-        });
+        this.offsetPlatform(new Z.Point(0,0));
         var mapSize = this._getContainerDomSize();
         this._setMapSize(mapSize);
     },
@@ -1193,10 +1205,7 @@ Z['Map']=Z.Map=Z.Class.extend({
                 var oldHeight = map.height;
                 var oldWidth = map.width;
                 map._setMapSize(watched);
-                map._onResize({
-                    'left' : ((watched.width-oldWidth) / 2),
-                    'top' : ((watched.height-oldHeight) / 2)
-                    });
+                map._onResize(new Z.Point((watched.width-oldWidth) / 2,(watched.height-oldHeight) / 2));
                 // 触发_onResize事件
                 /**
                  * 地图容器大小变化事件

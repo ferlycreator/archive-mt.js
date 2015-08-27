@@ -2,13 +2,10 @@ Z.Ellipse.Canvas = Z.Polygon.Canvas.extend({
     doPaint:function(context,resources,platformOffset) {
         var geometry = this.geometry;
         var center = geometry._getCenterDomOffset();
-        var pt = {
-             left:center["left"]+platformOffset['left'],
-             top:center["top"]+platformOffset['top']
-        };
+        var pt = new Z.Point(center["left"]+platformOffset['left'],center["top"]+platformOffset['top']);
         var pr = this.getPixelSize();
-        var width = pr['px'];
-        var height = pr['py'];
+        var width = pr['width'];
+        var height = pr['height'];
         this.BezierEllipse(context,pt['left'],pt['top'],width,height);
         // this.drawHoles(context,tileNw,geometry);
 

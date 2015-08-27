@@ -42,7 +42,7 @@ Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
         }
         // var _canvas = this.map._panels.canvasLayerContainer;
 
-        this.drawLayer = new Z.SVGLayer(this.layerId);
+        this.drawLayer = new Z.VectorLayer(this.layerId);
 
         this.map.addLayer(this.drawLayer);
 
