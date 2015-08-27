@@ -46,18 +46,42 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
             y = symbol.dy,
             center = this._getCenterDomOffset();
         var pxMin = new Z.Point(center.left - width/2 + x, center.top - height - y),
-            pxMax = new Z.Point(center.left + width/2 + x, center.top - y),
-            pxExtent = new Z.Extent(pxMin.left, pxMin.top, pxMax.left, pxMax.top);
+            pxMax = new Z.Point(center.left + width/2 + x, center.top - y);
 
-        point = new Z.Point(point.left, point.top);
-
+        if (symbol['markerType']) {
+            pxMin = new Z.Point(center.left - width/2 + x, center.top - height/2 - y);
+            pxMax = new Z.Point(center.left + width/2 + x, center.top + height/2 - y);
+        } else if (symbol['shieldType']) {
+            var vertical = Z.Util.setDefaultValue(symbol['shieldVerticalAlignment'], 'middle'),
+                horizontal = Z.Util.setDefaultValue(symbol['shieldHorizontalAlignment'], 'middle');
+            var px = this._getExtent(center, vertical, horizontal, width, height, x, y);
+            pxMin = px['min'];
+            pxMax = px['max'];
+        } else if (symbol['textName']) {
+            var vertical = Z.Util.setDefaultValue(symbol['textVerticalAlignment'], 'middle'),
+                horizontal = Z.Util.setDefaultValue(symbol['textHorizontalAlignment'], 'middle');
+            var px = this._getExtent(center, vertical, horizontal, width, height, x, y);
+            pxMin = px['min'];
+            pxMax = px['max'];
+        }
+        var pxExtent = new Z.Extent(pxMin.left, pxMin.top, pxMax.left, pxMax.top);
+        console.log(pxExtent);
+        console.log(point);
         return Z.Extent.contains(pxExtent, point);
     },
 
     _getMarkerSize: function(symbol) {
-        var width = 0,height =0;
-        var fontSize = 0, lineSpacing = 0, content ='';
-        if(symbol['shieldType']) {
+        var width=0,height=0;
+        var fontSize=0,lineSpacing=0,content='';
+        if (symbol['markerType']) {
+            width = Z.Util.setDefaultValue(symbol['markerWidth'], 0);
+            height = Z.Util.setDefaultValue(symbol['markerHeight'], 0);
+            if(width > height) {
+                height = width;
+            } else {
+                width = height;
+            }
+        } else if (symbol['shieldType']) {
             width = Z.Util.setDefaultValue(symbol['shieldWrapWidth'], 0);
             height = Z.Util.setDefaultValue(symbol['shieldSize'], 0) +
                      Z.Util.setDefaultValue(symbol['shieldLineSpacing'], 0);
@@ -65,18 +89,14 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
             lineSpacing = Z.Util.setDefaultValue(symbol['shieldLineSpacing'], 12);
             shieldName = Z.Util.setDefaultValue(symbol['shieldName'], '');
 
-        } else {
-            width = Z.Util.setDefaultValue(symbol['markerWidth'], 0);
-            height = Z.Util.setDefaultValue(symbol['markerHeight'], 0);
-            if(symbol['textName']) {
+        } else if (symbol['textName']) {
                 fontSize = Z.Util.setDefaultValue(symbol['textSize'], 12);
                 lineSpacing = Z.Util.setDefaultValue(symbol['textLineSpacing'], 12);
                 textName = Z.Util.setDefaultValue(symbol['textName'], '');
                 var textWidth = Z.Util.setDefaultValue(symbol['textWrapWidth'], 0);
                 width = (width>textWidth)?width:textWidth;
-                var textHeight = Z.Util.setDefaultValue(symbol['size'], 0);
+                var textHeight = fontSize;
                 height = (height>textHeight)?height:textHeight;
-            }
         }
         return this._getRealSize(height, width, content, fontSize, lineSpacing);
     },
@@ -94,6 +114,47 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
             width += fontSize;
         }
         return {'width': width, 'height': height};
+    },
+
+    _getExtent: function(center, vertical, horizontal, width, height, x, y) {
+        var left = center.left;
+        var top = center.top;
+        var min, max;
+        if ('left' === horizontal) {
+            if('top' === vertical) {
+                min = {'left': (left-width+x), 'top': (top-height-y)};
+                max = {'left': (left+x), 'top': (top-y)};
+            } else if ('middle' === vertical) {
+                min = {'left': (left-width+x), 'top': (top-height/2-y)};
+                max = {'left': (left+x), 'top': (top+height/2-y)};
+            } else if ('bottom' === vertical) {
+                min = {'left': (left-width+x), 'top': (top-y)};
+                max = {'left': (left+x), 'top': (top+height-y)};
+            }
+        } else if ('middle' === horizontal) {
+            if('top' === vertical) {
+                min = {'left': (left-width/2+x), 'top': (top-height-y)};
+                max = {'left': (left+width/2+x), 'top': (top-y)};
+            } else if ('middle' === vertical) {
+                min = {'left': (left-width/2+x), 'top': (top-height/2-y)};
+                max = {'left': (left+width/2+x), 'top': (top+height/2-y)};
+            } else if ('bottom' === vertical) {
+                min = {'left': (left-width/2+x), 'top': (top-y)};
+                max = {'left': (left+width/2+x), 'top': (top+height-y)};
+            }
+        } else if ('right' === horizontal) {
+            if('top' === vertical) {
+                min = {'left': (left+x), 'top': (top-height-y)};
+                max = {'left': (left+width+x),  'top': (top-y)};
+            } else if ('middle' === vertical) {
+                min = {'left': (left+x), 'top': (top-height/2-y)};
+                max = {'left': (left+width+x), 'top': (top+height/2-y)};
+            } else if ('bottom' === vertical) {
+                min = {'left': (left+x), 'top': (top-y)};
+                max = {'left': (left+width+x), 'top': (top+height-y)};
+            }
+        }
+        return {'min': min, 'max': max};
     },
 
     _computeExtent:function(projection) {
