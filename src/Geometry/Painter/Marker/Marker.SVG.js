@@ -257,7 +257,6 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
                             content = content.replace(regex, props[key]);
                         }
                     }
-                    content = content.replace(regex, '');
                 }
             }
         }

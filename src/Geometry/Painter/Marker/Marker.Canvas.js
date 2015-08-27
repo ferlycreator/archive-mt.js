@@ -27,20 +27,22 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
             var url = icon['url'];
             if(url&&url.length>0) {
                 this.paintPictureMarker(context, pt, icon,resources);
+                return;
             }
             var markerType = icon['type'];
             if(markerType&&markerType.length>0) {
                 this.paintVectorMarker(context, pt, geometry);
+                return;
+            }
+            var shieldType = icon['shieldType'];
+            if(shieldType&&shieldType.length>0) {
+                this.paintShieldMarker(context, pt);
+                return;
             }
             var textName = icon['content'];
             if(textName&&textName.length>0) {
                 this.paintTextMarker(context, pt);
-            }
-        } else {
-            icon = this.getGeoIcon();
-            var shieldType = icon['shieldType'];
-            if(shieldType&&shieldType.length>0) {
-                this.paintShieldMarker(context, pt);
+                return;
             }
         }
     },
@@ -82,7 +84,7 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
         }  else if ('triangle' === markerType
                 || 'diamond' === markerType
                 || 'square' === markerType
-                || 'tip' === markerType) {
+                || 'label' === markerType) {
              context.moveTo(points[0][0],points[0][1]);
              for (var i = 1, len = points.length;i<len;i++) {
                  context.lineTo(points[i][0],points[i][1]);
@@ -190,7 +192,6 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
                             content = content.replace(regex, props[key]);
                         }
                     }
-                    content = content.replace(regex, '');
                 }
             }
         }
