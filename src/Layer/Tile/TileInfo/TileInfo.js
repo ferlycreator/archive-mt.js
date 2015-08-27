@@ -1,7 +1,7 @@
 Z['TileInfo']={
     'web-mercator':{
         'projection':'EPSG:3857', //4326 | 3857 | bd09
-        'transformation' : [0, 1, -1, 0, -20037508.34, 20037508.34],
+        'transformation' : [1, -1, -20037508.34, 20037508.34],
         'tileSystem' : 'web-mercator',
         'maxZoomLevel':18,
         'minZoomLevel':1,

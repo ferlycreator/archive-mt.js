@@ -891,19 +891,20 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {Coordinate}           Coordinate
      */
     _transform:function(domPos) {
-        var transformation =  this._getTileConfig().getTransformationInstance();
+        /*var transformation =  this._getTileConfig().getTransformationInstance();
         var res = this._tileConfig.getResolution(this.getZoomLevel());//['resolutions'][this._zoomLevel];
 
         var pcenter = this._getPrjCenter();
-        var centerPoint = transformation.untransform(pcenter);
-
-        var point = [centerPoint[0]]
-        var point = transformation.untransform([domPos['left'], domPos['top']], res);
-
-        /*var pcenter = this._getPrjCenter();
+        var centerPoint = transformation.transform(pcenter, res);
+        //容器的像素坐标方向是固定的, 即从左到右增大, 从上到下增大
+        var point = [centerPoint[0]+domPos['left'] - this.width / 2, centerPoint[1]-(this.height / 2 - domPos['top'])];
+        var result = transformation.untransform(point, res);
+        return new Z.Coordinate(result);*/
+        var res = this._tileConfig.getResolution(this.getZoomLevel());//['resolutions'][this._zoomLevel];
+        var pcenter = this._getPrjCenter();
         var y = pcenter.y + this.dy*(this.height / 2 - domPos['top'])* res;
         var x = pcenter.x + this.dx*(domPos['left'] - this.width / 2)* res;
-        return new Z.Coordinate(x, y);*/
+        return new Z.Coordinate(x, y);
     },
 
     /**
@@ -921,6 +922,18 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {[type]}             [description]
      */
     _untransform:function(pCoordinate) {
+        /*var transformation =  this._getTileConfig().getTransformationInstance();
+        var res = this._tileConfig.getResolution(this.getZoomLevel());//['resolutions'][this._zoomLevel];
+
+        var pcenter = this._getPrjCenter();
+        var centerPoint = transformation.transform(pcenter, res);
+
+        var point = transformation.transform(pCoordinate,res);
+        return {
+            'left'  : Math.round(this.width / 2 + point[0] - centerPoint[0]),
+            'top'   : Math.round(this.height / 2 + centerPoint[1] - point[0])
+        };*/
+
         var res = this._tileConfig['resolutions'][this._zoomLevel];
         var pcenter = this._getPrjCenter();
         // var _canvasDom = this.canvasDom;

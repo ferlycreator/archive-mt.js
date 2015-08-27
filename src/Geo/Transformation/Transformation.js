@@ -19,7 +19,7 @@ Z.Transformation = function(matrix) {
 };
 
 Z.Transformation.prototype = {
-
+    //prj coordinate -> point
     transform : function(coordinates, scale) {
         var matrix = this.matrix;
         var x,y;
@@ -31,11 +31,12 @@ Z.Transformation.prototype = {
             y = coordinates.y;
         }
         // affine transformation
-        var x_ = x*matrix[0]+y*matrix[2]+matrix[4];
-        var y_ = x*matrix[1]+y*matrix[3]+matrix[5];
-        return [x_*scale, y_*scale];
+        var x_ = (x*matrix[0]+matrix[2])/scale;
+        var y_ = (y*matrix[1]+matrix[3])/scale;
+        return [x_, y_];
     },
 
+    //point -> prj coordinate
     untransform : function(point, scale) {
         var matrix = this.matrix;
         var x,y;
@@ -46,8 +47,8 @@ Z.Transformation.prototype = {
             x = point.x;
             y = point.y;
         }
-        var x_ = x/matrix[0]+y/matrix[2]-matrix[4];
-        var y_ = x/matrix[1]+y/matrix[3]-matrix[5];
-        return [x_/scale, y_/scale];
+        var x_ = (x/matrix[0]*scale-matrix[2]);
+        var y_ = (y/matrix[1]*scale-matrix[3]);
+        return [x_, y_];
     }
-}
+};
