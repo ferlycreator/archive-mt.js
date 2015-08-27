@@ -419,7 +419,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         var drawLayerId = '____system_layer_drawtool';
         var drawToolLayer = this.map.getLayer(drawLayerId);
         if (!drawToolLayer) {
-            drawToolLayer = new Z.SVGLayer(drawLayerId);
+            drawToolLayer = new Z.VectorLayer(drawLayerId);
             this.map.addLayer(drawToolLayer);
         }
         return drawToolLayer;

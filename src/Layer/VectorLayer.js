@@ -27,6 +27,10 @@ Z.VectorLayer=Z.OverlayLayer.extend({
      * @expose
      */
     isCanvasRender:function() {
+        //即不支持svg, 也不支持vml
+        if (!Z.Browser.svg && !Z.Browser.vml) {
+            return true;
+        }
         return 'canvas' === this.options['render'].toLowerCase();
     }
 
