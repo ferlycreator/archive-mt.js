@@ -164,10 +164,10 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
 
     _assignPainter:function() {
         if (!this.layer) {return null;}
-        if (this.layer instanceof Z.SVGLayer) {
-            return new Z.Polygon.SVG(this);
-        } else if (this.layer instanceof Z.CanvasLayer) {
+        if (this.layer.isCanvasRender()) {
             return new Z.Polygon.Canvas(this);
+        } else {
+            return new Z.Polygon.SVG(this);
         }
         return null;
     }

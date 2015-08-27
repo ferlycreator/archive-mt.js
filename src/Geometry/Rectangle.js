@@ -192,10 +192,10 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
     _assignPainter:function() {
         var layer = this.getLayer();
         if (!layer) {return null;}
-        if (layer instanceof Z.SVGLayer) {
-            return new Z.Rectangle.SVG(this);
-        } else if (layer instanceof Z.CanvasLayer) {
+        if (this.layer.isCanvasRender()) {
             return new Z.Rectangle.Canvas(this);
+        } else  {
+            return new Z.Rectangle.SVG(this);
         }
         return null;
     },

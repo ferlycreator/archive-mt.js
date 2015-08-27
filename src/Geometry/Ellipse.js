@@ -137,10 +137,10 @@ Z['Ellipse']=Z.Ellipse = Z.Polygon.extend({
     _assignPainter:function() {
         var layer = this.getLayer();
         if (!layer) {return null;}
-        if (layer instanceof Z.SVGLayer) {
-            return new Z.Ellipse.SVG(this);
-        } else if (layer instanceof Z.CanvasLayer) {
+        if (layer.isCanvasRender()) {
             return new Z.Ellipse.Canvas(this);
+        } else {
+            return new Z.Ellipse.SVG(this);
         }
         return null;
     },

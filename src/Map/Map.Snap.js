@@ -128,7 +128,7 @@ Z.Map.include({
                     continue;
                 }
                 var layer = geos[j].getLayer();
-                if (layer instanceof Z.SVGLayer &&
+                if (layer instanceof Z.VectorLayer && !layer.isCanvasRender() &&
                     Z.Geometry["TYPE_POINT"] === geos[j].getType()) {
                     var jStr =geos[j].toJson({'properties':false});
                     markerJson.push(jStr);

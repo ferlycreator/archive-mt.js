@@ -95,10 +95,10 @@ Z['Circle']=Z.Circle=Z.Polygon.extend({
     _assignPainter:function() {
         var layer = this.getLayer();
         if (!layer) {return null;}
-        if (layer instanceof Z.SVGLayer) {
-            return new Z.Circle.SVG(this);
-        } else if (layer instanceof Z.CanvasLayer) {
+        if (layer.isCanvasRender()) {
             return new Z.Circle.Canvas(this);
+        } else {
+            return new Z.Circle.SVG(this);
         }
         return null;
     },

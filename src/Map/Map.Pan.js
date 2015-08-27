@@ -22,15 +22,15 @@ Z.Map.include({
      * @expose
      */
     panBy:function(offset) {
-        this.offsetPlatform({'left':offset['left'],'top':offset['top']});
-        this._offsetCenterByPixel({'left':-offset['left'],'top':-offset['top']});
+        this.offsetPlatform(new Z.Point(offset['left'],offset['top']));//{'left':offset['left'],'top':offset['top']}
+        this._offsetCenterByPixel(new Z.Point(-offset['left'],-offset['top']));//{'left':-offset['left'],'top':-offset['top']}
         this._fireEvent('moving');
         this._onMoveEnd({'target':this});
         return this;
     },
 
     _animatePan:function(moveOffset) {
-        if (!moveOffset) {moveOffset = {'left':0, 'top':0};}
+        if (!moveOffset) {moveOffset = new Z.Point(0,0);}//{'left':0, 'top':0}
         if (!moveOffset['left']) {
             moveOffset['left'] = 0;
         }
@@ -104,8 +104,8 @@ Z.Map.include({
             }
             var ySpan = spanArr[counter].y;
             var xSpan = spanArr[counter].x;
-            _map.offsetPlatform({'left':xSpan,'top':ySpan});
-            _map._offsetCenterByPixel({'left':-xSpan,'top':-ySpan});
+            _map.offsetPlatform(new Z.Point(xSpan, ySpan)); //{'left':xSpan,'top':ySpan}
+            _map._offsetCenterByPixel(new Z.Point(-xSpan, -ySpan)); //{'left':-xSpan,'top':-ySpan}
             counter++;
             // 每移动3次draw一次
             if (counter <= counterLimit - 1) {

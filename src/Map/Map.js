@@ -69,7 +69,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         this._baseTileLayer=null;
         this._tileLayers=[];
         this._svgLayers=[];
-        this._baseCanvasLayer = null;
+
         this._canvasLayers=[];
         this._dynLayers=[];
         //handler
@@ -111,6 +111,10 @@ Z['Map']=Z.Map=Z.Class.extend({
         });
         return this;
     },*/
+
+    isLoaded:function() {
+        return this._loaded;
+    },
 
     /**
      * 设定地图鼠标跟随提示框内容，设定的提示框会一直跟随鼠标显示
@@ -224,7 +228,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         var me=this;
         if (me._baseTileLayer) {me._baseTileLayer._onMoveEnd();}
         me._refreshSVGPaper();
-        me._eachLayer(endMoveLayer,me._tileLayers,[me._baseCanvasLayer],me._dynLayers);
+        me._eachLayer(endMoveLayer,me._tileLayers,me._canvasLayers,me._dynLayers);
         me._fireEvent('moveend');
     },
 
@@ -237,7 +241,8 @@ Z['Map']=Z.Map=Z.Class.extend({
         var _current = this._getPrjCenter();
         var curr_px = this._transform(_current);
         var _pcenter_px = this._transform(_pcenter);
-        var span = {'left':(_pcenter_px['left']-curr_px['left']),'top':(curr_px['top']-_pcenter_px['top'])};
+        // var span = {'left':(_pcenter_px['left']-curr_px['left']),'top':(curr_px['top']-_pcenter_px['top'])};
+        var span = new Z.Point((_pcenter_px['left']-curr_px['left']),(curr_px['top']-_pcenter_px['top']));
         return span;
     },
 
@@ -494,24 +499,21 @@ Z['Map']=Z.Map=Z.Class.extend({
                 if (this._loaded) {
                     layer.load();
                 }
-            } else if (layer instanceof Z.SVGLayer) {
-                layer._prepare(this,this._svgLayers.length);
-                this._svgLayers.push(layer);
-                if (this._loaded) {
-                    layer.load();
-                }
-            } else if (layer instanceof Z.CanvasLayer) {
-                layer._prepare(this, this._canvasLayers.length);
-                this._canvasLayers.push(layer);
-                if (!this._baseCanvasLayer) {
-                    this._baseCanvasLayer = new Z.CanvasLayer.Base();
-                    this._baseCanvasLayer._prepare(this);
-                    if (this._loaded) {
-                        this._baseCanvasLayer.load();
-                    }
+            } else if (layer instanceof Z.VectorLayer) {
+                if (layer.isCanvasRender()) {
+                    // canvas render
+                    layer._prepare(this, this._canvasLayers.length);
+                    this._canvasLayers.push(layer);
+
                 } else {
-                    this._repaintBaseCanvasLayer();
+                    // svg render
+                    layer._prepare(this,this._svgLayers.length);
+                    this._svgLayers.push(layer);
+
                 }
+                if (this._loaded) {
+                        layer.load();
+                    }
             } else {
                 continue;
             }
@@ -520,15 +522,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         return this;
     },
 
-    /**
-     * 刷新绘制baseCanvasLayer
-     * @param  {Boolean} isRealTime 是否是实时绘制
-     */
-    _repaintBaseCanvasLayer:function(isRealTime) {
-        if (this._loaded && this._baseCanvasLayer) {
-            this._baseCanvasLayer.repaint(isRealTime);
-        }
-    },
+
 
     /**
      * 移除图层
@@ -546,10 +540,14 @@ Z['Map']=Z.Map=Z.Class.extend({
         if (!map || map != this) {
             return;
         }
-        if (layer instanceof Z.SVGLayer) {
-            this._removeLayer(layer, this._svgLayers);
-        } else if (layer instanceof Z.CanvasLayer) {
-            this._removeLayer(layer, this._canvasLayers);
+        if (layer instanceof Z.VectorLayer) {
+            if (layer.isCanvasRender()) {
+                this._removeLayer(layer, this._canvasLayers);
+            } else {
+                this._removeLayer(layer, this._svgLayers);
+            }
+        } else if (layer instanceof Z.DynamicLayer) {
+            this._removeLayer(layer, this._dynLayers);
         } else if (layer instanceof Z.TileLayer) {
             this._removeLayer(layer, this._tileLayers);
         }
@@ -703,7 +701,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     _getAllLayers:function() {
         var result = [];
         return result.concat(this._tileLayers)
-        .concat([this._baseCanvasLayer])
+        .concat(this._canvasLayers)
         .concat(this._svgLayers)
         .concat(this._dynLayers);
     },
@@ -857,7 +855,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     _offsetCenterByPixel:function(pixel) {
         var posX = this.width/2+pixel['left'],
             posY = this.height/2+pixel['top'];
-        var pCenter = this._untransform({'left':posX,'top':posY});
+        var pCenter = this._untransform(new Z.Point(posX, posY));//{'left':posX,'top':posY}
         this._setPrjCenter(pCenter);
     },
 

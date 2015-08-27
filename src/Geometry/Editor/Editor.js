@@ -221,7 +221,7 @@ Z.Editor=Z.Class.extend({
             var pxCenter = map._transformToOffset(geometry._getPCenter());
             var r = geometry.getRadius();
             var p = map.distanceToPixel(r,0);
-            var rPx={'left':pxCenter['left']+p['px'],'top':pxCenter['top']};
+            var rPx= new Z.Point(pxCenter['left']+p['px'],pxCenter['top']);// {'left':pxCenter['left']+p['px'],'top':pxCenter['top']};
             return rPx;
         }
         var rPx = radiusHandleOffset();
@@ -321,7 +321,7 @@ Z.Editor=Z.Class.extend({
             var rw = Math.round(geometry.getWidth());
             var rh = Math.round(geometry.getHeight());
             var p = map.distanceToPixel(rw,rh);
-            var rPx={'left':pxNw['left']+p['px'],'top':pxNw['top']+p['py']};
+            var rPx= new Z.Point(pxNw['left']+p['px'],pxNw['top']+p['py']);//{'left':pxNw['left']+p['px'],'top':pxNw['top']+p['py']};
             return rPx;
         }
 
@@ -508,7 +508,8 @@ Z.Editor=Z.Class.extend({
                                 var lonlats = getLonlats();
                                 for (var i=0,len=lonlats.length;i<len;i++) {
                                     var vo = map._transformToOffset(lonlats[i]);
-                                    var n = map._untransformFromOffset({'left':vo['left']+dragged['left'], 'top':vo['top']+dragged['top']});
+                                    //{'left':vo['left']+dragged['left'], 'top':vo['top']+dragged['top']}
+                                    var n = map._untransformFromOffset(new Z.Point(vo['left']+dragged['left'], vo['top']+dragged['top']));
                                     lonlats[i].x = n.x;
                                     lonlats[i].y = n.y;
                                 }
@@ -546,7 +547,7 @@ Z.Editor=Z.Class.extend({
         }
         createCenterHandle.call(this);
         createRemoveHandle.call(this);
-        tmpHandle = this.createHandleDom({'left':0,'top':0},{
+        tmpHandle = this.createHandleDom(new Z.Point(0,0),{
                             tip:'点击后增加节点',
                             cursor:'pointer'
                         });

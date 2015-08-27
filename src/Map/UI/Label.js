@@ -102,16 +102,16 @@ Z['Label'] = Z.Label = Z.Class.extend({
 	},
 
 	addTo: function (geometry) {
-        if(!geometry || !this.options || !this.options['symbol']) return;
+        if(!geometry || !this.options || !this.options['symbol']) {return;}
         this._map = geometry.getMap();
         this._labelContrainer = this._map._containerDOM;
         this._target = geometry;
-        if(!this._target) throw new Error(this.exceptions['NEED_TARGET']);
+        if(!this._target) {throw new Error(this.exceptions['NEED_TARGET']);}
 
         var layerId = '__mt__layer_label';
         var canvas = false;
         var targetLayer = this._target.getLayer();
-        if(targetLayer && targetLayer instanceof Z.CanvasLayer) {
+        if(targetLayer && targetLayer instanceof Z.VectorLayer && targetLayer.isCanvasRender()) {
             canvas = true;
         }
         this._internalLayer = this._getInternalLayer(this._map, layerId, canvas);
@@ -352,13 +352,13 @@ Z['Label'] = Z.Label = Z.Class.extend({
 	},
 
     _getInternalLayer: function(map, layerId, canvas) {
-        if(!map) return;
+        if(!map) {return;}
         var layer = map.getLayer(layerId);
         if(!layer) {
             if(canvas) {
-                layer = new Z.CanvasLayer(layerId);
+                layer = new Z.VectorLayer(layerId,{'render':'canvas'});
             } else {
-                layer = new Z.SVGLayer(layerId);
+                layer = new Z.VectorLayer(layerId);
             }
             map.addLayer(layer);
         }

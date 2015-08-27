@@ -52,7 +52,7 @@ Z['ComputeAreaTool'] = Z.ComputeAreaTool = Z.Class.extend({
 		}
 		// var _canvas = this.map.canvasDom;
 
-		this.drawLayer = new Z.SVGLayer(this.layerId);
+		this.drawLayer = new Z.VectorLayer(this.layerId);
 		this.map.addLayer(this.drawLayer);
 
 		var drawTool = new Z.DrawTool({

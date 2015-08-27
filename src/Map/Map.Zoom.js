@@ -34,7 +34,7 @@ Z.Map.include({
 
     _resetContainer:function() {
         var position = this.offsetPlatform();
-        Z.DomUtil.offsetDom(this._panels.mapPlatform,{'left':0,'top':0});
+        Z.DomUtil.offsetDom(this._panels.mapPlatform, new Z.Point(0,0)); //{'left':0,'top':0}
         this._refreshSVGPaper();
         if (this._backgroundDOM) {
             //Z.DomUtil.offsetDom(this._backgroundDOM,position);

@@ -73,14 +73,14 @@ Z.SVG.SVG = {
 
     refreshContainer:function(map, paper) {
         var domOffset = map.offsetPlatform();
-        var x = domOffset['left'],
-            y = domOffset['top'];
+        var x = -domOffset['left'],
+            y = -domOffset['top'];
         var mapSize =   map.getSize();
         paper.setAttribute('width', mapSize['width']);
         paper.setAttribute('height', mapSize['height']);
         paper.setAttribute('viewBox', [x, y, mapSize['width'], mapSize['height']].join(' '));
-        paper.style.left = -x + 'px';
-        paper.style.top = -y + 'px';
+        paper.style.left = x + 'px';
+        paper.style.top = y + 'px';
     },
 
     refreshVector:function(vector, vectorBean) {

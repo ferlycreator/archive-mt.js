@@ -144,10 +144,10 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
 
     _assignPainter:function() {
         if (!this.layer) {return null;}
-        if (this.layer instanceof Z.SVGLayer) {
-            return new Z.Marker.SVG(this);
-        } else if (this.layer instanceof Z.CanvasLayer) {
+        if (this.layer.isCanvasRender()) {
             return new Z.Marker.Canvas(this);
+        } else {
+            return new Z.Marker.SVG(this);
         }
         return null;
     }

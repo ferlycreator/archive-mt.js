@@ -112,10 +112,10 @@ Z.Geometry.include({
 
     _getDragLayer: function() {
         var map = this.getMap();
-        if(!map) return;
+        if(!map) {return;}
         var layerId = '__mt__internal_drag_layer';
         if(!map.getLayer(layerId)) {
-            map.addLayer(new Z.SVGLayer(layerId));
+            map.addLayer(new Z.VectorLayer(layerId));
         }
         return map.getLayer(layerId);
     }
