@@ -28,6 +28,7 @@
 ../src/Layer/Tile/ArcgisTileLayer.js
 ../src/Layer/DynamicLayer.js
 ../src/Layer/OverlayLayer.js
+../src/Layer/VectorLayer.js
 ../src/Layer/SVGLayer.js
 ../src/Layer/CanvasLayer.js
 ../src/Layer/CanvasLayer.Base.js
