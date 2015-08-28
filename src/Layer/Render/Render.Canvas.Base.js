@@ -8,7 +8,7 @@ Z.Util.extend(Z.Render.Canvas.Base, {
         return map._baseCanvasRender;
     },
 
-    setBaseCanvasRender:function(map, baseCanvasRender) {
+    registerBaseCanvasRender:function(map, baseCanvasRender) {
         map._baseCanvasRender = baseCanvasRender;
     }
 });
