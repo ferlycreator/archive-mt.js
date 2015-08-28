@@ -72,7 +72,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
     hide: function() {
         this._label.hide();
         if(this.options['link']) {
-            this._link.hide();
+            //this._link.hide();
         }
         this.fire('hide', {'target': this});
     },
@@ -84,7 +84,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
     show: function() {
         this._label.show();
         if(this.options['link']) {
-            this._linkToTarget();
+            //this._linkToTarget();
         }
         this.fire('show', {'target': this});
     },
@@ -96,7 +96,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
     remove: function() {
         this._label.remove();
         if(this.options['link']) {
-            this._link.remove();
+            //this._link.remove();
         }
         this.fire('remove', {'target': this});
     },
