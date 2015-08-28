@@ -21,7 +21,8 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
             return;
         }
         var offset = this.getMarkerDomOffset();
-        var pt = map._domOffsetToScreen(new Z.Point(offset[0],offset[1]));
+        var mapOffset = map.offsetPlatform();
+        var pt = map._domOffsetToScreen(new Z.Point(offset[0], offset[1]));
         var icon = this.getGeoIcon();
         if(icon) {
             var url = icon['url'];
@@ -29,9 +30,10 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
                 this.paintPictureMarker(context, pt, icon,resources);
                 return;
             }
-            pt = geometry._getCenterDomOffset();
             var markerType = icon['type'];
             if(markerType&&markerType.length>0) {
+                pt = geometry._getCenterDomOffset();
+                pt = new Z.Point(pt['left']+mapOffset['left'], pt['top']+mapOffset['top']);
                 this.paintVectorMarker(context, pt);
                 return;
             }
@@ -176,12 +178,13 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
         } else {
             contents.push(content);
         }
+        /**
         var shieldType = icon['shieldType'];
         if(shieldType) {
             var points = this.getLabelVectorArray(icon);
             this._drawVector(context, shieldType, points);
             this._fillColor(context, icon);
-        }
+        }*/
         if (icon['color']) {
              color = this.getRgba(icon['color'], 1);
         }
