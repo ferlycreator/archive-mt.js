@@ -8,7 +8,7 @@ Z['Control'] = Z.Control = Z.Class.extend({
 			'NEED_ID':'You must set id to Control.'
 		},
 		'zh-CN':{
-			'NEED_ID':'你必须为Control设置id。'
+			'NEED_ID':'Control必须设置id。'
 		}
 	},
 
@@ -28,8 +28,8 @@ Z['Control'] = Z.Control = Z.Class.extend({
 		}
 	},
 
-    options:{
-    	'position' : this['top_left']
+        options:{
+    		'position' : this['top_left']
 	},
 
 	initialize: function (options) {
