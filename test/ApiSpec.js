@@ -349,7 +349,7 @@ describe('API', function () {
 
         it('identify', function() {
             var spy = sinon.spy();
-            var layer = new Z.SVGLayer('id');
+            var layer = new Z.VectorLayer('id');
             var geometries = genAllTypeGeometries();
             layer.addGeometry(geometries);
             map.addLayer(layer);
@@ -698,7 +698,7 @@ describe('API', function () {
 
     describe('OverLayer.SVGLayer', function() {
         it('show/hide/isVisible', function() {
-            var layer = new Z.SVGLayer('svg');
+            var layer = new Z.VectorLayer('svg');
             map.addLayer(layer);
             var geometry = new Z.Polygon([
                 {x: 121.111, y: 30.111},
@@ -918,7 +918,7 @@ describe('API', function () {
         var layer;
 
         beforeEach(function () {
-            layer = new Z.SVGLayer('svg');
+            layer = new Z.VectorLayer('svg');
             map.addLayer(layer);
         });
 
@@ -995,7 +995,7 @@ describe('API', function () {
         var layer;
 
         beforeEach(function () {
-            layer = new Z.SVGLayer('svg');
+            layer = new Z.VectorLayer('svg');
             map.addLayer(layer);
         });
 
@@ -1088,7 +1088,7 @@ describe('API', function () {
         var layer;
 
         beforeEach(function () {
-            layer = new Z.SVGLayer('svg');
+            layer = new Z.VectorLayer('svg');
             map.addLayer(layer);
         });
 
@@ -1191,7 +1191,7 @@ describe('API', function () {
         var layer;
 
         beforeEach(function () {
-            layer = new Z.SVGLayer('svg');
+            layer = new Z.VectorLayer('svg');
             map.addLayer(layer);
         });
 
@@ -1299,7 +1299,7 @@ describe('API', function () {
         var layer;
 
         beforeEach(function () {
-            layer = new Z.SVGLayer('svg');
+            layer = new Z.VectorLayer('svg');
             map.addLayer(layer);
         });
 
@@ -1402,7 +1402,7 @@ describe('API', function () {
         var layer;
 
         beforeEach(function () {
-            layer = new Z.SVGLayer('svg');
+            layer = new Z.VectorLayer('svg');
             map.addLayer(layer);
         });
 
@@ -1513,7 +1513,7 @@ describe('API', function () {
         var layer;
 
         beforeEach(function () {
-            layer = new Z.SVGLayer('svg');
+            layer = new Z.VectorLayer('svg');
             map.addLayer(layer);
         });
 
@@ -1669,7 +1669,7 @@ describe('API', function () {
         var layer;
 
         beforeEach(function () {
-            layer = new Z.SVGLayer('svg');
+            layer = new Z.VectorLayer('svg');
             map.addLayer(layer);
         });
 
@@ -1759,7 +1759,7 @@ describe('API', function () {
         var layer;
 
         beforeEach(function () {
-            layer = new Z.SVGLayer('svg');
+            layer = new Z.VectorLayer('svg');
             map.addLayer(layer);
         });
 
@@ -1797,7 +1797,7 @@ describe('API', function () {
         var layer;
 
         beforeEach(function () {
-            layer = new Z.SVGLayer('svg');
+            layer = new Z.VectorLayer('svg');
             map.addLayer(layer);
         });
 
@@ -1941,7 +1941,7 @@ describe('API', function () {
         var layer;
 
         beforeEach(function () {
-            layer = new Z.SVGLayer('svg');
+            layer = new Z.VectorLayer('svg');
             map.addLayer(layer);
         });
 
@@ -2151,7 +2151,7 @@ describe('API', function () {
         var layer;
 
         beforeEach(function () {
-            layer = new Z.SVGLayer('svg');
+            layer = new Z.VectorLayer('svg');
             map.addLayer(layer);
         });
 

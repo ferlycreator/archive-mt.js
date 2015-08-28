@@ -167,7 +167,7 @@ describe('#Map', function () {
     describe('#addLayer', function() {
         it('图层加入地图时触发add事件', function() {
             var spy = sinon.spy();
-            var layer = new Z.SVGLayer('id');
+            var layer = new Z.VectorLayer('id');
             layer.on('add', spy);
             map.addLayer(layer);
             expect(spy.called).to.be.ok();
@@ -177,7 +177,7 @@ describe('#Map', function () {
             map.setBaseTileLayer(tile);
 
             var spy = sinon.spy();
-            var layer = new Z.SVGLayer('id');
+            var layer = new Z.VectorLayer('id');
             layer.on('loaded', spy);
             map.addLayer(layer);
             expect(spy.called).to.be.ok();
@@ -185,7 +185,7 @@ describe('#Map', function () {
 
         it('当地图载入完成时, 如果加入的图层已被删除, 不触发loaded事件', function() {
             var spy = sinon.spy();
-            var layer = new Z.SVGLayer('id');
+            var layer = new Z.VectorLayer('id');
             layer.on('loaded', spy);
             map.addLayer(layer);
             map.removeLayer(layer);
@@ -196,7 +196,7 @@ describe('#Map', function () {
 
         it('当地图载入完成时触发已加入图层的loaded事件', function() {
             var spy = sinon.spy();
-            var layer = new Z.SVGLayer('id');
+            var layer = new Z.VectorLayer('id');
             layer.on('loaded', spy);
             map.addLayer(layer);
             expect(spy.called).to.not.be.ok();
@@ -208,7 +208,7 @@ describe('#Map', function () {
 
     describe('#removeLayer', function() {
         it('删除图层后getLayer返回null(地图未载入)', function() {
-            var layer = new Z.SVGLayer('id');
+            var layer = new Z.VectorLayer('id');
             map.addLayer(layer);
             map.removeLayer(layer);
 
@@ -218,7 +218,7 @@ describe('#Map', function () {
         it('删除图层后getLayer返回null(地图已载入)', function() {
             map.setBaseTileLayer(tile);
 
-            var layer = new Z.SVGLayer('id');
+            var layer = new Z.VectorLayer('id');
             map.addLayer(layer);
             map.removeLayer(layer);
 
@@ -227,7 +227,7 @@ describe('#Map', function () {
 
         it('删除图层时触发图层的removed事件', function() {
             var spy = sinon.spy();
-            var layer = new Z.SVGLayer('id');
+            var layer = new Z.VectorLayer('id');
             layer.on('removed', spy);
             map.addLayer(layer);
             map.removeLayer(layer);

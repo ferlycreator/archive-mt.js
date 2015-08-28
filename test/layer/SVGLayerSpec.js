@@ -28,7 +28,7 @@ describe('SVGLayer', function() {
 
     describe('addGeometry', function() {
 
-        var layer = new Z.SVGLayer('id');
+        var layer = new Z.VectorLayer('id');
 
         beforeEach(function() {
             map.setBaseTileLayer(tile);
