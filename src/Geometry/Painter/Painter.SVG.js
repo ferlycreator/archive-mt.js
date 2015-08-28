@@ -115,6 +115,14 @@ Z.Painter.SVG = Z.Painter.extend({
 
     },
 
+    /**
+     * 返回实际绘制的矢量dom对象
+     * @return {Dom} dom对象
+     */
+    getVectorDom:function() {
+        return this.markerDom || this.vector;
+    },
+
     setVectorPaper:function(paper) {
         this.vectorPaper = paper;
     },

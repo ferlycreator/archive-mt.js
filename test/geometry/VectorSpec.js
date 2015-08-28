@@ -37,7 +37,7 @@ describe('VectorSpec', function() {
             var vector = new Z.Circle(center, 1);
             vector.on('click', spy);
             layer.addGeometry(vector);
-            var painter = vector.getPainter();
+            var painter = vector._getPainter();
             var paper = painter.getVectorPaper();
             paper.forEach(function(el) {
                 happen.click(el);

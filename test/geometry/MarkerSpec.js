@@ -76,7 +76,7 @@ describe('Marker', function() {
             marker.bind('click', spy);
             marker.setIcon(icon1);
             layer.addGeometry(marker);
-            var painter = marker.getPainter();
+            var painter = marker._getPainter();
             happen.click(painter.markerDom);
 
             expect(spy.called).to.be.ok();

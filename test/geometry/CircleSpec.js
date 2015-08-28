@@ -35,14 +35,14 @@ describe('CircleSpec', function() {
         it('fires click event when clicked', function() {
             var spy = sinon.spy();
             var vector = new Z.Circle(center, 1);
-            vector.on('click', spy);
+            vector.on('click mousedown mousemove mouseup dblclick', spy);
             layer.addGeometry(vector);
-            var painter = vector.getPainter();
-            var paper = painter.getVectorPaper();
-            paper.forEach(function(el) {
-                happen.click(el);
-            });
+            var point = map.coordinateToScreenPoint(vector.getCenter());
+            var dom = vector._getPainter().getVectorDom();
+            happen.click(dom);
+            expect(spy.called).to.be.ok();
 
+            happen.mousedown(dom);
             expect(spy.called).to.be.ok();
         });
     });
