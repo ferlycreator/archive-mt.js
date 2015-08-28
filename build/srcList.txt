@@ -8,6 +8,7 @@
 ../src/Core/Class.js
 ../src/Geo/Coordinate.js
 ../src/Geo/Point.js
+../src/Geo/Size.js
 ../src/Geo/Transformation/Transformation.js
 ../src/Geo/Projection/Projection.js
 ../src/Geo/Projection/Projection.Common.js
@@ -28,9 +29,11 @@
 ../src/Layer/Tile/ArcgisTileLayer.js
 ../src/Layer/DynamicLayer.js
 ../src/Layer/OverlayLayer.js
-../src/Layer/SVGLayer.js
-../src/Layer/CanvasLayer.js
-../src/Layer/CanvasLayer.Base.js
+../src/Layer/Render/Render.js
+../src/Layer/Render/Render.Dom.js
+../src/Layer/Render/Render.Canvas.js
+../src/Layer/Render/Render.Canvas.Base.js
+../src/Layer/VectorLayer.js
 ../src/Layer/VisualizerLayer.js
 ../src/Layer/HeatmapLayer.js
 ../src/Geometry/Geometry.js
