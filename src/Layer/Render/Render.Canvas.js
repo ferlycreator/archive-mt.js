@@ -1,4 +1,13 @@
-Z.Render.Canvas = {
+Z.Render.Canvas = function(layer) {
+    this.layer = layer;
+    this._visible=true;
+};
+
+Z.Render.Canvas.prototype = {
+
+    getMap:function() {
+        return this.layer.getMap();
+    },
 
     load:function() {
         this._prepareRenderAndLoad();
@@ -9,7 +18,7 @@ Z.Render.Canvas = {
         var baseRender = this._getBaseRender();
         if (!baseRender) {
             baseRender = new Z.Render.Canvas.Base(map);
-            Z.Render.Canvas.Base.setBaseCanvasRender(map,baseRender);
+            Z.Render.Canvas.Base.registerBaseCanvasRender(map,baseRender);
         }
         if (map.isLoaded()) {
             baseRender.load();

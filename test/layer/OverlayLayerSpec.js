@@ -28,20 +28,20 @@ describe('OverlayLayer', function() {
 
     describe('visibility', function() {
         it('should be false if not add to map', function() {
-            var layer = new Z.SVGLayer('id');
+            var layer = new Z.VectorLayer('id');
 
             expect(layer.isVisible()).to.not.be.ok();
         });
 
         it('should be false if map not loaded', function() {
-            var layer = new Z.SVGLayer('id');
+            var layer = new Z.VectorLayer('id');
             map.addLayer(layer);
 
             expect(layer.isVisible()).to.not.be.ok();
         });
 
         it('should be true if map loaded', function() {
-            var layer = new Z.SVGLayer('id');
+            var layer = new Z.VectorLayer('id');
             map.addLayer(layer);
             map.setBaseTileLayer(tile);
 
@@ -49,7 +49,7 @@ describe('OverlayLayer', function() {
         });
 
         it('should be false after hide', function() {
-            var layer = new Z.SVGLayer('id');
+            var layer = new Z.VectorLayer('id');
             map.addLayer(layer);
             map.setBaseTileLayer(tile);
             layer.hide();
@@ -58,7 +58,7 @@ describe('OverlayLayer', function() {
         });
 
         it('should be true after hide then show', function() {
-            var layer = new Z.SVGLayer('id');
+            var layer = new Z.VectorLayer('id');
             map.addLayer(layer);
             map.setBaseTileLayer(tile);
             layer.hide();
@@ -70,7 +70,7 @@ describe('OverlayLayer', function() {
 
     describe('addGeometry', function() {
         it('can be called on layer not on map', function() {
-            var layer = new Z.SVGLayer('id');
+            var layer = new Z.VectorLayer('id');
             var gid = 'g1';
             var geo1 = new Z.Marker(center);
             geo1.setId(gid);
@@ -80,7 +80,7 @@ describe('OverlayLayer', function() {
         });
 
         it('can be called on layer on map that not loaded', function() {
-            var layer = new Z.SVGLayer('id');
+            var layer = new Z.VectorLayer('id');
             var gid = 'g1';
             var geo1 = new Z.Marker(center);
             geo1.setId(gid);
@@ -91,7 +91,7 @@ describe('OverlayLayer', function() {
         });
 
         it('shold throw error if geometry to be added has same id', function() {
-            var layer = new Z.SVGLayer('id');
+            var layer = new Z.VectorLayer('id');
             var gid = 'g1';
             var geo1 = new Z.Marker(center);
             geo1.setId(gid);
@@ -110,13 +110,13 @@ describe('OverlayLayer', function() {
 
     describe('getGeometry', function() {
         it('return null if called with non-existed id', function() {
-            var layer = new Z.SVGLayer('id');
+            var layer = new Z.VectorLayer('id');
 
             expect(layer.getGeometryById('non-existed')).to.equal(null);
         });
 
         it('return value is empty after call clear', function() {
-            var layer = new Z.SVGLayer('id');
+            var layer = new Z.VectorLayer('id');
             var gid = 'g1';
             var geo1 = new Z.Marker(center, {id: gid});
             layer.addGeometry(geo1);

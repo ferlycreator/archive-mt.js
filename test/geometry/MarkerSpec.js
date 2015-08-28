@@ -23,7 +23,7 @@ describe('Marker', function() {
             subdomains: [0, 1, 2, 3]
         });
         map.setBaseTileLayer(tile);
-        layer = new Z.SVGLayer('id');
+        layer = new Z.VectorLayer('id');
         map.addLayer(layer);
         var icon = new Z.Geometry().defaultIcon;
         icon1 = Z.Util.extend({}, icon, {url: icon.url + '?1'});

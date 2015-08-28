@@ -22,7 +22,7 @@ describe('VectorSpec', function() {
             subdomains: [0, 1, 2, 3]
         });
         map.setBaseTileLayer(tile);
-        layer = new Z.SVGLayer('id');
+        layer = new Z.VectorLayer('id');
         map.addLayer(layer);
     });
 

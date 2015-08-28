@@ -1,5 +1,19 @@
-Z.Render.Dom = {
+Z.Render.Dom = function(layer) {
+    this.layer = layer;
+    this._visible=true;
+};
 
+Z.Render.Dom.prototype= {
+    getMap:function() {
+        return this.layer.getMap();
+    },
+
+    load:function() {
+        var map = this.getMap();
+        this.layerDom = map._panels.svgContainer;
+        map._createSVGPaper();
+        this._addTo();
+    },
 
     /**
      * 显示图层
@@ -9,7 +23,7 @@ Z.Render.Dom = {
         if (this._visible) {
             return;
         }
-        this._eachGeometry(function(geo) {
+        this.layer._eachGeometry(function(geo) {
             geo.show();
         });
         this._visible=true;
@@ -24,7 +38,7 @@ Z.Render.Dom = {
         if (!this._visible) {
             return;
         }
-        this._eachGeometry(function(geo) {
+        this.layer._eachGeometry(function(geo) {
             geo.hide();
         });
         this._visible=false;
@@ -37,7 +51,7 @@ Z.Render.Dom = {
      * @expose
      */
     isVisible:function() {
-        return this._visible && this.layerDom && this.layerDom.style.display !== 'none';
+        return this._visible/* && this.layerDom && this.layerDom.style.display !== 'none'*/;
     },
 
     /**
@@ -59,8 +73,8 @@ Z.Render.Dom = {
 
 
 
-    addTo:function() {
-        this._eachGeometry(function(geo) {
+    _addTo:function() {
+        this.layer._eachGeometry(function(geo) {
             if (geo._getPainter()) {
                 geo._getPainter().paint(this.layerDom,  this.zIndex);
             }
@@ -68,16 +82,11 @@ Z.Render.Dom = {
     },
 
 
-    load:function() {
-        var map = this.getMap();
-        this.layerDom = map._panels.svgContainer;
-        map._createSVGPaper();
-        this.addTo();
-    },
+
 
     _setZIndex:function(zIndex) {
         this.zIndex=zIndex;
-        this._eachGeometry(function(geo) {
+        this.layer._eachGeometry(function(geo) {
             if (geo._getPainter()) {
                 geo._getPainter()._setZIndex(zIndex);
             }
@@ -108,15 +117,12 @@ Z.Render.Dom = {
     },
 
     _onZoomEnd:function() {
-        this._eachGeometry(function(geo) {
+        this.layer._eachGeometry(function(geo) {
             geo._onZoomEnd();
         });
-        //this.show();
     },
 
     _onResize:function() {
         //nothing to do
     }
-
-
 };
