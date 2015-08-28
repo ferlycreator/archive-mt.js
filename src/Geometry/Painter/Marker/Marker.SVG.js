@@ -122,7 +122,7 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
      * @returns
      */
     _createVectorObj: function(icon) {
-        var gCenter = this.getMarkerDomOffset();
+        var gCenter = this.geometry._getCenterDomOffset();
         if (!gCenter) {return null;}
         //矢量标注
         var markerType = icon['type'];
@@ -130,7 +130,7 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
         var height = icon['height'];
         var radius = (width + height)/2;
         var svgBean = null;
-        var points = this.getVectorArray(gCenter);
+        var points = this.getVectorArray([gCenter['left'], gCenter['top']]);
         if ('circle' === markerType) {
             var path = null;
             if (Z.Browser.vml) {

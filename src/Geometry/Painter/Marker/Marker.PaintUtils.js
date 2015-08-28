@@ -1,6 +1,6 @@
 Z.Marker.PaintUtils = {
 
-    getMarkerDomOffset:function() {
+    getMarkerDomOffset: function() {
         var domOffset = this.geometry._getCenterDomOffset();
         if (!domOffset) {return null;}
         var moffset = this.getIconOffset();
@@ -8,7 +8,7 @@ Z.Marker.PaintUtils = {
         return gCenter;
     },
 
-    getIconOffset : function() {
+    getIconOffset: function() {
         var icon = this.getGeoIcon();
         var width = icon['width'];
         if (!width) {width = 0;}
@@ -17,7 +17,7 @@ Z.Marker.PaintUtils = {
         return new Z.Point(-Math.round(width/2), -height);
     },
 
-    getVectorArray:function(gCenter) {
+    getVectorArray: function(gCenter) {
         var icon = this.getGeoIcon();
         var markerType = icon['type'];
         var width = icon['width'];
@@ -111,10 +111,10 @@ Z.Marker.PaintUtils = {
     },
 
     _getLabelPoints: function(icon) {
-        var gCenter = this.getMarkerDomOffset();
+        var gCenter = this.geometry._getCenterDomOffset();
         if (!gCenter) {return null;}
-        var left = gCenter[0];
-        var top = gCenter[1];
+        var left = gCenter['left'];
+        var top = gCenter['top'];
         var height = icon['height'];
         var width = icon['width'];
         var content = icon['content'];

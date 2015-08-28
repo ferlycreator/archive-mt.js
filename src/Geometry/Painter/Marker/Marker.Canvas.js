@@ -21,7 +21,7 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
             return;
         }
         var offset = this.getMarkerDomOffset();
-        var pt = map._domOffsetToScreen(new Z.Point(offset[0],offset[1])); //{'left':offset[0],top:offset[1]}
+        var pt = map._domOffsetToScreen(new Z.Point(offset[0],offset[1]));
         var icon = this.getGeoIcon();
         if(icon) {
             var url = icon['url'];
@@ -29,9 +29,10 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
                 this.paintPictureMarker(context, pt, icon,resources);
                 return;
             }
+            pt = geometry._getCenterDomOffset();
             var markerType = icon['type'];
             if(markerType&&markerType.length>0) {
-                this.paintVectorMarker(context, pt, geometry);
+                this.paintVectorMarker(context, pt);
                 return;
             }
             var shieldType = icon['shieldType'];
@@ -75,13 +76,20 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
         var width = icon['width'];
         var height = icon['height'];
         var radius = (width + height)/2;
-        var points = this.getVectorArray([pt.left,pt.top]);
         context.beginPath();
         if ('circle' === markerType) {
             context.arc(pt.left,pt.top,radius,0,2*Math.PI);
             context.stroke();
             this.fillGeo(context, this.fillSymbol);
-        }  else if ('triangle' === markerType
+        } else {
+            var points = this.getVectorArray([pt.left, pt.top]);
+            this._drawVector(context, markerType, points);
+            this._fillColor(context, icon);
+        }
+    },
+
+    _drawVector: function(context, markerType, points) {
+        if ('triangle' === markerType
                 || 'diamond' === markerType
                 || 'square' === markerType
                 || 'label' === markerType) {
@@ -91,12 +99,29 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
              }
              context.closePath();
              context.stroke();
-             this.fillGeo(context, this.fillSymbol);
         }  else if ('cross' === markerType || 'x' === markerType || 'X' === markerType) {
             context.moveTo(points[0][0],points[0][1]);
             context.lineTo(points[1][0],points[1][1]);
             context.moveTo(points[2][0],points[2][1]);
             context.lineTo(points[3][0],points[3][1]);
+            context.stroke();
+        }
+    },
+
+    _fillColor: function(context, icon) {
+        var stroke = (!icon['stroke'])?'#000000':icon['stroke'];
+        var strokeWidth = icon['strokeWidth'];
+        var strokeOpacity = (!icon['strokeOpacity'])?1:icon['strokeOpacity'];
+        var fill = (!icon['fill'])?'#ffffff':icon['fill'];
+        var fillOpacity = (!icon['fillOpacity'])?1:icon['fillOpacity'];
+        //绘制背景
+        if (fill) {
+            context.fillStyle =this.getRgba(fill);
+            context.fill();
+        }
+        if (stroke) {
+            context.lineWidth = strokeWidth;
+            context.strokeStyle = this.getRgba(stroke,1);
             context.stroke();
         }
     },
@@ -124,11 +149,6 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
 
         var padding = icon['padding'];
         if (Z.Util.isNil(padding)) {padding = 8;}
-        var stroke = (!icon['stroke'])?'#000000':icon['stroke'];
-        var strokeWidth = icon['strokeWidth'];
-        var strokeOpacity = (!icon['strokeOpacity'])?1:icon['strokeOpacity'];
-        var fill = (!icon['fill'])?'#ffffff':icon['fill'];
-        var fillOpacity = (!icon['fillOpacity'])?1:icon['fillOpacity'];
 
         var fontSize = (!icon['size'])?12:icon['size'];
         var width = icon['textWidth'];
@@ -143,11 +163,11 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
         if(textWidth>width) {
             width = textWidth;
         }
-        var rowNum = 0;
+        var rowNum = 1;
         if(textWidth>width){
-            rowNum = Math.ceil(textWidth/width)-1;
+            rowNum = Math.ceil(textWidth/width)/2;
         }
-        var labelHeight = height + rowNum*(fontSize+lineSpacing)/2;
+        var labelHeight = height + rowNum*(fontSize+lineSpacing);
         var labelWidth = width + fontSize;
 
         var contents = [];
@@ -156,19 +176,21 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
         } else {
             contents.push(content);
         }
-        //计算偏移量
-        var offset = this.computeLabelOffset(labelWidth+2*padding,labelHeight+2*padding,icon);
-        pt = new Z.Point(pt.left+offset['left'],pt.top-offset['top']);
-        context.beginPath();
-
+        var shieldType = icon['shieldType'];
+        if(shieldType) {
+            var points = this.getLabelVectorArray(icon);
+            this._drawVector(context, shieldType, points);
+            this._fillColor(context, icon);
+        }
         if (icon['color']) {
              color = this.getRgba(icon['color'], 1);
         }
-        for (var i=0, len=contents.length;i<len;i++) {
+        pt = this.getTextVectorLocation(icon);
+        for (var i=0,len=contents.length;i<len;i++) {
             //绘制文字
             if (color) {
                 context.fillStyle = color;
-                context.fillText(contents[i],pt.left+padding,pt.top+padding+i*(fontSize+2));
+                context.fillText(contents[i], pt[0], pt[1]+i*(fontSize));
             }
         }
     },
