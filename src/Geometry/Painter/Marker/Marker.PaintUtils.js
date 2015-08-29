@@ -87,10 +87,15 @@ Z.Marker.PaintUtils = {
     getTextVectorLocation: function(icon) {
         var points = this._getLabelPoints(icon);
         var leftTopPoint = points[0];
+
         var padding = icon['padding'];
-        if(!padding) padding = 0;
         var width = icon['width'];
         var height = icon['height'];
+        if(!icon['shieldType']) {
+            width = Z.Util.setDefaultValue(icon['textWidth'],0);
+            height = Z.Util.setDefaultValue(icon['size'], 12);
+        }
+        if(!padding) padding = 0;
         var align = icon['textAlign'];
         if(!align) align ='left';
         var content = icon['content'];
@@ -113,10 +118,15 @@ Z.Marker.PaintUtils = {
     _getLabelPoints: function(icon) {
         var gCenter = this.geometry._getCenterDomOffset();
         if (!gCenter) {return null;}
-        var left = gCenter['left'];
-        var top = gCenter['top'];
+        var mapOffset = this.geometry.getMap().offsetPlatform();
+        var left = gCenter['left']+mapOffset['left'];
+        var top = gCenter['top']+mapOffset['top'];
         var height = icon['height'];
         var width = icon['width'];
+        if(!icon['shieldType']) {
+            width = Z.Util.setDefaultValue(icon['textWidth'],0);
+            height = Z.Util.setDefaultValue(icon['size'], 12);
+        }
         var content = icon['content'];
         var fontSize = icon['size'];
         var size = fontSize/2;

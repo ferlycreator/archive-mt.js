@@ -5,11 +5,11 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
 
     options:{
         'symbol':{
-            'url' : Z.host + '/engine/images/marker.png',
-            'height' : 30,
-            'width' : 22,
-            'dx' : 0,
-            'dy' : 0
+            markerFile : Z.host + '/engine/images/marker.png',
+            markerHeight : 30,
+            markerWidth : 22,
+            dx : 0,
+            dy : 0
         }
     },
 

@@ -73,9 +73,9 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
             var shieldType = icon['shieldType'];
             if(shieldType&&shieldType.length>0) {
                var shieldVector = this._createShieldObj(icon);
-                var fontSize = icon['size'];
-                var location = shieldVector['text']['location'];
-                shieldVector['text']['location'][1] = location[1]+fontSize;
+               var fontSize = icon['size'];
+               var location = shieldVector['text']['location'];
+               shieldVector['text']['location'][1] = location[1]+fontSize;
                Z.SVG.refreshShieldVector(this.vector, shieldVector);
             }
         }
