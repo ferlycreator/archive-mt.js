@@ -85,6 +85,8 @@ Z.Eventable={
         for (var i=0, len = handlerChain.length;i<len; i++) {
             if (!handlerChain[i]) {continue;}
             var context = handlerChain[i].context;
+            //增加一个type参数, 表示事件类型
+            param['type'] = eventType;
             if (context) {
                 if (!param) {
                     param = {};

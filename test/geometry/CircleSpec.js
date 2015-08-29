@@ -1,3 +1,20 @@
+var geometry_events = 'click mousedown mousemove mouseup dblclick';
+
+function testGeometryEvents(dom,spy,options) {
+    var events = geometry_events.split(' ');
+
+    for (var i=0, len=events.length;i<len;i++) {
+        if (options) {
+            happen[events[i]](dom,options);
+        } else {
+            happen[events[i]](dom);
+        }
+
+        expect(spy.called).to.be.ok();
+    }
+
+}
+
 describe('CircleSpec', function() {
 
     var container;
@@ -22,28 +39,39 @@ describe('CircleSpec', function() {
             subdomains: [0, 1, 2, 3]
         });
         map.setBaseTileLayer(tile);
-        layer = new Z.VectorLayer('id');
-        map.addLayer(layer);
+
     });
 
     afterEach(function() {
-        map.removeLayer(layer);
-        document.body.removeChild(container);
+       // map.removeLayer(layer);
+        //document.body.removeChild(container);
     });
 
-    describe('events', function() {
-        it('fires click event when clicked', function() {
+    /*describe('svg events', function() {
+        it('fires geometry events and listened', function() {
+            layer = new Z.VectorLayer('id');
+            map.addLayer(layer);
             var spy = sinon.spy();
             var vector = new Z.Circle(center, 1);
-            vector.on('click mousedown mousemove mouseup dblclick', spy);
+            vector.on(geometry_events, spy);
+            layer.addGeometry(vector);
+            var dom = vector._getPainter().getVectorDom();
+            testGeometryEvents(dom,spy);
+        });
+    });*/
+
+    describe('canvas events', function() {
+        it('fires geometry events and listened', function() {
+            layer = new Z.VectorLayer('id',{'render':'canvas'});
+            map.addLayer(layer);
+            var spy = sinon.spy();
+            var vector = new Z.Circle(center, 100);
+            vector.on(geometry_events, spy);
             layer.addGeometry(vector);
             var point = map.coordinateToScreenPoint(vector.getCenter());
-            var dom = vector._getPainter().getVectorDom();
-            happen.click(dom);
-            expect(spy.called).to.be.ok();
+            var dom = Z.Render.Canvas.Base.getBaseCanvasRender(map).getCanvasContainer();
 
-            happen.mousedown(dom);
-            expect(spy.called).to.be.ok();
+            testGeometryEvents(dom,spy,{'screenX':point.left, 'screenY':point.top, 'clientX':point.left, 'clientY':point.top});
         });
     });
 
