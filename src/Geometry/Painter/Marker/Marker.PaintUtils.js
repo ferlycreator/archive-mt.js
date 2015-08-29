@@ -269,25 +269,25 @@ Z.Marker.PaintUtils = {
                 point6 = [(left-width-arrowWidth),(top+height)];
             }
         } else if ('middle' === horizontal) {
-            var arrowWidth = width/5;
-            var arrowHeight = height/2;
+            var arrowWidth = Math.round(width/5);
+            var arrowHeight = Math.round(height/2);
             if('top' === vertical
             || 'middle' === vertical) {
-                point0 = [(left-width/2),(top-height-arrowHeight)];
-                point1 = [(left+width/2),(top-height-arrowHeight)];
-                point2 = [(left+width/2),(top-arrowHeight)];
-                point3 = [(left+arrowWidth/2),(top-arrowHeight)];
+                point0 = [(left-Math.round(width/2)),(top-height-arrowHeight)];
+                point1 = [(left+Math.round(width/2)),(top-height-arrowHeight)];
+                point2 = [(left+Math.round(width/2)),(top-arrowHeight)];
+                point3 = [(left+Math.round(arrowWidth/2)),(top-arrowHeight)];
                 point4 = [left, top];
-                point5 = [(left-arrowWidth/2),(top-arrowHeight)];
-                point6 = [(left-width/2),(top-arrowHeight)];
+                point5 = [(left-Math.round(arrowWidth/2)),(top-arrowHeight)];
+                point6 = [(left-Math.round(width/2)),(top-arrowHeight)];
             } else if ('bottom' === vertical) {
-                point0 = [(left-width/2),(top+arrowHeight)];
-                point1 = [(left-arrowWidth/2),(top+arrowHeight)];
+                point0 = [(left-Math.round(width/2)),(top+arrowHeight)];
+                point1 = [(left-Math.round(arrowWidth/2)),(top+arrowHeight)];
                 point2 = [left, top];
-                point3 = [(left+arrowWidth/2),(top+arrowHeight)];
-                point4 = [(left+width/2),(top+arrowHeight)];
-                point5 = [(left+width/2),(top+height+arrowHeight)];
-                point6 = [(left-width/2),(top+height+arrowHeight)];
+                point3 = [(left+Math.round(arrowWidth/2)),(top+arrowHeight)];
+                point4 = [(left+Math.round(width/2)),(top+arrowHeight)];
+                point5 = [(left+Math.round(width/2)),(top+height+arrowHeight)];
+                point6 = [(left-Math.round(width/2)),(top+height+arrowHeight)];
             }
         } else if ('right' === horizontal) {
             var arrowWidth = arrowHeight = height/2;
