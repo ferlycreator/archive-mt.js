@@ -94,7 +94,9 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
         if ('triangle' === markerType
                 || 'diamond' === markerType
                 || 'square' === markerType
-                || 'label' === markerType) {
+                || 'bar' === markerType
+                || 'label' === markerType
+                || 'tip' === markerType) {
              context.moveTo(points[0][0],points[0][1]);
              for (var i = 1, len = points.length;i<len;i++) {
                  context.lineTo(points[i][0],points[i][1]);
@@ -178,13 +180,13 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
         } else {
             contents.push(content);
         }
-        /**
+
         var shieldType = icon['shieldType'];
         if(shieldType) {
             var points = this.getLabelVectorArray(icon);
             this._drawVector(context, shieldType, points);
             this._fillColor(context, icon);
-        }*/
+        }
         if (icon['color']) {
              color = this.getRgba(icon['color'], 1);
         }

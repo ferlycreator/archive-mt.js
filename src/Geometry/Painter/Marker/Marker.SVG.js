@@ -158,7 +158,7 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
                          'M'+points[2][0]+','+points[2][1]+ ' ' +
                          'L'+points[3][0]+','+points[3][1]
             };
-        } else if ('diamond' === markerType || 'square' === markerType || 'rectangle' === markerType) {
+        } else if ('diamond' === markerType || 'square' === markerType || 'bar' === markerType) {
             svgBean = {
                 'type' : 'path',
                 'path' : 'M'+points[0][0]+','+points[0][1]+ ' ' +

@@ -14,52 +14,61 @@ Z.Marker.PaintUtils = {
         if (!width) {width = 0;}
         var height = icon['height'];
         if (!height) {height = 0;}
-        return new Z.Point(-Math.round(width/2), -height);
+        return new Z.Point(-Math.round(width/2),-height);
     },
 
     getVectorArray: function(gCenter) {
         var icon = this.getGeoIcon();
         var markerType = icon['type'];
-        var width = icon['width'];
-        var height = icon['height'];
-        var iconSize = (width + height)/2;
-        var size = (0.5+iconSize) << 0;
+        var width = Z.Util.setDefaultValue(icon['width'],0);
+        var height = Z.Util.setDefaultValue(icon['height'],0);
+        var iconSize = 0;
+        if(width>height){
+            iconSize = width;
+        } else {
+            iconSize = height;
+        }
+        var size = iconSize/2;
+        var dx = Z.Util.setDefaultValue(icon['dx'],0);
+        var dy = Z.Util.setDefaultValue(icon['dy'],0);
+        var left = gCenter[0] + dx;
+        var top = gCenter[1] + dy;
         var radius = Math.PI/180;
         if ('triangle' === markerType) {
-            var v0 = [gCenter[0],gCenter[1]-size];
-            var v1 = [Z.Util.roundNumber(gCenter[0]-Math.cos(30*radius)*size),Z.Util.roundNumber(gCenter[1]+Math.sin(30*radius)*size)];
-            var v2 = [Z.Util.roundNumber(gCenter[0]+Math.cos(30*radius)*size),Z.Util.roundNumber(gCenter[1]+Math.sin(30*radius)*size)];
+            var v0 = [left,top-size];
+            var v1 = [Z.Util.roundNumber(left-Math.cos(30*radius)*size),Z.Util.roundNumber(top+Math.sin(30*radius)*size)];
+            var v2 = [Z.Util.roundNumber(left+Math.cos(30*radius)*size),Z.Util.roundNumber(top+Math.sin(30*radius)*size)];
             return [v0,v1,v2];
         }  else if ('cross' === markerType) {
-            var v0 = [(gCenter[0]-size),gCenter[1]];
-            var v1 = [(gCenter[0]+size),gCenter[1]];
-            var v2 = [(gCenter[0]),(gCenter[1]-size)];
-            var v3 = [(gCenter[0]),(gCenter[1]+size)];
+            var v0 = [(left-size),top];
+            var v1 = [(left+size),top];
+            var v2 = [(left),(top-size)];
+            var v3 = [(left),(top+size)];
             return [v0,v1,v2,v3];
         } else if ('diamond' === markerType) {
-            var v0 = [(gCenter[0]-size),gCenter[1]];
-            var v1 = [(gCenter[0]),(gCenter[1]-size)];
-            var v2 = [(gCenter[0]+size),gCenter[1]];
-            var v3 = [(gCenter[0]),(gCenter[1]+size)];
+            var v0 = [(left-size),top];
+            var v1 = [(left),(top-size)];
+            var v2 = [(left+size),top];
+            var v3 = [(left),(top+size)];
             return [v0,v1,v2,v3];
         } else if ('square' === markerType) {
-            var v0 = [(gCenter[0]-size),(gCenter[1]+size)];
-            var v1 = [(gCenter[0]+size),(gCenter[1]+size)];
-            var v2 = [(gCenter[0]+size),(gCenter[1]-size)];
-            var v3 = [(gCenter[0]-size),(gCenter[1]-size)];
+            var v0 = [(left-size),(top+size)];
+            var v1 = [(left+size),(top+size)];
+            var v2 = [(left+size),(top-size)];
+            var v3 = [(left-size),(top-size)];
             return [v0,v1,v2,v3];
         } else if ('x' === markerType || 'X' === markerType) {
-            var r = Math.round(Math.cos(45*rad)*size);
-            var v0 = [gCenter[0]-r,gCenter[1]+r];
-            var v1 = [gCenter[0]+r,gCenter[1]-r];
-            var v2 = [gCenter[0]+r,gCenter[1]+r];
-            var v3 = [gCenter[0]-r,gCenter[1]-r];
+            var r = Math.round(Math.cos(45*radius)*size);
+            var v0 = [left-r,top+r];
+            var v1 = [left+r,top-r];
+            var v2 = [left+r,top+r];
+            var v3 = [left-r,top-r];
             return [v0,v1,v2,v3];
-        } else if ('rectangle' === markerType) {
-            var v0 = [(gCenter[0]-width/2),(gCenter[1]-height/2)];
-            var v1 = [(gCenter[0]+width/2),(gCenter[1]-height/2)];
-            var v2 = [(gCenter[0]+width/2),(gCenter[1]+height/2)];
-            var v3 = [(gCenter[0]-width/2),(gCenter[1]+height/2)];
+        } else if ('bar' === markerType) {
+            var v0 = [(left-width/2),(top-height)];
+            var v1 = [(left+width/2),(top-height)];
+            var v2 = [(left+width/2),(top)];
+            var v3 = [(left-width/2),(top)];
             return [v0,v1,v2,v3];
         }
         return null;
@@ -70,22 +79,19 @@ Z.Marker.PaintUtils = {
         if ('label' === labelType) {
             return this._getLabelPoints(icon);
         } else if ('tip' === labelType) {
-            var arrowWidth = width/5;
-            var arrowHeight = height/2;
-            var v0 = [(gCenter[0]-width/2),(gCenter[1]-height-arrowHeight)];
-            var v1 = [(gCenter[0]+width/2),(gCenter[1]-height-arrowHeight)];
-            var v2 = [(gCenter[0]+width/2),(gCenter[1]-arrowHeight)];
-            var v3 = [(gCenter[0]+arrowWidth/2),(gCenter[1]-arrowHeight)];
-            var v4 = gCenter;
-            var v5 = [(gCenter[0]-arrowWidth/2),(gCenter[1]-arrowHeight)];
-            var v6 = [(gCenter[0]-width/2),(gCenter[1]-arrowHeight)];
-            return [v0,v1,v2,v3,v4,v5,v6];
+            return this._getTipPoints(icon);
         }
         return null;
     },
 
     getTextVectorLocation: function(icon) {
         var points = this._getLabelPoints(icon);
+        var labelType = icon['shieldType'];
+        if ('label' === labelType) {
+            points = this._getLabelPoints(icon);
+        } else if ('tip' === labelType) {
+            points = this._getTipPoints(icon);
+        }
         var leftTopPoint = points[0];
 
         var padding = icon['padding'];
@@ -119,8 +125,11 @@ Z.Marker.PaintUtils = {
         var gCenter = this.geometry._getCenterDomOffset();
         if (!gCenter) {return null;}
         var mapOffset = this.geometry.getMap().offsetPlatform();
-        var left = gCenter['left']+mapOffset['left'];
-        var top = gCenter['top']+mapOffset['top'];
+        var dx = Z.Util.setDefaultValue(icon['dx'],0);
+        var dy = Z.Util.setDefaultValue(icon['dy'],0);
+        var left = gCenter['left']+mapOffset['left'] + dx;
+        var top = gCenter['top']+mapOffset['top'] + dy;
+
         var height = icon['height'];
         var width = icon['width'];
         if(!icon['shieldType']) {
@@ -197,6 +206,118 @@ Z.Marker.PaintUtils = {
             }
         }
         points = [point0, point1, point2, point3];
+        return points;
+    },
+
+     _getTipPoints: function(icon) {
+        var gCenter = this.geometry._getCenterDomOffset();
+        if (!gCenter) {return null;}
+        var mapOffset = this.geometry.getMap().offsetPlatform();
+        var dx = Z.Util.setDefaultValue(icon['dx'],0);
+        var dy = Z.Util.setDefaultValue(icon['dy'],0);
+        var left = gCenter['left']+mapOffset['left'] + dx;
+        var top = gCenter['top']+mapOffset['top'] + dy;
+
+        var height = icon['height'];
+        var width = icon['width'];
+        if(!icon['shieldType']) {
+            width = Z.Util.setDefaultValue(icon['textWidth'],0);
+            height = Z.Util.setDefaultValue(icon['size'], 12);
+        }
+        var content = icon['content'];
+        var fontSize = icon['size'];
+        var size = fontSize/2;
+        var lineSpacing = icon['lineSpacing'];
+        var textWidth = Z.Util.getLength(content)*size;
+        var rowNum = 0;
+        if(textWidth>width){
+            rowNum = Math.ceil(textWidth/width);
+        }
+        height += rowNum*((fontSize+lineSpacing)/2);
+        width += fontSize;
+        var points = [];
+        var point0,point1,point2,point3,point4,point5,point6;
+        var horizontal = icon['horizontal'];//水平
+        if(!horizontal) horizontal = 'middle';
+        var vertical = icon['vertical'];//垂直
+        if(!vertical) vertical = 'top';
+        if ('left' === horizontal) {
+            var arrowWidth = arrowHeight = height/2;
+            if('top' === vertical) {
+                point0 = [(left-width-arrowWidth),(top-height)];
+                point1 = [(left-arrowWidth),(top-height)];
+                point2 = [(left-arrowWidth),(top-arrowHeight)];
+                point3 = [left, top];
+                point4 = [left, top];
+                point5 = [left, top];
+                point6 = [(left-width-arrowWidth),(top)];
+            } else if ('middle' === vertical) {
+                point0 = [(left-width-arrowWidth),(top-height/2)];
+                point1 = [(left-arrowWidth),(top-height/2)];
+                point2 = [(left-arrowWidth),(top-arrowHeight/2)];
+                point3 = [left, top];
+                point4 = [(left-arrowWidth),(top+arrowHeight/2)];
+                point5 = [(left-arrowWidth),(top+height/2)];
+                point6 = [(left-width-arrowWidth),(top+height/2)];
+            } else if ('bottom' === vertical) {
+                point0 = [(left-width-arrowWidth),(top)];
+                point1 = [left, top];
+                point2 = [left, top];
+                point3 = [left, top];
+                point4 = [(left-arrowWidth),(top+arrowHeight)];
+                point5 = [(left-arrowWidth),(top+height)];
+                point6 = [(left-width-arrowWidth),(top+height)];
+            }
+        } else if ('middle' === horizontal) {
+            var arrowWidth = width/5;
+            var arrowHeight = height/2;
+            if('top' === vertical
+            || 'middle' === vertical) {
+                point0 = [(left-width/2),(top-height-arrowHeight)];
+                point1 = [(left+width/2),(top-height-arrowHeight)];
+                point2 = [(left+width/2),(top-arrowHeight)];
+                point3 = [(left+arrowWidth/2),(top-arrowHeight)];
+                point4 = [left, top];
+                point5 = [(left-arrowWidth/2),(top-arrowHeight)];
+                point6 = [(left-width/2),(top-arrowHeight)];
+            } else if ('bottom' === vertical) {
+                point0 = [(left-width/2),(top+arrowHeight)];
+                point1 = [(left-arrowWidth/2),(top+arrowHeight)];
+                point2 = [left, top];
+                point3 = [(left+arrowWidth/2),(top+arrowHeight)];
+                point4 = [(left+width/2),(top+arrowHeight)];
+                point5 = [(left+width/2),(top+height+arrowHeight)];
+                point6 = [(left-width/2),(top+height+arrowHeight)];
+            }
+        } else if ('right' === horizontal) {
+            var arrowWidth = arrowHeight = height/2;
+            if('top' === vertical) {
+                point0 = [(left+arrowWidth),(top-height)];
+                point1 = [(left+width+arrowWidth),(top-height)];
+                point2 = [(left+width+arrowWidth),(top)];
+                point3 = [(left+arrowWidth), top];
+                point4 = [left, top];
+                point5 = [left, top];
+                point6 = [(left+arrowWidth),(top-arrowHeight)];
+            } else if ('middle' === vertical) {
+                point0 = [left+arrowWidth, (top-height/2)];
+                point1 = [(left+width+arrowWidth),(top-height/2)];
+                point2 = [(left+width+arrowWidth),(top+height/2)];
+                point3 = [(left+arrowWidth),(top+height/2)];
+                point4 = [(left+arrowWidth),(top+arrowHeight/2)];
+                point5 = [left, top];
+                point6 = [(left+arrowWidth),(top-arrowHeight/2)];
+            } else if ('bottom' === vertical) {
+                point0 = [left+arrowWidth, top];
+                point1 = [(left+width+arrowWidth),(top)];
+                point2 = [(left+width+arrowWidth),(top+height)];
+                point3 = [(left+arrowWidth),(top+height)];
+                point4 = [(left+arrowWidth),(top+arrowHeight)];
+                point5 = [left, top];
+                point6 = [left, top];
+            }
+        }
+        points = [point0, point1, point2, point3, point4, point5, point6];
         return points;
     },
 
