@@ -209,6 +209,10 @@ Z.Render.Canvas.Base.prototype={
     _onZoomEnd:function(param) {
         this.repaint();
         this.show();
+    },
+
+    getCanvasContainer:function() {
+        return this.layerCanvas;
     }
 
 };
