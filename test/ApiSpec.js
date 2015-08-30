@@ -29,12 +29,6 @@ describe('API', function () {
 
     describe('Map', function () {
 
-        it('Load', function () {
-            expect(function () {
-                map.Load();
-            }).to.not.throwException();
-        });
-
         it('setMouseTip', function () {
             expect(function () {
                 map.setMouseTip();
@@ -151,9 +145,9 @@ describe('API', function () {
 
         it('setBaseTileLayer', function () {
             var tile2 = new Z.TileLayer('tile2', {
-                crs: 'crs3857',
-                urlTemplate: 'http://emap{s}.mapabc.com/mapabc/maptile?&x={X}&y={y}&z={z}',
-                subdomains: [0,1,2],
+                tileInfo: 'web-mercator',
+                urlTemplate: 'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',
+                subdomains: [0, 1, 2]
             });
             expect(function () {
                 map.setBaseTileLayer(tile2);
@@ -179,7 +173,7 @@ describe('API', function () {
         });
 
         it('screenPointToCoordinate', function () {
-            var coord = map.screenPointToCoordinate();
+            var coord = map.screenPointToCoordinate(new Z.Point(0, 0));
 
             expect(coord).to.not.be(null);
         });
@@ -717,7 +711,7 @@ describe('API', function () {
 
     describe('OverLayer.CanvasLayer', function() {
         it('show/hide/isVisible', function() {
-            var layer = new Z.CanvasLayer('canvas');
+            var layer = new Z.VectorLayer('canvas', {render: 'canvas'});
             map.addLayer(layer);
             var geometry = new Z.Polygon([
                 {x: 121.111, y: 30.111},
