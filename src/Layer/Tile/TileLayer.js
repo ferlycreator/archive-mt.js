@@ -94,7 +94,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         this.clear();
         this._clearExecutors();
         if (this._tileContainer) {
-            Z.Util.removeDomNode(this._tileContainer);
+            Z.DomUtil.removeDomNode(this._tileContainer);
         }
     },
 
