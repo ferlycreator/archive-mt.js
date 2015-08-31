@@ -22,9 +22,9 @@ describe('GeometrySpec', function() {
     it("Marker._containsPoint", function() {
         var geometry = new Z.Marker(center, {
             symbol: {
-                'marker-file' : Z.host + '/engine/images/marker.png',
-                'marker-height' : 30,
-                'marker-width' : 22,
+                markerFile : Z.host + '/engine/images/marker.png',
+                markerHeight : 30,
+                markerWidth : 22,
                 dx : 0,
                 dy : 0
             }
@@ -33,7 +33,7 @@ describe('GeometrySpec', function() {
 
         var spy = sinon.spy();
         geometry.on('click', spy);
-
+        //TODO 因为marker的width和height为0, 所以无法击中
         happen.click(map._containerDOM, {
             clientX: 400 + 8,
             clientY: 300 + 8

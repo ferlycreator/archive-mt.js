@@ -15,7 +15,7 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
 
     initialize:function(coordinates,opts) {
         this._coordinates = new Z.Coordinate(coordinates);
-        this.initOptions(opts);
+        this._initOptions(opts);
     },
 
     getDefaultSymbol:function() {

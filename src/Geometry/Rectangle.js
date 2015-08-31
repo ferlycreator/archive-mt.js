@@ -6,7 +6,7 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
         this._coordinates = new Z.Coordinate(coordinates);
         this.width = width;
         this.height = height;
-        this.initOptions(opts);
+        this._initOptions(opts);
     },
 
 

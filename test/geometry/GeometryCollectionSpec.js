@@ -19,4 +19,12 @@ describe('GeometryCollectionSpec', function() {
         document.body.removeChild(container);
     });
 
+     describe('constructor', function() {
+
+
+        it('test constructor', function() {
+            //var geometry =
+        });
+    });
+
 });

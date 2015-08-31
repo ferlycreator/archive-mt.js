@@ -11,7 +11,7 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
      */
     initialize:function(coordinates, opts) {
         this.setCoordinates(coordinates);
-        this.initOptions(opts);
+        this._initOptions(opts);
     },
 
     /**

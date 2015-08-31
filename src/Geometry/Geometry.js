@@ -58,7 +58,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * 初始化传入的option参数
      * @param  {Object} opts [option参数]
      */
-    initOptions:function(opts) {
+    _initOptions:function(opts) {
         if (!opts) {
             return;
         }
@@ -186,17 +186,13 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
         var projection = this._getProjection();
         var extent = this._computeVisualExtent(projection);
-        var xmin = extent['xmin'];
-        var xmax = extent['xmax'];
-        var ymin = extent['ymin'];
-        var ymax = extent['ymax'];
-        var topLeftPoint = new Z.Coordinate(xmin, ymax);
-        var topRightPoint = new Z.Coordinate(xmax, ymax);
-        var bottomLeftPoint = new Z.Coordinate(xmin, ymin);
-        var width = map.computeDistance(topLeftPoint, topRightPoint);
-        var height = map.computeDistance(topLeftPoint, bottomLeftPoint);
-        var result = map.distanceToPixel(width, height);
-        return result;//{'width': result['width'], 'height': result['height']};
+        var xmin = extent['xmin'],
+            xmax = extent['xmax'],
+            ymin = extent['ymin'],
+            ymax = extent['ymax'];
+        var width = map.computeDistance(new Z.Coordinate(xmin, ymax), new Z.Coordinate(xmax, ymax));
+        var height = map.computeDistance(new Z.Coordinate(xmin, ymax), new Z.Coordinate(xmin, ymin));
+        return map.distanceToPixel(width, height);
     },
 
     _getPrjExtent:function() {

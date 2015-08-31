@@ -10,8 +10,8 @@ module.exports = function(config) {
 
   var srcFiles = require(__dirname + '/build/getFiles.js').getFiles();
   var files = srcFiles.concat([
+    // 'test/geometry/*.js',
     'test/**/*.js',
-    // 'test/geojson/GeoJsonSpec.js',
     {pattern: 'assets/css/**/*.css', watched: true, included: false, served: true},
     {pattern: 'assets/images/**/*.png', watched: false, included: false, served: true},
     {pattern: 'assets/images/**/*.gif', watched: false, included: false, served: true}
@@ -32,6 +32,7 @@ module.exports = function(config) {
     // testing framework to use (jasmine/mocha/qunit/...)
     // as well as any additional frameworks (requirejs/chai/sinon/...)
     frameworks: [
+      'browserify',
       'mocha',
       'expect',
       'sinon',
@@ -46,16 +47,17 @@ module.exports = function(config) {
     exclude: [
     ],
 
-    // preprocessors: {
-    //   'src/**/*.js': 'coverage',
-    // },
+    preprocessors: {
+      //'src/**/*.js': 'coverage',
+      'test/**/*.js': [ 'browserify' ] //Mention path as per your test js folder
+    },
 
     // coverageReporter: {
     //   type: 'html',
     //   dir: 'coverage',
     // },
 
-    reporters: ['dots'],
+    reporters: ['spec'],
 
     // web server port
     port: 12345,
@@ -82,7 +84,8 @@ module.exports = function(config) {
       'karma-expect',
       'karma-sinon-ie',
       'karma-happen',
-      'karma-jquery'
+      'karma-jquery',
+      'karma-browserify'
     ],
 
     customLaunchers: {

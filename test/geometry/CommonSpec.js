@@ -2,6 +2,7 @@ var CommonSpec = {
     eventsToTest : 'click mousedown mouseup dblclick',
 
 
+
     mapSetup:function(center) {
         var container = document.createElement('div');
         container.style.width = '800px';
@@ -85,6 +86,23 @@ var CommonSpec = {
         var spy = this.spy;
         expect(spy.callCount).to.be(events.length);
         spy.reset();
+
+    },
+
+    //测试Geometry的公开方法
+    testGeometryMethods:function(geometry) {
+
+            it('id', function() {
+                geometry.setId('id');
+                var id = geometry.getId();
+                expect(id).to.be('id');
+            });
+
+            it('Layer',function() {
+                var layer = new Z.VectorLayer('id');
+                layer.addGeometry(geometry);
+                expect(layer.getLayer()).to.not.be.ok();
+            });
 
     }
 };
