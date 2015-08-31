@@ -43,8 +43,8 @@ describe('CircleSpec', function() {
     });
 
     afterEach(function() {
-       // map.removeLayer(layer);
-        //document.body.removeChild(container);
+        map.removeLayer(layer);
+        document.body.removeChild(container);
     });
 
     /*describe('svg events', function() {
