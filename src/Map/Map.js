@@ -1139,7 +1139,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         _canvasLayerContainer.className = 'MAP_CANVAS_CONTAINER';
 
         _mapContainer.style.zIndex = 10;
-        _mapContainer.id='mapContainer';
+        // _mapContainer.id='mapContainer';
         _canvasLayerContainer.style.zIndex=100;
         _svgContainer.style.zIndex = 200;
         _popMenuContainer.style.zIndex = 3000;
