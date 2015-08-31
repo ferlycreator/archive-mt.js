@@ -51,13 +51,17 @@ module.exports = function(config) {
       //'src/**/*.js': 'coverage',
       'test/**/*.js': [ 'browserify' ] //Mention path as per your test js folder
     },
-
+    // add additional browserify configuration properties here
+    // such as transform and/or debug=true to generate source maps
+    browserify: {
+      debug: true
+    },
     // coverageReporter: {
     //   type: 'html',
     //   dir: 'coverage',
     // },
 
-    reporters: ['spec'],
+    reporters: ['dots'],
 
     // web server port
     port: 12345,

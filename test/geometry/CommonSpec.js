@@ -91,7 +91,22 @@ var CommonSpec = {
 
     //测试Geometry的公开方法
     testGeometryMethods:function(geometry) {
+        var setups;
+        var map,layer;
+        function setupGeometry() {
+            setups = CommonSpec.mapSetup(geometry.getCenter());
+            map = setups.map;
+            layer = new Z.VectorLayer('id');
+            layer.addGeometry(geometry);
+            map.addLayer(layer);
+        }
 
+        function teardownGeometry() {
+            geometry.remove();
+            Z.DomUtil.removeDomNode(setups.container);
+        }
+
+        context('getter and setters.',function() {
             it('id', function() {
                 geometry.setId('id');
                 var id = geometry.getId();
@@ -99,10 +114,123 @@ var CommonSpec = {
             });
 
             it('Layer',function() {
+                expect(geometry.getLayer()).to.not.be.ok();
                 var layer = new Z.VectorLayer('id');
                 layer.addGeometry(geometry);
-                expect(layer.getLayer()).to.not.be.ok();
+                expect(geometry.getLayer()).to.be.ok();
+                //delete
+                geometry.remove();
+                expect(geometry.getLayer()).to.not.be.ok();
             });
+
+            it('Map',function() {
+                setupGeometry();
+
+                expect(geometry.getMap()).to.be.ok();
+
+                teardownGeometry();
+
+                expect(geometry.getMap()).to.not.be.ok();
+            });
+
+            it('Type',function() {
+                var type = geometry.getType();
+                expect(type).to.not.be.empty();
+            });
+
+            it('Symbol',function() {
+                var symbol = geometry.getSymbol();
+                expect(symbol).to.be.ok();
+                expect(symbol).to.not.be.empty();
+                //setSymbol单独测试
+            });
+
+            it('Extent',function() {
+                setupGeometry();
+
+                var extent = geometry.getExtent();
+                expect(extent).to.be.a(Z.Extent);
+                expect(extent).to.not.be.empty();
+
+                teardownGeometry();
+            });
+
+            it('Size',function() {
+                setupGeometry();
+
+                var size = geometry.getSize();
+                expect(size).to.be.a(Z.Size);
+                expect(size.width).to.be.above(0);
+                expect(size.height).to.be.above(0);
+
+                teardownGeometry();
+            });
+
+            it('Center',function() {
+                var center = geometry.getCenter();
+                expect(center).to.be.a(Z.Coordinate);
+                expect(center.x).to.be.ok();
+                expect(center.y).to.be.ok();
+
+                setupGeometry();
+
+                center = geometry.getCenter();
+                expect(center).to.be.a(Z.Coordinate);
+                expect(center.x).to.be.ok();
+                expect(center.y).to.be.ok();
+
+                teardownGeometry();
+            });
+
+            it('Properties',function() {
+                var old_props = geometry.getProperties();
+
+                var props_test = {'foo_num':1, 'foo_str':'str', 'foo_bool':false};
+                geometry.setProperties(props_test);
+
+                var props = geometry.getProperties();
+                expect(props).to.eql(props_test);
+
+                geometry.setProperties(old_props);
+                expect(geometry.getProperties()).to.not.eql(props_test);
+            });
+
+        });
+
+        context('can show and hide.',function() {
+            it('show and hide',function() {
+                geometry.show();
+                expect(geometry.isVisible()).to.be.ok();
+                geometry.hide();
+                expect(geometry.isVisible()).to.not.be.ok();
+
+                setupGeometry();
+
+                geometry.show();
+                expect(geometry.isVisible()).to.be.ok();
+                geometry.hide();
+                expect(geometry.isVisible()).to.not.be.ok();
+
+                teardownGeometry();
+
+                geometry.show();
+                expect(geometry.isVisible()).to.be.ok();
+            });
+        });
+
+        context('copy',function() {
+            it ('copy',function() {
+                var json = geometry.toJson();
+
+                var cloned = geometry.copy();
+
+                var clonedJson = cloned.toJson();
+
+                expect(clonedJson).to.eql(json);
+            });
+        });
 
     }
 };
+
+exports = module.exports = CommonSpec;

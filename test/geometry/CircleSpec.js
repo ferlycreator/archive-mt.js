@@ -33,11 +33,8 @@ describe('CircleSpec', function() {
 
 
 
-    describe('geometry open methods', function() {
-        context('common tests',function() {
-            CommonSpec.testGeometryMethods.call(this,new Z.Circle(center, 1));
-        });
-
+    describe('Common geometry tests.', function() {
+        CommonSpec.testGeometryMethods.call(this,new Z.Circle(center, 1));
     });
 
 });

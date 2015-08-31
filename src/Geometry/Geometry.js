@@ -235,6 +235,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      */
     setProperties:function(properties) {
         this.properties = properties;
+        //TODO 抛事件
         return this;
     },
 
@@ -316,7 +317,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     },
 
     _getInternalId:function() {
-        return this.internalId;
+        return this._internalId;
     },
 
     /**
@@ -324,7 +325,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @param {String} id [内部id]
      */
     _setInternalId:function(id) {
-        this.internalId = id;
+        this._internalId = id;
     },
 
 
