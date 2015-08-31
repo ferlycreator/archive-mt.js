@@ -12,12 +12,6 @@
     
     geometry：    图形
     
-        marker：  点
-    
-        polyline：线
-    
-        polygon： 面
-    
     controls：    控件库
     
     plugins：     插件库

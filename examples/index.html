@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MapTalks Example</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="js/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="js/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet"/>
+    <link href="js/bootstrap/css/docs.css" rel="stylesheet">
+    <link href="js/prettify/prettify.css" rel="stylesheet"/>
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+
+    <div class="container">
+        <div class="row">
+            <div class="span12" style="text-align:center;">
+                <h1>MapTalks Example</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="span3 bs-docs-sidebar">
+                <ul class="nav nav-list bs-docs-sidenav affix">
+                    <li class="active nav-item">
+                        <a href="#begin"><i class="icon-chevron-right"></i> 开始</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#tile"><i class="icon-chevron-right"></i> 底图</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#layer"><i class="icon-chevron-right"></i> 图层</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#marker"><i class="icon-chevron-right"></i> 点</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#polyline"><i class="icon-chevron-right"></i> 线</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#polygon"><i class="icon-chevron-right"></i> 面</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="span9">
+                <section id="begin">
+                    <div class="page-header">
+                        <h1>开始</h1>
+                    </div>
+                </section>
+
+                <section id="tile">
+                    <div class="page-header">
+                        <h1>底图</h1>
+                    </div>
+                </section>
+
+                <section id="layer">
+                    <div class="page-header">
+                        <h1>图层</h1>
+                    </div>
+                </section>
+
+                <section id="marker">
+                    <div class="page-header">
+                        <h1>点</h1>
+                    </div>
+                    <h2>标注点</h2>
+                    <p>通过<code>new Z.Marker(...)</code>创建一个点。</p>
+                    <div class="bs-docs-example">
+                        <pre class="prettyprint linenums">
+//构造点的坐标
+var markerCoordinate = new Z.Coordinate(121.489935,31.24432);
+//构造点
+var marker = new Z.Marker(markerCoordinate);
+//将点添加到Layer上
+layer.addGeometry(marker);
+
+                        </pre>
+                    </div>
+                </section>
+
+                <section id="polyline">
+                    <div class="page-header">
+                        <h1>线</h1>
+                    </div>
+                </section>
+
+                <section id="polygon">
+                    <div class="page-header">
+                        <h1>面</h1>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+    <script src="js/jquery/jquery.min.js"></script>
+    <script src="js/bootstrap/js/bootstrap.min.js"></script>
+    <script src="js/prettify/run_prettify.js"></script>
+    <script src="js/index.js"></script>
+  </body>
+</html
