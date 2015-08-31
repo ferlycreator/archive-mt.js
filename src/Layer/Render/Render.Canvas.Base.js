@@ -32,7 +32,6 @@ Z.Render.Canvas.Base.prototype={
     createLayerCanvas:function() {
         if (!this.layerCanvas) {
             if (!this.canvasContainer) {return;}
-
             //初始化
             var layerCanvas = Z.DomUtil.createEl('canvas');
             layerCanvas.style.cssText = 'position:absolute;top:0px;left:0px;';
@@ -59,7 +58,7 @@ Z.Render.Canvas.Base.prototype={
      * @param  {boolean} isRealTime 是否是实时绘制
      * @return {[type]}        [description]
      */
-    repaint:function(isRealTime) {
+    repaint: function(isRealTime) {
         //延迟执行,减少刷新次数
         var me = this;
         if (isRealTime) {
@@ -75,21 +74,26 @@ Z.Render.Canvas.Base.prototype={
     },
 
     doRepaint:function() {
-        this.loadResource(function(){
-            var me = this;
-            var map = me.getMap();
-            var mapSize = map.getSize();
-            me.canvasCtx.clearRect(0, 0, mapSize['width'], mapSize['height']);
-            var mapExtent = map.getExtent();
-            /*me.layerCanvas.width = mapSize.width;
-            me.layerCanvas.height = mapSize.height;*/
-            me.updateCanvasSize(me.layerCanvas);
-            var containerOffset = map.offsetPlatform();
-            me.layerCanvas.style.left=(-containerOffset['left'])+"px";
-            me.layerCanvas.style.top=(-containerOffset['top'])+"px";
-            //载入资源后再进行绘制
-            me.repaintInExtent(mapExtent);
-        });
+        var resourceLoad = this.resourceLoader;
+        if(resourceLoad.imgUrls || resourceLoad.defaultIconUrl) {
+            this.loadResource(this._doRepaint());
+        } else {
+            this._doRepaint();
+        }
+    },
+
+    _doRepaint: function() {
+        var me = this;
+        var map = me.getMap();
+        var mapSize = map.getSize();
+        me.canvasCtx.clearRect(0, 0, mapSize['width'], mapSize['height']);
+        var mapExtent = map.getExtent();
+        me.updateCanvasSize(me.layerCanvas);
+        var containerOffset = map.offsetPlatform();
+        me.layerCanvas.style.left=(-containerOffset['left'])+"px";
+        me.layerCanvas.style.top=(-containerOffset['top'])+"px";
+        //载入资源后再进行绘制
+        me.repaintInExtent(mapExtent);
     },
 
     /**
@@ -150,10 +154,6 @@ Z.Render.Canvas.Base.prototype={
             me.resourceLoaded = true;
             onComplete.call(me);
         });
-        //} else {
-            //onComplete.call(me);
-        //}
-
     },
 
     _getLayerList:function() {

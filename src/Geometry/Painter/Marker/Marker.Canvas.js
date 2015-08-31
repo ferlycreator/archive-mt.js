@@ -11,7 +11,7 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
      * @param  {[type]} resources [图片资源缓存]
      * @return {[type]}           [description]
      */
-    doPaint:function(context, resources) {
+    doPaint: function(context, resources) {
         var geometry = this.geometry;
         if (!geometry) {
             return;
@@ -79,12 +79,13 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
         var height = icon['height'];
         var radius = (width + height)/2;
         context.beginPath();
+        var points = this.getVectorArray([pt.left, pt.top]);
         if ('circle' === markerType) {
-            context.arc(pt.left,pt.top,radius,0,2*Math.PI);
+            var center = points[0];
+            context.arc(center[0],center[1],radius,0,2*Math.PI);
             context.stroke();
             this.fillGeo(context, this.fillSymbol);
         } else {
-            var points = this.getVectorArray([pt.left, pt.top]);
             this._drawVector(context, markerType, points);
             this._fillColor(context, icon);
         }

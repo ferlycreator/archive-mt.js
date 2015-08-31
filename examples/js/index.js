@@ -11,9 +11,7 @@
                         }
                   })
             }, 100);
-
             window.prettyPrint && prettyPrint();
-
             $('.nav-item a').on('click', function () {
                   $('.nav-item').removeClass('active');
                   $(this.parentNode).addClass('active');

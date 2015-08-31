@@ -37,11 +37,12 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     //默认标注样式
     defaultIcon: {
-        'markerFile' : Z.host + '/engine/images/marker.png',
-        'markerHeight' : 30,
-        'markerWidth' : 22,
-        'dx': 0,
-        'dy': 0
+        'markerType' : 'circle',
+        'markerLineColor': '#ff0000',
+        'markerFill': '#ffffff',
+        'markerFillOpacity': 0.6,
+        'markerHeight' : 8,
+        'markerWidth' : 8
     },
 
     // 默认线样式

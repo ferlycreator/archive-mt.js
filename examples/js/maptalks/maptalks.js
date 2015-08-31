@@ -2891,7 +2891,7 @@ Z.ResourceLoader=Z.Class.extend({
 		initialize:function(urls) {
 			this.imgUrls = urls;
 			this.resourcesCache={};
-			this.defaultIconUrl = "/engine/images/marker.png";
+			this.defaultIconUrl = null;//"/engine/images/marker.png";
 		},
 
 		load:function(successFn, invoker) {
@@ -3271,7 +3271,6 @@ Z.Render.Canvas.Base.prototype={
     createLayerCanvas:function() {
         if (!this.layerCanvas) {
             if (!this.canvasContainer) {return;}
-
             //初始化
             var layerCanvas = Z.DomUtil.createEl('canvas');
             layerCanvas.style.cssText = 'position:absolute;top:0px;left:0px;';
@@ -3298,7 +3297,7 @@ Z.Render.Canvas.Base.prototype={
      * @param  {boolean} isRealTime 是否是实时绘制
      * @return {[type]}        [description]
      */
-    repaint:function(isRealTime) {
+    repaint: function(isRealTime) {
         //延迟执行,减少刷新次数
         var me = this;
         if (isRealTime) {
@@ -3314,21 +3313,26 @@ Z.Render.Canvas.Base.prototype={
     },
 
     doRepaint:function() {
-        this.loadResource(function(){
-            var me = this;
-            var map = me.getMap();
-            var mapSize = map.getSize();
-            me.canvasCtx.clearRect(0, 0, mapSize['width'], mapSize['height']);
-            var mapExtent = map.getExtent();
-            /*me.layerCanvas.width = mapSize.width;
-            me.layerCanvas.height = mapSize.height;*/
-            me.updateCanvasSize(me.layerCanvas);
-            var containerOffset = map.offsetPlatform();
-            me.layerCanvas.style.left=(-containerOffset['left'])+"px";
-            me.layerCanvas.style.top=(-containerOffset['top'])+"px";
-            //载入资源后再进行绘制
-            me.repaintInExtent(mapExtent);
-        });
+        var resourceLoad = this.resourceLoader;
+        if(resourceLoad.imgUrls || resourceLoad.defaultIconUrl) {
+            this.loadResource(this._doRepaint());
+        } else {
+            this._doRepaint();
+        }
+    },
+
+    _doRepaint: function() {
+        var me = this;
+        var map = me.getMap();
+        var mapSize = map.getSize();
+        me.canvasCtx.clearRect(0, 0, mapSize['width'], mapSize['height']);
+        var mapExtent = map.getExtent();
+        me.updateCanvasSize(me.layerCanvas);
+        var containerOffset = map.offsetPlatform();
+        me.layerCanvas.style.left=(-containerOffset['left'])+"px";
+        me.layerCanvas.style.top=(-containerOffset['top'])+"px";
+        //载入资源后再进行绘制
+        me.repaintInExtent(mapExtent);
     },
 
     /**
@@ -3389,10 +3393,6 @@ Z.Render.Canvas.Base.prototype={
             me.resourceLoaded = true;
             onComplete.call(me);
         });
-        //} else {
-            //onComplete.call(me);
-        //}
-
     },
 
     _getLayerList:function() {
@@ -5043,11 +5043,12 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     //默认标注样式
     defaultIcon: {
-        'markerFile' : Z.host + '/engine/images/marker.png',
-        'markerHeight' : 30,
-        'markerWidth' : 22,
-        'dx': 0,
-        'dy': 0
+        'markerType' : 'circle',
+        'markerLineColor': '#ff0000',
+        'markerFill': '#ffffff',
+        'markerFillOpacity': 0.6,
+        'markerHeight' : 8,
+        'markerWidth' : 8
     },
 
     // 默认线样式
@@ -6407,11 +6408,12 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
 
     options:{
         'symbol':{
-            markerFile : Z.host + '/engine/images/marker.png',
-            markerHeight : 30,
-            markerWidth : 22,
-            dx : 0,
-            dy : 0
+            'markerType' : 'circle',
+            'markerLineColor': '#ff0000',
+            'markerFill': '#ffffff',
+            'markerFillOpacity': 0.6,
+            'markerHeight' : 8,
+            'markerWidth' : 8
         }
     },
 
@@ -9346,7 +9348,10 @@ Z.Marker.PaintUtils = {
         var left = gCenter[0] + dx;
         var top = gCenter[1] + dy;
         var radius = Math.PI/180;
-        if ('triangle' === markerType) {
+        if ('circle' === markerType) {
+            var v0 = [left,top];
+            return [v0];
+        } else if ('triangle' === markerType) {
             var v0 = [left,top-size];
             var v1 = [Z.Util.roundNumber(left-Math.cos(30*radius)*size),Z.Util.roundNumber(top+Math.sin(30*radius)*size)];
             var v2 = [Z.Util.roundNumber(left+Math.cos(30*radius)*size),Z.Util.roundNumber(top+Math.sin(30*radius)*size)];
@@ -9798,6 +9803,7 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
         var points = this.getVectorArray([gCenter['left'], gCenter['top']]);
         if ('circle' === markerType) {
             var path = null;
+            var gCenter = points[0];
             if (Z.Browser.vml) {
                 path ='AL ' + gCenter[0]+','+gCenter[1] + ' ' + radius + ',' + radius + ' 0,' + (65535 * 360) + ' x';
             } else {
@@ -10295,7 +10301,7 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
      * @param  {[type]} resources [图片资源缓存]
      * @return {[type]}           [description]
      */
-    doPaint:function(context, resources) {
+    doPaint: function(context, resources) {
         var geometry = this.geometry;
         if (!geometry) {
             return;
@@ -10363,12 +10369,13 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
         var height = icon['height'];
         var radius = (width + height)/2;
         context.beginPath();
+        var points = this.getVectorArray([pt.left, pt.top]);
         if ('circle' === markerType) {
-            context.arc(pt.left,pt.top,radius,0,2*Math.PI);
+            var center = points[0];
+            context.arc(center[0],center[1],radius,0,2*Math.PI);
             context.stroke();
             this.fillGeo(context, this.fillSymbol);
         } else {
-            var points = this.getVectorArray([pt.left, pt.top]);
             this._drawVector(context, markerType, points);
             this._fillColor(context, icon);
         }

@@ -133,6 +133,7 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
         var points = this.getVectorArray([gCenter['left'], gCenter['top']]);
         if ('circle' === markerType) {
             var path = null;
+            var gCenter = points[0];
             if (Z.Browser.vml) {
                 path ='AL ' + gCenter[0]+','+gCenter[1] + ' ' + radius + ',' + radius + ' 0,' + (65535 * 360) + ' x';
             } else {

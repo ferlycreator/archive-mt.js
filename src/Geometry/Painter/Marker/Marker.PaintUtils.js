@@ -34,7 +34,10 @@ Z.Marker.PaintUtils = {
         var left = gCenter[0] + dx;
         var top = gCenter[1] + dy;
         var radius = Math.PI/180;
-        if ('triangle' === markerType) {
+        if ('circle' === markerType) {
+            var v0 = [left,top];
+            return [v0];
+        } else if ('triangle' === markerType) {
             var v0 = [left,top-size];
             var v1 = [Z.Util.roundNumber(left-Math.cos(30*radius)*size),Z.Util.roundNumber(top+Math.sin(30*radius)*size)];
             var v2 = [Z.Util.roundNumber(left+Math.cos(30*radius)*size),Z.Util.roundNumber(top+Math.sin(30*radius)*size)];
