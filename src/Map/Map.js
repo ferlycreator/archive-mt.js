@@ -537,7 +537,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         }
         var map = layer.getMap();
         if (!map || map != this) {
-            return;
+            return this;
         }
         if (layer instanceof Z.VectorLayer) {
             if (layer.isCanvasRender()) {
@@ -1091,31 +1091,37 @@ Z['Map']=Z.Map=Z.Class.extend({
         }
         this._containerDOM = _containerDOM;
         _containerDOM.innerHTML = '';
+        _containerDOM.className = 'MAP_CONTAINER_TOP';
 
         var controlWrapper = Z.DomUtil.createEl('div');
+        controlWrapper.className = 'MAP_CONTROL_WRAPPER';
 
         var _controlsContainer = Z.DomUtil.createEl('div');
+        _controlsContainer.className = 'MAP_CONTROLS_CONTAINER';
         _controlsContainer.style.cssText = 'z-index:3002';
         controlWrapper.appendChild(_controlsContainer);
         //map wrapper定义了全局的背景色, hidden overflow等css属性
         var mapWrapper = Z.DomUtil.createEl('div');
         mapWrapper.style.cssText = 'position:absolute;overflow:hidden;';
-        mapWrapper.className='MAP_TILE_BACK';
+        mapWrapper.className='MAP_WRAPPER';
         _containerDOM.appendChild(mapWrapper);
 
         // 最外层的div
         var _mapPlatform = Z.DomUtil.createEl('div');
-        _mapPlatform.id='_mapPlatform';
+        // _mapPlatform.id='_mapPlatform';
+        _mapPlatform.className = 'MAP_PLATFORM';
         _mapPlatform.style.cssText = 'position:absolute;top:0px;left:0px;';
         mapWrapper.appendChild(_mapPlatform);
         mapWrapper.appendChild(controlWrapper);
 
         var _mapViewPort = Z.DomUtil.createEl('div');
-        _mapViewPort.id='_mapViewPort';
+        // _mapViewPort.id='_mapViewPort';
+        _mapViewPort.className = 'MAP_VIEWPORT';
         _mapViewPort.style.cssText = 'position:absolute;top:0px;left:0px;z-index:10;-moz-user-select:none;-webkit-user-select: none;';
         _mapPlatform.appendChild(_mapViewPort);
 
         var _mapContainer = Z.DomUtil.createEl('div');
+        _mapContainer.className = 'MAP_CONTAINER';
 
         _mapContainer.style.cssText = 'position:absolute;top:0px;left:0px;';
         _mapContainer.style.border = 'none';
@@ -1126,8 +1132,14 @@ Z['Map']=Z.Map=Z.Class.extend({
         var _svgContainer = _mapContainer.cloneNode(false);
         var _canvasLayerContainer = _mapContainer.cloneNode(false);
 
+        _tipContainer.className = 'MAP_TIP_CONTAINER';
+        _popMenuContainer.className = 'MAP_POPMENU_CONTAINER';
+        _contextCtrlContainer.className = 'MAP_CONTEXTCTRL_CONTAINER';
+        _svgContainer.className = 'MAP_SVG_CONTAINER';
+        _canvasLayerContainer.className = 'MAP_CANVAS_CONTAINER';
+
         _mapContainer.style.zIndex = 10;
-        _mapContainer.id='mapContainer';
+        // _mapContainer.id='mapContainer';
         _canvasLayerContainer.style.zIndex=100;
         _svgContainer.style.zIndex = 200;
         _popMenuContainer.style.zIndex = 3000;

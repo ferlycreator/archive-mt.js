@@ -29,12 +29,6 @@ describe('API', function () {
 
     describe('Map', function () {
 
-        it('Load', function () {
-            expect(function () {
-                map.Load();
-            }).to.not.throwException();
-        });
-
         it('setMouseTip', function () {
             expect(function () {
                 map.setMouseTip();
@@ -151,9 +145,9 @@ describe('API', function () {
 
         it('setBaseTileLayer', function () {
             var tile2 = new Z.TileLayer('tile2', {
-                crs: 'crs3857',
-                urlTemplate: 'http://emap{s}.mapabc.com/mapabc/maptile?&x={X}&y={y}&z={z}',
-                subdomains: [0,1,2],
+                tileInfo: 'web-mercator',
+                urlTemplate: 'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',
+                subdomains: [0, 1, 2]
             });
             expect(function () {
                 map.setBaseTileLayer(tile2);
@@ -179,7 +173,7 @@ describe('API', function () {
         });
 
         it('screenPointToCoordinate', function () {
-            var coord = map.screenPointToCoordinate();
+            var coord = map.screenPointToCoordinate(new Z.Point(0, 0));
 
             expect(coord).to.not.be(null);
         });
@@ -717,7 +711,7 @@ describe('API', function () {
 
     describe('OverLayer.CanvasLayer', function() {
         it('show/hide/isVisible', function() {
-            var layer = new Z.CanvasLayer('canvas');
+            var layer = new Z.VectorLayer('canvas', {render: 'canvas'});
             map.addLayer(layer);
             var geometry = new Z.Polygon([
                 {x: 121.111, y: 30.111},
@@ -985,9 +979,6 @@ describe('API', function () {
         it('toJson', function() {
         });
 
-        it('toGeoJson', function() {
-        });
-
     });
 
     describe('Geometry.Circle', function() {
@@ -1060,9 +1051,6 @@ describe('API', function () {
         it('copy');
 
         it('toJson', function() {
-        });
-
-        it('toGeoJson', function() {
         });
 
         it('setRadius/getRadius', function() {
@@ -1153,9 +1141,6 @@ describe('API', function () {
         it('copy');
 
         it('toJson', function() {
-        });
-
-        it('toGeoJson', function() {
         });
 
         it('getWidth/getHeight]', function() {
@@ -1258,9 +1243,6 @@ describe('API', function () {
         it('toJson', function() {
         });
 
-        it('toGeoJson', function() {
-        });
-
         it('getRadius/getStartAngle/getEndAngle', function() {
             var sector = new Z.Sector({x: 0, y: 0}, 1, 30, 60);
             var r = sector.getRadius();
@@ -1354,9 +1336,6 @@ describe('API', function () {
         it('copy');
 
         it('toJson', function() {
-        });
-
-        it('toGeoJson', function() {
         });
 
         it('getNw/getWidth/getHeight', function() {
@@ -1478,9 +1457,6 @@ describe('API', function () {
         it('toJson', function() {
         });
 
-        it('toGeoJson', function() {
-        });
-
         it('getPath', function() {
             var path = [
               {x: 0, y: 0},
@@ -1598,9 +1574,6 @@ describe('API', function () {
         it('copy');
 
         it('toJson', function() {
-        });
-
-        it('toGeoJson', function() {
         });
 
         it('getRings/getHoles', function() {
@@ -1727,9 +1700,6 @@ describe('API', function () {
         it('toJson', function() {
         });
 
-        it('toGeoJson', function() {
-        });
-
         it('getGeometries/setGeometries', function() {
             var collection = new Z.GeometryCollection([]);
 
@@ -1785,9 +1755,6 @@ describe('API', function () {
         it('copy');
 
         it('toJson', function() {
-        });
-
-        it('toGeoJson', function() {
         });
 
     });
@@ -1908,9 +1875,6 @@ describe('API', function () {
         it('copy');
 
         it('toJson', function() {
-        });
-
-        it('toGeoJson', function() {
         });
 
         it('getCoordinates/setCoordinates', function() {
@@ -2054,9 +2018,6 @@ describe('API', function () {
         it('toJson', function() {
         });
 
-        it('toGeoJson', function() {
-        });
-
         it('getCoordinates/setCoordinates', function() {
             var mp = new Z.MultiPolygon([]);
 
@@ -2141,8 +2102,6 @@ describe('API', function () {
             var json = extent.toJson();
             expect(json).to.only.have.keys(['xmin', 'xmax', 'ymin', 'ymax']);
         });
-
-        it('toGeoJson');
 
     });
 

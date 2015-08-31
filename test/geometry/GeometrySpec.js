@@ -22,7 +22,7 @@ describe('GeometrySpec', function() {
             subdomains: [0, 1, 2, 3]
         });
         map.setBaseTileLayer(tile);
-        layer = new Z.CanvasLayer('canvas');
+        layer = new Z.VectorLayer('canvas', {render: 'canvas'});
         map.addLayer(layer);
     });
 

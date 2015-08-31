@@ -45,6 +45,7 @@ Z['Control'] = Z.Control = Z.Class.extend({
 		this._controlContainer = map._panels.controlWrapper;
 
 		this._container = Z.DomUtil.createEl('div');
+        this._container.className = 'MAP_CONTROL';
 		Z.DomUtil.setStyle(this._container, 'z-index: 3003');
 		var controlDom = this.buildOn(map);
 		if(controlDom) {

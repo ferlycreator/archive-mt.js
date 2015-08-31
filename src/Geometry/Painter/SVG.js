@@ -496,7 +496,6 @@ Z.SVG.VML= {
             return null;
         }
         vector = Z.SVG.create('shape');
-
         //以下三行不设置的话, IE8无法显示vml图形,原因不明
         vector.style.width = '1px';
         vector.style.height = '1px';
@@ -533,8 +532,8 @@ Z.SVG.VML= {
         var lineSpacing = iconSymbol['lineSpacing'];
 
 
-        var dx = parseInt(iconSymbol['dx'],0);
-        var dy = parseInt(iconSymbol['dy'],0);
+        var dx = parseInt(iconSymbol['textDx'],0);
+        var dy = parseInt(iconSymbol['textDy'],0);
         var text = vectorBean['text'];
         if(text){
             var location = text['location'];
@@ -566,8 +565,42 @@ Z.SVG.VML= {
     addShieldVector: function(container, vectorBean, strokeSymbol, fillSymbol, shieldSymbol) {
         var vector =  this._addVector(vectorBean, strokeSymbol, fillSymbol, shieldSymbol);
         var textVector = this._addTextVector(vectorBean, shieldSymbol);
-        textVector.style.left = '0px';
-        textVector.style.top = '0px';
+        var shieldType = shieldSymbol['shieldType'];
+        var offsetWidth=0,offsetHeight=0;
+        if ('tip' === shieldType) {
+            var height = shieldSymbol['height'];
+            var width = shieldSymbol['width'];
+            if(!shieldSymbol['shieldType']) {
+                width = Z.Util.setDefaultValue(shieldSymbol['textWidth'],0);
+                height = Z.Util.setDefaultValue(shieldSymbol['size'], 12);
+            }
+            var content = shieldSymbol['content'];
+            var fontSize = shieldSymbol['size'];
+            var size = fontSize/2;
+            var lineSpacing = shieldSymbol['lineSpacing'];
+            var textWidth = Z.Util.getLength(content)*size;
+            var rowNum = 0;
+            if(textWidth>width){
+                rowNum = Math.ceil(textWidth/width);
+            }
+            height += rowNum*((fontSize+lineSpacing)/2);
+            width += fontSize;
+
+            var horizontal = shieldSymbol['horizontal'];//水平
+            if(!horizontal) horizontal = 'middle';
+            var vertical = shieldSymbol['vertical'];//垂直
+            if(!vertical) vertical = 'top';
+            if ('middle' === horizontal) {
+                if ('bottom' === vertical) {
+                    offsetHeight = height/2;
+                }
+            } else if ('right' === horizontal){
+                offsetWidth = height/2;
+            }
+        }
+        textVector.style.left = offsetWidth + 'px';
+        textVector.style.top = offsetHeight +'px';
+
         if(vector&&textVector) {
             vector.appendChild(textVector);
             container.appendChild(vector);

@@ -417,6 +417,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         if (!mapContainer) {return;}
         //生成地图瓦片装载div
         var tileContainer = Z.DomUtil.createEl('div');
+        tileContainer.className = 'MAP_TILE_CONTAINER';
         tileContainer.style.cssText = 'position:absolute;top:0px;left:0px;z-index:'+(this.baseDomZIndex+this.getZIndex());
         var currentTileContainers = mapContainer.childNodes;
         if (currentTileContainers && currentTileContainers.length > 0) {
