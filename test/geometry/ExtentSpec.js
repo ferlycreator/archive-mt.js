@@ -43,8 +43,8 @@ describe('ExtentSpec', function() {
         });
     });
 
-    describe("how to validate a extent", function() {
 
+    describe("extent instance methods",function() {
         it('is valid',function() {
             var extent = new Z.Extent(1,2,3,4);
             expect(extent.isValid()).to.be.ok();
@@ -65,9 +65,72 @@ describe('ExtentSpec', function() {
             var extent4 = new Z.Extent(undefined, 2, 3, 4);
             expect(extent4.isValid()).to.not.be.ok();
         });
+
+        it('equals',function() {
+            var ext1 = new Z.Extent(1,2,3,4);
+            expect(ext1.equals(new Z.Extent(1,2,3,4))).to.be.ok();
+            expect(ext1.equals(new Z.Extent(2,2,4,4))).to.not.be.ok();
+
+            //2 empty extents are equal
+            var ext1 = new Z.Extent();
+            expect(ext1.equals(new Z.Extent())).to.be.ok();
+        });
+
+        it('toJson',function() {
+            var ext1 = new Z.Extent(1,2,3,4);
+            var json = ext1.toJson();
+            expect(json).to.eql({
+                'xmin':1,
+                'ymin':2,
+                'xmax':3,
+                'ymax':4
+            });
+        });
+
+        it('isIntersect',function() {
+            var ext1 = new Z.Extent(1,1,4,4);
+
+            expect(ext1.isIntersect(new Z.Extent(2,2,3,3))).to.be.ok();
+            expect(ext1.isIntersect(new Z.Extent(20,20,30,30))).to.not.be.ok();
+
+        });
+
+        it('contains',function() {
+            var ext1 = new Z.Extent(1,1,4,4);
+
+            expect(ext1.contains(new Z.Point(2,2))).to.be.ok();
+            expect(ext1.contains(new Z.Point(20,20))).to.not.be.ok();
+        });
+
     });
 
-    describe("Extent static methods",function() {
-        it('can ')
+
+    describe("extent static methods", function() {
+
+        it('combines',function() {
+            var ext1 = new Z.Extent(1,1,2,2);
+            var ext2 = new Z.Extent(2, 2, 4, 4);
+
+            var combined = Z.Extent.combine(ext1, ext2);
+
+            expect(combined.equals(new Z.Extent(1,1,4,4))).to.be.ok();
+
+            var combined2 = Z.Extent.combine(ext1, new Z.Extent());
+            expect(combined2.equals(ext1)).to.be.ok();
+        });
+
+        it('expand',function() {
+            var ext = new Z.Extent(1,2,3,4);
+            var expanded = Z.Extent.expand(ext, 10);
+            expect(expanded.equals(new Z.Extent(-9,-8,13,14))).to.be.ok();
+
+            expanded = Z.Extent.expand(ext, 0);
+            expect(expanded.equals(ext)).to.be.ok();
+
+            var empty = new Z.Extent();
+            expanded = Z.Extent.expand(empty, 1);
+            expect(expanded.equals(new Z.Extent(-1,-1,1,1))).to.be.ok();
+        });
     });
+
 });

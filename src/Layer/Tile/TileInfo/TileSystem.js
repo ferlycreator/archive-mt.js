@@ -26,7 +26,7 @@ Z.Util.extend(Z.TileSystem, {
     'web-mercator' : new Z.TileSystem(1, -1, -20037508.34, 20037508.34),
 
     //百度地图采用的瓦片系统
-    'baidu' : new Z.TileSystem(1, 1, 0, 0),
+    // 'baidu' : new Z.TileSystem(1, 1, 0, 0),
 
     getInstance:function(ts) {
         return Z.TileSystem[ts.toLowerCase()];

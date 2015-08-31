@@ -65,7 +65,7 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
             pxMax = px['max'];
         }
         var pxExtent = new Z.Extent(pxMin.left, pxMin.top, pxMax.left, pxMax.top);
-        return Z.Extent.contains(pxExtent, point);
+        return pxExtent.contains(pxExtent, point);
     },
 
     _getMarkerSize: function(symbol) {

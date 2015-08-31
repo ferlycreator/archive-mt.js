@@ -79,6 +79,8 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
         var height = icon['height'];
         var radius = (width + height)/2;
         context.beginPath();
+        //TODO ellipse的支持
+        //TODO fillGeo和fillColor方法的作用相同, 应统一
         if ('circle' === markerType) {
             context.arc(pt.left,pt.top,radius,0,2*Math.PI);
             context.stroke();

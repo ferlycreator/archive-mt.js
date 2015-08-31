@@ -7,21 +7,9 @@ describe('GeometrySpec', function() {
     var layer;
 
     beforeEach(function() {
-        container = document.createElement('div');
-        container.style.width = '800px';
-        container.style.height = '600px';
-        document.body.appendChild(container);
-        var option = {
-            zoomLevel: 17, // 1 pixel ~= 1 meter
-            center: center
-        };
-        map = new Z.Map(container, option);
-        tile = new Z.TileLayer('tile', {
-            tileInfo: 'web-mercator',
-            urlTemplate: 'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',
-            subdomains: [0, 1, 2, 3]
-        });
-        map.setBaseTileLayer(tile);
+        var setups = CommonSpec.mapSetup(center);
+        container = setups.container;
+        map = setups.map;
         layer = new Z.VectorLayer('canvas', {render: 'canvas'});
         map.addLayer(layer);
     });
@@ -34,9 +22,9 @@ describe('GeometrySpec', function() {
     it("Marker._containsPoint", function() {
         var geometry = new Z.Marker(center, {
             symbol: {
-                markerFile : Z.host + '/engine/images/marker.png',
-                markerHeight : 30,
-                markerWidth : 22,
+                'marker-file' : Z.host + '/engine/images/marker.png',
+                'marker-height' : 30,
+                'marker-width' : 22,
                 dx : 0,
                 dy : 0
             }

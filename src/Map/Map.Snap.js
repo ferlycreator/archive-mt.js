@@ -124,7 +124,7 @@ Z.Map.include({
             for (var j=0, jLen = geos.length;j<jLen;j++) {
                 if (!geos[j].isVisible()) {continue;}
                 var geoExtent = geos[j].getExtent();
-                if (!Z.Extent.isIntersect(geoExtent,extent)) {
+                if (!geoExtent.isIntersect(extent)) {
                     continue;
                 }
                 var layer = geos[j].getLayer();

@@ -44,7 +44,7 @@ Z['Polyline']=Z.Polyline = Z.Vector.extend({
 
         point = new Z.Point(point.left, point.top);
 
-        if (!Z.Extent.contains(pxExtent, point)) { return false; }
+        if (!pxExtent.contains(point)) { return false; }
 
         // screen points
         var points = this._transformToOffset(this._getPrjPoints());
