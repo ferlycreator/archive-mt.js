@@ -979,9 +979,6 @@ describe('API', function () {
         it('toJson', function() {
         });
 
-        it('toGeoJson', function() {
-        });
-
     });
 
     describe('Geometry.Circle', function() {
@@ -1054,9 +1051,6 @@ describe('API', function () {
         it('copy');
 
         it('toJson', function() {
-        });
-
-        it('toGeoJson', function() {
         });
 
         it('setRadius/getRadius', function() {
@@ -1147,9 +1141,6 @@ describe('API', function () {
         it('copy');
 
         it('toJson', function() {
-        });
-
-        it('toGeoJson', function() {
         });
 
         it('getWidth/getHeight]', function() {
@@ -1252,9 +1243,6 @@ describe('API', function () {
         it('toJson', function() {
         });
 
-        it('toGeoJson', function() {
-        });
-
         it('getRadius/getStartAngle/getEndAngle', function() {
             var sector = new Z.Sector({x: 0, y: 0}, 1, 30, 60);
             var r = sector.getRadius();
@@ -1348,9 +1336,6 @@ describe('API', function () {
         it('copy');
 
         it('toJson', function() {
-        });
-
-        it('toGeoJson', function() {
         });
 
         it('getNw/getWidth/getHeight', function() {
@@ -1472,9 +1457,6 @@ describe('API', function () {
         it('toJson', function() {
         });
 
-        it('toGeoJson', function() {
-        });
-
         it('getPath', function() {
             var path = [
               {x: 0, y: 0},
@@ -1592,9 +1574,6 @@ describe('API', function () {
         it('copy');
 
         it('toJson', function() {
-        });
-
-        it('toGeoJson', function() {
         });
 
         it('getRings/getHoles', function() {
@@ -1721,9 +1700,6 @@ describe('API', function () {
         it('toJson', function() {
         });
 
-        it('toGeoJson', function() {
-        });
-
         it('getGeometries/setGeometries', function() {
             var collection = new Z.GeometryCollection([]);
 
@@ -1779,9 +1755,6 @@ describe('API', function () {
         it('copy');
 
         it('toJson', function() {
-        });
-
-        it('toGeoJson', function() {
         });
 
     });
@@ -1902,9 +1875,6 @@ describe('API', function () {
         it('copy');
 
         it('toJson', function() {
-        });
-
-        it('toGeoJson', function() {
         });
 
         it('getCoordinates/setCoordinates', function() {
@@ -2048,9 +2018,6 @@ describe('API', function () {
         it('toJson', function() {
         });
 
-        it('toGeoJson', function() {
-        });
-
         it('getCoordinates/setCoordinates', function() {
             var mp = new Z.MultiPolygon([]);
 
@@ -2135,8 +2102,6 @@ describe('API', function () {
             var json = extent.toJson();
             expect(json).to.only.have.keys(['xmin', 'xmax', 'ymin', 'ymax']);
         });
-
-        it('toGeoJson');
 
     });
 
