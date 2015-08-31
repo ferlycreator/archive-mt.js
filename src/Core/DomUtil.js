@@ -213,8 +213,7 @@ Z.DomUtil = {
             topValue+= parseInt(obj.offsetTop,0);
             obj= obj.offsetParent;
         }
-       var finalvalue = {left:leftValue,top:topValue};
-       return finalvalue;
+       return new Z.Point(leftValue, topValue);
     },
 
 

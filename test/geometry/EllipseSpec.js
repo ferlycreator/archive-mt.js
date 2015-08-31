@@ -7,28 +7,28 @@ describe('EllipseSpec', function() {
     var layer;
 
     beforeEach(function() {
-        container = document.createElement('div');
-        container.style.width = '800px';
-        container.style.height = '600px';
-        document.body.appendChild(container);
-        var option = {
-            zoomLevel: 17,
-            center: center
-        };
-        map = new Z.Map(container, option);
-        tile = new Z.TileLayer('tile', {
-            tileInfo: 'web-mercator',
-            urlTemplate: 'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',
-            subdomains: [0, 1, 2, 3]
-        });
-        map.setBaseTileLayer(tile);
-        layer = new Z.VectorLayer('id');
-        map.addLayer(layer);
+       var setups = CommonSpec.mapSetup(center);
+       container = setups.container;
+       map = setups.map;
     });
 
     afterEach(function() {
         map.removeLayer(layer);
         document.body.removeChild(container);
+    });
+
+    describe('svg events', function() {
+        it('fires geometry events and listened', function() {
+            var vector = new Z.Ellipse(center, 1,1);
+            CommonSpec.testSVGEvents(vector, map);
+        });
+    });
+
+    describe('canvas events', function() {
+        it('fires geometry events and listened', function() {
+            var vector = new Z.Ellipse(center, 1,1);
+            CommonSpec.testCanvasEvents(vector, map, vector.getCenter());
+        });
     });
 
 });
