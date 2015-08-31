@@ -374,7 +374,7 @@ Z.SVG.SVG = {
     removeVector:function(_container, vector) {
         //如果是模式填充, 需要删除模式定义元素
         if (vector._pattern) {
-            Z.Util.removeDomNode(vector._pattern);
+            Z.DomUtil.removeDomNode(vector._pattern);
         }
         if (_container && vector) {
             _container.removeChild(vector);

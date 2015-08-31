@@ -395,7 +395,8 @@ Z['Map']=Z.Map=Z.Class.extend({
             if (ret === -1) {
                 return this._maxZoomLevel;
             }
-            return ret - 2;
+            // return ret - 2;
+            return ret;
         } catch (exception) {
             return this.getZoomLevel();
         }
