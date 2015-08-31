@@ -1,6 +1,7 @@
 #!/bin/sh
 
-BUILDPATH=../../../engine-projects/engine-front/webroot/js/build/v2
+#BUILDPATH=../../../engine-projects/engine-front/webroot/js/build/v2
+BUILDPATH=../examples/js
 rm -f $BUILDPATH/maptalks.js.gz
 rm -f $BUILDPATH/maptalks.js
 
