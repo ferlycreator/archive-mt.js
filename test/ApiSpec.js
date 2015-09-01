@@ -302,7 +302,7 @@ describe('API', function () {
             expect(function () {
                 for (var i = 0; i < all.length; i++) {
                     var g = all[i];
-                    g.computeGeodesicLength(g);
+                    map.computeGeodesicLength(g);
                 }
             }).to.not.throwException();
         });
@@ -313,7 +313,7 @@ describe('API', function () {
             expect(function () {
                 for (var i = 0; i < all.length; i++) {
                     var g = all[i];
-                    g.computeGeodesicArea(g);
+                    map.computeGeodesicArea(g);
                 }
             }).to.not.throwException();
         });
@@ -436,7 +436,7 @@ describe('API', function () {
             }).to.not.throwException();
         });
 
-        it('closeMenu/removeMenu', function() {
+        it('close/remove', function() {
             var options = {
                 items: [
                     {item: 'item1'},
@@ -450,8 +450,8 @@ describe('API', function () {
             menu.show(pos);
 
             expect(function () {
-                menu.closeMenu();
-                menu.removeMenu();
+                menu.close();
+                menu.remove();
             }).to.not.throwException();
         });
 
@@ -495,7 +495,10 @@ describe('API', function () {
         it('getOption');
 
         it('addTo', function() {
-            var control = new Z.Control({id: 'id1'});
+            var control = new Z.Control({
+                id: 'id1',
+                position: {top: 10, left: 10}
+            });
             control.buildOn = buildOn;
 
             expect(function () {
@@ -506,7 +509,7 @@ describe('API', function () {
         it('setPosition', function() {
             var control = new Z.Control({
                 id: 'id1',
-                position: {'top': '10','left': '10'}
+                position: {top: 10, left: 10}
             });
             control.buildOn = buildOn;
             control.addTo(map);
@@ -521,7 +524,10 @@ describe('API', function () {
         });
 
         it('getPosition', function() {
-            var control = new Z.Control({id: 'id1'});
+            var control = new Z.Control({
+                id: 'id1',
+                position: {top: 10, left: 10}
+            });
             var undef;
 
             expect(control.getPosition()).to.not.eql(undef);
@@ -564,7 +570,7 @@ describe('API', function () {
 
         it('addGeometry', function() {
             var layer = new Z.OverlayLayer();
-            layer.paintGeometries = paint;
+            layer._paintGeometries = paint;
             layer.setId('id');
             // map.addLayer(layer);
             var geometry = new Z.Polygon([
@@ -671,14 +677,16 @@ describe('API', function () {
 
     });
 
-    describe('OverLayer.SVGLayer', function() {
+    describe('OverlayLayer.SVGLayer', function() {
         it('show/hide/isVisible', function() {
             var layer = new Z.VectorLayer('svg');
             map.addLayer(layer);
             var geometry = new Z.Polygon([
-                {x: 121.111, y: 30.111},
-                {x: 121.222, y: 30.222},
-                {x: 121.333, y: 30.333}
+                [
+                    {x: 121.111, y: 30.111},
+                    {x: 121.222, y: 30.222},
+                    {x: 121.333, y: 30.333}
+                ]
             ]);
             layer.addGeometry(geometry);
 
@@ -690,7 +698,7 @@ describe('API', function () {
         });
     });
 
-    describe('OverLayer.CanvasLayer', function() {
+    describe('OverlayLayer.CanvasLayer', function() {
         it('show/hide/isVisible', function() {
             var layer = new Z.VectorLayer('canvas', {render: 'canvas'});
             map.addLayer(layer);
@@ -833,6 +841,8 @@ describe('API', function () {
 
     describe('Geometry', function() {
 
+        function getPainter() {}
+
         it('fromJson', function() {
             // TODO
         });
@@ -854,6 +864,7 @@ describe('API', function () {
 
         it('setSymbol/getSymbol', function() {
             var geometry = new Z.Geometry();
+            geometry._getPainter = getPainter;
             var symbol = {
                 strokeSymbol: {
                     stroke: '#ff0000',
@@ -861,8 +872,9 @@ describe('API', function () {
                     opacity: 0.6
                 }
             };
+            var undef;
 
-            expect(geometry.getSymbol()).to.be(null);
+            expect(geometry.getSymbol()).to.eql(undef);
 
             geometry.setSymbol(symbol);
             var got = geometry.getSymbol();
@@ -871,9 +883,9 @@ describe('API', function () {
             var stroke = got.strokeSymbol;
             expect(stroke).to.only.have.keys([
                 'stroke',
-                'strokeWidth',
+                'stroke-width',
                 'opacity'
-                ]);
+            ]);
         });
 
         it('[set|get]Properties');
