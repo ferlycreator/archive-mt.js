@@ -28,6 +28,7 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
         this._coordinates = new Z.Coordinate(nw);
 
         if (!this._coordinates || !this.getMap()) {
+            this._onPositionChanged();
             return this;
         }
         var projection = this._getProjection();

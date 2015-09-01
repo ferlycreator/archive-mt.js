@@ -60,9 +60,23 @@ Z['Ellipse']=Z.Ellipse = Z.Polygon.extend({
      * @expose
      */
     getShell:function() {
-        //var proj = this._getProjection();
-        //TODO
-
+        var projection = this._getProjection();
+        var center = this.getCoordinates();
+        var numberOfPoints = this.options['numberOfPoints'];
+        var width = this.getWidth(),
+            height = this.getHeight();
+        var shell = [];
+        var s = Math.pow(width,2)*Math.pow(height,2),
+            sx = Math.pow(width,2),
+            sy = Math.pow(height,2);
+        for (var i=0;i<numberOfPoints;i++) {
+            var rad = (360*i/numberOfPoints)*Math.PI/180;
+            var dx = Math.sqrt(s/(sx*Math.pow(Math.tan(rad),2)+sy));
+            var dy = Math.sqrt(s/(sy*Math.pow(1/Math.tan(rad),2)+sx));
+            var vertex = projection.locate(center, dx, dy);
+            shell.push(vertex);
+        }
+        return shell;
     },
 
     /**

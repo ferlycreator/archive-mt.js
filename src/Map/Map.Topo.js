@@ -22,7 +22,7 @@ Z.Map.include({
      * @return {Number}          [地理长度]
      * @expose
      */
-    _computeGeodesicLength:function(geometry) {
+    computeGeodesicLength:function(geometry) {
         return geometry._computeGeodesicLength(this._getProjection());
     },
 
@@ -32,7 +32,7 @@ Z.Map.include({
      * @return {Number}          [地理面积]
      * @expose
      */
-    _computeGeodesicArea:function(geometry) {
+    computeGeodesicArea:function(geometry) {
         return geometry._computeGeodesicArea(this._getProjection());
     },
 

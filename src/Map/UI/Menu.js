@@ -135,9 +135,6 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
     * @expose
     */
     setItems: function(items) {
-        if (!items) {
-            return;
-        }
         this.menuOption['items'] = items;
         return this;
     },

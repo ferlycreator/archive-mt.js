@@ -1,6 +1,6 @@
-Z.Render.Dom = function(layer) {
+Z.Render.Dom = function(layer,options) {
     this.layer = layer;
-    this._visible=true;
+    this._visible=options['visible'];
 };
 
 Z.Render.Dom.prototype= {

@@ -43,9 +43,19 @@ Z['Circle']=Z.Circle=Z.Polygon.extend({
      * @expose
      */
     getShell:function() {
-        //var proj = this._getProjection();
-        //TODO
-
+        var projection = this._getProjection();
+        var center = this.getCoordinates();
+        var numberOfPoints = this.options['numberOfPoints'];
+        var radius = this.getRadius();
+        var shell = [];
+        for (var i=0;i<numberOfPoints;i++) {
+            var rad = (360*i/numberOfPoints)*Math.PI/180;
+            var dx = radius*Math.cos(rad);
+            var dy = radius*Math.sin(rad);
+            var vertex = projection.locate(center, dx, dy);
+            shell.push(vertex);
+        }
+        return shell;
     },
 
     /**

@@ -39,6 +39,62 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
     },
 
     /**
+     * load the tile layer, can be overrided by sub-classes
+     */
+    load:function(){
+        this._load();
+    },
+
+    /**
+     * 显示图层
+     */
+    show:function() {
+        if (this.options['visible']) {
+            return;
+        }
+        this._tileContainer.style.display="";
+        this._fillTiles(true);
+        this.options['visible'] = true;
+        return this;
+    },
+
+    /**
+     * 隐藏图层
+     */
+    hide:function() {
+        if (!this.options['visible']) {
+            return;
+        }
+        this._tileContainer.style.display="none";
+        this.clear();
+        this.options['visible'] = false;
+        return this;
+    },
+
+    /**
+     * 瓦片图层是否可见
+     * @return {Boolean} true/false
+     */
+    isVisible:function() {
+        return this.options['visible'];
+    },
+
+    _load:function() {
+        if (!this.getMap()) {return;}
+        if (!this._tileContainer) {
+            this._initPanel();
+        }
+        this.clear();
+        if (this._prepareLoad()) {
+            this._clearExecutors();
+            var me = this;
+            this._tileLoadExecutor = setTimeout(function() {
+                me._fillTiles(me.options['showOnTileLoadComplete']);
+            },20);
+        }
+    },
+
+    /**
      * * 加载TileConfig
      * @param  {fn} onLoaded 加载完成后的回调函数
      */
@@ -137,27 +193,9 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         return true;
     },
 
-    /**
-     * load the tile layer, can be overrided by sub-classes
-     */
-    load:function(){
-        this._load();
-    },
 
-    _load:function() {
-        if (!this.getMap()) {return;}
-        if (!this._tileContainer) {
-            this._initPanel();
-        }
-        this.clear();
-        if (this._prepareLoad()) {
-            this._clearExecutors();
-            var me = this;
-            this._tileLoadExecutor = setTimeout(function() {
-                me._fillTiles(me.options['showOnTileLoadComplete']);
-            },20);
-        }
-    },
+
+
 
     clear:function() {
         this._tileMap = {};
@@ -205,6 +243,9 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         // isCheckTileLoad = false;
         var map =this.map;
         if (!map) {
+            return;
+        }
+        if (!this.isVisible()) {
             return;
         }
         var tileContainer = this._tileContainer;

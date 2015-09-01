@@ -106,6 +106,8 @@ var CommonSpec = {
             Z.DomUtil.removeDomNode(setups.container);
         }
 
+
+
         context('getter and setters.',function() {
             it('id', function() {
                 geometry.setId('id');
@@ -145,7 +147,33 @@ var CommonSpec = {
                 //setSymbol单独测试
             });
 
-            it('Extent',function() {
+            it('Properties',function() {
+                var old_props = geometry.getProperties();
+
+                var props_test = {'foo_num':1, 'foo_str':'str', 'foo_bool':false};
+                geometry.setProperties(props_test);
+
+                var props = geometry.getProperties();
+                expect(props).to.eql(props_test);
+
+                geometry.setProperties(old_props);
+                expect(geometry.getProperties()).to.not.eql(props_test);
+            });
+
+        });
+
+        context('can be measured.',function() {
+            it('it has geodesic length',function() {
+                var length = geometry.getLength();
+                expect(length).to.be.ok();
+            });
+
+            it('it has geodesic area',function() {
+                var area = geometry.getArea();
+                expect(area).to.be.ok();
+            });
+
+            it('it has extent',function() {
                 setupGeometry();
 
                 var extent = geometry.getExtent();
@@ -155,7 +183,7 @@ var CommonSpec = {
                 teardownGeometry();
             });
 
-            it('Size',function() {
+            it('it has size',function() {
                 setupGeometry();
 
                 var size = geometry.getSize();
@@ -166,7 +194,7 @@ var CommonSpec = {
                 teardownGeometry();
             });
 
-            it('Center',function() {
+            it('it has center',function() {
                 var center = geometry.getCenter();
                 expect(center).to.be.a(Z.Coordinate);
                 expect(center.x).to.be.ok();
@@ -181,20 +209,6 @@ var CommonSpec = {
 
                 teardownGeometry();
             });
-
-            it('Properties',function() {
-                var old_props = geometry.getProperties();
-
-                var props_test = {'foo_num':1, 'foo_str':'str', 'foo_bool':false};
-                geometry.setProperties(props_test);
-
-                var props = geometry.getProperties();
-                expect(props).to.eql(props_test);
-
-                geometry.setProperties(old_props);
-                expect(geometry.getProperties()).to.not.eql(props_test);
-            });
-
         });
 
         context('can show and hide.',function() {
@@ -230,6 +244,101 @@ var CommonSpec = {
             });
         });
 
+        context('remove',function() {
+            it ('remove from layer',function() {
+                //layer not on map
+                var layer = new Z.VectorLayer('svg');
+                layer.addGeometry(geometry);
+                expect(geometry.getLayer()).to.be.ok();
+                expect(geometry.getMap()).to.not.be.ok();
+                geometry.remove();
+                expect(geometry.getLayer()).to.not.be.ok();
+
+                setupGeometry();
+
+                expect(geometry.getLayer()).to.be.ok();
+                expect(geometry.getMap()).to.be.ok();
+                geometry.remove();
+                expect(geometry.getLayer()).to.not.be.ok();
+
+                var canvasLayer = new Z.VectorLayer('canvas',{'render':'canvas'});
+                canvasLayer.addGeometry(geometry);
+                map.addLayer(canvasLayer);
+
+                expect(geometry.getLayer()).to.be.ok();
+                expect(geometry.getMap()).to.be.ok();
+                geometry.remove();
+                expect(geometry.getLayer()).to.not.be.ok();
+
+                teardownGeometry();
+            });
+        });
+
+        context('some internal methods should be tested.',function() {
+            it('painter',function() {
+                setupGeometry();
+
+                var painter = geometry._getPainter();
+                expect(painter).to.be.ok();
+                geometry.remove();
+
+                var canvasLayer = new Z.VectorLayer('canvas',{'render':'canvas'});
+                canvasLayer.addGeometry(geometry);
+                map.addLayer(canvasLayer);
+
+                painter = geometry._getPainter();
+                expect(painter).to.be.ok();
+
+                teardownGeometry();
+            });
+
+            it('getExternalResource',function() {
+                var oldSymbol = geometry.getSymbol();
+
+                var type = geometry.getType();
+                if (type === Z.Geometry.TYPE_POINT) {
+                    var symbol = {
+                        'marker-file':'http://foo.com/foo.png'
+                    };
+                    geometry.setSymbol(symbol);
+                    var resource = geometry._getExternalResource();
+                    expect(resource).to.be(symbol['marker-file']);
+                } else {
+                    var symbol = {
+                        'polygon-fill':'url(\'http://foo.com/foo.png\')'
+                    };
+                    geometry.setSymbol(symbol);
+                    var resource = geometry._getExternalResource();
+                    expect(resource).to.be('http://foo.com/foo.png');
+                }
+            });
+
+            it('getProjection',function() {
+                var projection = geometry._getProjection();
+                expect(projection).to.be.ok();
+
+                setupGeometry();
+
+                var projection = geometry._getProjection();
+                expect(projection.srs).to.be(map._getProjection().srs);
+
+                teardownGeometry();
+            });
+        });
+
+
+        context('map events listeners',function() {
+            it ('onZoomEnd',function() {
+                setupGeometry();
+                var spy = sinon.spy(geometry,'_onZoomEnd');
+                map.on('zoomend',function() {
+                    expect(spy.called).to.be.ok();
+                    teardownGeometry();
+                });
+                map.zoomOut();
+
+            });
+        });
     }
 };
 

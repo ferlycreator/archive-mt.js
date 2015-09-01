@@ -50,10 +50,12 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
 
     _projectRings:function() {
         if (!this.getMap()) {
+            this._onShapeChanged();
             return;
         }
         this.prjPoints = this._projectPoints(this.points);
         this.prjHoles = this._projectPoints(this.holes);
+        this._onShapeChanged();
     },
 
     /**
