@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MapTalks 示例: 添加点</title>
+    <title>MapTalks 示例: 标注图片</title>
     <!-- 公用的地图初始化代码，其中注册的地图载入完成回调函数名为onMapReady -->
     <link href="/engine/css/label.css" rel="stylesheet" type="text/css"/>
     <link href="/engine/css/controls.css" rel="stylesheet" type="text/css"/>
@@ -33,9 +33,19 @@
         //将图层添加到地图对象
         mapObj.addLayer(layer);
         //创建点的坐标对象
-        var markerCoordinate = new Z.Coordinate(121.489935,31.24432);
+        var coordinate = new Z.Coordinate(121.489935,31.24432);
+        //设置图片
+        var icon = {
+            'marker-file': '/engine/images/marker.png',
+            'marker-width': 22,
+            'marker-height': 30,
+            'dx': 0,
+            'dy' :0
+        };
         //创建点对象
-        var marker = new Z.Marker(markerCoordinate,'marker_id');
+        var marker = new Z.Marker(coordinate,'marker_id');
+        //设置点样式
+        marker.setSymbol(icon);
         //将点添加到Layer
         layer.addGeometry(marker);
     }
