@@ -1,4 +1,4 @@
-describe('OverlayLayer', function() {
+describe('#OverlayLayer', function() {
 
     var container;
     var map;
@@ -27,23 +27,8 @@ describe('OverlayLayer', function() {
     });
 
     describe('visibility', function() {
-        it('should be false if not add to map', function() {
+        it('should be true if initialized with default visibility', function() {
             var layer = new Z.VectorLayer('id');
-
-            expect(layer.isVisible()).to.not.be.ok();
-        });
-
-        it('should be false if map not loaded', function() {
-            var layer = new Z.VectorLayer('id');
-            map.addLayer(layer);
-
-            expect(layer.isVisible()).to.not.be.ok();
-        });
-
-        it('should be true if map loaded', function() {
-            var layer = new Z.VectorLayer('id');
-            map.addLayer(layer);
-            map.setBaseTileLayer(tile);
 
             expect(layer.isVisible()).to.be.ok();
         });

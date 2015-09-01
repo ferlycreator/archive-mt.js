@@ -33,6 +33,16 @@ Z['Polyline']=Z.Polyline = Z.Vector.extend({
         return this.points;
     },
 
+    _computeGeodesicLength:function(projection) {
+        // TODO: implementation
+        return 0;
+    },
+
+    _computeGeodesicArea:function(projection) {
+        // TODO: implementation
+        return 0;
+    },
+
     _containsPoint: function(point) {
         var map = this.getMap(),
             t = this._hitTestTolerance(),
