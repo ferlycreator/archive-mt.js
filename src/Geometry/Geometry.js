@@ -59,7 +59,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * 初始化传入的option参数
      * @param  {Object} opts [option参数]
      */
-    initOptions:function(opts) {
+    _initOptions:function(opts) {
         if (!opts) {
             return;
         }
@@ -83,7 +83,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         this.layer = layer;
         //如果投影发生改变,则清除掉所有的投影坐标属性
         this._clearProjection();
-        this.painter = this._assignPainter();
+
     },
 
     /**
@@ -187,17 +187,13 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
         var projection = this._getProjection();
         var extent = this._computeVisualExtent(projection);
-        var xmin = extent['xmin'];
-        var xmax = extent['xmax'];
-        var ymin = extent['ymin'];
-        var ymax = extent['ymax'];
-        var topLeftPoint = new Z.Coordinate(xmin, ymax);
-        var topRightPoint = new Z.Coordinate(xmax, ymax);
-        var bottomLeftPoint = new Z.Coordinate(xmin, ymin);
-        var width = map.computeDistance(topLeftPoint, topRightPoint);
-        var height = map.computeDistance(topLeftPoint, bottomLeftPoint);
-        var result = map.distanceToPixel(width, height);
-        return result;//{'width': result['width'], 'height': result['height']};
+        var xmin = extent['xmin'],
+            xmax = extent['xmax'],
+            ymin = extent['ymin'],
+            ymax = extent['ymax'];
+        var width = map.computeDistance(new Z.Coordinate(xmin, ymax), new Z.Coordinate(xmax, ymax));
+        var height = map.computeDistance(new Z.Coordinate(xmin, ymax), new Z.Coordinate(xmin, ymin));
+        return map.distanceToPixel(width, height);
     },
 
     _getPrjExtent:function() {
@@ -240,6 +236,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      */
     setProperties:function(properties) {
         this.properties = properties;
+        //TODO 抛事件
         return this;
     },
 
@@ -249,8 +246,8 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      */
     show:function() {
         this._visible = true;
-        if (this.painter) {
-            this.painter.show();
+        if (this._painter) {
+            this._painter.show();
         }
         return this;
     },
@@ -261,8 +258,8 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      */
     hide:function() {
         this._visible = false;
-        if (this.painter) {
-            this.painter.hide();
+        if (this._painter) {
+            this._painter.hide();
         }
         return this;
     },
@@ -307,11 +304,12 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         //infowindow
         this.closeInfoWindow();
 
-        var painter = this._getPainter();
+        /*var painter = this._getPainter();
         if (painter) {
             painter.remove();
         }
-        delete this.painter;
+        delete this._painter;*/
+        this._removePainter();
 
         layer._onGeometryRemove(this);
         delete this.layer;
@@ -321,7 +319,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     },
 
     _getInternalId:function() {
-        return this.internalId;
+        return this._internalId;
     },
 
     /**
@@ -329,7 +327,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @param {String} id [内部id]
      */
     _setInternalId:function(id) {
-        this.internalId = id;
+        this._internalId = id;
     },
 
 
@@ -353,15 +351,12 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (!symbol) {
             return null;
         }
-        var icon = symbol['icon'];
+        var icon = symbol['markerFile'];
         if (icon) {
-            if (icon['type'] === 'picture') {
-                return icon['url'];
-            }
+            return icon;
         }
-        var fillSymbol = symbol['fillSymbol'];
-        if (fillSymbol) {
-            var fill = fillSymbol['fill'];
+        var fill = symbol['polygonFill'];
+        if (fill) {
             if (fill && fill.length>7 && "url" ===fill.substring(0,3)) {
                 return fill.substring(5,fill.length-2);
             }
@@ -370,16 +365,22 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     },
 
     _getPainter:function() {
-        return this.painter;
+        if (!this._painter) {
+            this._painter = this._assignPainter();
+        }
+        return this._painter;
     },
 
     _removePainter:function() {
-        delete this.painter;
+        if (this._painter) {
+            this._painter.remove();
+        }
+        delete this._painter;
     },
 
     _onZoomEnd:function() {
-        if (this.painter) {
-            this.painter.refresh();
+        if (this._painter) {
+            this._painter.refresh();
         }
     },
 
@@ -473,6 +474,24 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
         feature['properties'] = properties;
         return feature;
+    },
+
+    /**
+     * 计算Geometry的地理长度,单位为米或像素(依据坐标类型)
+     * @return {Number} 地理长度
+     * @expose
+     */
+    getLength:function() {
+        return this._computeGeodesicLength(this._getProjection());
+    },
+
+    /**
+     * 计算Geometry的地理面积, 单位为平方米或平方像素(依据坐标类型)
+     * @return {Number} 地理面积
+     * @expose
+     */
+    getArea:function() {
+        return this._computeGeodesicArea(this._getProjection());
     }
 
 });

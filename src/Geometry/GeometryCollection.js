@@ -3,7 +3,7 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
 
     initialize:function(geometries, opts) {
         this.setGeometries(geometries);
-        this.initOptions(opts);
+        this._initOptions(opts);
     },
 
     /**

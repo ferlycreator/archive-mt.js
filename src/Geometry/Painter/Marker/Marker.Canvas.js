@@ -80,6 +80,8 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
         var radius = (width + height)/2;
         context.beginPath();
         var points = this.getVectorArray([pt.left, pt.top]);
+        //TODO ellipse的支持
+        //TODO fillGeo和fillColor方法的作用相同, 应统一
         if ('circle' === markerType) {
             var center = points[0];
             context.arc(center[0],center[1],radius,0,2*Math.PI);

@@ -9,12 +9,12 @@ Z.TileConfig=Z.Class.extend({
         //根据不同的语言定义不同的错误信息
         exceptionDefs:{
             'en-US':{
-                'INVALID_TILEINFO':'Invalid TILEINFO',
-                'INVALID_TILESYSTEM':'Invalid tileSystem'
+                'INVALID_TILEINFO':'Invalid TileInfo',
+                'INVALID_TILESYSTEM':'Invalid TileSystem'
             },
             'zh-CN':{
-                'INVALID_TILEINFO':'无效的TILEINFO',
-                'INVALID_TILESYSTEM':'无效的tileSystem'
+                'INVALID_TILEINFO':'无效的TileInfo',
+                'INVALID_TILESYSTEM':'无效的TileSystem'
             }
         },
 
@@ -51,16 +51,6 @@ Z.TileConfig=Z.Class.extend({
             }
             this.projectionInstance = Z.Projection.getInstance(tileInfo['projection']);
 
-            /*if ('baidu' === tileInfo['projection'].toLowerCase()) {
-                Z.Util.extend(this,Z.TileUtil.BD09);
-            }  else {
-                if (lodName && 'globalmercator' === lodName) {
-                    Z.Util.extend(this,Z.TileUtil.GLOALMERCATOR);
-                } else {
-                    Z.Util.extend(this,Z.TileUtil.Default);
-                }
-
-            }*/
             var tileSystem;
             if (!tileInfo['tileSystem']) {
                 //默认是WEB-MERCATOR瓦片系统

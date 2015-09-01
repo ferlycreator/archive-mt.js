@@ -105,14 +105,14 @@ Z.Render.Canvas.Base.prototype={
         var me = this;
         var map = me.getMap();
         var mapExtent = map.getExtent();
-        if (extent && Z.Extent.isIntersect(extent, mapExtent)) {
+        if (extent && extent.isIntersect(mapExtent)) {
             this.clearCanvas(extent);
             me.eachGeometry(function(geo) {
                 if (!geo || !geo.isVisible()) {
                     return;
                 }
                 var ext = geo._computeVisualExtent(geo._getProjection());
-                if (!ext || !Z.Extent.isIntersect(ext,extent)) {
+                if (!ext || !ext.isIntersect(extent)) {
                     return;
                 }
                 geo._getPainter().paint(me.canvasCtx,me.resourceLoader);
@@ -142,7 +142,7 @@ Z.Render.Canvas.Base.prototype={
                 return;
             }
             var ext = geo.getExtent();
-            if (!ext || !Z.Extent.isIntersect(ext,mapExtent)) {
+            if (!ext || !ext.isIntersect(mapExtent)) {
                 return;
             }
             var resource = geo._getExternalResource();

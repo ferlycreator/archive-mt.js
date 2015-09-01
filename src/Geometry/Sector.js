@@ -12,7 +12,7 @@ Z['Sector']=Z.Sector=Z.Polygon.extend({
         this.radius = radius;
         this.startAngle = startAngle;
         this.endAngle = endAngle;
-        this.initOptions(opts);
+        this._initOptions(opts);
     },
 
     /**

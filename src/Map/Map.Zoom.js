@@ -151,7 +151,7 @@ Z.Map.include({
     _animateEnd:function() {
         if (Z.Browser.ielt9) {return;}
         var mapContainer = this._panels.mapContainer;
-        mapContainer.className="";
+        mapContainer.className="MAP_CONTAINER";
         Z.DomUtil.setDomTransformOrigin(mapContainer,"");
         Z.DomUtil.setDomTransform(mapContainer,"");
         mapContainer.style.top=0+"px";
@@ -162,4 +162,3 @@ Z.Map.include({
         return 150;
     }
 });
-

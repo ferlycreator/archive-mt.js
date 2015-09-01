@@ -25,7 +25,7 @@ Z.Painter.SVG = Z.Painter.extend({
 
     _getVectorPaper: function(vectorBean) {
         var vectorPaper = this.getVectorPaper();
-        if (!vectorBean || !vectorPaper) {return;}
+        if (!vectorBean || !vectorPaper) {return this;}
         //样式
         if (this.vector) {
             // TODO: only update?
@@ -69,7 +69,9 @@ Z.Painter.SVG = Z.Painter.extend({
 
     _registerEvents:function(){
         var targetDom = this.vector || this.markerDom;
-        targetDom && this.addDomEvents(targetDom);
+        if (targetDom) {
+            this.addDomEvents(targetDom);
+        }
     },
 
     _setZIndex:function(change) {

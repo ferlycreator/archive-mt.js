@@ -8,7 +8,7 @@ Z.MultiPoly = Z.GeometryCollection.extend({
                 this.setCoordinates(data);
             }
         }
-        this.initOptions(opts);
+        this._initOptions(opts);
     },
 
     _checkGeometries:function(geometries) {

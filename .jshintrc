@@ -26,6 +26,13 @@
       "console": true,
       "setTimeout": true,
       "setInterval": true,
+      //mocha
+      "describe" : true,
+      "it" : true,
+      "expect":true,
+      //node.js
+      "exports" : true,
+      "module" : true,
       "Z": true
   }
 }

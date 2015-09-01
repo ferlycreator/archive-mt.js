@@ -1,3 +1,5 @@
+var utils = require('./SpecUtils.js');
+
 describe('API', function () {
 
     var container;
@@ -24,16 +26,10 @@ describe('API', function () {
     });
 
     afterEach(function () {
-        document.body.removeChild(container);
+        // document.body.removeChild(container);
     });
 
     describe('Map', function () {
-
-        it('Load', function () {
-            expect(function () {
-                map.Load();
-            }).to.not.throwException();
-        });
 
         it('setMouseTip', function () {
             expect(function () {
@@ -151,9 +147,9 @@ describe('API', function () {
 
         it('setBaseTileLayer', function () {
             var tile2 = new Z.TileLayer('tile2', {
-                crs: 'crs3857',
-                urlTemplate: 'http://emap{s}.mapabc.com/mapabc/maptile?&x={X}&y={y}&z={z}',
-                subdomains: [0,1,2],
+                tileInfo: 'web-mercator',
+                urlTemplate: 'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',
+                subdomains: [0, 1, 2]
             });
             expect(function () {
                 map.setBaseTileLayer(tile2);
@@ -179,7 +175,7 @@ describe('API', function () {
         });
 
         it('screenPointToCoordinate', function () {
-            var coord = map.screenPointToCoordinate();
+            var coord = map.screenPointToCoordinate(new Z.Point(0, 0));
 
             expect(coord).to.not.be(null);
         });
@@ -201,27 +197,6 @@ describe('API', function () {
 
             expect(function () {
                 map.panBy(offset);
-            }).to.not.throwException();
-        });
-
-        it('animatePan', function() {
-            var offset = {left: 20, top: 20};
-
-            expect(function () {
-                map.animatePan(offset);
-            }).to.not.throwException();
-        });
-
-    });
-
-    describe('Map.Zoom', function() {
-
-        it('zoom', function() {
-            var zoom = map.getZoomLevel();
-            zoom = Math.ceil(zoom / 2);
-
-            expect(function () {
-                map.zoom(zoom);
             }).to.not.throwException();
         });
 
@@ -322,7 +297,7 @@ describe('API', function () {
         });
 
         it('computeGeodesicLength', function() {
-            var all = genAllTypeGeometries();
+            var all = utils.genAllTypeGeometries();
 
             expect(function () {
                 for (var i = 0; i < all.length; i++) {
@@ -333,7 +308,7 @@ describe('API', function () {
         });
 
         it('computeGeodesicArea', function() {
-            var all = genAllTypeGeometries();
+            var all = utils.genAllTypeGeometries();
 
             expect(function () {
                 for (var i = 0; i < all.length; i++) {
@@ -350,7 +325,7 @@ describe('API', function () {
         it('identify', function() {
             var spy = sinon.spy();
             var layer = new Z.VectorLayer('id');
-            var geometries = genAllTypeGeometries();
+            var geometries = utils.genAllTypeGeometries();
             layer.addGeometry(geometries);
             map.addLayer(layer);
 
@@ -717,7 +692,7 @@ describe('API', function () {
 
     describe('OverLayer.CanvasLayer', function() {
         it('show/hide/isVisible', function() {
-            var layer = new Z.CanvasLayer('canvas');
+            var layer = new Z.VectorLayer('canvas', {render: 'canvas'});
             map.addLayer(layer);
             var geometry = new Z.Polygon([
                 {x: 121.111, y: 30.111},
@@ -985,9 +960,6 @@ describe('API', function () {
         it('toJson', function() {
         });
 
-        it('toGeoJson', function() {
-        });
-
     });
 
     describe('Geometry.Circle', function() {
@@ -1060,9 +1032,6 @@ describe('API', function () {
         it('copy');
 
         it('toJson', function() {
-        });
-
-        it('toGeoJson', function() {
         });
 
         it('setRadius/getRadius', function() {
@@ -1153,9 +1122,6 @@ describe('API', function () {
         it('copy');
 
         it('toJson', function() {
-        });
-
-        it('toGeoJson', function() {
         });
 
         it('getWidth/getHeight]', function() {
@@ -1258,9 +1224,6 @@ describe('API', function () {
         it('toJson', function() {
         });
 
-        it('toGeoJson', function() {
-        });
-
         it('getRadius/getStartAngle/getEndAngle', function() {
             var sector = new Z.Sector({x: 0, y: 0}, 1, 30, 60);
             var r = sector.getRadius();
@@ -1354,9 +1317,6 @@ describe('API', function () {
         it('copy');
 
         it('toJson', function() {
-        });
-
-        it('toGeoJson', function() {
         });
 
         it('getNw/getWidth/getHeight', function() {
@@ -1478,9 +1438,6 @@ describe('API', function () {
         it('toJson', function() {
         });
 
-        it('toGeoJson', function() {
-        });
-
         it('getPath', function() {
             var path = [
               {x: 0, y: 0},
@@ -1600,9 +1557,6 @@ describe('API', function () {
         it('toJson', function() {
         });
 
-        it('toGeoJson', function() {
-        });
-
         it('getRings/getHoles', function() {
             var rings = [
                 {x: 20, y: 0},
@@ -1678,21 +1632,21 @@ describe('API', function () {
         });
 
         it('getCenter', function() {
-            var geometries = genAllTypeGeometries();
+            var geometries = utils.genAllTypeGeometries();
             var collection = new Z.GeometryCollection(geometries);
 
             expect(collection.getCenter()).to.not.be(null);
         });
 
         it('getExtent', function() {
-            var geometries = genAllTypeGeometries();
+            var geometries = utils.genAllTypeGeometries();
             var collection = new Z.GeometryCollection(geometries);
 
             expect(collection.getExtent()).to.not.be(null);
         });
 
         it('getSize', function() {
-            var geometries = genAllTypeGeometries();
+            var geometries = utils.genAllTypeGeometries();
             var collection = new Z.GeometryCollection(geometries);
             layer.addGeometry(collection);
             var size = collection.getSize();
@@ -1702,7 +1656,7 @@ describe('API', function () {
         });
 
         it('show/hide/isVisible', function() {
-            var geometries = genAllTypeGeometries();
+            var geometries = utils.genAllTypeGeometries();
             var collection = new Z.GeometryCollection(geometries);
             layer.addGeometry(collection);
 
@@ -1714,7 +1668,7 @@ describe('API', function () {
         });
 
         it('remove', function() {
-            var geometries = genAllTypeGeometries();
+            var geometries = utils.genAllTypeGeometries();
             var collection = new Z.GeometryCollection(geometries);
             layer.addGeometry(collection);
             collection.remove();
@@ -1727,15 +1681,12 @@ describe('API', function () {
         it('toJson', function() {
         });
 
-        it('toGeoJson', function() {
-        });
-
         it('getGeometries/setGeometries', function() {
             var collection = new Z.GeometryCollection([]);
 
             expect(collection.getGeometries()).to.be.empty();
 
-            var geometries = genAllTypeGeometries();
+            var geometries = utils.genAllTypeGeometries();
             collection.setGeometries(geometries);
 
             expect(collection.getGeometries()).to.eql(geometries);
@@ -1746,7 +1697,7 @@ describe('API', function () {
 
             expect(collection.isEmpty()).to.be.ok();
 
-            var geometries = genAllTypeGeometries();
+            var geometries = utils.genAllTypeGeometries();
             collection.setGeometries(geometries);
 
             expect(collection.isEmpty()).to.not.be.ok();
@@ -1785,9 +1736,6 @@ describe('API', function () {
         it('copy');
 
         it('toJson', function() {
-        });
-
-        it('toGeoJson', function() {
         });
 
     });
@@ -1908,9 +1856,6 @@ describe('API', function () {
         it('copy');
 
         it('toJson', function() {
-        });
-
-        it('toGeoJson', function() {
         });
 
         it('getCoordinates/setCoordinates', function() {
@@ -2054,9 +1999,6 @@ describe('API', function () {
         it('toJson', function() {
         });
 
-        it('toGeoJson', function() {
-        });
-
         it('getCoordinates/setCoordinates', function() {
             var mp = new Z.MultiPolygon([]);
 
@@ -2142,8 +2084,6 @@ describe('API', function () {
             expect(json).to.only.have.keys(['xmin', 'xmax', 'ymin', 'ymax']);
         });
 
-        it('toGeoJson');
-
     });
 
     describe('Geometry.Edit', function() {
@@ -2160,7 +2100,7 @@ describe('API', function () {
         });
 
         it('edit', function() {
-            var geometries = genAllTypeGeometries();
+            var geometries = utils.genAllTypeGeometries();
             layer.addGeometry(geometries);
 
             expect(function () {
@@ -2173,7 +2113,7 @@ describe('API', function () {
         });
 
         it('drag', function() {
-            var geometries = genAllTypeGeometries();
+            var geometries = utils.genAllTypeGeometries();
             layer.addGeometry(geometries);
 
             expect(function () {

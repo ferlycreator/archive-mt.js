@@ -10,7 +10,7 @@ Z['Circle']=Z.Circle=Z.Polygon.extend({
     initialize:function(coordinates,radius,opts) {
         this._coordinates = new Z.Coordinate(coordinates);
         this.radius = radius;
-        this.initOptions(opts);
+        this._initOptions(opts);
         /*this.numberOfPoints = this.options['defaultNumberOfPoints'];
         if (opts && opts['numberOfPoints']) {
             this.numberOfPoints = opts['numberOfPoints'];

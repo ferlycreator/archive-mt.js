@@ -7,22 +7,10 @@ describe('GeometrySpec', function() {
     var layer;
 
     beforeEach(function() {
-        container = document.createElement('div');
-        container.style.width = '800px';
-        container.style.height = '600px';
-        document.body.appendChild(container);
-        var option = {
-            zoomLevel: 17, // 1 pixel ~= 1 meter
-            center: center
-        };
-        map = new Z.Map(container, option);
-        tile = new Z.TileLayer('tile', {
-            tileInfo: 'web-mercator',
-            urlTemplate: 'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',
-            subdomains: [0, 1, 2, 3]
-        });
-        map.setBaseTileLayer(tile);
-        layer = new Z.CanvasLayer('canvas');
+        var setups = CommonSpec.mapSetup(center);
+        container = setups.container;
+        map = setups.map;
+        layer = new Z.VectorLayer('canvas', {render: 'canvas'});
         map.addLayer(layer);
     });
 
@@ -45,7 +33,7 @@ describe('GeometrySpec', function() {
 
         var spy = sinon.spy();
         geometry.on('click', spy);
-
+        //TODO 因为marker的width和height为0, 所以无法击中
         happen.click(map._containerDOM, {
             clientX: 400 + 8,
             clientY: 300 + 8

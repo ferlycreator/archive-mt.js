@@ -40,7 +40,7 @@ describe('SVGLayer', function() {
         });
 
         it('all type of geometry', function() {
-            var geometries = genAllTypeGeometries();
+            var geometries = utils.genAllTypeGeometries();
 
             expect(function() {
                 layer.addGeometry(geometries);
