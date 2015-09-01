@@ -1,6 +1,6 @@
 (function(){
     //解析host地址，插入css和vml定义
-    var head= document.getElementsByTagName('head')[0];   
+    var head= document.getElementsByTagName('head')[0];
 
     var headChildren = head.childNodes;
     var viewPortMeta = null;
@@ -10,7 +10,7 @@
         if ("viewport" === metaName) {
             viewPortMeta = headChildren[i];
         }
-    }       
+    }
     }
 
     //根据script查找
@@ -33,7 +33,7 @@
             viewPortMeta=Z.DomUtil.createEl('meta');
             viewPortMeta.setAttribute("viewport");
             viewPortMeta.setAttribute("content","user-scalable=no");
-            head.appendChild(viewPortMeta); 
+            head.appendChild(viewPortMeta);
         } else {
             var viewPortContent = viewPortMeta.getAttribute("content");
             if (viewPortContent.indexOf("user-scalable=no") < 0) {
@@ -41,12 +41,12 @@
             }
         }
     }
-    var controlStyle=Z.DomUtil.createEl('link'); 
-    controlStyle.href=Z.host+"/engine/css/controls.min.css"; 
-    controlStyle.rel='stylesheet'; 
-    controlStyle.type='text/css'; 
+    var controlStyle=Z.DomUtil.createEl('link');
+    controlStyle.href=Z.host+"/maptalks/v2/css/controls.min.css";
+    controlStyle.rel='stylesheet';
+    controlStyle.type='text/css';
     head.appendChild(controlStyle);
-    //ie插入vml定义 
+    //ie插入vml定义
     if (Z.Browser.ielt9) {
         //chrome frame meta标签
         var cfMeta = Z.DomUtil.createEl('meta');
@@ -58,7 +58,7 @@
     if (!window['JSON']) {
         var script = document.createElement("script");
         script['type'] = "text/javascript";
-        script['src'] = Z.host+"/engine/js/build/v2/json3.min.js";
+        script['src'] = Z.host+"/maptalks/v2/lib/json3.min.js";
         head.appendChild(script);
     }
 })();
