@@ -8,7 +8,7 @@ Z.ResourceLoader=Z.Class.extend({
 		initialize:function(urls) {
 			this.imgUrls = urls;
 			this.resourcesCache={};
-			this.defaultIconUrl = null;//"/engine/images/marker.png";
+			this.defaultIconUrl = null;//"/maptalks/v2/images/marker.png";
 		},
 
 		load:function(successFn, invoker) {

@@ -326,7 +326,8 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
 
         var _this = geometry;
         markerIcon.onerror = function() {
-            this.src = _this.defaultIcon['url'];
+            //TODO 默认样式
+            //this.src = _this.defaultIcon['url'];
 
         };
         markerIcon.onabort = function() {

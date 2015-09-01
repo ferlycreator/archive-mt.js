@@ -45,7 +45,7 @@ Z['ArcgisTileLayer'] = Z.ArcgisTileLayer = Z.TileLayer.extend({
         if (Z.Util.isString(service) && service.indexOf('http') >= 0) {
             //网址
             var remoteUrl = service+'?f=pjson';
-            var url = Z.host+"/engine/proxy?url="+remoteUrl;
+            var url = Z.host+"/maptalks/proxy?url="+remoteUrl;
             var me = this;
             var ajax = new Z.Util.Ajax(url,0,null,function(responseText){
                 var serviceInfo = Z.Util.parseJson(responseText);

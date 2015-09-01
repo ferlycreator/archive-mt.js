@@ -18,14 +18,13 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
                             "<div style=\"font-size:14px; height:30px; line-height:30px; background:#f9f9f9; border-bottom:1px solid #ccc; font-weight:bold; padding-left:15px;\">" +
                                 "<span style=\"display:block; float:left;\"></span>" +
                                 '<div style="position:relative;float:right;height:30px;width:20px;padding-top:10px;line-height: 0px;">'+
-                                    "<a href=\"javascript:void(0)\" class=\"MAP_CONTROL_close\" onclick=\"this.parentNode.parentNode.parentNode.parentNode.m.hide()\"><img width=\"10px\" height=\"10px\" src=\""+Z.host+"/engine/images/tip_close.gif\" style=\"border:none;\"/></a>" +
+                                    "<a href=\"javascript:void(0)\" class=\"MAP_CONTROL_close\" onclick=\"this.parentNode.parentNode.parentNode.parentNode.m.hide()\"><img width=\"10px\" height=\"10px\" src=\""+Z.host+"/maptalks/v2/images/tip_close.gif\" style=\"border:none;\"/></a>" +
                                 '</div>'+
                             "</div>"+
                             "<div style=\"padding:10px; line-height:20px; color:#444\">"+
                             "</div>"+
                         "</div>"+
                         "<div class=\"MAP_CONTROL_api MAP_CONTROL_jiantou\"></div>"+
-                        //"<div style=\"position:absolute;top:0px;left:0px;z-index:10;\"><img src=\""+seegoo.maps.config.host+"/engine/images/shadow.png\" style=\"border:none;\"/></div>"+
                      "</div>"
         },
 

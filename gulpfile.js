@@ -8,6 +8,7 @@ var gcc = require('gulp-closure-compiler');
 var karma = require('karma').server;
 var uglify = require('gulp-uglify');
 var rename = require('gulp-rename');
+var connect = require('gulp-connect');
 
 var minimist = require('minimist');
 
@@ -32,14 +33,17 @@ browsers = browsers.map(function(name) {
   }
 });
 
-//the path to distribute css and javascript, normally in maptalks's engine_front module
-var maptalks_css_dist_path,maptalks_js_dist_path;
+// paths to distribute
+var js_dist_path = './dist/maptalks/v2/';
+var css_dist_path = './dist/maptalks/v2/css/';
+var img_dist_path = './dist/maptalks/v2/images/';
+var lib_dist_path = './dist/maptalks/v2/lib/';
+
+//paths to distribute to maptalks
+var maptalks_dist_path;
 var root_dist_path = options.maptalks;
-console.log(options);
-console.log(root_dist_path);
 if (root_dist_path) {
-    maptalks_css_dist_path = root_dist_path+'/webroot/css/';
-    maptalks_js_dist_path = root_dist_path+'/webroot/js/build/v2/';
+    maptalks_dist_path = root_dist_path+'/webroot/maptalks/v2/';
 }
 
 gulp.task('jshint', function () {
@@ -65,30 +69,40 @@ gulp.task('styles', function () {
   return gulp.src('assets/css/**/*.css')
     // .pipe($.sourcemaps.init())
     .pipe($.autoprefixer(AUTOPREFIXER_BROWSERS))
-    .pipe(gulp.dest('dist'))
+    .pipe(gulp.dest(css_dist_path))
     // Concatenate and minify styles
     .pipe($.csso());
     // .pipe($.sourcemaps.write())
 });
-
+//copy images
+gulp.task('images', function () {
+  return gulp.src('assets/images/**/*')
+            .pipe(gulp.dest(img_dist_path));
+});
+//copy libs
+gulp.task('lib', function () {
+  return gulp.src('assets/lib/**/*')
+            .pipe(gulp.dest(lib_dist_path));
+});
+//copy css styles
 gulp.task('scripts', function () {
   var sources = require('./build/getFiles.js').getFiles();
   sources.unshift('build/header.js');
   sources.push('build/footer.js');
   return gulp.src(sources)
     .pipe($.concat('maptalks.js'))
-    .pipe(gulp.dest('./dist/'));
+    .pipe(gulp.dest(js_dist_path));
 });
-
+//compile and copy
 gulp.task('compile',function () {
   var sources = require('./build/getFiles.js').getFiles();
   sources.unshift('build/header.js');
   sources.push('build/footer.js');
   return gulp.src(sources)
     .pipe($.concat('maptalks.js'))
-    .pipe(gulp.dest('./dist/'))
+    .pipe(gulp.dest(js_dist_path))
     .pipe(rename({suffix: '.min'}))
-    .pipe(gulp.dest('./dist/'))
+    .pipe(gulp.dest(js_dist_path))
     .pipe($.uglify({preserveComments: 'some'}))
     /*.pipe(gcc({
       compilerPath: 'build/compiler.jar',
@@ -104,44 +118,48 @@ gulp.task('compile',function () {
       fileName: 'maptalks.min.js'
     }))*/
     // Output files
-    .pipe(gulp.dest('dist'))
+    .pipe(gulp.dest(js_dist_path))
     .pipe($.gzip())
-    .pipe(gulp.dest('dist'));
+    .pipe(gulp.dest(js_dist_path));
 });
 
 gulp.task('clean', del.bind(null, [], {dot: true}));
 
 gulp.task('build', ['clean'], function (done) {
   runSequence(
-    'styles',
+    ['styles','images'],
     ['compile'],
+    // 'test',
     done);
 });
 
 //
 gulp.task('dist',['build'],function() {
-  var css_path = maptalks_css_dist_path;
-  var js_path = maptalks_js_dist_path;
-  if (!css_path) {
-    css_path = './dist/';
+  if (!maptalks_dist_path) {
+    return;
   }
-  if (!js_path) {
-    js_path = './dist/';
-  }
-  gulp.src('./dist/*.css')
-    .pipe(gulp.dest(css_path));
-  gulp.src('./dist/*.css.gz')
-    .pipe(gulp.dest(css_path));
-  gulp.src('./dist/*.js')
-    .pipe(gulp.dest(js_path));
-    gulp.src('./dist/*.js.gz')
-    .pipe(gulp.dest(js_path));
+  gulp.src(js_dist_path+'**/*')
+    .pipe(gulp.dest(maptalks_dist_path));
 });
 
-gulp.task('watch-dist', function () {
-   gulp.watch(['src/**/*.js','build/srcList.txt'], ['dist']);
+gulp.task('connect', function() {
+  connect.server({
+    root: ['dist', '.'],
+    port:20000,
+    liveload:true
+  });
 });
 
+gulp.task('reload', ['build'], function () {
+  gulp.src(['./dist/**/*','./examples/**/*.html'])
+    .pipe(connect.reload());
+});
+
+gulp.task('watch', function () {
+  gulp.watch(['src/**/*.js','assets/css/*.css','build/srcList.txt'], ['reload']);
+});
+
+gulp.task('watch-dev',['connect','watch']);
 /**
  * Run test for minified scripts once and exit
  */
@@ -207,5 +225,6 @@ gulp.task('tdd', ['styles'], function (done) {
   }
   karma.start(karmaConfig, done);
 });
+
 
 gulp.task('default', ['watch-dist']);

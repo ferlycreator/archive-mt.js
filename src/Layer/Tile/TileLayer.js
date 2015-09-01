@@ -9,8 +9,8 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
 
     options: {
         'opacity':1,
-        'errorTileUrl':Z.host+'/engine/images/error.png',
-        'urlTemplate':Z.host+'/engine/images/blank.png',
+        'errorTileUrl':Z.host+'/maptalks/v2/images/error.png',
+        'urlTemplate':Z.host+'/maptalks/v2/images/blank.png',
         'subdomains':[''],
         //是否检查
         'showOnTileLoadComplete':true,
@@ -366,7 +366,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
 
         var width = tileSize['width']+padding['width'],
             height = tileSize['height']+padding['height'],
-            defaultTileUrl = Z.host + '/engine/images/transparent.gif';
+            defaultTileUrl = Z.host + '/maptalks/v2/images/transparent.gif';
         //border:1px green solid;
         //TODO 当前padding设定为整个瓦片增加的宽度和高度, 改为纵向每边增加的高度, 横向每边增加的宽度,即为当前的1/2
         tileImage.style.cssText = 'width:'+width+'px;height:'+height+'px;unselectable:on;position:absolute;left: '+

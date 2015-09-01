@@ -1,5 +1,9 @@
 var Z = window['Z'] = Z || {};
 
+Z.VERSION='2.0.0-dev';
+
+Z.ROOTPATH='v2';
+
 Z.DEBUG=true;
 
 Z.loadModule=function(module,callback,context) {
@@ -7,8 +11,8 @@ Z.loadModule=function(module,callback,context) {
     if (Z.DEBUG) {
         suffix = '.js';
     }
-    var url = Z.host+'/engine/js/build/v2/modules/'+module+suffix;
+    var url = Z.host+'/maptalks/v2/lib/'+module+suffix;
     Z.Util.Ajax.getScript(url,function() {
             callback.call(context);
         });
-}; 
+};
