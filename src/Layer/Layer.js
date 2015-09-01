@@ -16,13 +16,22 @@ Z['Layer']=Z.Layer=Z.Class.extend({
     },
 
 
+    options:{
+        //最大最小可视范围, -1表示不受限制
+        'minZoomLevel':-1,
+        'maxZoomLevel':-1,
+        //图层是否可见
+        'visible':true
+    },
+
+
     _prepare:function(map,zIndex) {
         if (!map) {return;}
         this.map = map;
         this._setZIndex(zIndex);
-        if (Z.Util.isNil(this._visible)) {
+/*        if (Z.Util.isNil(this._visible)) {
             this._visible = true;
-        }
+        }*/
     },
 
 

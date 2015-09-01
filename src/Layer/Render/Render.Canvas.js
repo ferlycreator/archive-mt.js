@@ -1,6 +1,6 @@
-Z.Render.Canvas = function(layer) {
+Z.Render.Canvas = function(layer,options) {
     this.layer = layer;
-    this._visible=true;
+    this._visible=options['visible'];
 };
 
 Z.Render.Canvas.prototype = {

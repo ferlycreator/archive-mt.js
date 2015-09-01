@@ -29,7 +29,10 @@ Z.Geometry.Center={
     setCoordinates:function(coordinates) {
         var center = new Z.Coordinate(coordinates);
         this._coordinates = center;
-        if (!this._coordinates || !this.getMap()) {return;}
+        if (!this._coordinates || !this.getMap()) {
+            this._onPositionChanged();
+            return;
+        }
         var projection = this._getProjection();
         this._setPCenter(projection.project(this._coordinates));
         return this;

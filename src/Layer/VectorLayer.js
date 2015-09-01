@@ -13,9 +13,13 @@ Z.VectorLayer=Z.OverlayLayer.extend({
         Z.Util.setOptions(this, options);
         //动态加载Render
         if (this.isCanvasRender()) {
-            this._render = new Z.Render.Canvas(this);
+            this._render = new Z.Render.Canvas(this,{
+                'visible':this.options['visible']
+            });
         } else {
-            this._render = new Z.Render.Dom(this);
+            this._render = new Z.Render.Dom(this,{
+                'visible':this.options['visible']
+            });
         }
     },
 
