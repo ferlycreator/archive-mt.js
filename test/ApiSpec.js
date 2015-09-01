@@ -26,7 +26,7 @@ describe('API', function () {
     });
 
     afterEach(function () {
-        // document.body.removeChild(container);
+        document.body.removeChild(container);
     });
 
     describe('Map', function () {
