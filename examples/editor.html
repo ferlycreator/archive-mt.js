@@ -1,0 +1,107 @@
+<!DOCTYPE>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MapTalks 示例: 源代码编辑器</title>
+    <!-- 公用的地图初始化代码，其中注册的地图载入完成回调函数名为onMapReady -->
+    <link href="/engine/examples/js/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/engine/examples/js/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet"/>
+    <link href="/engine/examples/js/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet"/>
+    <link href="/engine/examples/js/codemirror/codemirror.css" rel="stylesheet"/>
+</head>
+<body scroll="no" onload="initHtmlContent();">
+    <div class="row">
+        <div class="row">
+            <span class="span3" id="editor_title" style="text-align: center; color:red;"> 源代码编辑器</span>
+            <div class="span3" style="text-align:right;">
+                <span class="btn btn-success" id="reload">重置</span>
+                <span class="btn btn-success" id="run">运行</span>
+            </div>
+            <div class="span6"></div>
+        </div>
+        <div class="span6">
+            <textarea id="codeArea" style="display: none;">
+
+            </textarea>
+        </div>
+        <div class="span6">
+            <iframe name="mapContainer" id="mapContainer" style="border: solid 3px #DCDCDC; width: 100%;height:90%;"></iframe>
+        </div>
+    </div>
+    <script type="text/javascript" >
+        var codeEditor;
+
+        function initHtmlContent() {
+            var paramKit = new ParamKit();
+            var title = paramKit.getParameterStr('title');
+            if(title) {
+                title = decodeURIComponent(title);
+            }
+            var pageTitle = $(document).attr('title');
+            $(document).attr('title', pageTitle + '-' + title);
+            $('#editor_title').text(title + $('#editor_title').text());
+            var htmlPath = paramKit.getParameterStr('html');
+
+            $.ajax({
+                type: 'get',
+                url: htmlPath,
+                success: function(htmlContent) {
+                    $("#codeArea").val(htmlContent);
+                    initCodeEditior();
+                }
+            });
+
+            $('#reload').click(function(e){
+                this.initCodeEditior();
+            });
+
+            $('#run').click(function(e){
+                run();
+            });
+        }
+
+        //初始化代码编辑器
+        function initCodeEditior() {
+            if(!codeEditor){
+                var codeArea = document.getElementById('codeArea');
+                codeEditor = CodeMirror.fromTextArea(codeArea, {
+                    lineWrapping: true, //是否显示scroll
+                    lineNumbers: true, //是否显示number
+                    styleActiveLine: true,
+                    matchBrackets: true,
+                    mode:'htmlmixed',
+                    viewportMargin: Infinity,
+                    autoMatchParens: true
+                });
+            }else{
+                codeEditor.setValue($('#codeArea').val());
+            }
+            run();
+        }
+
+        //执行修改后的代码
+        function run(){
+            var codeContent = $('#codeArea').val();
+            if(codeEditor){
+                codeContent = codeEditor.getValue();
+            }
+            var mapIFrame = document.getElementById('mapContainer').contentWindow;
+            mapIFrame.document.open();
+            mapIFrame.document.write(codeContent);
+            mapIFrame.document.close();
+        }
+
+    </script>
+    <!-- 引擎javascript开发包-->
+    <script type="text/javascript" src="/engine/examples/js/maptalks/maptalks.js"></script>
+    <script type="text/javascript" src="/engine/examples/js/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/engine/examples/js/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/engine/examples/js/codemirror/codemirror.js"></script>
+    <script type="text/javascript" src="/engine/examples/js/util/ParamKit.js"></script>
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.min.js"></script>
+    <![endif]-->
+</body>
+</html>

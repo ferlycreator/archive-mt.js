@@ -1,9 +1,8 @@
 #!/bin/sh
-
-#BUILDPATH=../../../engine-projects/engine-front/webroot/js/build/v2
-BUILDPATH=../examples/js/maptalks
-rm -f $BUILDPATH/maptalks.js.gz
-rm -f $BUILDPATH/maptalks.js
+BUILDPATH=../../../engine-projects/engine-front/webroot
+#BUILDPATH=../examples/js/maptalks
+rm -f $BUILDPATH/js/build/v2/maptalks.js.gz
+rm -f $BUILDPATH/js/build/v2/maptalks.js
 
 #for /f %%i in (allInOne/packList.txt) do type %%i >> pack-all.js
 INPUT=srcList.txt
@@ -20,7 +19,7 @@ done < $INPUT
 #cat seegoo.map.extern.js >> $OUTPUT
 
 #/home/duscin/work/java/jdk/jdk1.7.0_25/bin/java -jar compiler.jar --formatting PRETTY_PRINT --compilation_level WHITESPACE_ONLY --js pack-all.js --js_output_file compiled.js --externs ../webroot/js/raphael.js seegoo.map.extern.js
- 
+
 #for /f %%i in (closurePack.txt) do type %%i >> ../webroot/js/build/maptalks.js
 # INPUT=./packList.txt
 # OUTPUT=maptalks.js
@@ -34,15 +33,19 @@ done < $INPUT
 #     echo \\n >> $OUTPUT
 #   fi
 # done < $INPUT
-OUTPUT=$BUILDPATH/maptalks.js
+OUTPUT=$BUILDPATH/js/build/v2/maptalks.js
 rm -f $OUTPUT
 cat header.js >> $OUTPUT
 cat compiled.js >> $OUTPUT
 cat footer.js >> $OUTPUT
+rm -rf $BUILDPATH/examples
+mkdir $BUILDPATH/examples
+cp -R ../examples/* $BUILDPATH/examples/
+
 
 rm compiled.js
 
-echo --formatting PRETTY_PRINT 
+echo --formatting PRETTY_PRINT
 cd $BUILDPATH
 #rm -f maptalks.js.gz
 #gzip maptalks.js

@@ -3,18 +3,15 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Examples: 点</title>
-    <!-- 引擎javascript开发包-->
-    <script type="text/javascript" src="../../js/maptalks/maptalks.js"></script>
+    <title>MapTalks 示例: 添加点</title>
     <!-- 公用的地图初始化代码，其中注册的地图载入完成回调函数名为onMapReady -->
-    <link href="../../../assets/css/label.css" rel="stylesheet" type="text/css"/>
-    <link href="../../../assets/css/controls.css" rel="stylesheet" type="text/css"/>
+    <link href="/engine/css/label.css" rel="stylesheet" type="text/css"/>
+    <link href="/engine/css/controls.css" rel="stylesheet" type="text/css"/>
 </head>
 <body scroll="no" onload="onMapReady();">
 <div style="width:100%;height:100%;float:right;margin-top:0px" id="mapObj"></div>
 <script type="text/javascript" >
     var mapObj;
-
     function onMapReady(){
         //创建地图对象
         mapObj = new Z.Map("mapObj",{
@@ -25,20 +22,16 @@
             'navControl': false,
             'scaleControl': false
         });
-
         //添加mapabc瓦片图层
         mapObj.setBaseTileLayer(new Z.TileLayer("tile",{
             crs:"crs3857",
             urlTemplate:"http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}",
             subdomains:[1,2,3]
         }));
-
         //创建图层
         var layer = new Z.VectorLayer('layer');
-
         //将图层添加到地图对象
         mapObj.addLayer(layer);
-
         //创建点的坐标对象
         var markerCoordinate = new Z.Coordinate(121.489935,31.24432);
         //创建点对象
@@ -47,5 +40,11 @@
         layer.addGeometry(marker);
     }
 </script>
+<!-- 引擎javascript开发包-->
+<script type="text/javascript" src="/engine/js/build/v2/maptalks.js"></script>
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+  <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.min.js"></script>
+<![endif]-->
 </body>
 </html>

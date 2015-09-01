@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE>
 <html>
   <head>
     <meta charset="utf-8">
@@ -6,17 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>MapTalks 示例</title>
     <!-- Bootstrap -->
-    <link href="js/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
-    <link href="js/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet"/>
-    <link href="js/bootstrap/css/docs.css" rel="stylesheet">
-    <link href="js/prettify/prettify.css" rel="stylesheet"/>
+    <link href="/engine/examples/js/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/engine/examples/js/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet"/>
+    <link href="/engine/examples/js/bootstrap/css/docs.css" rel="stylesheet">
+    <link href="/engine/examples/js/prettify/prettify.css" rel="stylesheet"/>
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.min.js"></script>
     <![endif]-->
   </head>
   <body>
-
     <div class="container">
         <div class="row">
             <div class="span12" style="text-align:center;">
@@ -69,8 +68,8 @@
                     <div class="page-header">
                         <h1>点</h1>
                     </div>
-                    <h2>标注点</h2>
-                    <p>通过<code>new Z.Marker(...)</code>创建一个点。</p>
+                    <h2>添加点</h2>
+                    <p>通过<code>new Z.Marker(...)</code>创建一个点，并添加到地图上。</p>
                     <div class="bs-docs-example">
 <pre class="linenums prettyprint">
 //创建点的坐标对象
@@ -80,9 +79,12 @@ var marker = new Z.Marker(markerCoordinate);
 //将点添加到Layer
 layer.addGeometry(marker);
 </pre>
-                    <iframe src="geometry/marker/marker.html">
+                    <iframe src="/engine/examples/geometry/marker/marker.html" width="100%">
 
                     </iframe>
+                    <p>
+                        <a class="btn btn-success" href="editor.html?html=/engine/examples/geometry/marker/marker.html&title=Add Marker" target="_blank">源码编辑器</a>
+                    </p>
                     </div>
                 </section>
 
@@ -100,9 +102,9 @@ layer.addGeometry(marker);
             </div>
         </div>
     </div>
-    <script src="js/jquery/jquery.min.js"></script>
-    <script src="js/bootstrap/js/bootstrap.min.js"></script>
-    <script src="js/prettify/run_prettify.js"></script>
-    <script src="js/index.js"></script>
+    <script src="/engine/examples/js/jquery/jquery.js"></script>
+    <script src="/engine/examples/js/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/engine/examples/js/prettify/run_prettify.js"></script>
+    <script src="/engine/examples/js/index.js"></script>
   </body>
 </html

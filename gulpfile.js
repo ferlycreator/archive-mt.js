@@ -17,7 +17,7 @@ var knownOptions = {
   alias: {
     'coverage': 'cov'
   },
-  default: { browsers: 'PhantomJS', coverage: false, maptalks: null }
+  default: { browsers: 'PhantomJS', coverage: false, maptalks: '../../../engine-projects/engine-front' }
 };
 
 var options = minimist(process.argv.slice(2), knownOptions);
@@ -35,6 +35,8 @@ browsers = browsers.map(function(name) {
 //the path to distribute css and javascript, normally in maptalks's engine_front module
 var maptalks_css_dist_path,maptalks_js_dist_path;
 var root_dist_path = options.maptalks;
+console.log(options);
+console.log(root_dist_path);
 if (root_dist_path) {
     maptalks_css_dist_path = root_dist_path+'/webroot/css/';
     maptalks_js_dist_path = root_dist_path+'/webroot/js/build/v2/';
