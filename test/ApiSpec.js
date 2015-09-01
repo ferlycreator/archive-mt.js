@@ -1,3 +1,5 @@
+var utils = require('./SpecUtils.js');
+
 describe('API', function () {
 
     var container;
@@ -24,7 +26,7 @@ describe('API', function () {
     });
 
     afterEach(function () {
-        document.body.removeChild(container);
+        // document.body.removeChild(container);
     });
 
     describe('Map', function () {
@@ -198,27 +200,6 @@ describe('API', function () {
             }).to.not.throwException();
         });
 
-        it('animatePan', function() {
-            var offset = {left: 20, top: 20};
-
-            expect(function () {
-                map.animatePan(offset);
-            }).to.not.throwException();
-        });
-
-    });
-
-    describe('Map.Zoom', function() {
-
-        it('zoom', function() {
-            var zoom = map.getZoomLevel();
-            zoom = Math.ceil(zoom / 2);
-
-            expect(function () {
-                map.zoom(zoom);
-            }).to.not.throwException();
-        });
-
     });
 
     describe('Map.ContextMenu', function() {
@@ -316,7 +297,7 @@ describe('API', function () {
         });
 
         it('computeGeodesicLength', function() {
-            var all = genAllTypeGeometries();
+            var all = utils.genAllTypeGeometries();
 
             expect(function () {
                 for (var i = 0; i < all.length; i++) {
@@ -327,7 +308,7 @@ describe('API', function () {
         });
 
         it('computeGeodesicArea', function() {
-            var all = genAllTypeGeometries();
+            var all = utils.genAllTypeGeometries();
 
             expect(function () {
                 for (var i = 0; i < all.length; i++) {
@@ -344,7 +325,7 @@ describe('API', function () {
         it('identify', function() {
             var spy = sinon.spy();
             var layer = new Z.VectorLayer('id');
-            var geometries = genAllTypeGeometries();
+            var geometries = utils.genAllTypeGeometries();
             layer.addGeometry(geometries);
             map.addLayer(layer);
 
@@ -1651,21 +1632,21 @@ describe('API', function () {
         });
 
         it('getCenter', function() {
-            var geometries = genAllTypeGeometries();
+            var geometries = utils.genAllTypeGeometries();
             var collection = new Z.GeometryCollection(geometries);
 
             expect(collection.getCenter()).to.not.be(null);
         });
 
         it('getExtent', function() {
-            var geometries = genAllTypeGeometries();
+            var geometries = utils.genAllTypeGeometries();
             var collection = new Z.GeometryCollection(geometries);
 
             expect(collection.getExtent()).to.not.be(null);
         });
 
         it('getSize', function() {
-            var geometries = genAllTypeGeometries();
+            var geometries = utils.genAllTypeGeometries();
             var collection = new Z.GeometryCollection(geometries);
             layer.addGeometry(collection);
             var size = collection.getSize();
@@ -1675,7 +1656,7 @@ describe('API', function () {
         });
 
         it('show/hide/isVisible', function() {
-            var geometries = genAllTypeGeometries();
+            var geometries = utils.genAllTypeGeometries();
             var collection = new Z.GeometryCollection(geometries);
             layer.addGeometry(collection);
 
@@ -1687,7 +1668,7 @@ describe('API', function () {
         });
 
         it('remove', function() {
-            var geometries = genAllTypeGeometries();
+            var geometries = utils.genAllTypeGeometries();
             var collection = new Z.GeometryCollection(geometries);
             layer.addGeometry(collection);
             collection.remove();
@@ -1705,7 +1686,7 @@ describe('API', function () {
 
             expect(collection.getGeometries()).to.be.empty();
 
-            var geometries = genAllTypeGeometries();
+            var geometries = utils.genAllTypeGeometries();
             collection.setGeometries(geometries);
 
             expect(collection.getGeometries()).to.eql(geometries);
@@ -1716,7 +1697,7 @@ describe('API', function () {
 
             expect(collection.isEmpty()).to.be.ok();
 
-            var geometries = genAllTypeGeometries();
+            var geometries = utils.genAllTypeGeometries();
             collection.setGeometries(geometries);
 
             expect(collection.isEmpty()).to.not.be.ok();
@@ -2119,7 +2100,7 @@ describe('API', function () {
         });
 
         it('edit', function() {
-            var geometries = genAllTypeGeometries();
+            var geometries = utils.genAllTypeGeometries();
             layer.addGeometry(geometries);
 
             expect(function () {
@@ -2132,7 +2113,7 @@ describe('API', function () {
         });
 
         it('drag', function() {
-            var geometries = genAllTypeGeometries();
+            var geometries = utils.genAllTypeGeometries();
             layer.addGeometry(geometries);
 
             expect(function () {

@@ -6,9 +6,6 @@ Z.Map.include({
      * @expose
      */
     panTo:function(coordinate) {
-        if (!Z.Util.isCoordinate(coordinate)) {
-            return;
-        }
         var projection = this._getProjection();
         var p = projection.project(coordinate);
         var span = this._getPixelDistance(p);
