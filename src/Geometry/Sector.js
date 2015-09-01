@@ -81,8 +81,20 @@ Z['Sector']=Z.Sector=Z.Polygon.extend({
      * @expose
      */
     getShell:function() {
-        //var proj = this._getProjection();
-        //TODO
+        var projection = this._getProjection();
+        var center = this.getCoordinates();
+        var numberOfPoints = this.options['numberOfPoints'];
+        var radius = this.getRadius();
+        var shell = [];
+        var angle = this.getEndAngle()-this.getStartAngle();
+        for (var i=0;i<numberOfPoints;i++) {
+            var rad = (angle*i/numberOfPoints+this.getStartAngle())*Math.PI/180;
+            var dx = radius*Math.cos(rad);
+            var dy = radius*Math.sin(rad);
+            var vertex = projection.locate(center, dx, dy);
+            shell.push(vertex);
+        }
+        return shell;
 
     },
 

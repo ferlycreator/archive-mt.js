@@ -1,3 +1,4 @@
+var CommonSpec = require('./CommonSpec');
 describe('EllipseSpec', function() {
 
     var container;
@@ -17,15 +18,13 @@ describe('EllipseSpec', function() {
         document.body.removeChild(container);
     });
 
-    describe('svg events', function() {
-        it('fires geometry events and listened', function() {
+    describe('geometry fires events', function() {
+        it('svg events', function() {
             var vector = new Z.Ellipse(center, 1,1);
             CommonSpec.testSVGEvents(vector, map);
         });
-    });
 
-    describe('canvas events', function() {
-        it('fires geometry events and listened', function() {
+        it('canvas events', function() {
             var vector = new Z.Ellipse(center, 1,1);
             CommonSpec.testCanvasEvents(vector, map, vector.getCenter());
         });

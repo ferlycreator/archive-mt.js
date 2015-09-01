@@ -18,6 +18,8 @@ Z['Polyline']=Z.Polyline = Z.Vector.extend({
         this.points = Z.GeoJson.fromGeoJsonCoordinates(coordinates);
         if (this.getMap()) {
             this._setPrjPoints(this._projectPoints(this.points));
+        } else {
+            this._onShapeChanged();
         }
         return this;
     },
