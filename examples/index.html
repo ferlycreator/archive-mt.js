@@ -266,7 +266,7 @@ var icon = {
 //创建点对象
 var marker = new Z.Marker(coordinate, 'marker_id');
 marker.setProperties({
-    'marker_name':'我是文字标签'
+    'marker_name':'上海大厦'
 });
 //设置点样式
 marker.setSymbol(icon);
@@ -278,6 +278,70 @@ layer.addGeometry(marker);
                     </iframe>
                     <p>
                         <a class="btn btn-success" href="editor.html?html=/engine/examples/geometry/marker/text_marker.html&title=Add Vector Marker" target="_blank">源码编辑器</a>
+                    </p>
+                    </div>
+
+
+                    <h2>设置点标签</h2>
+                    <p>1、通过<code>new Z.Marker(...)</code>创建一个点；</p>
+                    <p>2、构造标签参数，并设置到Marker；</p>
+                    <p>3、将点添加到图层上。</p>
+                    <div class="bs-docs-example">
+<pre class="linenums prettyprint">
+//创建点的坐标对象
+var coordinate = new Z.Coordinate(121.489935,31.24432);
+//设置矢量配置
+var icon = {
+    'shield-type': 'tip',//label tip
+    'shield-name': '测试标签: [marker_name]',
+    'shield-opacity': 1,
+    'shield-line-color': '#121212',
+    'shield-line-width': 1,
+    'shield-line-opacity': 1,
+    'shield-fill': '#536457',
+    'shield-fill-opacity': 1,
+    'shield-file': '',
+    'shield-face-name': 'Serif',
+    'shield-unlock-image' : false,
+    'shield-size': 12,
+    'shield-text-fill': '#ff0000',
+    'shield-placement': 'point', //point line vertex interior
+    'shield-wrap-width': 100,
+    'shield-wrap-before': false,
+    'shield-wrap-character': '',
+    'shield-character-spacing': 0,
+    'shield-line-spacing': 8,
+    'shield-text-dx': 0,
+    'shield-text-dy': 0,
+    'shield-dx': 0,
+    'shield-dy': 0,
+    'shield-text-opacity': 1,
+    'shield-horizontal-alignment': 'middle',//left middle right
+    'shield-vertical-alignment': 'top',//top middle bottom
+    'shield-justify-alignment': 'left'//left center right
+};
+/**
+* 说明：
+* 1、shield-type tip：气泡形；label：矩形标签；
+* 2、在shield-type 为tip的情形下，设置shield-horizontal-alignment 与 shield-vertical-alignment
+*    气泡的尖端会根据位置调整。
+*/
+//创建点对象
+var marker = new Z.Marker(coordinate, 'marker_id');
+marker.setProperties({
+    'marker_name':'上海大厦',
+    'marker_addr': '北苏州路20号'
+});
+//设置点样式
+marker.setSymbol(icon);
+//将点添加到Layer
+layer.addGeometry(marker);
+</pre>
+                    <iframe src="/engine/examples/geometry/marker/label_marker.html" width="100%">
+
+                    </iframe>
+                    <p>
+                        <a class="btn btn-success" href="editor.html?html=/engine/examples/geometry/marker/label_marker.html&title=Add Vector Marker" target="_blank">源码编辑器</a>
                     </p>
                     </div>
 
