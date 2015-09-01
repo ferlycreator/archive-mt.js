@@ -1,3 +1,5 @@
+var utils = require('../SpecUtils.js');
+
 describe('SVGLayer', function() {
 
     var container;
