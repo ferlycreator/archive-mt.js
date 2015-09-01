@@ -82,7 +82,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         this.layer = layer;
         //如果投影发生改变,则清除掉所有的投影坐标属性
         this._clearProjection();
-        this.painter = this._assignPainter();
+
     },
 
     /**
@@ -245,8 +245,8 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      */
     show:function() {
         this._visible = true;
-        if (this.painter) {
-            this.painter.show();
+        if (this._painter) {
+            this._painter.show();
         }
         return this;
     },
@@ -257,8 +257,8 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      */
     hide:function() {
         this._visible = false;
-        if (this.painter) {
-            this.painter.hide();
+        if (this._painter) {
+            this._painter.hide();
         }
         return this;
     },
@@ -303,11 +303,12 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         //infowindow
         this.closeInfoWindow();
 
-        var painter = this._getPainter();
+        /*var painter = this._getPainter();
         if (painter) {
             painter.remove();
         }
-        delete this.painter;
+        delete this._painter;*/
+        this._removePainter();
 
         layer._onGeometryRemove(this);
         delete this.layer;
@@ -349,15 +350,12 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (!symbol) {
             return null;
         }
-        var icon = symbol['icon'];
+        var icon = symbol['markerFile'];
         if (icon) {
-            if (icon['type'] === 'picture') {
-                return icon['url'];
-            }
+            return icon;
         }
-        var fillSymbol = symbol['fillSymbol'];
-        if (fillSymbol) {
-            var fill = fillSymbol['fill'];
+        var fill = symbol['polygonFill'];
+        if (fill) {
             if (fill && fill.length>7 && "url" ===fill.substring(0,3)) {
                 return fill.substring(5,fill.length-2);
             }
@@ -366,16 +364,22 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     },
 
     _getPainter:function() {
-        return this.painter;
+        if (!this._painter) {
+            this._painter = this._assignPainter();
+        }
+        return this._painter;
     },
 
     _removePainter:function() {
-        delete this.painter;
+        if (this._painter) {
+            this._painter.remove();
+        }
+        delete this._painter;
     },
 
     _onZoomEnd:function() {
-        if (this.painter) {
-            this.painter.refresh();
+        if (this._painter) {
+            this._painter.refresh();
         }
     },
 
@@ -469,6 +473,24 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
         feature['properties'] = properties;
         return feature;
+    },
+
+    /**
+     * 计算Geometry的地理长度,单位为米或像素(依据坐标类型)
+     * @return {Number} 地理长度
+     * @expose
+     */
+    getLength:function() {
+        return this._computeGeodesicLength(this._getProjection());
+    },
+
+    /**
+     * 计算Geometry的地理面积, 单位为平方米或平方像素(依据坐标类型)
+     * @return {Number} 地理面积
+     * @expose
+     */
+    getArea:function() {
+        return this._computeGeodesicArea(this._getProjection());
     }
 
 });
