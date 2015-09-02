@@ -125,7 +125,7 @@ var layer = new Z.VectorLayer('layer');
 mapObj.addLayer(layer);
 
 //创建点对象
-var marker = new Z.Marker(new Z.Coordinate(121.489935,31.24432),{'id':'marker_id'});
+var marker = new Z.Marker(new Z.Coordinate(121.489935,31.24432));
 //设置点图片
 var icon = {
     'marker-file': '/maptalks/v2/images/marker.png',
@@ -139,12 +139,123 @@ marker.setSymbol(icon);
 //将点添加到Layer
 layer.addGeometry(marker);
 
+//创建线对象
+var polyline = new Z.Polyline(
+    //线端点坐标数组
+    [new Z.Coordinate(121.454716,31.272095),
+    new Z.Coordinate(121.459007,31.25933),
+    new Z.Coordinate(121.458149,31.241572),
+    new Z.Coordinate(121.460381,31.229977),
+    new Z.Coordinate(121.473427,31.222784)]);
+//设置线样式
+var polylineSymbol = {
+    'line-color' : '#ff00ff',
+    'line-width' : 5,
+    'line-dasharray' : '-',//线形
+    'line-opacity' : 1
+};
+polyline.setSymbol(polylineSymbol);
+//将线添加到Layer
+layer.addGeometry(polyline);
+
+//创建面对象
+var polygon = new Z.Polygon(
+    //面端点坐标数组
+    [[new Z.Coordinate(121.508617,31.241279),
+    new Z.Coordinate(121.519432,31.241572),
+    new Z.Coordinate(121.524067,31.241719),
+    new Z.Coordinate(121.528015,31.242893),
+    new Z.Coordinate(121.539173,31.245388),
+    new Z.Coordinate(121.544323,31.236142),
+    new Z.Coordinate(121.548443,31.227335),
+    new Z.Coordinate(121.538486,31.223518),
+    new Z.Coordinate(121.517887,31.223665)]
+    ]);
+//设置面样式
+var polygonSymbol = {
+    'line-color' : '#0000ff',
+    'line-width' : 2,
+    'line-dasharray' : '-',//线形
+    'line-opacity' : 1,
+    'polygon-fill' : '#ff00ff',
+    'polygon-opacity' : 0.8
+};
+polygon.setSymbol(polygonSymbol);
+//将面添加到Layer
+layer.addGeometry(polygon);
 </pre>
                     <iframe src="guide/geometry.html" width="100%">
 
                     </iframe>
                     <p>
                         <a class="btn btn-success" href="editor.html?html=guide/geometry.html&title=Add Geometries" target="_blank">源码编辑器</a>
+                    </p>
+                    </div>
+
+                     <h2>添加标签与事件</h2>
+                    <p>1、使用<code>new Z.Label(...)</code>创建标签；</p>
+                    <p>1、使用<code>geometry.on('event_name', fn)</code>监听geometry上事件</p>
+                    <div class="bs-docs-example">
+<pre class="linenums prettyprint">
+//为marker添加tip标签
+var label = new Z.Label({
+    'symbol': {
+        'shield-type': 'tip',//label tip
+        'shield-name': '名    称: [marker_name]',
+        'shield-opacity': 1,
+        'shield-line-color': '#121212',
+        'shield-line-width': 1,
+        'shield-line-opacity': 1,
+        'shield-fill': '#536457',
+        'shield-fill-opacity': 1,
+        'shield-file': '',
+        'shield-face-name': 'Serif',
+        'shield-unlock-image' : false,
+        'shield-size': 12,
+        'shield-text-fill': '#ff0000',
+        'shield-placement': 'point', //point line vertex interior
+        'shield-wrap-width': 100,
+        'shield-wrap-before': false,
+        'shield-wrap-character': '',
+        'shield-character-spacing': 0,
+        'shield-line-spacing': 8,
+        'shield-text-dx': 0,
+        'shield-text-dy': 0,
+        'shield-dx': 0,
+        'shield-dy': 0,
+        'shield-text-opacity': 1,
+        'shield-horizontal-alignment': 'middle',//left middle right
+        'shield-vertical-alignment': 'top',//top middle bottom
+        'shield-justify-alignment': 'left'//left center right
+    },
+    'link': false, //与geometry连线
+    'draggable': true, //能否拖动
+    'trigger': 'click'//click|hover //标签显示触发事件
+});
+//设置marker属性
+marker.setProperties({
+    'marker_name':'上海大厦',
+    'marker_addr': '北苏州路20号'
+});
+//为marker添加label
+marker.addLabel(label);
+
+//监听polyline上的click事件
+polyline.on('click', function(){
+    alert('click on polyline');
+});
+
+//监听polygon上的rightclick事件
+polygon.on('rightclick', function(){
+    alert('rightclick on polygon');
+});
+
+</pre>
+                    <iframe src="guide/tip_event.html" width="100%">
+
+                    </iframe>
+                    <p>
+                        <a class="btn btn-success" href="editor.html?html=guide/tip_event.html&title=Add Tip and Event" target="_blank">源码编辑器</a>
                     </p>
                     </div>
 

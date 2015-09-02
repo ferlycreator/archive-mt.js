@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MapTalks 示例: 添加点、线与面</title>
+    <title>MapTalks 示例: 添加标签与事件</title>
 </head>
 <body scroll="no" onload="initMap();">
 <div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
@@ -91,6 +91,59 @@
         polygon.setSymbol(polygonSymbol);
         //将面添加到Layer
         layer.addGeometry(polygon);
+
+        //为marker添加tip标签
+        var label = new Z.Label({
+            'symbol': {
+                'shield-type': 'tip',//label tip
+                'shield-name': '名    称: [marker_name]',
+                'shield-opacity': 1,
+                'shield-line-color': '#121212',
+                'shield-line-width': 1,
+                'shield-line-opacity': 1,
+                'shield-fill': '#536457',
+                'shield-fill-opacity': 1,
+                'shield-file': '',
+                'shield-face-name': 'Serif',
+                'shield-unlock-image' : false,
+                'shield-size': 12,
+                'shield-text-fill': '#ff0000',
+                'shield-placement': 'point', //point line vertex interior
+                'shield-wrap-width': 100,
+                'shield-wrap-before': false,
+                'shield-wrap-character': '',
+                'shield-character-spacing': 0,
+                'shield-line-spacing': 8,
+                'shield-text-dx': 0,
+                'shield-text-dy': 0,
+                'shield-dx': 0,
+                'shield-dy': 0,
+                'shield-text-opacity': 1,
+                'shield-horizontal-alignment': 'middle',//left middle right
+                'shield-vertical-alignment': 'top',//top middle bottom
+                'shield-justify-alignment': 'left'//left center right
+            },
+            'link': false, //与geometry连线
+            'draggable': true, //能否拖动
+            'trigger': 'click'//click|hover //标签显示触发事件
+        });
+        //设置marker属性
+        marker.setProperties({
+            'marker_name':'上海大厦',
+            'marker_addr': '北苏州路20号'
+        });
+        //为marker添加label
+        marker.addLabel(label);
+
+        //监听polyline上的click事件
+        polyline.on('click', function(){
+            alert('click on polyline');
+        });
+
+        //监听polygon上的rightclick事件
+        polygon.on('rightclick', function(){
+            alert('rightclick on polygon');
+        });
     }
 </script>
 <!-- 引擎javascript开发包-->
