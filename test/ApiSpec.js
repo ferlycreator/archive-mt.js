@@ -992,7 +992,7 @@ describe('API', function () {
 
             expect(function () {
                 circle.setCoordinates({x: 1, y: 1});
-                layer.add(circle);
+                layer.addGeometry(circle);
                 circle.setCoordinates({x:180, y: 75});
             }).to.not.throwException();
         });
@@ -1018,8 +1018,8 @@ describe('API', function () {
             layer.addGeometry(circle);
             var size = circle.getSize();
 
-            expect(size.x).to.be.above(0);
-            expect(size.y).to.be.above(0);
+            expect(size.width).to.be.above(0);
+            expect(size.height).to.be.above(0);
         });
 
         it('show/hide/isVisible', function() {
@@ -1038,7 +1038,7 @@ describe('API', function () {
             layer.addGeometry(circle);
             circle.remove();
 
-            expect(circle.getlayer()).to.be(null);
+            expect(circle.getLayer()).to.be(null);
         });
 
         it('copy');
@@ -1108,8 +1108,8 @@ describe('API', function () {
             layer.addGeometry(ellipse);
             var size = ellipse.getSize();
 
-            expect(size.x).to.be.above(0);
-            expect(size.y).to.be.above(0);
+            expect(size.width).to.be.above(0);
+            expect(size.height).to.be.above(0);
         });
 
         it('show/hide/isVisible', function() {
@@ -1208,8 +1208,8 @@ describe('API', function () {
             layer.addGeometry(sector);
             var size = sector.getSize();
 
-            expect(size.x).to.be.above(0);
-            expect(size.y).to.be.above(0);
+            expect(size.width).to.be.above(0);
+            expect(size.height).to.be.above(0);
         });
 
         it('show/hide/isVisible', function() {
@@ -1286,8 +1286,7 @@ describe('API', function () {
             var rect = new Z.Rectangle({x: 0, y: 0}, 200, 100);
             var got = rect.getCenter();
 
-            expect(got.x).to.eql(0);
-            expect(got.y).to.eql(0);
+            expect(got).to.nearCoord(new Z.Coordinate([0.000898, -0.000449]));
         });
 
         it('getExtent', function() {
@@ -1303,8 +1302,8 @@ describe('API', function () {
             layer.addGeometry(rect);
             var size = rect.getSize();
 
-            expect(size.x).to.be.above(0);
-            expect(size.y).to.be.above(0);
+            expect(size.width).to.be.above(0);
+            expect(size.height).to.be.above(0);
         });
 
         it('show/hide/isVisible', function() {
@@ -1333,7 +1332,7 @@ describe('API', function () {
 
         it('getNw/getWidth/getHeight', function() {
             var rect = new Z.Rectangle({x: 0, y: 0}, 200, 100);
-            var nw = rect.getNw();
+            var nw = rect.getCoordinates();
             var w = rect.getWidth();
             var h = rect.getHeight();
 
@@ -1344,7 +1343,7 @@ describe('API', function () {
 
         it('setNw/getWidth/getHeight', function() {
             var rect = new Z.Rectangle({x: 0, y: 0}, 200, 100);
-            rect.setNw({x: -180, y: 75});
+            rect.setCoordinates({x: -180, y: 75});
             rect.setWidth(401);
             rect.setHeight(201);
             var nw = rect.getNw();
@@ -1414,8 +1413,8 @@ describe('API', function () {
             layer.addGeometry(polyline);
             var size = polyline.getSize();
 
-            expect(size.x).to.be.above(0);
-            expect(size.y).to.be.above(0);
+            expect(size.width).to.be.above(0);
+            expect(size.height).to.be.above(0);
         });
 
         it('show/hide/isVisible', function() {
@@ -1450,7 +1449,7 @@ describe('API', function () {
         it('toJson', function() {
         });
 
-        it('getPath', function() {
+        it('getCoordinates', function() {
             var path = [
               {x: 0, y: 0},
               {x: 10, y: 10},
@@ -1458,11 +1457,15 @@ describe('API', function () {
             ];
             var polyline = new Z.Polyline(path);
             layer.addGeometry(polyline);
+            var coords = polyline.getCoordinates();
 
-            expect(polyline.getPath()).to.eql(path);
+            for(var i = 0; i < coords.length; i++) {
+                expect(coords[i]).to.nearCoord(path[i]);
+            }
+            // expect(polyline.getCoordinates()).to.eql(path);
         });
 
-        it('setPath', function() {
+        it('setCoordinates', function() {
             var path = [
               {x: 0, y: 0},
               {x: 10, y: 10},
@@ -1470,9 +1473,9 @@ describe('API', function () {
             ];
             var polyline = new Z.Polyline([]);
             layer.addGeometry(polyline);
-            polyline.setPath(path);
+            polyline.setCoordinates(path);
 
-            expect(polyline.getPath()).to.eql(path);
+            expect(polyline.getCoordinates()).to.eql(path);
         });
 
     });
@@ -1492,24 +1495,27 @@ describe('API', function () {
 
         it('getCenter', function() {
             var rings = [
-                {x: 20, y: 0},
-                {x: 20, y: 10},
-                {x: 0, y: 10},
-                {x: 0, y: 0}
+                [
+                    {x: -1, y: 1},
+                    {x: 1, y: 1},
+                    {x: 1, y: -1},
+                    {x: -1, y: -1}
+                ]
             ];
             var polygon = new Z.Polygon(rings);
             var got = polygon.getCenter();
 
-            expect(got.x).to.eql(10);
-            expect(got.y).to.eql(5);
+            expect(got).to.nearCoord(new Z.Coordinate([0, 0]));
         });
 
         it('getExtent', function() {
             var rings = [
-                {x: 20, y: 0},
-                {x: 20, y: 10},
-                {x: 0, y: 10},
-                {x: 0, y: 0}
+                [
+                    {x: 20, y: 0},
+                    {x: 20, y: 10},
+                    {x: 0, y: 10},
+                    {x: 0, y: 0}
+                ]
             ];
             var polygon = new Z.Polygon(rings);
 
@@ -1520,25 +1526,29 @@ describe('API', function () {
 
         it('getSize', function() {
             var rings = [
-                {x: 20, y: 0},
-                {x: 20, y: 10},
-                {x: 0, y: 10},
-                {x: 0, y: 0}
+                [
+                    {x: 20, y: 0},
+                    {x: 20, y: 10},
+                    {x: 0, y: 10},
+                    {x: 0, y: 0}
+                ]
             ];
             var polygon = new Z.Polygon(rings);
             layer.addGeometry(polygon);
             var size = polygon.getSize();
 
-            expect(size.x).to.be.above(0);
-            expect(size.y).to.be.above(0);
+            expect(size.width).to.be.above(0);
+            expect(size.height).to.be.above(0);
         });
 
         it('show/hide/isVisible', function() {
             var rings = [
-                {x: 20, y: 0},
-                {x: 20, y: 10},
-                {x: 0, y: 10},
-                {x: 0, y: 0}
+                [
+                    {x: 20, y: 0},
+                    {x: 20, y: 10},
+                    {x: 0, y: 10},
+                    {x: 0, y: 0}
+                ]
             ];
             var polygon = new Z.Polygon(rings);
             layer.addGeometry(polygon);
@@ -1552,10 +1562,12 @@ describe('API', function () {
 
         it('remove', function() {
             var rings = [
-                {x: 20, y: 0},
-                {x: 20, y: 10},
-                {x: 0, y: 10},
-                {x: 0, y: 0}
+                [
+                    {x: 20, y: 0},
+                    {x: 20, y: 10},
+                    {x: 0, y: 10},
+                    {x: 0, y: 0}
+                ]
             ];
             var polygon = new Z.Polygon(rings);
             layer.addGeometry(polygon);
@@ -1569,7 +1581,7 @@ describe('API', function () {
         it('toJson', function() {
         });
 
-        it('getRings/getHoles', function() {
+        it('getCoordinates', function() {
             var rings = [
                 {x: 20, y: 0},
                 {x: 20, y: 10},
@@ -1581,13 +1593,15 @@ describe('API', function () {
                 {x: 3, y: 2},
                 {x: 2, y: 3}
             ];
-            var polygon = new Z.Polygon(rings, {holes: holes});
+            var polygon = new Z.Polygon([rings, holes]);
 
-            expect(polygon.getRings()).to.eql(rings);
-            expect(polygon.getHoles()).to.eql(holes);
+            rings.push(rings[0]);
+            holes.push(holes[0]);
+            expect(polygon.getCoordinates()[0]).to.eql(rings);
+            expect(polygon.getCoordinates()[1]).to.eql(holes);
         });
 
-        it('setRings/setHoles', function() {
+        it('setCoordinates', function() {
             var rings = [
                 {x: 20, y: 0},
                 {x: 20, y: 10},
@@ -1599,12 +1613,13 @@ describe('API', function () {
                 {x: 3, y: 2},
                 {x: 2, y: 3}
             ];
-            var polygon = new Z.Polygon([]);
-            polygon.setRings(rings);
-            polygon.setHoles(holes);
+            var polygon = new Z.Polygon([[]]);
+            polygon.setCoordinates([rings, holes]);
 
-            expect(polygon.getRings()).to.eql(rings);
-            expect(polygon.getHoles()).to.eql(holes);
+            rings.push(rings[0]);
+            holes.push(holes[0]);
+            expect(polygon.getCoordinates()[0]).to.eql(rings);
+            expect(polygon.getCoordinates()[1]).to.eql(holes);
         });
 
         it('hasHoles', function() {
@@ -1619,11 +1634,11 @@ describe('API', function () {
                 {x: 3, y: 2},
                 {x: 2, y: 3}
             ];
-            var polygon = new Z.Polygon(rings);
+            var polygon = new Z.Polygon([rings]);
 
             expect(polygon.hasHoles()).to.not.be.ok();
 
-            polygon.setHoles(holes);
+            polygon.setCoordinates([rings, holes]);
 
             expect(polygon.hasHoles()).to.be.ok();
         });
@@ -1663,8 +1678,8 @@ describe('API', function () {
             layer.addGeometry(collection);
             var size = collection.getSize();
 
-            expect(size.x).to.be.above(0);
-            expect(size.y).to.be.above(0);
+            expect(size.width).to.be.above(0);
+            expect(size.height).to.be.above(0);
         });
 
         it('show/hide/isVisible', function() {
@@ -1818,8 +1833,8 @@ describe('API', function () {
             layer.addGeometry(mp);
             var size = mp.getSize();
 
-            expect(size.x).to.be.above(0);
-            expect(size.y).to.be.above(0);
+            expect(size.width).to.be.above(0);
+            expect(size.height).to.be.above(0);
         });
 
         it('show/hide/isVisible', function() {
@@ -1959,8 +1974,8 @@ describe('API', function () {
             layer.addGeometry(mp);
             var size = mp.getSize();
 
-            expect(size.x).to.be.above(0);
-            expect(size.y).to.be.above(0);
+            expect(size.width).to.be.above(0);
+            expect(size.height).to.be.above(0);
         });
 
         it('show/hide/isVisible', function() {

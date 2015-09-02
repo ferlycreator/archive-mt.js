@@ -156,6 +156,18 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         return result;
     },
 
+    _computeVisualExtent: function(projection) {
+        if (!projection || this.isEmpty()) {
+            return null;
+        }
+        var result = this.geometries[0]._computeVisualExtent(projection);
+        for (var i= 1, len = this.geometries.length; i < len; i++) {
+            var extent = this.geometries[i]._computeVisualExtent(projection);
+            result = Z.Extent.combine(extent ,result);
+        }
+        return result;
+    },
+
     _computeGeodesicLength:function(projection) {
         if (!projection || this.isEmpty()) {
             return 0;
