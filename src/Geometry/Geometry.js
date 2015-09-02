@@ -35,26 +35,6 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         'editable':true
     },
 
-    //默认标注样式
-    defaultIcon: {
-        'markerType' : 'circle',
-        'markerLineColor': '#ff0000',
-        'markerFill': '#ffffff',
-        'markerFillOpacity': 0.6,
-        'markerHeight' : 8,
-        'markerWidth' : 8
-    },
-
-    // 默认线样式
-    defaultSymbol:{
-        'lineColor' : '#ff0000',
-        'lineWidth' : 3,
-        'lineOpacity' : 1,
-        'lineDasharray': null,
-        'polygonFill' : '#ffffff',
-        'polygonOpacity' : 1
-    },
-
     /**
      * 初始化传入的option参数
      * @param  {Object} opts [option参数]
@@ -213,10 +193,6 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      */
     getCenter:function() {
         return this._computeCenter(this._getProjection());
-    },
-
-    getDefaultSymbol:function() {
-        return this.defaultSymbol;
     },
 
     /**

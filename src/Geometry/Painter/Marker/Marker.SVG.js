@@ -301,9 +301,6 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
         if (!gCenter) {return null;}
         var _graphicDom = null;
         var iconSymbol = this.getGeoIcon();
-        if (!iconSymbol['url']) {
-            iconSymbol['url'] = geometry.defaultIcon['url'];
-        }
         _graphicDom = Z.DomUtil.createEl('span');
         _graphicDom.setAttribute('unselectable', 'on');
         //用gCenter的话，会出现标注图片无法显示的问题，原因未知
