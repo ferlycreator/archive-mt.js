@@ -31,6 +31,24 @@ describe('PolylineSpec', function() {
         document.body.removeChild(container);
     });
 
+    describe('constructor', function() {
+
+        it('normal constructor', function() {
+            var points = [ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0] ];
+            var polyline = new Z.Polyline(points);
+            var coordinates = polyline.getCoordinates();
+            expect(coordinates).to.have.length(points.length);
+            var geojsonCoordinates = Z.GeoJson.toGeoJsonCoordinates(coordinates);
+            expect(geojsonCoordinates).to.eql(points);
+        });
+
+        it('can be empty.',function() {
+            var polyline = new Z.Polyline();
+            expect(polyline.getCoordinates()).to.have.length(0);
+        });
+
+    });
+
     describe('getCenter', function() {
         it('should返回笛卡尔坐标系上的点集合的中心点', function() {
             var polyline = new Z.Polyline([
@@ -40,7 +58,7 @@ describe('PolylineSpec', function() {
             ]);
             layer.addGeometry(polyline);
 
-            expect(polyline.getCenter()).to.eql({x:0, y: 45});
+            expect(polyline.getCenter()).to.eql({x:0, y: 100/3});
         });
     });
 

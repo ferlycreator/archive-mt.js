@@ -197,12 +197,12 @@ describe('GeometrySpec', function() {
     var geometries = genAllTypeGeometries();
 
     for (var i=0, len = geometries.length;i<len;i++){
-        registerGeometryCommonTest(geometries[i]);
+        registerGeometryCommonTest(geometries[i],map);
     }
 
 });
 //测试Geometry的公共方法
-function registerGeometryCommonTest(geometry) {
+function registerGeometryCommonTest(geometry,map) {
 
     function setupGeometry() {
         var layer = new Z.VectorLayer('common_test_layer');

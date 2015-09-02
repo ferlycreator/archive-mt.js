@@ -78,7 +78,7 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
     },
 
     /**
-     * 保证Ring都是闭合的
+     * 保证Ring都是合法且闭合的
      */
     _checkRing:function(ring) {
         if (!Z.Util.isArray(ring) || ring.length < 3) {
