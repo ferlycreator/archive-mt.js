@@ -7,21 +7,9 @@ describe('MultiPolygonSpec', function() {
     var layer;
 
     beforeEach(function() {
-        container = document.createElement('div');
-        container.style.width = '800px';
-        container.style.height = '600px';
-        document.body.appendChild(container);
-        var option = {
-            zoomLevel: 17,
-            center: center
-        };
-        map = new Z.Map(container, option);
-        tile = new Z.TileLayer('tile', {
-            tileInfo: 'web-mercator',
-            urlTemplate: 'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',
-            subdomains: [0, 1, 2, 3]
-        });
-        map.setBaseTileLayer(tile);
+        var setups = commonSetupMap(center);
+        container = setups.container;
+        map = setups.map;
         layer = new Z.VectorLayer('id');
         map.addLayer(layer);
     });
@@ -31,4 +19,30 @@ describe('MultiPolygonSpec', function() {
         document.body.removeChild(container);
     });
 
+    describe('constructor', function() {
+
+        it('normal constructor', function() {
+            var points = [
+                [
+                    [[102.0, 2.0], [103.0, 2.0], [103.0, 3.0], [102.0, 3.0], [102.0, 2.0]]
+                ],
+                [
+                    [[100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]],
+                    [[100.2, 0.2], [100.8, 0.2], [100.8, 0.8], [100.2, 0.8], [100.2, 0.2]]
+                ]
+            ];
+            var multiPolygon = new Z.MultiPolygon(points);
+            var coordinates = multiPolygon.getCoordinates();
+            expect(coordinates).to.have.length(points.length);
+            var geojsonCoordinates = Z.GeoJson.toGeoJsonCoordinates(coordinates);
+            expect(geojsonCoordinates).to.eql(points);
+        });
+
+        it('can be empty.',function() {
+            var multiPolygon = new Z.MultiPolygon();
+            expect(multiPolygon.getCoordinates()).to.have.length(0);
+            expect(multiPolygon.isEmpty()).to.be.ok();
+        });
+
+    });
 });

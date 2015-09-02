@@ -19,19 +19,6 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
         this._initOptions(opts);
     },
 
-    /**
-     * 设置Marker的Icon
-     * @param {Icon} icon 新的Icon
-     * @expose
-     */
-    _setIcon: function(icon) {
-        return this.setSymbol(icon);
-    },
-
-    setText: function(text) {
-        this._setIcon(text);
-    },
-
     _containsPoint: function(point) {
         var symbol = this.getSymbol();
         var markerSize = this._getMarkerSize(symbol);

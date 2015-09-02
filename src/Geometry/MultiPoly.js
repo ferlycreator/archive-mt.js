@@ -19,6 +19,7 @@ Z.MultiPoly = Z.GeometryCollection.extend({
                 }
             }
         }
+        return geometries;
     },
 
     /**

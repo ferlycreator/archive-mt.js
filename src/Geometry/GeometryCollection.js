@@ -1,9 +1,57 @@
 Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
     type:Z.Geometry['TYPE_GEOMETRYCOLLECTION'],
 
+    //根据不同的语言定义不同的错误信息
+    exceptionDefs:{
+        'en-US':{
+            'INVALID_GEOMETRY':'invalid geometry for collection.'
+        },
+        'zh-CN':{
+            'INVALID_GEOMETRY':'无效的Geometry被加入到collection中.'
+        }
+    },
+
     initialize:function(geometries, opts) {
         this.setGeometries(geometries);
         this._initOptions(opts);
+    },
+
+    /**
+     * 设置
+     * @param {[Geometry]} geometries [Geometry数组]
+     * @expose
+     *
+     */
+    setGeometries:function(_geometries) {
+        var geometries = this._checkGeometries(_geometries);
+        this._geometries = geometries;
+        if (this.getLayer()) {
+            this._prepareGeometries();
+            this._onShapeChanged();
+        }
+        return this;
+    },
+
+    /**
+     * 获取集合中的Geometries
+     * @return {[Geometry]} Geometry数组
+     * @expose
+     */
+    getGeometries:function() {
+        if (!this._geometries) {
+            return [];
+        }
+        return this._geometries;
+    },
+
+
+    /**
+     * 集合是否为空
+     * @return {Boolean} [是否为空]
+     * @expose
+     */
+    isEmpty:function() {
+        return !Z.Util.isArrayHasData(this.getGeometries());
     },
 
     /**
@@ -25,36 +73,8 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         var layer = this.getLayer();
         var geometries = this.getGeometries();
         for (var i=0,len=geometries.length;i<len;i++) {
-            this.geometries[i]._prepare(layer);
+            this._geometries[i]._prepare(layer);
         }
-    },
-
-    /**
-     * 设置
-     * @param {[Geometry]} geometries [Geometry数组]
-     * @expose
-     *
-     */
-    setGeometries:function(geometries) {
-        this._checkGeometries(geometries);
-        this.geometries = geometries;
-        if (this.getLayer()) {
-            this._prepareGeometries();
-            this._onShapeChanged();
-        }
-        return this;
-    },
-
-    /**
-     * 获取集合中的Geometries
-     * @return {[Geometry]} Geometry数组
-     * @expose
-     */
-    getGeometries:function() {
-        if (!this.geometries && !Z.Util.isArray(this.geometries)) {
-            return [];
-        }
-        return this.geometries;
     },
 
     /**
@@ -62,22 +82,32 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
      * @param  {Geometry[]} geometries [供检查的Geometry]
      */
     _checkGeometries:function(geometries) {
-
+        if (geometries && !Z.Util.isArray(geometries)) {
+            if (geometries instanceof Z.Geometry) {
+                return [geometries];
+            } else {
+                throw new Error(this.exceptions['INVALID_GEOMETRY']);
+            }
+        } else if (Z.Util.isArray(geometries)) {
+            for (var i=0, len=geometries.length;i<len;i++) {
+                if (    geometries instanceof Z.Geometry) {
+                   throw new Error(this.exceptions['INVALID_GEOMETRY']);
+                }
+            }
+            return geometries;
+        }
+        return null;
     },
 
-    /**
-     * 集合是否为空
-     * @return {Boolean} [是否为空]
-     * @expose
-     */
-    isEmpty:function() {
-        return !Z.Util.isArrayHasData(this.geometries);
-    },
+
 
     _updateCache:function() {
-        for (var i=0, len=this.geometries.length;i<len;i++) {
-            if (this.geometries[i] && this.geometries[i]._updateCache) {
-                this.geometries[i]._updateCache();
+        if (this.isEmpty()) {
+            return;
+        }
+        for (var i=0, len=this._geometries.length;i<len;i++) {
+            if (this._geometries[i] && this._geometries[i]._updateCache) {
+                this._geometries[i]._updateCache();
             }
         }
     },
@@ -87,11 +117,11 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
             return null;
         }
         var sumX=0, sumY=0,counter=0;
-        for (var i=0, len=this.geometries.length;i<len;i++) {
-            if (!this.geometries[i]) {
+        for (var i=0, len=this._geometries.length;i<len;i++) {
+            if (!this._geometries[i]) {
                 continue;
             }
-            var center = this.geometries[i]._computeCenter(projection);
+            var center = this._geometries[i]._computeCenter(projection);
             sumX += center.x;
             sumY += center.y;
             counter++;
@@ -100,10 +130,13 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
     },
 
     _containsPoint: function(point) {
+        if (this.isEmpty()) {
+            return false;
+        }
         var i, len, geo;
 
-        for (i = 0, len = this.geometries.length; i < len; i++) {
-            geo = this.geometries[i];
+        for (i = 0, len = this._geometries.length; i < len; i++) {
+            geo = this._geometries[i];
             if (geo._containsPoint(point)) {
                 return true;
             }
@@ -117,8 +150,8 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
             return null;
         }
         var result = null;
-        for (var i=0, len=this.geometries.length;i<len;i++) {
-            result = Z.Extent.combine(this.geometries[i]._computeExtent(projection),result);
+        for (var i=0, len=this._geometries.length;i<len;i++) {
+            result = Z.Extent.combine(this._geometries[i]._computeExtent(projection),result);
         }
         return result;
     },
@@ -140,8 +173,8 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
             return 0;
         }
         var result = 0;
-        for (var i=0, len=this.geometries.length;i<len;i++) {
-            result += this.geometries[i]._computeGeodesicLength(projection);
+        for (var i=0, len=this._geometries.length;i<len;i++) {
+            result += this._geometries[i]._computeGeodesicLength(projection);
         }
         return result;
     },
@@ -151,8 +184,8 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
             return 0;
         }
         var result = 0;
-        for (var i=0, len=this.geometries.length;i<len;i++) {
-            result += this.geometries[i]._computeGeodesicArea(projection);
+        for (var i=0, len=this._geometries.length;i<len;i++) {
+            result += this._geometries[i]._computeGeodesicArea(projection);
         }
         return result;
     },
@@ -164,8 +197,8 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
 
    _exportGeoJson:function(opts) {
         var geoJsons = [];
-        var geometries = this.getGeometries();
-        if (Z.Util.isArray(geometries)) {
+        if (!this.isEmpty()) {
+            var geometries = this.getGeometries();
             for (var i=0,len=geometries.length;i<len;i++) {
                 geoJsons.push(geometries[i]._exportGeoJson(opts));
             }
@@ -177,12 +210,14 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
     },
 
     _clearProjection:function() {
-        var geometries = this.getGeometries();
-        if (Z.Util.isArrayHasData(geometries)) {
-            for (var i=0,len=geometries.length;i<len;i++) {
-                this.geometries[i]._clearProjection();
-            }
+        if (this.isEmpty()) {
+            return;
         }
+        var geometries = this.getGeometries();
+        for (var i=0,len=geometries.length;i<len;i++) {
+            this._geometries[i]._clearProjection();
+        }
+
     },
 
 //----------覆盖Geometry中的编辑相关方法-----------------
@@ -192,6 +227,9 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
      * @expose
      */
     startEdit:function(opts) {
+        if (this.isEmpty()) {
+            return;
+        }
         if (opts['symbol']) {
             this.originalSymbol = this.getSymbol();
             this.setSymbol(opts['symbol']);
@@ -200,7 +238,7 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         for (var i=0,len=geometries.length;i<len;i++) {
             geometries[i].startEdit(opts);
         }
-        this.editing = true;
+        this._editing = true;
         return this;
     },
 
@@ -209,15 +247,18 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
      * @expose
      */
     endEdit:function() {
+        if (this.isEmpty()) {
+            return;
+        }
         var geometries = this.getGeometries();
         for (var i=0,len=geometries.length;i<len;i++) {
             geometries[i].endEdit();
         }
-        if (this.originalSymbol !== undefined) {
+        if (this.originalSymbol) {
             this.setSymbol(this.originalSymbol);
             delete this.originalSymbol;
         }
-        this.editing = false;
+        this._editing = false;
         return this;
     },
 
@@ -227,7 +268,7 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
      * @expose
      */
     isEditing:function() {
-        return this.editing;
+        return this._editing;
     },
 
     /**
@@ -235,6 +276,9 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
      * @expose
      */
     startDrag:function() {
+        if (this.isEmpty()) {
+            return;
+        }
         var geometries = this.getGeometries();
         for (var i=0,len=geometries.length;i<len;i++) {
             geometries[i].startDrag();
@@ -248,6 +292,9 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
      * @expose
      */
     endDrag:function() {
+        if (this.isEmpty()) {
+            return;
+        }
         var geometries = this.getGeometries();
         for (var i=0,len=geometries.length;i<len;i++) {
             geometries[i].endDrag();
