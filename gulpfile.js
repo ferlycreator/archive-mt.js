@@ -155,7 +155,7 @@ gulp.task('watch', function () {
   gulp.watch(['src/**/*.js','examples/**/*','assets/css/*.css','build/srcList.txt'], ['reload']);
 });
 
-gulp.task('server',['connect','watch']);
+gulp.task('server',['build','connect','watch']);
 /**
  * Run test for minified scripts once and exit
  */

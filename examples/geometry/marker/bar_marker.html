@@ -8,19 +8,19 @@
     <link href="/maptalks/v2/css/label.css" rel="stylesheet" type="text/css"/>
     <link href="/maptalks/v2/css/controls.css" rel="stylesheet" type="text/css"/>
 </head>
-<body scroll="no" onload="onMapReady();">
-<div style="width:100%;height:100%;float:right;margin-top:0px" id="mapObj"></div>
+<body scroll="no" onload="initMap();">
+<div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
 <script type="text/javascript" >
     var mapObj;
-    function onMapReady(){
+    function initMap(){
         //创建地图对象
         mapObj = new Z.Map("mapObj",{
-            center:		new Z.Coordinate(121.489935,31.24432),
-            zoomLevel:	17,
-            'attributionControl': false,
-            'zoomControl' : false,
-            'navControl': false,
-            'scaleControl': false
+            center:     new Z.Coordinate(121.489935,31.24432), //地图初始中心点坐标
+            zoomLevel:  17, //地图初始缩放级别
+            attributionControl: false, //版权信息控件
+            zoomControl : false, // 地图缩放控件
+            navControl: false, //地图导航控件
+            scaleControl: false //地图比例尺控件
         });
         //添加mapabc瓦片图层
         mapObj.setBaseTileLayer(new Z.TileLayer("tile",{

@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MapTalks 示例: 源代码编辑器</title>
     <!-- 公用的地图初始化代码，其中注册的地图载入完成回调函数名为onMapReady -->
-    <link href="js/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
-    <link href="js/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet"/>
-    <link href="js/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet"/>
-    <link href="js/codemirror/codemirror.css" rel="stylesheet"/>
+    <link href="/engine/examples/js/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/engine/examples/js/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet"/>
+    <link href="/engine/examples/js/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet"/>
+    <link href="/engine/examples/js/codemirror/codemirror.css" rel="stylesheet"/>
 </head>
 <body scroll="no" onload="initHtmlContent();">
     <div class="row">
@@ -65,7 +65,15 @@
         function initCodeEditior() {
             if(!codeEditor){
                 var codeArea = document.getElementById('codeArea');
+                var mixedMode = {
+                    name: "htmlmixed",
+                    scriptTypes: [{matches: /\/x-handlebars-template|\/x-mustache/i,
+                                   mode: null},
+                                  {matches: /(text|application)\/(x-)?vb(a|script)/i,
+                                   mode: "vbscript"}]
+                };
                 codeEditor = CodeMirror.fromTextArea(codeArea, {
+                    mode: mixedMode,
                     lineWrapping: true, //是否显示scroll
                     lineNumbers: true, //是否显示number
                     styleActiveLine: true,
@@ -93,10 +101,14 @@
         }
 
     </script>
-    <script type="text/javascript" src="js/jquery/jquery.js"></script>
-    <script type="text/javascript" src="js/bootstrap/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="js/codemirror/codemirror.js"></script>
-    <script type="text/javascript" src="js/util/ParamKit.js"></script>
+    <script type="text/javascript" src="/engine/examples/js/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/engine/examples/js/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/engine/examples/js/codemirror/codemirror.js"></script>
+    <script type="text/javascript" src="/engine/examples/js/codemirror/xml.js"></script>
+    <script type="text/javascript" src="/engine/examples/js/codemirror/javascript.js"></script>
+    <script type="text/javascript" src="/engine/examples/js/codemirror/css.js"></script>
+    <script type="text/javascript" src="/engine/examples/js/codemirror/htmlmixed.js"></script>
+    <script type="text/javascript" src="/engine/examples/js/util/ParamKit.js"></script>
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.min.js"></script>

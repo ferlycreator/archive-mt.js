@@ -1,3 +1,5 @@
+Z.Browser.canvas = !!document.createElement("canvas").getContext;
+
 Z.Render.Canvas.Base=function(map) {
     this.map = map;
     this.resourceLoader = new Z.ResourceLoader();

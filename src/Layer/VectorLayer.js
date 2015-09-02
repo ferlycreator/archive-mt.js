@@ -1,3 +1,4 @@
+//TODO render的程序结构不是很好, 需要重构
 Z.VectorLayer=Z.OverlayLayer.extend({
 
     options:{
@@ -29,7 +30,10 @@ Z.VectorLayer=Z.OverlayLayer.extend({
      * @expose
      */
     isCanvasRender:function() {
-        //即不支持svg, 也不支持vml
+        if (!Z.Browser.canvas) {
+            return false;
+        }
+        //即不支持svg, 也不支持vml, 安卓早期浏览器可能会出现
         if (!Z.Browser.svg && !Z.Browser.vml) {
             return true;
         }

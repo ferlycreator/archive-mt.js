@@ -34,7 +34,7 @@ body > .navbar {
 body > .navbar .brand {
   padding-right: 0;
   padding-left: 0;
-  margin-left: 20px;
+  margin-left: 5px;
   float: right;
   font-weight: bold;
   color: #000;
@@ -48,6 +48,12 @@ body > .navbar .brand:hover {
   text-shadow: 0 1px 0 rgba(255,255,255,.1), 0 0 30px rgba(255,255,255,.4);
 }
 
+iframe {
+  border: solid 3px #dcdcdc;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+}
 
 /* Sections
 -------------------------------------------------- */
@@ -56,6 +62,7 @@ body > .navbar .brand:hover {
 section {
   padding-top: 30px;
 }
+
 section > .page-header,
 section > .lead {
   color: #5a5a5a;
@@ -576,7 +583,7 @@ h2 + .row {
   padding: 39px 19px 14px;
   *padding-top: 19px;
   background-color: #fff;
-  border: 1px solid #ddd;
+  border: solid 1px #dcdcdc;
   -webkit-border-radius: 4px;
      -moz-border-radius: 4px;
           border-radius: 4px;
@@ -592,7 +599,7 @@ h2 + .row {
   font-size: 12px;
   font-weight: bold;
   background-color: #f5f5f5;
-  border: 1px solid #ddd;
+  border: solid 1px #dcdcdc;
   color: #9da0a4;
   -webkit-border-radius: 4px 0 4px 0;
      -moz-border-radius: 4px 0 4px 0;
@@ -858,10 +865,10 @@ form.bs-docs-example {
     max-width: 970px;
   }
   .bs-docs-sidenav {
-    width: 258px;
+    width: 95px;
   }
   .bs-docs-sidenav > li > a {
-    width: 230px \9; /* Override the previous IE8-9 hack */
+    width: 90px \9; /* Override the previous IE8-9 hack */
   }
 }
 
@@ -885,7 +892,7 @@ form.bs-docs-example {
   /* When affixed, space properly */
   .bs-docs-sidenav {
     top: 0;
-    width: 218px;
+    width: 95px;
     margin-top: 30px;
     margin-right: 0;
   }
@@ -904,7 +911,7 @@ form.bs-docs-example {
   }
   /* Adjust sidenav width */
   .bs-docs-sidenav {
-    width: 166px;
+    width: 90px;
     margin-top: 20px;
   }
   .bs-docs-sidenav.affix {

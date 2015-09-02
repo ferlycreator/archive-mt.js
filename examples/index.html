@@ -23,10 +23,10 @@
             </div>
         </div>
         <div class="row">
-            <div class="span3 bs-docs-sidebar">
+            <div class="span1 bs-docs-sidebar">
                 <ul class="nav nav-list bs-docs-sidenav affix">
                     <li class="active nav-item">
-                        <a href="#begin"><i class="icon-chevron-right"></i> 开始</a>
+                        <a href="#begin"><i class="icon-chevron-right"></i> 快速上手</a>
                     </li>
                     <li class="nav-item">
                         <a href="#tile"><i class="icon-chevron-right"></i> 底图</a>
@@ -45,11 +45,72 @@
                     </li>
                 </ul>
             </div>
-            <div class="span9">
+            <div class="span11">
                 <section id="begin">
                     <div class="page-header">
-                        <h1>开始</h1>
+                        <h1>快速上手 MapTalks</h1>
+                        <h6>该向导帮助您将快速掌握构建地图、标注点、线与面，并为它们设置标签，以及监听处理交互事件。
+                        </h6>
                     </div>
+
+                    <h2>第一张定制地图</h2>
+                    <!--
+                    <p>1、引入 MapTalks CSS  文件；</p>
+                    <p><code>
+                        &lt;link href="http://www.maptalks.org/maptalks/v2/css/maptalks.min.css" rel="stylesheet" type="text/css"/&gt;
+                    </code></p>-->
+                    <p>1、引入 MapTalks JavaScript 文件；</p>
+                    <p><code>
+                        &lt;link href="http://www.maptalks.org/maptalks/v2/css/maptalks.min.js" rel="stylesheet" type="text/css"/&gt;
+                    </code></p>
+                    <p>2、在页面中添加一个放置Map的Html Element，例如：DIV；</p>
+                    <p><code>
+                        &lt;div id="mapObj" style="width:100%; height:100%;"&gt;&lt;/div&gt;
+                    </code></p>
+                    </code></p>
+                    <p>3、通过<code> new Z.Map(...)创建地图对象，并设置底图图层。</code></p>
+                    <div class="bs-docs-example">
+<pre class="linenums prettyprint">
+&lt;!-- 第一步：MapTalks JavaScript 开发包 --&gt;
+&lt;script type="text/javascript" src="http://www.maptalks.org/maptalks/v2/css/maptalks.min.js"&gt;&lt;/script&gt;
+&lt;body scroll="no"  onload="initMap();"&gt;
+    &lt;!-- 第二步、设置放置地图的Html Element --&gt;
+    &lt;div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"&gt;&lt;/div&gt;
+&lt;/body&gt;
+&lt;!-- 第三步、创建地图对象，并设置底图图层 --&gt;
+&lt;script type="text/javascript" &gt;
+    var mapObj;
+    function initMap(){
+        //创建地图对象
+        mapObj = new Z.Map('mapObj', //放置mapObj的div id
+        {
+            center:     new Z.Coordinate(121.489935,31.24432), //地图初始中心点坐标
+            zoomLevel:  17, //地图初始缩放级别
+            attributionControl: false, //版权信息控件
+            zoomControl : false, // 地图缩放控件
+            navControl: false, //地图导航控件
+            scaleControl: false //地图比例尺控件
+        });
+        //定制地图底图(Tile Layer)
+        var tileLayer = new Z.TileLayer('tile', //底图id
+        {
+            crs:'crs3857', //坐标系
+            urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
+            subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
+        });
+        //设置底图图层
+        mapObj.setBaseTileLayer(tileLayer);
+    }
+&lt;/script&gt;
+</pre>
+                    <iframe src="geometry/guide/first_map.html" width="100%">
+
+                    </iframe>
+                    <p>
+                        <a class="btn btn-success" href="editor.html?html=geometry/guide/first_map.html&title=First Map" target="_blank">源码编辑器</a>
+                    </p>
+                    </div>
+
                 </section>
 
                 <section id="tile">
@@ -70,7 +131,8 @@
                     </div>
 
                     <h2>添加点</h2>
-                    <p>通过<code>new Z.Marker(...)</code>创建一个点，并添加到图层上。</p>
+                    <p>1、通过<code>new Z.Marker(...)</code>创建一个点；</p>
+                    <p>2、将点添加到图层上。</p>
                     <div class="bs-docs-example">
 <pre class="linenums prettyprint">
 //创建点的坐标对象
