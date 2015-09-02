@@ -38,6 +38,7 @@ var js_dist_path = './dist/maptalks/v2/';
 var css_dist_path = './dist/maptalks/v2/css/';
 var img_dist_path = './dist/maptalks/v2/images/';
 var lib_dist_path = './dist/maptalks/v2/lib/';
+var examples_dist_path = './dist/maptalks/v2/examples/';
 
 //paths to distribute to maptalks
 var maptalks_dist_path;
@@ -52,8 +53,14 @@ gulp.task('jshint', function () {
     .pipe($.jshint.reporter('jshint-stylish'));
 });
 
-gulp.task('styles', function () {
-
+//copy libs
+gulp.task('copy', function () {
+  gulp.src('assets/images/**/*')
+            .pipe(gulp.dest(img_dist_path));
+  gulp.src('assets/lib/**/*')
+            .pipe(gulp.dest(lib_dist_path));
+  gulp.src('./examples/**/*')
+            .pipe(gulp.dest(examples_dist_path));
   var AUTOPREFIXER_BROWSERS = [
     'ie >= 10',
     'ie_mob >= 10',
@@ -72,17 +79,6 @@ gulp.task('styles', function () {
     .pipe(gulp.dest(css_dist_path))
     // Concatenate and minify styles
     .pipe($.csso());
-    // .pipe($.sourcemaps.write())
-});
-//copy images
-gulp.task('images', function () {
-  return gulp.src('assets/images/**/*')
-            .pipe(gulp.dest(img_dist_path));
-});
-//copy libs
-gulp.task('lib', function () {
-  return gulp.src('assets/lib/**/*')
-            .pipe(gulp.dest(lib_dist_path));
 });
 //copy css styles
 gulp.task('scripts', function () {
@@ -123,11 +119,11 @@ gulp.task('compile',function () {
     .pipe(gulp.dest(js_dist_path));
 });
 
-gulp.task('clean', del.bind(null, [], {dot: true}));
+gulp.task('clean', del.bind(null, ['./dist/**','!./dist'], {dot: true}));
 
 gulp.task('build', ['clean'], function (done) {
   runSequence(
-    ['styles','images'],
+    ['copy'],
     ['compile'],
     // 'test',
     done);
@@ -144,22 +140,22 @@ gulp.task('dist',['build'],function() {
 
 gulp.task('connect', function() {
   connect.server({
-    root: ['dist', '.'],
+    root: ['./dist'],
     port:20000,
     liveload:true
   });
 });
 
 gulp.task('reload', ['build'], function () {
-  gulp.src(['./dist/**/*','./examples/**/*.html'])
+  gulp.src(['./dist/**/*'])
     .pipe(connect.reload());
 });
 
 gulp.task('watch', function () {
-  gulp.watch(['src/**/*.js','assets/css/*.css','build/srcList.txt'], ['reload']);
+  gulp.watch(['src/**/*.js','examples/**/*','assets/css/*.css','build/srcList.txt'], ['reload']);
 });
 
-gulp.task('watch-dev',['connect','watch']);
+gulp.task('server',['connect','watch']);
 /**
  * Run test for minified scripts once and exit
  */
@@ -227,4 +223,4 @@ gulp.task('tdd', ['styles'], function (done) {
 });
 
 
-gulp.task('default', ['watch-dist']);
+gulp.task('default', ['server']);
