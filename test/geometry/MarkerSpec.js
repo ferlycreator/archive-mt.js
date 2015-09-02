@@ -1,4 +1,4 @@
-describe('Marker', function() {
+describe('MarkerSpec', function() {
 
     var container;
     var map;
@@ -53,7 +53,14 @@ describe('Marker', function() {
             var spy = sinon.spy();
             var marker = new Z.Marker(center);
             marker.bind('symbolchanged', spy);
-            marker.setSymbol(icon1);
+            marker.setSymbol({
+                'markerType' : 'circle',
+                'markerLineColor': '#ff0000',
+                'markerFill': '#ffffff',
+                'markerFillOpacity': 0.6,
+                'markerHeight' : 8,
+                'markerWidth' : 8
+            });
 
             expect(spy.called).to.be.ok();
         });

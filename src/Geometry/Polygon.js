@@ -3,6 +3,16 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
 
     type:Z.Geometry['TYPE_POLYGON'],
 
+    //根据不同的语言定义不同的错误信息
+    exceptionDefs:{
+        'en-US':{
+            'INVALID_COORDINATES':'invalid coordinates for polygon.'
+        },
+        'zh-CN':{
+            'INVALID_COORDINATES':'对于多边形无效的坐标.'
+        }
+    },
+
     /**
      * [多边形构造函数]
      * @param  {坐标数组} coordinates [description]
@@ -19,6 +29,12 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
      * @param {[坐标数组]} coordinates [description]
      */
     setCoordinates:function(coordinates) {
+        if (!coordinates) {
+            this.points = null;
+            this.holes = null;
+            this._projectRings();
+            return;
+        }
         var rings = Z.GeoJson.fromGeoJsonCoordinates(coordinates);
         var len = rings.length;
         this.points = rings[0];
@@ -42,6 +58,9 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
      * @return {[Coordinate]} 坐标数组
      */
     getCoordinates:function() {
+        if (!this.points) {
+            return [];
+        }
         if (this.holes) {
             return [this.points].concat(this.holes);
         }
@@ -63,7 +82,7 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
      */
     _checkRing:function(ring) {
         if (!Z.Util.isArray(ring) || ring.length < 3) {
-            return;
+            throw new Error(this.exceptions['INVALID_COORDINATES']);
         }
         var lastPoint = ring[ring.length-1];
         if (!lastPoint) {

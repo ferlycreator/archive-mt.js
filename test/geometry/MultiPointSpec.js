@@ -7,21 +7,9 @@ describe('MultiPointSpec', function() {
     var layer;
 
     beforeEach(function() {
-        container = document.createElement('div');
-        container.style.width = '800px';
-        container.style.height = '600px';
-        document.body.appendChild(container);
-        var option = {
-            zoomLevel: 17,
-            center: center
-        };
-        map = new Z.Map(container, option);
-        tile = new Z.TileLayer('tile', {
-            tileInfo: 'web-mercator',
-            urlTemplate: 'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',
-            subdomains: [0, 1, 2, 3]
-        });
-        map.setBaseTileLayer(tile);
+        var setups = commonSetupMap(center);
+        container = setups.container;
+        map = setups.map;
         layer = new Z.VectorLayer('id');
         map.addLayer(layer);
     });
@@ -30,5 +18,22 @@ describe('MultiPointSpec', function() {
         map.removeLayer(layer);
         document.body.removeChild(container);
     });
+
+    describe('constructor', function() {
+
+        it('normal constructor', function() {
+            var points = [ [100.0, 0.0], [101.0, 1.0] ];
+            var multiPoint = new Z.MultiPoint(points);
+            expect(multiPoint.getCoordinates()).to.have.length(points.length);
+        });
+
+        it('can be empty.',function() {
+            var multiPoint = new Z.MultiPoint();
+            expect(multiPoint.getCoordinates()).to.have.length(0);
+            expect(multiPoint.isEmpty()).to.be.ok();
+        });
+
+    });
+
 
 });
