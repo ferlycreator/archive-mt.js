@@ -48,9 +48,9 @@ function genAllTypeGeometries() {
     return geometries;
 }
 
-exports = module.exports = {
+/*exports = module.exports = {
     genAllTypeGeometries: genAllTypeGeometries
-};
+};*/
 
 expect.Assertion.prototype.nearCoord = function(expected, delta) {
     delta = delta || 1e-6;

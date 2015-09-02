@@ -1,4 +1,4 @@
-var CommonSpec = require('./CommonSpec');
+// var CommonSpec = require('./CommonSpec');
 describe('EllipseSpec', function() {
 
     var container;
@@ -29,10 +29,10 @@ describe('EllipseSpec', function() {
             CommonSpec.testCanvasEvents(vector, map, vector.getCenter());
         });
     });
-
+/*
      describe('Common geometry tests.', function() {
         CommonSpec.testGeometryMethods.call(this,new Z.Ellipse(center, 1, 1));
-    });
+    });*/
 
     describe('change shape and position',function() {
         it('events',function() {

@@ -2,8 +2,6 @@ var Z = window['Z'] = Z || {};
 
 Z.VERSION='2.0.0-dev';
 
-Z.ROOTPATH='v2';
-
 Z.DEBUG=true;
 
 Z.loadModule=function(module,callback,context) {

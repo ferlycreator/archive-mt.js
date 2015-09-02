@@ -1,4 +1,4 @@
-var CommonSpec = require('./CommonSpec');
+// var CommonSpec = require('./CommonSpec');
 
 describe('CircleSpec', function() {
 
@@ -30,10 +30,10 @@ describe('CircleSpec', function() {
             CommonSpec.testCanvasEvents(vector, map, vector.getCenter());
         });
     });
-
+    /*
     describe('Common geometry tests.', function() {
         CommonSpec.testGeometryMethods.call(this,new Z.Circle(center, 1));
-    });
+    });*/
 
     describe('change shape and position',function() {
         it('events',function() {
