@@ -913,13 +913,13 @@ describe('API', function () {
             map.removeLayer(layer);
         });
 
-        it('setCenter', function() {
+        it('setCoordinates', function() {
             var marker = new Z.Marker({x: 0, y: 0});
 
             expect(function () {
-                marker.setCenter({x: 1, y: 1});
+                marker.setCoordinates({x: 1, y: 1});
                 layer.addGeometry(marker);
-                marker.setCenter({x: -180, y: 75});
+                marker.setCoordinates({x: -180, y: 75});
             }).to.not.throwException();
         });
 
@@ -987,13 +987,13 @@ describe('API', function () {
             map.removeLayer(layer);
         });
 
-        it('setCenter', function() {
+        it('setCoordinates', function() {
             var circle = new Z.Circle({x: 0, y: 0}, 1);
 
             expect(function () {
-                circle.setCenter({x: 1, y: 1});
+                circle.setCoordinates({x: 1, y: 1});
                 layer.add(circle);
-                circle.setCenter({x:180, y: 75});
+                circle.setCoordinates({x:180, y: 75});
             }).to.not.throwException();
         });
 
@@ -1077,13 +1077,13 @@ describe('API', function () {
             map.removeLayer(layer);
         });
 
-        it('setCenter', function() {
+        it('setCoordinates', function() {
             var ellipse = new Z.Ellipse({x: 0, y: 0}, 1, 1);
 
             expect(function () {
-                ellipse.setCenter({x: -180, y: -75});
+                ellipse.setCoordinates({x: -180, y: -75});
                 layer.addGeometry(ellipse);
-                ellipse.setCenter({x: -180, y: 75});
+                ellipse.setCoordinates({x: -180, y: 75});
             }).to.not.throwException();
         });
 
@@ -1177,13 +1177,13 @@ describe('API', function () {
             map.removeLayer(layer);
         });
 
-        it('setCenter', function() {
+        it('setCoordinates', function() {
             var sector = new Z.Sector({x: 0, y: 0}, 1, 30, 60);
 
             expect(function () {
-                sector.setCenter({x: 180, y: -75});
+                sector.setCoordinates({x: 180, y: -75});
                 layer.addGeometry(sector);
-                sector.setCenter({x: 180, y: 75});
+                sector.setCoordinates({x: 180, y: 75});
             }).to.not.throwException();
         });
 
