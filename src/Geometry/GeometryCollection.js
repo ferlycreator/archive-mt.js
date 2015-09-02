@@ -54,6 +54,14 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         return !Z.Util.isArrayHasData(this.getGeometries());
     },
 
+    remove:function() {
+        var geometries = this.getGeometries();
+        for (var i=0,len=geometries.length;i<len;i++) {
+            this._geometries[i]._rootRemove(false);
+        }
+        this._rootRemove(true);
+    },
+
     /**
      * _prepare this geometry collection
      * @param  {Z.Layer} layer [description]
@@ -117,11 +125,12 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
             return null;
         }
         var sumX=0, sumY=0,counter=0;
-        for (var i=0, len=this._geometries.length;i<len;i++) {
-            if (!this._geometries[i]) {
+        var geometries = this.getGeometries();
+        for (var i=0, len=geometries.length;i<len;i++) {
+            if (!geometries[i]) {
                 continue;
             }
-            var center = this._geometries[i]._computeCenter(projection);
+            var center = geometries[i]._computeCenter(projection);
             sumX += center.x;
             sumY += center.y;
             counter++;
@@ -134,9 +143,9 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
             return false;
         }
         var i, len, geo;
-
-        for (i = 0, len = this._geometries.length; i < len; i++) {
-            geo = this._geometries[i];
+        var geometries = this.getGeometries();
+        for (i = 0, len = geometries.length; i < len; i++) {
+            geo = geometries[i];
             if (geo._containsPoint(point)) {
                 return true;
             }
@@ -149,9 +158,10 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         if (!projection || this.isEmpty()) {
             return null;
         }
+        var geometries = this.getGeometries();
         var result = null;
-        for (var i=0, len=this._geometries.length;i<len;i++) {
-            result = Z.Extent.combine(this._geometries[i]._computeExtent(projection),result);
+        for (var i=0, len=geometries.length;i<len;i++) {
+            result = Z.Extent.combine(geometries[i]._computeExtent(projection),result);
         }
         return result;
     },
@@ -160,9 +170,10 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         if (!projection || this.isEmpty()) {
             return null;
         }
-        var result = this.geometries[0]._computeVisualExtent(projection);
-        for (var i= 1, len = this.geometries.length; i < len; i++) {
-            var extent = this.geometries[i]._computeVisualExtent(projection);
+        var geometries = this.getGeometries();
+        var result = geometries[0]._computeVisualExtent(projection);
+        for (var i= 1, len = geometries.length; i < len; i++) {
+            var extent = geometries[i]._computeVisualExtent(projection);
             result = Z.Extent.combine(extent ,result);
         }
         return result;
@@ -172,9 +183,10 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         if (!projection || this.isEmpty()) {
             return 0;
         }
+        var geometries = this.getGeometries();
         var result = 0;
-        for (var i=0, len=this._geometries.length;i<len;i++) {
-            result += this._geometries[i]._computeGeodesicLength(projection);
+        for (var i=0, len=geometries.length;i<len;i++) {
+            result += geometries[i]._computeGeodesicLength(projection);
         }
         return result;
     },
@@ -183,9 +195,10 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         if (!projection || this.isEmpty()) {
             return 0;
         }
+        var geometries = this.getGeometries();
         var result = 0;
-        for (var i=0, len=this._geometries.length;i<len;i++) {
-            result += this._geometries[i]._computeGeodesicArea(projection);
+        for (var i=0, len=geometries.length;i<len;i++) {
+            result += geometries[i]._computeGeodesicArea(projection);
         }
         return result;
     },

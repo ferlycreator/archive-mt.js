@@ -45,7 +45,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
      * @expose
      */
     getId:function() {
-        return this.identifier;
+        return this._identifier;
     },
 
     /**
@@ -54,7 +54,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
      * @expose
      */
     setId:function(id) {
-        this.identifier = id;
+        this._identifier = id;
     },
 
     /**

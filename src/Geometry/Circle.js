@@ -114,7 +114,7 @@ Z['Circle']=Z.Circle=Z.Polygon.extend({
     },
 
     _exportGeoJson:function(opts) {
-        var center = this.getCenter();
+        var center = this.getCoordinates();
         return {
             'type':'Circle',
             'coordinates':[center.x, center.y],

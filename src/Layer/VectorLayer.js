@@ -13,7 +13,8 @@ Z.VectorLayer=Z.OverlayLayer.extend({
         this.setId(id);
         Z.Util.setOptions(this, options);
         //动态加载Render
-        if (this.isCanvasRender()) {
+        if (Z.Browser.canvas &&
+            ((!Z.Browser.svg && !Z.Browser.vml) || 'canvas' === this.options['render'].toLowerCase())) {
             this._render = new Z.Render.Canvas(this,{
                 'visible':this.options['visible']
             });
@@ -30,14 +31,10 @@ Z.VectorLayer=Z.OverlayLayer.extend({
      * @expose
      */
     isCanvasRender:function() {
-        if (!Z.Browser.canvas) {
-            return false;
-        }
-        //即不支持svg, 也不支持vml, 安卓早期浏览器可能会出现
-        if (!Z.Browser.svg && !Z.Browser.vml) {
+        if (this._render instanceof Z.Render.Canvas) {
             return true;
         }
-        return 'canvas' === this.options['render'].toLowerCase();
+        return false;
     },
 
     load:function() {

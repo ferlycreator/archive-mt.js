@@ -42,12 +42,15 @@ Z.LineString = Z.Polyline = Z.Vector.extend({
     },
 
     _computeGeodesicLength:function(projection) {
-        // TODO: implementation
-        return 0;
+        var coordinates = this.getCoordinates();
+        var result = 0;
+        for (var i=0, len=coordinates.length;i<len-1;i++) {
+            result += projection.getGeodesicLength(coordinates[i],coordinates[i+1]);
+        }
+        return result;
     },
 
     _computeGeodesicArea:function(projection) {
-        // TODO: implementation
         return 0;
     },
 

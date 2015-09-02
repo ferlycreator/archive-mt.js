@@ -110,7 +110,8 @@ Z.Render.Canvas.Base.prototype={
         if (extent && extent.isIntersect(mapExtent)) {
             this.clearCanvas(extent);
             me.eachGeometry(function(geo) {
-                if (!geo || !geo.isVisible()) {
+                //geo的map可能为null,因为绘制为延时方法
+                if (!geo || !geo.isVisible() || !geo.getMap() || !(geo._getPainter() instanceof Z.Painter.Canvas)) {
                     return;
                 }
                 var ext = geo._computeVisualExtent(geo._getProjection());

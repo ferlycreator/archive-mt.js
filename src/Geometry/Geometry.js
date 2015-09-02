@@ -56,7 +56,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     _rootPrepare:function(layer) {
         //Geometry不允许被重复添加到多个图层上
         if (this.getLayer()) {
-            throw new Error(this.exception['DUPLICATE_LAYER']);
+            throw new Error(this.exceptions['DUPLICATE_LAYER']);
         }
         //更新缓存
         this._updateCache();
@@ -72,7 +72,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     getId:function() {
-        return this.identifier;
+        return this._identifier;
     },
 
     /**
@@ -82,7 +82,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      */
     setId:function(id) {
         var oldId = this.getId();
-        this.identifier=id;
+        this._identifier=id;
         this._fireEvent('_idchanged',{'target':this,'oldId':oldId,'newId':id});
         return this;
     },
@@ -270,6 +270,10 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     remove:function() {
+        this._rootRemove(true);
+    },
+
+    _rootRemove:function(isFireEvent) {
         var layer = this.getLayer();
         if (!layer) {
             return;
@@ -286,12 +290,12 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
         delete this._painter;*/
         this._removePainter();
-
+        delete this.layer;
         layer._onGeometryRemove(this);
         delete this.layer;
-
-        this._fireEvent('remove',{'target':this});
-
+        if (isFireEvent) {
+            this._fireEvent('remove',{'target':this});
+        }
     },
 
     _getInternalId:function() {

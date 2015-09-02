@@ -138,11 +138,32 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
     },
 
     _computeGeodesicLength:function(projection) {
-        return 0;
+        var rings = this.getCoordinates();
+        if (!Z.Util.isArrayHasData(rings)) {
+            return 0;
+        }
+        var result = 0;
+        for (var i=0, len=rings.length;i<len;i++) {
+            var ring = rings[i];
+            for (var j=0, jlen=ring.length-1;j<jlen;j++) {
+                result += projection.getGeodesicLength(ring[j],ring[j+1]);
+            }
+        }
+        return result;
     },
 
     _computeGeodesicArea:function(projection) {
-        return 0;
+        var rings = this.getCoordinates();
+        if (!Z.Util.isArrayHasData(rings)) {
+            return 0;
+        }
+        var result = projection.getGeodesicArea(rings[0]);
+        //holes
+        for (var i=1, len=rings.length;i<len;i++) {
+            result -= projection.getGeodesicArea(rings[i]);
+
+        }
+        return result;
     },
 
     _containsPoint: function(point) {
