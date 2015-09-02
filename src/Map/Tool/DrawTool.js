@@ -282,7 +282,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
                     drawLayer.addGeometry(geometry);
                     break;
                 }
-                var nw =geometry.getNw();
+                var nw =geometry.getCoordinates();
                 var width = _map.computeDistance(nw,{x:coordinate.x, y:nw.y});
                 var height = _map.computeDistance(nw,{x:nw.x, y:coordinate.y});
                 geometry.setWidth(width);

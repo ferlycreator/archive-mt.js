@@ -175,12 +175,11 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
                 'y':0
             };
         }
-        if (!coordinates) {return null;}
         var pnw,pse;
         var width, height;
-        var iconType = icon['type'];
-        height = (icon['height']?parseInt(icon['height'],10):0);
-        width = (icon['width']?parseInt(icon['width'],10):0);
+        var size = this._getMarkerSize(icon);
+        width = size.width;
+        height = size.height;
         pnw = new Z.Point((width/2-offset['x']), (height+offset['y']));
         pse = new Z.Point((width/2+offset['x']), (-offset['y']));
 
