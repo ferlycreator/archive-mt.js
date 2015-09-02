@@ -7,7 +7,7 @@ describe('ExtentSpec', function() {
     var layer;
 
     beforeEach(function() {
-        var setups = CommonSpec.mapSetup(center);
+        var setups = commonSetupMap(center);
        container = setups.container;
        map = setups.map;
     });

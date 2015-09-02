@@ -8,7 +8,7 @@ describe('EllipseSpec', function() {
     var layer;
 
     beforeEach(function() {
-       var setups = CommonSpec.mapSetup(center);
+       var setups = commonSetupMap(center);
        container = setups.container;
        map = setups.map;
     });
@@ -21,18 +21,14 @@ describe('EllipseSpec', function() {
     describe('geometry fires events', function() {
         it('svg events', function() {
             var vector = new Z.Ellipse(center, 1,1);
-            CommonSpec.testSVGEvents(vector, map);
+            GeoEventsTester.testSVGEvents(vector, map);
         });
 
         it('canvas events', function() {
             var vector = new Z.Ellipse(center, 1,1);
-            CommonSpec.testCanvasEvents(vector, map, vector.getCenter());
+            GeoEventsTester.testCanvasEvents(vector, map, vector.getCenter());
         });
     });
-/*
-     describe('Common geometry tests.', function() {
-        CommonSpec.testGeometryMethods.call(this,new Z.Ellipse(center, 1, 1));
-    });*/
 
     describe('change shape and position',function() {
         it('events',function() {
