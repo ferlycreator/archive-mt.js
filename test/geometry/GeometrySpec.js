@@ -7,7 +7,7 @@ describe('GeometrySpec', function() {
     var layer;
 
     beforeEach(function() {
-        var setups = CommonSpec.mapSetup(center);
+        var setups = commonSetupMap(center);
         container = setups.container;
         map = setups.map;
         layer = new Z.VectorLayer('canvas', {render: 'canvas'});
@@ -193,5 +193,261 @@ describe('GeometrySpec', function() {
         });
         expect(spy.called).to.be.ok();
     });
+    // 测试所有类型Geometry的公共方法
+    var geometries = genAllTypeGeometries();
+
+    for (var i=0, len = geometries.length;i<len;i++){
+        registerGeometryCommonTest(geometries[i]);
+    }
 
 });
+//测试Geometry的公共方法
+function registerGeometryCommonTest(geometry) {
+
+    function setupGeometry() {
+        var layer = new Z.VectorLayer('common_test_layer');
+        layer.addGeometry(geometry);
+        map.addLayer(layer);
+    }
+
+    function teardownGeometry() {
+        geometry.remove();
+        map.removeLayer('common_test_layer');
+    }
+
+
+
+    context('getter and setters.',function() {
+        it('id', function() {
+            geometry.setId('id');
+            var id = geometry.getId();
+            expect(id).to.be('id');
+            geometry.setId(null);
+            expect(geometry.getId()).to.not.be.ok();
+        });
+
+        it('Layer',function() {
+            expect(geometry.getLayer()).to.not.be.ok();
+            var layer = new Z.VectorLayer('id');
+            layer.addGeometry(geometry);
+            expect(geometry.getLayer()).to.be.ok();
+            //delete
+            geometry.remove();
+            expect(geometry.getLayer()).to.not.be.ok();
+        });
+
+        it('Map',function() {
+            setupGeometry();
+
+            expect(geometry.getMap()).to.be.ok();
+
+            teardownGeometry();
+
+            expect(geometry.getMap()).to.not.be.ok();
+        });
+
+        it('Type',function() {
+            var type = geometry.getType();
+            expect(type).to.not.be.empty();
+        });
+
+        it('Symbol',function() {
+            var symbol = geometry.getSymbol();
+            expect(symbol).to.be.ok();
+            expect(symbol).to.not.be.empty();
+            //setSymbol单独测试
+        });
+
+        it('Properties',function() {
+            var old_props = geometry.getProperties();
+
+            var props_test = {'foo_num':1, 'foo_str':'str', 'foo_bool':false};
+            geometry.setProperties(props_test);
+
+            var props = geometry.getProperties();
+            expect(props).to.eql(props_test);
+
+            geometry.setProperties(old_props);
+            expect(geometry.getProperties()).to.not.eql(props_test);
+        });
+
+    });
+
+    context('can be measured.',function() {
+        it('it has geodesic length',function() {
+            var length = geometry.getLength();
+            expect(length).to.be.ok();
+        });
+
+        it('it has geodesic area',function() {
+            var area = geometry.getArea();
+            expect(area).to.be.ok();
+        });
+
+        it('it has extent',function() {
+            setupGeometry();
+
+            var extent = geometry.getExtent();
+            expect(extent).to.be.a(Z.Extent);
+            expect(extent).to.not.be.empty();
+
+            teardownGeometry();
+        });
+
+        it('it has size',function() {
+            setupGeometry();
+
+            var size = geometry.getSize();
+            expect(size).to.be.a(Z.Size);
+            expect(size.width).to.be.above(0);
+            expect(size.height).to.be.above(0);
+
+            teardownGeometry();
+        });
+
+        it('it has center',function() {
+            var center = geometry.getCenter();
+            expect(center).to.be.a(Z.Coordinate);
+            expect(center.x).to.be.ok();
+            expect(center.y).to.be.ok();
+
+            setupGeometry();
+
+            center = geometry.getCenter();
+            expect(center).to.be.a(Z.Coordinate);
+            expect(center.x).to.be.ok();
+            expect(center.y).to.be.ok();
+
+            teardownGeometry();
+        });
+    });
+
+    context('can show and hide.',function() {
+        it('show and hide',function() {
+            geometry.show();
+            expect(geometry.isVisible()).to.be.ok();
+            geometry.hide();
+            expect(geometry.isVisible()).to.not.be.ok();
+
+            setupGeometry();
+
+            geometry.show();
+            expect(geometry.isVisible()).to.be.ok();
+            geometry.hide();
+            expect(geometry.isVisible()).to.not.be.ok();
+
+            teardownGeometry();
+
+            geometry.show();
+            expect(geometry.isVisible()).to.be.ok();
+        });
+    });
+
+    context('copy',function() {
+        it ('copy',function() {
+            var json = geometry.toJson();
+
+            var cloned = geometry.copy();
+
+            var clonedJson = cloned.toJson();
+
+            expect(clonedJson).to.eql(json);
+        });
+    });
+
+    context('remove',function() {
+        it ('remove from layer',function() {
+            //layer not on map
+            var layer = new Z.VectorLayer('svg');
+            layer.addGeometry(geometry);
+            expect(geometry.getLayer()).to.be.ok();
+            expect(geometry.getMap()).to.not.be.ok();
+            geometry.remove();
+            expect(geometry.getLayer()).to.not.be.ok();
+
+            setupGeometry();
+
+            expect(geometry.getLayer()).to.be.ok();
+            expect(geometry.getMap()).to.be.ok();
+            geometry.remove();
+            expect(geometry.getLayer()).to.not.be.ok();
+
+            var canvasLayer = new Z.VectorLayer('canvas',{'render':'canvas'});
+            canvasLayer.addGeometry(geometry);
+            map.addLayer(canvasLayer);
+
+            expect(geometry.getLayer()).to.be.ok();
+            expect(geometry.getMap()).to.be.ok();
+            geometry.remove();
+            expect(geometry.getLayer()).to.not.be.ok();
+
+            teardownGeometry();
+        });
+    });
+
+    context('some internal methods should be tested.',function() {
+        it('painter',function() {
+            setupGeometry();
+
+            var painter = geometry._getPainter();
+            expect(painter).to.be.ok();
+            geometry.remove();
+
+            var canvasLayer = new Z.VectorLayer('canvas',{'render':'canvas'});
+            canvasLayer.addGeometry(geometry);
+            map.addLayer(canvasLayer);
+
+            painter = geometry._getPainter();
+            expect(painter).to.be.ok();
+
+            teardownGeometry();
+        });
+
+        it('getExternalResource',function() {
+            var oldSymbol = geometry.getSymbol();
+
+            var type = geometry.getType();
+            if (type === Z.Geometry.TYPE_POINT) {
+                var symbol = {
+                    'marker-file':'http://foo.com/foo.png'
+                };
+                geometry.setSymbol(symbol);
+                var resource = geometry._getExternalResource();
+                expect(resource).to.be(symbol['marker-file']);
+            } else {
+                var symbol = {
+                    'polygon-fill':'url(\'http://foo.com/foo.png\')'
+                };
+                geometry.setSymbol(symbol);
+                var resource = geometry._getExternalResource();
+                expect(resource).to.be('http://foo.com/foo.png');
+            }
+        });
+
+        it('getProjection',function() {
+            var projection = geometry._getProjection();
+            expect(projection).to.be.ok();
+
+            setupGeometry();
+
+            var projection = geometry._getProjection();
+            expect(projection.srs).to.be(map._getProjection().srs);
+
+            teardownGeometry();
+        });
+    });
+
+
+    context('map events listeners',function() {
+        it ('onZoomEnd',function() {
+            setupGeometry();
+            var spy = sinon.spy(geometry,'_onZoomEnd');
+            map.on('zoomend',function() {
+                expect(spy.called).to.be.ok();
+                teardownGeometry();
+            });
+            map.zoomOut();
+
+        });
+    });
+}

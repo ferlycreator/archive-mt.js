@@ -8,7 +8,7 @@ describe('Marker', function() {
     var icon1, icon2;
 
     beforeEach(function() {
-        var setups = CommonSpec.mapSetup(center);
+        var setups = commonSetupMap(center);
         container = setups.container;
         map = setups.map;
         /*layer = new Z.VectorLayer('id');
@@ -62,12 +62,12 @@ describe('Marker', function() {
     describe('events', function() {
         it('svg events', function() {
             var vector = new Z.Marker(center);
-            CommonSpec.testSVGEvents(vector, map);
+            GeoEventsTester.testSVGEvents(vector, map);
         });
 
         it('canvas events', function() {
             var vector = new Z.Marker(center);
-            CommonSpec.testCanvasEvents(vector, map, vector.getCenter());
+            GeoEventsTester.testCanvasEvents(vector, map, vector.getCenter());
         });
     });
 

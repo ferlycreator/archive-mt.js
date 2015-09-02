@@ -32,7 +32,7 @@ module.exports = function(config) {
     // testing framework to use (jasmine/mocha/qunit/...)
     // as well as any additional frameworks (requirejs/chai/sinon/...)
     frameworks: [
-      'browserify',
+      // 'browserify',
       'mocha',
       'expect',
       'sinon',
@@ -47,15 +47,15 @@ module.exports = function(config) {
     exclude: [
     ],
 
-    preprocessors: {
-      //'src/**/*.js': 'coverage',
-      'test/**/*.js': [ 'browserify' ] //Mention path as per your test js folder
-    },
+    // preprocessors: {
+    //   //'src/**/*.js': 'coverage',
+    //   'test/**/*.js': [ 'browserify' ] //Mention path as per your test js folder
+    // },
     // add additional browserify configuration properties here
     // such as transform and/or debug=true to generate source maps
-    browserify: {
-      debug: true
-    },
+    // browserify: {
+    //   debug: true
+    // },
     // coverageReporter: {
     //   type: 'html',
     //   dir: 'coverage',
@@ -88,8 +88,8 @@ module.exports = function(config) {
       'karma-expect',
       'karma-sinon-ie',
       'karma-happen',
-      'karma-jquery',
-      'karma-browserify'
+      'karma-jquery'/*,
+      'karma-browserify'*/
     ],
 
     customLaunchers: {
