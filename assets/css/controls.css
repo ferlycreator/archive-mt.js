@@ -144,7 +144,7 @@
     vertical-align: top;
     text-decoration: none;
     color: #5077bb;
-    background: transparent url(/engine/images/control.png) no-repeat;
+    background: transparent url(../images/control.png) no-repeat;
 
 }
 
@@ -198,7 +198,7 @@
     position: absolute;
     top: 0px;
     left: 12px;
-    background: url(/engine/images/zoom_bar.png) no-repeat 0 0;
+    background: url(../images/zoom_bar.png) no-repeat 0 0;
     width: 6px;
     height: 198px;
 }
@@ -208,7 +208,7 @@
     position: absolute;
     top: 0px;
     left: 7px;
-    background: url(/engine/images/zoom_thumb.png) no-repeat 0 0;
+    background: url(../images/zoom_thumb.png) no-repeat 0 0;
     width: 16px;
     height: 8px;
 }
@@ -250,6 +250,5 @@
 }
 
 .control_nav_bg {
-    background: url(/engine/images/apiimg.png);
+    background: url(../images/apiimg.png);
 }
-
