@@ -60,13 +60,16 @@ Z.Painter = Z.Class.extend({
         if (symbol['polygonPatternFile']) {
             fillSymbol['fill'] = symbol['polygonPatternFile'];
         }
-        fillSymbol['fillOpacity'] = (!Z.Util.isNil(symbol['polygonOpacity'])?symbol['polygonOpacity']:symbol['polygonPatternOpacity']);
+        var fillOpacity = (!Z.Util.isNil(symbol['polygonOpacity'])?symbol['polygonOpacity']:symbol['polygonPatternOpacity']);
 
         if (symbol['markerFill'] || symbol['markerFillOpacity']) {
             fillSymbol['fill'] = Z.Util.setDefaultValue(symbol['markerFill'], '#ffffff');
             //markerOpacity优先级较高
-            fillSymbol['fillOpacity'] = (!Z.Util.isNil(symbol['markerOpacity'])?symbol['markerOpacity']:symbol['markerFillOpacity']);
+            fillOpacity = (!Z.Util.isNil(symbol['markerOpacity'])?symbol['markerOpacity']:symbol['markerFillOpacity']);
+
         }
+        if(!fillOpacity) fillOpacity = 0;
+        fillSymbol['fillOpacity'] = fillOpacity;
         return fillSymbol;
     },
 

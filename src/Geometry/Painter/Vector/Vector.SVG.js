@@ -16,13 +16,13 @@ Z.Vector.SVG = Z.Painter.SVG.extend({
         }
         var ret = null;
         if (!isHole) {
-            ret = 'M'+coords.join('L');
+            ret = 'M'+coords.join(' L');
             if (isClosePath) {
                 ret += Z.SVG.closeChar;
             }
         } else {
             //如果是空洞,则逆时针绘制
-            ret = 'M'+coords.reverse().join('L')+Z.SVG.closeChar;
+            ret = 'M'+coords.reverse().join(' L')+Z.SVG.closeChar;
         }
 
         return ret;

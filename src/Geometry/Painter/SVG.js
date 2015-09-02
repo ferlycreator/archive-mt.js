@@ -153,13 +153,15 @@ Z.SVG.SVG = {
         }
 
         for (key in strokeSymbol) {
+            var svgKey = Z.Util.convertCamelToMinus(key);
             if (strokeSymbol.hasOwnProperty(key)) {
-                vector.setAttribute(key, strokeSymbol[key]);
+                vector.setAttribute(svgKey, strokeSymbol[key]);
             }
         }
 
         for (key in fillSymbol) {
             if (fillSymbol.hasOwnProperty(key)) {
+                var svgKey = Z.Util.convertCamelToMinus(key);
                 if (key.toLowerCase() === 'fill') {
                     //模式填充
                     var fillValue = fillSymbol[key];
@@ -169,11 +171,11 @@ Z.SVG.SVG = {
                     var isUrl = fillValue.match(Z.SVG._ISURL);
                     if (isUrl) {
                         var pattern = Z.SVG.SVG.fillWithPattern(isUrl, vector, paper);
-                        vector.setAttribute(key, pattern);
+                        vector.setAttribute(svgKey, pattern);
                         continue;
                     }
                 }
-                vector.setAttribute(key, fillSymbol[key]);
+                vector.setAttribute(svgKey, fillSymbol[key]);
             }
         }
     },

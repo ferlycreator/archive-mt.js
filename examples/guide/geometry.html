@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MapTalks 示例: 标注矢量图形</title>
+    <title>MapTalks 示例: 添加点、线与面</title>
 </head>
 <body scroll="no" onload="initMap();">
 <div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
@@ -14,7 +14,7 @@
         mapObj = new Z.Map('mapObj', //放置mapObj的div id
         {
             center:  new Z.Coordinate(121.489935,31.24432), //初始中心点坐标
-            zoomLevel:   17, //初始缩放级别
+            zoomLevel:   11, //初始缩放级别
             attributionControl:  false, //版权信息控件
             zoomControl :  false, //缩放控件
             navControl:  false, //导航控件
@@ -25,39 +25,54 @@
         {
             crs:'crs3857', //坐标系
             urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
-            subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
+            subdomains:[1,2,3]//对应urlTemplate中占位符{s}的值
         }));
-        //创建图层
+        //创建放置图形的图层
         var layer = new Z.VectorLayer('layer');
-        //将图层添加到地图对象
+        //将图层添加到地图
         mapObj.addLayer(layer);
-        //创建点的坐标对象
-        var coordinate = new Z.Coordinate(121.489935,31.24432);
-        //设置矢量配置
-        var icon = {
-            'marker-type': 'triangle',
-            'marker-opacity': 1,
-            'marker-fill-opacity': 1,
-            'marker-line-color': '#0000ff',
-            'marker-line-width': 1,
-            'marker-line-opacity': 1,
-            'marker-placement': 'point',
-            'marker-width': 30,
-            'marker-height': 30,
-            'marker-fill': '#ff0000',
-            'dx': 0,
-            'dy': 0
-        };
-        /**
-        * marker-type 说明：
-        * circle：圆形；triangle：三角形；cross：十字；diamond：菱形；square：正方形；x/X：X形；bar：柱状图
-        */
+
         //创建点对象
-        var marker = new Z.Marker(coordinate, {symbol:icon});
+        var marker = new Z.Marker(
+            //点坐标
+            new Z.Coordinate(121.489935,31.24432),
+            //点id，可不设置
+            {'id':'marker_id'});
+        //设置点图片
+        var icon = {
+            'marker-file': '/maptalks/v2/images/marker.png',
+            'marker-width': 22,
+            'marker-height': 30,
+            'dx': 0,
+            'dy' :0
+        };
         //设置点样式
         marker.setSymbol(icon);
         //将点添加到Layer
         layer.addGeometry(marker);
+
+        //创建线对象
+        var polyline = new Z.Polyline(
+            //线端点坐标数组
+            [new Z.Coordinate(121.454716,31.272095),
+            new Z.Coordinate(121.459007,31.25933),
+            new Z.Coordinate(121.458149,31.241572),
+            new Z.Coordinate(121.460381,31.229977),
+            new Z.Coordinate(121.473427,31.222784)],
+            //线id，可不设置
+            {'id': 'polyline_id'});
+        //设置线样式
+        var polylineSymbol = {
+            'line-color' : '#ff00ff',
+            'line-width' : 5,
+            'line-dasharray' : '-',//线形
+            'line-opacity' : 1
+        };
+        polyline.setSymbol(polylineSymbol);
+        //将线添加到Layer
+        layer.addGeometry(polyline);
+
+
     }
 </script>
 <!-- 引擎javascript开发包-->

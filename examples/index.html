@@ -68,7 +68,7 @@
                         &lt;div id="mapObj" style="width:100%; height:100%;"&gt;&lt;/div&gt;
                     </code></p>
                     </code></p>
-                    <p>3、通过<code> new Z.Map(...)创建地图对象，并设置底图图层。</code></p>
+                    <p>3、使用<code> new Z.Map(...)创建地图对象，并设置底图图层。</code></p>
                     <div class="bs-docs-example">
 <pre class="linenums prettyprint">
 &lt;!-- 第一步：MapTalks JavaScript 开发包 --&gt;
@@ -84,30 +84,67 @@
         //创建地图对象
         mapObj = new Z.Map('mapObj', //放置mapObj的div id
         {
-            center:     new Z.Coordinate(121.489935,31.24432), //地图初始中心点坐标
-            zoomLevel:  17, //地图初始缩放级别
-            attributionControl: false, //版权信息控件
-            zoomControl : false, // 地图缩放控件
-            navControl: false, //地图导航控件
-            scaleControl: false //地图比例尺控件
+            center:  new Z.Coordinate(121.489935,31.24432), //初始中心点坐标
+            zoomLevel:   17, //初始缩放级别
+            attributionControl:  false, //版权信息控件
+            zoomControl :  false, //缩放控件
+            navControl:  false, //导航控件
+            scaleControl:  false //比例尺控件
         });
         //定制地图底图(Tile Layer)
         var tileLayer = new Z.TileLayer('tile', //底图id
         {
             crs:'crs3857', //坐标系
             urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
-            subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
+            subdomains:[1,2,3]//对应urlTemplate中占位符{s}的值
         });
         //设置底图图层
         mapObj.setBaseTileLayer(tileLayer);
     }
 &lt;/script&gt;
 </pre>
-                    <iframe src="geometry/guide/first_map.html" width="100%">
+                    <iframe src="guide/first_map.html" width="100%">
 
                     </iframe>
                     <p>
-                        <a class="btn btn-success" href="editor.html?html=geometry/guide/first_map.html&title=First Map" target="_blank">源码编辑器</a>
+                        <a class="btn btn-success" href="editor.html?html=guide/first_map.html&title=First Map" target="_blank">源码编辑器</a>
+                    </p>
+                    </div>
+
+                    <h2>添加点、线与面</h2>
+                    <p>1、使用<code>new Z.VectorLayer(...)</code>创建放置图形的图层；</p>
+                    <p>2、使用<code>new Z.Marker(...)</code>创建点；</p>
+                    <p>3、使用<code>new Z.Polyline(...)</code>创建线；</p>
+                    <p>4、使用<code>new Z.Polygon(...)</code>创建面；</p>
+                    <p>5、将点、线与面添加到图层上。</p>
+                    <div class="bs-docs-example">
+<pre class="linenums prettyprint">
+//创建放置图形的图层
+var layer = new Z.VectorLayer('layer');
+//将图层添加到地图
+mapObj.addLayer(layer);
+
+//创建点对象
+var marker = new Z.Marker(new Z.Coordinate(121.489935,31.24432),{'id':'marker_id'});
+//设置点图片
+var icon = {
+    'marker-file': '/maptalks/v2/images/marker.png',
+    'marker-width': 22,
+    'marker-height': 30,
+    'dx': 0,
+    'dy' :0
+};
+//设置点样式
+marker.setSymbol(icon);
+//将点添加到Layer
+layer.addGeometry(marker);
+
+</pre>
+                    <iframe src="guide/geometry.html" width="100%">
+
+                    </iframe>
+                    <p>
+                        <a class="btn btn-success" href="editor.html?html=guide/geometry.html&title=Add Geometries" target="_blank">源码编辑器</a>
                     </p>
                     </div>
 
@@ -131,7 +168,7 @@
                     </div>
 
                     <h2>添加点</h2>
-                    <p>1、通过<code>new Z.Marker(...)</code>创建一个点；</p>
+                    <p>1、使用<code>new Z.Marker(...)</code>创建一个点；</p>
                     <p>2、将点添加到图层上。</p>
                     <div class="bs-docs-example">
 <pre class="linenums prettyprint">
@@ -151,7 +188,7 @@ layer.addGeometry(marker);
                     </div>
 
                     <h2>标注图片</h2>
-                    <p>1、通过<code>new Z.Marker(...)</code>创建一个点；</p>
+                    <p>1、使用<code>new Z.Marker(...)</code>创建一个点；</p>
                     <p>2、构造图片参数，并设置到Marker；</p>
                     <p>3、将点添加到图层上。</p>
                     <div class="bs-docs-example">
@@ -182,7 +219,7 @@ layer.addGeometry(marker);
                     </div>
 
                     <h2>标注矢量图形</h2>
-                    <p>1、通过<code>new Z.Marker(...)</code>创建一个点；</p>
+                    <p>1、使用<code>new Z.Marker(...)</code>创建一个点；</p>
                     <p>2、构造矢量图形参数，并设置到Marker；</p>
                     <p>3、将点添加到图层上。</p>
                     <div class="bs-docs-example">
@@ -226,7 +263,7 @@ layer.addGeometry(marker);
 
 
                     <h2>标注柱状图</h2>
-                    <p>1、通过<code>new Z.Marker(...)</code>创建一个点；</p>
+                    <p>1、使用<code>new Z.Marker(...)</code>创建一个点；</p>
                     <p>2、构造柱状图参数，并设置到Marker；</p>
                     <p>3、将点添加到图层上。</p>
                     <div class="bs-docs-example">
@@ -299,7 +336,7 @@ layer.addGeometry(barMarker3);
 
 
                     <h2>标注文本</h2>
-                    <p>1、通过<code>new Z.Marker(...)</code>创建一个点；</p>
+                    <p>1、使用<code>new Z.Marker(...)</code>创建一个点；</p>
                     <p>2、构造文本参数，并设置到Marker；</p>
                     <p>3、将文本点添加到图层上。</p>
                     <div class="bs-docs-example">
@@ -345,7 +382,7 @@ layer.addGeometry(marker);
 
 
                     <h2>设置点标签</h2>
-                    <p>1、通过<code>new Z.Marker(...)</code>创建一个点；</p>
+                    <p>1、使用<code>new Z.Marker(...)</code>创建一个点；</p>
                     <p>2、构造标签参数，并设置到Marker；</p>
                     <p>3、将点添加到图层上。</p>
                     <div class="bs-docs-example">

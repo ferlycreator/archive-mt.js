@@ -4,9 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MapTalks 示例: 标注图片</title>
-    <!-- 公用的地图初始化代码，其中注册的地图载入完成回调函数名为onMapReady -->
-    <link href="/maptalks/v2/css/label.css" rel="stylesheet" type="text/css"/>
-    <link href="/maptalks/v2/css/controls.css" rel="stylesheet" type="text/css"/>
 </head>
 <body scroll="no" onload="initMap();">
 <div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
@@ -16,12 +13,12 @@
         //创建地图对象
         mapObj = new Z.Map('mapObj', //放置mapObj的div id
         {
-            center:     new Z.Coordinate(121.489935,31.24432), //地图初始中心点坐标
-            zoomLevel:  17, //地图初始缩放级别
-            attributionControl: false, //版权信息控件
-            zoomControl : false, // 地图缩放控件
-            navControl: false, //地图导航控件
-            scaleControl: false //地图比例尺控件
+            center:  new Z.Coordinate(121.489935,31.24432), //初始中心点坐标
+            zoomLevel:   17, //初始缩放级别
+            attributionControl:  false, //版权信息控件
+            zoomControl :  false, //缩放控件
+            navControl:  false, //导航控件
+            scaleControl:  false //比例尺控件
         });
         //设置底图图层
         mapObj.setBaseTileLayer(new Z.TileLayer('tile', //底图id
