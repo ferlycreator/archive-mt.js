@@ -97,7 +97,12 @@ Z.Geometry.Poly={
         }
         var sumx=0,sumy=0;
         var counter = 0;
-        for (var i=0,len=ring.length;i<len;i++) {
+        var size = ring.length;
+        if (this instanceof Z.Polygon) {
+            //如果是Polygon,则是闭合圆环, 需要去掉最后一个点
+            size--;
+        }
+        for (var i=0;i<size;i++) {
             if (ring[i]) {
                 if (Z.Util.isNumber(ring[i].x) && Z.Util.isNumber(ring[i].y)) {
                         sumx += ring[i].x;

@@ -49,7 +49,7 @@ Z.ProjectionInstance.GeoMethods.WGS84Geodesic={
         //              / (2 * 6378137)))
         //              / (2 * Math.pow(Math.cos(ry), 2)))));
         rx = rx + sx * (xDistance > 0 ? 1 : -1);
-        return {'x':rx * 180 / Math.PI, 'y':ry * 180 / Math.PI};
+        return new Z.Coordinate(rx * 180 / Math.PI, ry * 180 / Math.PI);
     }
 };
 Z.ProjectionInstance.GeoMethods.Pixel={
@@ -83,6 +83,6 @@ Z.ProjectionInstance.GeoMethods.Pixel={
         if (!xDistance) {xDistance = 0;}
         if (!yDistance) {yDistance = 0;}
         if (!xDistance && !yDistance) {return mlonlat;}
-        return {'x':mlonlat.x+xDistance, 'y':mlonlat.y+yDistance};
+        return new Z.Coordinate(mlonlat.x+xDistance, mlonlat.y+yDistance);
     }
 };

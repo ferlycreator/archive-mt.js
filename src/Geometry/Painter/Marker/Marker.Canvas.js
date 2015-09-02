@@ -53,6 +53,9 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
     paintPictureMarker:function(context, pt, icon, resources) {
         var url = icon['url'];
         var img = resources.getImage(url);
+        if (!img) {
+            return;
+        }
         var ratio = Z.Browser.retina ? 2:1;
         var left = pt.left*ratio;
         var top = pt.top*ratio;

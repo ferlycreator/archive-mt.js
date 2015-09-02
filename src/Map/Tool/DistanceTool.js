@@ -102,7 +102,7 @@ Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
 
         var point = this._genMeasurePoint(coordinate, this.layerId + '_startp_' + this.counter);
         var marker = new Z.Marker(coordinate, this.layerId + '_start_' + this.counter);
-        marker._setIcon({
+        marker.setSymbol({
             'type' : 'html',
             'content' : startDiv
         });
@@ -124,7 +124,7 @@ Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
         var measureDiv = this._outline(content, 50);
         var point = this._genMeasurePoint(coordinate, this.layerId + '_ringp_' + this.rings.length+'_' + this.counter);
         var marker = new Z.Marker(coordinate, this.layerId + '_ring_' + this.rings.length + '_' + this.counter);
-        marker._setIcon({
+        marker.setSymbol({
             'type' : 'html',
             'content' : measureDiv
         });

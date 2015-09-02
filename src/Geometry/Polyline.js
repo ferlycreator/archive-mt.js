@@ -1,4 +1,4 @@
-Z['Polyline']=Z.Polyline = Z.Vector.extend({
+Z.LineString = Z.Polyline = Z.Vector.extend({
     includes:[Z.Geometry.Poly],
 
     type:Z.Geometry['TYPE_LINESTRING'],
@@ -15,6 +15,11 @@ Z['Polyline']=Z.Polyline = Z.Vector.extend({
      * @expose
      */
     setCoordinates:function(coordinates) {
+        if (!coordinates) {
+            this.points = null;
+            this._setPrjPoints(null);
+            return;
+        }
         this.points = Z.GeoJson.fromGeoJsonCoordinates(coordinates);
         if (this.getMap()) {
             this._setPrjPoints(this._projectPoints(this.points));
@@ -30,16 +35,22 @@ Z['Polyline']=Z.Polyline = Z.Vector.extend({
      * @expose
      */
     getCoordinates:function() {
+        if (!this.points) {
+            return [];
+        }
         return this.points;
     },
 
     _computeGeodesicLength:function(projection) {
-        // TODO: implementation
-        return 0;
+        var coordinates = this.getCoordinates();
+        var result = 0;
+        for (var i=0, len=coordinates.length;i<len-1;i++) {
+            result += projection.getGeodesicLength(coordinates[i],coordinates[i+1]);
+        }
+        return result;
     },
 
     _computeGeodesicArea:function(projection) {
-        // TODO: implementation
         return 0;
     },
 

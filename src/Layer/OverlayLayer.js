@@ -107,14 +107,14 @@ Z.OverlayLayer=Z.Layer.extend({
      * 遍历geometry
      * @param  {Function} fn 回调函数
      */
-    _eachGeometry:function(fn,obj) {
+    _eachGeometry:function(fn,context) {
         var cache = this._geoCache;
-        if (!obj) {
-            obj=this;
+        if (!context) {
+            context=this;
         }
         for (var g in cache) {
             if (cache.hasOwnProperty(g)) {
-                fn.call(obj,cache[g]);
+                fn.call(context,cache[g]);
             }
         }
     },

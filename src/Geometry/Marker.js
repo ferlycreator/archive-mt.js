@@ -19,25 +19,6 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
         this._initOptions(opts);
     },
 
-    getDefaultSymbol:function() {
-        return {
-            'icon': this.defaultIcon
-        };
-    },
-
-    /**
-     * 设置Marker的Icon
-     * @param {Icon} icon 新的Icon
-     * @expose
-     */
-    _setIcon: function(icon) {
-        return this.setSymbol(icon);
-    },
-
-    setText: function(text) {
-        this._setIcon(text);
-    },
-
     _containsPoint: function(point) {
         var symbol = this.getSymbol();
         var markerSize = this._getMarkerSize(symbol);
@@ -181,12 +162,11 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
                 'y':0
             };
         }
-        if (!coordinates) {return null;}
         var pnw,pse;
         var width, height;
-        var iconType = icon['type'];
-        height = (icon['height']?parseInt(icon['height'],10):0);
-        width = (icon['width']?parseInt(icon['width'],10):0);
+        var size = this._getMarkerSize(icon);
+        width = size.width;
+        height = size.height;
         pnw = new Z.Point((width/2-offset['x']), (height+offset['y']));
         pse = new Z.Point((width/2+offset['x']), (-offset['y']));
 

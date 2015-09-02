@@ -1,4 +1,4 @@
-var utils = require('../SpecUtils.js');
+// var utils = require('../SpecUtils.js');
 
 describe('SVGLayer', function() {
 
@@ -42,7 +42,7 @@ describe('SVGLayer', function() {
         });
 
         it('all type of geometry', function() {
-            var geometries = utils.genAllTypeGeometries();
+            var geometries = genAllTypeGeometries();
 
             expect(function() {
                 layer.addGeometry(geometries);

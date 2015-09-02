@@ -1,8 +1,7 @@
-
 Z.Painter = Z.Class.extend({
     includes:[Z.Eventable],
     paint:function() {
-        if (!this.geometry || !this.geometry.isVisible()) {
+        if (!this.geometry || !this.geometry.isVisible() || !this.geometry.getMap()) {
             return;
         }
         this._paint.apply(this,arguments);
@@ -13,13 +12,10 @@ Z.Painter = Z.Class.extend({
         var symbol = _symbol;
         if (!symbol) {
             symbol = this.geometry.getSymbol();
-            if (!symbol) {
-                symbol = this.geometry.getDefaultSymbol();
-            }
         }
         //如果有cartoCSS定义, 则优先载入cartoCSS中的symbol
         var map = this.geometry.getMap();
-        if (map.options['enableCartoCSS']) {
+        if (map.options && map.options['enableCartoCSS']) {
             var cartoSymbol = map._cartoCSSGeometry(this.geometry);
             if (cartoSymbol) {
                 symbol = Z.Util.convertFieldNameStyle(cartoSymbol,'camel');

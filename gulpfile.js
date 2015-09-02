@@ -54,13 +54,17 @@ gulp.task('jshint', function () {
 });
 
 //copy libs
-gulp.task('copy', function () {
+gulp.task('copy', ['styles'],function () {
   gulp.src('assets/images/**/*')
             .pipe(gulp.dest(img_dist_path));
   gulp.src('assets/lib/**/*')
             .pipe(gulp.dest(lib_dist_path));
-  gulp.src('./examples/**/*')
+  return gulp.src('./examples/**/*')
             .pipe(gulp.dest(examples_dist_path));
+
+});
+//copy css styles
+gulp.task('styles',function() {
   var AUTOPREFIXER_BROWSERS = [
     'ie >= 10',
     'ie_mob >= 10',
@@ -80,7 +84,6 @@ gulp.task('copy', function () {
     // Concatenate and minify styles
     .pipe($.csso());
 });
-//copy css styles
 gulp.task('scripts', function () {
   var sources = require('./build/getFiles.js').getFiles();
   sources.unshift('build/header.js');

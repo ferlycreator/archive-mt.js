@@ -1,4 +1,4 @@
-var CommonSpec = require('./CommonSpec');
+// var CommonSpec = require('./CommonSpec');
 
 describe('CircleSpec', function() {
 
@@ -9,7 +9,7 @@ describe('CircleSpec', function() {
     var layer;
 
     beforeEach(function() {
-        var setups = CommonSpec.mapSetup(center);
+        var setups = commonSetupMap(center);
         container = setups.container;
         map = setups.map;
     });
@@ -22,17 +22,13 @@ describe('CircleSpec', function() {
     describe('geometry fires events', function() {
         it('svg events', function() {
             var vector = new Z.Circle(center, 1);
-            CommonSpec.testSVGEvents(vector, map);
+            GeoEventsTester.testSVGEvents(vector, map);
         });
 
         it('canvas events', function() {
             var vector = new Z.Circle(center, 1);
-            CommonSpec.testCanvasEvents(vector, map, vector.getCenter());
+            GeoEventsTester.testCanvasEvents(vector, map, vector.getCenter());
         });
-    });
-
-    describe('Common geometry tests.', function() {
-        CommonSpec.testGeometryMethods.call(this,new Z.Circle(center, 1));
     });
 
     describe('change shape and position',function() {
