@@ -1,4 +1,3 @@
-
 Z.Painter = Z.Class.extend({
     includes:[Z.Eventable],
     paint:function() {
@@ -13,9 +12,6 @@ Z.Painter = Z.Class.extend({
         var symbol = _symbol;
         if (!symbol) {
             symbol = this.geometry.getSymbol();
-            if (!symbol) {
-                symbol = this.geometry.getDefaultSymbol();
-            }
         }
         //如果有cartoCSS定义, 则优先载入cartoCSS中的symbol
         var map = this.geometry.getMap();

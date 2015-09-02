@@ -19,12 +19,6 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
         this._initOptions(opts);
     },
 
-    getDefaultSymbol:function() {
-        return {
-            'icon': this.defaultIcon
-        };
-    },
-
     /**
      * 设置Marker的Icon
      * @param {Icon} icon 新的Icon
