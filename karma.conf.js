@@ -25,8 +25,8 @@ module.exports = function(config) {
     basePath: '',
 
     proxies: {
-      '/engine/': '/base/assets/',
-      '/engine/css/controls.min.css': '/base/assets/css/controls.css'
+      '/maptalks/v2/': '/base/assets/',
+      '/maptalks/v2/css/controls.min.css': '/base/assets/css/controls.css'
     },
 
     // testing framework to use (jasmine/mocha/qunit/...)
