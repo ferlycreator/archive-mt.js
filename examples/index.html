@@ -1,4 +1,4 @@
-<!DOCTYPE>
+<!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
@@ -308,6 +308,58 @@ mapObj.setBaseTileLayer(tileLayer);
                     <div class="page-header">
                         <h1>图层</h1>
                     </div>
+
+                    <h2>基础图层</h2>
+                    <p>1、使用<code>new Z.VectorLayer(...)</code>创建一个图层；</p>
+                    <p>2、将图层添加到mapObj。</p>
+                    <div class="bs-docs-example">
+<pre class="linenums prettyprint">
+/**
+* 创建放置图形的图层
+* 说明：new Z.VectorLayer(id, {'render': 'Canvas'});
+* id:图层的名称；render:渲染方式，默认使用SVG或VML（ie9以下），支持5万以内图形渲染
+* 如果需要渲染5万以上的图形，建议设置渲染方式为Canvas {'render': 'Canvas'}
+* 注意：Canvas渲染只支持ie8以上浏览器，以及chrome与safari、firefox等
+* 下面例子就采用Canvas渲染1000个点
+*/
+var layer = new Z.VectorLayer('layer',{'render': 'Canvas'});
+//将图层添加到地图
+mapObj.addLayer(layer);
+</pre>
+                    <iframe src="layer/layer.html" width="100%">
+
+                    </iframe>
+                    <p>
+                        <a class="btn btn-success" href="editor.html?html=layer/layer.html&title=Add Layer" target="_blank">源码编辑器</a>
+                    </p>
+                    </div>
+
+                     <h2>热力图</h2>
+                    <p>1、使用<code>new Z.HeatmapLayer(...)</code>创建热力图；</p>
+                    <p>2、将图层添加到mapObj。</p>
+                    <div class="bs-docs-example">
+<pre class="linenums prettyprint">
+var cfg = {
+    'radius': 2,
+    'maxOpacity': 0.8,
+    'scaleRadius': true,
+    'useLocalExtrema': true,
+    'latField': 'lat',
+    'lngField': 'lng',
+    'valueField': 'count'
+};
+var heatmap = new Z.HeatmapLayer(cfg);
+heatmap.onAdd(mapObj);
+heatmap.setData(testData);
+</pre>
+                    <iframe src="layer/heatmap.html" width="100%">
+
+                    </iframe>
+                    <p>
+                        <a class="btn btn-success" href="editor.html?html=layer/heatmap.html&title=Heatmap" target="_blank">源码编辑器</a>
+                    </p>
+                    </div>
+
                 </section>
 
                 <section id="marker">
@@ -599,12 +651,86 @@ layer.addGeometry(marker);
                     <div class="page-header">
                         <h1>线</h1>
                     </div>
+
+                    <h2>添加线</h2>
+                    <p>1、使用<code>new Z.Polyline(...)</code>创建一条线；</p>
+                    <p>2、将线添加到图层上。</p>
+                    <div class="bs-docs-example">
+<pre class="linenums prettyprint">
+//创建线对象
+var polyline = new Z.Polyline(
+    //线端点坐标数组
+    [new Z.Coordinate(121.454716,31.272095),
+    new Z.Coordinate(121.459007,31.25933),
+    new Z.Coordinate(121.458149,31.241572),
+    new Z.Coordinate(121.460381,31.229977),
+    new Z.Coordinate(121.473427,31.222784)]);
+//设置线样式
+var polylineSymbol = {
+    'line-color' : '#ff00ff',
+    'line-width' : 5,
+    'line-dasharray' : '-',//线形
+    'line-opacity' : 1
+};
+polyline.setSymbol(polylineSymbol);
+//将线添加到Layer
+layer.addGeometry(polyline);
+</pre>
+                    <iframe src="geometry/polyline/polyline.html" width="100%">
+
+                    </iframe>
+                    <p>
+                        <a class="btn btn-success" href="editor.html?html=geometry/polyline/polyline.html&title=Add Polyline" target="_blank">源码编辑器</a>
+                    </p>
+                    </div>
+
+
                 </section>
 
                 <section id="polygon">
                     <div class="page-header">
                         <h1>面</h1>
                     </div>
+
+                    <h2>添加面</h2>
+                    <p>1、使用<code>new Z.Polygon(...)</code>创建面；</p>
+                    <p>2、将面添加到图层上。</p>
+                    <div class="bs-docs-example">
+<pre class="linenums prettyprint">
+//创建面对象
+var polygon = new Z.Polygon(
+    //面端点坐标数组
+    [[new Z.Coordinate(121.508617,31.241279),
+    new Z.Coordinate(121.519432,31.241572),
+    new Z.Coordinate(121.524067,31.241719),
+    new Z.Coordinate(121.528015,31.242893),
+    new Z.Coordinate(121.539173,31.245388),
+    new Z.Coordinate(121.544323,31.236142),
+    new Z.Coordinate(121.548443,31.227335),
+    new Z.Coordinate(121.538486,31.223518),
+    new Z.Coordinate(121.517887,31.223665)]
+    ]);
+//设置面样式
+var polygonSymbol = {
+    'line-color' : '#0000ff',
+    'line-width' : 2,
+    'line-dasharray' : '-',//线形
+    'line-opacity' : 1,
+    'polygon-fill' : '#ff00ff',
+    'polygon-opacity' : 0.8
+};
+polygon.setSymbol(polygonSymbol);
+//将面添加到Layer
+layer.addGeometry(polygon);
+</pre>
+                    <iframe src="geometry/polygon/polygon.html" width="100%">
+
+                    </iframe>
+                    <p>
+                        <a class="btn btn-success" href="editor.html?html=geometry/polygon/polygon.html&title=Add Polygon" target="_blank">源码编辑器</a>
+                    </p>
+                    </div>
+
                 </section>
             </div>
         </div>
