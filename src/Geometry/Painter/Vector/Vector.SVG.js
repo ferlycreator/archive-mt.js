@@ -47,10 +47,8 @@ Z.Vector.SVG = Z.Painter.SVG.extend({
         }
         var newSymbol = this.geometry.getSymbol();
         this.setSymbol(newSymbol);
-        Z.SVG.refreshVectorSymbol(this.vector, this.strokeSymbol, this.fillSymbol, this.getVectorPaper());
-    }/*,
+        var vObj = this.createSVGObj();
+        Z.SVG.refreshVector(this.vector, vObj);
+    }
 
-    _registerEvents:function(){
-        this.addDomEvents(this.vector);
-    }*/
 });
