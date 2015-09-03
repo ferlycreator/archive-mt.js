@@ -19,7 +19,8 @@ Z.Browser.vml = !Z.Browser.svg && (function () {
 Z.SVG = {
     defaultStrokeSymbol:{
         'stroke':'#000000',
-        'strokeWidth': 2
+        'strokeWidth': 2,
+        'strokeDasharray': ''//'', '-', '.', '-.', '-..', '. ', '- ', '--', '- .', '--.', '--..'
     },
 
     defaultFillSymbol:{
@@ -147,6 +148,22 @@ Z.SVG.SVG = {
         if (!strokeSymbol) {
             strokeSymbol = Z.SVG.defaultStrokeSymbol;
         }
+
+        var dashstyle = strokeSymbol['strokeDasharray'];
+        if ('.' === dashstyle) {
+            dashstyle = 'Dot';
+        } else if ('-' === dashstyle) {
+            dashstyle = '5,5';
+        } else if('-.' === dashstyle) {
+            dashstyle = '10,5,5,10';
+        } else if('--' === dashstyle) {
+            dashstyle = '20,10';
+        } else if('--.' === dashstyle) {
+            dashstyle = '20,5,5,10';
+        } else if('--..' === dashstyle) {
+            dashstyle = '20,10,5,5,5,10';
+        }
+        strokeSymbol['strokeDasharray'] = dashstyle;
 
         if (!fillSymbol) {
             fillSymbol = Z.SVG.defaultFillSymbol;
@@ -416,9 +433,33 @@ Z.SVG.VML= {
         if (strokeSymbol['strokeOpacity']) {
             stroke.opacity = strokeSymbol['strokeOpacity'];
         }
-        if (strokeSymbol['strokeDasharray']) {
-            stroke.dashStyle = strokeSymbol['strokeDasharray'];
+        /**
+        * vml中线形：solid|dot|dash|dashdot|longdash|longdashdot|longdashdotdot
+            Solid(默认): 实线
+            Dot:            .............
+            Dash:           -------------
+            DashDot:        -.-.-.-.-.-.-.
+            LongDash:       -- -- -- -- --
+            LongDashDot:    --.--.--.--.--.
+            LongDashDotDot: --..--..--..--..
+        */
+        var dashstyle = strokeSymbol['strokeDasharray'];
+        if ('' === dashstyle) {
+            dashstyle = 'Solid';
+        } else if ('.' === dashstyle) {
+            dashstyle = 'Dot';
+        } else if ('-' === dashstyle) {
+            dashstyle = 'Dash';
+        } else if('-.' === dashstyle) {
+            dashstyle = 'DashDot';
+        } else if('--' === dashstyle) {
+            dashstyle = 'LongDash';
+        } else if('--.' === dashstyle) {
+            dashstyle = 'LongDashDot';
+        } else if('--..' === dashstyle) {
+            dashstyle = 'LongDashDotDot';
         }
+        stroke.dashstyle = dashstyle;
         vmlShape.appendChild(stroke);
 
         if (fillSymbol) {

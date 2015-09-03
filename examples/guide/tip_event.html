@@ -28,7 +28,7 @@
             subdomains:[1,2,3]//对应urlTemplate中占位符{s}的值
         }));
         //创建放置图形的图层
-        var layer = new Z.VectorLayer('layer');
+        var layer = new Z.VectorLayer('layer', {'render':'Canvas'});
         //将图层添加到地图
         mapObj.addLayer(layer);
 

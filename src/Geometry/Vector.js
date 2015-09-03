@@ -4,7 +4,7 @@ Z.Vector = Z.Geometry.extend({
             'stroke' : '#ff0000',
             'strokeWidth' : 3,
             'strokeOpacity' : 1,
-            'strokeDasharray': '-',
+            'strokeDasharray': '',
             'fill' : '#ffffff',
             'fillOpacity' : 1
         }
