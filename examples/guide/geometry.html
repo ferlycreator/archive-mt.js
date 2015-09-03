@@ -23,9 +23,9 @@
         //设置底图图层
         mapObj.setBaseTileLayer(new Z.TileLayer('tile', //底图id
         {
-            crs:'crs3857', //坐标系
+            tileInfo: 'web-mercator',
             urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
-            subdomains:[1,2,3]//对应urlTemplate中占位符{s}的值
+            subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
         }));
         //创建放置图形的图层
         var layer = new Z.VectorLayer('layer');

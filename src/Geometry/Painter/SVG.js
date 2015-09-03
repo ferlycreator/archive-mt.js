@@ -151,9 +151,9 @@ Z.SVG.SVG = {
 
         var dashstyle = strokeSymbol['strokeDasharray'];
         if ('.' === dashstyle) {
-            dashstyle = 'Dot';
-        } else if ('-' === dashstyle) {
             dashstyle = '5,5';
+        } else if ('-' === dashstyle) {
+            dashstyle = '10,10';
         } else if('-.' === dashstyle) {
             dashstyle = '10,5,5,10';
         } else if('--' === dashstyle) {

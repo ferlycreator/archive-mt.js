@@ -26,9 +26,9 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
      *     urlTemplate:URL模板,例如http://{s}.example.com/{z}/{y}/{x}.png
      *     subdomains:数组,用来轮流替换url模板中的{s}变量
      *     tileSize:{width:256,height:256}
-     * tileInfo的值可为字符串类型的预定义配置或属性对象:
-     *      预定义配置有:"web-mercator","global-mercator","baidu"
-     *      如果是属性对象,则需要指定
+     *     tileInfo的值可为字符串类型的预定义配置或属性对象:
+     *     预定义配置有:"web-mercator","global-mercator","baidu"
+     *     如果是属性对象,则需要指定
      * </pre>
      * @param  {String} id 图层identifier
      * @param  {Object} opts 图层配置
