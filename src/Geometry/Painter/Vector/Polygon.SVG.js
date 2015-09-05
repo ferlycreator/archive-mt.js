@@ -10,9 +10,6 @@ Z.Polygon.SVG=Z.Vector.SVG.extend({
         var geometry = this.geometry;
         var offsets = geometry._transformToOffset(geometry._getPrjPoints());
         var pathString = this.domOffsetsToSVGPath(offsets,true,false);
-        if (!pathString) {
-            return null;
-        }
         var holePathes = this.getHolePathes();
         if (Z.Util.isArrayHasData(holePathes)) {
             pathString = pathString + ' ' + holePathes.join(' ');

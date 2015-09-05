@@ -3,9 +3,6 @@ Z.Vector.SVG = Z.Painter.SVG.extend({
      * 将容器相对坐标数组转化为svg path定义
      */
     domOffsetsToSVGPath:function(offsets,isClosePath,isHole) {
-        if (!offsets || !Z.Util.isArrayHasData(offsets)) {
-            return null;
-        }
         var seperator=',';
 
         var coords = [];
@@ -13,6 +10,9 @@ Z.Vector.SVG = Z.Painter.SVG.extend({
 
         for ( var i = 0, len = offsets.length; i < len; i++) {
             coords.push(offsets[i]['left']+seperator+offsets[i]['top']);
+        }
+        if (coords.length === 0) {
+            return 'M0 0';
         }
         var ret = null;
         if (!isHole) {

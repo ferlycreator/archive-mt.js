@@ -5,11 +5,11 @@ Z.Geometry.Poly={
      * @return {[type]}        [description]
      */
     _transformToOffset:function(points) {
+        var result = [];
         var map = this.getMap();
         if (!map || !Z.Util.isArrayHasData(points)) {
-            return null;
+            return result;
         }
-        var result = [];
         var is2D = false;
         for (var i=0,len=points.length;i<len;i++) {
             var p = points[i];
