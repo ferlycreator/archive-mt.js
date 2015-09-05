@@ -284,13 +284,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         //infowindow
         this.closeInfoWindow();
 
-        /*var painter = this._getPainter();
-        if (painter) {
-            painter.remove();
-        }
-        delete this._painter;*/
         this._removePainter();
-        delete this.layer;
         layer._onGeometryRemove(this);
         delete this.layer;
         if (isFireEvent) {
