@@ -643,6 +643,47 @@ layer.addGeometry(marker);
                     </p>
                     </div>
 
+                    <h2>标注点</h2>
+                    <p>1、使用<code>new Z.DrawTool(...)</code>创建drawTool；</p>
+                    <p>2、将drawTool添加到需要绘制工具的map上。</p>
+                    <div class="bs-docs-example">
+<pre class="linenums prettyprint">
+//构造绘制点工具
+drawTool = new Z.DrawTool({
+    mode: Z.Geometry.TYPE_POINT//设置drawTool绘制的图形类型
+});
+//将点绘制工具绑定到地图对象
+drawTool.addTo(mapObj);
+//监听绘制工具完成事件，获取绘制的点坐标等信息
+drawTool.on('afterdraw', onAfterDrawMarker);
+//绘制完点后操作
+function onAfterDrawMarker(param) {
+    console.log(param);
+    var coordinate = param.coordinate;
+    alert('您绘制的点的坐标为:{x:'+coordinate.x+',y:'+coordinate.y);        //创建点的坐标对象
+    //设置图片
+    var icon = {
+        'marker-file': '/maptalks/v2/images/marker.png',
+        'marker-width': 22,
+        'marker-height': 30,
+        'dx': 0,
+        'dy' :0
+    };
+    //创建点对象
+    var marker = new Z.Marker(coordinate,{'id':'marker_id'});
+    //设置点样式
+    marker.setSymbol(icon);
+    //将点添加到Layer
+    layer.addGeometry(marker);
+}
+</pre>
+                    <iframe src="geometry/marker/draw_marker.html" width="100%">
+
+                    </iframe>
+                    <p>
+                        <a class="btn btn-success" href="editor.html?html=geometry/marker/draw_marker.html&title=Draw Marker" target="_blank">源码编辑器</a>
+                    </p>
+                    </div>
 
                 </section>
 
