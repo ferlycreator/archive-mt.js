@@ -737,23 +737,275 @@ layer.addGeometry(polygon);
                         <h1>地图控件</h1>
                     </div>
 
-                    <h2>ZoomIn/ZoomOut</h2>
-                    <p>1、配置mapObj属性<code>zoomControl: true/false</code>打开或关闭zoom控件；</p>
-                    <p>2、使用<code>new Z.Control.Zoom(...)</code>创建多个zoom控件。</p>
+                    <h2>ZoomIn/ZoomOut控件</h2>
+                    <p>1、引入control 样式文件<code>&lt;link href="/maptalks/v2/css/controls.css" rel="stylesheet" type="text/css"/&gt;</code>；</p>
+                    <p>2、配置mapObj属性<code>zoomControl: true/false</code>打开或关闭zoom控件；</p>
+                    <p>3、使用<code>new Z.Control.Zoom(...)</code>创建多个zoom控件。</p>
                     <div class="bs-docs-example">
 <pre class="linenums prettyprint">
 /**
-* 设置mapObj zoom控件
+* 设置map 默认zoomIn/zoomOut控件
 */
 new Z.Map('mapObj',{
     center:  new Z.Coordinate(121.489935,31.24432), //初始中心点坐标
     zoomLevel:   11, //初始缩放级别
-    zoomControl :  false, //缩放控件
+    zoomControl :  true, //缩放控件
+    zoomControlOptions : { //设置缩放控件的位置
+        position : Z.Control['top_left']//top_left|top_right|bottom_left|bottom_right
+    }
 });
+/**
+* 创建多个zoom控件
+*/
+var zoomControl = new Z.Control.Zoom({
+    id: 'zoomControl1', //控件id
+    //自定义控件放置位置
+    position : {
+        top: '40',
+        right: '60'
+    }
+});
+mapObj.addControl(zoomControl);
 
+var zoomControl2 = new Z.Control.Zoom({
+    id: 'zoomControl12', //控件id
+    position : Z.Control['bottom_right']
+});
+mapObj.addControl(zoomControl2);
 </pre>
                     <p>
-                        <a class="btn btn-success" href="editor.html?html=control/zoom.html&title=Zoom" target="_blank">源码编辑器</a>
+                        <a class="btn btn-success" href="editor.html?html=control/zoom.html&title=Zoom Control" target="_blank">源码编辑器</a>
+                    </p>
+                    </div>
+
+                    <h2>Nav控件</h2>
+                    <p>1、引入control 样式文件<code>&lt;link href="/maptalks/v2/css/controls.css" rel="stylesheet" type="text/css"/&gt;</code>；</p>
+                    <p>2、配置mapObj属性<code>navControl: true/false</code>打开或关闭nav控件；</p>
+                    <p>3、使用<code>new Z.Control.Nav(...)</code>创建多个nav控件。</p>
+                    <div class="bs-docs-example">
+<pre class="linenums prettyprint">
+/**
+* 设置map 默认nav控件
+*/
+new Z.Map('mapObj',{
+    center:  new Z.Coordinate(121.489935,31.24432), //初始中心点坐标
+    zoomLevel:   11, //初始缩放级别
+    navControl: true,//nav控件
+    navControlOptions : {//设置控件放置位置
+        position : Z.Control['top_left']
+    }
+});
+/**
+* 创建多个nav控件
+*/
+var navControl = new Z.Control.Nav({
+    id: 'navControl', //控件id
+    //自定义控件放置位置
+    position : {
+        top: '40',
+        right: '60'
+    }
+});
+mapObj.addControl(navControl);
+</pre>
+                    <p>
+                        <a class="btn btn-success" href="editor.html?html=control/nav.html&title=Nav Control" target="_blank">源码编辑器</a>
+                    </p>
+                    </div>
+
+                    <h2>Scale(比例尺)控件</h2>
+                    <p>1、引入control 样式文件<code>&lt;link href="/maptalks/v2/css/controls.css" rel="stylesheet" type="text/css"/&gt;</code>；</p>
+                    <p>2、配置mapObj属性<code>scaleControl: true/false</code>打开或关闭Scale控件；</p>
+                    <div class="bs-docs-example">
+<pre class="linenums prettyprint">
+/**
+* 设置map 默认scale控件
+*/
+new Z.Map('mapObj',{
+    center:  new Z.Coordinate(121.489935,31.24432), //初始中心点坐标
+    zoomLevel:   11, //初始缩放级别
+    scaleControl: true,//scale控件
+    scaleControlOptions : {
+        id: 'MAP_CONTROL_SCALE', //控件id
+        position : Z.Control['bottom_left'],
+        maxWidth: 100,//最大宽度（单位：像素）
+        metric: true,//米（公尺）
+        imperial: false//英尺
+    }
+});
+</pre>
+                    <p>
+                        <a class="btn btn-success" href="editor.html?html=control/scale.html&title=Scale Control" target="_blank">源码编辑器</a>
+                    </p>
+                    </div>
+
+                    <h2>Attribution(归属信息)控件</h2>
+                    <p>1、引入control 样式文件<code>&lt;link href="/maptalks/v2/css/controls.css" rel="stylesheet" type="text/css"/&gt;</code>；</p>
+                    <p>2、配置mapObj属性<code>attributionControl: true/false</code>打开或关闭attribution控件；</p>
+                    <p>3、使用<code>new Z.Control.Attribution(...)</code>创建多个attribution控件。</p>
+                    <div class="bs-docs-example">
+<pre class="linenums prettyprint">
+/**
+* 设置map 默认attribution控件
+*/
+new Z.Map('mapObj',{
+    center:  new Z.Coordinate(121.489935,31.24432), //初始中心点坐标
+    zoomLevel:   11, //初始缩放级别
+    attributionControl: true,//attribution控件
+    attributionControlOptions : {//设置控件放置位置
+        id: 'CONTROL_ATTRIBUTION',
+        position : {
+            'bottom': '0',
+            'right': '0'
+        },
+        content : '<a href="www.maptalks.org" target="_blank" style="text-decoration:none;cursor: pointer;color: #6490C4; ">@ MapTalks</a>'
+    }
+});
+/**
+* 创建多个Attribution控件
+*/
+var attributionControl = new Z.Control.Attribution({
+    id: 'attributionControl', //控件id
+    //自定义控件放置位置
+    position : {
+        top: '40',
+        right: '0'
+    },
+    content: '<font color="red">地图其它说明信息</font>'
+});
+mapObj.addControl(attributionControl);
+</pre>
+                    <p>
+                        <a class="btn btn-success" href="editor.html?html=control/attribution.html&title=Attribution Control" target="_blank">源码编辑器</a>
+                    </p>
+                    </div>
+
+                     <h2>Toolbar控件</h2>
+                    <p>1、引入control 样式文件<code>&lt;link href="/maptalks/v2/css/controls.css" rel="stylesheet" type="text/css"/&gt;</code>；</p>
+                    <p>3、使用<code>new Z.Toolbar(...)</code>创建多个nav控件。</p>
+                    <div class="bs-docs-example">
+<pre class="linenums prettyprint">
+/**
+* 创建多个toolbar控件
+*/
+var toolbar = new Z.Toolbar({
+    id: 'toolbar',//toolbar id
+    position : { //工具条放置位置
+        top: '2',
+        left: '2'
+    },
+    vertical : false,//垂直放置toolbar，默认：false，代表toolbar水平放置
+    //工具项
+    items: [{
+        type : 'menu',//button|html|menu
+        content: '左',
+        click : function(){alert('click 左');},
+        children : [{//子菜单
+            content: '左01',
+            click : function(){alert('click 左01');}
+        }, {
+            content: '左02',
+            click : function(){alert('click 左02');}
+        }]
+    }, {
+        type : 'button',
+        content: '中',
+        click : function(){alert('click 中');}
+    }, {
+        type : 'button',
+        content: '右',
+        click : function(){alert('click 右');}
+    }, {
+        type : 'html',
+        content:' &lt;input type="checkbox" name="check" /&gt; checkbox'
+    }]
+});
+mapObj.addControl(toolbar);
+
+var verticalToolbar = new Z.Toolbar({
+    id: 'verticalToolbar',//toolbar id
+    position : { //工具条放置位置
+        top: '2',
+        right: '2'
+    },
+    vertical : true,//垂直放置toolbar，默认：false，代表toolbar水平放置
+    //工具项
+    items: [{
+        type : 'button',//button|html|menu
+        content: '上',
+        click : function(){alert('click 上');}
+    }, {
+        type : 'button',
+        content: '中',
+        click : function(){alert('click 中');}
+    }, {
+        type : 'button',
+        content: '下',
+        click : function(){alert('click 下');}
+    }]
+});
+mapObj.addControl(verticalToolbar);
+</pre>
+                    <p>
+                        <a class="btn btn-success" href="editor.html?html=control/toolbar.html&title=Toolbar Control" target="_blank">源码编辑器</a>
+                    </p>
+
+                    <h2>Panel控件</h2>
+                    <p>1、引入control 样式文件<code>&lt;link href="/maptalks/v2/css/panel.css" rel="stylesheet" type="text/css"/&gt;</code>；</p>
+                    <p>2、使用<code>Z.Panel(...)</code>创建panel；</p>
+                    <p>3、将panel绑定在地图容器或Geometry上</p>
+                    <div class="bs-docs-example">
+<pre class="linenums prettyprint">
+//构建panel
+var panel = new Z.Panel({
+    id: 'panelId', //panel id
+    position : {//放置panel的位置
+        top: '15',
+        left: '15'
+    },
+    style: 'default',
+    draggable: true,//能否拖动
+    title: '地图信息面板',
+    html: true, //content值能否为html
+    content: '地图信息面板'
+});
+/**
+* 将面板绑定到地图容器上
+*/
+mapObj.addControl(panel);
+//创建图层
+var layer = new Z.VectorLayer('layer');
+//将图层添加到地图对象
+mapObj.addLayer(layer);
+//创建点的坐标对象
+var markerCoordinate = new Z.Coordinate(121.489935,31.24432);
+//创建点对象
+var marker = new Z.Marker(markerCoordinate,'marker_id');
+layer.addGeometry(marker);
+
+var markerPanelOptions = {
+    id : 'label01',
+    position : {
+        top: '15',
+        right: '15'
+    },
+    style: 'default',
+    draggable: true,
+    title: '点信息面板',
+    html: true,
+    content: '点信息正文',
+    linksymbol: {//panel与marker之间连线样式
+        'line-color' : '#00ff00',
+        'line-width' : 2,
+        'line-opacity' : 1,
+        'line-dasharray' : '-'
+    }
+};
+var markerInfoPanel = new Z.Panel(markerPanelOptions);
+marker.addPanel(markerInfoPanel);
+</pre>
+                    <p>
+                        <a class="btn btn-success" href="editor.html?html=control/panel.html&title=Panel Control" target="_blank">源码编辑器</a>
                     </p>
                     </div>
 
