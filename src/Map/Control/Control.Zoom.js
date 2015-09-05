@@ -139,7 +139,7 @@ Z['Control']['Zoom'] = Z.Control.Zoom = Z.Control.extend({
 });
 
 Z.Map.mergeOptions({
-	'zoomControl': true,
+	'zoomControl': false,
 	'zoomControlOptions' : {
 		'id': 'MAP_CONTROL_ZOOM',
 		'position' : Z.Control['top_right']

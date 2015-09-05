@@ -73,7 +73,7 @@ Z['Control']['Nav'] = Z.Control.Nav = Z.Control.extend({
 });
 
 Z.Map.mergeOptions({
-    'navControl' : true,
+    'navControl' : false,
     'navControlOptions' : {
         'id': 'MAP_CONTROL_NAV',
         'position' : Z.Control['bottom_right']

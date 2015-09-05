@@ -95,7 +95,7 @@ Z['Control']['Scale'] = Z.Control.Scale = Z.Control.extend({
 });
 
 Z.Map.mergeOptions({
-    'scaleControl' : true,
+    'scaleControl' : false,
     'scaleControlOptions' : {
         'id': 'MAP_CONTROL_SCALE',
         'position' : Z.Control['bottom_left'],

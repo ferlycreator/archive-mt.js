@@ -43,6 +43,9 @@
                     <li class="nav-item">
                         <a href="#polygon"><i class="icon-chevron-right"></i> 面</a>
                     </li>
+                    <li class="nav-item">
+                        <a href="#control"><i class="icon-chevron-right"></i> 地图控件</a>
+                    </li>
                 </ul>
             </div>
             <div class="span11">
@@ -319,7 +322,7 @@ mapObj.setBaseTileLayer(tileLayer);
 * id:图层的名称；render:渲染方式，默认使用SVG或VML（ie9以下），支持5万以内图形渲染
 * 如果需要渲染5万以上的图形，建议设置渲染方式为Canvas {'render': 'Canvas'}
 * 注意：Canvas渲染只支持ie8以上浏览器，以及chrome与safari、firefox等
-* 下面例子就采用Canvas渲染1000个点
+* 下面例子就采用Canvas渲染10000个点
 */
 var layer = new Z.VectorLayer('layer',{'render': 'Canvas'});
 //将图层添加到地图
@@ -339,21 +342,18 @@ mapObj.addLayer(layer);
                     <div class="bs-docs-example">
 <pre class="linenums prettyprint">
 var cfg = {
-    'radius': 2,
-    'maxOpacity': 0.8,
-    'scaleRadius': true,
-    'useLocalExtrema': true,
-    'latField': 'lat',
-    'lngField': 'lng',
-    'valueField': 'count'
+    radius: 2,
+    maxOpacity: .8,
+    scaleRadius: true,
+    useLocalExtrema: true,
+    latField: 'y',
+    lngField: 'x',
+    valueField: 'count'
 };
 var heatmap = new Z.HeatmapLayer(cfg);
 heatmap.addTo(mapObj);
 heatmap.setData(testData);
 </pre>
-                    <iframe src="layer/heatmap.html" width="100%">
-
-                    </iframe>
                     <p>
                         <a class="btn btn-success" href="editor.html?html=layer/heatmap.html&title=Heatmap" target="_blank">源码编辑器</a>
                     </p>
@@ -727,6 +727,33 @@ layer.addGeometry(polygon);
                     </iframe>
                     <p>
                         <a class="btn btn-success" href="editor.html?html=geometry/polygon/polygon.html&title=Add Polygon" target="_blank">源码编辑器</a>
+                    </p>
+                    </div>
+
+                </section>
+
+                <section id="polygon">
+                    <div class="page-header">
+                        <h1>地图控件</h1>
+                    </div>
+
+                    <h2>ZoomIn/ZoomOut</h2>
+                    <p>1、配置mapObj属性<code>zoomControl: true/false</code>打开或关闭zoom控件；</p>
+                    <p>2、使用<code>new Z.Control.Zoom(...)</code>创建多个zoom控件。</p>
+                    <div class="bs-docs-example">
+<pre class="linenums prettyprint">
+/**
+* 设置mapObj zoom控件
+*/
+new Z.Map('mapObj',{
+    center:  new Z.Coordinate(121.489935,31.24432), //初始中心点坐标
+    zoomLevel:   11, //初始缩放级别
+    zoomControl :  false, //缩放控件
+});
+
+</pre>
+                    <p>
+                        <a class="btn btn-success" href="editor.html?html=control/zoom.html&title=Zoom" target="_blank">源码编辑器</a>
                     </p>
                     </div>
 

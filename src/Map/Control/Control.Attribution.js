@@ -37,7 +37,7 @@ Z['Control']['Attribution'] = Z.Control.Attribution = Z.Control.extend({
 });
 
 Z.Map.mergeOptions({
-	'attributionControl' : true,
+	'attributionControl' : false,
 	'attributionControlOptions' : {
 		'id': 'MAP_CONTROL_ATTRIBUTION',
 		'position' : {
