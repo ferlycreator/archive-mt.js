@@ -81,8 +81,12 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
      * 保证Ring都是合法且闭合的
      */
     _checkRing:function(ring) {
-        if (!Z.Util.isArray(ring) || ring.length < 3) {
+        if (!Z.Util.isArray(ring)) {
             throw new Error(this.exceptions['INVALID_COORDINATES']);
+        }
+        // TODO:
+        if (ring.length < 3) {
+            return;
         }
         var lastPoint = ring[ring.length-1];
         if (!lastPoint) {

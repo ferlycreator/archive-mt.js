@@ -38,6 +38,7 @@
     "karma-chrome-launcher": "^0.1.3",
     "karma-coverage": "^0.3.1",
     "karma-expect": "^1.1.0",
+    "karma-firefox-launcher": "^0.1.6",
     "karma-happen": "git+https://github.com/MapTalks/karma-happen.git",
     "karma-ie-launcher": "^0.1.5",
     "karma-jquery": "^0.1.0",

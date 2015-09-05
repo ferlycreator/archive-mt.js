@@ -595,9 +595,11 @@ describe('API', function () {
             var count = 10;
             for (var i = 0; i < count; i++) {
                 var geometry = new Z.Polygon([
-                    {x: 121.111, y: 30.111},
-                    {x: 121.222, y: 30.222},
-                    {x: 121.333, y: 30.333}
+                    [
+                        {x: 121.111, y: 30.111},
+                        {x: 121.222, y: 30.222},
+                        {x: 121.333, y: 30.333}
+                    ]
                 ]);
                 layer.addGeometry(geometry);
             }
@@ -612,9 +614,11 @@ describe('API', function () {
             layer.setId('id');
             // map.addLayer(layer);
             var geometry = new Z.Polygon([
-                {x: 121.111, y: 30.111},
-                {x: 121.222, y: 30.222},
-                {x: 121.333, y: 30.333}
+                [
+                    {x: 121.111, y: 30.111},
+                    {x: 121.222, y: 30.222},
+                    {x: 121.333, y: 30.333}
+                ]
             ]);
             geometry.setId('id');
             layer.addGeometry(geometry);
@@ -630,9 +634,11 @@ describe('API', function () {
             layer.setId('id');
             // map.addLayer(layer);
             var polygon = new Z.Polygon([
-                {x: 121.111, y: 30.111},
-                {x: 121.222, y: 30.222},
-                {x: 121.333, y: 30.333}
+                [
+                    {x: 121.111, y: 30.111},
+                    {x: 121.222, y: 30.222},
+                    {x: 121.333, y: 30.333}
+                ]
             ]);
             polygon.setId('polygon');
             var polyline = new Z.Polyline([
@@ -643,11 +649,15 @@ describe('API', function () {
             layer.addGeometry(polygon);
             layer.addGeometry(polyline);
 
+            var got;
+
             layer.removeGeometry('polyline');
-            expect(layer.getGeometryById('polyline')).to.be(null);
+            got = layer.getGeometryById('polyline');
+            expect(got).to.be(null);
 
             layer.removeGeometry(polygon);
-            expect(layer.getGeometryById('polygon')).to.be(null);
+            got = layer.getGeometryById('polygon');
+            expect(got).to.be(null);
         });
 
         it('clear', function() {
@@ -656,9 +666,11 @@ describe('API', function () {
             layer.setId('id');
             // map.addLayer(layer);
             var polygon = new Z.Polygon([
-                {x: 121.111, y: 30.111},
-                {x: 121.222, y: 30.222},
-                {x: 121.333, y: 30.333}
+                [
+                    {x: 121.111, y: 30.111},
+                    {x: 121.222, y: 30.222},
+                    {x: 121.333, y: 30.333}
+                ]
             ]);
             polygon.setId('polygon');
             var polyline = new Z.Polyline([
@@ -703,9 +715,11 @@ describe('API', function () {
             var layer = new Z.VectorLayer('canvas', {render: 'canvas'});
             map.addLayer(layer);
             var geometry = new Z.Polygon([
-                {x: 121.111, y: 30.111},
-                {x: 121.222, y: 30.222},
-                {x: 121.333, y: 30.333}
+                [
+                    {x: 121.111, y: 30.111},
+                    {x: 121.222, y: 30.222},
+                    {x: 121.333, y: 30.333}
+                ]
             ]);
             layer.addGeometry(geometry);
 
@@ -1056,10 +1070,11 @@ describe('API', function () {
             expect(circle.getRadius()).to.eql(20);
         });
 
-        it('setRings');
+        it('getShell', function() {
+            var circle = new Z.Circle({x: 0, y: 0}, 1);
+            var shell = circle.getShell();
 
-        it('getPoints', function() {
-            expect().fail('TODO');
+            expect(shell).to.have.length(circle.options.numberOfPoints);
         });
 
     });
@@ -1156,10 +1171,11 @@ describe('API', function () {
             expect(h).to.eql(200);
         });
 
-        it('setRings');
+        it('getShell', function() {
+            var ellipse = new Z.Ellipse({x: 0, y: 0}, 1, 1);
+            var shell = ellipse.getShell();
 
-        it('getPoints', function() {
-            expect().fail('TODO');
+            expect(shell).to.have.length(ellipse.options.numberOfPoints);
         });
 
     });
@@ -1261,10 +1277,11 @@ describe('API', function () {
             expect(e).to.eql(120);
         });
 
-        it('setRings');
-
         it('getPoints', function() {
-            expect().fail('TODO');
+            var sector = new Z.Sector({x: 0, y: 0}, 1, 30, 60);
+            var shell = sector.getShell();
+
+            expect(shell).to.have.length(sector.options.numberOfPoints);
         });
 
     });
@@ -1346,7 +1363,7 @@ describe('API', function () {
             rect.setCoordinates({x: -180, y: 75});
             rect.setWidth(401);
             rect.setHeight(201);
-            var nw = rect.getNw();
+            var nw = rect.getCoordinates();
             var w = rect.getWidth();
             var h = rect.getHeight();
 
@@ -1355,12 +1372,10 @@ describe('API', function () {
             expect(h).to.eql(201);
         });
 
-        it('setRings');
-
-        it('getPoints', function() {
+        it('getShell', function() {
             var rect = new Z.Rectangle({x: 0, y: 0}, 200, 100);
             layer.addGeometry(rect);
-            var points = rect.getRings();
+            var points = rect.getShell();
 
             expect(points).to.have.length(5);
             expect(points[0]).to.eql(points[4]);
@@ -1925,14 +1940,18 @@ describe('API', function () {
             var mp = new Z.MultiPolygon([]);
             var coords = [];
             coords[0] = [
-                {x: 1, y: 2},
-                {x: 3, y: 4},
-                {x: 4, y: 3}
+                [
+                    {x: 1, y: 2},
+                    {x: 3, y: 4},
+                    {x: 4, y: 3}
+                ]
             ];
             coords[1] = [
-                {x: 5, y: 6},
-                {x: 7, y: 8},
-                {x: 6, y: 5}
+                [
+                    {x: 5, y: 6},
+                    {x: 7, y: 8},
+                    {x: 6, y: 5}
+                ]
             ];
             mp.setCoordinates(coords);
 
@@ -1943,14 +1962,18 @@ describe('API', function () {
             var mp = new Z.MultiPolygon([]);
             var coords = [];
             coords[0] = [
-                {x: 1, y: 2},
-                {x: 3, y: 4},
-                {x: 4, y: 3}
+                [
+                    {x: 1, y: 2},
+                    {x: 3, y: 4},
+                    {x: 4, y: 3}
+                ]
             ];
             coords[1] = [
-                {x: 5, y: 6},
-                {x: 7, y: 8},
-                {x: 6, y: 5}
+                [
+                    {x: 5, y: 6},
+                    {x: 7, y: 8},
+                    {x: 6, y: 5}
+                ]
             ];
             mp.setCoordinates(coords);
 
@@ -1961,14 +1984,18 @@ describe('API', function () {
             var mp = new Z.MultiPolygon([]);
             var coords = [];
             coords[0] = [
-                {x: 1, y: 2},
-                {x: 3, y: 4},
-                {x: 4, y: 3}
+                [
+                    {x: 1, y: 2},
+                    {x: 3, y: 4},
+                    {x: 4, y: 3}
+                ]
             ];
             coords[1] = [
-                {x: 5, y: 6},
-                {x: 7, y: 8},
-                {x: 6, y: 5}
+                [
+                    {x: 5, y: 6},
+                    {x: 7, y: 8},
+                    {x: 6, y: 5}
+                ]
             ];
             mp.setCoordinates(coords);
             layer.addGeometry(mp);
@@ -1982,14 +2009,18 @@ describe('API', function () {
             var mp = new Z.MultiPolygon([]);
             var coords = [];
             coords[0] = [
-                {x: 1, y: 2},
-                {x: 3, y: 4},
-                {x: 4, y: 3}
+                [
+                    {x: 1, y: 2},
+                    {x: 3, y: 4},
+                    {x: 4, y: 3}
+                ]
             ];
             coords[1] = [
-                {x: 5, y: 6},
-                {x: 7, y: 8},
-                {x: 6, y: 5}
+                [
+                    {x: 5, y: 6},
+                    {x: 7, y: 8},
+                    {x: 6, y: 5}
+                ]
             ];
             mp.setCoordinates(coords);
             layer.addGeometry(mp);
@@ -2005,14 +2036,18 @@ describe('API', function () {
             var mp = new Z.MultiPolygon([]);
             var coords = [];
             coords[0] = [
-                {x: 1, y: 2},
-                {x: 3, y: 4},
-                {x: 4, y: 3}
+                [
+                    {x: 1, y: 2},
+                    {x: 3, y: 4},
+                    {x: 4, y: 3}
+                ]
             ];
             coords[1] = [
-                {x: 5, y: 6},
-                {x: 7, y: 8},
-                {x: 6, y: 5}
+                [
+                    {x: 5, y: 6},
+                    {x: 7, y: 8},
+                    {x: 6, y: 5}
+                ]
             ];
             mp.setCoordinates(coords);
             layer.addGeometry(mp);
@@ -2033,14 +2068,20 @@ describe('API', function () {
 
             var coords = [];
             coords[0] = [
-                {x: 1, y: 2},
-                {x: 3, y: 4},
-                {x: 4, y: 3}
+                [
+                    {x: 1, y: 2},
+                    {x: 3, y: 4},
+                    {x: 4, y: 3},
+                    {x: 1, y: 2}
+                ]
             ];
             coords[1] = [
-                {x: 5, y: 6},
-                {x: 7, y: 8},
-                {x: 6, y: 5}
+                [
+                    {x: 5, y: 6},
+                    {x: 7, y: 8},
+                    {x: 6, y: 5},
+                    {x: 5, y: 6}
+                ]
             ];
             mp.setCoordinates(coords);
 
@@ -2062,15 +2103,6 @@ describe('API', function () {
             expect(combined.ymax).to.eql(6);
         });
 
-        it('static.isIntersect', function() {
-            var e1 = new Z.Extent(1, 1, 5, 5);
-            var e2 = new Z.Extent(2, 2, 6, 6);
-
-            expect(Z.Extent.isIntersect(e1, e2)).to.be.ok();
-        });
-
-        it('static.contains');
-
         it('static.expand', function() {
             var extent = new Z.Extent(2, 2, 6, 6);
             var e1 = Z.Extent.expand(extent, 1);
@@ -2087,29 +2119,20 @@ describe('API', function () {
             expect(e2.xmax).to.eql(4);
             expect(e2.ymax).to.eql(4);
 
-            expect(e3.xmin).to.eql(4);
-            expect(e3.ymin).to.eql(4);
-            expect(e3.xmax).to.eql(4);
-            expect(e3.ymax).to.eql(4);
+            // expect(e3.xmin).to.eql(4);
+            // expect(e3.ymin).to.eql(4);
+            // expect(e3.xmax).to.eql(4);
+            // expect(e3.ymax).to.eql(4);
         });
 
-        it('getCenter');
+        it('isIntersect', function() {
+            var e1 = new Z.Extent(1, 1, 5, 5);
+            var e2 = new Z.Extent(2, 2, 6, 6);
 
-        it('getExtent');
-
-        it('getSize');
-
-        it('show/hide/isVisible');
-
-        it('remove');
-
-        it('copy');
-
-        it('toJson', function() {
-            var extent = new Z.Extent(1, 1, 2, 2);
-            var json = extent.toJson();
-            expect(json).to.only.have.keys(['xmin', 'xmax', 'ymin', 'ymax']);
+            expect(e1.isIntersect(e2)).to.be.ok();
         });
+
+        it('contains');
 
     });
 

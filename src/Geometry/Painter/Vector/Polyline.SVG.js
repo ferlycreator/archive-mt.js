@@ -14,9 +14,6 @@ Z.Polyline.SVG=Z.Vector.SVG.extend({
             //vml图形需要在末尾加个e表示图形结束
             pathString = pathString +' e';
         }
-        if (!pathString) {
-            return null;
-        }
         return {
             type : "path",
             path : pathString
