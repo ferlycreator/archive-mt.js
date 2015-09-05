@@ -55,15 +55,22 @@ describe('PolygonSpec', function() {
     });
 
     it('getExtent', function() {
-        var polygon = new Z.Polygon([[
-            {x: 0, y: 0},
-            {x: 0, y: 10},
-            {x: 10, y: 10},
-            {x: 10, y: 0}
-        ]]);
+        var polygon = new Z.Polygon([
+            [
+                {x: 0, y: 0},
+                {x: 0, y: 10},
+                {x: 10, y: 10},
+                {x: 10, y: 0}
+            ]
+        ]);
         layer.addGeometry(polygon);
+        var extent = polygon.getExtent();
+        var delta = 1e-6;
 
-        expect(polygon.getExtent()).to.eql(new Z.Extent(0, 0, 10, 10));
+        expect(extent.xmin).to.be.within(0 - delta, 0 + delta);
+        expect(extent.xmax).to.be.within(10 - delta, 10 + delta);
+        expect(extent.ymin).to.be.within(0 - delta, 0 + delta);
+        expect(extent.ymax).to.be.within(10 - delta, 10 + delta);
     });
 
 });

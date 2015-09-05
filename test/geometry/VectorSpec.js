@@ -38,10 +38,7 @@ describe('VectorSpec', function() {
             vector.on('click', spy);
             layer.addGeometry(vector);
             var painter = vector._getPainter();
-            var paper = painter.getVectorPaper();
-            paper.forEach(function(el) {
-                happen.click(el);
-            });
+            happen.click(painter.vector);
 
             expect(spy.called).to.be.ok();
         });
