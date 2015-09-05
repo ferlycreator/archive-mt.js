@@ -27,10 +27,10 @@ Z['HeatmapLayer'] = Z.HeatmapLayer = Z.Layer.extend({
         this._el = Z.DomUtil.createEl('div');
         this._data = [];
         this._max = 1;
-        this.cfg._container = this._el;
+        this.cfg.container = this._el;
       },
 
-      _onAdd: function (map) {
+      addTo: function (map) {
         var size = map.getSize();
 
         this._map = map;
@@ -58,7 +58,7 @@ Z['HeatmapLayer'] = Z.HeatmapLayer = Z.Layer.extend({
         this._draw();
       },
 
-      _onRemove: function (map) {
+      onRemove: function (map) {
         // remove layer's DOM elements and listeners
         map.getPanels().removeChild(this._el);
 

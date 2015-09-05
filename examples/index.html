@@ -279,16 +279,15 @@ var tileLayer = new Z.TileLayer('tile', //底图id
     * web-mercator：谷歌, 必应,高德, 腾讯等地图服务采用的瓦片系统;
     * baidu: 百度标注。
     */
-    tileInfo: 'baidu',
+    tileInfo: 'web-mercator',
     /**
     * 在线底图服务url
-    http://online1.map.bdimg.com/onlinelabel/?qt=tile&x=825&y=222&z=12&styles=pl&udt=20150902&scaler=2
     */
-    urlTemplate: 'http://online{s}.map.bdimg.com/onlinelabel/?qt=tile&x={x}&y={y}&z={z}&styles=pl',
+    urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',
     /**
     *urlTemplate中占位符{s}所有数值的数组
     */
-    subdomains:[0,1,2,3,4,5,6,7,8,9]
+    subdomains:[1,2,3]
 });
 //设置底图图层
 mapObj.setBaseTileLayer(tileLayer);
@@ -309,7 +308,7 @@ mapObj.setBaseTileLayer(tileLayer);
                         <h1>图层</h1>
                     </div>
 
-                    <h2>基础图层</h2>
+                    <h2>添加图层</h2>
                     <p>1、使用<code>new Z.VectorLayer(...)</code>创建一个图层；</p>
                     <p>2、将图层添加到mapObj。</p>
                     <div class="bs-docs-example">
@@ -349,7 +348,7 @@ var cfg = {
     'valueField': 'count'
 };
 var heatmap = new Z.HeatmapLayer(cfg);
-heatmap.onAdd(mapObj);
+heatmap.addTo(mapObj);
 heatmap.setData(testData);
 </pre>
                     <iframe src="layer/heatmap.html" width="100%">

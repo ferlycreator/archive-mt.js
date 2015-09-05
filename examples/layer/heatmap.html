@@ -3,10 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MapTalks 示例: 热了图</title>
+<title>MapTalks 示例: 热力图</title>
 </head>
 <body scroll="no" onload="initMap();">
-<body onload="loadMap()">
 <div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
 <script>
   var mapObj;
@@ -14,8 +13,8 @@
     //创建地图对象
     mapObj = new Z.Map('mapObj', //放置mapObj的div id
     {
-        center:  new Z.Coordinate(-80.3568, 25.6586), //初始中心点坐标
-        zoomLevel:   12, //初始缩放级别
+        center:  new Z.Coordinate(121.489935,31.24432), //初始中心点坐标
+        zoomLevel:   5, //初始缩放级别
         attributionControl:  false, //版权信息控件
         zoomControl :  false, //缩放控件
         navControl:  false, //导航控件
@@ -29,39 +28,36 @@
         subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
     }));
 
-    mapObj.addEventListener("mapready", addHeatMap);
-  }
-
-  function addHeatMap(){
 
     var testData = {
       max: 8,
-      data: [{y: 24.6408, x:46.7728, count: 3},{y: 50.75, x:-1.55, count: 1},{y: 52.6333, x:1.75, count: 1},{y: 48.15, x:9.4667, count: 1},{y: 52.35, x:4.9167, count: 2},{y: 60.8, x:11.1, count: 1},{y: 43.561, x:-116.214, count: 1},{y: 47.5036, x:-94.685, count: 1},{y: 42.1818, x:-71.1962, count: 1},{y: 42.0477, x:-74.1227, count: 1},{y: 40.0326, x:-75.719, count: 1},{y: 40.7128, x:-73.2962, count: 2},{y: 27.9003, x:-82.3024, count: 1},{y: 38.2085, x:-85.6918, count: 1},{y: 46.8159, x:-100.706, count: 1},{y: 30.5449, x:-90.8083, count: 1},{y: 44.735, x:-89.61, count: 1},{y: 41.4201, x:-75.6485, count: 2},{y: 39.4209, x:-74.4977, count: 1},{y: 39.7437, x:-104.979, count: 1},{y: 39.5593, x:-105.006, count: 1},{y: 45.2673, x:-93.0196, count: 1},{y: 41.1215, x:-89.4635, count: 1},{y: 43.4314, x:-83.9784, count: 1},{y: 43.7279, x:-86.284, count: 1},{y: 40.7168, x:-73.9861, count: 1},{y: 47.7294, x:-116.757, count: 1},{y: 47.7294, x:-116.757, count: 2},{y: 35.5498, x:-118.917, count: 1},{y: 34.1568, x:-118.523, count: 1},{y: 39.501, x:-87.3919, count: 3},{y: 33.5586, x:-112.095, count: 1},{y: 38.757, x:-77.1487, count: 1},{y: 33.223, x:-117.107, count: 1},{y: 30.2316, x:-85.502, count: 1},{y: 39.1703, x:-75.5456, count: 8},{y: 30.0041, x:-95.2984, count: 2},{y: 29.7755, x:-95.4152, count: 1},{y: 41.8014, x:-87.6005, count: 1},{y: 37.8754, x:-121.687, count: 7},{y: 38.4493, x:-122.709, count: 1},{y: 40.5494, x:-89.6252, count: 1},{y: 42.6105, x:-71.2306, count: 1},{y: 40.0973, x:-85.671, count: 1},{y: 40.3987, x:-86.8642, count: 1},{y: 40.4224, x:-86.8031, count: 4},{y: 47.2166, x:-122.451, count: 1},{y: 32.2369, x:-110.956, count: 1},{y: 41.3969, x:-87.3274, count: 2},{y: 41.7364, x:-89.7043, count: 2},{y: 42.3425, x:-71.0677, count: 1},{y: 33.8042, x:-83.8893, count: 1},{y: 36.6859, x:-121.629, count: 2},{y: 41.0957, x:-80.5052, count: 1},{y: 46.8841, x:-123.995, count: 1},{y: 40.2851, x:-75.9523, count: 2},{y: 42.4235, x:-85.3992, count: 1},{y: 39.7437, x:-104.979, count: 2},{y: 25.6586, x:-80.3568, count: 7},{y: 33.0975, x:-80.1753, count: 1},{y: 25.7615, x:-80.2939, count: 1},{y: 26.3739, x:-80.1468, count: 1},{y: 37.6454, x:-84.8171, count: 1},{y: 34.2321, x:-77.8835, count: 1},{y: 34.6774, x:-82.928, count: 1},{y: 39.9744, x:-86.0779, count: 1},{y: 35.6784, x:-97.4944, count: 2},{y: 33.5547, x:-84.1872, count: 1},{y: 27.2498, x:-80.3797, count: 1},{y: 41.4789, x:-81.6473, count: 1},{y: 41.813, x:-87.7134, count: 1},{y: 41.8917, x:-87.9359, count: 1},{y: 35.0911, x:-89.651, count: 1},{y: 32.6102, x:-117.03, count: 1},{y: 41.758, x:-72.7444, count: 1},{y: 39.8062, x:-86.1407, count: 1},{y: 41.872, x:-88.1662, count: 1},{y: 34.1404, x:-81.3369, count: 1},{y: 46.15, x:-60.1667, count: 1},{y: 36.0679, x:-86.7194, count: 1},{y: 43.45, x:-80.5, count: 1},{y: 44.3833, x:-79.7, count: 1},{y: 45.4167, x:-75.7, count: 2},{y: 43.75, x:-79.2, count: 2},{y: 45.2667, x:-66.0667, count: 3},{y: 42.9833, x:-81.25, count: 2},{y: 44.25, x:-79.4667, count: 3},{y: 45.2667, x:-66.0667, count: 2},{y: 34.3667, x:-118.478, count: 3},{y: 42.734, x:-87.8211, count: 1},{y: 39.9738, x:-86.1765, count: 1},{y: 33.7438, x:-117.866, count: 1},{y: 37.5741, x:-122.321, count: 1},{y: 42.2843, x:-85.2293, count: 1},{y: 34.6574, x:-92.5295, count: 1},{y: 41.4881, x:-87.4424, count: 1},{y: 25.72, x:-80.2707, count: 1},{y: 34.5873, x:-118.245, count: 1},{y: 35.8278, x:-78.6421, count: 1}]
+      data: [{x:121.489935, y: 31.24432, count: 3},
+             {x:121.554716, y: 32.372095, count: 5},
+             {x:121.659007, y: 30.45933, count: 2},
+             {x:122.758149, y: 31.541572, count: 6},
+             {x:119.860381, y: 29.629977, count: 3},
+             {x:118.973427, y: 32.122784, count: 8},
+             {x:123.308617, y: 33.741279, count: 5}
+      ]
     };
 
     var cfg = {
-      // radius should be small ONLY if scaleRadius is true (or small radius is intended)
-      "radius": 2,
-      "maxOpacity": .8,
-      // scales the radius based on map zoom
-      "scaleRadius": true,
-      // if set to false the heatmap uses the global maximum for colorization
-      // if activated: uses the data maximum within the current map boundaries
-      //   (there will always be a red spot with useLocalExtremas true)
-      "useLocalExtrema": true,
-      // which field name in your data represents the latitude - default "lat"
-      latField: 'lat',
-      // which field name in your data represents the longitude - default "lng"
-      lngField: 'lng',
-      // which field name in your data represents the data value - default "value"
+      radius: 2,
+      maxOpacity: .8,
+      scaleRadius: true,
+      useLocalExtrema: true,
+      latField: 'y',
+      lngField: 'x',
       valueField: 'count'
     };
-    //构造地图类,第一个参数为加载地图的容器，例如div的id
     var heatmap = new Z.HeatmapLayer(cfg);
-    heatmap.onAdd(mapObj);
+    heatmap.addTo(mapObj);
     heatmap.setData(testData);
-  };
+
+
+  }
 </script>
+<script type="text/javascript" src="js/heatmap/heatmap.js"></script>
 <!-- 引擎javascript开发包-->
 <script type="text/javascript" src="/maptalks/v2/maptalks.js"></script>
 <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
