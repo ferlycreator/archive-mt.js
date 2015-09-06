@@ -58,7 +58,10 @@ Z.Editor=Z.Class.extend({
             this.createRectEditor();
         } else if (geometry instanceof Z.Ellipse) {
             this.createEllipseEditor();
-        } else if (geometry instanceof Z.Polygon || geometry instanceof Z.Polyline){
+        } else if (geometry instanceof Z.Sector) {
+            // TODO: createSectorEditor
+        } else if ((geometry instanceof Z.Polygon) ||
+                   (geometry instanceof Z.Polyline)){
             this.createPolygonEditor();
         }
         this.editing = true;

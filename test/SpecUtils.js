@@ -1,6 +1,6 @@
 function genAllTypeGeometries() {
     var center = new Z.Coordinate(118.846825, 32.046534);
-    var w = 1, h = 1, r = 1;
+    var w = 200, h = 200, r = 200;
     var geometries = [
         new Z.Marker(center),
         new Z.Circle(center, r),

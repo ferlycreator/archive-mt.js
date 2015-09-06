@@ -2156,6 +2156,11 @@ describe('API', function () {
             expect(function () {
                 for (var i = 0; i < geometries.length; i++) {
                     var geometry = geometries[i];
+                    if ((geometry instanceof Z.MultiPoint) ||
+                        (geometry instanceof Z.MultiPolyline) ||
+                        (geometry instanceof Z.MultiPolygon)) {
+                        continue;
+                    }
                     geometry.startEdit();
                     geometry.endEdit();
                 }
