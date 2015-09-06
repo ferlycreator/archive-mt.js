@@ -177,15 +177,15 @@ Z.Util = {
         return len;
     },
 
-    splitContent: function(content, contentLen, size, length) {
-        var rowNum = Math.ceil(contentLen/length);
-        var length = parseInt(length/size);
+    splitContent: function(content, textWidth, size, length) {
+        var rowNum = Math.ceil(textWidth/length);
+        var fontSize = parseInt(length/size);
         var result = [];
         for(var i=0;i<rowNum;i++) {
             if(i < rowNum -1 ) {
-                result.push(content.substring(i*length,(i+1)*length-1));
+                result.push(content.substring(i*fontSize, (i+1)*fontSize));
             } else {
-                result.push(content.substring(i*length));
+                result.push(content.substring(i*fontSize));
             }
         }
         return result;

@@ -339,9 +339,8 @@ Z.SVG.SVG = {
             textElement.setAttribute('style', textStyle);
             textElement.setAttribute('x', location[0]);
             textElement.setAttribute('y', location[1] + lineSpacing + size);
-            //textElement.setAttribute('style', textStyle);
             if(textWidth>width){
-                 var contents = Z.Util.splitContent(content, textWidth, size, width);
+                 var contents = Z.Util.splitContent(content, textWidth, fontSize, width);
                  var result = '';
                  for(var i=0,len=contents.length;i<len;i++){
                     var content = contents[i];
@@ -585,7 +584,7 @@ Z.SVG.VML= {
             var textWidth = Z.Util.getLength(content)*size;
             var resultStr = '';
             if(textWidth>width){
-                 var contents = Z.Util.splitContent(content, textWidth, size, width);
+                 var contents = Z.Util.splitContent(content, textWidth, fontSize, width);
                  var result = '';
                  for(var i=0,len=contents.length;i<len;i++){
                     var content = contents[i];
