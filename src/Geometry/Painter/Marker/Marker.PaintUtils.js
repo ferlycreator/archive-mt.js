@@ -121,7 +121,9 @@ Z.Marker.PaintUtils = {
                 left = left + width-textWidth;
             }
         }
-        return [left, top];
+        var textDx = Z.Util.setDefaultValue(icon['textDx'],0);
+        var textDy = Z.Util.setDefaultValue(icon['textDy'],0);
+        return [left+textDx, top+textDy];
     },
 
     _getLabelPoints: function(icon) {
