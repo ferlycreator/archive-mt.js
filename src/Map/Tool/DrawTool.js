@@ -15,7 +15,14 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
      * 默认的线型
      * @type {Object}
      */
-    defaultStrokeSymbol:{'strokeSymbol' : {'stroke':'#474cf8', 'strokeWidth':3, 'strokeOpacity':1}},
+    defaultStrokeSymbol: {
+            'lineColor':'#474cf8',
+            'lineWidth':2,
+            'lineOpacity':1,
+            'lineDasharray': '',
+            'polygonFill' : '#ffffff',
+            'polygonOpacity' : 1
+    },
 
     addTo: function(map) {
         //TODO options应该设置到this.options中
@@ -61,7 +68,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
             this.geometry.remove();
             delete this.geometry;
         }
-        this['mode'] = mode;
+        this.mode = mode;
         this._clearEvents();
         this._registerEvents();
     },
@@ -72,8 +79,10 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
      * @expose
      */
     getSymbol:function() {
-        if(this['symbol']) {
-            return this['symbol'];
+        var symbol = this.symbol;
+        if(symbol) {
+            this.symbol = Z.Util.convertFieldNameStyle(symbol, 'camel');
+            return this.symbol;
         } else {
             return this.defaultStrokeSymbol;
         }
@@ -87,7 +96,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         if (!symbol) {
             return;
         }
-        this['symbol'] = symbol;
+        this.symbol = symbol;
         if (this.geometry) {
             this.geometry.setSymbol(symbol);
         }
@@ -105,11 +114,11 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
      */
     _registerEvents: function() {
         this._preventEvents();
-        var mode = this['mode'];
+        var mode = this.mode;
         if (Z.Util.isNil(mode)) {
             mode = Z.Geometry['TYPE_CIRCLE'];
         }
-        if (Z.Geometry['TYPE_POLYGON'] == mode || Z.Geometry['TYPE_POLYLINE'] == mode) {
+        if (Z.Geometry['TYPE_POLYGON'] == mode || Z.Geometry['TYPE_LINESTRING'] == mode) {
             this.map.on('click',this._clickForPath, this);
             this.map.on('mousemove',this._mousemoveForPath,this);
             this.map.on('dblclick',this._dblclickForPath,this);
@@ -235,7 +244,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
             }
             this.drawToolLayer.addGeometry(this.geometry);
         } else {
-            this.geometry.setPath(path);
+            this.geometry.setCoordinates(path);
         }
         //<--
         this._endDraw(coordinate, screenXY);
@@ -344,7 +353,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
          * @param coordinate {seegoo.maps.MLonLat} 结束坐标
          * @param pixel {Pixel} 结束像素坐标
          */
-         var param = {'target':target,'coordinate':coordinate, 'pixel':screenXY};
+         var param = {'target':target,'coordinate':target.getCoordinates(), 'pixel':screenXY};
          if(this.afterdraw){
             this.afterdraw(param);
          }
@@ -362,7 +371,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         if (this.geometry.getShell) {
             return this.geometry.getShell();
         }
-        return this.geometry.getPath();
+        return this.geometry.getCoordinates();
     },
 
     _setLonlats:function(lonlats) {
@@ -371,11 +380,6 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         } else if (this.geometry instanceof Z.Polyline) {
             this.geometry.setCoordinates(lonlats);
         }
-        /*if (this.geometry.setRing) {
-            this.geometry.setRing(lonlats);
-        } else {
-            this.geometry.setPath(lonlats);
-        }*/
     },
 
     /**

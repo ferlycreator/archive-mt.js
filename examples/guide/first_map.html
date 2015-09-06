@@ -18,11 +18,7 @@
         mapObj = new Z.Map('mapObj', //放置mapObj的div id
         {
             center:  new Z.Coordinate(121.489935,31.24432), //初始中心点坐标
-            zoomLevel:   17, //初始缩放级别
-            attributionControl:  false, //版权信息控件
-            zoomControl :  false, //缩放控件
-            navControl:  false, //导航控件
-            scaleControl:  false //比例尺控件
+            zoomLevel:   17 //初始缩放级别
         });
         //设置底图图层
         mapObj.setBaseTileLayer(new Z.TileLayer('tile', //底图id

@@ -581,7 +581,7 @@ layer.addGeometry(marker);
 
 
                     <h2>设置点标签</h2>
-                    <p>1、使用<code>new Z.Marker(...)</code>创建一个点；</p>
+                    <p>1、使用<code>new Z.Marker(...)</code>创建点；</p>
                     <p>2、构造标签参数，并设置到Marker；</p>
                     <p>3、将点添加到图层上。</p>
                     <div class="bs-docs-example">
@@ -645,7 +645,8 @@ layer.addGeometry(marker);
 
                     <h2>标注点</h2>
                     <p>1、使用<code>new Z.DrawTool(...)</code>创建drawTool；</p>
-                    <p>2、将drawTool添加到需要绘制工具的map上。</p>
+                    <p>2、将drawTool添加到需要绘制工具的map上；</p>
+                    <p>3、drawTool会监听鼠标点击事件，并在完成点击后，返回点击点的坐标。</p>
                     <div class="bs-docs-example">
 <pre class="linenums prettyprint">
 //构造绘制点工具
@@ -658,7 +659,6 @@ drawTool.addTo(mapObj);
 drawTool.on('afterdraw', onAfterDrawMarker);
 //绘制完点后操作
 function onAfterDrawMarker(param) {
-    console.log(param);
     var coordinate = param.coordinate;
     alert('您绘制的点的坐标为:{x:'+coordinate.x+',y:'+coordinate.y);        //创建点的坐标对象
     //设置图片
@@ -687,7 +687,8 @@ function onAfterDrawMarker(param) {
 
                     <h2>编辑点</h2>
                     <p>1、编辑点：<code>marker.startEdit();</code></p>
-                    <p>2、停止编辑：<code>marker.endEdit();</code></p>
+                    <p>2、待编辑的点上会出现交互的热区，点击即可将点拖动到新的位置；</p>
+                    <p>3、停止编辑：<code>marker.endEdit()。</code></p>
                     <div class="bs-docs-example">
 <pre class="linenums prettyprint">
 //开始编辑点
@@ -711,7 +712,7 @@ marker.endEdit();
                     </div>
 
                     <h2>添加线</h2>
-                    <p>1、使用<code>new Z.Polyline(...)</code>创建一条线；</p>
+                    <p>1、使用<code>new Z.Polyline(...)</code>创建线；</p>
                     <p>2、将线添加到图层上。</p>
                     <div class="bs-docs-example">
 <pre class="linenums prettyprint">
@@ -739,6 +740,62 @@ layer.addGeometry(polyline);
                     </iframe>
                     <p>
                         <a class="btn btn-success" href="editor.html?html=geometry/polyline/polyline.html&title=Add Polyline" target="_blank">源码编辑器</a>
+                    </p>
+                    </div>
+
+                    <h2>绘制线</h2>
+                    <p>1、使用<code>new Z.DrawTool(...)</code>创建drawTool；</p>
+                    <p>2、将drawTool添加到需要绘制工具的map上；</p>
+                    <p>3、drawTool会监听鼠标事件，点击创建线节点，拖动移动到新的位置，双击停止绘制。</p>
+                    <div class="bs-docs-example">
+<pre class="linenums prettyprint">
+//构造绘制线工具
+drawTool = new Z.DrawTool({
+    mode: Z.Geometry.TYPE_LINESTRING,//设置drawTool绘制的图形类型
+    symbol: {
+            'line-color':'#0000ff',
+            'line-width':2,
+            'line-opacity':1,
+            'line-dasharray': ''
+    }
+});
+//将线绘制工具绑定到地图对象
+drawTool.addTo(mapObj);
+//监听绘制工具完成事件，获取绘制的线坐标数组等信息
+drawTool.on('afterdraw', onAfterDrawPolyline);
+
+//绘制完线后操作
+function onAfterDrawPolyline(param) {
+    var coordinates = param.coordinate;
+    //创建线对象
+    var polyline = new Z.Polyline(coordinates);
+    //将线添加到Layer
+    layer.addGeometry(polyline);
+}
+</pre>
+                    <iframe src="geometry/polyline/draw_polyline.html" width="100%">
+
+                    </iframe>
+                    <p>
+                        <a class="btn btn-success" href="editor.html?html=geometry/polyline/draw_polyline.html&title=Draw Polyline" target="_blank">源码编辑器</a>
+                    </p>
+                    </div>
+
+                    <h2>编辑线</h2>
+                    <p>1、编辑线：<code>polyline.startEdit();</code></p>
+                    <p>2、停止编辑：<code>polyline.endEdit();</code></p>
+                    <div class="bs-docs-example">
+<pre class="linenums prettyprint">
+//开始编辑点
+polyline.startEdit();
+//停止编辑点
+polyline.endEdit();
+</pre>
+                    <iframe src="geometry/polyline/edit_polyline.html" width="100%">
+
+                    </iframe>
+                    <p>
+                        <a class="btn btn-success" href="editor.html?html=geometry/polyline/edit_polyline.html&title=Edit Polyline" target="_blank">源码编辑器</a>
                     </p>
                     </div>
 
