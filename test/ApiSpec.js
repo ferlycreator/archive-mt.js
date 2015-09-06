@@ -276,13 +276,67 @@ describe('API', function () {
 
     describe('Map.CartoCSS', function() {
 
-        it('CartoCSS');
+        var layer;
 
-        it('loadCartoCSS');
+        beforeEach(function() {
+            layer = new Z.VectorLayer('layer1');
+            map.addLayer(layer);
+        });
 
-        it('rendCartoCSS');
+        afterEach(function() {
+            map.removeLayer(layer);
+        });
 
-        it('cartoCSSGeometry');
+        it('CartoCSS 1', function () {
+            var cartocss = [
+                '#layer1 {',
+                ' marker-width: 2',
+                '}'
+            ].join('');
+            map.cartoCSS(cartocss);
+            var marker = new Z.Marker(center);
+            // marker.setProperties({});
+            layer.addGeometry(marker);
+            var style = map._cartoCSSGeometry(marker);
+
+            expect(style['marker-width']).to.eql(2);
+        });
+
+        it('CartoCSS 2', function () {
+            var cartocss = [
+                '#layer1 {',
+                ' marker-width: [my-width]',
+                '}'
+            ].join('');
+            map.cartoCSS(cartocss);
+            var marker = new Z.Marker(center);
+            marker.setProperties({
+                'my-width': 2
+            });
+            layer.addGeometry(marker);
+            var style = map._cartoCSSGeometry(marker);
+
+            expect(style['marker-width']).to.eql(2);
+        });
+
+        it('CartoCSS 3', function () {
+            var cartocss = [
+                '#layer1 {',
+                ' marker-width: [my-width];',
+                ' [property>3] { marker-width: 5; }',
+                '}'
+            ].join('');
+            map.cartoCSS(cartocss);
+            var marker = new Z.Marker(center);
+            marker.setProperties({
+                'my-width': 2,
+                'property': 4
+            });
+            layer.addGeometry(marker);
+            var style = map._cartoCSSGeometry(marker);
+
+            expect(style['marker-width']).to.eql(5);
+        });
 
     });
 

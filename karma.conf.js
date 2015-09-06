@@ -1,8 +1,4 @@
-// Karma configuration
-// http://karma-runner.github.io/0.12/config/configuration-file.html
-// Generated on 2015-05-27 using
-// generator-karma 1.0.0
-
+// -*- js2-basic-offset: 2; js-indent-level: 2 -*-
 /* jshint node: true */
 
 module.exports = function(config) {
@@ -12,6 +8,7 @@ module.exports = function(config) {
   var files = srcFiles.concat([
     // 'test/geometry/*.js',
     'test/**/*.js',
+    'assets/lib/**/*.js',
     {pattern: 'assets/css/**/*.css', watched: true, included: false, served: true},
     {pattern: 'assets/images/**/*.png', watched: false, included: false, served: true},
     {pattern: 'assets/images/**/*.gif', watched: false, included: false, served: true}
