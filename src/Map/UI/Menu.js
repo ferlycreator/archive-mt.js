@@ -135,6 +135,8 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
     * @expose
     */
     setItems: function(items) {
+        // FIXME:
+        this.menuOption = this.menuOption || {};
         this.menuOption['items'] = items;
         return this;
     },
@@ -202,7 +204,9 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
     show:function(coordinate) {
         var menuOption = this.menuOption;
         var pxCoord = this._getShowPosition(coordinate);
-        if (Z.Util.isNil(pxCoord) || Z.Util.isNil(menuOption)) {return;}
+        if (Z.Util.isNil(pxCoord) || Z.Util.isNil(menuOption)) {
+            return this;
+        }
         this._clearDomAndBindEvent();
         this.hide();
         var me = this;
