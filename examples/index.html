@@ -755,8 +755,7 @@ drawTool = new Z.DrawTool({
     symbol: {
             'line-color':'#0000ff',
             'line-width':2,
-            'line-opacity':1,
-            'line-dasharray': ''
+            'line-opacity':1
     }
 });
 //将线绘制工具绑定到地图对象
@@ -843,6 +842,66 @@ layer.addGeometry(polygon);
                     </iframe>
                     <p>
                         <a class="btn btn-success" href="editor.html?html=geometry/polygon/polygon.html&title=Add Polygon" target="_blank">源码编辑器</a>
+                    </p>
+                    </div>
+
+                    <h2>绘制面</h2>
+                    <p>1、使用<code>new Z.DrawTool(...)</code>创建drawTool；</p>
+                    <p>2、将drawTool添加到需要绘制工具的map上；</p>
+                    <p>3、drawTool会监听鼠标事件，点击创建面节点，拖动移动到新的位置，双击停止绘制。</p>
+                    <div class="bs-docs-example">
+<pre class="linenums prettyprint">
+//构造绘制面工具
+drawTool = new Z.DrawTool({
+    /**
+    *设置drawTool绘制的图形类型
+    *TYPE_POLYGON： 多边形；TYPE_RECT：矩形；TYPE_CIRCLE：圆形
+    */
+    mode: Z.Geometry.TYPE_POLYGON,
+    symbol: {
+        'line-color':'#0000ff',
+        'line-width':3,
+        'line-opacity':1,
+        'polygon-fill': '#ff0000',
+        'polygon-opacity': 0.6
+    }
+});
+//将线绘制工具绑定到地图对象
+drawTool.addTo(mapObj);
+//监听绘制工具完成事件，获取绘制的面坐标数组等信息
+drawTool.on('afterdraw', onAfterDrawPolygon);
+
+//绘制完线面操作
+function onAfterDrawPolygon(param) {
+    //绘制的图形
+    var polygon = param.target;
+    //将线添加到Layer
+    layer.addGeometry(polygon);
+}
+</pre>
+                    <iframe src="geometry/polygon/draw_polygon.html" width="100%">
+
+                    </iframe>
+                    <p>
+                        <a class="btn btn-success" href="editor.html?html=geometry/polygon/draw_polygon.html&title=Draw Polygon" target="_blank">源码编辑器</a>
+                    </p>
+                    </div>
+
+                    <h2>编辑面</h2>
+                    <p>1、编辑线：<code>polygon.startEdit();</code></p>
+                    <p>2、停止编辑：<code>polygon.endEdit();</code></p>
+                    <div class="bs-docs-example">
+<pre class="linenums prettyprint">
+//开始编辑点
+polygon.startEdit();
+//停止编辑点
+polygon.endEdit();
+</pre>
+                    <iframe src="geometry/polygon/edit_polygon.html" width="100%">
+
+                    </iframe>
+                    <p>
+                        <a class="btn btn-success" href="editor.html?html=geometry/polygon/edit_polygon.html&title=Edit Polygon" target="_blank">源码编辑器</a>
                     </p>
                     </div>
 

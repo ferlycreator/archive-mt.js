@@ -237,7 +237,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         //-->2014-10-28 增加只在双击时才封闭多边形
         if (Z.Geometry['TYPE_POLYGON'] == this.mode) {
 
-            this.geometry = new Z.Polygon(path);
+            this.geometry = new Z.Polygon([path]);
             var symbol=this.getSymbol();
             if (symbol) {
                 this.geometry.setSymbol(symbol);
