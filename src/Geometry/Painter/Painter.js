@@ -145,7 +145,7 @@ Z.Painter = Z.Class.extend({
             'fillOpacity': Z.Util.setDefaultValue(symbol['shieldFillOpacity'], 1),
             'image': symbol['shieldFile'],
             'unlockImage': Z.Util.setDefaultValue(symbol['shieldUnlockImage'], false),
-            'font': Z.Util.setDefaultValue(symbol['textFaceName'], 'arial'),
+            'font': Z.Util.setDefaultValue(symbol['shieldFaceName'], 'arial'),
             'size': Z.Util.setDefaultValue(symbol['shieldSize'], 12),
             'color': Z.Util.setDefaultValue(symbol['shieldTextFill'], '#000000'),
             'textOpacity': Z.Util.setDefaultValue(symbol['shieldTextOpacity'], 1),
