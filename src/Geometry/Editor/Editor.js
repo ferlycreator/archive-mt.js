@@ -392,9 +392,9 @@ Z.Editor=Z.Class.extend({
         var title = ((geometry instanceof Z.Polygon)?'多边形':'多折线');
         function getLonlats() {
             if (geometry instanceof Z.Polygon) {
-                return geometry.getPrjShell();
+                return geometry._getPrjPoints();
             } else if (geometry instanceof Z.Polyline) {
-                return geometry.getPrjPath();
+                return geometry._getPrjPoints();
             }
         }
         function createVertexHandle(vertex) {

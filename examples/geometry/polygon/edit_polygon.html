@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MapTalks 示例: 添加点、线与面</title>
+    <title>MapTalks 示例: 编辑面</title>
 </head>
 <body scroll="no" onload="initMap();">
 <div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
 <script type="text/javascript" >
-    var mapObj;
+    var mapObj,polygon;
     function initMap(){
         //创建地图对象
         mapObj = new Z.Map('mapObj', //放置mapObj的div id
         {
             center:  new Z.Coordinate(121.489935,31.24432), //初始中心点坐标
-            zoomLevel:   11 //初始缩放级别
+            zoomLevel:   12 //初始缩放级别
         });
         //设置底图图层
         mapObj.setBaseTileLayer(new Z.TileLayer('tile', //底图id
@@ -23,47 +23,14 @@
             urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
             subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
         }));
-        //创建放置图形的图层
+
+        //创建图层
         var layer = new Z.VectorLayer('layer');
-        //将图层添加到地图
+        //将图层添加到地图对象
         mapObj.addLayer(layer);
 
-        //创建点对象
-        var marker = new Z.Marker(new Z.Coordinate(121.489935,31.24432));
-        //设置点图片
-        var icon = {
-            'marker-file': '/maptalks/v2/images/marker.png',
-            'marker-width': 22,
-            'marker-height': 30,
-            'dx': 0,
-            'dy' :0
-        };
-        //设置点样式
-        marker.setSymbol(icon);
-        //将点添加到Layer
-        layer.addGeometry(marker);
-
-        //创建线对象
-        var polyline = new Z.Polyline(
-            //线端点坐标数组
-            [new Z.Coordinate(121.454716,31.272095),
-            new Z.Coordinate(121.459007,31.25933),
-            new Z.Coordinate(121.458149,31.241572),
-            new Z.Coordinate(121.460381,31.229977),
-            new Z.Coordinate(121.473427,31.222784)]);
-        //设置线样式
-        var polylineSymbol = {
-            'line-color' : '#ff00ff',
-            'line-width' : 5,
-            'line-dasharray' : '-',//线形
-            'line-opacity' : 1
-        };
-        polyline.setSymbol(polylineSymbol);
-        //将线添加到Layer
-        layer.addGeometry(polyline);
-
         //创建面对象
-        var polygon = new Z.Polygon(
+        polygon = new Z.Polygon(
             //面端点坐标数组
             [[new Z.Coordinate(121.508617,31.241279),
             new Z.Coordinate(121.519432,31.241572),
@@ -87,6 +54,31 @@
         polygon.setSymbol(polygonSymbol);
         //将面添加到Layer
         layer.addGeometry(polygon);
+
+        var toolbar = new Z.Toolbar({
+            id: 'toolbar',//toolbar id
+            position : { //工具条放置位置
+                top: '2',
+                left: '2'
+            },
+            vertical : false,
+            //工具项
+            items: [{
+                type : 'button',
+                content: '编辑',
+                click : function(){
+                    polygon.startEdit();
+                }
+            }, {
+                type : 'button',
+                content: '停止编辑',
+                click : function(){
+                    polygon.endEdit();
+                }
+            }]
+        });
+        mapObj.addControl(toolbar);
+
     }
 </script>
 <!-- 引擎javascript开发包-->

@@ -1,12 +1,12 @@
 Z.Vector = Z.Geometry.extend({
     options:{
         'symbol':{
-            'stroke' : '#ff0000',
-            'strokeWidth' : 3,
-            'strokeOpacity' : 1,
-            'strokeDasharray': '',
-            'fill' : '#ffffff',
-            'fillOpacity' : 1
+            'lineColor' : '#ff0000',
+            'lineWidth' : 2,
+            'lineOpacity' : 1,
+            'lineDasharray': '',
+            'polygonFill' : '#ffffff',
+            'polygonOpacity' : 1
         }
     },
 

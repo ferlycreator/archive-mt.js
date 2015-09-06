@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MapTalks 示例: 标注点</title>
+    <title>MapTalks 示例: 绘制线</title>
 </head>
 <body scroll="no" onload="initMap();">
 <div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
@@ -27,34 +27,35 @@
         layer = new Z.VectorLayer('layer');
         //将图层添加到地图对象
         mapObj.addLayer(layer);
-        //构造绘制点工具
+
+        //构造绘制面工具
         drawTool = new Z.DrawTool({
-            mode: Z.Geometry.TYPE_POINT//设置drawTool绘制的图形类型
+            /**
+            *设置drawTool绘制的图形类型
+            *TYPE_POLYGON： 多边形；TYPE_RECT：矩形；TYPE_CIRCLE：圆形
+            */
+            mode: Z.Geometry.TYPE_POLYGON,
+            symbol: {
+                'line-color':'#0000ff',
+                'line-width':3,
+                'line-opacity':1,
+                'polygon-fill': '#ff0000',
+                'polygon-opacity': 0.6
+            }
         });
-        //将点绘制工具绑定到地图对象
+        //将线绘制工具绑定到地图对象
         drawTool.addTo(mapObj);
-        //监听绘制工具完成事件，获取绘制的点坐标等信息
-        drawTool.on('afterdraw', onAfterDrawMarker);
+        //监听绘制工具完成事件，获取绘制的面坐标数组等信息
+        drawTool.on('afterdraw', onAfterDrawPolygon);
     }
 
-    //绘制完点后操作
-    function onAfterDrawMarker(param) {
-        var coordinate = param.coordinate;
-        alert('您绘制的点的坐标为:{x:'+coordinate.x+',y:'+coordinate.y);        //创建点的坐标对象
-        //设置图片
-        var icon = {
-            'marker-file': '/maptalks/v2/images/marker.png',
-            'marker-width': 22,
-            'marker-height': 30,
-            'dx': 0,
-            'dy' :0
-        };
-        //创建点对象
-        var marker = new Z.Marker(coordinate,{'id':'marker_id'});
-        //设置点样式
-        marker.setSymbol(icon);
-        //将点添加到Layer
-        layer.addGeometry(marker);
+    //绘制完线面操作
+    function onAfterDrawPolygon(param) {
+        console.log(param);
+        //绘制的图形
+        var polygon = param.target;
+        //将线添加到Layer
+        layer.addGeometry(polygon);
     }
 </script>
 <!-- 引擎javascript开发包-->
