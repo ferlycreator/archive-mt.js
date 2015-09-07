@@ -19,6 +19,7 @@ Z.Map.include({
      * @expose
      */
     panBy:function(offset) {
+        this._fireEvent('movestart');
         this.offsetPlatform(new Z.Point(offset['left'],offset['top']));
         this._offsetCenterByPixel(new Z.Point(-offset['left'],-offset['top']));
         this._fireEvent('moving');
@@ -95,6 +96,7 @@ Z.Map.include({
                 return;
             }
             if (!_map._allowSlideMap) {
+                // XXX: why set '_allowSlideMap' to 'true'?
                 _map._allowSlideMap = true;
                 _map._onMoveEnd({'target':_map});
                 return;

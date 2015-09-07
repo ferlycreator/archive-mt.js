@@ -63,7 +63,7 @@ describe('#Map', function () {
         it('setCenter后, getCenter返回结果与指定center相等(Load之后)', function() {
             map.setBaseTileLayer(tile);
 
-            var nc = new Z.Coordinate(119, 32);
+            var nc = new Z.Coordinate(122, 32);
             map.setCenter(nc);
 
             expect(map.getCenter()).to.nearCoord(nc);
@@ -73,27 +73,27 @@ describe('#Map', function () {
             map.setBaseTileLayer(tile);
 
             var spy = sinon.spy();
-            map.addEventListener('movestart', spy);
+            map.on('movestart', spy);
             map.setCenter(center);
 
             expect(spy.called).to.not.be.ok();
         });
 
-        it('setCenter设定中心点为当前地图中心点, 不应该触发moveend', function() {
+        it('setCenter设定中心点为当前地图中心点, 应该触发moveend', function() {
             map.setBaseTileLayer(tile);
 
             var spy = sinon.spy();
-            map.addEventListener('moveend', spy);
+            map.on('moveend', spy);
             map.setCenter(center);
 
-            expect(spy.called).to.not.be.ok();
+            expect(spy.called).to.be.ok();
         });
 
         it('setCenter设定中心点不同于当前地图中心点, 应该触发movestart', function() {
             map.setBaseTileLayer(tile);
 
             var spy = sinon.spy();
-            map.addEventListener('movestart', spy);
+            map.on('movestart', spy);
             var nc = new Z.Coordinate(119, 32);
             map.setCenter(nc);
 
@@ -104,7 +104,7 @@ describe('#Map', function () {
             map.setBaseTileLayer(tile);
 
             var spy = sinon.spy();
-            map.addEventListener('moveend', spy);
+            map.on('moveend', spy);
             var nc = new Z.Coordinate(119, 32);
             map.setCenter(nc);
 
