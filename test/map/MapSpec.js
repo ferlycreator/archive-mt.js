@@ -116,7 +116,7 @@ describe('#Map', function () {
         it('get (min/max/current)zoom level', function() {
             map.setBaseTileLayer(tile);
 
-            expect(map.getZoomLevel()).to.be.a('number');
+            expect(map.getZoomLevel()).to.eql(17);
             expect(map.getMinZoomLevel()).to.be.a('number');
             expect(map.getMaxZoomLevel()).to.be.a('number');
         });
@@ -137,13 +137,11 @@ describe('#Map', function () {
         it('set max zoom level to less than current zoom level', function() {
             map.setBaseTileLayer(tile);
 
-            var min = 3, max = 14, cur = max + 1;
-            map.setMinZoomLevel(min);
+            var max = 14, cur = max + 1;
             map.setZoomLevel(cur);
             map.setMaxZoomLevel(max);
 
             expect(map.getZoomLevel()).to.equal(max);
-            expect(map.getMinZoomLevel()).to.equal(min);
             expect(map.getMaxZoomLevel()).to.equal(max);
         });
 

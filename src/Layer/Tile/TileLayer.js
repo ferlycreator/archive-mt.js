@@ -49,12 +49,11 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
      * 显示图层
      */
     show:function() {
-        if (this.options['visible']) {
-            return;
+        if (!this.options['visible']) {
+            this._tileContainer.style.display="";
+            this._fillTiles(true);
+            this.options['visible'] = true;
         }
-        this._tileContainer.style.display="";
-        this._fillTiles(true);
-        this.options['visible'] = true;
         return this;
     },
 
@@ -62,12 +61,11 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
      * 隐藏图层
      */
     hide:function() {
-        if (!this.options['visible']) {
-            return;
+        if (this.options['visible']) {
+            this._tileContainer.style.display="none";
+            this.clear();
+            this.options['visible'] = false;
         }
-        this._tileContainer.style.display="none";
-        this.clear();
-        this.options['visible'] = false;
         return this;
     },
 
