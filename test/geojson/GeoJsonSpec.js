@@ -142,15 +142,13 @@ describe('GeoJson', function() {
         it('parse FeatureCollection', function() {
             expect(features).to.have.length(3);
             expect(features[0]).to.an(Z.Marker);
-            expect(features[0].toJson()).to.eql(fJsons[0]);
+            expect(features[0].toJson({symbol: false})).to.eql(fJsons[0]);
             expect(features[0].getProperties()).to.eql(featureCollectionGeoJson['features'][0]['properties']);
             expect(features[1]).to.an(Z.Polyline);
-            expect(features[1].toJson()).to.eql(fJsons[1]);
+            expect(features[1].toJson({symbol: false})).to.eql(fJsons[1]);
             expect(features[2]).to.an(Z.Polygon);
-            expect(features[2].toJson()).to.eql(fJsons[2]);
+            expect(features[2].toJson({symbol: false})).to.eql(fJsons[2]);
         });
-
-
 
     });
 
