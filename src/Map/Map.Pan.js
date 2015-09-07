@@ -19,10 +19,12 @@ Z.Map.include({
      * @expose
      */
     panBy:function(offset) {
-        this._fireEvent('movestart');
-        this.offsetPlatform(new Z.Point(offset['left'],offset['top']));
-        this._offsetCenterByPixel(new Z.Point(-offset['left'],-offset['top']));
-        this._fireEvent('moving');
+        if (offset.left || offset.top) {
+            this._fireEvent('movestart');
+            this.offsetPlatform(new Z.Point(offset['left'],offset['top']));
+            this._offsetCenterByPixel(new Z.Point(-offset['left'],-offset['top']));
+            this._fireEvent('moving');
+        }
         this._onMoveEnd({'target':this});
         return this;
     },

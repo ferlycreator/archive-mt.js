@@ -198,6 +198,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         var projection = this._getProjection();
         var _pcenter = projection.project(center);
         var offset = this._getPixelDistance(_pcenter);
+        // FIXME: call panBy() ?
         if (offset.left || offset.top) {
             this._fireEvent('movestart');
             this._setPrjCenter(_pcenter);
