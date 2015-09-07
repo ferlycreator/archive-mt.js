@@ -226,6 +226,33 @@ Z.Util = {
     },
 
     /**
+     * 将带减号的名称转化为camel名称, 如foo-class -> fooClass
+     * @param  {String} p 带减号名称
+     * @return {String}   camel名称
+     */
+    convertMinusToCamel: function(str) {
+        var re = /(-[A-Za-z])/g;
+        return str.replace(re, function (match, p1, offset, str) {
+            return p1[1].toUpperCase();
+        });
+    },
+
+    /**
+     * 将camel名称转化为带减号的名称, 如fooClass -> foo-class
+     * @param  {String} p camel名称
+     * @return {String}   带减号名称
+     */
+    convertCamelToMinus: function(str) {
+        var re = /([A-Z])/g;
+        return str.replace(re, function (match, p1, offset, str) {
+            if (offset > 0) {
+                return '-' + p1.toLowerCase();
+            }
+            return p1.toLowerCase();
+        });
+    },
+
+    /**
      * 转换对象属性变量名风格, 即将属性名在camel风格到minus风格间转换
      * @param  {Object} symbol 对象
      * @param  {String} style   转换风格:'minus'或'camel'
@@ -249,64 +276,6 @@ Z.Util = {
             }
         }
         return option;
-    },
-
-    /**
-     * 将带减号的名称转化为camel名称, 如foo-class -> fooClass
-     * @param  {String} p 带减号名称
-     * @return {String}   camel名称
-     */
-    convertMinusToCamel:function(p) {
-        if (!p) {
-            return null;
-        }
-        var catched = false;
-        var ret = [];
-        for ( var i = 0, len = p.length; i < len; i++) {
-            var currChar = p[i];
-            if (Z.Util.isNil(currChar)) {
-                currChar = p.charAt(i);
-            }
-            if (currChar === "-") {
-                catched = true;
-                continue;
-            }
-            if (catched) {
-                ret.push(currChar.toUpperCase());
-                catched = false;
-            } else {
-                ret.push(currChar);
-            }
-        }
-        return ret.join("");
-    },
-
-    /**
-     * 将camel名称转化为带减号的名称, 如fooClass -> foo-class
-     * @param  {String} p camel名称
-     * @return {String}   带减号名称
-     */
-    convertCamelToMinus:function(p) {
-        function isUpperCase(chr) {
-            if (!chr) {return false;}
-            return (chr.charCodeAt(0)>=65)&&(chr.charCodeAt(0)<=90);
-        }
-        if (!p) {return null;}
-        var ret=[];
-        for (var i=0, len=p.length;i<len;i++) {
-            var currChar = p[i];
-            if (!currChar) {
-                //ie 6, ie 7取字符方法
-                currChar = p.charAt(i);
-            }
-            if (isUpperCase(currChar)) {
-                ret.push("-");
-                ret.push(currChar.toLowerCase());
-            } else {
-                ret.push(currChar);
-            }
-        }
-        return ret.join("");
     },
 
     //borrowed from jquery, Evaluates a script in a global context
