@@ -283,6 +283,9 @@ Z['Map']=Z.Map=Z.Class.extend({
         if (zoomLevel > tileConfig['maxZoomLevel']) {
             zoomLevel = tileConfig['maxZoomLevel'];
         }
+        if (zoomLevel < this._zoomLevel) {
+            this.setZoomLevel(zoomLevel);
+        }
         this._maxZoomLevel = zoomLevel;
         return this;
     },
