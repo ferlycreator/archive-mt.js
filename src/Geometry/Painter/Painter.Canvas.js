@@ -107,23 +107,23 @@ Z.Painter.Canvas = Z.Painter.extend({
              //低版本ie不支持该属性
              if (context.setLineDash) {
                  var strokeDash=(strokeSymbol['strokeDasharray'] || strokeSymbol['strokeDashArray']);
-                 if (strokeDash && Z.Util.isString(strokeDash) && strokeDash.length>0) {
-                     var da = [];
+                 if (strokeDash && strokeDash.length>0) {
+                     /**var da = [];
                      for (var i=0, len=strokeDash.length;i<len;i++) {
-                            var currChar = strokeDash[i];
-                            if (currChar === null) {
-                                currChar = strokeDash.charAt(i);
-                            }
-                            if (currChar === "-") {
-                                da.push(9);
-                            } else if (currChar === ".") {
-                                da.push(3);
-                            } else {
-                                continue;
-                            }
-                            da.push(6);
+                        var currChar = strokeDash[i];
+                        if (currChar === null) {
+                            currChar = strokeDash.charAt(i);
                         }
-                     context.setLineDash(da);
+                        if (currChar === "-") {
+                            da.push(9);
+                        } else if (currChar === ".") {
+                            da.push(3);
+                        } else {
+                            continue;
+                        }
+                        da.push(6);
+                     }*/
+                     context.setLineDash(strokeDash);
                  }
              }
          }

@@ -1,5 +1,10 @@
-<!DOCTYPE>
+<!DOCTYPE html>
 <html>
+<!—[if IE 6 ]><html class=“ie ielt9 ielt8 ielt7 ie6” lang=“en-US”><![endif]—>
+<!—[if IE 7 ]><html class=“ie ielt9 ielt8 ie7” lang=“en-US”><![endif]—>
+<!—[if IE 8 ]><html class=“ie ielt9 ie8” lang=“en-US”><![endif]—>
+<!—[if IE 9 ]><html class=“ie ie9” lang=“en-US”><![endif]—>
+<!—[if (gt IE 9)|!(IE)]><!—><html lang=“en-US”><!—<![endif]—>
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -41,7 +46,7 @@
         var polylineSymbol = {
             'line-color' : '#ff00ff',
             'line-width' : 5,
-            'line-dasharray' : '-',//线形
+            'line-dasharray' : [20,10,5,5,5,10],//线形
             'line-opacity' : 1
         };
         polyline.setSymbol(polylineSymbol);
