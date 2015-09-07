@@ -137,8 +137,9 @@ Z.TileConfig=Z.Class.extend({
             var tileIndex = this.getTileIndex(pLonlat, zoomLevel);
             var tileY = tileIndex.y;
             var tileX = tileIndex.x;
-            var tileLeft = tileSystem['scale']['x']*tileSize['width']*tileX * resolution+tileSystem['origin']['x'];
-            var tileTop = tileSystem['origin']['y'] + tileSystem['scale']['y']*tileY* resolution * tileSize['height'];
+            //tileX和tileY为什么会+1, -1是因为根据tilesystem的scale不同, 瓦片顶端的编号会有1的差值
+            var tileLeft = tileSystem['scale']['x']*tileSize['width']*(tileX+(tileSystem['scale']['x']==1?0:1)) * resolution+tileSystem['origin']['x'];
+            var tileTop = tileSystem['origin']['y'] + tileSystem['scale']['y']*(tileY+(tileSystem['scale']['y']==1?1:0))* resolution * tileSize['height'];
             var offsetLeft = Math.abs(Math.round((pLonlat.x-tileLeft)/resolution));
             var offsetTop = Math.abs(Math.round((pLonlat.y-tileTop)/resolution));
             return {'x':tileX, 'y':tileY, 'offsetLeft':offsetLeft, 'offsetTop':offsetTop};
@@ -182,8 +183,8 @@ Z.TileConfig=Z.Class.extend({
             var resolution = this['resolutions'][zoomLevel];
             var tileSize = this['tileSize'];
             // var maxExtent = this['origin'];
-            var y = tileSystem['origin']['y'] + tileSystem['scale']['y']*(resolution* tileSize['height']);
-            var x = tileSystem['scale']['x']*tileX*resolution*tileSize['width']+tileSystem['origin']['x'];
+            var y = tileSystem['origin']['y'] + tileSystem['scale']['y']*(tileY+(tileSystem['scale']['y']==1?1:0))*(resolution* tileSize['height']);
+            var x = tileSystem['scale']['x']*(tileX+(tileSystem['scale']['x']==1?0:1))*resolution*tileSize['width']+tileSystem['origin']['x'];
             return this.getProjectionInstance().unproject({x:x,y:y});
         }
 
