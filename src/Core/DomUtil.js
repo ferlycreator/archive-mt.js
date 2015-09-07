@@ -19,7 +19,7 @@ Z.DomUtil = {
         if (!node) {return;}
         if (Z.Browser.ie) {
             var d = Z.DomUtil.createEl('div');
-//            d.appendChild(node);
+           d.appendChild(node);
             d.innerHTML = '';
             d = null;
         } else {
