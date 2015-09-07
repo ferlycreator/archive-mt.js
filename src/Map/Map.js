@@ -1051,7 +1051,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         var center = this.getCenter(),
             pcenter = this._getPrjCenter(),
             res = tileConfig['resolutions'][this.getZoomLevel()];
-        var pTarget = {x:pcenter.x+width*res, y:pcenter.y+height*res};
+        var pTarget = new Z.Coordinate(pcenter.x+width*res, pcenter.y+height*res);
         var target = projection.unproject(pTarget);
         return projection.getGeodesicLength(target,center);
     },
