@@ -380,13 +380,13 @@ describe('API', function () {
             var spy = sinon.spy();
             var layer = new Z.VectorLayer('id');
             var geometries = genAllTypeGeometries();
+            var point = map.coordinateToScreenPoint(center);
             layer.addGeometry(geometries);
             map.addLayer(layer);
 
             expect(function () {
                 map.identify({
-                    coordinate: center,
-                    radius: 50, // m
+                    point: point,
                     layers: [layer],
                     success: spy
                 });
