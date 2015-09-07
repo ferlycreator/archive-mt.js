@@ -149,21 +149,12 @@ Z.SVG.SVG = {
             strokeSymbol = Z.SVG.defaultStrokeSymbol;
         }
 
-        var dashstyle = strokeSymbol['strokeDasharray'];
-        if ('.' === dashstyle) {
-            dashstyle = '5,5';
-        } else if ('-' === dashstyle) {
-            dashstyle = '10,10';
-        } else if('-.' === dashstyle) {
-            dashstyle = '10,5,5,10';
-        } else if('--' === dashstyle) {
-            dashstyle = '20,10';
-        } else if('--.' === dashstyle) {
-            dashstyle = '20,5,5,10';
-        } else if('--..' === dashstyle) {
-            dashstyle = '20,10,5,5,5,10';
+        var dashStyle = '';
+        var strokeDasharray = strokeSymbol['strokeDasharray'];
+        if(strokeDasharray&&strokeDasharray.length>0&&Z.Util.isArray(strokeDasharray)) {
+            dashStyle = strokeDasharray.join(',');
         }
-        strokeSymbol['strokeDasharray'] = dashstyle;
+        strokeSymbol['strokeDasharray'] = dashStyle;
 
         if (!fillSymbol) {
             fillSymbol = Z.SVG.defaultFillSymbol;
@@ -339,9 +330,8 @@ Z.SVG.SVG = {
             textElement.setAttribute('style', textStyle);
             textElement.setAttribute('x', location[0]);
             textElement.setAttribute('y', location[1] + lineSpacing + size);
-            //textElement.setAttribute('style', textStyle);
             if(textWidth>width){
-                 var contents = Z.Util.splitContent(content, textWidth, size, width);
+                 var contents = Z.Util.splitContent(content, textWidth, fontSize, width);
                  var result = '';
                  for(var i=0,len=contents.length;i<len;i++){
                     var content = contents[i];
@@ -442,8 +432,6 @@ Z.SVG.VML= {
             LongDash:       -- -- -- -- --
             LongDashDot:    --.--.--.--.--.
             LongDashDotDot: --..--..--..--..
-        */
-        var dashstyle = strokeSymbol['strokeDasharray'];
         if ('' === dashstyle) {
             dashstyle = 'Solid';
         } else if ('.' === dashstyle) {
@@ -459,7 +447,11 @@ Z.SVG.VML= {
         } else if('--..' === dashstyle) {
             dashstyle = 'LongDashDotDot';
         }
-        stroke.dashstyle = dashstyle;
+        */
+        var dashstyle = strokeSymbol['strokeDasharray'];
+        if(dashstyle) {
+            stroke.dashstyle = dashstyle;
+        }
         vmlShape.appendChild(stroke);
 
         if (fillSymbol) {
@@ -585,7 +577,7 @@ Z.SVG.VML= {
             var textWidth = Z.Util.getLength(content)*size;
             var resultStr = '';
             if(textWidth>width){
-                 var contents = Z.Util.splitContent(content, textWidth, size, width);
+                 var contents = Z.Util.splitContent(content, textWidth, fontSize, width);
                  var result = '';
                  for(var i=0,len=contents.length;i<len;i++){
                     var content = contents[i];

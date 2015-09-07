@@ -97,24 +97,24 @@ Z.Marker.PaintUtils = {
         }
         var leftTopPoint = points[0];
 
-        var padding = icon['padding'];
+        //var padding = icon['padding'];
         var width = icon['width'];
         var height = icon['height'];
         if(!icon['shieldType']) {
             width = Z.Util.setDefaultValue(icon['textWidth'],0);
             height = Z.Util.setDefaultValue(icon['size'], 12);
         }
-        if(!padding) padding = 0;
+        //if(!padding) padding = 0;
         var align = icon['textAlign'];
         if(!align) align ='left';
         var content = icon['content'];
         var fontSize = icon['size'];
         var size = fontSize/2;
         var textWidth = Z.Util.getLength(content)*size;
-        var left= leftTopPoint[0] + padding, top = leftTopPoint[1] + padding;
+        var left= leftTopPoint[0], top = leftTopPoint[1];
         if ('center' === align) {
             if(width>=textWidth) {
-                left = left - (width-textWidth)/2;
+                left = left - width-textWidth;
             }
         } else if ('right' === align) {
             if(width>=textWidth) {

@@ -7,12 +7,12 @@
     <style type="text/css">
         html,body{ margin:0px; height:100%; };
     </style>
-    <title>MapTalks 示例: 绘制面</title>
+    <title>MapTalks 示例: 添加点</title>
 </head>
 <body scroll="no" onload="initMap();">
 <div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
 <script type="text/javascript" >
-    var mapObj,drawTool,layer;
+    var mapObj;
     function initMap(){
         //创建地图对象
         mapObj = new Z.Map('mapObj', //放置mapObj的div id
@@ -27,33 +27,42 @@
             urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
             subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
         }));
-        //创建图层
-        layer = new Z.VectorLayer('layer');
+        //创建Canvas图层
+        var layer = new Z.VectorLayer('layer',{'render': 'Canvas'});//
         //将图层添加到地图对象
         mapObj.addLayer(layer);
-
-        //构造绘制线工具
-        drawTool = new Z.DrawTool({
-            mode: Z.Geometry.TYPE_LINESTRING,//设置drawTool绘制的图形类型
-            symbol: {
-                    'line-color':'#0000ff',
-                    'line-width':2,
-                    'line-opacity':1
-            }
+        //创建点的坐标对象
+        var markerCoordinate = new Z.Coordinate(121.489935,31.24432);
+        //设置矢量配置
+        var icon = {
+            'text-name': '文本标注：[marker_name]',
+            'text-face-name': 'arial',
+            'text-size': 12,
+            'text-wrap-width': 100,
+            'text-fill': '#ff0000',
+            'text-horizontal-alignment': 'middle',
+            'text-vertical-alignment': 'middle',
+            'text-align': 'center',
+            'text-line-spacing': 8,
+            'text-opacity': 1,
+            'text-spacing': 30,
+            'text-placement': 'point',
+            'text-dx': 0,
+            'text-dy':0
+        };
+        //创建点对象
+        var marker = new Z.Marker(markerCoordinate, 'marker_id');
+        marker.setProperties({
+            'marker_name':'我是文字标签'
         });
-        //将线绘制工具绑定到地图对象
-        drawTool.addTo(mapObj);
-        //监听绘制工具完成事件，获取绘制的线坐标数组等信息
-        drawTool.on('afterdraw', onAfterDrawPolyline);
-    }
-
-    //绘制完线后操作
-    function onAfterDrawPolyline(param) {
-        var coordinates = param.coordinate;
-        //创建线对象
-        var polyline = new Z.Polyline(coordinates);
-        //将线添加到Layer
-        layer.addGeometry(polyline);
+        //设置点样式
+        marker.setSymbol(icon);
+        //将点添加到Layer
+        layer.addGeometry(marker);
+        //监听marker事件
+        marker.on('click', function(){
+            alert('You click marker!');
+        });
     }
 </script>
 <!-- 引擎javascript开发包-->

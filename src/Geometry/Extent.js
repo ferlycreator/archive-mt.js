@@ -89,12 +89,9 @@ Z.Extent.prototype={
 
     /**
     * 判断点是否在矩形中
-    *
-    *
     */
     contains: function(coordinate) {
         var x, y;
-
         if (coordinate instanceof Z.Coordinate) {
             x = coordinate.x;
             y = coordinate.y;
