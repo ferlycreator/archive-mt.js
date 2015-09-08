@@ -28,7 +28,6 @@ Z.Painter.SVG = Z.Painter.extend({
         if (!vectorBean || !vectorPaper) {return this;}
         //样式
         if (this.vector) {
-            // TODO: only update?
             Z.SVG.removeVector(vectorPaper, this.vector);
         }
         return vectorPaper;
@@ -59,11 +58,7 @@ Z.Painter.SVG = Z.Painter.extend({
      * 刷新Graphic的位置,主要用在缩放地图
      */
     refresh:function() {
-        if (this.geometry.type === Z.Geometry['TYPE_POINT']) {
-            this.refreshMarker();
-        }  else {
-            this.refreshVectorSymbol();
-        }
+        this.refreshSymbol();
         this._registerEvents();
     },
 
