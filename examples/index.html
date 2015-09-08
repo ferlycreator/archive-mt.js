@@ -796,6 +796,31 @@ polyline.endEdit();
                     </p>
                     </div>
 
+                    <h2>拖动线</h2>
+                    <p>1、设置polyline：<code>draggable: true</code></p>
+                    <div class="bs-docs-example">
+<pre class="linenums prettyprint">
+//线端点坐标数组
+var coordinates = [new Z.Coordinate(121.454716,31.272095),
+                    new Z.Coordinate(121.459007,31.25933),
+                    new Z.Coordinate(121.458149,31.241572),
+                    new Z.Coordinate(121.460381,31.229977),
+                    new Z.Coordinate(121.473427,31.222784)];
+//创建线对象
+var polyline = new Z.Polyline(coordinates, {
+    draggable: true
+});
+//将线添加到Layer
+layer.addGeometry(polyline);
+</pre>
+                    <iframe src="geometry/polyline/drag_polyline.html" width="100%">
+
+                    </iframe>
+                    <p>
+                        <a class="btn btn-success" href="editor.html?html=geometry/polyline/drag_polyline.html&title=Drag Polyline" target="_blank">源码编辑器</a>
+                    </p>
+                    </div>
+
 
                 </section>
 
@@ -900,6 +925,71 @@ polygon.endEdit();
                     </iframe>
                     <p>
                         <a class="btn btn-success" href="editor.html?html=geometry/polygon/edit_polygon.html&title=Edit Polygon" target="_blank">源码编辑器</a>
+                    </p>
+                    </div>
+
+                    <h2>拖动面</h2>
+                    <p>1、设置polygon：<code>draggable: true</code></p>
+                    <div class="bs-docs-example">
+<pre class="linenums prettyprint">
+//面端点坐标数组
+var coordinates = [[new Z.Coordinate(121.508617,31.241279),
+    new Z.Coordinate(121.519432,31.241572),
+    new Z.Coordinate(121.524067,31.241719),
+    new Z.Coordinate(121.528015,31.242893),
+    new Z.Coordinate(121.539173,31.245388),
+    new Z.Coordinate(121.544323,31.236142),
+    new Z.Coordinate(121.548443,31.227335),
+    new Z.Coordinate(121.538486,31.223518),
+    new Z.Coordinate(121.517887,31.223665)]
+    ];
+//创建面对象
+var polygon = new Z.Polygon(coordinates, {
+    draggable: true
+});
+</pre>
+                    <iframe src="geometry/polygon/drag_polygon.html" width="100%">
+
+                    </iframe>
+                    <p>
+                        <a class="btn btn-success" href="editor.html?html=geometry/polygon/drag_polygon.html&title=Drag Polygon" target="_blank">源码编辑器</a>
+                    </p>
+                    </div>
+
+                    <h2>拖动圆形</h2>
+                    <p>1、设置circle：<code>draggable: true</code></p>
+                    <div class="bs-docs-example">
+<pre class="linenums prettyprint">
+//圆心
+var center = new Z.Coordinate(121.489935,31.24432);
+//创建圆
+var circle = new Z.Circle(center, 1000, {
+    draggable: true
+});
+</pre>
+                    <iframe src="geometry/polygon/drag_circle.html" width="100%">
+
+                    </iframe>
+                    <p>
+                        <a class="btn btn-success" href="editor.html?html=geometry/polygon/drag_circle.html&title=Drag Circle" target="_blank">源码编辑器</a>
+                    </p>
+                    </div>
+
+                    <h2>拖动矩形</h2>
+                    <p>1、设置rectangle：<code>draggable: true</code></p>
+                    <div class="bs-docs-example">
+<pre class="linenums prettyprint">
+var coordinate = new Z.Coordinate(121.489935,31.24432);
+//创建矩形
+var rectangle = new Z.Rectangle(coordinate, 1000, 600, {
+    draggable: true
+});
+</pre>
+                    <iframe src="geometry/polygon/drag_rectangle.html" width="100%">
+
+                    </iframe>
+                    <p>
+                        <a class="btn btn-success" href="editor.html?html=geometry/polygon/drag_rectangle.html&title=Drag Rectangle" target="_blank">源码编辑器</a>
                     </p>
                     </div>
 

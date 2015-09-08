@@ -127,38 +127,38 @@ Z.Editor=Z.Class.extend({
         var handle = this.createHandleDom(pixel,opts);
         var _containerDOM = this.map._containerDOM;
         Z.DomUtil.addDomEvent(handle,'mousedown',function(event) {
-                            var editor = this;
-                            if (opts.onDown) {
-                                opts.onDown.call(editor);
-                            }
-                            //鼠标拖动操作
-                            document.onmouseup = function(ev) {
-                                ev  = ev || window.event;
-                                document.onmousemove=null;
-                                document.onmouseup=null;
-                                Z.DomUtil.stopPropagation(ev);
-                                if (opts.onUp) {
-                                    opts.onUp.call(editor);
-                                }
-                                return false;
-                            };
-                            document.onmousemove = function(ev){
-                                ev  = ev || window.event;
-                                editor.hideContext();
-                                var mousePos = Z.DomUtil.getEventDomCoordinate(ev,_containerDOM);
-                                var handleDomOffset = editor.map._screenToDomOffset(mousePos);
-                                handle.style['top']=(handleDomOffset.top-5)+"px";
-                                handle.style['left']=(handleDomOffset.left-5)+"px";
-                                Z.DomUtil.stopPropagation(ev);
-                                if (opts.onMove) {
-                                    opts.onMove.call(editor,handleDomOffset);
-                                }
-                                return false;
-                            };
-                            Z.DomUtil.stopPropagation(event);
+            var editor = this;
+            if (opts.onDown) {
+                opts.onDown.call(editor);
+            }
+            //鼠标拖动操作
+            document.onmouseup = function(ev) {
+                ev  = ev || window.event;
+                document.onmousemove=null;
+                document.onmouseup=null;
+                Z.DomUtil.stopPropagation(ev);
+                if (opts.onUp) {
+                    opts.onUp.call(editor);
+                }
+                return false;
+            };
+            document.onmousemove = function(ev){
+                ev  = ev || window.event;
+                editor.hideContext();
+                var mousePos = Z.DomUtil.getEventDomCoordinate(ev,_containerDOM);
+                var handleDomOffset = editor.map._screenToDomOffset(mousePos);
+                handle.style['top']=(handleDomOffset.top-5)+"px";
+                handle.style['left']=(handleDomOffset.left-5)+"px";
+                Z.DomUtil.stopPropagation(ev);
+                if (opts.onMove) {
+                    opts.onMove.call(editor,handleDomOffset);
+                }
+                return false;
+            };
+            Z.DomUtil.stopPropagation(event);
 
-                            return false;
-                        },this);
+            return false;
+        },this);
         //拖动移图
         this.appendHandler(handle,opts);
 
@@ -178,32 +178,32 @@ Z.Editor=Z.Class.extend({
         var pxCenter = map._transformToOffset(geometry._getPCenter());
         //------------------------拖动标注--------------------------
         this.createHandle(pxCenter, {
-                        tip:"拖动以移动图形",
-                        onDown:function() {
-                            if (opts.onDown) {
-                                opts.onDown.call(this);
-                            }
-                        },
-                        onMove:function(handleDomOffset) {
-                            var pcenter = map._untransformFromOffset(handleDomOffset);
-                            geometry._setPCenter(pcenter);
-                            geometry._updateCache();
-                            if (opts.onMove) {
-                                opts.onMove.call(this);
-                            }
-                            this.fireEditEvent('positionchanging');
-                        },
-                        onUp:function() {
-                            if (opts.onUp) {
-                                opts.onUp.call(this);
-                            }
-                            // geometry.fire("positionchanged",{"target":geometry});
-                            this.fireEditEvent('positionchanged');
-                        },
-                        onRefresh:function() {
-                            return map._transformToOffset(geometry._getPCenter());
-                        }
-                    });
+            tip:"拖动以移动图形",
+            onDown:function() {
+                if (opts.onDown) {
+                    opts.onDown.call(this);
+                }
+            },
+            onMove:function(handleDomOffset) {
+                var pcenter = map._untransformFromOffset(handleDomOffset);
+                geometry._setPCenter(pcenter);
+                geometry._updateCache();
+                if (opts.onMove) {
+                    opts.onMove.call(this);
+                }
+                this.fireEditEvent('positionchanging');
+            },
+            onUp:function() {
+                if (opts.onUp) {
+                    opts.onUp.call(this);
+                }
+                // geometry.fire("positionchanged",{"target":geometry});
+                this.fireEditEvent('positionchanged');
+            },
+            onRefresh:function() {
+                return map._transformToOffset(geometry._getPCenter());
+            }
+        });
 
     },
     /**
@@ -229,24 +229,24 @@ Z.Editor=Z.Class.extend({
         }
         var rPx = radiusHandleOffset();
         var radiusHandle = this.createHandle(rPx, {
-                                tip:"拖动以调整圆形半径",
-                                onMove:function(handleDomOffset) {
-                                    var pxCenter = map._transformToOffset(geometry._getPCenter());
-                                    var rPx = handleDomOffset['left']-pxCenter['left'];
-                                    var rPy = handleDomOffset['top']-pxCenter['top'];
-                                    //if (rPx >= 0 && rPy >= 0) {
-                                    var r = map.pixelToDistance(Math.abs(rPx), Math.abs(rPy));
-                                    geometry.setRadius(r);
-                                    //}
-                                    this.fireEditEvent('shapechanging');
-                                },
-                                onUp:function() {
-                                    this.fireEditEvent('shapechanged');
-                                },
-                                onRefresh:function() {
-                                    return radiusHandleOffset();
-                                }
-                            });
+            tip:"拖动以调整圆形半径",
+            onMove:function(handleDomOffset) {
+                var pxCenter = map._transformToOffset(geometry._getPCenter());
+                var rPx = handleDomOffset['left']-pxCenter['left'];
+                var rPy = handleDomOffset['top']-pxCenter['top'];
+                //if (rPx >= 0 && rPy >= 0) {
+                var r = map.pixelToDistance(Math.abs(rPx), Math.abs(rPy));
+                geometry.setRadius(r);
+                //}
+                this.fireEditEvent('shapechanging');
+            },
+            onUp:function() {
+                this.fireEditEvent('shapechanged');
+            },
+            onRefresh:function() {
+                return radiusHandleOffset();
+            }
+         });
          this.createCenterEditor({
             onDown:function() {
                 radiusHandle.style.display='none';
@@ -278,28 +278,28 @@ Z.Editor=Z.Class.extend({
         //this.createCenterEditor();
         var rPx = radiusHandleOffset();
         var rHandle = this.createHandle(rPx, {
-                                tip:"拖动以调整椭圆大小",
-                                onMove:function(handleDomOffset) {
-                                    var pxCenter = map._transformToOffset(geometry._getPCenter());
-                                    var rxPx = handleDomOffset.left-pxCenter.left;
-                                    var ryPx = handleDomOffset.top-pxCenter.top;
-                                    if (rxPx >= 0 && ryPx>=0) {
-                                        var w = map.pixelToDistance(Math.abs(rxPx), 0);
-                                        var h = map.pixelToDistance(0,Math.abs(ryPx));
-                                        geometry.setWidth(w*2);
-                                        geometry.setHeight(h*2);
-                                    }
-                                    this.fireEditEvent('shapechanging');
-                                    // geometry.fire("shapechanging",{"target":geometry});
-                                },
-                                onUp:function() {
-                                    this.fireEditEvent('shapechanged');
-                                    // geometry.fire("shapechanged",{"target":geometry});
-                                },
-                                onRefresh:function() {
-                                    return radiusHandleOffset();
-                                }
-                            });
+            tip:"拖动以调整椭圆大小",
+            onMove:function(handleDomOffset) {
+                var pxCenter = map._transformToOffset(geometry._getPCenter());
+                var rxPx = handleDomOffset.left-pxCenter.left;
+                var ryPx = handleDomOffset.top-pxCenter.top;
+                if (rxPx >= 0 && ryPx>=0) {
+                    var w = map.pixelToDistance(Math.abs(rxPx), 0);
+                    var h = map.pixelToDistance(0,Math.abs(ryPx));
+                    geometry.setWidth(w*2);
+                    geometry.setHeight(h*2);
+                }
+                this.fireEditEvent('shapechanging');
+                // geometry.fire("shapechanging",{"target":geometry});
+            },
+            onUp:function() {
+                this.fireEditEvent('shapechanged');
+                // geometry.fire("shapechanged",{"target":geometry});
+            },
+            onRefresh:function() {
+                return radiusHandleOffset();
+            }
+        });
         this.createCenterEditor({
             onDown:function() {
                 rHandle.style.display='none';
@@ -330,29 +330,29 @@ Z.Editor=Z.Class.extend({
 
         var rPx = radiusHandleOffset();
         var rHandle = this.createHandle(rPx, {
-                                tip:"拖动以调整矩形大小",
-                                onMove:function(handleDomOffset) {
-                                    var pxNw = map._transformToOffset(geometry._getPNw());
-                                    var rxPx = handleDomOffset['left']-pxNw['left'];
-                                    var ryPx = handleDomOffset['top']-pxNw['top'];
-                                    if (rxPx >= 0 && ryPx>=0) {
-                                        var w = map.pixelToDistance(Math.abs(rxPx), 0);
-                                        var h = map.pixelToDistance(0,Math.abs(ryPx));
-                                        geometry.setWidth(w);
-                                        geometry.setHeight(h);
-                                    }
-                                    this.fireEditEvent('shapechanging');
-                                    //geometry.fire("shapechanging",{"target":geometry});
-                                },
-                                onUp:function() {
-                                    this.fireEditEvent('shapechanged');
-                                    // geometry.fire("shapechanged",{"target":geometry});
-                                    //geometry.fire("shapechanged",{"target":geometry});
-                                },
-                                onRefresh:function() {
-                                    return radiusHandleOffset();
-                                }
-                            });
+            tip:"拖动以调整矩形大小",
+            onMove:function(handleDomOffset) {
+                var pxNw = map._transformToOffset(geometry._getPNw());
+                var rxPx = handleDomOffset['left']-pxNw['left'];
+                var ryPx = handleDomOffset['top']-pxNw['top'];
+                if (rxPx >= 0 && ryPx>=0) {
+                    var w = map.pixelToDistance(Math.abs(rxPx), 0);
+                    var h = map.pixelToDistance(0,Math.abs(ryPx));
+                    geometry.setWidth(w);
+                    geometry.setHeight(h);
+                }
+                this.fireEditEvent('shapechanging');
+                //geometry.fire("shapechanging",{"target":geometry});
+            },
+            onUp:function() {
+                this.fireEditEvent('shapechanged');
+                // geometry.fire("shapechanged",{"target":geometry});
+                //geometry.fire("shapechanged",{"target":geometry});
+            },
+            onRefresh:function() {
+                return radiusHandleOffset();
+            }
+        });
         var pxNw = map._transformToOffset(geometry._getPNw());
         //------------------------拖动标注--------------------------
         this.createHandle(pxNw, {
@@ -405,41 +405,34 @@ Z.Editor=Z.Class.extend({
             var pxVertex = map._transformToOffset(vertex);
             //------------------------拖动标注--------------------------
             var handle = this.createHandle(pxVertex, {
-                            tip:"拖动以调整"+title+"顶点",
-                            onMove:function(handleDomOffset) {
-                                hideCloseHandle();
-                                var nVertex = map._untransformFromOffset(handleDomOffset);
-                                vertex.x = nVertex.x;
-                                vertex.y = nVertex.y;
-                                geometry._updateCache();
-                                geometry._onShapeChanged();
-                                this.fireEditEvent('shapechanging');
-                                // geometry.fire("shapechanging",{"target":geometry});
-                                // geometry.fire("shapechanging",{"target":geometry});
-                            },
-                            onUp:function() {
-                                this.fireEditEvent('shapechanged');
-                                this.refreshHandles([centerHandle]);
-                                // geometry.fire("shapechanged",{"target":geometry});
-                                // geometry.fire("shapechanged",{"targetmouseover":geometry});
-                            },
-                            onRefresh:function() {
-                                return map._transformToOffset(vertex);
-                            }
-                        });
+                tip:"拖动以调整"+title+"顶点",
+                onMove:function(handleDomOffset) {
+                    hideCloseHandle();
+                    var nVertex = map._untransformFromOffset(handleDomOffset);
+                    vertex.x = nVertex.x;
+                    vertex.y = nVertex.y;
+                    geometry._updateCache();
+                    geometry._onShapeChanged();
+                    this.fireEditEvent('shapechanging');
+                },
+                onUp:function() {
+                    this.fireEditEvent('shapechanged');
+                    this.refreshHandles([centerHandle]);
+                },
+                onRefresh:function() {
+                    return map._transformToOffset(vertex);
+                }
+            });
             Z.DomUtil.addDomEvent(handle,'mouseover',function(event){
-                                        closeHandle.style.top = (parseInt(handle.style.top)-2)+"px";
-                                        closeHandle.style.left = (parseInt(handle.style.left)+12)+"px";
-                                        closeHandle.style.display="block";
-                                        closeHandle["source"] = handle;
-                                    },this);
+                closeHandle.style.top = (parseInt(handle.style.top)-2)+"px";
+                closeHandle.style.left = (parseInt(handle.style.left)+12)+"px";
+                closeHandle.style.display="block";
+                closeHandle["source"] = handle;
+            },this);
             return handle;
         }
         function hideCloseHandle() {
             closeHandle.style.display="none";
-            //closeHandle.style.top="-999999px";
-            //closeHandle["source"] = null;
-            //closeHandle.style.top="-999999px";
         }
         function createRemoveHandle() {
             closeHandle = Z.DomUtil.createEl("div");
@@ -494,45 +487,42 @@ Z.Editor=Z.Class.extend({
         }
         function createCenterHandle() {
             centerHandle = this.createHandle(computePxCenter(), {
-                            tip:"拖动以移动"+title,
-                            onDown:function() {
-                                hideCloseHandle();
-                                for (var i=0,len=vertexHandles.length;i<len;i++) {
-                                    vertexHandles[i].style.display = "none";
-                                }
-                            },
-                            onMove:function(handleDomOffset) {
-                                var pxCenter = computePxCenter();
-                                var dragged = new Z.Point(
-                                        handleDomOffset['left']+5-pxCenter['left'],
-                                        handleDomOffset['top']+5-pxCenter['top']
-                                    );
-                                //TODO 移动vertex,重新赋值points
-                                var lonlats = getLonlats();
-                                for (var i=0,len=lonlats.length;i<len;i++) {
-                                    var vo = map._transformToOffset(lonlats[i]);
-                                    //{'left':vo['left']+dragged['left'], 'top':vo['top']+dragged['top']}
-                                    var n = map._untransformFromOffset(new Z.Point(vo['left']+dragged['left'], vo['top']+dragged['top']));
-                                    lonlats[i].x = n.x;
-                                    lonlats[i].y = n.y;
-                                }
-                                geometry._updateCache();
-                                geometry._onPositionChanged();
-                                this.fireEditEvent('positionchanging');
-                                // geometry.fire("positionchanging",{"target":geometry});
-                            },
-                            onUp:function() {
-                                this.refreshHandles(vertexHandles);
-                                for (var i=0,len=vertexHandles.length;i<len;i++) {
-                                    vertexHandles[i].style.display = "";
-                                }
-                                this.fireEditEvent('positionchanged');
-                                // geometry.fire("positionchanged",{"target":geometry});
-                            },
-                            onRefresh:function() {
-                                return computePxCenter();
-                            }
-                        });
+                tip:"拖动以移动"+title,
+                onDown:function() {
+                    hideCloseHandle();
+                    for (var i=0,len=vertexHandles.length;i<len;i++) {
+                        vertexHandles[i].style.display = "none";
+                    }
+                },
+                onMove:function(handleDomOffset) {
+                    var pxCenter = computePxCenter();
+                    var dragged = new Z.Point(
+                            handleDomOffset['left']+5-pxCenter['left'],
+                            handleDomOffset['top']+5-pxCenter['top']
+                    );
+                    //TODO 移动vertex,重新赋值points
+                    var lonlats = getLonlats();
+                    for (var i=0,len=lonlats.length;i<len;i++) {
+                        var vo = map._transformToOffset(lonlats[i]);
+                        var n = map._untransformFromOffset(new Z.Point(vo['left']+dragged['left'], vo['top']+dragged['top']));
+                        lonlats[i].x = n.x;
+                        lonlats[i].y = n.y;
+                    }
+                    geometry._updateCache();
+                    geometry._onPositionChanged();
+                    this.fireEditEvent('positionchanging');
+                },
+                onUp:function() {
+                    this.refreshHandles(vertexHandles);
+                    for (var i=0,len=vertexHandles.length;i<len;i++) {
+                        vertexHandles[i].style.display = "";
+                    }
+                    this.fireEditEvent('positionchanged');
+                },
+                onRefresh:function() {
+                    return computePxCenter();
+                }
+            });
         }
         function isPointOverlapped(p1,p2,tolerance) {
             if (!p1 || !p2) {
@@ -557,37 +547,37 @@ Z.Editor=Z.Class.extend({
         tmpHandle.style.display='none';
         var pxTolerance = 2;
         Z.DomUtil.addDomEvent(tmpHandle,'click',function(event) {
-                            //临时编辑按钮的点击
-                            var handleDomOffset = Z.DomUtil.offsetDom(tmpHandle);
-                            var res = map._getTileConfig()['resolutions'][map.getZoomLevel()];
-                            var plonlat = map._untransformFromOffset(new Z.Point(handleDomOffset['left']+5,handleDomOffset['top']+5));
-                            var interIndex = Z.GeoUtils._isPointOnPath(plonlat, geometry, pxTolerance*res);
-                            if (interIndex >= 0) {
-                                vertexHandles.splice(interIndex+1,0,createVertexHandle.call(this,plonlat));
-                                lonlats.splice(interIndex+1,0,plonlat);
-                                geometry._setPrjPoints(lonlats);
-                                geometry._updateCache();
-                                this.fireEditEvent('shapechanged');
-                            }
-                        },this);
+            //临时编辑按钮的点击
+            var handleDomOffset = Z.DomUtil.offsetDom(tmpHandle);
+            var res = map._getTileConfig()['resolutions'][map.getZoomLevel()];
+            var plonlat = map._untransformFromOffset(new Z.Point(handleDomOffset['left']+5,handleDomOffset['top']+5));
+            var interIndex = Z.GeoUtils._isPointOnPath(plonlat, geometry, pxTolerance*res);
+            if (interIndex >= 0) {
+                vertexHandles.splice(interIndex+1,0,createVertexHandle.call(this,plonlat));
+                lonlats.splice(interIndex+1,0,plonlat);
+                geometry._setPrjPoints(lonlats);
+                geometry._updateCache();
+                this.fireEditEvent('shapechanged');
+            }
+        },this);
 
         Z.DomUtil.addDomEvent(map._containerDOM,'mousemove',function(event) {
-                        var res = map._getTileConfig()['resolutions'][map.getZoomLevel()];
-                        var eventOffset = Z.DomUtil.getEventDomCoordinate(event,map._containerDOM);
-                        var plonlat = map._untransform(eventOffset);
-                        var tolerance = pxTolerance*res;
-                        var interIndex = Z.GeoUtils._isPointOnPath(plonlat, geometry,tolerance);
-                        var prjPoints = getLonlats();
-                        //不与端点重叠,如果重叠则不显示
-                        if (interIndex >= 0 && !isPointOverlapped(plonlat,prjPoints[interIndex],tolerance) && !isPointOverlapped(plonlat,prjPoints[interIndex+1],tolerance)) {
-                            var domOffset = map._screenToDomOffset(eventOffset);
-                            tmpHandle.style.left = (domOffset['left']-5)+'px';
-                            tmpHandle.style.top = (domOffset['top']-5)+'px';
-                            tmpHandle.style.display="";
-                        } else {
-                            tmpHandle.style.display="none";
-                        }
-                    }, this);
+            var res = map._getTileConfig()['resolutions'][map.getZoomLevel()];
+            var eventOffset = Z.DomUtil.getEventDomCoordinate(event,map._containerDOM);
+            var plonlat = map._untransform(eventOffset);
+            var tolerance = pxTolerance*res;
+            var interIndex = Z.GeoUtils._isPointOnPath(plonlat, geometry,tolerance);
+            var prjPoints = getLonlats();
+            //不与端点重叠,如果重叠则不显示
+            if (interIndex >= 0 && !isPointOverlapped(plonlat,prjPoints[interIndex],tolerance) && !isPointOverlapped(plonlat,prjPoints[interIndex+1],tolerance)) {
+                var domOffset = map._screenToDomOffset(eventOffset);
+                tmpHandle.style.left = (domOffset['left']-5)+'px';
+                tmpHandle.style.top = (domOffset['top']-5)+'px';
+                tmpHandle.style.display="";
+            } else {
+                tmpHandle.style.display="none";
+            }
+        }, this);
         this.appendHandler(tmpHandle,{onRefresh:function(){tmpHandle.style.display='none';return null;}});
 
     },

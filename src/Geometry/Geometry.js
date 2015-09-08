@@ -31,7 +31,6 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     },
 
     options:{
-        'draggable':false,
         'editable':true
     },
 
@@ -63,6 +62,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         this.layer = layer;
         //如果投影发生改变,则清除掉所有的投影坐标属性
         this._clearProjection();
+        this.callInitHooks();
 
     },
 

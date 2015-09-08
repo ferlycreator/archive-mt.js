@@ -29,12 +29,10 @@ module.exports = function(config) {
     // testing framework to use (jasmine/mocha/qunit/...)
     // as well as any additional frameworks (requirejs/chai/sinon/...)
     frameworks: [
-      // 'browserify',
       'mocha',
       'expect',
       'sinon',
-      'happen',
-      'jquery-1.7.2'
+      'happen'
     ],
 
     // list of files / patterns to load in the browser
@@ -85,8 +83,7 @@ module.exports = function(config) {
       'karma-mocha',
       'karma-expect',
       'karma-sinon-ie',
-      'karma-happen',
-      'karma-jquery'
+      'karma-happen'
     ],
 
     customLaunchers: {

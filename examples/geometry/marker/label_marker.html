@@ -69,7 +69,7 @@
         *    气泡的尖端会根据位置调整。
         */
         //创建点对象
-        var marker = new Z.Marker(coordinate, 'marker_id');
+        var marker = new Z.Marker(coordinate,{'id':'marker_id','draggable':true});
         marker.setProperties({
             'marker_name':'上海大厦',
             'marker_addr': '北苏州路20号'

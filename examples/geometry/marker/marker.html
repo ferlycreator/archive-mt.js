@@ -34,7 +34,7 @@
         //创建点的坐标对象
         var markerCoordinate = new Z.Coordinate(121.489935,31.24432);
         //创建点对象
-        var marker = new Z.Marker(markerCoordinate,'marker_id');
+        var marker = new Z.Marker(markerCoordinate,{'id':'marker_id'});
         //将点添加到Layer
         layer.addGeometry(marker);
     }
