@@ -1,6 +1,6 @@
 Z.Geometry.mergeOptions({
 	'draggable': false,
-	'dragTrigger': 'mousedown'
+	'dragTrigger': 'mousedown'//manual
 });
 
 Z.Geometry.include({
@@ -10,24 +10,11 @@ Z.Geometry.include({
     startDrag: function() {
         this._map = this.getMap();
         this._map.disableDrag();
-        this.hide();
-        var symbol = Z.Util.convertFieldNameStyle(this.getSymbol(), 'minus');
-        /**if(this instanceof Z.Marker) {
-            this._dragGeometry = new Z.Marker(this.getCoordinates());
-        } else { //线与面图形
-            if (this instanceof Z.Polyline) {
-                this._dragGeometry = new Z.Polyline(this.getCoordinates());
-            } else if (this instanceof Z.Polygon) {
-                this._dragGeometry = new Z.Polygon([this.getCoordinates()]);
-            } else {
-                this._dragGeometry = this.copy();
-            }
-        }*/
-        this._dragGeometry = this.copy();
-        this._dragGeometry.setProperties(this.getProperties());
-        this._dragGeometry.setSymbol(symbol);
-        var _dragLayer = this._getDragLayer();
-        _dragLayer.addGeometry(this._dragGeometry);
+        //this._dragGeometry = this.copy();
+        //this._dragGeometry.setProperties(this.getProperties());
+        //this._dragGeometry.setSymbol(symbol);
+        //var _dragLayer = this._getDragLayer();
+        //_dragLayer.addGeometry(this._dragGeometry);
         this._map.on('mousemove', this._dragging, this)
                  .on('mouseup', this._endDrag, this);
         this.fire('dragstart', {'target': this});
@@ -43,7 +30,7 @@ Z.Geometry.include({
             this.endPosition['left'] - this.startPosition['left'],
             this.endPosition['top'] - this.startPosition['top']
         );
-        var center = this._dragGeometry.getCenter();
+        var center = this.getCenter();
         if(!center||!center.x||!center.y) return;
         var geometryPixel = this._map.coordinateToScreenPoint(center);
         var mapOffset = this._map.offsetPlatform();
@@ -57,7 +44,7 @@ Z.Geometry.include({
             || this instanceof Z.Ellipse
             || this instanceof Z.Sector) {
             var pcenter = this._map._untransformFromOffset(newPosition);
-            this._dragGeometry._setPCenter(pcenter);
+            //this._dragGeometry._setPCenter(pcenter);
             this._setPCenter(pcenter);
         } else if (this instanceof Z.Rectangle) {
             var coordinate = this._dragGeometry.getCoordinates();
@@ -68,7 +55,7 @@ Z.Geometry.include({
                 geometryPixel['top'] + dragOffset['top'] - mapOffset['top']
             );
             var pCoordinate = this._map._untransformFromOffset(newPosition);
-            this._dragGeometry._setPNw(pCoordinate);
+            //this._dragGeometry._setPNw(pCoordinate);
             this._setPNw(pCoordinate);
         } else if (this instanceof Z.Polyline) {
             var lonlats = this.getCoordinates();
@@ -79,7 +66,7 @@ Z.Geometry.include({
                 lonlats[i].x = coordinate.x;
                 lonlats[i].y = coordinate.y;
             }
-            this._dragGeometry._setPrjPoints(lonlats);
+            //this._dragGeometry._setPrjPoints(lonlats);
             this._setPrjPoints(lonlats);
         } else if (this instanceof Z.Polygon) {
            var newLonlats = [];
@@ -96,10 +83,10 @@ Z.Geometry.include({
                     newLonlats.push(coordinate);
                 }
            }
-           this._dragGeometry._setPrjPoints(newLonlats);
+           //this._dragGeometry._setPrjPoints(newLonlats);
            this._setPrjPoints(newLonlats);
         }
-        this._dragGeometry._updateCache();
+        //this._dragGeometry._updateCache();
         this._updateCache();
         this.fire('dragging', {'target': this});
     },
@@ -108,9 +95,9 @@ Z.Geometry.include({
      * 结束移动Geometry, 退出移动模式
      */
     _endDrag: function(event) {
-        this._dragGeometry.remove();
-        this._getDragLayer().clear();
-        this.show();
+        //this._dragGeometry.remove();
+        //this._getDragLayer().clear();
+        //this.show();
         this.isDragging = false;
         this._map.enableDrag();
         this._map.off('mousemove', this._dragging, this)
@@ -145,8 +132,10 @@ Z.Geometry.include({
 Z.Geometry.addInitHook(function () {
 	if (this.options['draggable']) {
 	    var trigger = this.options['dragTrigger'];
-	    this.on(trigger, function() {
-	        this.startDrag();
-	    });
+	    if(!('manual' === trigger)) {
+            this.on(trigger, function() {
+                this.startDrag();
+            },this);
+	    }
 	}
 });

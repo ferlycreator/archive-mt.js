@@ -62,9 +62,13 @@
                     <p><code>
                         &lt;link href="http://www.maptalks.org/maptalks/v2/css/maptalks.min.css" rel="stylesheet" type="text/css"/&gt;
                     </code></p>-->
+                    <p>准备工作，设置页面默认样式：</p>
+                    <p><code>
+                        &lt;style type="text/css"&gt; html,body{ margin:0px; height:100%; };&lt;/style&gt;
+                    </code></p>
                     <p>1、引入 MapTalks JavaScript 文件；</p>
                     <p><code>
-                        &lt;link href="http://www.maptalks.org/maptalks/v2/css/maptalks.min.js" rel="stylesheet" type="text/css"/&gt;
+                        &lt;script type="text/javascript" src="/maptalks/v2/maptalks.js"&gt;&lt;/script&gt;
                     </code></p>
                     <p>2、在页面中添加一个放置Map的Html Element，例如：DIV；</p>
                     <p><code>
@@ -74,6 +78,10 @@
                     <p>3、使用<code> new Z.Map(...)创建地图对象，并设置底图图层。</code></p>
                     <div class="bs-docs-example">
 <pre class="linenums prettyprint">
+&lt;!-- 设置页面高度，如果不设置页面高度默认为0，导致地图显示不出来--&gt;
+&lt;style type="text/css"&gt;
+    html,body{ margin:0px; height:100%; };
+&lt;/style&gt;
 &lt;!-- 第一步：MapTalks JavaScript 开发包 --&gt;
 &lt;script type="text/javascript" src="http://www.maptalks.org/maptalks/v2/css/maptalks.min.js"&gt;&lt;/script&gt;
 &lt;body scroll="no"  onload="initMap();"&gt;
