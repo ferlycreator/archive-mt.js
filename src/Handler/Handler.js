@@ -2,7 +2,7 @@ Z.Handler = Z.Class.extend({
 	includes: Z.Eventable,
 
 	initialize: function (map) {
-		this['map'] = map;
+		this.map = map;
 	},
 
 	/**

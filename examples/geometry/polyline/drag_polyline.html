@@ -7,7 +7,7 @@
     <style type="text/css">
         html,body{ margin:0px; height:100%; };
     </style>
-    <title>MapTalks 示例: 添加线</title>
+    <title>MapTalks 示例: 拖动线</title>
 </head>
 <body scroll="no" onload="initMap();">
 <div id="mapObj" style="width:99%;height:99%;"></div>
@@ -32,14 +32,12 @@
         //将图层添加到地图
         mapObj.addLayer(layer);
 
-        //创建线对象
-        var polyline = new Z.Polyline(
-            //线端点坐标数组
-            [new Z.Coordinate(121.454716,31.272095),
-            new Z.Coordinate(121.459007,31.25933),
-            new Z.Coordinate(121.458149,31.241572),
-            new Z.Coordinate(121.460381,31.229977),
-            new Z.Coordinate(121.473427,31.222784)]);
+        //线端点坐标数组
+        var coordinates = [new Z.Coordinate(121.454716,31.272095),
+                            new Z.Coordinate(121.459007,31.25933),
+                            new Z.Coordinate(121.458149,31.241572),
+                            new Z.Coordinate(121.460381,31.229977),
+                            new Z.Coordinate(121.473427,31.222784)];
         //设置线样式
         var polylineSymbol = {
             'line-color' : '#ff00ff',
@@ -47,6 +45,10 @@
             'line-dasharray' : [20,10,5,5,5,10],//线形
             'line-opacity' : 1
         };
+        //创建线对象
+        var polyline = new Z.Polyline(coordinates, {
+            draggable: true
+        });
         polyline.setSymbol(polylineSymbol);
         //将线添加到Layer
         layer.addGeometry(polyline);

@@ -5,7 +5,7 @@ Z.Map.mergeOptions({
 Z.Map.Drag = Z.Handler.extend({
 	addHooks: function () {
 		if (!this['draggable']) {
-            var map = this['map'];
+            var map = this.map;
             if (!map) return;
             this.dom = map._containerDOM;
             if (!Z.Browser.mobile) {

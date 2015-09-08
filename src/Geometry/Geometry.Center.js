@@ -1,4 +1,4 @@
-Z.Geometry.Center={
+Z.Geometry.Center = {
     /**
      * 计算Geometry中心点在地图容器中的相对坐标
      * @return {[type]} [description]
