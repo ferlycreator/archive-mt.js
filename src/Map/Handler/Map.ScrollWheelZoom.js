@@ -1,7 +1,6 @@
 
 Z.Map.mergeOptions({
-    'scrollWheelZoom': true,
-    'wheelDebounceTime': 40
+    'scrollWheelZoom': true
 });
 
 Z.Map.ScrollWheelZoom = Z.Handler.extend({
