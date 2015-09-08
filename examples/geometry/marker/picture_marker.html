@@ -42,7 +42,7 @@
             'dy' :0
         };
         //创建点对象
-        var marker = new Z.Marker(coordinate,{'id':'marker_id'});
+        var marker = new Z.Marker(coordinate,{'id':'marker_id','draggable':true});
         //设置点样式
         marker.setSymbol(icon);
         //将点添加到Layer

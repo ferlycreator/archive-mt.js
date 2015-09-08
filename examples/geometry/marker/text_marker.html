@@ -51,7 +51,7 @@
             'text-dy':0
         };
         //创建点对象
-        var marker = new Z.Marker(coordinate, 'marker_id');
+        var marker = new Z.Marker(coordinate, {'id':'marker_id','draggable':true});
         marker.setProperties({
             'marker_name':'我是文字标签'
         });
