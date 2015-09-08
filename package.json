@@ -41,7 +41,6 @@
     "karma-firefox-launcher": "^0.1.6",
     "karma-happen": "git+https://github.com/MapTalks/karma-happen.git",
     "karma-ie-launcher": "^0.1.5",
-    "karma-jquery": "^0.1.0",
     "karma-mocha": "^0.1.10",
     "karma-phantomjs-launcher": "^0.1.4",
     "karma-sinon-ie": "^1.0.2",
