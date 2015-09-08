@@ -1,11 +1,11 @@
 Z.Map.mergeOptions({
-	'dragging': true
+    'dragging': true
 });
 
 Z.Map.Drag = Z.Handler.extend({
-	addHooks: function () {
-		if (!this['draggable']) {
-            var map = this.map;
+    addHooks: function () {
+        if (!this['draggable']) {
+            var map = this['map'];
             if (!map) return;
             this.dom = map._containerDOM;
             if (!Z.Browser.mobile) {
@@ -13,21 +13,21 @@ Z.Map.Drag = Z.Handler.extend({
             }
             //TODO 其它触摸屏幕
             /*else {
-                this['draggable'] = new Z.Handler.Touch(this.dom);
-            }*/
+             this['draggable'] = new Z.Handler.Touch(this.dom);
+             }*/
 
             this['draggable'].on("dragstart", this._onDragStart, this);
             this['draggable'].on("dragging", this._onDragging, this);
             this['draggable'].on("dragend", this._onDragEnd, this);
-		}
-		this['draggable'].enable();
-	},
+        }
+        this['draggable'].enable();
+    },
 
-	removeHooks: function () {
-		this['draggable'].disable();
-	},
+    removeHooks: function () {
+        this['draggable'].disable();
+    },
 
-	_onDragStart:function(param) {
+    _onDragStart:function(param) {
         var me = this;
         me.map._allowSlideMap=false;
         var map = me.map;
@@ -53,10 +53,8 @@ Z.Map.Drag = Z.Handler.extend({
         me.map.offsetPlatform(new Z.Point(currentDomLeft-domOffset['left'],currentDomTop-domOffset['top']));
         map._offsetCenterByPixel(new Z.Point(-(currentDomLeft-domOffset['left']),-(currentDomTop-domOffset['top'])));
         me.map._onMoving({'target':map});
-        map._fireEvent('moving');
+        // map._fireEvent('moving');
     },
-
-
 
     _onDragEnd:function(param) {
         var me = this;
@@ -71,7 +69,7 @@ Z.Map.Drag = Z.Handler.extend({
         } else {
             map._onMoveEnd({'target':map});
         }
-        map._fireEvent('moveend');
+        // map._fireEvent('moveend');
     }
 });
 

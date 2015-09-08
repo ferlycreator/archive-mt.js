@@ -231,9 +231,9 @@ Z.Util = {
      * @return {String}   camel名称
      */
     convertMinusToCamel: function(str) {
-        var re = /(-[A-Za-z])/g;
+        var re = /-([A-Za-z])/g;
         return str.replace(re, function (match, p1, offset, str) {
-            return p1[1].toUpperCase();
+            return p1.toUpperCase();
         });
     },
 

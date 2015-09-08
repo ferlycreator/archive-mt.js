@@ -197,9 +197,14 @@ Z['Map']=Z.Map=Z.Class.extend({
         }
         var projection = this._getProjection();
         var _pcenter = projection.project(center);
-        var span = this._getPixelDistance(_pcenter);
-        this._setPrjCenter(_pcenter);
-        this.offsetPlatform(span);
+        var offset = this._getPixelDistance(_pcenter);
+        // FIXME: call panBy() ?
+        if (offset.left || offset.top) {
+            this._fireEvent('movestart');
+            this._setPrjCenter(_pcenter);
+            this.offsetPlatform(offset);
+        }
+        // XXX: fire 'moveend' or not?
         this._onMoveEnd();
         return this;
     },
@@ -420,10 +425,6 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     setBaseTileLayer:function(baseTileLayer) {
-        if (!baseTileLayer) {
-            //TODO 是否要抛出错误?
-            return;
-        }
         if (this._baseTileLayer) {
             this._removeBackGroundDOM();
             this._baseTileLayer._onRemove();
@@ -862,7 +863,6 @@ Z['Map']=Z.Map=Z.Class.extend({
         this._setPrjCenter(pCenter);
     },
 
-
     /**
      * 获取地图容器偏移量或增加容器的偏移量
      * @param  {Pixel} offset 增加的偏移量,如果为null,则直接返回容器的偏移量
@@ -877,11 +877,10 @@ Z['Map']=Z.Map=Z.Class.extend({
             Z.DomUtil.offsetDom(this._panels.mapPlatform, new Z.Point(
                     domOffset['left']+offset['left'],
                     domOffset['top']+offset['top']
-                ));
+            ));
+            return this;
         }
     },
-
-
 
     /**
      * transform dom position to geodesic projected coordinate

@@ -69,6 +69,7 @@ function commonSetupMap(center) {
     container.style.height = '600px';
     document.body.appendChild(container);
     var option = {
+        enableCartoCSS: false,
         zoomLevel: 17,
         center: center
     };
@@ -161,6 +162,5 @@ var GeoEventsTester = {
         spy.reset();
 
     }
-
 
 };

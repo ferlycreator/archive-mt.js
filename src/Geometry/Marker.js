@@ -37,19 +37,20 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
         var pxMin = new Z.Point(left - width/2, top - height),
             pxMax = new Z.Point(left + width/2, top);
 
+        var vertical, horizontal, px;
         if (symbol['markerType']) {
             pxMin = new Z.Point(left - width/2, top - height/2);
             pxMax = new Z.Point(left + width/2, top + height/2);
         } else if (symbol['shieldType']) {
-            var vertical = Z.Util.setDefaultValue(symbol['shieldVerticalAlignment'], 'middle'),
-                horizontal = Z.Util.setDefaultValue(symbol['shieldHorizontalAlignment'], 'middle');
-            var px = this._getExtent(left, top, vertical, horizontal, width, height);
+            vertical = Z.Util.setDefaultValue(symbol['shieldVerticalAlignment'], 'middle');
+            horizontal = Z.Util.setDefaultValue(symbol['shieldHorizontalAlignment'], 'middle');
+            px = this._getExtent(left, top, vertical, horizontal, width, height);
             pxMin = px['min'];
             pxMax = px['max'];
         } else if (symbol['textName']) {
-            var vertical = Z.Util.setDefaultValue(symbol['textVerticalAlignment'], 'middle'),
-                horizontal = Z.Util.setDefaultValue(symbol['textHorizontalAlignment'], 'middle');
-            var px = this._getExtent(left, top, vertical, horizontal, width, height);
+            vertical = Z.Util.setDefaultValue(symbol['textVerticalAlignment'], 'middle');
+            horizontal = Z.Util.setDefaultValue(symbol['textHorizontalAlignment'], 'middle');
+            px = this._getExtent(left, top, vertical, horizontal, width, height);
             pxMin = px['min'];
             pxMax = px['max'];
         }
