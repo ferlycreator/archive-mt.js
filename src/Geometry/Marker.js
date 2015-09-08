@@ -112,7 +112,6 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
 
     _getRealSize: function(height, width, content, fontSize, lineSpacing) {
         if (content&&content.length>0) {
-            var fontSize = icon['size'];
             var size = fontSize/2;
             var textWidth = Z.Util.getLength(content)*size;
             var rowNum = 0;

@@ -172,14 +172,15 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
 
     _containsPoint: function(point) {
         var map = this.getMap(),
+            mapOffset = map.offsetPlatform(),
             t = this._hitTestTolerance(),
             extent = this.getExtent(),
             nw = new Z.Coordinate(extent.xmin, extent.ymax),
             se = new Z.Coordinate(extent.xmax, extent.ymin),
             pxMin = map.coordinateToScreenPoint(nw),
             pxMax = map.coordinateToScreenPoint(se),
-            pxExtent = new Z.Extent(pxMin.left - t, pxMin.top - t,
-                                    pxMax.left + t, pxMax.top + t);
+            pxExtent = new Z.Extent(pxMin.left + mapOffset.left - t, pxMin.top + mapOffset.top - t,
+                                    pxMax.left + mapOffset.left + t, pxMax.top + mapOffset.top + t);
 
         point = new Z.Point(point.left, point.top);
 
@@ -187,6 +188,10 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
 
         // screen points
         var points = this._transformToOffset(this._getPrjPoints());
+        for(var i=0,len=points.length;i<len;i++) {
+            points[i].left += mapOffset.left;
+            points[i].top += mapOffset.top;
+        }
 
         var c = Z.GeoUtils.pointInsidePolygon(point, points);
         if (c) {

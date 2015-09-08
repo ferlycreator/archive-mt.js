@@ -7,7 +7,7 @@
     <style type="text/css">
         html,body{ margin:0px; height:100%; };
     </style>
-    <title>MapTalks 示例: 添加点</title>
+    <title>MapTalks 示例: canvas上点</title>
 </head>
 <body scroll="no" onload="initMap();">
 <div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
@@ -51,7 +51,7 @@
             'text-dy':0
         };
         //创建点对象
-        var marker = new Z.Marker(markerCoordinate, {'id':'marker_id'});
+        var marker = new Z.Marker(markerCoordinate);
         marker.setProperties({
             'marker_name':'我是文字标签'
         });

@@ -1,0 +1,69 @@
+<!DOCTYPE>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MapTalks 示例: canvas上的面</title>
+</head>
+<body scroll="no" onload="initMap();">
+<div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
+<script type="text/javascript" >
+    var mapObj;
+    function initMap(){
+        //创建地图对象
+        mapObj = new Z.Map('mapObj', //放置mapObj的div id
+        {
+            center:  new Z.Coordinate(121.489935,31.24432), //初始中心点坐标
+            zoomLevel:   11 //初始缩放级别
+        });
+        //设置底图图层
+        mapObj.setBaseTileLayer(new Z.TileLayer('tile', //底图id
+        {
+            tileInfo: 'web-mercator',
+            urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
+            subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
+        }));
+        //创建放置图形的图层
+        var layer = new Z.VectorLayer('layer', {'render': 'Canvas'});
+        //将图层添加到地图
+        mapObj.addLayer(layer);
+
+        //创建面对象
+        var polygon = new Z.Polygon(
+            //面端点坐标数组
+            [[new Z.Coordinate(121.508617,31.241279),
+            new Z.Coordinate(121.519432,31.241572),
+            new Z.Coordinate(121.524067,31.241719),
+            new Z.Coordinate(121.528015,31.242893),
+            new Z.Coordinate(121.539173,31.245388),
+            new Z.Coordinate(121.544323,31.236142),
+            new Z.Coordinate(121.548443,31.227335),
+            new Z.Coordinate(121.538486,31.223518),
+            new Z.Coordinate(121.517887,31.223665)]
+            ]);
+        //设置面样式
+        var polygonSymbol = {
+            'line-color' : '#0000ff',
+            'line-width' : 2,
+            'line-dasharray' : [20,10,5,5,5,10],//线形
+            'line-opacity' : 1,
+            'polygon-fill' : '#ff00ff',
+            'polygon-opacity' : 0.8
+        };
+        polygon.setSymbol(polygonSymbol);
+        //将面添加到Layer
+        layer.addGeometry(polygon);
+        //监听marker事件
+        polygon.on('click', function(){
+            alert('You click polygon!');
+        });
+    }
+</script>
+<!-- 引擎javascript开发包-->
+<script type="text/javascript" src="/maptalks/v2/maptalks.js"></script>
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+  <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.min.js"></script>
+<![endif]-->
+</body>
+</html>
