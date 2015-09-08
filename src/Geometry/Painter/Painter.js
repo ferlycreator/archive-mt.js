@@ -102,6 +102,7 @@ Z.Painter = Z.Class.extend({
            'url': symbol['markerFile'],
            'width': Z.Util.setDefaultValue(symbol['markerWidth'], 30),
            'height': Z.Util.setDefaultValue(symbol['markerHeight'], 30),
+
            'type': symbol['markerType'],
            'opacity': Z.Util.setDefaultValue(symbol['markerOpacity'], 1),
            'fillOpacity': Z.Util.setDefaultValue(symbol['markerFillOpacity'],1 ),

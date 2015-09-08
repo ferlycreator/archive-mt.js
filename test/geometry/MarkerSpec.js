@@ -1,58 +1,101 @@
-describe('MarkerSpec', function() {
+describe('Marker', function() {
 
     var container;
     var map;
     var tile;
     var center = new Z.Coordinate(118.846825, 32.046534);
-    var layer;
-    var icon1, icon2;
 
     beforeEach(function() {
         var setups = commonSetupMap(center);
         container = setups.container;
         map = setups.map;
-        /*layer = new Z.VectorLayer('id');
-        map.addLayer(layer);*/
-        /*var icon = new Z.Geometry().defaultIcon;
-        icon1 = Z.Util.extend({}, icon, {url: icon.url + '?1'});
-        icon2 = Z.Util.extend({}, icon, {url: icon.url + '?2'});*/
     });
 
     afterEach(function() {
-        map.removeLayer(layer);
         document.body.removeChild(container);
     });
 
-    describe('#setIcon', function() {
-        //icon tests
-        //
-        /*it('does not overwrite given icon', function() {
-            var marker = new Z.Marker(center);
-            var newIcon = Z.Util.extend({}, icon1);
-            marker.setIcon(newIcon);
-            layer.addGeometry(marker);
+    describe("symbol", function() {
 
-            expect(newIcon).to.eql(icon1);
+        var layer;
+
+        beforeEach(function() {
+            layer = new Z.VectorLayer('id');
+            map.addLayer(layer);
         });
 
-        it('changes icon to another one', function() {
-            var marker = new Z.Marker(center);
-            marker.setIcon(icon1);
-            layer.addGeometry(marker);
+        afterEach(function() {
+            map.removeLayer(layer);
+        });
 
-            var beforeIcon = marker.getIcon();
-            marker.setIcon(icon2);
-            var afterIcon = marker.getIcon();
+        it("can be icon", function() {
+            var marker = new Z.Marker(center, {
+                symbol: {
+                    markerFile: '/maptalks/v2/images/marker.png',
+                    markerWidth: 30,
+                    markerHeight: 22
+                }
+            });
 
-            expect(beforeIcon).to.equal(icon1);
-            expect(beforeIcon).to.not.equal(afterIcon);
-            expect(afterIcon).to.equal(icon2);
-        });*/
+            expect(function () {
+                layer.addGeometry(marker);
+            }).to.not.throwException();
+        });
+
+        it("can be text", function() {
+            var marker = new Z.Marker(center, {
+                symbol: {
+                    textName: 'texxxxxt',
+                    font: 'monospace'
+                }
+            });
+
+            expect(function () {
+                layer.addGeometry(marker);
+            }).to.not.throwException();
+        });
+
+
+        it("can be vector", function() {
+            var types = ['circle', 'triangle', 'cross', 'diamond', 'square', 'x', 'bar'];
+
+            expect(function () {
+                for(var i = 0; i < types.length; i++) {
+                    var marker = new Z.Marker(center, {
+                        symbol: {
+                            markerType: types[i],
+                            markerLineDasharray: [20, 10, 5, 5, 5, 10]
+                        }
+                    });
+                    layer.addGeometry(marker);
+                }
+            }).to.not.throwException();
+        });
+
+        it("can be shield", function() {
+            var types = ['label', 'tip'];
+
+            expect(function () {
+                for(var i = 0; i < types.length; i++) {
+                    var marker = new Z.Marker(center, {
+                        symbol: {
+                            shieldType: types[i],
+                            shieldName: types[i] + 'Shield'
+                        }
+                    });
+                    layer.addGeometry(marker);
+                }
+            }).to.not.throwException();
+        });
+
+    });
+
+    describe('#setSymbol', function() {
 
         it('fires symbolchanged event', function() {
             var spy = sinon.spy();
             var marker = new Z.Marker(center);
-            marker.bind('symbolchanged', spy);
+            marker.on('symbolchanged', spy);
             marker.setSymbol({
                 'markerType' : 'circle',
                 'markerLineColor': '#ff0000',
@@ -64,6 +107,7 @@ describe('MarkerSpec', function() {
 
             expect(spy.called).to.be.ok();
         });
+
     });
 
     describe('events', function() {

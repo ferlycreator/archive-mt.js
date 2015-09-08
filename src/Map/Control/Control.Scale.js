@@ -20,6 +20,7 @@ Z['Control']['Scale'] = Z.Control.Scale = Z.Control.extend({
         this._addScales();
         map.on('moveend', this._update, this)
            .on('move', this._update, this);
+        // FIXME: need to call this._update()
         return this._scaleContainer;
     },
 
@@ -42,6 +43,7 @@ Z['Control']['Scale'] = Z.Control.Scale = Z.Control.extend({
         var height = map.getSize().height / 2;
         var projection = map._getProjection();
         var maxMeters = 100;
+        // TODO: do calculate
         this._updateScales(maxMeters);
     },
 
