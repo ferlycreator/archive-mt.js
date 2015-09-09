@@ -2,7 +2,8 @@
 Z.VectorLayer=Z.OverlayLayer.extend({
 
     options:{
-        'render':'dom' // possible values: dom - svg or vml, canvas
+        'render':'dom', // possible values: dom - svg or vml, canvas
+        'enableSimplify':true
     },
 
     /**

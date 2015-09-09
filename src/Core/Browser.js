@@ -91,7 +91,9 @@
 		retina: retina,
 
 		language:language,
-		translateDom:(any3d && !ie)
+		translateDom:(any3d && !ie),
+
+		canvas:!!document.createElement("canvas").getContext
 	};
 
 }());
