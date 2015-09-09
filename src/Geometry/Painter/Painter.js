@@ -150,6 +150,7 @@ Z.Painter = Z.Class.extend({
             'size': Z.Util.setDefaultValue(symbol['shieldSize'], 12),
             'color': Z.Util.setDefaultValue(symbol['shieldTextFill'], '#000000'),
             'textOpacity': Z.Util.setDefaultValue(symbol['shieldTextOpacity'], 1),
+            'padding': Z.Util.setDefaultValue(symbol['shieldTextSpacing'], 0),
             'placement': Z.Util.setDefaultValue(symbol['shieldPlacement'], 'point'),
             'lineSpacing': Z.Util.setDefaultValue(symbol['shieldLineSpacing'], 8),
             'textWidth': symbol['shieldWrapWidth'],

@@ -300,7 +300,7 @@ Z.SVG.SVG = {
     _addTextVector: function(vectorBean, iconSymbol) {
         var textElement = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         var font = iconSymbol['font'];
-        var size = iconSymbol['size'];
+        var fontSize = iconSymbol['size'];
         var width = iconSymbol['textWidth'];
         var padding = iconSymbol['padding'];
         var color = iconSymbol['color'];
@@ -322,7 +322,6 @@ Z.SVG.SVG = {
         if(text){
             var location = text['location'];
             var content = text['content'];
-            var fontSize = iconSymbol['size'];
             var size = fontSize/2;
             var textWidth = Z.Util.getLength(content)*size;
             textElement.setAttribute('font-family', font);
