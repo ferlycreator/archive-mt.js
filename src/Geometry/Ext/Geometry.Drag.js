@@ -9,6 +9,7 @@ Z.Geometry.include({
      */
     startDrag: function() {
         this._map = this.getMap();
+        Z.DomUtil.setStyle(this._map._containerDOM, 'cursor: move');
         this._map.disableDrag();
         this._map.on('mousemove', this._dragging, this)
                  .on('mouseup', this._endDrag, this);
@@ -90,6 +91,7 @@ Z.Geometry.include({
         this._map.off('mousemove', this._dragging, this)
                  .off('mouseup', this._endDrag, this);
         this.fire('dragend', {'target': this});
+        Z.DomUtil.setStyle(this._map._containerDOM, 'cursor: default');
     },
 
     /**
@@ -112,7 +114,7 @@ Z.Geometry.addInitHook(function () {
 	    if(!('manual' === trigger)) {
             this.on(trigger, function() {
                 this.startDrag();
-            },this);
+            }, this);
 	    }
 	}
 });

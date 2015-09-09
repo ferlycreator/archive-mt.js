@@ -5,25 +5,32 @@ Z.Map.mergeOptions({
 
 Z.Map.EventToGeometry = Z.Handler.extend({
     addHooks: function() {
+        /**
         this.map.on('mousedown mouseup mousemove click dblclick contextmenu', this._queryGeometries, this)
                 .on('moving', this._stopQueryGeometries, this)
                 .on('moveend', this._startQueryGeometries, this);
+        */
+        /**
+        * TODO Z.Render.Canvas.Base.getBaseCanvasRender(map) 在该扩展功能注册时为undefined
+        * 故采用了之前的方式获取canvas容器。
+        */
+        var canvasContainer = this.map._panels.canvasLayerContainer;
+        if(canvasContainer) {
+            Z.DomUtil.on(canvasContainer,'mousedown mouseup mousemove click dblclick contextmenu', this._queryGeometries, this);
+        }
     },
 
     removeHooks: function() {
-        this.map.off('mousedown mouseup mousemove click dblclick contextmenu', this._queryGeometries, this);
-    },
-
-    _stopQueryGeometries: function(event) {
-        this.removeHooks();
-    },
-
-    _startQueryGeometries: function(event) {
-        this.addHooks();
+        /**
+        this.map.off('mousedown mouseup mousemove click dblclick contextmenu', this._queryGeometries, this);*/
+        var canvasContainer = this.map._panels.canvasLayerContainer;
+        if(canvasContainer) {
+            Z.DomUtil.off(canvasContainer,'mousedown mouseup mousemove click dblclick contextmenu', this._queryGeometries, this);
+        }
     },
 
     _queryGeometries: function(event) {
-        var eventType = event['originalEvent']['type'];
+        var eventType = event.type;
         var mouseOffset = Z.DomUtil.getEventDomCoordinate(event['originalEvent'], this.map._containerDOM);
         var layers = [];
         //2015-07-09 fuzhen dynamiclayer不需要做identify
