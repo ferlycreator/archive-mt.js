@@ -27,7 +27,6 @@ Z.Render.Dom.prototype= {
             geo.show();
         });
         this._visible=true;
-        return this;
     },
 
     /**
@@ -42,7 +41,6 @@ Z.Render.Dom.prototype= {
             geo.hide();
         });
         this._visible=false;
-        return this;
     },
 
     /**

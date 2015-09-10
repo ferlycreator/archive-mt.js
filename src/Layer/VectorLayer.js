@@ -38,6 +38,10 @@ Z.VectorLayer=Z.OverlayLayer.extend({
         return false;
     },
 
+    getRender: function() {
+        return this._render;
+    },
+
     load:function() {
         this._render.load();
         return this;

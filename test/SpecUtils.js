@@ -126,8 +126,7 @@ var GeoEventsTester = {
         vector.on(this.eventsToTest, this._eventCallBack );
         layer.addGeometry(vector);
         var point = map.coordinateToScreenPoint(testPoint);
-        var dom = Z.Render.Canvas.Base.getBaseCanvasRender(map).
-                    getCanvasContainer();
+        var dom = layer.getRender().getCanvasContainer();
         var domPosition = Z.DomUtil.getPageCoordinate(dom);
         point.add(domPosition);
         this._verifyGeometryEvents(dom,

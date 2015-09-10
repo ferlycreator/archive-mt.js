@@ -27,7 +27,6 @@
 ../src/Layer/Render/Render.js
 ../src/Layer/Render/Render.Dom.js
 ../src/Layer/Render/Render.Canvas.js
-../src/Layer/Render/Render.Canvas.Base.js
 ../src/Layer/Layer.js
 ../src/Layer/Tile/TileLayer.js
 ../src/Layer/Tile/ArcgisTileLayer.js
