@@ -48,9 +48,11 @@ Z['Control'] = Z.Control = Z.Class.extend({
     },
 
     addTo: function (map) {
-        var id = this.options['id'];
+        var id = this.options.id;
         this.remove();
         this._map = map;
+        var mapId = map._container;
+        this._checkControlId(mapId, id);
         this._controlContainer = map._panels.controlWrapper;
 
         this._container = Z.DomUtil.createEl('div');
@@ -74,13 +76,21 @@ Z['Control'] = Z.Control = Z.Class.extend({
         if(!controlsInMap) {
             controls[mapId] = {id: this};
         } else {
-            var check = controls[mapId][id];
+            var check = this._checkControlId(mapId, id);
             if(check) {
-                var exceptionStr = Z.Util.getExceptionInfo(this.exceptions['DUPLICATE_ID'],id);
-                throw new Error(exceptionStr);
+                controls[mapId][id] = this;
             }
-            controls[mapId][id] = this;
         }
+    },
+
+    _checkControlId: function(mapId, id) {
+        var controls = Z.Control.controls;
+        var check = controls[mapId];
+        if(check&&check[id]) {
+            var exceptionStr = Z.Util.getExceptionInfo(this.exceptions['DUPLICATE_ID'],id);
+            throw new Error(exceptionStr);
+        }
+        return true;
     },
 
     _updateContainerPosition: function(){
