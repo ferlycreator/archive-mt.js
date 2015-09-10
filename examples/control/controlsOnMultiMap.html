@@ -81,6 +81,19 @@
         });
         mapObj2.addControl(navControl2);
 
+        /**
+        * 创建多个nav控件
+        */
+        var navControl3 = new Z.Control.Nav({
+            id: 'navControl', //控件id
+            //自定义控件放置位置
+            position : {
+                top: '40',
+                left: '60'
+            }
+        });
+        mapObj2.addControl(navControl3);
+
         var nav2 = mapObj2.getControl('navControl');
         console.log(nav2);
     }

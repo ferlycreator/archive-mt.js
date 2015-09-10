@@ -5,10 +5,12 @@ Z['Control']['Zoom'] = Z.Control.Zoom = Z.Control.extend({
     */
     exceptionDefs: {
         'en-US':{
-            'NEED_ID':'You must set id to Zoom Control.'
+            'NEED_ID':'You must set id to Zoom Control.',
+            'DUPLICATE_ID':'This Control id:[%1] already exists.'
         },
         'zh-CN':{
-            'NEED_ID':'您需要为Zoom控件设置id。'
+            'NEED_ID':'您需要为Zoom控件设置id。',
+            'DUPLICATE_ID':'该控件id:[%1]已存在!'
         }
     },
 

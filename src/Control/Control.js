@@ -5,10 +5,12 @@ Z['Control'] = Z.Control = Z.Class.extend({
     */
     exceptionDefs: {
         'en-US':{
-            'NEED_ID':'You must set id to Control.'
+            'NEED_ID':'You must set id to Control.',
+            'DUPLICATE_ID':'This Control id:[%1] already exists.'
         },
         'zh-CN':{
-            'NEED_ID':'Control必须设置id。'
+            'NEED_ID':'Control必须设置id。',
+            'DUPLICATE_ID':'该控件id:[%1]已存在!'
         }
     },
 
@@ -47,7 +49,6 @@ Z['Control'] = Z.Control = Z.Class.extend({
 
     addTo: function (map) {
         var id = this.options['id'];
-        if(!id) {throw new Error(this.exceptions['NEED_ID']);}
         this.remove();
         this._map = map;
         this._controlContainer = map._panels.controlWrapper;
@@ -62,16 +63,24 @@ Z['Control'] = Z.Control = Z.Class.extend({
             this._controlContainer.appendChild(this._container);
         }
         this._afterAdd();
+        this._saveControlToMemery(id);
+        return this;
+    },
 
+    _saveControlToMemery: function(id) {
         var controls = Z.Control.controls;
         var mapId = this._map._container;
         var controlsInMap = controls[mapId];
         if(!controlsInMap) {
             controls[mapId] = {id: this};
         } else {
+            var check = controls[mapId][id];
+            if(check) {
+                var exceptionStr = Z.Util.getExceptionInfo(this.exceptions['DUPLICATE_ID'],id);
+                throw new Error(exceptionStr);
+            }
             controls[mapId][id] = this;
         }
-        return this;
     },
 
     _updateContainerPosition: function(){
