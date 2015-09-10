@@ -152,7 +152,7 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
     _containsPoint: function(point) {
         var map = this.getMap(),
             t = this._hitTestTolerance(),
-            sp = map.coordinateToScreenPoint(this._coordinates),
+            sp = map.coordinateToDomOffset(this._coordinates),
             pxSize = map.distanceToPixel(this.width, this.height);
 
         var pxMin = new Z.Point(sp.left, sp.top),

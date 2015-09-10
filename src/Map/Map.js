@@ -605,8 +605,6 @@ Z['Map']=Z.Map=Z.Class.extend({
         }
     },
 
-
-
     /**
      * 获取地图的坐标类型
      * @return {String} 坐标类型
@@ -632,16 +630,30 @@ Z['Map']=Z.Map=Z.Class.extend({
 
 //------------------------------坐标转化函数-----------------------------
     /**
-     * 将地理坐标转化为屏幕像素坐标
+     * 将地理坐标转化为容器偏转坐标
      * @param {Coordinate} 地理坐标
-     * @return {Point}
+     * @return {Point} 容器偏转坐标
+     * @expose
+     */
+    coordinateToDomOffset: function(coordinate) {
+        var projection = this._getProjection();
+        if (!coordinate || !projection) {return null;}
+        var pCoordinate = projection.project(coordinate);
+        return this._transformToOffset(pCoordinate);
+    },
+
+    /**
+     * 将地理坐标转化为屏幕坐标
+     * @param {Coordinate} 地理坐标
+     * @return {Point} 屏幕坐标
      * @expose
      */
     coordinateToScreenPoint: function(coordinate) {
         var projection = this._getProjection();
         if (!coordinate || !projection) {return null;}
         var pCoordinate = projection.project(coordinate);
-        return this._transformToOffset(pCoordinate);
+        var offset = this._transformToOffset(pCoordinate);
+        return this._domOffsetToScreen(offset);
     },
 
     /**
@@ -965,9 +977,9 @@ Z['Map']=Z.Map=Z.Class.extend({
         if (!screenXY) {return null;}
         var platformOffset = this.offsetPlatform();
         return new Z.Point(
-                screenXY['left'] - platformOffset['left'],
-                screenXY['top'] - platformOffset['top']
-            );
+            screenXY['left'] - platformOffset['left'],
+            screenXY['top'] - platformOffset['top']
+        );
     },
 
     /**
@@ -980,9 +992,9 @@ Z['Map']=Z.Map=Z.Class.extend({
         if (!domOffset) {return null;}
         var platformOffset = this.offsetPlatform();
         return new Z.Point(
-                domOffset["left"] + platformOffset["left"],
-                domOffset["top"] + platformOffset["top"]
-            );
+            domOffset["left"] + platformOffset["left"],
+            domOffset["top"] + platformOffset["top"]
+        );
     },
 
     /**

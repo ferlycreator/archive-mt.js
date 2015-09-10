@@ -176,8 +176,8 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
             extent = this.getExtent(),
             nw = new Z.Coordinate(extent.xmin, extent.ymax),
             se = new Z.Coordinate(extent.xmax, extent.ymin),
-            pxMin = map.coordinateToScreenPoint(nw),
-            pxMax = map.coordinateToScreenPoint(se),
+            pxMin = map.coordinateToDomOffset(nw),
+            pxMax = map.coordinateToDomOffset(se),
             pxExtent = new Z.Extent(pxMin.left - t, pxMin.top - t,
                                     pxMax.left + t, pxMax.top + t);
 

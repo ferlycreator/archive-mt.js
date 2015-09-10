@@ -1,19 +1,5 @@
 Z['Control']['Nav'] = Z.Control.Nav = Z.Control.extend({
 
-    /**
-    * 异常信息定义
-    */
-    exceptionDefs: {
-        'en-US':{
-            'NEED_ID':'You must set id to Nav Control.',
-            'DUPLICATE_ID':'This Control id:[%1] already exists.'
-        },
-        'zh-CN':{
-            'NEED_ID':'您需要为Nav控件设置id。',
-            'DUPLICATE_ID':'该控件id:[%1]已存在!'
-        }
-    },
-
     options:{
         'id': 'CONTROL_NAV',
         'position' : Z.Control['bottom_right']
@@ -59,12 +45,6 @@ Z['Control']['Nav'] = Z.Control.Nav = Z.Control.extend({
         Z.DomUtil.setStyle(this._navBar, 'background-position: -208px 0!important');
         this._startPan('top', -1);
     },
-
-/*    _stopPan: function() {
-        if (this._panTimeout) {
-            clearInterval(this._panTimeout);
-        }
-    },*/
 
     _startPan: function(direction, step) {
         var me = this;

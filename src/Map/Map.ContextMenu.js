@@ -19,7 +19,7 @@ Z.Map.include({
     _beforeOpenContextMenu: function(event) {
         var pixel = Z.DomUtil.getEventDomCoordinate(event, this._containerDOM);
         var coordinate = this.screenPointToCoordinate(pixel);
-        var position = this.coordinateToScreenPoint(coordinate);
+        var position = this.coordinateToDomOffset(coordinate);
         var param = {'coordinate':coordinate, 'pixel':position};
         this.menu.showPosition = position;
         var beforeopenFn = this.menu.menuOption['beforeopen'];

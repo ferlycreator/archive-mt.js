@@ -295,7 +295,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
     _topLeftPoint: function(width, height) {
         var placement = this.options['symbol']['shield-vertical-alignment'];
         var center = this._label.getCenter();
-        var point = this._map.coordinateToScreenPoint(center);
+        var point = this._map.coordinateToDomOffset(center);
         var mapOffset = this._map.offsetPlatform();
         if (placement === 'left') {
             return new Z.Point(

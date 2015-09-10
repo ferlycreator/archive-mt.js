@@ -49,7 +49,8 @@
         mapObj.addControl(navControl);
 
         //创建地图对象
-        var mapObj2 = new Z.Map('mapObj2', //放置mapObj的div id
+        var mapElement = document.getElementById('mapObj2');
+        var mapObj2 = new Z.Map(mapElement, //放置mapObj的div id
         {
             center:  new Z.Coordinate(121.489935,31.24432), //初始中心点坐标
             zoomLevel:   11, //初始缩放级别
@@ -94,7 +95,7 @@
         });
         mapObj2.addControl(navControl3);
 
-        var nav2 = mapObj2.getControl('navControl');
+        var nav2 = mapObj2.getControls();
         console.log(nav2);
     }
 </script>

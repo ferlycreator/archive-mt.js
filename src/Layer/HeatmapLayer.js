@@ -71,7 +71,7 @@ Z['HeatmapLayer'] = Z.HeatmapLayer = Z.Layer.extend({
         /**
         * 将投影坐标转化为屏幕偏移坐标
         */
-        var point = this._map.coordinateToScreenPoint(this._origin);
+        var point = this._map.coordinateToDomOffset(this._origin);
 
         // reposition the layer
         this._el.style[Z.HeatmapLayer.CSS_TRANSFORM] = 'translate(' +
@@ -117,7 +117,7 @@ Z['HeatmapLayer'] = Z.HeatmapLayer = Z.Layer.extend({
             continue;
           }
 
-          var point = this._map.coordinateToScreenPoint(coordinate);
+          var point = this._map.coordinateToDomOffset(coordinate);
           var latlngPoint = { x: Math.round(point.left), y: Math.round(point.top) };
           latlngPoint[valueField] = value;
 
