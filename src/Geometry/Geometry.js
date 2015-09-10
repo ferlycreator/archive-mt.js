@@ -42,9 +42,9 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (!opts) {
             return;
         }
-        if (opts['symbol']) {
+        /*if (opts['symbol']) {
             opts['symbol'] = Z.Util.convertFieldNameStyle(opts['symbol'],'camel');
-        }
+        }*/
         Z.Util.setOptions(this,opts);
     },
 
@@ -139,8 +139,8 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
             this.options.symbol = null;
         } else {
             //属性的变量名转化为驼峰风格
-            var camelSymbol = Z.Util.convertFieldNameStyle(symbol,'camel');
-            this.options.symbol = camelSymbol;
+            // var camelSymbol = Z.Util.convertFieldNameStyle(symbol,'camel');
+            this.options.symbol = symbol;
         }
         this._onSymbolChanged();
         return this;
@@ -342,8 +342,9 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     },
 
     _getPainter:function() {
-        if (!this._painter) {
-            this._painter = this._assignPainter();
+        if (this.getMap() && !this._painter) {
+            //this._painter = this._assignPainter();
+            this._painter = new Z.Painter(this);
         }
         return this._painter;
     },

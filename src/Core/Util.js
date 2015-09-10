@@ -192,7 +192,7 @@ Z.Util = {
     },
 
     setDefaultValue: function(value, defaultValue) {
-        return (!value)?defaultValue:value;
+        return (Z.Util.isNil(value))?defaultValue:value;
     },
 
     /**

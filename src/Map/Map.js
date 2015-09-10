@@ -1059,21 +1059,20 @@ Z['Map']=Z.Map=Z.Class.extend({
      * [createVectorPaper description]
      * @return {[type]} [description]
      */
-    _createSVGPaper: function(){
+    _getSvgPaper: function(){
         var map = this;
-        if (map.vectorPaper) {return;}
-        var svgContainer = this._panels.svgContainer;
-        map.vectorPaper = Z.SVG.createContainer();
-        this._refreshSVGPaper();
-        svgContainer.appendChild(map.vectorPaper);
+        if (!map._vectorPaper) {
+            var svgContainer = this._panels.svgContainer;
+            map._vectorPaper = Z.SVG.createContainer();
+            this._refreshSVGPaper();
+            svgContainer.appendChild(map._vectorPaper);
+        }
+        return map._vectorPaper;
     },
 
     _refreshSVGPaper: function() {
-        var map = this;
-        var paper = map.vectorPaper;
-        if (paper) {
-            Z.SVG.refreshContainer(map,paper);
-        }
+        var paper = this._getSvgPaper();
+        Z.SVG.refreshContainer(this,paper);
     },
 
     /**

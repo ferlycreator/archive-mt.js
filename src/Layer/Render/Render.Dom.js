@@ -11,7 +11,7 @@ Z.Render.Dom.prototype= {
     load:function() {
         var map = this.getMap();
         this.layerDom = map._panels.svgContainer;
-        map._createSVGPaper();
+        // map._createSVGPaper();
         this._addTo();
     },
 
