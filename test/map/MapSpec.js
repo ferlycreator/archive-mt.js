@@ -234,7 +234,8 @@ describe('#Map', function () {
         });
     });
 
-    describe('#map events', function() {
+    describe('events', function() {
+
         it('double click', function() {
             map.setBaseTileLayer(tile);
 
@@ -245,6 +246,19 @@ describe('#Map', function () {
 
             expect(spy.called).to.be.ok();
         });
+
+        it("mousedown following mouseup on map should not trigger move events", function() {
+            map.setBaseTileLayer(tile);
+
+            var spy = sinon.spy();
+            map.on('movestart moving moveend', spy);
+
+            happen.mousedown(container);
+            happen.mouseup(container);
+
+            expect(spy.called).to.not.be.ok();
+        });
+
     });
 
 });

@@ -1,4 +1,4 @@
-describe('GeometrySpec', function() {
+describe('Geometry', function() {
 
     var container;
     var map;
@@ -9,6 +9,7 @@ describe('GeometrySpec', function() {
         map:map,
         layer:layer
     };
+    var canvasContainer;
 
     beforeEach(function() {
         var setups = commonSetupMap(center);
@@ -18,6 +19,7 @@ describe('GeometrySpec', function() {
         map.addLayer(layer);
         context.map = map;
         context.layer = layer;
+        canvasContainer = map._panels.canvasLayerContainer;
     });
 
     afterEach(function() {
@@ -40,7 +42,7 @@ describe('GeometrySpec', function() {
         var spy = sinon.spy();
         geometry.on('click', spy);
         //TODO 因为marker的width和height为0, 所以无法击中
-        happen.click(map._containerDOM, {
+        happen.click(canvasContainer, {
             clientX: 400 + 8,
             clientY: 300 + 8
         });
@@ -59,13 +61,13 @@ describe('GeometrySpec', function() {
         var spy = sinon.spy();
         geometry.on('click', spy);
 
-        happen.click(map._containerDOM, {
+        happen.click(canvasContainer, {
             clientX: 400 + 8 + 10 + 4,
             clientY: 300 + 8
         });
         expect(spy.called).to.not.be.ok();
 
-        happen.click(map._containerDOM, {
+        happen.click(canvasContainer, {
             clientX: 400 + 8 + 10 + 3,
             clientY: 300 + 8
         });
@@ -83,13 +85,13 @@ describe('GeometrySpec', function() {
         var spy = sinon.spy();
         geometry.on('click', spy);
 
-        happen.click(map._containerDOM, {
+        happen.click(canvasContainer, {
             clientX: 400 + 8 + 10 + 4,
             clientY: 300 + 8
         });
         expect(spy.called).to.not.be.ok();
 
-        happen.click(map._containerDOM, {
+        happen.click(canvasContainer, {
             clientX: 400 + 8 + 10 + 3,
             clientY: 300 + 8
         });
@@ -107,13 +109,13 @@ describe('GeometrySpec', function() {
         var spy = sinon.spy();
         geometry.on('click', spy);
 
-        happen.click(map._containerDOM, {
+        happen.click(canvasContainer, {
             clientX: 400 + 8 + (10 - 3),
             clientY: 300 + 8 - (10 - 2)
         });
         expect(spy.called).to.not.be.ok();
 
-        happen.click(map._containerDOM, {
+        happen.click(canvasContainer, {
             clientX: 400 + 8,
             clientY: 300 + 8 - 10
         });
@@ -131,13 +133,13 @@ describe('GeometrySpec', function() {
         var spy = sinon.spy();
         geometry.on('click', spy);
 
-        happen.click(map._containerDOM, {
+        happen.click(canvasContainer, {
             clientX: 400 + 8,
             clientY: 300 + 8 - 4
         });
         expect(spy.called).to.not.be.ok();
 
-        happen.click(map._containerDOM, {
+        happen.click(canvasContainer, {
             clientX: 400 + 8,
             clientY: 300 + 8 - 3
         });
@@ -159,13 +161,13 @@ describe('GeometrySpec', function() {
         var spy = sinon.spy();
         geometry.on('click', spy);
 
-        happen.click(map._containerDOM, {
+        happen.click(canvasContainer, {
             clientX: 400 + 8 + 4,
             clientY: 300 + 8 - 4
         });
         expect(spy.called).to.not.be.ok();
 
-        happen.click(map._containerDOM, {
+        happen.click(canvasContainer, {
             clientX: 400 + 8 + 3,
             clientY: 300 + 8 - 3
         });
@@ -187,13 +189,13 @@ describe('GeometrySpec', function() {
         var spy = sinon.spy();
         geometry.on('click', spy);
 
-        happen.click(map._containerDOM, {
+        happen.click(canvasContainer, {
             clientX: 400 + 8 - 4,
             clientY: 300 + 8
         });
         expect(spy.called).to.not.be.ok();
 
-        happen.click(map._containerDOM, {
+        happen.click(canvasContainer, {
             clientX: 400 + 8 - 3,
             clientY: 300 + 8
         });

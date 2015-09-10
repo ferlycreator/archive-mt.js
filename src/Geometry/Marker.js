@@ -29,10 +29,9 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
             y = Z.Util.setDefaultValue(symbol.dy, 0)+
                 Z.Util.setDefaultValue(symbol.textDy, 0),
             center = this._getCenterDomOffset();
-        var mapOffset = this.getMap().offsetPlatform();
 
-        var left = center['left']+mapOffset['left'] + x;
-        var top = center['top']+mapOffset['top'] + y;
+        var left = center['left'] + x;
+        var top = center['top'] + y;
 
         var pxMin = new Z.Point(left - width/2, top - height),
             pxMax = new Z.Point(left + width/2, top);

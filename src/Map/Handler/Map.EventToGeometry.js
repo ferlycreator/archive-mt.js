@@ -31,13 +31,14 @@ Z.Map.EventToGeometry = Z.Handler.extend({
 
     _queryGeometries: function(event) {
         var eventType = event.type;
-        var mouseOffset = Z.DomUtil.getEventDomCoordinate(event['originalEvent'], this.map._containerDOM);
+        var mouseOffset = Z.DomUtil.getEventDomCoordinate(event, this.map._containerDOM);
+        var mouseDomOffset = this.map._screenToDomOffset(mouseOffset);
         var layers = [];
         //2015-07-09 fuzhen dynamiclayer不需要做identify
         layers = layers.concat(this.map._canvasLayers)/*.concat(this.map._dynLayers)*/;
 
         this.options = {
-            point: mouseOffset,
+            point: mouseDomOffset,
             'layers': layers,
             'success': Z.Util.bind(fireGeometryEvent, this)
         };

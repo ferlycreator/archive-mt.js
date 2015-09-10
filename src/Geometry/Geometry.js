@@ -42,6 +42,9 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (!opts) {
             return;
         }
+        if (opts['symbol']) {
+            opts['symbol'] = Z.Util.convertFieldNameStyle(opts['symbol'],'camel');
+        }
         Z.Util.setOptions(this,opts);
     },
 
