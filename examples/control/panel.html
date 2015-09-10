@@ -79,6 +79,9 @@
         };
         var markerInfoPanel = new Z.Panel(markerPanelOptions);
         marker.addPanel(markerInfoPanel);
+
+        var getPanel = marker.getPanel('label01');
+        console.log(getPanel);
     }
 </script>
 <script type="text/javascript" src="/maptalks/v2/maptalks.js"></script>

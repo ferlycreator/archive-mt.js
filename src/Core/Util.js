@@ -284,8 +284,24 @@ Z.Util = {
 
         script.text = code;
         document.head.appendChild( script ).parentNode.removeChild( script );
-    }
+    },
 
+    /**
+    *获取异常信息
+    *@param {String} exceptionStr
+    *@param {Array} 参数数组
+    *@return {String} 异常字符串
+    */
+    getExceptionInfo: function(exceptionStr, params) {
+        if(!params) return exceptionStr;
+        if(this.isString(params)) params = [params];
+        if(this.isArray) {
+            for(var i=0,len=params.length;i<len;i++) {
+                exceptionStr = exceptionStr.replace('%'+(i+1), params[i]);
+            }
+        }
+        return exceptionStr;
+    }
 
 };
 
