@@ -2,8 +2,8 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
     includes: [Z.Eventable],
 
     statics: {
-        getPanel: function(id) {
-            return Z['Control']['getControl'](id);
+        'getPanel': function(target, id) {
+            return Z.Control.getControl(target, id);
         }
     },
 
@@ -59,14 +59,6 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
         if(this.options['target']) {
             this._link.remove();
         }
-    },
-
-    /**
-    * 根据id获取panel
-    * @expose
-    */
-    getPanel: function(id) {
-        return this.getControl();
     },
 
     buildOn: function (map) {

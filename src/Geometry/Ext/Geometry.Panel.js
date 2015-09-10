@@ -12,11 +12,12 @@ Z.Geometry.include({
                 this._addPanel(options);
             });
         }
+        return this;
     },
 
     _addPanel: function(options) {
         if(options instanceof Z.Panel) {
-            panel = options;
+            var panel = options;
             panel.options['target'] = this;
             panel.addTo(this.getMap());
         } else {
@@ -33,7 +34,7 @@ Z.Geometry.include({
     * @expose
     */
     removePanel: function (obj) {
-        panel = this._getPanel(obj);
+        panel = this.getPanel(obj);
         panel.removeLable();
         return this;
     },
@@ -44,7 +45,7 @@ Z.Geometry.include({
     * @expose
     */
     hidePanel: function(obj) {
-        panel = this._getPanel(obj);
+        panel = this.getPanel(obj);
         panel.hide();
         return this;
     },
@@ -55,26 +56,22 @@ Z.Geometry.include({
     * @expose
     */
     showPanel: function(obj) {
-        panel = this._getPanel(obj);
+        panel = this.getPanel(obj);
         panel.show();
         return this;
     },
 
     /*
-    * 获取面板
-    * @param {String} id
+    * 获取panel
+    * @param {Object} id or Z.Panel
     * @expose
     */
-    getPanel: function(id) {
-        return Z.Panel.getPanel(id);
-    },
-
-    _getPanel: function(obj) {
+    getPanel: function(obj) {
         if(!obj) return;
         if(obj instanceof Z.Panel) {
             return obj;
         } else {
-            return Z.Panel.getPanel(obj);
+            return Z.Panel.getPanel(this.getMap(), obj);
         }
     }
 

@@ -1,5 +1,17 @@
 Z['Control']['Toolbar'] = Z.Control.Toolbar = Z.Control.extend({
 
+    /**
+    * 异常信息定义
+    */
+    exceptionDefs: {
+        'en-US':{
+            'NEED_ID':'You must set id to Toolbar Control.'
+        },
+        'zh-CN':{
+            'NEED_ID':'您需要为Toolbar控件设置id。'
+        }
+    },
+
 	options:{
 		'position' : {
 			'bottom': '0',

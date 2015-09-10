@@ -1,5 +1,17 @@
 Z['Control']['Attribution'] = Z.Control.Attribution = Z.Control.extend({
 
+    /**
+    * 异常信息定义
+    */
+    exceptionDefs: {
+        'en-US':{
+            'NEED_ID':'You must set id to Attribution Control.'
+        },
+        'zh-CN':{
+            'NEED_ID':'您需要为Attribution控件设置id。'
+        }
+    },
+
 	options:{
 		'id': 'CONTROL_ATTRIBUTION',
 		'position' : {

@@ -1,5 +1,17 @@
 Z['Control']['Nav'] = Z.Control.Nav = Z.Control.extend({
 
+    /**
+    * 异常信息定义
+    */
+    exceptionDefs: {
+        'en-US':{
+            'NEED_ID':'You must set id to Nav Control.'
+        },
+        'zh-CN':{
+            'NEED_ID':'您需要为Nav控件设置id。'
+        }
+    },
+
     options:{
         'id': 'CONTROL_NAV',
         'position' : Z.Control['bottom_right']

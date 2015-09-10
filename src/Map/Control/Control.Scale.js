@@ -1,5 +1,17 @@
 Z['Control']['Scale'] = Z.Control.Scale = Z.Control.extend({
 
+    /**
+    * 异常信息定义
+    */
+    exceptionDefs: {
+        'en-US':{
+            'NEED_ID':'You must set id to Scale Control.'
+        },
+        'zh-CN':{
+            'NEED_ID':'您需要为Scale控件设置id。'
+        }
+    },
+
     options:{
         'id': 'CONTROL_SCALE',
         'position' : Z.Control['bottom_left'],
