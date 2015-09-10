@@ -41,11 +41,6 @@
             }
         }
     }
-    var controlStyle=Z.DomUtil.createEl('link');
-    controlStyle.href=Z.host+"/maptalks/v2/css/controls.min.css";
-    controlStyle.rel='stylesheet';
-    controlStyle.type='text/css';
-    head.appendChild(controlStyle);
     //ie插入vml定义
     if (Z.Browser.ielt9) {
         //chrome frame meta标签
@@ -58,7 +53,7 @@
     if (!window['JSON']) {
         var script = document.createElement("script");
         script['type'] = "text/javascript";
-        script['src'] = Z.host+"/maptalks/v2/lib/json3.min.js";
+        script['src'] = "lib/json3.min.js";
         head.appendChild(script);
     }
 })();
