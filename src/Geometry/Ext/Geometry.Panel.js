@@ -30,49 +30,32 @@ Z.Geometry.include({
 
     /*
     * 删除面板
-    * @param {Object} id or Z.Panel
+    * @param {Z.Panel} panel
     * @expose
     */
-    removePanel: function (obj) {
-        panel = this.getPanel(obj);
-        panel.removeLable();
+    removePanel: function (panel) {
+        panel.removePanel();
         return this;
     },
 
     /*
     * 删除面板
-    * @param {Object} id or Z.Panel
+    * @param {Z.Panel} panel
     * @expose
     */
-    hidePanel: function(obj) {
-        panel = this.getPanel(obj);
+    hidePanel: function(panel) {
         panel.hide();
         return this;
     },
 
     /*
     * 删除面板
-    * @param {Object} id or Z.Panel
+    * @param {Z.Panel} panel
     * @expose
     */
-    showPanel: function(obj) {
-        panel = this.getPanel(obj);
+    showPanel: function(panel) {
         panel.show();
         return this;
-    },
-
-    /*
-    * 获取panel
-    * @param {Object} id or Z.Panel
-    * @expose
-    */
-    getPanel: function(obj) {
-        if(!obj) return;
-        if(obj instanceof Z.Panel) {
-            return obj;
-        } else {
-            return Z.Panel.getPanel(this.getMap(), obj);
-        }
     }
 
 });

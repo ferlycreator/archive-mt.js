@@ -22,8 +22,9 @@ module.exports = function(config) {
     basePath: '',
 
     proxies: {
-      '/maptalks/v2/': '/base/assets/',
-      '/maptalks/v2/css/controls.min.css': '/base/assets/css/controls.css'
+      '/images/': '/base/assets/images/',
+      '/css/': '/base/assets/css/',
+      '/lib/': '/base/assets/lib/'
     },
 
     // testing framework to use (jasmine/mocha/qunit/...)

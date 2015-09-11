@@ -116,7 +116,7 @@ Z.Editor=Z.Class.extend({
         }
         handle.style.cssText="display:block;position: absolute; top:"+
             (pixel.top-5)+"px;left:"+(pixel.left-5)+"px;cursor:"+cursorStyle+";";
-        handle.innerHTML='<div title="'+opts.tip+'" style="display:block;width:11px;height:11px;background:url('+Z.host+'/maptalks/v2/images/dd-via.png) 0px 0px no-repeat;"></div>';
+        handle.innerHTML='<div title="'+opts.tip+'" style="display:block;width:11px;height:11px;background:url(' + Z.prefix + 'images/dd-via.png) 0px 0px no-repeat;"></div>';
         return handle;
     },
 
@@ -437,7 +437,7 @@ Z.Editor=Z.Class.extend({
         function createRemoveHandle() {
             closeHandle = Z.DomUtil.createEl("div");
             closeHandle.style.cssText="display:none;position: absolute; cursor: pointer;top:-9999px;left:0px;";
-            closeHandle.innerHTML="<div title=\"点击删除端点\" style=\"display:block;width:14px;height:14px;background:url("+Z.host+"/maptalks/v2/images/close.gif) 0px 0px no-repeat;\"></div>";
+            closeHandle.innerHTML="<div title=\"点击删除端点\" style=\"display:block;width:14px;height:14px;background:url(' + Z.prefix + 'images/close.gif) 0px 0px no-repeat;\"></div>";
             Z.DomUtil.addDomEvent(closeHandle,'click',function(ev) {
                 var ringhandle = closeHandle["source"];
                 hideCloseHandle();

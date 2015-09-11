@@ -31,7 +31,7 @@ describe('Marker', function() {
         it("can be icon", function() {
             var marker = new Z.Marker(center, {
                 symbol: {
-                    markerFile: '/maptalks/v2/images/marker.png',
+                    markerFile: Z.prefix + 'images/marker.png',
                     markerWidth: 30,
                     markerHeight: 22
                 }

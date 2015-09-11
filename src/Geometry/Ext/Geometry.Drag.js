@@ -28,7 +28,7 @@ Z.Geometry.include({
         );
         var center = this.getCenter();
         if(!center||!center.x||!center.y) return;
-        var geometryPixel = this._map.coordinateToScreenPoint(center);
+        var geometryPixel = this._map.coordinateToDomOffset(center);
         var mapOffset = this._map.offsetPlatform();
         var newPosition = new Z.Point(
             geometryPixel['left'] + dragOffset['left'] - mapOffset['left'],
@@ -44,7 +44,7 @@ Z.Geometry.include({
         } else if (this instanceof Z.Rectangle) {
             var coordinate = this._dragGeometry.getCoordinates();
             if(!coordinate||!coordinate.x||!coordinate.y) return;
-            var geometryPixel = this._map.coordinateToScreenPoint(coordinate);
+            var geometryPixel = this._map.coordinateToDomOffset(coordinate);
             var newPosition = new Z.Point(
                 geometryPixel['left'] + dragOffset['left'] - mapOffset['left'],
                 geometryPixel['top'] + dragOffset['top'] - mapOffset['top']
@@ -55,7 +55,7 @@ Z.Geometry.include({
         } else if (this instanceof Z.Polyline) {
             var lonlats = this.getCoordinates();
             for (var i=0,len=lonlats.length;i<len;i++) {
-                var plonlat = this._map.coordinateToScreenPoint(lonlats[i]);
+                var plonlat = this._map.coordinateToDomOffset(lonlats[i]);
                 var coordinate = this._map._untransformFromOffset(new Z.Point(plonlat['left']+dragOffset['left'] - mapOffset['left'],
                         plonlat['top']+dragOffset['top'] - mapOffset['top']));
                 lonlats[i].x = coordinate.x;
@@ -68,7 +68,7 @@ Z.Geometry.include({
            for (var i=0,len=lonlats.length;i<len;i++) {
                 var coordinates = lonlats[i];
                 for (var j=0,clen=coordinates.length;j<clen;j++) {
-                    var plonlat = this._map.coordinateToScreenPoint(coordinates[j]);
+                    var plonlat = this._map.coordinateToDomOffset(coordinates[j]);
                     var coordinate = this._map._untransformFromOffset(new Z.Point(
                         plonlat['left']+dragOffset['left'] - mapOffset['left'],
                         plonlat['top']+dragOffset['top'] - mapOffset['top']

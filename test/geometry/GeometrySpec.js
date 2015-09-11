@@ -30,7 +30,7 @@ describe('Geometry', function() {
     it("Marker._containsPoint", function() {
         var geometry = new Z.Marker(center, {
             symbol: {
-                markerFile : Z.host + '/maptalks/v2/images/marker.png',
+                markerFile : Z.prefix + 'images/marker.png',
                 markerHeight : 30,
                 markerWidth : 22,
                 dx : 0,

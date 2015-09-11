@@ -1,12 +1,6 @@
 Z['Panel'] = Z.Panel = Z.Control.extend({
     includes: [Z.Eventable],
 
-    statics: {
-        'getPanel': function(target, id) {
-            return Z.Control.getControl(target, id);
-        }
-    },
-
     options:{
         'position' : {
             'top': '0',

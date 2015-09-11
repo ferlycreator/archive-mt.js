@@ -287,7 +287,7 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
         }
         if(coordinate){
             if(coordinate instanceof Z.Coordinate) {
-                position = this.coordinateToScreenPoint(coordinate);
+                position = this.coordinateToDomOffset(coordinate);
             } else {
                 position = coordinate;
             }

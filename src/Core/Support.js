@@ -5,25 +5,23 @@
     var headChildren = head.childNodes;
     var viewPortMeta = null;
     for (var i=0, len = headChildren.length;i<len;i++) {
-    if ("meta" === headChildren[i].nodeName.toLowerCase()) {
-        var metaName = (headChildren[i].getAttribute?headChildren[i].getAttribute("name"):null);
-        if ("viewport" === metaName) {
-            viewPortMeta = headChildren[i];
+        if ("meta" === headChildren[i].nodeName.toLowerCase()) {
+            var metaName = (headChildren[i].getAttribute?headChildren[i].getAttribute("name"):null);
+            if ("viewport" === metaName) {
+                viewPortMeta = headChildren[i];
+            }
         }
-    }
     }
 
     //根据script查找
-    Z.host = '';
+    Z.prefix = '';
     var scriptTags = document.getElementsByTagName('script');
-    var regex = /(?:\/engine).*[\/]maptalks(?:\.min)?\.js/;
-    for (var i=0, len = scriptTags.length;i<len;i++) {
-        var src = (scriptTags[i].getAttribute?scriptTags[i].getAttribute("src"):null);
-        if (src !== null && src.match(regex)) {
-            Z.host = src.split(regex)[0];
-            if (!Z.host) {
-                Z.host = window.location.protocol + '\/\/' + window.location.host;
-            }
+    var regex = /[\/^]maptalks(?:\.min)?\.js/;
+    for (var i = 0, len = scriptTags.length; i < len; i++) {
+        var src = scriptTags[i].src || '';
+        if (src.match(regex)) {
+            var p = src.split(regex)[0];
+            Z.prefix = p ? p + '/' : '';
             break;
         }
     }
@@ -41,11 +39,13 @@
             }
         }
     }
+
     var controlStyle=Z.DomUtil.createEl('link');
-    controlStyle.href=Z.host+"/maptalks/v2/css/controls.min.css";
+    controlStyle.href=Z.prefix+"css/maptalks.css";
     controlStyle.rel='stylesheet';
     controlStyle.type='text/css';
     head.appendChild(controlStyle);
+
     //ie插入vml定义
     if (Z.Browser.ielt9) {
         //chrome frame meta标签
@@ -58,7 +58,7 @@
     if (!window['JSON']) {
         var script = document.createElement("script");
         script['type'] = "text/javascript";
-        script['src'] = Z.host+"/maptalks/v2/lib/json3.min.js";
+        script['src'] = Z.prefix + "lib/json3.min.js";
         head.appendChild(script);
     }
 })();

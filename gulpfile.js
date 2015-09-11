@@ -1,14 +1,14 @@
+// -*- js2-basic-offset: 2; js-indent-level: 2 -*-
 /* jshint node: true */
 
 var gulp = require('gulp');
 var $ = require('gulp-load-plugins')();
 var del = require('del');
 var runSequence = require('run-sequence');
-var gcc = require('gulp-closure-compiler');
 var karma = require('karma').server;
-var uglify = require('gulp-uglify');
-var rename = require('gulp-rename');
 var connect = require('gulp-connect');
+var browserSync = require('browser-sync');
+var reload = browserSync.reload;
 
 var minimist = require('minimist');
 
@@ -24,21 +24,16 @@ var knownOptions = {
 var options = minimist(process.argv.slice(2), knownOptions);
 var browsers = options.browsers.split(',');
 browsers = browsers.map(function(name) {
-  if (name === 'PhantomJS') { return name; }
   var lname = name.toLowerCase();
+  if (lname.indexOf('phantom') === 0) {
+    return 'PhantomJS';
+  }
   if (lname[0] === 'i') {
     return 'IE' + lname.substr(2);
   } else {
     return lname[0].toUpperCase() + lname.substr(1);
   }
 });
-
-// paths to distribute
-var js_dist_path = './dist/maptalks/v2/';
-var css_dist_path = './dist/maptalks/v2/css/';
-var img_dist_path = './dist/maptalks/v2/images/';
-var lib_dist_path = './dist/maptalks/v2/lib/';
-var examples_dist_path = './dist/maptalks/v2/examples/';
 
 //paths to distribute to maptalks
 var maptalks_dist_path;
@@ -53,18 +48,22 @@ gulp.task('jshint', function () {
     .pipe($.jshint.reporter('jshint-stylish'));
 });
 
-//copy libs
-gulp.task('copy', ['styles'],function () {
-  gulp.src('assets/images/**/*')
-            .pipe(gulp.dest(img_dist_path));
-  gulp.src('assets/lib/**/*')
-            .pipe(gulp.dest(lib_dist_path));
-  return gulp.src('./examples/**/*')
-            .pipe(gulp.dest(examples_dist_path));
-
+gulp.task('images', function () {
+  return gulp.src('assets/images/**/*')
+    .pipe(gulp.dest('dist/images'));
 });
-//copy css styles
-gulp.task('styles',function() {
+
+gulp.task('libs', function () {
+  return gulp.src('assets/lib/**/*.js')
+    .pipe(gulp.dest('dist/lib'));
+});
+
+gulp.task('examples', function () {
+  return gulp.src('examples/**/*')
+    .pipe(gulp.dest('dist/examples'));
+});
+
+gulp.task('styles', function () {
   var AUTOPREFIXER_BROWSERS = [
     'ie >= 10',
     'ie_mob >= 10',
@@ -78,74 +77,69 @@ gulp.task('styles',function() {
   ];
 
   return gulp.src('assets/css/**/*.css')
-    // .pipe($.sourcemaps.init())
     .pipe($.autoprefixer(AUTOPREFIXER_BROWSERS))
-    .pipe(gulp.dest(css_dist_path))
-    // Concatenate and minify styles
-    .pipe($.csso());
+    .pipe($.concat('maptalks.css'))
+    .pipe(gulp.dest('dist/css'))
+    .pipe($.rename({suffix: '.min'}))
+    .pipe($.minifyCss())
+    .pipe(gulp.dest('dist/css'));
 });
+
 gulp.task('scripts', function () {
   var sources = require('./build/getFiles.js').getFiles();
   sources.unshift('build/header.js');
   sources.push('build/footer.js');
   return gulp.src(sources)
     .pipe($.concat('maptalks.js'))
-    .pipe(gulp.dest(js_dist_path));
-});
-//compile and copy
-gulp.task('compile',function () {
-  var sources = require('./build/getFiles.js').getFiles();
-  sources.unshift('build/header.js');
-  sources.push('build/footer.js');
-  return gulp.src(sources)
-    .pipe($.concat('maptalks.js'))
-    .pipe(gulp.dest(js_dist_path))
-    .pipe(rename({suffix: '.min'}))
-    .pipe(gulp.dest(js_dist_path))
+    .pipe(gulp.dest('dist'))
+    .pipe($.rename({suffix: '.min'}))
     .pipe($.uglify({preserveComments: 'some'}))
-    /*.pipe(gcc({
-      compilerPath: 'build/compiler.jar',
-      compilerFlags: {
-        formatting: 'PRETTY_PRINT',
-        compilation_level: 'ADVANCED_OPTIMIZATIONS',
-        // generate_exports: true,
-        externs: []
-        // language_in: 'ECMASCRIPT5'
-      },
-      maxBuffer: 10000,
-      continueWithWarnings: true,
-      fileName: 'maptalks.min.js'
-    }))*/
-    // Output files
-    .pipe(gulp.dest(js_dist_path))
+    .pipe(gulp.dest('dist'))
     .pipe($.gzip())
-    .pipe(gulp.dest(js_dist_path));
+    .pipe(gulp.dest('dist'));
 });
 
-gulp.task('clean', del.bind(null, ['./dist/**','!./dist'], {dot: true}));
+gulp.task('clean', del.bind(null, ['dist/*', '!dist'], {dot: true}));
 
 gulp.task('build', ['clean'], function (done) {
   runSequence(
-    ['copy'],
-    ['compile'],
-    // 'test',
+    'styles',
+    ['scripts', 'images', 'libs'],
+    'examples',
     done);
 });
 
-//
-gulp.task('dist',['build'],function() {
-  if (!maptalks_dist_path) {
-    return;
-  }
-  gulp.src(js_dist_path+'**/*')
+gulp.task('dist', ['build'], function () {
+  gulp.src(['dist/*.js'])
     .pipe(gulp.dest(maptalks_dist_path));
+});
+
+gulp.task('archive', ['build'], function () {
+  return gulp.src(['dist/**/*'])
+    .pipe($.tar('maptalks-js-sdk.tar'))
+    .pipe($.gzip())
+    .pipe(gulp.dest('dist'));
+});
+
+gulp.task('serve', ['build'], function () {
+  browserSync({
+    notify: false,
+    server: {
+      baseDir: 'dist'
+    },
+    startPath: '/examples/index.html'
+  });
+
+  gulp.watch(['src/**/*.js', 'build/srcList.txt'], ['scripts', reload]);
+  gulp.watch(['assets/css**/*.css'], ['styles', reload]);
+  gulp.watch(['examples/**/*'], ['examples', reload]);
 });
 
 gulp.task('connect', function() {
   connect.server({
     root: ['./dist'],
-    port:20000,
-    liveload:true
+    port: 20000,
+    liveload: true
   });
 });
 
@@ -155,18 +149,24 @@ gulp.task('reload', ['build'], function () {
 });
 
 gulp.task('watch', function () {
-  gulp.watch(['src/**/*.js','examples/**/*','assets/css/*.css','build/srcList.txt'], ['reload']);
+  gulp.watch([
+    'src/**/*.js',
+    'examples/**/*',
+    'assets/css/*.css',
+    'build/srcList.txt'
+  ], ['reload']);
 });
 
 gulp.task('server',['build','connect','watch']);
+
 /**
  * Run test for minified scripts once and exit
  */
 gulp.task('test:dist', ['styles', 'scripts'], function (done) {
   var files = [
-    '.tmp/maptalks.js',
+    'dist/maptalks.js',
     'test/**/*.js',
-    {pattern: '.tmp/**/*.css', watched: true, included: false, served: true},
+    {pattern: 'dist/**/*.css', watched: true, included: false, served: true},
     {pattern: 'assets/images/**/*.png', watched: false, included: false, served: true}
   ];
   karma.start({

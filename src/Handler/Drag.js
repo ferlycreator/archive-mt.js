@@ -26,19 +26,32 @@ Z.Handler.Drag = Z.Handler.extend({
             window.captureEvents(window['Event'].MOUSEMOVE|window['Event'].MOUSEUP);
         }
         dom['ondragstart'] = function() { return false; };
+        this.moved = false;
+        if (this.moving) { return; }
+        this.startPos = new Z.Point(event.clientX, event.clientY);
         Z.DomUtil.on(dom,'mousemove',this.onMouseMove,this);
         Z.DomUtil.on(dom,'mouseup',this.onMouseUp,this);
-        if (!dom.style.cursor || dom.style.cursor === 'default') {
-            dom.style.cursor = 'move';
-        }
-        this.fire('dragstart',{
-            'mousePos':new Z.Point(parseInt(event.clientX,0),parseInt(event.clientY,0))
-        });
     },
 
     onMouseMove:function(event) {
+        var dom = this.dom;
+        var newPos = new Z.Point(event.clientX, event.clientY),
+            offset = newPos.substract(this.startPos);
+        if (!offset.left && !offset.top) {
+            return;
+        }
+        if (!this.moved) {
+            if (!dom.style.cursor || dom.style.cursor === 'default') {
+                dom.style.cursor = 'move';
+            }
+            this.fire('dragstart',{
+                'mousePos':new Z.Point(this.startPos.left, this.startPos.top)
+            });
+            this.moved = true;
+        }
+        this.moving = true;
         this.fire('dragging',{
-            'mousePos': new Z.Point(parseInt(event.clientX,0),parseInt(event.clientY,0))
+            'mousePos': new Z.Point(event.clientX, event.clientY)
         });
     },
 
@@ -54,8 +67,11 @@ Z.Handler.Drag = Z.Handler.extend({
         if (dom.style.cursor === 'move') {
             dom.style.cursor = 'default';
         }
-        this.fire('dragend',{
-            'mousePos': new Z.Point(parseInt(event.clientX,0),parseInt(event.clientY,0))
-        });
+        if (this.moved && this.moving) {
+            this.fire('dragend',{
+                'mousePos': new Z.Point(parseInt(event.clientX,0),parseInt(event.clientY,0))
+            });
+        }
+        this.moving = false;
     }
 });
