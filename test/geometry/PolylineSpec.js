@@ -58,7 +58,7 @@ describe('PolylineSpec', function() {
             ]);
             layer.addGeometry(polyline);
 
-            expect(polyline.getCenter()).to.eql({x:0, y: 100/3});
+            expect(polyline.getCenter()).to.nearCoord(new Z.Coordinate(0, 100/3));
         });
     });
 
