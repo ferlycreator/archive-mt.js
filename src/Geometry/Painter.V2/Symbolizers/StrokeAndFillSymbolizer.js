@@ -34,8 +34,18 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
 
     },
 
-    canvas:function() {
-
+    canvas:function(ctx, resources) {
+        var style = this.translate();
+        Z.Canvas.setDefaultCanvasSetting(ctx);
+        if (this.geometry instanceof Z.Polygon) {
+            Z.Canvas.prepareCanvas(ctx, style['stroke'], style['fill']);
+        } else {
+            Z.Canvas.prepareCanvas(ctx, style['stroke'], null);
+        }
+        this.geometry._paintOnCanvas(ctx, resources);
+        if (this.geometry instanceof Z.Polygon) {
+            Z.Canvas.fillCanvas(ctx, style['fill']);
+        }
     },
 
     translate:function() {

@@ -3,7 +3,8 @@ var Symboling = {};
 Symboling.Center = {
     _getElementToSymbolize:function(placement) {
         return {
-            "points"    : [this._getCenterDomOffset()]
+            "points"    : [this._getCenterDomOffset()],
+            "svgPath"   : this._getSvgPath()
         };
     }
 };
@@ -97,7 +98,8 @@ Z.Rectangle.include({
     _getElementToSymbolize:function(placement) {
         var domNw = this.getMap()._transformToOffset(this._getPNw());
         return {
-            "points"    : [domNw]
+            "points"    : [domNw],
+            "svgPath"   : this._getSvgPath()
         };
     },
 
@@ -158,14 +160,15 @@ Symboling.Poly={
             points = this._transformToOffset(this._getPrjPoints());
         } else if ('line' === placement) {
             var vertexes = this._transformToOffset(this._getPrjPoints());
-            //TODO
+            //TODO 获取线段中心点
         } else {
             var center = this.getCenter();
             var pcenter = this.getProjection().project(center);
             points = [map._transformToOffset(pcenter)];
         }
         return {
-            "points" : points
+            "points" : points,
+            "svgPath"   : this._getSvgPath()
         };
     }
 };

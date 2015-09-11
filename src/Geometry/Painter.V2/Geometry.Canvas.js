@@ -85,80 +85,23 @@ if (Z.Browser.canvas) {
 
     });
     //----------------------------------------------------
-    Symboling.Poly.Canvas={
-        _paintPrjPointsOnCanvas:function(context, prjRings) {
-            /**
-            * 出处：http://outofmemory.cn/code-snippet/10602/canvas-carry-arrow--IE8
-            */
-            function drawDashLine(startPoint, endPoint, dashArray) {
-                var x = startPoint.left,y = startPoint.top,
-                    x2 = endPoint.left,y2 = endPoint.top;
-                // if (!dashArray) dashArray = [10, 5];
-                var dashCount = dashArray.length;
-                context.moveTo(x, y);
-                var dx = Math.abs(x2 - x), dy = Math.abs(y2 - y);
-                var slope = dy / dx;
-                var distRemaining = Math.sqrt(dx * dx + dy * dy);
-                var dashIndex = 0, draw = true;
-                while (distRemaining >= 0.1 && dashIndex < 10000) {
-                    var dashLength = dashArray[dashIndex++ % dashCount];
-                    if (dashLength === 0) {dashLength = 0.001;} // Hack for Safari
-                    if (dashLength > distRemaining) {dashLength = distRemaining;}
-                    var xStep = Math.sqrt(dashLength * dashLength / (1 + slope * slope));
-                    x += xStep;
-                    y += slope * xStep;
-                    context[draw ? 'lineTo' : 'moveTo'](x, y);
-                    distRemaining -= dashLength;
-                    draw = !draw;
-                }
-            }
-            if (!Z.Util.isArrayHasData(prjRings)) {return;}
-            var map = this.getMap();
-            var platformOffset = map.offsetPlatform();
-            var offsets = this._transformToOffset(prjRings);
-            var lineDashArray = this.getSymbol()['line-dasharray'];
-            var isDashed = Z.Util.isArrayHasData(this.getSymbol()['line-dasharray']);
-            for (var i=0, len=offsets.length; i<len;i++) {
-                var point = new Z.Point(
-                    Z.Util.canvasNumber(offsets[i]['left']+platformOffset['left']),
-                    Z.Util.canvasNumber(offsets[i]['top']+platformOffset['top'])
-                );
-                if (!isDashed || context.setLineDash) {//ie9以上浏览器
-                    if (i === 0) {
-                        context.moveTo(point['left'], point['top']);
-                    } else {
-                        context.lineTo(point['left'],point['top']);
-                    }
-                } else {
-                    if (isDashed) {
-                        if(i === len-1) {break;}
-                        var nextPoint = new Z.Point(
-                            Z.Util.canvasNumber(offsets[i+1]['left']+platformOffset['left']),
-                            Z.Util.canvasNumber(offsets[i+1]['top']+platformOffset['top'])
-                        );
-                        drawDashLine(point, nextPoint, lineDashArray);
-                    }
-                }
-             }
-        },
 
-
-    };
-
-    Z.Polyline.include(Symboling.Poly.Canvas,{
+    Z.Polyline.include({
         _paintOnCanvas:function(context,resources) {
-            var points = this._getPrjPoints();
+            var prjVertexes = this._getPrjPoints();
+            var points = this._transformToScreenPoints(prjVertexes);
             context.beginPath();
-            this._paintPrjPointsOnCanvas(context,points);
+            Z.Canvas.paintPoints(context,points,this.getSymbol()['line-dasharray']);
             context.stroke();
         }
     });
 
-    Z.Polygon.include(Symboling.Poly.Canvas,{
+    Z.Polygon.include({
         _paintOnCanvas:function(context,resources) {
-            var points = this._getPrjPoints();
+            var prjVertexes = this._getPrjPoints();
             context.beginPath();
-            this._paintPrjPointsOnCanvas(context,points);
+            var points = this._transformToScreenPoints(prjVertexes);
+            Z.Canvas.paintPoints(context,points,this.getSymbol()['line-dasharray']);
             context.closePath();
             context.stroke();
         }

@@ -236,6 +236,7 @@ Z.SVG.VML= {
 
     //更新矢量图形样式
     updateShapeStyle:function(vmlShape, strokeSymbol, fillSymbol) {
+        //TODO 旧的样式对象没有清除
         var stroke = Z.SVG.create('stroke');
         stroke.weight = strokeSymbol['stroke-width'] + 'px';
         stroke.color = strokeSymbol['stroke'];
@@ -246,11 +247,11 @@ Z.SVG.VML= {
         stroke.joinstyle = strokeSymbol['stroke-linejoin'];
         stroke.endcap = strokeSymbol['stroke-linecap'];
 
-        if (vmlShape.stroke) {
+        /*if (vmlShape.stroke) {
             Z.Util.removeDomNode(vmlShape.stroke);
-        }
+        }*/
         vmlShape.appendChild(stroke);
-        vmlShape.stroke = stroke;
+        // vmlShape.stroke = stroke;
 
         if (fillSymbol) {
             var fill = Z.SVG.create('fill');
@@ -269,11 +270,11 @@ Z.SVG.VML= {
                 fill.opacity = fillSymbol['fill-opacity'];
             }
 
-            if (vmlShape.fill) {
+            /*if (vmlShape.fill) {
                 Z.Util.removeDomNode(vmlShape.fill);
-            }
+            }*/
             vmlShape.appendChild(fill);
-            vmlShape.fill = fill;
+            // vmlShape.fill = fill;
         }
     },
 

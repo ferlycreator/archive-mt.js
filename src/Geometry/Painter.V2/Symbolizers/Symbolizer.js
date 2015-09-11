@@ -4,9 +4,9 @@ Z.Symbolizer = Z.Class.extend({
         var layer = this.geometry.getLayer();
         //canvas, svg由各symbolizer实现
         if (layer.isCanvasRender()) {
-            this.canvas();
+            this.canvas.apply(this,arguments);
         } else {
-            this.svg();
+            this.svg.apply(this,arguments);
         }
     },
 

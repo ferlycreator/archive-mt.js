@@ -1,4 +1,5 @@
-var Z = window['Z'] = Z || {};
+//package internally used
+var Z = {};
 
 Z.VERSION='2.0.0-dev';
 

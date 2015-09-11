@@ -1,5 +1,7 @@
 Z['Coordinate'] = Z.Coordinate = function(x, y) {
-
+    if (Z.Util.isNil(x)) {
+        return;
+    }
     if (Z.Util.isArray(x)) {
         //数组
         this.x = parseFloat(x[0]);

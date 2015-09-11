@@ -1,12 +1,18 @@
 Z.Painter = Z.Class.extend({
     //注册的symbolizer
     registerSymbolizers : [
-        Z.StrokeAndFillSymbolizer
+        Z.StrokeAndFillSymbolizer/*,
+        Z.PicureMarkerSymbolizer*/
     ],
 
     initialize:function(geometry) {
         this.geometry = geometry;
         this._createSymbolizers();
+        this._getElementToSymbolize();
+    },
+
+    _getElementToSymbolize:function() {
+        this.elementToSymbolize = this.geometry._getElementToSymbolize();
     },
 
     /**
@@ -38,7 +44,7 @@ Z.Painter = Z.Class.extend({
      */
     paint:function() {
         for (var i=0, len=this.symbolizers.length;i<len;i++) {
-            this.symbolizers[i].symbolize();
+            this.symbolizers[i].symbolize.apply(this.symbolizers[i], arguments);
         }
     },
 
@@ -56,6 +62,7 @@ Z.Painter = Z.Class.extend({
     },
 
     refresh:function(){
+        this._getElementToSymbolize();
         this.paint();
     },
 

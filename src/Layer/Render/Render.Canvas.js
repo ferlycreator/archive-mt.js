@@ -1,5 +1,3 @@
-Z.Browser.canvas = !!document.createElement("canvas").getContext;
-
 Z.Render.Canvas = function(layer, options) {
     this.layer = layer;
     this._visible = options['visible'];
@@ -122,7 +120,7 @@ Z.Render.Canvas.prototype = {
             this._clearCanvas(extent);
             me._eachGeometry(function(geo) {
                 //geo的map可能为null,因为绘制为延时方法
-                if (!geo || !geo.isVisible() || !geo.getMap() || !(geo._getPainter() instanceof Z.Painter.Canvas)) {
+                if (!geo || !geo.isVisible() || !geo.getMap() || !geo.getLayer() || (!geo.getLayer().isCanvasRender())) {
                     return;
                 }
                 var ext = geo._computeVisualExtent(geo._getProjection());
