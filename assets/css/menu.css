@@ -1,0 +1,32 @@
+.maptalks-menu {
+    position: absolute;
+    cursor: pointer;
+    background-color: #f0f0f0;
+    color: #3C7796;
+    border: solid 1px #CCCCCC;
+}
+
+.maptalks-menu-items {
+    list-style: none;
+    padding:0px;
+    margin:0px;
+}
+
+.maptalks-menu-item {
+    margin: 1px;
+    height: 24px;
+    line-height: 24px;
+    color: #3C7796;
+    font-size: 12px;
+    padding: 0px 0px 0px 21px;
+}
+
+.maptalks-menu-item-over {
+    border: solid 1px #CCCCCC;
+    margin: 1px;
+    height: 22px;
+    line-height: 22px;
+    color: #3C7796;
+    font-size: 12px;
+    padding: 0px 0px 0px 20px;
+}

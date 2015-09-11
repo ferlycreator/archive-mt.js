@@ -67,7 +67,7 @@ Z.DomUtil = {
 
     },
 
-    removeDomEvent:function(obj,typeArr, handler) {
+    removeDomEvent:function(obj, typeArr, handler) {
         function doRemove(type,callback) {
             if ('removeEventListener' in obj) {
                 //滚轮事件的特殊处理

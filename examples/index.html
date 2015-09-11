@@ -1280,6 +1280,28 @@ marker.addPanel(markerInfoPanel);
                     </p>
                     </div>
 
+                    <h2>地图右键菜单</h2>
+                    <p>1、设置菜单项：<code>mapObj.setContextMenu(options);</code>；</p>
+                    <div class="bs-docs-example">
+<pre class="linenums prettyprint">
+//设置地图右键菜单
+mapObj.setContextMenu({
+    'width': 160,
+    'style': 'default', //black|white
+    'items' : [
+        {'item': '查看', 'callback': function() {alert('你点击了【查看】菜单!')}},
+        {'item': '编辑', 'callback': function() {alert('你点击了【编辑】菜单！')}}
+    ]
+});
+</pre>
+                    <iframe src="control/contextMenu.html" width="100%">
+
+                    </iframe>
+                    <p>
+                        <a class="btn btn-success" href="editor.html?html=control/contextMenu.html&title=Context Menu" target="_blank">源码编辑器</a>
+                    </p>
+                    </div>
+
                 </section>
             </div>
         </div>

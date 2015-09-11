@@ -7,7 +7,7 @@
     <style type="text/css">
         html,body{ margin:0px; height:100%; };
     </style>
-    <title>MapTalks 示例: ZoomIn/ZoomOut控件</title>
+    <title>MapTalks 示例: 地图右键菜单</title>
     <link href="../../css/maptalks.css" rel="stylesheet" type="text/css"/>
 </head>
 <body scroll="no" onload="initMap();">
@@ -19,11 +19,7 @@
         mapObj = new Z.Map('mapObj', //放置mapObj的div id
         {
             center:  new Z.Coordinate(121.489935,31.24432), //初始中心点坐标
-            zoomLevel:   11, //初始缩放级别
-            zoomControl :  true, //缩放控件
-            zoomControlOptions : { //设置缩放控件的位置
-                position : Z.Control['top_left']//top_left|top_right|bottom_left|bottom_right
-            }
+            zoomLevel:   11
         });
         //设置底图图层
         mapObj.setBaseTileLayer(new Z.TileLayer('tile', //底图id
@@ -32,24 +28,16 @@
             urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
             subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
         }));
-        /**
-        * 创建多个zoom控件
-        */
-        var zoomControl = new Z.Control.Zoom({
-            id: 'zoomControl1', //控件id
-            //自定义控件放置位置
-            position : {
-                top: '40',
-                right: '60'
-            }
-        });
-        mapObj.addControl(zoomControl);
 
-        var zoomControl2 = new Z.Control.Zoom({
-            id: 'zoomControl12', //控件id
-            position : Z.Control['bottom_right']
+        //设置地图右键菜单
+        mapObj.setContextMenu({
+            'width': 160,
+            'style': 'default', //black|white
+            'items' : [
+                {'item': '查看', 'callback': function() {alert('你点击了【查看】菜单!')}},
+                {'item': '编辑', 'callback': function() {alert('你点击了【编辑】菜单！')}}
+            ]
         });
-        mapObj.addControl(zoomControl2);
     }
 </script>
 <script type="text/javascript" src="../../maptalks.js"></script>
