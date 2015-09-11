@@ -9,7 +9,7 @@ Z.loadModule=function(module,callback,context) {
     if (Z.DEBUG) {
         suffix = '.js';
     }
-    var url = Z.host+'/maptalks/v2/lib/'+module+suffix;
+    var url = Z.prefix+'lib/'+module+suffix;
     Z.Util.Ajax.getScript(url,function() {
             callback.call(context);
         });

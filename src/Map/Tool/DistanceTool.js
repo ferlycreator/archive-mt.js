@@ -174,7 +174,7 @@ Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
         point.setSymbol({
             'icon':{
                 'type'   : 'picture',
-                'url'    : 'images/point.png',
+                'url'    : Z.prefix + 'images/point.png',
                 'width'  : 16,
                 'height' : 17,
                 'offset' : {
@@ -239,7 +239,7 @@ Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
         closeBtn.setSymbol({
             'icon' : {
                 'type'   : 'picture',
-                'url'    : 'images/m_close.png',
+                'url'    : Z.prefix + 'images/m_close.png',
                 'width'  : 12,
                 'height' : 12,
                 'offset' : {

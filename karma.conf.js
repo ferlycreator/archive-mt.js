@@ -22,7 +22,9 @@ module.exports = function(config) {
     basePath: '',
 
     proxies: {
-      '/images/': '/base/assets/images/'
+      '/images/': '/base/assets/images/',
+      '/css/': '/base/assets/css/',
+      '/lib/': '/base/assets/lib/'
     },
 
     // testing framework to use (jasmine/mocha/qunit/...)
