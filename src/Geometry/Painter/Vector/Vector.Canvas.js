@@ -6,8 +6,8 @@ Z.Vector.Canvas = Z.Painter.Canvas.extend({
         var dashArray = symbol.strokeDasharray;
         for (var i=0, len=offsets.length; i<len;i++) {
             var startPoint = new Z.Point(
-                Z.Util.canvasNumber(offsets[i]['left']+platformOffset['left']),
-                Z.Util.canvasNumber(offsets[i]['top']+platformOffset['top'])
+                Z.Util.canvasRound(offsets[i]['left']+platformOffset['left']),
+                Z.Util.canvasRound(offsets[i]['top']+platformOffset['top'])
             );
             if (context.setLineDash) {//ie9以上浏览器
                 if (i === 0) {
@@ -18,8 +18,8 @@ Z.Vector.Canvas = Z.Painter.Canvas.extend({
             } else {
                 if(i === len-1) break;
                 var endPoint = new Z.Point(
-                    Z.Util.canvasNumber(offsets[i+1]['left']+platformOffset['left']),
-                    Z.Util.canvasNumber(offsets[i+1]['top']+platformOffset['top'])
+                    Z.Util.canvasRound(offsets[i+1]['left']+platformOffset['left']),
+                    Z.Util.canvasRound(offsets[i+1]['top']+platformOffset['top'])
                 );
                 this.drawLine(startPoint, endPoint, dashArray, context);
             }

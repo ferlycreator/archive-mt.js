@@ -1,0 +1,243 @@
+Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
+
+    defaultSymbol:{
+        "marker-type": "ellipse", //<----- ellipse | arrow | triangle | square | bar等,默认ellipse
+
+        "marker-fill": "#0000ff", //blue as cartoCSS
+        "marker-fill-opacity": 1,
+        "marker-line-color": "#000000", //black
+        "marker-line-width": 1,
+        "marker-line-opacity": 1,
+        "marker-width": 10,
+        "marker-height": 10,
+
+        "marker-dx": 0,
+        "marker-dy": 0
+    },
+
+    initialize:function(symbol, geometry) {
+        this.symbol = symbol;
+        this.geometry = geometry;
+        this.renderPoints = this.geometry._getRenderPoints();
+    },
+
+    svg:function(container, vectorcontainer, zIndex) {
+        this._svg(vectorcontainer, zIndex);
+    },
+
+    canvas:function(ctx, resources) {
+        var points = this.renderPoints;
+        if (!Z.Util.isArrayHasData(points)) {
+            return;
+        }
+        var map = this.getMap();
+        var cookedPoints = Z.Util.eachInArray(points,this,function(point) {
+            return map._domOffsetToScreen(point);
+        });
+        var style = this._translate();
+        var url = style['marker-file'];
+        var img = resources.getImage(url);
+        if (!img) {
+            return;
+        }
+        //将完整图片地址写回到symbol中, 截图等模块需要
+        this.symbol['marker-file'] = img['src'];
+        var ratio = Z.Browser.retina ? 2:1;
+        for (var i = 0, len=cookedPoints.length;i<len;i++) {
+            var pt = cookedPoints[i].multi(ratio);
+            var width = style['marker-width']*ratio;
+            var height = style['marker-height']*ratio;
+            if (width && height) {
+                ctx.drawImage(img,pt['left'],pt['top'],width,height);
+             } else {
+                ctx.drawImage(img,pt['left'],pt['top']);
+             }
+        }
+    },
+
+    refresh:function() {
+        this.renderPoints = this.geometry._getRenderPoints();
+        var layer = this.geometry.getLayer();
+        if (!layer.isCanvasRender()) {
+            this.symbolize();
+        }
+    },
+
+    remove:function() {
+        if (Z.Util.isArrayHasData(this.markers)) {
+            for (var i = this.markers.length-1;i>=0;i--) {
+                Z.Util.removeDomNode(this.markers[i]);
+            }
+        }
+    },
+
+    _translate:function() {
+        var s = this.symbol;
+        var d = this.defaultSymbol;
+
+        var result = {
+            "marker-type"       : s["marker-type"],
+            "marker-width"      : Z.Util.setDefaultValue(s["marker-width"], d["marker-width"]),
+            "marker-height"     : Z.Util.setDefaultValue(s["marker-height"], d["marker-height"]),
+            "marker-dx"         : Z.Util.setDefaultValue(s["marker-dx"], d["marker-height"]),
+            "marker-dy"         : Z.Util.setDefaultValue(s["marker-dy"], d["marker-height"]),
+
+            "marker-fill"       : Z.Util.setDefaultValue(s["marker-fill"], d["marker-fill"]),
+            "marker-fill-opacity": Z.Util.setDefaultValue(s["marker-fill-opacity"], d["marker-fill-opacity"]),
+            "marker-line-color" : Z.Util.setDefaultValue(s["marker-line-color"], d["marker-line-color"]),
+            "marker-line-width" : Z.Util.setDefaultValue(s["marker-line-width"], d["marker-line-width"]),
+            "marker-line-opacity": Z.Util.setDefaultValue(s["marker-line-opacity"], d["marker-line-opacity"])
+        };
+        //marker-opacity覆盖fill-opacity和line-opacity
+        if (Z.Util.isNumber(s["marker-opacity"])) {
+            result["marker-fill-opacity"] = result["marker-line-opacity"] = s["marker-opacity"];
+        }
+        return result;
+    },
+
+    _translateStrokeAndFill:function(s) {
+        var result = {
+            "stroke" :{
+                "stroke" : s['marker-line-color'],
+                "stroke-width" : s['marker-line-width'],
+                "stroke-opacity" : s['marker-line-opacity'],
+                "stroke-dasharray": null,
+                "stroke-linecap" : "butt",
+                "stroke-linejoin" : "round"
+            },
+
+            "fill" : {
+                "fill"          : s["marker-fill" ],
+                "fill-opacity"  : s["marker-fill-opacity"]
+            }
+        };
+        //vml和svg对linecap的定义不同
+        if (result['stroke']['stroke-linecap'] === "butt") {
+            if (Z.Browser.vml) {
+                result['stroke']['stroke-linecap'] = "flat";
+            }
+        }
+        return result;
+    },
+
+    /**
+     * 生成图片标注
+     * @param point
+     */
+    _createMarkerDom: function(style) {
+        var svgPath = this._getMarkerSvgPath(style);
+        var svgDom = Z.SVG.createShapeDom(svgPath);
+        var svgStyle = this._translateStrokeAndFill(style);
+        Z.SVG.updateShapeStyle(svgDom, svgStyle['stroke'], svgStyle['fill']);
+        return svgDom;
+    },
+
+    _getMarkerSvgPath:function(style) {
+        //矢量标注
+        var markerType = style['marker-type'].toLowerCase();
+        var points = this._getVectorArray(style);
+        var path;
+        if ('ellipse' === markerType) {
+            var width = style['marker-width'],
+                height = style['marker-height'];
+            var point = [0,0];
+            if (Z.Browser.vml) {
+                path = 'AL ' + point.join(',') + ' ' + width/2 + ',' + height/2 +
+                        ' 0,' + (65535 * 360) + ' x e';
+            } else {
+                path = 'M'+point.join(',')+' a'+width/2 + ',' + height/2+' 0,1,0,0,-0.9Z';
+            }
+        } else if ('triangle' === markerType) {
+            path = 'M'+points[0][0]+','+points[0][1]+ ' ' +
+                     'L'+points[1][0]+','+points[1][1]+ ' ' +
+                     'L'+points[2][0]+','+points[2][1]+ ' ' +
+                     Z.SVG.closeChar;
+        }  else if ('cross' === markerType || 'x' === markerType) {
+            path ='M'+points[0][0]+','+points[0][1]+ ' ' +
+                         'L'+points[1][0]+','+points[1][1]+ ' ' +
+                         'M'+points[2][0]+','+points[2][1]+ ' ' +
+                         'L'+points[3][0]+','+points[3][1];
+        } else if ('diamond' === markerType || 'square' === markerType || 'bar' === markerType) {
+           path = 'M'+points[0][0]+','+points[0][1]+ ' ' +
+                         'L'+points[1][0]+','+points[1][1]+ ' ' +
+                         'L'+points[2][0]+','+points[2][1]+ ' ' +
+                         'L'+points[3][0]+','+points[3][1]+ ' ' +
+                         Z.SVG.closeChar;
+        } /*else if ('tip' === markerType) {
+            path = 'M'+points[0][0]+','+points[0][1]+ ' ' +
+                         'L'+points[1][0]+','+points[1][1]+ ' ' +
+                         'L'+points[2][0]+','+points[2][1]+ ' ' +
+                         'L'+points[3][0]+','+points[3][1]+ ' ' +
+                         'L'+points[4][0]+','+points[4][1]+ ' ' +
+                         'L'+points[5][0]+','+points[5][1]+ ' ' +
+                         'L'+points[6][0]+','+points[6][1]+ ' ' +
+                         Z.SVG.closeChar;
+        }*/
+        if (Z.Browser.vml) {
+            path += ' e';
+        }
+        return path;
+    },
+
+    _getVectorArray: function(style) {
+        //ignore case
+        var markerType = style['marker-type'].toLowerCase();
+        var width = style['marker-width'],
+            height = style['marker-height'];
+        //half height and half width
+        var hh = Math.round(height/2),
+            hw = Math.round(width/2);
+        var left = 0, top = 0;
+        var rad = Math.PI/180; // 单位弧度
+        var v0,v1,v2,v3;
+        if ('triangle' === markerType) {
+            var th = Math.tan(30*rad)*hw;
+            v0 = [left,top-(hh-th)];
+            v1 = [Z.Util.roundNumber(left-hw),Z.Util.roundNumber(top+th)];
+            v2 = [Z.Util.roundNumber(left+hw),Z.Util.roundNumber(top+th)];
+            return [v0,v1,v2];
+        } else if ('cross' === markerType) {
+            v0 = [(left-hw),top];
+            v1 = [(left+hw),top];
+            v2 = [(left),(top-hh)];
+            v3 = [(left),(top+hh)];
+            return [v0,v1,v2,v3];
+        } else if ('diamond' === markerType) {
+            v0 = [(left-hw),top];
+            v1 = [left,(top-hh)];
+            v2 = [(left+hw),top];
+            v3 = [(left),(top+hh)];
+            return [v0,v1,v2,v3];
+        } else if ('square' === markerType) {
+            v0 = [(left-hw),(top+hh)];
+            v1 = [(left+hw),(top+hh)];
+            v2 = [(left+hw),(top-hh)];
+            v3 = [(left-hw),(top-hh)];
+            return [v0,v1,v2,v3];
+        } else if ('x' === markerType) {
+             v0 = [left-hw,top+hh];
+             v1 = [left+hw,top-hh];
+             v2 = [left+hw,top+hh];
+             v3 = [left-hw,top-hh];
+            return [v0,v1,v2,v3];
+        } else if ('bar' === markerType) {
+             v0 = [(left-hw),(top-height)];
+             v1 = [(left+hw),(top-height)];
+             v2 = [(left+hw),top];
+             v3 = [(left-hw),top];
+            return [v0,v1,v2,v3];
+        }
+        return null;
+    }
+});
+
+
+Z.VectorMarkerSymbolizer.test=function(geometry, symbol) {
+    if (!geometry || !symbol) {
+        return false;
+    }
+    if (Z.Util.isNil(symbol['marker-file']) && !Z.Util.isNil(symbol['marker-type'])) {
+        return true;
+    }
+    return false;
+};

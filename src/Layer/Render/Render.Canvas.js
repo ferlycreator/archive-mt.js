@@ -277,6 +277,9 @@ Z.Render.Canvas.prototype = {
     },
 
     _onZoomEnd: function(param) {
+        this._eachGeometry(function(geo) {
+            geo._onZoomEnd();
+        });
         this.repaint();
         this._showDom();
     },

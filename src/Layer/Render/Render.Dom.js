@@ -1,16 +1,17 @@
 Z.Render.Dom = function(layer,options) {
-    this.layer = layer;
+    this._layer = layer;
     this._visible=options['visible'];
+    this._zIndex = options['zIndex'];
 };
 
 Z.Render.Dom.prototype= {
     getMap:function() {
-        return this.layer.getMap();
+        return this._layer.getMap();
     },
 
     load:function() {
         var map = this.getMap();
-        this.layerDom = map._panels.svgContainer;
+        this._layerContainer = map._panels.svgContainer;
         // map._createSVGPaper();
         this._addTo();
     },
@@ -23,7 +24,7 @@ Z.Render.Dom.prototype= {
         if (this._visible) {
             return;
         }
-        this.layer._eachGeometry(function(geo) {
+        this._layer._eachGeometry(function(geo) {
             geo.show();
         });
         this._visible=true;
@@ -37,7 +38,7 @@ Z.Render.Dom.prototype= {
         if (!this._visible) {
             return;
         }
-        this.layer._eachGeometry(function(geo) {
+        this._layer._eachGeometry(function(geo) {
             geo.hide();
         });
         this._visible=false;
@@ -49,7 +50,7 @@ Z.Render.Dom.prototype= {
      * @expose
      */
     isVisible:function() {
-        return this._visible/* && this.layerDom && this.layerDom.style.display !== 'none'*/;
+        return this._visible/* && this._layerContainer && this._layerContainer.style.display !== 'none'*/;
     },
 
     /**
@@ -58,35 +59,45 @@ Z.Render.Dom.prototype= {
      * @return {[type]}            [description]
      */
     _paintGeometries:function(geometries) {
+        var vectorPaper = this.getMap()._getSvgPaper();
+        var fragment = document.createDocumentFragment();
+        var vectorFragment = document.createDocumentFragment();
         for (var i=0,len=geometries.length;i<len;i++) {
             var geo = geometries[i];
             if (!geo) {
                 continue;
             }
             if (geo._getPainter()) {
-                geo._getPainter().paint(this.layerDom,  this.zIndex);
+                geo._getPainter().paint(fragment, vectorFragment, this._zIndex, this._layerContainer, vectorPaper);
             }
         }
+        this._layerContainer.appendChild(fragment);
+        vectorPaper.appendChild(vectorFragment);
     },
 
 
 
     _addTo:function() {
-        this.layer._eachGeometry(function(geo) {
+        var vectorPaper = this.getMap()._getSvgPaper();
+        var fragment = document.createDocumentFragment();
+        var vectorFragment = document.createDocumentFragment();
+        this._layer._eachGeometry(function(geo) {
             if (geo._getPainter()) {
-                geo._getPainter().paint(this.layerDom,  this.zIndex);
+                geo._getPainter().paint(fragment, vectorFragment,  this._zIndex, this._layerContainer, vectorPaper);
             }
         });
+        this._layerContainer.appendChild(fragment);
+        vectorPaper.appendChild(vectorFragment);
     },
 
 
 
 
-    _setZIndex:function(zIndex) {
-        this.zIndex=zIndex;
-        this.layer._eachGeometry(function(geo) {
+    setZIndex:function(zIndex) {
+        this._zIndex=zIndex;
+        this._layer._eachGeometry(function(geo) {
             if (geo._getPainter()) {
-                geo._getPainter()._setZIndex(zIndex);
+                geo._getPainter().setZIndex(zIndex);
             }
         });
     },
@@ -115,7 +126,7 @@ Z.Render.Dom.prototype= {
     },
 
     _onZoomEnd:function() {
-        this.layer._eachGeometry(function(geo) {
+        this._layer._eachGeometry(function(geo) {
             geo._onZoomEnd();
         });
     },

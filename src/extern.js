@@ -1,1 +1,1 @@
-window['maptalks']=Z;
+window['Z']=window['maptalks']=Z;

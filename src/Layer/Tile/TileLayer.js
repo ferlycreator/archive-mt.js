@@ -5,7 +5,7 @@
 Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
 
     //瓦片图层的基础ZIndex
-    baseDomZIndex:15,
+    baseZIndex:15,
 
     options: {
         'opacity':1,
@@ -137,7 +137,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
     _setZIndex:function(zIndex) {
         this.zIndex = zIndex;
         if (this._tileContainer) {
-            this._tileContainer.style.zIndex = (this.baseDomZIndex+zIndex);
+            this._tileContainer.style.zIndex = (this.baseZIndex+zIndex);
         }
     },
 
@@ -457,7 +457,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         //生成地图瓦片装载div
         var tileContainer = Z.DomUtil.createEl('div');
         tileContainer.className = 'MAP_TILE_CONTAINER';
-        tileContainer.style.cssText = 'position:absolute;top:0px;left:0px;z-index:'+(this.baseDomZIndex+this.getZIndex());
+        tileContainer.style.cssText = 'position:absolute;top:0px;left:0px;z-index:'+(this.baseZIndex+this.getZIndex());
         var currentTileContainers = mapContainer.childNodes;
         if (currentTileContainers && currentTileContainers.length > 0) {
             var firstChild = currentTileContainers[0];

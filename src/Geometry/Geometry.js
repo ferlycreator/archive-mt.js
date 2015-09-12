@@ -152,10 +152,10 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     getExtent:function() {
-        if (this.extent) {
-            return this.extent;
+        if (!this._extent) {
+            this._extent = this._computeExtent(this._getProjection());
         }
-        return this._computeExtent(this._getProjection());
+        return this._extent;
     },
 
     /**
@@ -367,7 +367,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (painter) {
             painter.refresh();
         }
-        this.extent = null;
+        this._extent = null;
         if (!this.isEditing || !this.isEditing()) {
             this._fireEvent('shapechanged',{'target':this});
         }
@@ -378,7 +378,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (painter) {
             painter.refresh();
         }
-        this.extent = null;
+        this._extent = null;
         if (!this.isEditing || !this.isEditing()) {
             this._fireEvent('positionchanged',{'target':this});
         }

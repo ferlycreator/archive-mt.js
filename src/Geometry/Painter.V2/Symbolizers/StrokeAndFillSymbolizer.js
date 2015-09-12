@@ -5,7 +5,7 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
         "stroke-width" : 3,
         "stroke-opacity" : 1,
         "stroke-dasharray": [],
-        "stroke-linecap" : (function(){return Z.Browser.vml?"flat":"butt";})(), //“butt”, “square”, “round”
+        "stroke-linecap" : "butt", //“butt”, “square”, “round”
         "stroke-linejoin" : "round", //“bevel”, “round”, “miter”
         "fill": "#ffffff",
         "fill-opacity": 0
@@ -17,7 +17,7 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
     },
 
     svg:function() {
-        var svgPath = this.geometry._getSvgPath();
+        var svgPath = this.geometry._getRenderPath();
         if (!this.svgDom) {
             var svgPaper = this.getMap()._getSvgPaper();
             this.svgDom = Z.SVG.createShapeDom(svgPath);
@@ -25,7 +25,7 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
         } else {
             Z.SVG.updateShapeDom(this.svgDom, svgPath);
         }
-        var style = this.translate();
+        var style = this._translate();
         if (this.geometry instanceof Z.Polygon) {
             Z.SVG.updateShapeStyle(this.svgDom, style['stroke'], style['fill']);
         } else {
@@ -35,23 +35,31 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
     },
 
     canvas:function(ctx, resources) {
-        var style = this.translate();
+        var canvasResources = this.geometry._getRenderCanvasResources();
+        var style = this._translate();
         Z.Canvas.setDefaultCanvasSetting(ctx);
         if (this.geometry instanceof Z.Polygon) {
-            Z.Canvas.prepareCanvas(ctx, style['stroke'], style['fill']);
+            Z.Canvas.prepareCanvas(ctx, style['stroke'], style['fill'], resources);
         } else {
             Z.Canvas.prepareCanvas(ctx, style['stroke'], null);
         }
-        this.geometry._paintOnCanvas(ctx, resources);
+        canvasResources['fn'].apply(this, [ctx].concat(canvasResources['context']));
         if (this.geometry instanceof Z.Polygon) {
             Z.Canvas.fillCanvas(ctx, style['fill']);
         }
     },
 
-    translate:function() {
+    refresh:function() {
+        var layer = this.geometry.getLayer();
+        if (!layer.isCanvasRender()) {
+            this.symbolize();
+        }
+    },
+
+    _translate:function() {
         var s = this.strokeAndFillSymbol;
         var d = this.defaultSymbol;
-        return {
+        var result = {
             "stroke" :{
                 "stroke" : Z.Util.setDefaultValue(s['line-color'], d['stroke']),
                 "stroke-width" : Z.Util.setDefaultValue(s['line-width'], d['stroke-width']),
@@ -66,11 +74,18 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
                 "fill-opacity": Z.Util.setDefaultValue(s['polygon-opacity'], d['fill-opacity'])
             }
         };
+        //vml和svg对linecap的定义不同
+        if (result['stroke']['stroke-linecap'] === "butt") {
+            if (Z.Browser.vml) {
+                result['stroke']['stroke-linecap'] = "flat";
+            }
+        }
+        return result;
     }
 
 });
 
-Z.StrokeAndFillSymbolizer.test=function(geometry) {
+Z.StrokeAndFillSymbolizer.test=function(geometry,symbol) {
     if (!geometry) {
         return false;
     }

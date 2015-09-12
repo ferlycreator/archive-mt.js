@@ -1,6 +1,9 @@
 //TODO render的程序结构不是很好, 需要重构
 Z.VectorLayer=Z.OverlayLayer.extend({
 
+    //瓦片图层的基础ZIndex
+    baseZIndex:200,
+
     options:{
         'render':'dom', // possible values: dom - svg or vml, canvas
         'enableSimplify':true
@@ -85,7 +88,7 @@ Z.VectorLayer=Z.OverlayLayer.extend({
     },
 
     _setZIndex:function(zIndex) {
-        this._render._setZIndex(zIndex);
+        this._render.setZIndex(zIndex);
         return this;
     },
 

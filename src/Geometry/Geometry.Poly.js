@@ -70,6 +70,7 @@ Z.Geometry.Poly={
      * 直接修改Geometry的投影坐标后调用该方法, 更新经纬度坐标缓存
      */
     _updateCache:function() {
+        delete this._extent;
         var projection = this._getProjection();
         if (!projection) {
             return;
