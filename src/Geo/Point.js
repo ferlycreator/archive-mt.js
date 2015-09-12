@@ -1,6 +1,6 @@
 Z['Point']=Z.Point=function(left,top) {
-     this['left']=left;
-     this['top']=top;
+    this['left']=left;
+    this['top']=top;
 };
 
 Z.Point.prototype={
@@ -14,5 +14,11 @@ Z.Point.prototype={
         if (!_point) {return;}
         this['left'] += _point['left'];
         this['top'] += _point['top'];
-     }
+    },
+
+    substract: function(point) {
+        var offx = this.left - point.left,
+            offy = this.top  - point.top;
+        return new Z.Point(offx, offy);
+    }
 };

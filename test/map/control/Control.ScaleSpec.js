@@ -36,6 +36,7 @@ describe("Control.Scale", function() {
 
         expect(control._mScale.innerHTML).to.not.be.empty();
         expect(control._iScale.innerHTML).to.not.be.empty();
+        expect(control._mScale.innerHTML).to.contain('100');
     });
 
 });

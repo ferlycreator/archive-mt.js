@@ -18,15 +18,15 @@ Z['Control']['Scale'] = Z.Control.Scale = Z.Control.extend({
         this._map = map;
         this._scaleContainer = Z.DomUtil.createEl('div');
         this._addScales();
-        map.on('moveend', this._update, this)
-           .on('move', this._update, this);
-        // FIXME: need to call this._update()
+        map.on('moveend zoomend', this._update, this);
+        if (this._map._loaded) {
+            this._update();
+        }
         return this._scaleContainer;
     },
 
     _onRemove: function (map) {
-        map.off('moveend', this._update, this)
-           .off('move', this._update, this);
+        map.off('moveend zoomend', this._update, this);
     },
 
     _addScales: function () {
@@ -40,10 +40,7 @@ Z['Control']['Scale'] = Z.Control.Scale = Z.Control.extend({
 
     _update: function () {
         var map = this._map;
-        var height = map.getSize().height / 2;
-        var projection = map._getProjection();
-        var maxMeters = 100;
-        // TODO: do calculate
+        var maxMeters = map.pixelToDistance(this.options['maxWidth'], 0);
         this._updateScales(maxMeters);
     },
 
