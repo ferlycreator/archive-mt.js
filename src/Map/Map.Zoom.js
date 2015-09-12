@@ -128,20 +128,20 @@ Z.Map.include({
         var offsetTop = domOffset['top'];
         var offsetLeft = domOffset['left'];
         var mapContainer = this._panels.mapContainer;
-        this._panels.mapContainer.className="MAP_ZOOM_ANIMATED";
+        this._panels.mapContainer.className ='maptalks-map-zoom_animated';
         var origin = Z.DomUtil.getDomTransformOrigin(mapContainer);
         var originX = Math.round(this.width/2-offsetLeft),
             originY = Math.round(this.height/2-offsetTop);
-        if ((origin===null || ""===origin) && pixelOffset) {
+        if ((origin===null || ''===origin) && pixelOffset) {
             var mouseOffset = new Z.Point(
                     pixelOffset.left-this.width/2,
                     pixelOffset.top-this.height/2
                 );
-            originX += mouseOffset["left"];
-            originY += mouseOffset["top"];
-            Z.DomUtil.setDomTransformOrigin(mapContainer, originX+"px "+ originY+"px");
+            originX += mouseOffset['left'];
+            originY += mouseOffset['top'];
+            Z.DomUtil.setDomTransformOrigin(mapContainer, originX+'px '+ originY+'px');
         } else if (!pixelOffset) {
-            Z.DomUtil.setDomTransformOrigin(mapContainer, originX+"px "+ originY+"px");
+            Z.DomUtil.setDomTransformOrigin(mapContainer, originX+'px '+ originY+'px');
         }
 
         Z.DomUtil.setDomTransform(mapContainer," scale("+scale+","+scale+")");

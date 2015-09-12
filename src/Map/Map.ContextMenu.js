@@ -6,9 +6,9 @@ Z.Map.include({
     * @expose
     */
     setContextMenu: function(menuOption) {
+        this._menu = new Z.Menu(menuOption);
+        this._menu.addTo(this);
         this.on('contextmenu', this._beforeOpenContextMenu, this);
-        this.menu = new Z.Menu(menuOption);
-        this.menu.addTo(this);
         return this;
     },
 
@@ -21,10 +21,14 @@ Z.Map.include({
         var coordinate = this.screenPointToCoordinate(pixel);
         var position = this.coordinateToDomOffset(coordinate);
         var param = {'coordinate':coordinate, 'pixel':position};
-        this.menu.showPosition = position;
-        var beforeopenFn = this.menu.menuOption['beforeopen'];
-        if(beforeopenFn) {
-            this.menu.beforeOpen(param);
+        var menuOptions = this._menu.getOptions();
+        menuOptions.position = position;
+        this._menu.setOptions(menuOptions);
+        var beforeOpenFn = menuOptions.beforeOpen;
+        if(beforeOpenFn) {
+            this._menu.beforeOpen(param);
+        } else {
+            this.openMenu();
         }
         return this;
     },
@@ -35,11 +39,8 @@ Z.Map.include({
     * @expose
     */
     openMenu: function(coordinate) {
-        if(!coordinate) {
-            coordinate = this.showPostion;
-        }
-        if (this.menu)  {
-            this.menu.showMenu(coordinate);
+        if (this._menu)  {
+            this._menu.show(coordinate);
         }
         return this;
     },
@@ -50,8 +51,8 @@ Z.Map.include({
     * @expose
     */
     setMenuItem: function(items) {
-        if (this.menu) {
-            this.menu.setItems(items);
+        if (this._menu) {
+            this._menu.setItems(items);
         }
         return this;
     },
@@ -61,8 +62,8 @@ Z.Map.include({
     * @expose
     */
     closeMenu: function() {
-        if (this.menu) {
-            this.menu.close();
+        if (this._menu) {
+            this._menu.close();
         }
     }
 });

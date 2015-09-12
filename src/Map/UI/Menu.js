@@ -1,5 +1,5 @@
 /**
-* 菜单类定义各种菜单
+* 菜单类
 */
 Z['Menu'] = Z.Menu = Z.Class.extend({
     /**
@@ -7,30 +7,32 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
     */
     exceptionDefs:{
         'en-US':{
-            'ONLY_MAP_OR_GEOMETRY_CAN_ADD_MENU':'The menu only can add to  map or geometry.'
+            'ONLY_MAP_OR_GEOMETRY_CAN_ADD_MENU': 'The menu only can add to  map or geometry.'
         },
         'zh-CN':{
-            'ONLY_MAP_OR_GEOMETRY_CAN_ADD_MENU':'只有Map或Geometry对象才能添加菜单。'
+            'ONLY_MAP_OR_GEOMETRY_CAN_ADD_MENU': '只有Map或Geometry对象才能添加菜单。'
         }
     },
 
-    statics:{
-        'template': "<div style=\"position:absolute;cursor:pointer;display:none;width:130px; background:#F0F0F0; color:#3C7796; border:solid 1px #CCCCCC; \"><ul style=\"list-style:none; padding:0px; margin:0px;\">" +
-            "</ul></div>",
-        'cssMenuItem': "padding:0; display:block; margin:1px; height:24px; line-height:24px;color:#3C7796; font-size:12px; padding:0px 0px 0px 21px;",
-        'cssMenuItem_over': "border:solid 1px #CCCCCC; padding:0; display:block; margin:1px; height:22px; line-height:22px; color:#3C7796; font-size:12px; padding:0px 0px 0px 20px;"
+    options: {
+        'width' : 160,
+        'style' : 'default',//black|white
+        'position' : null,
+        'beforeOpen': null,
+        'items' : []
     },
 
     /**
     * 初始化Menu
-    * @param {Json} menuOption
-    * menuOption:{"items":[], width:240, beforeopen:fn, showPostion:{coordinate/piexl}}
+    * @param {Json} options
+    * options:{"items":[], width:240, beforeOpen:fn, position:{coordinate/piexl}}
     * @return {Menu} menu
     */
-    initialize: function(menuOption) {
-        if(menuOption) {
-            this.setOption(menuOption);
+    initialize: function(options) {
+        if(options) {
+            this.setOptions(options);
         }
+        this._menuDom = this._createMenuDom();
         return this;
     },
 
@@ -40,18 +42,21 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
     * @expose
     */
     addTo: function(target) {
-        var map;
-        if(target instanceof Z['Map']) {
-            map = target;
+        if(target instanceof Z.Map) {
+            this._map = target;
         } else { //Geometry的情况
-            map = target.getMap();
+            this._map = target.getMap();
         }
-        if(!map) {
+        if(!this._map) {
             throw new Error(this.exceptions['ONLY_MAP_OR_GEOMETRY_CAN_ADD_MENU']);
         }
-        this.target = target;
-        this._addEvent(map);
-        return map;
+        this._target = target;
+        var popMenuContainer = this._map._panels.popMenuContainer;
+        popMenuContainer.innerHTML = '';
+        popMenuContainer.appendChild(this._menuDom);
+
+        this._addEvent();
+        return this;
     },
 
     /**
@@ -59,13 +64,13 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
     * @param 参数
     */
     beforeOpen: function(param) {
-        var beforeopenFn = this.menuOption['beforeopen'];
-        if(beforeopenFn){
-            var argLen = beforeopenFn.length;
-            if(argLen == 2) {
-                beforeopenFn(param, Z.Util.bind(this.show, this));
+        var beforeOpenFn = this.options.beforeOpen;
+        if(beforeOpenFn){
+            var argLen = beforeOpenFn.length;
+            if(argLen === 2) {
+                beforeOpenFn(param, Z.Util.bind(this.show, this));
             } else {
-                beforeopenFn(param);
+                beforeOpenFn(param);
                 this.show();
             }
         }
@@ -73,71 +78,53 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
     },
 
     /**
-    * 菜单监听地图的事件
-    * @param {Map} map
-    */
-    _addEvent:function(map) {
-        this.map = map;
-        this.map._panels.popMenuContainer.innerHTML = Z['Menu']['template'];
-        this.menuDom = this.map._panels.popMenuContainer.firstChild;
-        if(!this.menuDom.addEvent) {
-            this.close();
-            this._removeEvent(map);
-            map.on('zoomstart', this.hide, this);
-            map.on('zoomend', this.hide, this);
-            map.on('movestart', this.hide, this);
-            map.on('dblclick', this.hide, this);
-            map.on('click', this.hide, this);
-            this.menuDom.addEvent = true;
-        }
-    },
-
-    /**
-    * 菜单监听地图的事件
-    * @param {Map} map
-    */
-    _removeEvent:function(map) {
-        map.off('zoomstart', this.hide);
-        map.off('zoomend', this.hide);
-        map.off('movestart', this.hide);
-        map.off('dblclick', this.hide);
-        map.off('click', this.hide);
-    },
-
-    /**
     * 设置Map的右键菜单
-    * @param {Array} menuOption 菜单项
-    * {"items":[], width:240, beforeopen:fn}
+    * @param {Array} options 菜单项
     * @expose
     */
-    setOption: function(menuOption) {
-        if (!menuOption) {
+    setOptions: function(options) {
+        if (!options) {
             return;
         }
-        if (!menuOption['width']) {
-            menuOption['width'] = 240;
+        if (!options.width) {
+            options.width = 240;
         }
-        if(this.menuOption) {
-            this.menuOption['width'] = menuOption['width'];
-            this.menuOption['items'] = menuOption['items'];
-            if(menuOption['beforeopen']) {
-                this.menuOption['beforeopen'] = menuOption['beforeopen'];
+        if(!options.style||options.style === 'default') {
+            options.style = '';
+        } else {
+            options.style = '-' + options.style;
+        }
+        if(this.options) {
+            this.options.width = options.width;
+            this.options.style = options.style;
+            this.options.items = options.items;
+            if(options.beforeOpen) {
+                this.options.beforeOpen = options.beforeOpen;
             }
         } else {
-            this.menuOption = menuOption;
+            this.options = options;
         }
     },
 
     /**
     * 设置菜单项目
-    * @param {Array} menuItems 菜单项
+    * @param {Array} items 菜单项
     * @return {Menu} 菜单
     * @expose
     */
     setItems: function(items) {
-        // FIXME:
-        this.menuOption = this.menuOption || {};
-        this.menuOption['items'] = items;
+        this.options = this.options || {};
+        this.options['items'] = items;
+        var isOpen = this.isOpen();
+        Z.DomUtil.removeDomNode(this._menuDom);
+        this._menuDom = this._createMenuDom();
+        var popMenuContainer = this._map._panels.popMenuContainer;
+        popMenuContainer.innerHTML = '';
+        popMenuContainer.appendChild(this._menuDom);
+        this.addTo(this._target);
+        if(isOpen) {
+            this.show();
+        }
         return this;
     },
 
@@ -146,8 +133,8 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
     * @return {Object} 菜单设置
     * @expose
     */
-    getOption: function() {
-        return this.menuOption;
+    getOptions: function() {
+        return this.options;
     },
 
     /**
@@ -155,7 +142,7 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
      * @return {[type]} [description]
      * @expose
      */
-    close:function() {
+    close: function() {
         return this.hide();
     },
 
@@ -163,9 +150,9 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
      * 移除Map的右键菜单设置
      * @expose
      */
-    remove:function() {
+    remove: function() {
         this.hide();
-        delete this.menuOption;
+        delete this.options;
         return this;
     },
 
@@ -175,14 +162,9 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
     */
     hide: function() {
         if (this.isOpen()) {
-            this.menuDom.style.display="none";
-            if (this.hasListeners && this.hasListeners('closemenu')) {
-                /**
-                 * 右键菜单关闭事件
-                 * @event closemenu
-                 * @param target {seegoo.maps.Geometry} 产生事件的Geometry
-                 */
-                this._executeListeners('closemenu',{"target":this});
+            this._menuDom.style.display='none';
+            if (this._target.hasListeners && this._target.hasListeners('closemenu')) {
+                this._target._executeListeners('closemenu', {'target':this._target});
             }
         }
     },
@@ -192,8 +174,8 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
     *  @expose
     *  @returns {Boolean}
     */
-    isOpen:function() {
-        return (this.menuDom.style.display!="none");
+    isOpen: function() {
+        return (this._menuDom.style.display!='none');
     },
 
     /**
@@ -201,79 +183,109 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
     * @expose
     * @param {Coordinate} 坐标
     */
-    show:function(coordinate) {
-        var menuOption = this.menuOption;
+    show: function(coordinate) {
+        var options = this.options;
         var pxCoord = this._getShowPosition(coordinate);
-        if (Z.Util.isNil(pxCoord) || Z.Util.isNil(menuOption)) {
+        if (Z.Util.isNil(pxCoord) || Z.Util.isNil(options)) {
             return this;
         }
-        this._clearDomAndBindEvent();
-        this.hide();
-        var me = this;
-        var menuDom = me.menuDom;
-        menuDom.style.width = menuOption['width']+'px';
-        var ulDom = menuDom.firstChild;
-        ulDom.innerHTML = '';
-        var items = menuOption['items'];
-        for (var i=0, len=items.length;i<len;i++) {
-            var item = items[i];
-            var menuItem = Z.DomUtil.createEl('li');
-            menuItem.style.cssText = Z.Menu['cssMenuItem'];
-            Z.DomUtil.removeDomNode(menuItem,'mouseover',function(e){
-                this.style.cssText = Z.Menu['cssMenuItem_over'];
-            });
-            Z.DomUtil.removeDomNode(menuItem,'mouseout',function(e){
-                this.style.cssText = Z.Menu['cssMenuItem'];
-            });
-            menuItem['callback'] = item['callback'];
-            menuItem['index'] = i;
-            Z.DomUtil.removeDomNode(menuItem,'click',function(e) {
-                Z.DomUtil.stopPropagation(e);
-                var result = this['callback']({'target':me,'index':this['index']});
-                if (!Z.Util.isNil(result) && !result) {
-                    return;
-                }
-                me.hide();
-            });
-            Z.DomUtil.removeDomNode(menuItem,'mousedown',function(e) {
-                Z.DomUtil.stopPropagation(e);
-                return false;
-            });
-            Z.DomUtil.removeDomNode(menuItem,'mouseup',function(e) {
-                Z.DomUtil.stopPropagation(e);
-                return false;
-            });
-            Z.DomUtil.removeDomNode(menuItem,'dblclick',function(e) {
-                Z.DomUtil.stopPropagation(e);
-                return false;
-            });
-            menuItem.innerHTML = item['item'];
-            ulDom.appendChild(menuItem);
-        }
-        //添加菜单项
-        menuDom['style']['top'] = pxCoord['top']+'px';
-        menuDom['style']['left'] = pxCoord['left']+'px';
-        menuDom.style.display = '';
-        if (me.hasListeners && me.hasListeners('openmenu')) {
-            /**
-             * 右键菜单打开事件
-             * @event openmenu
-             * @param target {seegoo.maps.Geometry} 产生事件的Geometry
-             */
-            me.fire('openmenu',{'target':me});
-        }
+        this._menuDom.style.top = pxCoord.top+'px';
+        this._menuDom.style.left = pxCoord.left+'px';
+        this._menuDom.style.display = 'block';
         return this;
     },
 
-    /**
-    * 清理之前的事件，并绑定新的事件
-    */
-    _clearDomAndBindEvent: function() {
-        var firstChild = this.map._panels.popMenuContainer.firstChild;
-        Z.DomUtil.removeDomNode(firstChild);
-        this._addEvent(this.map);
+    _createMenuDom: function() {
+        var menuContainer = Z.DomUtil.createEl('div');
+        menuContainer.style.display = 'none';
+        menuContainer.style.width = this.options.width+'px';
+        var suffix = this.options.style;
+        Z.DomUtil.setClass(menuContainer, 'maptalks-menu'+suffix);
+        this._menuItemsDom = this._createMenuItemDom();
+        menuContainer.appendChild(this._menuItemsDom);
+        return menuContainer;
     },
 
+    _createMenuItemDom: function() {
+        var menuItemsDom = Z.DomUtil.createEl('ul');
+        var suffix = this.options.style;
+        Z.DomUtil.setClass(menuItemsDom, 'maptalks-menu-items'+suffix);
+        var items = this.options.items;
+        for (var i=0, len=items.length;i<len;i++) {
+            var item = items[i];
+            var menuItem = this._addMenuItem(item);
+            menuItemsDom.appendChild(menuItem);
+        }
+        return menuItemsDom;
+    },
+
+    _addMenuItem: function(item) {
+        var suffix = this.options.style;
+        var menuItem = Z.DomUtil.createEl('li');
+        Z.DomUtil.setClass(menuItem, 'maptalks-menu-item'+suffix);
+
+        Z.DomUtil.on(menuItem,'mouseover',function(e){
+            Z.DomUtil.setClass(menuItem, 'maptalks-menu-item-over'+suffix);
+        });
+        Z.DomUtil.on(menuItem,'mouseout',function(e){
+            Z.DomUtil.setClass(menuItem, 'maptalks-menu-item'+suffix);
+        });
+        menuItem['callback'] = item['callback'];
+        Z.DomUtil.on(menuItem,'click',function(e) {
+            Z.DomUtil.stopPropagation(e);
+            var result = this['callback']({'target':this,'index':this['index']});
+            if (!Z.Util.isNil(result) && !result) {
+                return;
+            }
+            this.hide();
+        });
+        Z.DomUtil.on (menuItem,'mousedown mouseup dblclick',function(e) {
+            Z.DomUtil.stopPropagation(e);
+            return false;
+        });
+        menuItem.innerHTML = item['item'];
+        return menuItem;
+    },
+
+    /**
+    * 菜单监听地图的事件
+    */
+    _addEvent: function() {
+        if(!this._menuDom.addEvent) {
+            this.close();
+            this._removeEvent();
+            this._map.on('zoomstart', this.hide, this);
+            this._map.on('zoomend', this.hide, this);
+            this._map.on('movestart', this.hide, this);
+            this._map.on('dblclick', this.hide, this);
+            this._map.on('click', this.hide, this);
+            this._menuDom.addEvent = true;
+
+            if (this._target.hasListeners && this._target.hasListeners('openmenu')) {
+                this._target.fire('openmenu',{'target':this._target});
+            }
+        }
+    },
+
+    /**
+    * 菜单监听地图的事件
+    * @param {Map} map
+    */
+    _removeEvent: function() {
+        this._map.off('zoomstart', this.hide);
+        this._map.off('zoomend', this.hide);
+        this._map.off('movestart', this.hide);
+        this._map.off('dblclick', this.hide);
+        this._map.off('click', this.hide);
+    },
+
+    /**
+    * 清理之前的事件，重新绑定新的事件
+    */
+    _clearDomAndBindEvent: function() {
+        Z.DomUtil.removeDomNode(this._menuDom);
+        this._addEvent();
+    },
 
     /**
     * 获取菜单显示位置
@@ -283,20 +295,17 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
     _getShowPosition: function(coordinate) {
         var position;
         if(!coordinate) {
-            coordinate = this.showPosition;
+            coordinate = this.options['position'];
         }
         if(coordinate){
             if(coordinate instanceof Z.Coordinate) {
-                position = this.coordinateToDomOffset(coordinate);
+                position = this._map.coordinateToDomOffset(coordinate);
             } else {
                 position = coordinate;
             }
         } else {
-            var center = this.target.getCenter();
-            var projection = this.map._getProjection();
-            if (!center || !projection) {return null;}
-            var pcenter = projection.project(center);
-            position = this.map._transformToOffset(pcenter);
+            var center = this._target.getCenter();
+            position = this._map.coordinateToDomOffset(center);
         }
         return position;
     }
