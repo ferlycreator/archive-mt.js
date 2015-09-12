@@ -369,7 +369,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         //TODO 当前padding设定为整个瓦片增加的宽度和高度, 改为纵向每边增加的高度, 横向每边增加的宽度,即为当前的1/2
         tileImage.style.cssText = 'width:'+width+'px;height:'+height+'px;unselectable:on;position:absolute;left: '+
                                     (_tileLeft-padding['width']/2)+'px;top: '+(_tileTop-padding['height']/2)+ 'px;max-width:none;-moz-user-select: -moz-none;-webkit-user-select: none;';
-        tileImage.className="MAP_FADE_ANIM";
+        tileImage.className='maptalks-map-fade-anim';
         tileImage["onload"]=function(){
             this.style.cssText+=";opacity:1;";
             Z.Util.fixPNG(this);
