@@ -406,7 +406,7 @@ describe('API', function () {
             };
 
             expect(function() {
-                win.setOption(options);
+                win.setOptions(options);
             }).to.not.throwException();
         });
 
@@ -416,7 +416,7 @@ describe('API', function () {
                 title: 'title',
                 content: 'content'
             };
-            win.setOption(options);
+            win.setOptions(options);
             win.addTo(map);
             var pos = {x: 10, y: 10};
 
@@ -431,33 +431,37 @@ describe('API', function () {
 
     describe('Map.UI.Menu', function() {
 
-        it('setOption', function() {
+        it('setOptions', function() {
             var menu = new Z.Menu();
             var options = {
+                position: null,
+                beforeOpen: null,
                 items: [
                     {item: 'item1'},
                     {item: 'item2'}
                 ],
-                width: 0
+                width: 160
             };
 
             expect(function () {
-                menu.setOption(options);
+                menu.setOptions(options);
             }).to.not.throwException();
         });
 
-        it('getOption', function() {
+        it('getOptions', function() {
             var menu = new Z.Menu();
             var options = {
+                position: null,
+                beforeOpen: null,
                 items: [
                     {item: 'item1'},
                     {item: 'item2'}
                 ],
-                width: 0
+                width: 160
             };
-            menu.setOption(options);
+            menu.setOptions(options);
 
-            var got = menu.getOption();
+            var got = menu.getOptions();
 
             expect(got).to.eql(options);
         });
@@ -465,13 +469,15 @@ describe('API', function () {
         it('addTo', function() {
             var menu = new Z.Menu();
             var options = {
+                position: null,
+                beforeOpen: null,
                 items: [
                     {item: 'item1'},
                     {item: 'item2'}
                 ],
-                width: 0
+                width: 160
             };
-            menu.setOption(options);
+            menu.setOptions(options);
 
             expect(function () {
                 menu.addTo(map);
@@ -492,11 +498,13 @@ describe('API', function () {
 
         it('close/remove', function() {
             var options = {
+                position: null,
+                beforeOpen: null,
                 items: [
                     {item: 'item1'},
                     {item: 'item2'}
                 ],
-                width: 0
+                width: 160
             };
             var menu = new Z.Menu(options);
             menu.addTo(map);
@@ -511,11 +519,13 @@ describe('API', function () {
 
         it('show/hide/isOpen', function() {
             var options = {
+                position: null,
+                beforeOpen: null,
                 items: [
                     {item: 'item1'},
                     {item: 'item2'}
                 ],
-                width: 0
+                width: 160
             };
             var menu = new Z.Menu(options);
             menu.addTo(map);

@@ -53,6 +53,14 @@
         });
         //将点添加到Layer
         layer.addGeometry(marker);
+
+
+        var items = [
+            {'item': '查看1', 'callback': function() {alert('你点击了【查看】菜单!')}},
+            {'item': '编辑1', 'callback': function() {alert('你点击了【编辑】菜单！')}}
+        ];
+
+        marker.setMenuItem(items);
     }
 </script>
 <script type="text/javascript" src="../../maptalks.js"></script>

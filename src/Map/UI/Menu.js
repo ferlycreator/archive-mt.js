@@ -86,7 +86,7 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
             return;
         }
         if (!options.width) {
-            options.width = 240;
+            options.width = 160;
         }
         if(!options.style||options.style === 'default') {
             options.style = '';
@@ -121,19 +121,24 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
     * @expose
     */
     setItems: function(items) {
-        this.options = this.options || {};
-        this.options['items'] = items;
-        var isOpen = this.isOpen();
-        Z.DomUtil.removeDomNode(this._menuDom);
+        var options = this.getOptions() || this.options;
+        options.items = items;
         this._menuDom = this._createMenuDom();
-        var popMenuContainer = this._map._panels.popMenuContainer;
-        popMenuContainer.innerHTML = '';
-        popMenuContainer.appendChild(this._menuDom);
-        this.addTo(this._target);
-        if(isOpen) {
-            this.show();
+        if(this._map) {
+            var popMenuContainer = this._map._panels.popMenuContainer;
+            popMenuContainer.innerHTML = '';
+            popMenuContainer.appendChild(this._menuDom);
         }
         return this;
+    },
+
+    /**
+     * 关闭Map的右键菜单
+     * @return {[type]} [description]
+     * @expose
+     */
+    close: function() {
+        return this.hide();
     },
 
     /**
