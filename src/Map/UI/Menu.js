@@ -200,16 +200,15 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
         menuContainer.style.display = 'none';
         menuContainer.style.width = this.options.width+'px';
         var suffix = this.options.style;
-        Z.DomUtil.setClass(menuContainer, 'maptalks-menu'+suffix);
+        Z.DomUtil.setClass(menuContainer, 'maptalks-menu');
+        Z.DomUtil.addClass(menuContainer, 'maptalks-menu-color'+suffix);
         this._menuItemsDom = this._createMenuItemDom();
         menuContainer.appendChild(this._menuItemsDom);
         return menuContainer;
     },
 
     _createMenuItemDom: function() {
-        var menuItemsDom = Z.DomUtil.createEl('ul');
-        var suffix = this.options.style;
-        Z.DomUtil.setClass(menuItemsDom, 'maptalks-menu-items'+suffix);
+        var menuItemsDom = Z.DomUtil.createElOn('ul', 'list-style: none;padding: 0px;margin: 0px;');
         var items = this.options.items;
         for (var i=0, len=items.length;i<len;i++) {
             var item = items[i];
@@ -222,13 +221,16 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
     _addMenuItem: function(item) {
         var suffix = this.options.style;
         var menuItem = Z.DomUtil.createEl('li');
-        Z.DomUtil.setClass(menuItem, 'maptalks-menu-item'+suffix);
+        Z.DomUtil.setClass(menuItem, 'maptalks-menu-item');
+        Z.DomUtil.addClass(menuItem, 'maptalks-menu-item-color'+suffix);
 
         Z.DomUtil.on(menuItem,'mouseover',function(e){
-            Z.DomUtil.setClass(menuItem, 'maptalks-menu-item-over'+suffix);
+            Z.DomUtil.removeClass(menuItem, 'maptalks-menu-item-color'+suffix);
+            Z.DomUtil.addClass(menuItem, 'maptalks-menu-item-over-color'+suffix);
         });
         Z.DomUtil.on(menuItem,'mouseout',function(e){
-            Z.DomUtil.setClass(menuItem, 'maptalks-menu-item'+suffix);
+            Z.DomUtil.removeClass(menuItem, 'maptalks-menu-item-over-color'+suffix);
+            Z.DomUtil.addClass(menuItem, 'maptalks-menu-item-color'+suffix);
         });
         menuItem['callback'] = item['callback'];
         Z.DomUtil.on(menuItem,'click',function(e) {

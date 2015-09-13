@@ -14,18 +14,18 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
 
         statics:{
            'template': "<div class=\"MAP_CONTROL_api MAP_CONTROL_msg\" style=\"z-index:10;cursor:default;display:none;padding:0 0 35px 15px;\">"+
-                        "<div style=\"width:345px; height:auto !important;height:150px;min-height:150px; border:1px solid #999; background:#fff;\">"+
-                            "<div style=\"font-size:14px; height:30px; line-height:30px; background:#f9f9f9; border-bottom:1px solid #ccc; font-weight:bold; padding-left:15px;\">" +
-                                "<span style=\"display:block; float:left;\"></span>" +
-                                '<div style="position:relative;float:right;height:30px;width:20px;padding-top:10px;line-height: 0px;">'+
-                                    "<a href=\"javascript:void(0)\" class=\"MAP_CONTROL_close\" onclick=\"this.parentNode.parentNode.parentNode.parentNode.m.hide()\"><img width=\"10px\" height=\"10px\" src=\""+Z.prefix+"images/tip_close.gif\" style=\"border:none;\"/></a>" +
-                                '</div>'+
-                            "</div>"+
-                            "<div style=\"padding:10px; line-height:20px; color:#444\">"+
-                            "</div>"+
-                        "</div>"+
-                        "<div class=\"MAP_CONTROL_api MAP_CONTROL_jiantou\"></div>"+
-                     "</div>"
+                "<div style=\"width:345px; height:auto !important;height:150px;min-height:150px; border:1px solid #999; background:#fff;\">"+
+                    "<div style=\"font-size:14px; height:30px; line-height:30px; background:#f9f9f9; border-bottom:1px solid #ccc; font-weight:bold; padding-left:15px;\">" +
+                        "<span style=\"display:block; float:left;\"></span>" +
+                        '<div style="position:relative;float:right;height:30px;width:20px;padding-top:10px;line-height: 0px;">'+
+                            "<a href=\"javascript:void(0)\" class=\"MAP_CONTROL_close\" onclick=\"this.parentNode.parentNode.parentNode.parentNode.m.hide()\"><img width=\"10px\" height=\"10px\" src=\""+Z.prefix+"images/tip_close.gif\" style=\"border:none;\"/></a>" +
+                        '</div>'+
+                    "</div>"+
+                    "<div style=\"padding:10px; line-height:20px; color:#444\">"+
+                    "</div>"+
+                "</div>"+
+                "<div class=\"MAP_CONTROL_api MAP_CONTROL_jiantou\"></div>"+
+             "</div>"
         },
 
         /**
