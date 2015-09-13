@@ -16,10 +16,10 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
         this.geometry = geometry;
     },
 
-    svg:function() {
+    svg:function(container, vectorContainer, zIndex) {
         var svgPath = this.geometry._getRenderPath();
         if (!this.svgDom) {
-            var svgPaper = this.getMap()._getSvgPaper();
+            var svgPaper = vectorContainer;//this.getMap()._getSvgPaper();
             this.svgDom = Z.SVG.createShapeDom(svgPath);
             svgPaper.appendChild(this.svgDom);
         } else {

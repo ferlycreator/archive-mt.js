@@ -143,7 +143,7 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
             var point = [0,0];
             if (Z.Browser.vml) {
                 path = 'AL ' + point.join(',') + ' ' + width/2 + ',' + height/2 +
-                        ' 0,' + (65535 * 360) + ' x e';
+                        ' 0,' + (65535 * 360) + ' x';
             } else {
                 path = 'M'+point.join(',')+' a'+width/2 + ',' + height/2+' 0,1,0,0,-0.9Z';
             }

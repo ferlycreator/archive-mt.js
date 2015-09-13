@@ -220,10 +220,10 @@ Z.SVG.VML= {
         vmlShape.style.height = '1px';
         vmlShape['coordsize'] = '1 1';
         vmlShape['coordorigin'] = '0 0';
-        var path = Z.SVG.create('path');
-        path.v = path;
-        vmlShape.appendChild(path);
-        vmlShape.path = path;
+        var pathDom = Z.SVG.create('path');
+        pathDom.v = path;
+        vmlShape.appendChild(pathDom);
+        vmlShape.path = pathDom;
         return vmlShape;
     },
 

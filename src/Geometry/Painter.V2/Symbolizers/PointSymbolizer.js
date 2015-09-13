@@ -1,5 +1,6 @@
 Z.PointSymbolizer=Z.Symbolizer.extend({
-    _svg:function(container, zIndex) {
+    _svg:function(container,vectorContainer, zIndex) {
+
         var points = this.renderPoints;
         if (!Z.Util.isArrayHasData(points)) {
             return;
@@ -55,11 +56,11 @@ Z.PointSymbolizer=Z.Symbolizer.extend({
         } else {
             if (Z.Browser.vml) {
                 //vml
+                marker.style.position = 'absolute';
                 marker.style.left = point['left'];
                 marker.style.top = point['top'];
             } else {
                 //svg
-                //marker.transform.baseVal.getItem(0).setTranslate(point['left'],point['top']);
                 marker.setAttribute('transform', 'translate('+point['left']+' '+point['top']+')');
             }
         }
