@@ -258,11 +258,9 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
             this._map.on('zoomend', this.hide, this);
             this._map.on('movestart', this.hide, this);
             this._map.on('dblclick', this.hide, this);
-            this._map.on('click', this.hide, this);
             this._menuDom.addEvent = true;
-
             if (this._target.hasListeners && this._target.hasListeners('openmenu')) {
-                this._target.fire('openmenu',{'target':this._target});
+                this._target.fire('openmenu', {'target':this._target});
             }
         }
     },
@@ -276,7 +274,6 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
         this._map.off('zoomend', this.hide);
         this._map.off('movestart', this.hide);
         this._map.off('dblclick', this.hide);
-        this._map.off('click', this.hide);
     },
 
     /**

@@ -8,7 +8,6 @@
         html,body{ margin:0px; height:100%; };
     </style>
     <title>MapTalks 示例: Scale(比例尺)控件</title>
-    <link href="../../css/maptalks.css" rel="stylesheet" type="text/css"/>
 </head>
 <body scroll="no" onload="initMap();">
 <div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
@@ -22,7 +21,6 @@
             zoomLevel:   11, //初始缩放级别
             scaleControl: true,//scale控件
             scaleControlOptions : {
-                id: 'MAP_CONTROL_SCALE', //控件id
                 position : Z.Control['bottom_left'],
                 maxWidth: 100,//最大宽度（单位：像素）
                 metric: true,//米（公尺）

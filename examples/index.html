@@ -1009,9 +1009,8 @@ var rectangle = new Z.Rectangle(coordinate, 1000, 600, {
                     </div>
 
                     <h2>ZoomIn/ZoomOut控件</h2>
-                    <p>1、引入control 样式文件<code>&lt;link href="/maptalks/v2/css/controls.css" rel="stylesheet" type="text/css"/&gt;</code>；</p>
-                    <p>2、配置mapObj属性<code>zoomControl: true/false</code>打开或关闭zoom控件；</p>
-                    <p>3、使用<code>new Z.Control.Zoom(...)</code>创建多个zoom控件。</p>
+                    <p>1、配置mapObj属性<code>zoomControl: true/false</code>打开或关闭zoom控件；</p>
+                    <p>2、使用<code>new Z.Control.Zoom(...)</code>创建多个zoom控件。</p>
                     <div class="bs-docs-example">
 <pre class="linenums prettyprint">
 /**
@@ -1029,7 +1028,6 @@ new Z.Map('mapObj',{
 * 创建多个zoom控件
 */
 var zoomControl = new Z.Control.Zoom({
-    id: 'zoomControl1', //控件id
     //自定义控件放置位置
     position : {
         top: '40',
@@ -1039,7 +1037,6 @@ var zoomControl = new Z.Control.Zoom({
 mapObj.addControl(zoomControl);
 
 var zoomControl2 = new Z.Control.Zoom({
-    id: 'zoomControl12', //控件id
     position : Z.Control['bottom_right']
 });
 mapObj.addControl(zoomControl2);
@@ -1050,9 +1047,8 @@ mapObj.addControl(zoomControl2);
                     </div>
 
                     <h2>Nav控件</h2>
-                    <p>1、引入control 样式文件<code>&lt;link href="/maptalks/v2/css/controls.css" rel="stylesheet" type="text/css"/&gt;</code>；</p>
-                    <p>2、配置mapObj属性<code>navControl: true/false</code>打开或关闭nav控件；</p>
-                    <p>3、使用<code>new Z.Control.Nav(...)</code>创建多个nav控件。</p>
+                    <p>1、配置mapObj属性<code>navControl: true/false</code>打开或关闭nav控件；</p>
+                    <p>2、使用<code>new Z.Control.Nav(...)</code>创建多个nav控件。</p>
                     <div class="bs-docs-example">
 <pre class="linenums prettyprint">
 /**
@@ -1070,7 +1066,6 @@ new Z.Map('mapObj',{
 * 创建多个nav控件
 */
 var navControl = new Z.Control.Nav({
-    id: 'navControl', //控件id
     //自定义控件放置位置
     position : {
         top: '40',
@@ -1085,8 +1080,7 @@ mapObj.addControl(navControl);
                     </div>
 
                     <h2>Scale(比例尺)控件</h2>
-                    <p>1、引入control 样式文件<code>&lt;link href="/maptalks/v2/css/controls.css" rel="stylesheet" type="text/css"/&gt;</code>；</p>
-                    <p>2、配置mapObj属性<code>scaleControl: true/false</code>打开或关闭Scale控件；</p>
+                    <p>1、配置mapObj属性<code>scaleControl: true/false</code>打开或关闭Scale控件；</p>
                     <div class="bs-docs-example">
 <pre class="linenums prettyprint">
 /**
@@ -1097,7 +1091,6 @@ new Z.Map('mapObj',{
     zoomLevel:   11, //初始缩放级别
     scaleControl: true,//scale控件
     scaleControlOptions : {
-        id: 'MAP_CONTROL_SCALE', //控件id
         position : Z.Control['bottom_left'],
         maxWidth: 100,//最大宽度（单位：像素）
         metric: true,//米（公尺）
@@ -1111,9 +1104,8 @@ new Z.Map('mapObj',{
                     </div>
 
                     <h2>Attribution(归属信息)控件</h2>
-                    <p>1、引入control 样式文件<code>&lt;link href="/maptalks/v2/css/controls.css" rel="stylesheet" type="text/css"/&gt;</code>；</p>
-                    <p>2、配置mapObj属性<code>attributionControl: true/false</code>打开或关闭attribution控件；</p>
-                    <p>3、使用<code>new Z.Control.Attribution(...)</code>创建多个attribution控件。</p>
+                    <p>1、配置mapObj属性<code>attributionControl: true/false</code>打开或关闭attribution控件；</p>
+                    <p>2、使用<code>new Z.Control.Attribution(...)</code>创建多个attribution控件。</p>
                     <div class="bs-docs-example">
 <pre class="linenums prettyprint">
 /**
@@ -1124,7 +1116,6 @@ new Z.Map('mapObj',{
     zoomLevel:   11, //初始缩放级别
     attributionControl: true,//attribution控件
     attributionControlOptions : {//设置控件放置位置
-        id: 'CONTROL_ATTRIBUTION',
         position : {
             'bottom': '0',
             'right': '0'
@@ -1136,7 +1127,6 @@ new Z.Map('mapObj',{
 * 创建多个Attribution控件
 */
 var attributionControl = new Z.Control.Attribution({
-    id: 'attributionControl', //控件id
     //自定义控件放置位置
     position : {
         top: '40',
@@ -1152,15 +1142,13 @@ mapObj.addControl(attributionControl);
                     </div>
 
                      <h2>Toolbar控件</h2>
-                    <p>1、引入control 样式文件<code>&lt;link href="/maptalks/v2/css/controls.css" rel="stylesheet" type="text/css"/&gt;</code>；</p>
-                    <p>3、使用<code>new Z.Toolbar(...)</code>创建多个nav控件。</p>
+                    <p>1、使用<code>new Z.Toolbar(...)</code>创建多个Toolbar控件。</p>
                     <div class="bs-docs-example">
 <pre class="linenums prettyprint">
 /**
 * 创建多个toolbar控件
 */
 var toolbar = new Z.Toolbar({
-    id: 'toolbar',//toolbar id
     position : { //工具条放置位置
         top: '2',
         left: '2'
@@ -1194,7 +1182,6 @@ var toolbar = new Z.Toolbar({
 mapObj.addControl(toolbar);
 
 var verticalToolbar = new Z.Toolbar({
-    id: 'verticalToolbar',//toolbar id
     position : { //工具条放置位置
         top: '2',
         right: '2'
@@ -1222,9 +1209,8 @@ mapObj.addControl(verticalToolbar);
                     </p>
 
                     <h2>Panel控件</h2>
-                    <p>1、引入control 样式文件<code>&lt;link href="/maptalks/v2/css/panel.css" rel="stylesheet" type="text/css"/&gt;</code>；</p>
-                    <p>2、使用<code>Z.Panel(...)</code>创建panel；</p>
-                    <p>3、将panel绑定在地图容器或Geometry上</p>
+                    <p>1、使用<code>Z.Panel(...)</code>创建panel；</p>
+                    <p>2、将panel绑定在地图容器或Geometry上</p>
                     <div class="bs-docs-example">
 <pre class="linenums prettyprint">
 //构建panel
@@ -1255,7 +1241,6 @@ var marker = new Z.Marker(markerCoordinate,'marker_id');
 layer.addGeometry(marker);
 
 var markerPanelOptions = {
-    id : 'label01',
     position : {
         top: '15',
         right: '15'
@@ -1299,6 +1284,36 @@ mapObj.setContextMenu({
                     </iframe>
                     <p>
                         <a class="btn btn-success" href="editor.html?html=control/contextMenu.html&title=Context Menu" target="_blank">源码编辑器</a>
+                    </p>
+                    </div>
+
+                    <h2>geometry上的菜单菜单</h2>
+                    <p>1、构造菜单项；</p>
+                    <p>2、将菜单绑定到图形上：<code>marker.setMenu(menuOptions);</code>；</p>
+                    <p>3、设置打开菜单的图形事件：<code>marker.on('click', function(){marker.openMenu();});</code></p>
+                    <div class="bs-docs-example">
+<pre class="linenums prettyprint">
+//设置菜单
+var menuOptions = {
+    'width': 160,
+    'style': 'default', //black|white
+    'items' : [
+        {'item': '查看', 'callback': function() {alert('你点击了【查看】菜单!')}},
+        {'item': '编辑', 'callback': function() {alert('你点击了【编辑】菜单！')}}
+    ]
+};
+//将菜单绑定到图形上
+marker.setMenu(menuOptions);
+//设置打开菜单的图形事件
+marker.on('click', function(){
+    marker.openMenu();
+});
+</pre>
+                    <iframe src="control/geometryWithMenu.html" width="100%">
+
+                    </iframe>
+                    <p>
+                        <a class="btn btn-success" href="editor.html?html=control/geometryWithMenu.html&title=Geometry With Menu" target="_blank">源码编辑器</a>
                     </p>
                     </div>
 
