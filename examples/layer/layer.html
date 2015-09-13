@@ -15,13 +15,13 @@
     var mapObj;
     function initMap(){
         //创建地图对象
-        mapObj = new Z.Map('mapObj', //放置mapObj的div id
+        mapObj = new maptalks.Map('mapObj', //放置mapObj的div id
         {
-            center:  new Z.Coordinate(121.489935,31.24432), //初始中心点坐标
+            center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
             zoomLevel:   12 //初始缩放级别
         });
         //设置底图图层
-        mapObj.setBaseTileLayer(new Z.TileLayer('tile', //底图id
+        mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
         {
             tileInfo: 'web-mercator',
             urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
@@ -30,13 +30,13 @@
 
         /**
         * 创建放置图形的图层
-        * 说明：new Z.VectorLayer(id, {'render': 'Canvas'});
+        * 说明：new maptalks.VectorLayer(id, {'render': 'Canvas'});
         * id:图层的名称；render:渲染方式，默认使用SVG或VML（ie9以下），支持5万以内图形渲染
         * 如果需要渲染5万以上的图形，建议设置渲染方式为Canvas {'render': 'Canvas'}
         * 注意：Canvas渲染只支持ie8以上浏览器，以及chrome与safari、firefox等
         * 下面例子就采用Canvas渲染10000个点
         */
-        var layer = new Z.VectorLayer('layer',{'render': 'Canvas'});
+        var layer = new maptalks.VectorLayer('layer',{'render': 'Canvas'});
         //将图层添加到地图
         mapObj.addLayer(layer);
         //加载10000个点
@@ -45,9 +45,9 @@
             var random = Math.random()*0.1;
             var marker;
             if(i%2) {
-                marker = new Z.Marker(new Z.Coordinate(121.489935 + random, 31.24432));
+                marker = new maptalks.Marker(new maptalks.Coordinate(121.489935 + random, 31.24432));
             } else {
-                marker = new Z.Marker(new Z.Coordinate(121.489935, 31.24432 + random));
+                marker = new maptalks.Marker(new maptalks.Coordinate(121.489935, 31.24432 + random));
             }
             markers.push(marker);
         }

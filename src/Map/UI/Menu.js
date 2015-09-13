@@ -54,7 +54,6 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
         var popMenuContainer = this._map._panels.popMenuContainer;
         popMenuContainer.innerHTML = '';
         popMenuContainer.appendChild(this._menuDom);
-
         this._addEvent();
         return this;
     },
@@ -106,6 +105,15 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
         }
     },
 
+   /**
+    * 返回Map的菜单设置
+    * @return {Object} 菜单设置
+    * @expose
+    */
+    getOptions: function() {
+        return this.options;
+    },
+
     /**
     * 设置菜单项目
     * @param {Array} items 菜单项
@@ -126,24 +134,6 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
             this.show();
         }
         return this;
-    },
-
-   /**
-    * 返回Map的菜单设置
-    * @return {Object} 菜单设置
-    * @expose
-    */
-    getOptions: function() {
-        return this.options;
-    },
-
-    /**
-     * 关闭Map的右键菜单
-     * @return {[type]} [description]
-     * @expose
-     */
-    close: function() {
-        return this.hide();
     },
 
     /**
@@ -232,20 +222,21 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
             Z.DomUtil.removeClass(menuItem, 'maptalks-menu-item-over-color'+suffix);
             Z.DomUtil.addClass(menuItem, 'maptalks-menu-item-color'+suffix);
         });
-        menuItem['callback'] = item['callback'];
+        menuItem.callback = item.callback;
+        var me = this;
         Z.DomUtil.on(menuItem,'click',function(e) {
             Z.DomUtil.stopPropagation(e);
-            var result = this['callback']({'target':this,'index':this['index']});
+            var result = this.callback({'target':me});
             if (!Z.Util.isNil(result) && !result) {
                 return;
             }
-            this.hide();
+            me.hide();
         });
         Z.DomUtil.on (menuItem,'mousedown mouseup dblclick',function(e) {
             Z.DomUtil.stopPropagation(e);
             return false;
         });
-        menuItem.innerHTML = item['item'];
+        menuItem.innerHTML = item.item;
         return menuItem;
     },
 
@@ -254,7 +245,7 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
     */
     _addEvent: function() {
         if(!this._menuDom.addEvent) {
-            this.close();
+            this.hide();
             this._removeEvent();
             this._map.on('zoomstart', this.hide, this);
             this._map.on('zoomend', this.hide, this);

@@ -15,36 +15,36 @@
     var mapObj;
     function initMap(){
         //创建地图对象
-        mapObj = new Z.Map('mapObj', //放置mapObj的div id
+        mapObj = new maptalks.Map('mapObj', //放置mapObj的div id
         {
-            center:  new Z.Coordinate(121.489935,31.24432), //初始中心点坐标
+            center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
             zoomLevel:   11 //初始缩放级别
         });
         //设置底图图层
-        mapObj.setBaseTileLayer(new Z.TileLayer('tile', //底图id
+        mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
         {
             tileInfo: 'web-mercator',
             urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
             subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
         }));
         //创建放置图形的图层
-        var layer = new Z.VectorLayer('layer',{'render':'Canvas'});
+        var layer = new maptalks.VectorLayer('layer',{'render':'Canvas'});
         //将图层添加到地图
         mapObj.addLayer(layer);
 
         //面端点坐标数组
-        var coordinates = [[new Z.Coordinate(121.508617,31.241279),
-            new Z.Coordinate(121.519432,31.241572),
-            new Z.Coordinate(121.524067,31.241719),
-            new Z.Coordinate(121.528015,31.242893),
-            new Z.Coordinate(121.539173,31.245388),
-            new Z.Coordinate(121.544323,31.236142),
-            new Z.Coordinate(121.548443,31.227335),
-            new Z.Coordinate(121.538486,31.223518),
-            new Z.Coordinate(121.517887,31.223665)]
+        var coordinates = [[new maptalks.Coordinate(121.508617,31.241279),
+            new maptalks.Coordinate(121.519432,31.241572),
+            new maptalks.Coordinate(121.524067,31.241719),
+            new maptalks.Coordinate(121.528015,31.242893),
+            new maptalks.Coordinate(121.539173,31.245388),
+            new maptalks.Coordinate(121.544323,31.236142),
+            new maptalks.Coordinate(121.548443,31.227335),
+            new maptalks.Coordinate(121.538486,31.223518),
+            new maptalks.Coordinate(121.517887,31.223665)]
             ];
         //创建面对象
-        var polygon = new Z.Polygon(coordinates, {
+        var polygon = new maptalks.Polygon(coordinates, {
             draggable: true
         });
         //将面添加到Layer

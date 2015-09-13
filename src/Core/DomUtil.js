@@ -52,7 +52,6 @@ Z.DomUtil = {
                 return this;
             }
             obj['Z__'+type].push({callback:eventHandler,src:handler});
-            // obj['Z__'+type]=eventHandler;
             if ('addEventListener' in obj) {
                 //滚轮事件的特殊处理
                 if (type === "mousewheel" && document['mozHidden'] !== undefined) {
@@ -64,10 +63,9 @@ Z.DomUtil = {
             }
         }
         return this;
-
     },
 
-    removeDomEvent:function(obj, typeArr, handler) {
+    removeDomEvent:function(obj,typeArr, handler) {
         function doRemove(type,callback) {
             if ('removeEventListener' in obj) {
                 //滚轮事件的特殊处理

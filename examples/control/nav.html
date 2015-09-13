@@ -15,17 +15,17 @@
     var mapObj;
     function initMap(){
         //创建地图对象
-        mapObj = new Z.Map('mapObj', //放置mapObj的div id
+        mapObj = new maptalks.Map('mapObj', //放置mapObj的div id
         {
-            center:  new Z.Coordinate(121.489935,31.24432), //初始中心点坐标
+            center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
             zoomLevel:   11, //初始缩放级别
             navControl: true,//nav控件
             navControlOptions : {//设置控件放置位置
-                position : Z.Control['top_left']
+                position : maptalks.Control['top_left']
             }
         });
         //设置底图图层
-        mapObj.setBaseTileLayer(new Z.TileLayer('tile', //底图id
+        mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
         {
             tileInfo: 'web-mercator',
             urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
@@ -34,7 +34,7 @@
         /**
         * 创建多个nav控件
         */
-        var navControl = new Z.Control.Nav({
+        var navControl = new maptalks.Control.Nav({
             //自定义控件放置位置
             position : {
                 top: '40',

@@ -15,13 +15,13 @@
     var mapObj,polyline;
     function initMap(){
         //创建地图对象
-        mapObj = new Z.Map('mapObj', //放置mapObj的div id
+        mapObj = new maptalks.Map('mapObj', //放置mapObj的div id
         {
-            center:  new Z.Coordinate(121.489935,31.24432), //初始中心点坐标
+            center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
             zoomLevel:   11 //初始缩放级别
         });
         //设置底图图层
-        mapObj.setBaseTileLayer(new Z.TileLayer('tile', //底图id
+        mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
         {
             tileInfo: 'web-mercator',
             urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
@@ -29,18 +29,18 @@
         }));
 
         //创建图层
-        var layer = new Z.VectorLayer('layer');
+        var layer = new maptalks.VectorLayer('layer');
         //将图层添加到地图对象
         mapObj.addLayer(layer);
 
         //创建线对象
-        polyline = new Z.Polyline(
+        polyline = new maptalks.Polyline(
             //线端点坐标数组
-            [new Z.Coordinate(121.454716,31.272095),
-            new Z.Coordinate(121.459007,31.25933),
-            new Z.Coordinate(121.458149,31.241572),
-            new Z.Coordinate(121.460381,31.229977),
-            new Z.Coordinate(121.473427,31.222784)]);
+            [new maptalks.Coordinate(121.454716,31.272095),
+            new maptalks.Coordinate(121.459007,31.25933),
+            new maptalks.Coordinate(121.458149,31.241572),
+            new maptalks.Coordinate(121.460381,31.229977),
+            new maptalks.Coordinate(121.473427,31.222784)]);
         //设置线样式
         var polylineSymbol = {
             'line-color' : '#ff00ff',
@@ -52,7 +52,7 @@
         //将线添加到Layer
         layer.addGeometry(polyline);
 
-        var toolbar = new Z.Toolbar({
+        var toolbar = new maptalks.Toolbar({
             id: 'toolbar',//toolbar id
             position : { //工具条放置位置
                 top: '2',
