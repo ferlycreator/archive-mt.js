@@ -1,4 +1,4 @@
-.control-toolbar {
+.maptalks-control-toolbar {
     background-color: #ffffff;
     border: 1px solid #C4C7CC;
     max-height: 35px;
@@ -6,7 +6,7 @@
     max-width: 100%;
 }
 
-.control-toolbar-vertical {
+.maptalks-control-toolbar-vertical {
     background-color: #ffffff;
     border: 1px solid #C4C7CC;
     max-width: 35px;
@@ -14,7 +14,7 @@
     max-height: 100%;
 }
 
-.control-button {
+.maptalks-control-button {
     position: relative;
     cursor: pointer;
     background-color: #ffffff;
@@ -25,7 +25,7 @@
     white-space: nowrap;
 }
 
-.control-button-hover {
+.maptalks-control-button-hover {
     position: relative;
     cursor: pointer;
     background-color: #6490C4;
@@ -36,7 +36,7 @@
     white-space: nowrap;
 }
 
-.control-menu-down {
+.maptalks-control-menu-down {
     position: absolute;
     top: 100%;
     left: 0;
@@ -52,7 +52,7 @@
     border: 1px solid rgba(0,0,0,.15);
 }
 
-.control-menu-up {
+.maptalks-control-menu-up {
     position: absolute;
     bottom: 100%;
     left: 0;
@@ -68,7 +68,7 @@
     border: 1px solid rgba(0,0,0,.15);
 }
 
-.control-menu-right {
+.maptalks-control-menu-right {
     position: absolute;
     top: 0px;
     left: 100%;
@@ -84,7 +84,7 @@
     border: 1px solid rgba(0,0,0,.15);
 }
 
-.control-menu-left {
+.maptalks-control-menu-left {
     position: absolute;
     top: 0px;
     right: 100%;
@@ -101,7 +101,7 @@
 }
 
 
-.control-menu-right-up {
+.maptalks-control-menu-right-up {
     position: absolute;
     bottom: 0;
     right: 100%;
@@ -117,7 +117,7 @@
     border: 1px solid rgba(0,0,0,.15);
 }
 
-.control-menu-left-up {
+.maptalks-control-menu-left-up {
     position: absolute;
     bottom: 0;
     left: 100%;
@@ -133,7 +133,7 @@
     border: 1px solid rgba(0,0,0,.15);
 }
 
-.control_zoom_button {
+.maptalks-control-zoom-button {
     display: inline-block;*display:inline;zoom:1;
     cursor: pointer;
     position: relative;
@@ -148,16 +148,16 @@
 
 }
 
-.control_zoom_in {
+.maptalks-control-zoom-in {
     background-position: 0 -229px;
 }
 
-.control_zoom_out {
+.maptalks-control-zoom-out {
     position: relative;
     background-position: 0 -106px;
 }
 
-.control_zoomlevel_bg {
+.maptalks-control-zoomlevel-bg {
     position: relative;
     top: 10px;
     left: 0px;
@@ -168,12 +168,12 @@
     text-align: center;
 }
 
-.control_zoomlevel_num {
+.maptalks-control-zoomlevel-num {
     color: #6490C4;
     font-size: x-large;
 }
 
-.control_zoomdrop {
+.maptalks-control-zoomdrop {
     width: 41px;
     height: 143px;
     top: 40px;
@@ -184,7 +184,7 @@
     padding-top: 15px;
 }
 
-.control_zoombar {
+.maptalks-control-zoombar {
     cursor: pointer;
     position: absolute;
     top: 30px;
@@ -194,7 +194,7 @@
     height: 131px;
 }
 
-.control_zoombar_background {
+.maptalks-control-zoombar-background {
     position: absolute;
     top: 0px;
     left: 12px;
@@ -203,7 +203,7 @@
     height: 198px;
 }
 
-.control_zoom_slider {
+.maptalks-control-zoom-slider {
     cursor: pointer;
     position: absolute;
     top: 0px;
@@ -214,7 +214,7 @@
 }
 
 
-.control_nav_button {
+.maptalks-control-nav-button {
     cursor: pointer;
     position: absolute;
     width: 16px;
@@ -222,33 +222,33 @@
     z-index:100;
 }
 
-.control_nav_left {
+.maptalks-control-nav-left {
     top: 18px;
     left: 2px;
 }
 
-.control_nav_up {
+.maptalks-control-nav-up {
     top: 2px;
     left: 18px;
 }
 
-.control_nav_right {
+.maptalks-control-nav-right {
     top: 18px;
     left: 34px;
 }
 
-.control_nav_down {
+.maptalks-control-nav-down {
     top: 34px;
     left: 18px;
 }
 
-.control_nav_bar {
+.maptalks-control-nav-bar {
     cursor: pointer;
     position: relative;
     width: 52px;
     height: 52px;
 }
 
-.control_nav_bg {
+.maptalks-control-nav-bg {
     background: url(../images/apiimg.png);
 }

@@ -60,14 +60,14 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
         this._map = map;
         this._internalLayer = this._getInternalLayer(map, '__mt__internal_layer_panel_link');
         this._panelContainer = Z.DomUtil.createElOn('div', 'cursor:default;');
-        var divCss = 'panel-default';
-        var titleCss = 'panel-title-default';
-        var contentCss = 'panel-content-default';
+        var divCss = 'maptalks-panel-default';
+        var titleCss = 'maptalks-panel-title-default';
+        var contentCss = 'maptalks-panel-content-default';
         var style = this.options['style'];
         if(style) {
-            divCss = 'panel-' + style;
-            titleCss = 'panel-title-' + style;
-            contentCss = 'panel-content-' + style;
+            divCss = 'maptalks-panel-' + style;
+            titleCss = 'maptalks-panel-title-' + style;
+            contentCss = 'maptalks-panel-content-' + style;
         }
         Z.DomUtil.addClass(this._panelContainer, divCss);
         this._appendTitleDom(titleCss);
@@ -318,6 +318,21 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
             this._map.off('zoomend resize moving', this._changeLinkPath, this);
         }*/
         this.fire('dragend', {'target': this, 'position': this._endOffset});
-    }
+    },
+
+     _getInternalLayer: function(map, layerId, canvas) {
+         if(!map) {return;}
+         var layer = map.getLayer(layerId);
+         if(!layer) {
+             if(canvas) {
+                 layer = new Z.VectorLayer(layerId,{'render':'canvas'});
+             } else {
+                 layer = new Z.VectorLayer(layerId);
+             }
+             map.addLayer(layer);
+         }
+         return layer;
+     }
+
 
 });
