@@ -40,21 +40,7 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
         }
     },
 
-    refresh:function() {
-        this.renderPoints = this.geometry._getRenderPoints();
-        var layer = this.geometry.getLayer();
-        if (!layer.isCanvasRender()) {
-            this.symbolize();
-        }
-    },
 
-    remove:function() {
-        if (Z.Util.isArrayHasData(this.markers)) {
-            for (var i = this.markers.length-1;i>=0;i--) {
-                Z.Util.removeDomNode(this.markers[i]);
-            }
-        }
-    },
 
     _translate:function() {
         var s = this.symbol;

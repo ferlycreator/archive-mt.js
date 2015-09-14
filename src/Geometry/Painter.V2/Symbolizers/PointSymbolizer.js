@@ -1,6 +1,5 @@
 Z.PointSymbolizer=Z.Symbolizer.extend({
-    _svg:function(container,vectorContainer, zIndex) {
-
+    _svg:function(container,zIndex) {
         var points = this.renderPoints;
         if (!Z.Util.isArrayHasData(points)) {
             return;
@@ -48,6 +47,26 @@ Z.PointSymbolizer=Z.Symbolizer.extend({
         }
     },
 
+    //所有point symbolizer的共同的refresh方法
+    refresh:function() {
+        this.renderPoints = this.geometry._getRenderPoints();
+        var layer = this.geometry.getLayer();
+        if (!layer.isCanvasRender()) {
+            this.symbolize();
+        }
+    },
+
+
+    //所有point symbolizer的共同的remove方法
+    remove:function() {
+        if (Z.Util.isArrayHasData(this.markers)) {
+            for (var i = this.markers.length-1;i>=0;i--) {
+                Z.Util.removeDomNode(this.markers[i]);
+            }
+        }
+    },
+
+    //设置dom/svg/vml类型marker页面位置的方法
     offsetMarker:function(marker, point) {
         if (marker.tagName && marker.tagName === 'SPAN') {
             //dom

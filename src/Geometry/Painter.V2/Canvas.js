@@ -48,9 +48,11 @@ Z.Canvas = {
                  /*var imageTexture = document.createElement('img');
                  imageTexture.src = imgUrl;*/
                  //#23
-                 var imageTexture = resources.getImage(imgUrl);
-                 var woodfill = context.createPattern(imageTexture, 'repeat');
-                 context.fillStyle = woodfill;
+                 if (resources) {
+                    var imageTexture = resources.getImage(imgUrl);
+                    var woodfill = context.createPattern(imageTexture, 'repeat');
+                    context.fillStyle = woodfill;
+                 }
              }else {
                  context.fillStyle =this.getRgba(fill);
              }
@@ -163,14 +165,15 @@ Z.Canvas = {
            ctx.closePath();
            ctx.stroke();
         }
-        /*var map = this.geoMap();
-        var pcenter = this._getPCenter();
-        var pt = map._transform(pcenter);
-        var size = this._getRenderSize();
-        var width = size['width'];
-        var height = size['height'];
-        bezierEllipse(pt['left'],pt['top'],width,height);*/
-        bezierEllipse(pt['left'],pt['top'],size["width"],size["height"]);
+        if (size['width'] === size['height']) {
+            //如果高宽相同,则直接绘制圆形, 提高效率
+            ctx.beginPath();
+            ctx.arc(pt['left'],pt['top'],size['width']/2,0,2*Math.PI);
+            ctx.stroke();
+        } else {
+            bezierEllipse(pt['left'],pt['top'],size["width"],size["height"]);
+        }
+
     },
 
     rectangle:function(ctx, pt, size) {

@@ -35,40 +35,32 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
             return map._domOffsetToScreen(point);
         });
         var style = this._translate();
-        var url = style['marker-file'];
-        var img = resources.getImage(url);
-        if (!img) {
-            return;
-        }
-        //将完整图片地址写回到symbol中, 截图等模块需要
-        this.symbol['marker-file'] = img['src'];
-        var ratio = Z.Browser.retina ? 2:1;
-        for (var i = 0, len=cookedPoints.length;i<len;i++) {
-            var pt = cookedPoints[i].multi(ratio);
-            var width = style['marker-width']*ratio;
-            var height = style['marker-height']*ratio;
-            if (width && height) {
-                ctx.drawImage(img,pt['left'],pt['top'],width,height);
-             } else {
-                ctx.drawImage(img,pt['left'],pt['top']);
-             }
-        }
-    },
-
-    refresh:function() {
-        this.renderPoints = this.geometry._getRenderPoints();
-        var layer = this.geometry.getLayer();
-        if (!layer.isCanvasRender()) {
-            this.symbolize();
-        }
-    },
-
-    remove:function() {
-        if (Z.Util.isArrayHasData(this.markers)) {
-            for (var i = this.markers.length-1;i>=0;i--) {
-                Z.Util.removeDomNode(this.markers[i]);
+        var vectorArray = this._getVectorArray(style);
+        var markerType = style['marker-type'].toLowerCase();
+        var strokeAndFill = this._translateStrokeAndFill(style);
+        Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'],strokeAndFill['fill'], null);
+        var j;
+        for (var i = cookedPoints.length - 1; i >= 0; i--) {
+            var point = cookedPoints[i];
+            if (markerType  === 'ellipse') {
+                Z.Canvas.ellipse(ctx, point, new Z.Size(style['marker-width'],style['marker-height']));
+                Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']);
+            } else if (markerType === 'cross' || markerType === 'x'){
+                for (j = vectorArray.length - 1; j >= 0; j--) {
+                    vectorArray[j].add(point);
+                }
+                //线类型
+                Z.Canvas.path(ctx,vectorArray,null);
+            } else {
+                for (j = vectorArray.length - 1; j >= 0; j--) {
+                    vectorArray[j].add(point);
+                }
+                //面类型
+                Z.Canvas.polygon(ctx,vectorArray,null);
+                Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']);
             }
         }
+
     },
 
     _translate:function() {
@@ -148,23 +140,23 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
                 path = 'M'+point.join(',')+' a'+width/2 + ',' + height/2+' 0,1,0,0,-0.9Z';
             }
         } else if ('triangle' === markerType) {
-            path = 'M'+points[0][0]+','+points[0][1]+ ' ' +
-                     'L'+points[1][0]+','+points[1][1]+ ' ' +
-                     'L'+points[2][0]+','+points[2][1]+ ' ' +
+            path = 'M'+points[0]['left']+','+points[0]['top']+ ' ' +
+                     'L'+points[1]['left']+','+points[1]['top']+ ' ' +
+                     'L'+points[2]['left']+','+points[2]['top']+ ' ' +
                      Z.SVG.closeChar;
         }  else if ('cross' === markerType || 'x' === markerType) {
-            path ='M'+points[0][0]+','+points[0][1]+ ' ' +
-                         'L'+points[1][0]+','+points[1][1]+ ' ' +
-                         'M'+points[2][0]+','+points[2][1]+ ' ' +
-                         'L'+points[3][0]+','+points[3][1];
+            path ='M'+points[0]['left']+','+points[0]['top']+ ' ' +
+                         'L'+points[1]['left']+','+points[1]['top']+ ' ' +
+                         'M'+points[2]['left']+','+points[2]['top']+ ' ' +
+                         'L'+points[3]['left']+','+points[3][1];
         } else if ('diamond' === markerType || 'square' === markerType || 'bar' === markerType) {
-           path = 'M'+points[0][0]+','+points[0][1]+ ' ' +
-                         'L'+points[1][0]+','+points[1][1]+ ' ' +
-                         'L'+points[2][0]+','+points[2][1]+ ' ' +
-                         'L'+points[3][0]+','+points[3][1]+ ' ' +
+           path = 'M'+points[0]['left']+','+points[0]['top']+ ' ' +
+                         'L'+points[1]['left']+','+points[1]['top']+ ' ' +
+                         'L'+points[2]['left']+','+points[2]['top']+ ' ' +
+                         'L'+points[3]['left']+','+points[3]['top']+ ' ' +
                          Z.SVG.closeChar;
         } /*else if ('tip' === markerType) {
-            path = 'M'+points[0][0]+','+points[0][1]+ ' ' +
+            path = 'M'+points[0]['left']+','+points[0]['top']+ ' ' +
                          'L'+points[1][0]+','+points[1][1]+ ' ' +
                          'L'+points[2][0]+','+points[2][1]+ ' ' +
                          'L'+points[3][0]+','+points[3][1]+ ' ' +
@@ -188,43 +180,41 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
         var hh = Math.round(height/2),
             hw = Math.round(width/2);
         var left = 0, top = 0;
-        var rad = Math.PI/180; // 单位弧度
         var v0,v1,v2,v3;
         if ('triangle' === markerType) {
-            var th = Math.tan(30*rad)*hw;
-            v0 = [left,top-(hh-th)];
-            v1 = [Z.Util.roundNumber(left-hw),Z.Util.roundNumber(top+th)];
-            v2 = [Z.Util.roundNumber(left+hw),Z.Util.roundNumber(top+th)];
+            v0 = new Z.Point(left,top-hh);
+            v1 = new Z.Point(Z.Util.roundNumber(left-hw),Z.Util.roundNumber(top+hh));
+            v2 = new Z.Point(Z.Util.roundNumber(left+hw),Z.Util.roundNumber(top+hh));
             return [v0,v1,v2];
         } else if ('cross' === markerType) {
-            v0 = [(left-hw),top];
-            v1 = [(left+hw),top];
-            v2 = [(left),(top-hh)];
-            v3 = [(left),(top+hh)];
+            v0 = new Z.Point((left-hw),top);
+            v1 = new Z.Point((left+hw),top);
+            v2 = new Z.Point((left),(top-hh));
+            v3 = new Z.Point((left),(top+hh));
             return [v0,v1,v2,v3];
         } else if ('diamond' === markerType) {
-            v0 = [(left-hw),top];
-            v1 = [left,(top-hh)];
-            v2 = [(left+hw),top];
-            v3 = [(left),(top+hh)];
+            v0 = new Z.Point((left-hw),top);
+            v1 = new Z.Point(left,(top-hh));
+            v2 = new Z.Point((left+hw),top);
+            v3 = new Z.Point((left),(top+hh));
             return [v0,v1,v2,v3];
         } else if ('square' === markerType) {
-            v0 = [(left-hw),(top+hh)];
-            v1 = [(left+hw),(top+hh)];
-            v2 = [(left+hw),(top-hh)];
-            v3 = [(left-hw),(top-hh)];
+            v0 = new Z.Point((left-hw),(top+hh));
+            v1 = new Z.Point((left+hw),(top+hh));
+            v2 = new Z.Point((left+hw),(top-hh));
+            v3 = new Z.Point((left-hw),(top-hh));
             return [v0,v1,v2,v3];
         } else if ('x' === markerType) {
-             v0 = [left-hw,top+hh];
-             v1 = [left+hw,top-hh];
-             v2 = [left+hw,top+hh];
-             v3 = [left-hw,top-hh];
+             v0 = new Z.Point(left-hw,top+hh);
+             v1 = new Z.Point(left+hw,top-hh);
+             v2 = new Z.Point(left+hw,top+hh);
+             v3 = new Z.Point(left-hw,top-hh);
             return [v0,v1,v2,v3];
         } else if ('bar' === markerType) {
-             v0 = [(left-hw),(top-height)];
-             v1 = [(left+hw),(top-height)];
-             v2 = [(left+hw),top];
-             v3 = [(left-hw),top];
+             v0 = new Z.Point((left-hw),(top-height));
+             v1 = new Z.Point((left+hw),(top-height));
+             v2 = new Z.Point((left+hw),top);
+             v3 = new Z.Point((left-hw),top);
             return [v0,v1,v2,v3];
         }
         return null;

@@ -245,7 +245,7 @@ Z.Render.Canvas.prototype = {
         return this._visible;
     },
 
-    _setZIndex: function(zindex) {
+    setZIndex: function(zindex) {
         this.zindex=zindex;
     },
 
