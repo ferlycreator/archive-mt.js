@@ -348,8 +348,11 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     _getPainter:function() {
         if (this.getMap() && !this._painter) {
-            //this._painter = this._assignPainter();
-            this._painter = new Z.Painter(this);
+            if (this instanceof Z.GeometryCollection) {
+                this._painter = new Z.CollectionPainter(this);
+            } else {
+                this._painter = new Z.Painter(this);
+            }
         }
         return this._painter;
     },

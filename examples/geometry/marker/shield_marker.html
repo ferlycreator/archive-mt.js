@@ -7,7 +7,7 @@
     <style type="text/css">
         html,body{ margin:0px; height:100%; };
     </style>
-    <title>MapTalks 示例: 标注文本</title>
+    <title>maptalks 示例: 标注文本</title>
 </head>
 <body scroll="no" onload="initMap();">
 <div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
@@ -34,6 +34,8 @@
         var coordinate = new maptalks.Coordinate(121.489935,31.24432);
         //设置矢量配置
         var icon = {
+            "shield-placement"  : "vertex",
+
              "shield-file"      :  "/images/marker.png",
             "shield-opacity"    :  1,
             "shield-dx"         :  0,
@@ -41,19 +43,24 @@
 
             "shield-name"       : "这是一个shield marker",
             "shield-face-name"  : "arial",
-            "shield-size"       :  40,
+            "shield-size"       :  10,
             "shield-fill"       : "#ff0000",
             "shield-text-opacity": 1,
-            "shield-halo-fill"  : "#ffffff",
-            "shield-halo-radius": 2,
+            //"shield-halo-fill"  : "#ffffff",
+            //"shield-halo-radius": 1,
 
             "shield-text-dx"    :  0,
             "shield-text-dy"    :  0,
 
-            "shield-horizontal-alignment"   : "right", //left | middle | right | auto
+            "shield-horizontal-alignment"   : "middle", //left | middle | right | auto
             "shield-vertical-alignment"     : "middle",   // top | middle | bottom | auto
             "shield-justify-alignment"      : "left"
         };
+
+        var polygon = new maptalks.Polygon([[
+                                            [121.489935,31.24432], [121.488935,31.24432], [121.488935,31.24332],[121.489935,31.24432]
+                                                ]], {'symbol':icon});
+
         /**
         * 说明：
         * 1、shield-type tip：气泡形；label：矩形标签；
@@ -69,7 +76,7 @@
         //设置点样式
         marker.setSymbol(icon);
         //将点添加到Layer
-        layer.addGeometry(marker);
+        layer.addGeometry([marker,polygon]);
     }
 </script>
 <!-- 引擎javascript开发包-->

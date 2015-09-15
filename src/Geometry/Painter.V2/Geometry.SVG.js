@@ -157,7 +157,7 @@ Symboling.Poly={
             //TODO 获取线段中心点
         } else {
             var center = this.getCenter();
-            var pcenter = this.getProjection().project(center);
+            var pcenter = this._getProjection().project(center);
             points = [map._transformToOffset(pcenter)];
         }
         return points;
