@@ -28,34 +28,34 @@
             subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
         }));
         //创建图层
-        var layer = new Z.VectorLayer('layer');
+        var layer = new Z.VectorLayer('layer',{render:'canvas'});
         //将图层添加到地图对象
         mapObj.addLayer(layer);
         //创建点的坐标对象
         var coordinate = new Z.Coordinate(121.489935,31.24432);
         //设置矢量配置
         var icon = {
-            'marker-type': 'triangle',
-            'marker-opacity': 1,
+            'marker-type': 'ellipse',
+            'marker-opacity': 0.5,
             'marker-fill-opacity': 1,
-            'marker-line-color': '#0000ff',
-            'marker-line-width': 1,
+            // 'marker-line-color': '#0000ff',
+            'marker-line-width': 5,
             'marker-line-opacity': 1,
             'marker-placement': 'point',
             'marker-width': 30,
             'marker-height': 30,
-            'marker-fill': '#ff0000',
-            'dx': 0,
-            'dy': 0
+            // 'marker-fill': '#ff0000',
+            'marker-dx': 0,
+            'marker-dy': 0
         };
         /**
         * marker-type 说明：
-        * circle：圆形；triangle：三角形；cross：十字；diamond：菱形；square：正方形；x/X：X形；bar：柱状图
+        * ellipse ：圆形；triangle ：三角形； cross ：十字； diamond ：菱形； square ：正方形；x/X：X形；bar：柱状图
         */
         //创建点对象
         var marker = new Z.Marker(coordinate, {symbol:icon});
         //设置点样式
-        marker.setSymbol(icon);
+        // marker.setSymbol(icon);
         //将点添加到Layer
         layer.addGeometry(marker);
     }
