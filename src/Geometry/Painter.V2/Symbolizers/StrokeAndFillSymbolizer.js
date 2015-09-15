@@ -21,6 +21,8 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
         if (!this.svgDom) {
             var svgPaper = vectorContainer;//this.getMap()._getSvgPaper();
             this.svgDom = Z.SVG.path(svgPath);
+            //鼠标样式
+            this.svgDom.style.cursor = "pointer";
             svgPaper.appendChild(this.svgDom);
         } else {
             Z.SVG.updatePath(this.svgDom, svgPath);

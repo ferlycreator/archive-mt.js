@@ -77,7 +77,7 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
 
         var markerIcon = Z.DomUtil.createEl('img');
         markerIcon.style.cssText = 'border:none; position:absolute;'+
-                'cursor:pointer;max-width:none;-webkit-user-select: none;';
+                'max-width:none;-webkit-user-select: none;';
         var width, height;
         if (!Z.Util.isNil(symbol['marker-width'])) {
             width = parseInt(symbol['marker-width'],0);

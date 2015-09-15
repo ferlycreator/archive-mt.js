@@ -27,7 +27,7 @@
             subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
         }));
         //创建图层
-        var layer = new maptalks.VectorLayer('layer',{'render':'canvas'});
+        var layer = new maptalks.VectorLayer('layer'/*,{'render':'canvas'}*/);
         //将图层添加到地图对象
         mapObj.addLayer(layer);
         //创建点的坐标对象
