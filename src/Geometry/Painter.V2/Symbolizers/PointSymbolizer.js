@@ -1,4 +1,47 @@
 Z.PointSymbolizer=Z.Symbolizer.extend({
+    //所有point symbolizer的共同的refresh方法
+    refresh:function() {
+        this.renderPoints = this._getRenderPoints();
+        var layer = this.geometry.getLayer();
+        if (!layer.isCanvasRender()) {
+            this.symbolize();
+        }
+    },
+
+
+    //所有point symbolizer的共同的remove方法
+    remove:function() {
+        if (Z.Util.isArrayHasData(this.markers)) {
+            for (var i = this.markers.length-1;i>=0;i--) {
+                Z.Util.removeDomNode(this.markers[i]);
+            }
+        }
+    },
+
+    setZIndex:function(zIndex) {
+        if (Z.Util.isArrayHasData(this.markers)) {
+            for (var i = this.markers.length-1;i>=0;i--) {
+                this.markers[i].style.zIndex = zIndex;
+            }
+        }
+    },
+
+    show:function(){
+        if (Z.Util.isArrayHasData(this.markers)) {
+            for (var i = this.markers.length-1;i>=0;i--) {
+                this.markers[i].style.display = "";
+            }
+        }
+    },
+
+    hide:function(){
+        if (Z.Util.isArrayHasData(this.markers)) {
+            for (var i = this.markers.length-1;i>=0;i--) {
+                this.markers[i].style.display = "none";
+            }
+        }
+    },
+
     _svgMarkers:function(container,zIndex) {
         var points = this.renderPoints;
         if (!Z.Util.isArrayHasData(points)) {
@@ -51,24 +94,7 @@ Z.PointSymbolizer=Z.Symbolizer.extend({
         return this.geometry._getRenderPoints(this.getPlacement());
     },
 
-    //所有point symbolizer的共同的refresh方法
-    refresh:function() {
-        this.renderPoints = this._getRenderPoints();
-        var layer = this.geometry.getLayer();
-        if (!layer.isCanvasRender()) {
-            this.symbolize();
-        }
-    },
 
-
-    //所有point symbolizer的共同的remove方法
-    remove:function() {
-        if (Z.Util.isArrayHasData(this.markers)) {
-            for (var i = this.markers.length-1;i>=0;i--) {
-                Z.Util.removeDomNode(this.markers[i]);
-            }
-        }
-    },
 
     //设置dom/svg/vml类型marker页面位置的方法
     _offsetMarker:function(marker, pt) {

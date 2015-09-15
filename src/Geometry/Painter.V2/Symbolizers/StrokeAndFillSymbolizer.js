@@ -56,6 +56,33 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
         }
     },
 
+    //所有point symbolizer的共同的remove方法
+    remove:function() {
+        if (Z.Util.isArrayHasData(this.markers)) {
+            for (var i = this.markers.length-1;i>=0;i--) {
+                Z.Util.removeDomNode(this.markers[i]);
+            }
+        }
+    },
+
+    setZIndex:function(zIndex) {
+        if (this.svgDom) {
+            this.svgDom.style.zIndex = zIndex;
+        }
+    },
+
+    show:function(){
+        if (this.svgDom) {
+            this.svgDom.style.display = "";
+        }
+    },
+
+    hide:function(){
+        if (this.svgDom) {
+            this.svgDom.style.display = "none";
+        }
+    },
+
     translate:function() {
         var s = this.strokeAndFillSymbol;
         var d = this.defaultSymbol;
