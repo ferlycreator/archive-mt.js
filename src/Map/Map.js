@@ -652,8 +652,8 @@ Z['Map']=Z.Map=Z.Class.extend({
         var projection = this._getProjection();
         if (!coordinate || !projection) {return null;}
         var pCoordinate = projection.project(coordinate);
-        var offset = this._transformToOffset(pCoordinate);
-        return this._domOffsetToScreen(offset);
+        var offset = this._transform(pCoordinate);
+        return offset;
     },
 
     /**
