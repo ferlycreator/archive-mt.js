@@ -8,7 +8,6 @@
         html,body{ margin:0px; height:100%; };
     </style>
     <title>MapTalks 示例: Attribution(归属信息)控件</title>
-    <link href="../../css/maptalks.css" rel="stylesheet" type="text/css"/>
 </head>
 <body scroll="no" onload="initMap();">
 <div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
@@ -16,13 +15,12 @@
     var mapObj;
     function initMap(){
         //创建地图对象
-        mapObj = new Z.Map('mapObj', //放置mapObj的div id
+        mapObj = new maptalks.Map('mapObj', //放置mapObj的div id
         {
-            center:  new Z.Coordinate(121.489935,31.24432), //初始中心点坐标
+            center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
             zoomLevel:   11, //初始缩放级别
             attributionControl: true,//attribution控件
             attributionControlOptions : {//设置控件放置位置
-                id: 'CONTROL_ATTRIBUTION',
                 position : {
                     'bottom': '0',
                     'right': '0'
@@ -31,7 +29,7 @@
             }
         });
         //设置底图图层
-        mapObj.setBaseTileLayer(new Z.TileLayer('tile', //底图id
+        mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
         {
             tileInfo: 'web-mercator',
             urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
@@ -40,8 +38,7 @@
         /**
         * 创建多个Attribution控件
         */
-        var attributionControl = new Z.Control.Attribution({
-            id: 'attributionControl', //控件id
+        var attributionControl = new maptalks.Control.Attribution({
             //自定义控件放置位置
             position : {
                 top: '40',

@@ -1,7 +1,6 @@
 Z['Control']['Attribution'] = Z.Control.Attribution = Z.Control.extend({
 
 	options:{
-		'id': 'CONTROL_ATTRIBUTION',
 		'position' : {
 			'bottom': '0',
 			'right': '0'
@@ -10,12 +9,12 @@ Z['Control']['Attribution'] = Z.Control.Attribution = Z.Control.extend({
 	},
 
 	statics: {
-		'control_attribution_bg' : 'display: inline-block; background-color: #FAF7F5; opacity: 0.8;'
+		'maptalks-control-attribution-bg' : 'display: inline-block; background-color: #FAF7F5; opacity: 0.8;'
 	},
 
 	buildOn: function (map) {
 		this._attributionContainer = Z.DomUtil.createEl('div');
-		Z.DomUtil.setStyle(this._attributionContainer, Z.Control.Attribution['control_attribution_bg']);
+		Z.DomUtil.setStyle(this._attributionContainer, Z.Control.Attribution['maptalks-control-attribution-bg']);
         Z.DomUtil.on(this._attributionContainer, 'mousedown mousemove dblclick contextmenu', Z.DomUtil.stopPropagation);
         this._update();
 		return this._attributionContainer;
@@ -39,7 +38,6 @@ Z['Control']['Attribution'] = Z.Control.Attribution = Z.Control.extend({
 Z.Map.mergeOptions({
 	'attributionControl' : false,
 	'attributionControlOptions' : {
-		'id': 'MAP_CONTROL_ATTRIBUTION',
 		'position' : {
 			'bottom': '0',
 			'right': '0'
@@ -50,9 +48,6 @@ Z.Map.mergeOptions({
 Z.Map.addOnLoadHook(function () {
 	if (this.options['attributionControl']) {
 		var attributionControlOptions = this['options']['attributionControlOptions'];
-		if(!attributionControlOptions['id']) {
-			attributionControlOptions['id'] = 'MAP_CONTROL_ATTRIBUTION';
-		}
 		if(!attributionControlOptions['position']) {
 			attributionControlOptions['position'] = {
 				'bottom': '0',

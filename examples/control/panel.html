@@ -8,7 +8,6 @@
         html,body{ margin:0px; height:100%; };
     </style>
     <title>MapTalks 示例: Panel控件</title>
-    <link href="../../css/maptalks.css" rel="stylesheet" type="text/css"/>
 </head>
 <body scroll="no" onload="initMap();">
 <div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
@@ -16,25 +15,24 @@
     var mapObj;
     function initMap(){
         //创建地图对象
-        mapObj = new Z.Map('mapObj', //放置mapObj的div id
+        mapObj = new maptalks.Map('mapObj', //放置mapObj的div id
         {
-            center:  new Z.Coordinate(121.489935,31.24432), //初始中心点坐标
+            center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
             zoomLevel:   11, //初始缩放级别
             navControl: true,//nav控件
             navControlOptions : {//设置控件放置位置
-                position : Z.Control['top_left']
+                position : maptalks.Control['top_left']
             }
         });
         //设置底图图层
-        mapObj.setBaseTileLayer(new Z.TileLayer('tile', //底图id
+        mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
         {
             tileInfo: 'web-mercator',
             urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
             subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
         }));
         //构建panel
-        var panel = new Z.Panel({
-            id: 'panelId', //panel id
+        var panel = new maptalks.Panel({
             position : {//放置panel的位置
                 top: '15',
                 left: '15'
@@ -50,17 +48,16 @@
         */
         mapObj.addControl(panel);
         //创建图层
-        var layer = new Z.VectorLayer('layer');
+        var layer = new maptalks.VectorLayer('layer');
         //将图层添加到地图对象
         mapObj.addLayer(layer);
         //创建点的坐标对象
-        var markerCoordinate = new Z.Coordinate(121.489935,31.24432);
+        var markerCoordinate = new maptalks.Coordinate(121.489935,31.24432);
         //创建点对象
-        var marker = new Z.Marker(markerCoordinate,'marker_id');
+        var marker = new maptalks.Marker(markerCoordinate,'marker_id');
         layer.addGeometry(marker);
 
         var markerPanelOptions = {
-            id : 'label01',
             position : {
                 bottom: '15',
                 right: '15'
@@ -77,7 +74,7 @@
                 'line-dasharray' : '-'
             }
         };
-        var markerInfoPanel = new Z.Panel(markerPanelOptions);
+        var markerInfoPanel = new maptalks.Panel(markerPanelOptions);
         marker.addPanel(markerInfoPanel);
 
         var getPanel = marker.getPanel('label01');

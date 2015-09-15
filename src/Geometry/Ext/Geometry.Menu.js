@@ -1,15 +1,26 @@
 Z.Geometry.include({
     /**
     * 设置Geometry的菜单
-    * @param {Array} menuOption 菜单项
+    * @param {Array} options 菜单项
     * {"items":[], width:240, beforeopen:fn}
     * @expose
     */
-    setMenu: function(menuOption) {
+    setMenu: function(options) {
+        if(this.getMap()) {
+            this._setMenu(options);
+        } else {
+            this.on('afterAdd', function() {
+                this._setMenu(options);
+            });
+        }
+        return this;
+    },
+
+    _setMenu: function(options) {
         this.map = this.getMap();
-        this.menu = new Z.Menu(menuOption);
+        this.menu = new Z.Menu(options);
         this.menu.addTo(this);
-        var beforeopenFn = menuOption['beforeopen'];
+        var beforeopenFn = options['beforeopen'];
         if(beforeopenFn) {
             this._beforeOpenMenu();
         }
@@ -35,7 +46,7 @@ Z.Geometry.include({
     */
     openMenu: function(coordinate) {
         if(!coordinate) {
-            coordinate = this.showPostion;
+            coordinate = this.position;
         }
         this.menu.show(coordinate);
     },

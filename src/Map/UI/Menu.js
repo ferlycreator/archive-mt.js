@@ -54,7 +54,6 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
         var popMenuContainer = this._map._panels.popMenuContainer;
         popMenuContainer.innerHTML = '';
         popMenuContainer.appendChild(this._menuDom);
-
         this._addEvent();
         return this;
     },
@@ -87,7 +86,7 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
             return;
         }
         if (!options.width) {
-            options.width = 240;
+            options.width = 160;
         }
         if(!options.style||options.style === 'default') {
             options.style = '';
@@ -106,28 +105,6 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
         }
     },
 
-    /**
-    * 设置菜单项目
-    * @param {Array} items 菜单项
-    * @return {Menu} 菜单
-    * @expose
-    */
-    setItems: function(items) {
-        this.options = this.options || {};
-        this.options['items'] = items;
-        var isOpen = this.isOpen();
-        Z.DomUtil.removeDomNode(this._menuDom);
-        this._menuDom = this._createMenuDom();
-        var popMenuContainer = this._map._panels.popMenuContainer;
-        popMenuContainer.innerHTML = '';
-        popMenuContainer.appendChild(this._menuDom);
-        this.addTo(this._target);
-        if(isOpen) {
-            this.show();
-        }
-        return this;
-    },
-
    /**
     * 返回Map的菜单设置
     * @return {Object} 菜单设置
@@ -135,6 +112,24 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
     */
     getOptions: function() {
         return this.options;
+    },
+
+    /**
+    * 设置菜单项目
+    * @param {Array} items 菜单项
+    * @return {Menu} 菜单
+    * @expose
+    */
+    setItems: function(items) {
+        var options = this.getOptions() || this.options;
+        options.items = items;
+        this._menuDom = this._createMenuDom();
+        if(this._map) {
+            var popMenuContainer = this._map._panels.popMenuContainer;
+            popMenuContainer.innerHTML = '';
+            popMenuContainer.appendChild(this._menuDom);
+        }
+        return this;
     },
 
     /**
@@ -200,16 +195,15 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
         menuContainer.style.display = 'none';
         menuContainer.style.width = this.options.width+'px';
         var suffix = this.options.style;
-        Z.DomUtil.setClass(menuContainer, 'maptalks-menu'+suffix);
+        Z.DomUtil.setClass(menuContainer, 'maptalks-menu');
+        Z.DomUtil.addClass(menuContainer, 'maptalks-menu-color'+suffix);
         this._menuItemsDom = this._createMenuItemDom();
         menuContainer.appendChild(this._menuItemsDom);
         return menuContainer;
     },
 
     _createMenuItemDom: function() {
-        var menuItemsDom = Z.DomUtil.createEl('ul');
-        var suffix = this.options.style;
-        Z.DomUtil.setClass(menuItemsDom, 'maptalks-menu-items'+suffix);
+        var menuItemsDom = Z.DomUtil.createElOn('ul', 'list-style: none;padding: 0px;margin: 0px;');
         var items = this.options.items;
         for (var i=0, len=items.length;i<len;i++) {
             var item = items[i];
@@ -222,28 +216,32 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
     _addMenuItem: function(item) {
         var suffix = this.options.style;
         var menuItem = Z.DomUtil.createEl('li');
-        Z.DomUtil.setClass(menuItem, 'maptalks-menu-item'+suffix);
+        Z.DomUtil.setClass(menuItem, 'maptalks-menu-item');
+        Z.DomUtil.addClass(menuItem, 'maptalks-menu-item-color'+suffix);
 
         Z.DomUtil.on(menuItem,'mouseover',function(e){
-            Z.DomUtil.setClass(menuItem, 'maptalks-menu-item-over'+suffix);
+            Z.DomUtil.removeClass(menuItem, 'maptalks-menu-item-color'+suffix);
+            Z.DomUtil.addClass(menuItem, 'maptalks-menu-item-over-color'+suffix);
         });
         Z.DomUtil.on(menuItem,'mouseout',function(e){
-            Z.DomUtil.setClass(menuItem, 'maptalks-menu-item'+suffix);
+            Z.DomUtil.removeClass(menuItem, 'maptalks-menu-item-over-color'+suffix);
+            Z.DomUtil.addClass(menuItem, 'maptalks-menu-item-color'+suffix);
         });
-        menuItem['callback'] = item['callback'];
+        menuItem.callback = item.callback;
+        var me = this;
         Z.DomUtil.on(menuItem,'click',function(e) {
             Z.DomUtil.stopPropagation(e);
-            var result = this['callback']({'target':this,'index':this['index']});
+            var result = this.callback({'target':me});
             if (!Z.Util.isNil(result) && !result) {
                 return;
             }
-            this.hide();
+            me.hide();
         });
         Z.DomUtil.on (menuItem,'mousedown mouseup dblclick',function(e) {
             Z.DomUtil.stopPropagation(e);
             return false;
         });
-        menuItem.innerHTML = item['item'];
+        menuItem.innerHTML = item.item;
         return menuItem;
     },
 
@@ -252,17 +250,15 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
     */
     _addEvent: function() {
         if(!this._menuDom.addEvent) {
-            this.close();
+            this.hide();
             this._removeEvent();
             this._map.on('zoomstart', this.hide, this);
             this._map.on('zoomend', this.hide, this);
             this._map.on('movestart', this.hide, this);
             this._map.on('dblclick', this.hide, this);
-            this._map.on('click', this.hide, this);
             this._menuDom.addEvent = true;
-
             if (this._target.hasListeners && this._target.hasListeners('openmenu')) {
-                this._target.fire('openmenu',{'target':this._target});
+                this._target.fire('openmenu', {'target':this._target});
             }
         }
     },
@@ -276,7 +272,6 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
         this._map.off('zoomend', this.hide);
         this._map.off('movestart', this.hide);
         this._map.off('dblclick', this.hide);
-        this._map.off('click', this.hide);
     },
 
     /**

@@ -15,19 +15,19 @@
     var mapObj,marker;
     function initMap(){
         //创建地图对象
-        mapObj = new Z.Map('mapObj', //放置mapObj的div id
+        mapObj = new maptalks.Map('mapObj', //放置mapObj的div id
         {
-            center:  new Z.Coordinate(121.489935,31.24432), //初始中心点坐标
+            center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
             zoomLevel:   17 //初始缩放级别
         });
         //设置底图图层
-        mapObj.setBaseTileLayer(new Z.TileLayer('tile', //底图id
+        mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
         {
             tileInfo: 'web-mercator',
             urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
             subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
         }));
-        var toolbar = new Z.Toolbar({
+        var toolbar = new maptalks.Toolbar({
             id: 'toolbar',//toolbar id
             position : { //工具条放置位置
                 top: '2',
@@ -51,13 +51,13 @@
         });
         mapObj.addControl(toolbar);
         //创建图层
-        var layer = new Z.VectorLayer('layer');
+        var layer = new maptalks.VectorLayer('layer');
         //将图层添加到地图对象
         mapObj.addLayer(layer);
         //创建点的坐标对象
-        var markerCoordinate = new Z.Coordinate(121.489935,31.24432);
+        var markerCoordinate = new maptalks.Coordinate(121.489935,31.24432);
         //创建点对象
-        marker = new Z.Marker(markerCoordinate,{'id':'marker_id'});
+        marker = new maptalks.Marker(markerCoordinate,{'id':'marker_id'});
         //设置图片
         var icon = {
             'marker-file': '../../../images/marker.png',

@@ -1,19 +1,18 @@
 Z['Control']['Nav'] = Z.Control.Nav = Z.Control.extend({
 
     options:{
-        'id': 'CONTROL_NAV',
         'position' : Z.Control['bottom_right']
     },
 
     buildOn: function (map) {
         this._map = map;
         this._navControlContainer = Z.DomUtil.createEl('div');
-        this._panToLeftButton  = this._createButton('control_nav_button control_nav_left', this._panToLeft);
-        this._panToUpButton  = this._createButton('control_nav_button control_nav_up', this._panToUp);
-        this._panToRightButton  = this._createButton('control_nav_button control_nav_right', this._panToRight);
-        this._panToDownButton  = this._createButton('control_nav_button control_nav_down', this._panToDown);
+        this._panToLeftButton  = this._createButton('maptalks-control-nav-button maptalks-control-nav-left', this._panToLeft);
+        this._panToUpButton  = this._createButton('maptalks-control-nav-button maptalks-control-nav-up', this._panToUp);
+        this._panToRightButton  = this._createButton('maptalks-control-nav-button maptalks-control-nav-right', this._panToRight);
+        this._panToDownButton  = this._createButton('maptalks-control-nav-button maptalks-control-nav-down', this._panToDown);
         this._navBar = Z.DomUtil.createElOn('div', '', this._navControlContainer);
-        Z.DomUtil.addClass(this._navBar, 'control_nav_bar control_nav_bg');
+        Z.DomUtil.addClass(this._navBar, 'maptalks-control-nav-bar maptalks-control-nav-bg');
         Z.DomUtil.on(this._navControlContainer, 'mouseup', this._stopPan, this);
         return this._navControlContainer;
     },
@@ -69,7 +68,6 @@ Z['Control']['Nav'] = Z.Control.Nav = Z.Control.extend({
 Z.Map.mergeOptions({
     'navControl' : false,
     'navControlOptions' : {
-        'id': 'MAP_CONTROL_NAV',
         'position' : Z.Control['bottom_right']
     }
 });
@@ -77,9 +75,6 @@ Z.Map.mergeOptions({
 Z.Map.addOnLoadHook(function () {
     if (this.options['navControl']) {
         var navControlOptions = this['options']['navControlOptions'];
-        if(!navControlOptions['id']) {
-            navControlOptions['id'] = 'MAP_CONTROL_NAV';
-        }
         if(!navControlOptions['position']) {
             navControlOptions['position'] = Z.Control['bottom_right'];
         }

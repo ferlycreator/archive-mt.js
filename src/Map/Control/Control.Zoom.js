@@ -1,15 +1,14 @@
 Z['Control']['Zoom'] = Z.Control.Zoom = Z.Control.extend({
 
 	options:{
-		'id': 'CONTROL_ZOOM',
 		'position' : Z.Control['top_right']
 	},
 
 	buildOn: function (map) {
 		this._zoomControlContainer = Z.DomUtil.createElOn('div', 'display:inline-block;_zoom:1;*display:inline;');
-        this._zoomInButton  = this._createButton('放大', 'control_zoom_button control_zoom_in', this._zoomIn);
+        this._zoomInButton  = this._createButton('放大', 'maptalks-control-zoom-button maptalks-control-zoom-in', this._zoomIn);
 		this._zoomLevelLabel = this._createZoomLevelLabel();
-		this._zoomOutButton = this._createButton('缩小', 'control_zoom_button control_zoom_out', this._zoomOut);
+		this._zoomOutButton = this._createButton('缩小', 'maptalks-control-zoom-button maptalks-control-zoom-out', this._zoomOut);
 		this._zoomSlider = this._createSlider();
 		this._updateDisabled();
 		map.on('zoomend zoomlevelschange', this._updateDisabled, this);
@@ -61,9 +60,9 @@ Z['Control']['Zoom'] = Z.Control.Zoom = Z.Control.extend({
 
 	_createZoomLevelLabel: function() {
 		var zoomLevelLabel = Z.DomUtil.createElOn('div', '', this._zoomControlContainer);
-		Z.DomUtil.addClass(zoomLevelLabel, 'control_zoomlevel_bg');
+		Z.DomUtil.addClass(zoomLevelLabel, 'maptalks-control-zoomlevel-bg');
 		this._zoomLevelNum = Z.DomUtil.createElOn('div', '', zoomLevelLabel);
-		Z.DomUtil.addClass(this._zoomLevelNum, 'control_zoomlevel_num');
+		Z.DomUtil.addClass(this._zoomLevelNum, 'maptalks-control-zoomlevel-num');
 		this._updateZoomLevel();
 		Z.DomUtil.on(zoomLevelLabel, 'mousedown mousemove click, dblclick contextmenu', Z.DomUtil.stopPropagation)
 				 .on(zoomLevelLabel, 'mouseover', this._showSlider, this)
@@ -78,15 +77,15 @@ Z['Control']['Zoom'] = Z.Control.Zoom = Z.Control.extend({
 
 	_createSlider: function() {
 		var zoomDrop = Z.DomUtil.createElOn('div', 'display: none');
-		Z.DomUtil.addClass(zoomDrop, 'control_zoomdrop');
+		Z.DomUtil.addClass(zoomDrop, 'maptalks-control-zoomdrop');
 
 		var zoom = Z.DomUtil.createElOn('div', '', zoomDrop);
 		var zoomBar = Z.DomUtil.createElOn('div', '', zoom);
-		Z.DomUtil.addClass(zoomBar, 'control_zoombar');
+		Z.DomUtil.addClass(zoomBar, 'maptalks-control-zoombar');
 		var zoomBarBg = Z.DomUtil.createElOn('div', '', zoomBar);
-		Z.DomUtil.addClass(zoomBarBg, 'control_zoombar_background');
+		Z.DomUtil.addClass(zoomBarBg, 'maptalks-control-zoombar-background');
 		this._zoomBarSlider = Z.DomUtil.createElOn('div', '', zoomBar);
-		Z.DomUtil.addClass(this._zoomBarSlider, 'control_zoom_slider');
+		Z.DomUtil.addClass(this._zoomBarSlider, 'maptalks-control-zoom-slider');
 
 		Z.DomUtil.on(zoomDrop, 'mousemove dblclick contextmenu', Z.DomUtil.stopPropagation)
 				 .on(zoomDrop, 'mouseover', this._showSlider, this)
@@ -141,7 +140,6 @@ Z['Control']['Zoom'] = Z.Control.Zoom = Z.Control.extend({
 Z.Map.mergeOptions({
 	'zoomControl': false,
 	'zoomControlOptions' : {
-		'id': 'MAP_CONTROL_ZOOM',
 		'position' : Z.Control['top_right']
 	}
 });
@@ -149,9 +147,6 @@ Z.Map.mergeOptions({
 Z.Map.addOnLoadHook(function () {
 	if (this.options['zoomControl']) {
 		var zoomControlOptions = this['options']['zoomControlOptions'];
-		if(!zoomControlOptions['id']) {
-			zoomControlOptions['id'] = 'MAP_CONTROL_ZOOM';
-		}
 		if(!zoomControlOptions['position']) {
 			zoomControlOptions['position'] = Z.Control['top_right'];
 		}

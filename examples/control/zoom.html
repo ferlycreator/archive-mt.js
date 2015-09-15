@@ -7,8 +7,7 @@
     <style type="text/css">
         html,body{ margin:0px; height:100%; };
     </style>
-    <title>MapTalks 示例: ZoomIn/ZoomOut控件</title>
-    <link href="../../css/maptalks.css" rel="stylesheet" type="text/css"/>
+    <title>MapTalks 示例: maptalks.omIn/maptalks.omOut控件</title>
 </head>
 <body scroll="no" onload="initMap();">
 <div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
@@ -16,17 +15,17 @@
     var mapObj;
     function initMap(){
         //创建地图对象
-        mapObj = new Z.Map('mapObj', //放置mapObj的div id
+        mapObj = new maptalks.Map('mapObj', //放置mapObj的div id
         {
-            center:  new Z.Coordinate(121.489935,31.24432), //初始中心点坐标
+            center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
             zoomLevel:   11, //初始缩放级别
             zoomControl :  true, //缩放控件
             zoomControlOptions : { //设置缩放控件的位置
-                position : Z.Control['top_left']//top_left|top_right|bottom_left|bottom_right
+                position : maptalks.Control['top_left']//top_left|top_right|bottom_left|bottom_right
             }
         });
         //设置底图图层
-        mapObj.setBaseTileLayer(new Z.TileLayer('tile', //底图id
+        mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
         {
             tileInfo: 'web-mercator',
             urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
@@ -35,8 +34,7 @@
         /**
         * 创建多个zoom控件
         */
-        var zoomControl = new Z.Control.Zoom({
-            id: 'zoomControl1', //控件id
+        var zoomControl = new maptalks.Control.maptalks.om({
             //自定义控件放置位置
             position : {
                 top: '40',
@@ -45,9 +43,8 @@
         });
         mapObj.addControl(zoomControl);
 
-        var zoomControl2 = new Z.Control.Zoom({
-            id: 'zoomControl12', //控件id
-            position : Z.Control['bottom_right']
+        var zoomControl2 = new maptalks.Control.maptalks.om({
+            position : maptalks.Control['bottom_right']
         });
         mapObj.addControl(zoomControl2);
     }

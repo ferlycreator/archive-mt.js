@@ -27,9 +27,9 @@ Z['Toolbar'] = Z.Toolbar = Z.Control.extend({
 			Z.DomUtil.addClass(this._toolbarContainer, this.options['className']);
 		} else {
 			if(this.options['vertical']) {
-				Z.DomUtil.addClass(this._toolbarContainer, 'control-toolbar-vertical');
+				Z.DomUtil.addClass(this._toolbarContainer, 'maptalks-control-toolbar-vertical');
 			} else {
-				Z.DomUtil.addClass(this._toolbarContainer, 'control-toolbar');
+				Z.DomUtil.addClass(this._toolbarContainer, 'maptalks-control-toolbar');
 			}
 		}
 		var items = this.options['items'];

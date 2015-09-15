@@ -1,14 +1,26 @@
 Z.Geometry.include({
     /**
      * 设置Geometry的信息提示框设置
-     * @param {Object} tipOption 信息提示框设置
+     * @param {Object} options 信息提示框设置
      * @expose
      */
-    setInfoWindow:function(tipOption) {
+    setInfoWindow:function(options) {
+        if(this.getMap()) {
+            this._setInfoWindow(options);
+        } else {
+            this.on('afterAdd', function() {
+                this._setInfoWindow(options);
+            });
+        }
+        return this;
+
+    },
+
+    _setInfoWindow: function(options) {
         this.map = this.getMap();
-        this.infoWindow = new Z.InfoWindow(tipOption);
+        this.infoWindow = new Z.InfoWindow(options);
         this.infoWindow.addTo(this);
-        var beforeopenFn = tipOption['beforeopen'];
+        var beforeopenFn = options.beforeOpen;
         if(beforeopenFn) {
             this._beforeOpenInfoWindow();
         }
@@ -22,7 +34,7 @@ Z.Geometry.include({
         var coordinate = this.getCenter();
         var position = this.getPostion();
         var param = {'coordinate':coordinate, 'pixel':position};
-        this.infoWindow.tipOption['showPosition'] = position;
+        this.infoWindow.options['position'] = position;
         this.infoWindow.beforeOpen(param);
         return this;
     },

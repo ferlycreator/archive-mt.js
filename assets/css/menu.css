@@ -1,32 +1,42 @@
 .maptalks-menu {
     position: absolute;
     cursor: pointer;
-    background-color: #f0f0f0;
-    color: #3C7796;
-    border: solid 1px #CCCCCC;
-}
-
-.maptalks-menu-items {
-    list-style: none;
-    padding:0px;
-    margin:0px;
 }
 
 .maptalks-menu-item {
-    margin: 1px;
     height: 24px;
     line-height: 24px;
-    color: #3C7796;
     font-size: 12px;
+    margin: 1px;
     padding: 0px 0px 0px 21px;
 }
 
-.maptalks-menu-item-over {
+.maptalks-menu-color {
+    background-color: #f0f0f0;
     border: solid 1px #CCCCCC;
-    margin: 1px;
-    height: 22px;
-    line-height: 22px;
+}
+
+.maptalks-menu-item-color {
+    border: solid 1px #ffffff;
     color: #3C7796;
-    font-size: 12px;
-    padding: 0px 0px 0px 20px;
+}
+
+.maptalks-menu-item-over-color {
+    border: solid 1px #cfe2f3;
+    color: #9fc5e8;
+}
+
+.maptalks-menu-color-black {
+    background-color: #000000;
+    border: solid 1px #ffffff;
+}
+
+.maptalks-menu-item-color-black {
+    border: solid 1px #ffffff;
+    color: #ffffff;
+}
+
+.maptalks-menu-item-over-color-black {
+    border: solid 1px #c9daf8;
+    color: #a2c4c9;
 }

@@ -1,269 +1,304 @@
+/**
+* info window
+*/
 Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
 
-        /**
-        * 异常信息定义
-        */
-        exceptionDefs:{
-            'en-US':{
-                'MUST_PROVIDE_OBJECT':'You must provide object which infowindow add to.'
-            },
-            'zh-CN':{
-                'MUST_PROVIDE_OBJECT':'必须提供添加信息框的对象。'
-            }
+    /**
+    * 异常信息定义
+    */
+    exceptionDefs:{
+        'en-US':{
+            'MUST_PROVIDE_OBJECT':'You must provide object which infowindow add to.'
         },
-
-        statics:{
-           'template': "<div class=\"MAP_CONTROL_api MAP_CONTROL_msg\" style=\"z-index:10;cursor:default;display:none;padding:0 0 35px 15px;\">"+
-                        "<div style=\"width:345px; height:auto !important;height:150px;min-height:150px; border:1px solid #999; background:#fff;\">"+
-                            "<div style=\"font-size:14px; height:30px; line-height:30px; background:#f9f9f9; border-bottom:1px solid #ccc; font-weight:bold; padding-left:15px;\">" +
-                                "<span style=\"display:block; float:left;\"></span>" +
-                                '<div style="position:relative;float:right;height:30px;width:20px;padding-top:10px;line-height: 0px;">'+
-                                    "<a href=\"javascript:void(0)\" class=\"MAP_CONTROL_close\" onclick=\"this.parentNode.parentNode.parentNode.parentNode.m.hide()\"><img width=\"10px\" height=\"10px\" src=\""+Z.prefix+"images/tip_close.gif\" style=\"border:none;\"/></a>" +
-                                '</div>'+
-                            "</div>"+
-                            "<div style=\"padding:10px; line-height:20px; color:#444\">"+
-                            "</div>"+
-                        "</div>"+
-                        "<div class=\"MAP_CONTROL_api MAP_CONTROL_jiantou\"></div>"+
-                     "</div>"
-        },
-
-        /**
-        * 初始化信息窗口
-        * @return {InfoWindow}
-        */
-        initialize:function (tipOption) {
-            if(tipOption) {
-                this.setOption(tipOption);
-            }
-            return this;
-        },
-
-        /**
-        * 将信息框添加到对象上
-        * @param {Object} map/geometry
-        */
-        addTo: function(target) {
-            var map;
-            if(target instanceof Z['Map']) {
-                map = target;
-            } else { //Geometry的情况
-                map = target.getMap();
-            }
-            if(!map) {
-                throw new Error(this.exceptions['ONLY_MAP_OR_GEOMETRY_CAN_ADD_MENU']);
-            }
-            this.target = target;
-            this._addEvent(map);
-            return this;
-        },
-
-        /**
-        * 显示信息窗口前
-        * @param 参数
-        */
-        beforeOpen: function(param) {
-            var beforeopenFn = this.tipOption['beforeopen'];
-            if(beforeopenFn){
-                var argLen = beforeopenFn.length;
-                if(argLen == 2) {
-                    beforeopenFn(param, Z.Util.bind(this.show, this));
-                } else {
-                    beforeopenFn(param);
-                    this.show();
-                }
-            }
-            return this;
-        },
-
-        /**
-        * 菜单监听地图的事件
-        * @param {Map} map
-        */
-        _addEvent:function(map) {
-            this.map = map;
-            if (!this.map) {
-                return;
-            }
-            this.map._panels.tipContainer.innerHTML = Z.InfoWindow['template'];
-            this.tipDom = this.map._panels.tipContainer.childNodes[0];
-            this.tipDom["m"] = this;
-            this.msgBox = this.tipDom.childNodes[0].childNodes[1];
-            //onmousedown事件解决弹出框内容无法选中的问题
-            if(!this.msgBox.addEvent) {
-                this._removeEvent();
-                Z.DomUtil.addDomEvent(this.msgBox,'mousedown', this.stopPropagation);
-                Z.DomUtil.addDomEvent(this.msgBox,'dblclick', this.stopPropagation);
-                this.map.on('zoomstart', this._onZoomStart, this);
-                this.map.on('zoomend', this._onZoomEnd, this);
-                this.msgBox.addEvent = true;
-            }
-        },
-
-        /**
-        * 菜单监听地图的事件
-        * @param {Map} map
-        */
-        _removeEvent:function() {
-            Z.DomUtil.removeDomEvent(this.msgBox,'mousedown', this.stopPropagation);
-            Z.DomUtil.removeDomEvent(this.msgBox,'dblclick', this.stopPropagation);
-            this.map.off('zoomstart', this._onZoomStart, this);
-            this.map.off('zoomend', this._onZoomEnd, this);
-        },
-
-        stopPropagation: function(event) {
-            Z.DomUtil.stopPropagation(event);
-        },
-
-        _onZoomStart:function() {
-            this.map._panels.tipContainer.style.display='none';
-        },
-
-        _onZoomEnd:function() {
-            if (this._visible) {
-                //style.display=''必须要在调用 offsetTipDom之前, 要不然tipDom.clientHeight和clientWidth取到的值为0
-                this.map._panels.tipContainer.style.display='';
-                this.offsetTipDom();
-            }
-        },
-
-        /**
-        * 设置InfoWindow窗口
-        * @param {Array} tipOption 项
-        * {"items":[], width:240, beforeopen:fn}
-        * @expose
-        */
-        setOption: function(tipOption) {
-            if (!tipOption) {
-                return;
-            }
-            if(this.tipOption) {
-                this.tipOption['title'] = tipOption['title'];
-                this.tipOption['content'] = tipOption['content'];
-                if(tipOption['beforeopen']) {
-                    this.tipOption['beforeopen'] = tipOption['beforeopen'];
-                }
-            } else {
-                this.tipOption = tipOption;
-            }
-        },
-
-        /**
-        * 隐藏信息框
-        * @expose
-        */
-        hide:function() {
-            this._visible = false;
-            this.tipDom.style.display="none";
-        },
-
-        /**
-         * 判断信息框是否打开
-         * @expose
-         * @returns {Boolean}
-         */
-        isOpen:function() {
-            return this._visible;
-        },
-
-        /**
-        * 显示信息框
-        * @expose
-        * @param {Coordinate} 信息框打开坐标
-        */
-        show:function(coordinate) {
-            if (!this.map) {
-                return;
-            }
-            if (!this.map.options['enableInfoWindow']) return;
-            this.hide();
-            this._visible = true;
-            var map = this.map;
-            var tipDom = this.tipDom;
-            tipDom.style.display='';
-            this.map._panels.tipContainer.style.display='';
-            var tipOption = this.tipOption;
-            if (tipOption['width']) {
-                tipDom.childNodes[0].style.width = tipOption['width']+'px';
-            }
-            var titleNode = tipDom.childNodes[0].childNodes[0].childNodes[0];
-            var contentNode =tipDom.childNodes[0].childNodes[1];
-            if (tipOption['title']) {
-                titleNode.style.display = '';
-                titleNode.innerHTML = tipOption['title'];
-            } else {
-                titleNode.style.display = 'none';
-            }
-            if (tipOption['content']) {
-                contentNode.innerHTML = tipOption['content'];
-            }
-
-            var tipCoord = this.offsetTipDom(coordinate);
-            var size = this.map.getSize();
-            var mapWidth = size['width'],
-                mapHeight = size['height'];
-            if (0 === mapWidth || 0 === mapHeight) {return;}
-            //只有当tip不是地图打开的时候，才做tip打开滑动操作
-            var absolute = map._domOffsetToScreen(tipCoord);
-            var left = 0;
-            var top=0;
-            if ((absolute["left"])<0) {
-                left=-(absolute["left"]-parseInt(tipDom.clientWidth)/2);
-            } else if ((absolute["left"]+parseInt(tipDom.clientWidth)-35)>mapWidth) {
-                left=(mapWidth-(absolute["left"]+parseInt(tipDom.clientWidth)*3/2));
-            }
-            if (absolute["top"]<0) {
-                top=-absolute["top"]+10;
-            } else if (absolute["top"] > mapHeight){
-                top = (mapHeight-absolute["top"]-parseInt(tipDom.clientHeight))-30;
-            }
-
-            if (top !== 0 || left !== 0) {
-                this.tipSlidingExecutor = map._animatePan({"left":left,"top":top});
-            }
-            return this;
-        },
-
-        /**
-        * 获取信息框打开位置
-        * @param {Coordiante} 信息框对象所在坐标
-        * @return {Pixel} 信息框打开位置
-        */
-        offsetTipDom: function(coordinate) {
-            var pxCoord = this._getShowPosition(coordinate);
-            var tipDom = this.tipDom;
-            var tipCoord = new Z.Point(
-                    parseInt(pxCoord.left-parseInt(tipDom.clientWidth)/2+38),
-                    parseInt(pxCoord.top-parseInt(tipDom.clientHeight))
-                );
-            tipDom['style']['top'] = tipCoord["top"]+"px";
-            tipDom['style']['left'] = tipCoord["left"]+"px";
-            return tipCoord;
-        },
-
-        /**
-        * 获取菜单显示位置
-        * @param {Coordinate} 菜单显示位置
-        * @return {Pixel} 菜单显示位置像素坐标
-        */
-        _getShowPosition: function(coordinate) {
-            var position;
-            if(!coordinate) {
-                coordinate = this.showPosition;
-            }
-            if(coordinate){
-                if(coordinate instanceof Z['Coordinate']) {
-                    position = this.coordinateToDomOffset(coordinate);
-                } else {
-                    position = coordinate;
-                }
-            } else {
-                var center = this.target.getCenter();
-                var projection = this.map._getProjection();
-                if (!center || !projection) {return null;}
-                var pcenter = projection.project(center);
-                position = this.map._transformToOffset(pcenter);
-            }
-            return position;
+        'zh-CN':{
+            'MUST_PROVIDE_OBJECT':'必须提供添加信息框的对象。'
         }
+    },
+
+    options: {
+        'width' : 300,
+        'title' : '',
+        'content' : '',
+        'style' : 'default',//black|white
+        'position' : null,
+        'beforeOpen': null
+    },
+
+    /**
+    * 初始化信息窗口
+    * @return {InfoWindow}
+    */
+    initialize:function (options) {
+        if(options) {
+            this.setOptions(options);
+        }
+        this._tipDom = this._createTipDom();
+        return this;
+    },
+
+    /**
+    * 将信息框添加到对象上
+    * @param {Object} map/geometry
+    */
+    addTo: function(target) {
+        if(target instanceof Z.Map) {
+            this._map = target;
+        } else { //Geometry的情况
+            this._map = target.getMap();
+        }
+        if(!this._map) {
+            throw new Error(this.exceptions['MUST_PROVIDE_OBJECT']);
+        }
+        this._target = target;
+        var tipContainer = this._map._panels.tipContainer;
+        tipContainer.innerHTML = '';
+        tipContainer.appendChild(this._tipDom);
+        this._addEvent();
+        return this;
+    },
+
+    /**
+    * 显示信息窗口前
+    * @param 参数
+    */
+    beforeOpen: function(param) {
+        var beforeOpenFn = this.options.beforeOpen;
+        if(beforeOpenFn){
+            var argLen = beforeOpenFn.length;
+            if(argLen == 2) {
+                beforeOpenFn(param, Z.Util.bind(this.show, this));
+            } else {
+                beforeOpenFn(param);
+                this.show();
+            }
+        }
+        return this;
+    },
+
+    /**
+    * 设置InfoWindow窗口
+    * @param {Array} options 项
+    * {"items":[], width:240, beforeOpen:fn}
+    * @expose
+    */
+    setOptions: function(options) {
+        if (!options) {
+            return;
+        }
+        if(!options.style||options.style === 'default') {
+            options.style = '';
+        } else {
+            options.style = '-' + options.style;
+        }
+        if(this.options) {
+            this.options.title = options.title;
+            this.options.content = options.content;
+            this.options.style = options.style;
+            if(options.beforeOpen) {
+                this.options.beforeOpen = options.beforeOpen;
+            }
+        } else {
+            this.options = options;
+        }
+    },
+
+    /**
+    * 返回infoWindow设置
+    * @return {Object} infoWindow设置
+    * @expose
+    */
+    getOptions: function() {
+        return this.options;
+    },
+
+    /**
+     * 移除infoWindow设置
+     * @expose
+     */
+    remove: function() {
+        this.hide();
+        delete this.options;
+        return this;
+    },
+
+    /**
+    * 隐藏信息框
+    * @expose
+    */
+    hide:function() {
+        this._visible = false;
+        this._tipDom.style.display = 'none';
+    },
+
+    /**
+     * 判断信息框是否打开
+     * @returns {Boolean}
+     * @expose
+     */
+    isOpen:function() {
+        return this._visible;
+    },
+
+    /**
+    * 显示infoWindow
+    * @param {Coordinate} 坐标
+    * @expose
+    */
+    show: function(coordinate) {
+        var tipCoord = this._offsetTipDom(coordinate);
+        var size = this._map.getSize();
+        var mapWidth = size['width'],
+            mapHeight = size['height'];
+        if (mapWidth===0||mapHeight===0) {return;}
+        //只有当tip不是地图打开的时候，才做tip打开滑动操作
+        var absolute = this._map._domOffsetToScreen(tipCoord);
+        var left=0,top=0,tipDom=this._tipDom;;
+        if ((absolute['left'])<0) {
+            left=-(absolute['left']-parseInt(tipDom.clientWidth)/2);
+        } else if ((absolute['left']+parseInt(tipDom.clientWidth)-35)>mapWidth) {
+            left=(mapWidth-(absolute['left']+parseInt(tipDom.clientWidth)*3/2));
+        }
+        if (absolute['top']<0) {
+            top=-absolute['top']+10;
+        } else if (absolute['top']>mapHeight){
+            top = (mapHeight-absolute['top']-parseInt(tipDom.clientHeight))-30;
+        }
+        if (top!==0||left!==0) {
+            this.tipSlidingExecutor = this._map._animatePan({'left':left, 'top' :top});
+        }
+        return this;
+    },
+
+    _createTipDom: function(){
+        var tipContainer = Z.DomUtil.createEl('div');
+        tipContainer.style.display = 'none';
+        tipContainer.style.width = this.options.width+'px';
+        var suffix = this.options.style;
+        Z.DomUtil.setClass(tipContainer, 'maptalks-infowindow');
+        var tipBoxDom = this._createTipBoxDom();
+        tipContainer.appendChild(tipBoxDom);
+        return tipContainer;
+    },
+
+    _createTipBoxDom: function() {
+        var tipBoxDom = Z.DomUtil.createEl('div');
+        Z.DomUtil.setClass(tipBoxDom, 'maptalks-infowindow-box');
+        if (this.options.width) {
+            tipBoxDom.style.width = this.options.width+'px';
+        }
+        tipBoxDom.appendChild(this._createHeaderDom());
+        tipBoxDom.appendChild(this._createContentDom());
+        tipBoxDom.appendChild(this._createArrowDom());
+        return tipBoxDom;
+    },
+
+    _createHeaderDom: function() {
+        var tipHeaderDom = Z.DomUtil.createEl('div');
+        Z.DomUtil.setClass(tipHeaderDom, 'maptalks-infowindow-header');
+
+        var titleDom = Z.DomUtil.createEl('span');
+         Z.DomUtil.setClass(titleDom, 'maptalks-infowindow-title');
+        var title = this.options.title;
+        if(title) {
+            titleDom.innerHTML = title;
+        }
+        tipHeaderDom.appendChild(titleDom);
+
+        var closeDom = Z.DomUtil.createEl('a');
+        var me = this;
+        Z.DomUtil.setClass(closeDom, 'maptalks-infowindow-close');
+        Z.DomUtil.addDomEvent(closeDom, 'click', function(event){
+            Z.DomUtil.stopPropagation(event);
+            me.hide();
+        });
+        var closeImage = Z.DomUtil.createElOn('img', 'border:none;');
+        closeImage.src = Z.prefix+'images/tip_close.gif';
+        closeDom.appendChild(closeImage);
+        tipHeaderDom.appendChild(closeDom);
+        return tipHeaderDom;
+    },
+
+    _createContentDom: function() {
+        var contentDom = Z.DomUtil.createEl('div');
+        Z.DomUtil.setClass(contentDom, 'maptalks-infowindow-content');
+        var content = this.options.content;
+        if(content) {
+            contentDom.innerHTML = content;
+        }
+        return contentDom;
+    },
+
+    _createArrowDom: function() {
+        var arrowDom = Z.DomUtil.createEl('div');
+        Z.DomUtil.setClass(arrowDom, 'maptalks-infowindow-arrow');
+        return arrowDom;
+    },
+
+    _addEvent:function() {
+        if(!this._tipDom.addEvent) {
+            this._removeEvent();
+            Z.DomUtil.on(this._tipDom, 'mousedown dblclick', Z.DomUtil.stopPropagation);
+            this._map.on('zoomstart', this._onZoomStart, this);
+            this._map.on('zoomend', this._onZoomEnd, this);
+            this._tipDom.addEvent = true;
+        }
+    },
+
+    _removeEvent:function() {
+        Z.DomUtil.off(this._tipDom, 'mousedown dblclick', Z.DomUtil.stopPropagation);
+        this._map.off('zoomstart', this._onZoomStart, this);
+        this._map.off('zoomend', this._onZoomEnd, this);
+    },
+
+    _onZoomStart:function() {
+        this.hide();
+    },
+
+    _onZoomEnd:function() {
+        if (this._visible) {
+            this._tipDom.style.display='';
+            this._offsetTipDom();
+        }
+    },
+
+    /**
+    * 获取信息框打开位置
+    * @param {Coordiante} 信息框对象所在坐标
+    * @return {Pixel} 信息框打开位置
+    */
+    _offsetTipDom: function(coordinate) {
+        var pxCoord = this._getShowPosition(coordinate);
+        var tipDom = this._tipDom;
+        tipDom.style.display = '';
+        var tipCoord = new Z.Point(
+            parseInt(pxCoord.left-parseInt(tipDom.clientWidth+38)/2),
+            parseInt(pxCoord.top-parseInt(tipDom.clientHeight))
+        );
+        tipDom.style.top = tipCoord.top+'px';
+        tipDom.style.left = tipCoord.left+'px';
+        return tipCoord;
+    },
+
+    /**
+    * 获取显示位置
+    * @param {Coordinate} 显示位置
+    * @return {Pixel} 显示位置像素坐标
+    */
+    _getShowPosition: function(coordinate) {
+        var position;
+        if(!coordinate) {
+            coordinate = this.position;
+        }
+        if(coordinate){
+            if(coordinate instanceof Z.Coordinate) {
+                position = this.coordinateToDomOffset(coordinate);
+            } else {
+                position = coordinate;
+            }
+        } else {
+            var center = this._target.getCenter();
+            position = this._map.coordinateToDomOffset(center);
+        }
+        return position;
+    }
 });

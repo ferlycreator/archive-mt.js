@@ -7,7 +7,7 @@
     <style type="text/css">
         html,body{ margin:0px; height:100%; };
     </style>
-    <title>MapTalks 示例: 标注图片</title>
+    <title>MapTalks 示例: 图形信息窗</title>
 </head>
 <body scroll="no" onload="initMap();">
 <div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
@@ -18,7 +18,7 @@
         mapObj = new maptalks.Map('mapObj', //放置mapObj的div id
         {
             center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
-            zoomLevel:   17 //初始缩放级别
+            zoomLevel:   11
         });
         //设置底图图层
         mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
@@ -27,30 +27,33 @@
             urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
             subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
         }));
+
         //创建图层
         var layer = new maptalks.VectorLayer('layer');
         //将图层添加到地图对象
         mapObj.addLayer(layer);
         //创建点的坐标对象
-        var coordinate = new maptalks.Coordinate(121.489935,31.24432);
-        //设置图片
-        var icon = {
-            'marker-file': '../../../images/marker.png',
-            'marker-width': 22,
-            'marker-height': 30,
-            'marker-dx': 0,
-            'marker-dy' :0
-        };
+        var markerCoordinate = new maptalks.Coordinate(121.489935,31.24432);
         //创建点对象
-        var marker = new maptalks.Marker(coordinate,{'id':'marker_id','draggable':true});
-        //设置点样式
-        marker.setSymbol(icon);
+        var marker = new maptalks.Marker(markerCoordinate,{'id':'marker_id'});
         //将点添加到Layer
         layer.addGeometry(marker);
+        //设置信息窗
+        var infoWindowOptions = {
+            'width': 300,
+            'style': 'default', //black|white
+            'title' : '信息窗',
+            'content' : '正文'
+        };
+        //将信息窗绑定到图形上
+        marker.setInfoWindow(infoWindowOptions);
+        //设置打开信息窗的图形事件
+        marker.on('click', function(){
+            marker.openInfoWindow();
+        });
     }
 </script>
-<!-- 引擎javascript开发包-->
-<script type="text/javascript" src="../../../maptalks.js"></script>
+<script type="text/javascript" src="../../maptalks.js"></script>
 <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
 <!--[if lt IE 9]>
   <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.min.js"></script>

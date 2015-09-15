@@ -1,7 +1,6 @@
 Z['Control']['Scale'] = Z.Control.Scale = Z.Control.extend({
 
     options:{
-        'id': 'CONTROL_SCALE',
         'position' : Z.Control['bottom_left'],
         'maxWidth': 100,
         'metric': true,
@@ -9,7 +8,7 @@ Z['Control']['Scale'] = Z.Control.Scale = Z.Control.extend({
     },
 
     statics: {
-        'control_scale' : 'border: 2px solid #6490C4;border-top: none;line-height: 1.1;padding: 2px 5px 1px;'+
+        'maptalks-control-scale' : 'border: 2px solid #6490C4;border-top: none;line-height: 1.1;padding: 2px 5px 1px;'+
                           'color: #6490C4;font-size: 11px;text-align:center;white-space: nowrap;overflow: hidden'+
                           ';-moz-box-sizing: content-box;box-sizing: content-box;background: #fff; background: rgba(255, 255, 255, 0.5);'
     },
@@ -31,10 +30,10 @@ Z['Control']['Scale'] = Z.Control.Scale = Z.Control.extend({
 
     _addScales: function () {
         if (this.options['metric']) {
-            this._mScale = Z.DomUtil.createElOn('div', Z.Control.Scale['control_scale'], this._scaleContainer);
+            this._mScale = Z.DomUtil.createElOn('div', Z.Control.Scale['maptalks-control-scale'], this._scaleContainer);
         }
         if (this.options['imperial']) {
-            this._iScale = Z.DomUtil.createElOn('div', Z.Control.Scale['control_scale'], this._scaleContainer);
+            this._iScale = Z.DomUtil.createElOn('div', Z.Control.Scale['maptalks-control-scale'], this._scaleContainer);
         }
     },
 
@@ -96,7 +95,6 @@ Z['Control']['Scale'] = Z.Control.Scale = Z.Control.extend({
 Z.Map.mergeOptions({
     'scaleControl' : false,
     'scaleControlOptions' : {
-        'id': 'MAP_CONTROL_SCALE',
         'position' : Z.Control['bottom_left'],
         'maxWidth': 100,
         'metric': true,

@@ -15,13 +15,13 @@
     var mapObj,polygon;
     function initMap(){
         //创建地图对象
-        mapObj = new Z.Map('mapObj', //放置mapObj的div id
+        mapObj = new maptalks.Map('mapObj', //放置mapObj的div id
         {
-            center:  new Z.Coordinate(121.489935,31.24432), //初始中心点坐标
+            center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
             zoomLevel:   12 //初始缩放级别
         });
         //设置底图图层
-        mapObj.setBaseTileLayer(new Z.TileLayer('tile', //底图id
+        mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
         {
             tileInfo: 'web-mercator',
             urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
@@ -29,22 +29,22 @@
         }));
 
         //创建图层
-        var layer = new Z.VectorLayer('layer');
+        var layer = new maptalks.VectorLayer('layer');
         //将图层添加到地图对象
         mapObj.addLayer(layer);
 
         //创建面对象
-        polygon = new Z.Polygon(
+        polygon = new maptalks.Polygon(
             //面端点坐标数组
-            [[new Z.Coordinate(121.508617,31.241279),
-            new Z.Coordinate(121.519432,31.241572),
-            new Z.Coordinate(121.524067,31.241719),
-            new Z.Coordinate(121.528015,31.242893),
-            new Z.Coordinate(121.539173,31.245388),
-            new Z.Coordinate(121.544323,31.236142),
-            new Z.Coordinate(121.548443,31.227335),
-            new Z.Coordinate(121.538486,31.223518),
-            new Z.Coordinate(121.517887,31.223665)]
+            [[new maptalks.Coordinate(121.508617,31.241279),
+            new maptalks.Coordinate(121.519432,31.241572),
+            new maptalks.Coordinate(121.524067,31.241719),
+            new maptalks.Coordinate(121.528015,31.242893),
+            new maptalks.Coordinate(121.539173,31.245388),
+            new maptalks.Coordinate(121.544323,31.236142),
+            new maptalks.Coordinate(121.548443,31.227335),
+            new maptalks.Coordinate(121.538486,31.223518),
+            new maptalks.Coordinate(121.517887,31.223665)]
             ]);
         //设置面样式
         var polygonSymbol = {
@@ -59,7 +59,7 @@
         //将面添加到Layer
         layer.addGeometry(polygon);
 
-        var toolbar = new Z.Toolbar({
+        var toolbar = new maptalks.Toolbar({
             id: 'toolbar',//toolbar id
             position : { //工具条放置位置
                 top: '2',

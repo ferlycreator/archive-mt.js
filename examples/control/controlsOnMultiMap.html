@@ -8,7 +8,6 @@
         html,body{ margin:0px; height:100%; };
     </style>
     <title>MapTalks 示例: 多地图控件管理</title>
-    <link href="../../css/maptalks.css" rel="stylesheet" type="text/css"/>
 </head>
 <body scroll="no" onload="initMap();">
 <div id="mapObj1" style="width:100%;height:45%;float:right;margin-top:0px"></div>
@@ -16,9 +15,9 @@
 <script type="text/javascript" >
     function initMap(){
         //创建地图对象
-        var mapObj = new Z.Map('mapObj1', //放置mapObj的div id
+        var mapObj = new maptalks.Map('mapObj1', //放置mapObj的div id
         {
-            center:  new Z.Coordinate(121.489935,31.24432), //初始中心点坐标
+            center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
             zoomLevel:   11, //初始缩放级别
             navControl: true,//nav控件
             navControlOptions : {//设置控件放置位置
@@ -29,7 +28,7 @@
             }
         });
         //设置底图图层
-        mapObj.setBaseTileLayer(new Z.TileLayer('tile', //底图id
+        mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
         {
             tileInfo: 'web-mercator',
             urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
@@ -38,7 +37,7 @@
         /**
         * 创建多个nav控件
         */
-        var navControl = new Z.Control.Nav({
+        var navControl = new maptalks.Control.Nav({
             id: 'navControl', //控件id
             //自定义控件放置位置
             position : {
@@ -50,9 +49,9 @@
 
         //创建地图对象
         var mapElement = document.getElementById('mapObj2');
-        var mapObj2 = new Z.Map(mapElement, //放置mapObj的div id
+        var mapObj2 = new maptalks.Map(mapElement, //放置mapObj的div id
         {
-            center:  new Z.Coordinate(121.489935,31.24432), //初始中心点坐标
+            center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
             zoomLevel:   11, //初始缩放级别
             navControl: true,//nav控件
             navControlOptions : {//设置控件放置位置
@@ -63,7 +62,7 @@
             }
         });
         //设置底图图层
-        mapObj2.setBaseTileLayer(new Z.TileLayer('tile', //底图id
+        mapObj2.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
         {
             tileInfo: 'web-mercator',
             urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
@@ -72,8 +71,7 @@
         /**
         * 创建多个nav控件
         */
-        var navControl2 = new Z.Control.Nav({
-            id: 'navControl', //控件id
+        var navControl2 = new maptalks.Control.Nav({
             //自定义控件放置位置
             position : {
                 top: '40',
@@ -85,8 +83,7 @@
         /**
         * 创建多个nav控件
         */
-        var navControl3 = new Z.Control.Nav({
-            id: 'navControl', //控件id
+        var navControl3 = new maptalks.Control.Nav({
             //自定义控件放置位置
             position : {
                 top: '100',

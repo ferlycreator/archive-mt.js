@@ -7,7 +7,7 @@
     <style type="text/css">
         html,body{ margin:0px; height:100%; };
     </style>
-    <title>MapTalks 示例: 标注图片</title>
+    <title>MapTalks 示例: 标注文本</title>
 </head>
 <body scroll="no" onload="initMap();">
 <div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
@@ -15,8 +15,7 @@
     var mapObj;
     function initMap(){
         //创建地图对象
-        mapObj = new maptalks.Map('mapObj', //放置mapObj的div id
-        {
+        mapObj = new maptalks.Map("mapObj",{
             center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
             zoomLevel:   17 //初始缩放级别
         });
@@ -33,16 +32,40 @@
         mapObj.addLayer(layer);
         //创建点的坐标对象
         var coordinate = new maptalks.Coordinate(121.489935,31.24432);
-        //设置图片
+        //设置矢量配置
         var icon = {
-            'marker-file': '../../../images/marker.png',
-            'marker-width': 22,
-            'marker-height': 30,
-            'marker-dx': 0,
-            'marker-dy' :0
+             "shield-file"      :  "/images/marker.png",
+            "shield-opacity"    :  1,
+            "shield-dx"         :  0,
+            "shield-dy"         :  0,
+
+            "shield-name"       : "这是一个shield marker",
+            "shield-face-name"  : "arial",
+            "shield-size"       :  10,
+            "shield-fill"       : "#000000",
+            "shield-text-opacity": 1,
+            "shield-halo-fill"  : "#ffffff",
+            "shield-halo-radius": 0,
+
+            "shield-text-dx"    :  0,
+            "shield-text-dy"    :  0,
+
+            "shield-horizontal-alignment"   : "middle", //left | middle | right | auto
+            "shield-vertical-alignment"     : "middle",   // top | middle | bottom | auto
+            "shield-justify-alignment"      : "left"
         };
+        /**
+        * 说明：
+        * 1、shield-type tip：气泡形；label：矩形标签；
+        * 2、在shield-type 为tip的情形下，设置shield-horizontal-alignment 与 shield-vertical-alignment
+        *    气泡的尖端会根据位置调整。
+        */
         //创建点对象
         var marker = new maptalks.Marker(coordinate,{'id':'marker_id','draggable':true});
+        marker.setProperties({
+            'marker_name':'上海大厦',
+            'marker_addr': '北苏州路20号'
+        });
         //设置点样式
         marker.setSymbol(icon);
         //将点添加到Layer
