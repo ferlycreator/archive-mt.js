@@ -64,17 +64,56 @@ Z.SVG.SVG = {
         paper.style.top = y + 'px';
     },
 
-    createShapeDom:function(path) {
+    path:function(path) {
         var svgShape = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         svgShape.setAttribute('d', path);
         return svgShape;
     },
 
-    updateShapeDom:function(svgShape, path) {
+    updatePath:function(svgShape, path) {
         if (!svgShape || !path) {
             return;
         }
         svgShape.setAttribute('d', path);
+    },
+
+    text:function(text) {
+        var svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        var textNode = document.createTextNode(text);
+        svgText.appendChild(textNode);
+        return svgText;
+    },
+
+    updateTextStyle:function(svgText, style) {
+        svgText.setAttribute('font-size', style['text-size']);
+        svgText.setAttribute('font-family', style['text-face-name']);
+        var textAnchor = style['text-horizontal-alignment'];
+        if (textAnchor === 'left') {
+            textAnchor = 'start';
+        } else if (textAnchor === 'right') {
+            textAnchor = 'end';
+        }
+        svgText.setAttribute('text-anchor', textAnchor);
+        // svgText.setAttribute('dx',style['text-dx']);
+        // svgText.setAttribute('dy',style['text-dy']);
+    },
+
+    image:function(url, width, height) {
+        var svgImage = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+        var xlink = "http://www.w3.org/1999/xlink";
+        svgImage.setAttributeNS(xlink, 'href', url);
+        if (!Z.Util.isNil(width)) {
+            svgImage.setAttribute('width', width);
+        }
+        if (!Z.Util.isNil(height)) {
+            svgImage.setAttribute('height', height);
+        }
+        return svgImage;
+    },
+
+    group:function() {
+        var svgGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        return svgGroup;
     },
 
     updateShapeStyle:function(svgShape, strokeSymbol, fillSymbol) {
@@ -212,7 +251,7 @@ Z.SVG.VML= {
         return;
     },
 
-    createShapeDom: function(path) {
+    path: function(path) {
         var vmlShape;
         vmlShape = Z.SVG.create('shape');
         //以下三行不设置的话, IE8无法显示vml图形,原因不明
@@ -230,7 +269,7 @@ Z.SVG.VML= {
      /**
      * 更新矢量图形的图形属性
      */
-    updateShapeDom: function(vmlShape, path) {
+    updatePath: function(vmlShape, path) {
         vmlShape.path['v'] = path;
     },
 

@@ -3,11 +3,11 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
     initialize:function(symbol, geometry) {
         this.symbol = symbol;
         this.geometry = geometry;
-        this.renderPoints = this.geometry._getRenderPoints();
+        this.renderPoints = this._getRenderPoints();
     },
 
     svg:function(container, vectorcontainer, zIndex) {
-        this._svg(container,zIndex);
+        this._svgMarkers(container,zIndex);
     },
 
     canvas:function(ctx, resources) {
@@ -19,7 +19,7 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
         var cookedPoints = Z.Util.eachInArray(points,this,function(point) {
             return map._domOffsetToScreen(point);
         });
-        var style = this._translate();
+        var style = this.translate();
         var url = style['marker-file'];
         var img = resources.getImage(url);
         if (!img) {
@@ -29,7 +29,7 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
         this.symbol['marker-file'] = img['src'];
         var ratio = Z.Browser.retina ? 2:1;
         for (var i = 0, len=cookedPoints.length;i<len;i++) {
-            var pt = cookedPoints[i].multi(ratio);
+            var pt = cookedPoints[i]._multi(ratio);
             var width = style['marker-width']*ratio;
             var height = style['marker-height']*ratio;
             if (width && height) {
@@ -40,9 +40,18 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
         }
     },
 
+    getPlacement:function() {
+        return this.symbol['marker-placement'];
+    },
 
+    getDxDy:function() {
+        var s = this.symbol;
+        var dx = s['marker-dx'] || 0,
+            dy = s['marker-dy'] || 0;
+        return new Z.Point(dx, dy);
+    },
 
-    _translate:function() {
+    translate:function() {
         var s = this.symbol;
         return {
             "marker-file" : s["marker-file"],
@@ -58,7 +67,7 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
      * 生成图片标注
      * @param point
      */
-    _createMarkerDom: function(style) {
+    createMarkerDom: function(style) {
         var symbol = style;
         var markerDom = Z.DomUtil.createEl('span');
         markerDom.setAttribute('unselectable', 'on');

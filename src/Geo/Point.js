@@ -10,10 +10,17 @@ Z.Point.prototype={
         return Math.sqrt(x * x + y * y);
     },
 
-    add: function(_point) {
+    //破坏性方法
+    _add: function(_point) {
         if (!_point) {return;}
         this['left'] += _point['left'];
         this['top'] += _point['top'];
+    },
+
+    add: function(point) {
+        var offx = this.left + point.left,
+            offy = this.top  + point.top;
+        return new Z.Point(offx, offy);
     },
 
     substract: function(point) {
@@ -21,8 +28,8 @@ Z.Point.prototype={
             offy = this.top  - point.top;
         return new Z.Point(offx, offy);
     },
-    
-    multi: function(ratio) {
+    //破坏性方法
+    _multi: function(ratio) {
         this['left'] *= ratio;
         this['top'] *= ratio;
     }

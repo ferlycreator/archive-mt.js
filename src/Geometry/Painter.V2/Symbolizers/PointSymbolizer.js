@@ -1,5 +1,5 @@
 Z.PointSymbolizer=Z.Symbolizer.extend({
-    _svg:function(container,zIndex) {
+    _svgMarkers:function(container,zIndex) {
         var points = this.renderPoints;
         if (!Z.Util.isArrayHasData(points)) {
             return;
@@ -11,14 +11,14 @@ Z.PointSymbolizer=Z.Symbolizer.extend({
                 c_m = this.markers.length;
             var count = Math.min(c_p, c_m);
             for (i = 0;i<count;i++) {
-               this.offsetMarker(this.markers[i], points[i]);
+               this._offsetMarker(this.markers[i], points[i]);
             }
             if (c_p>c_m) {
                 //marker数量不够, 增加marker
                 markerDom = this.markers[0];
                 for (i=c_m;i<c_p;i++) {
                     markerNode = markerDom.cloneNode(true);
-                    this.offsetMarker(markerNode, points[i]);
+                    this._offsetMarker(markerNode, points[i]);
                     this.markers.push(markerNode);
                     container.appendChild(markerNode);
                 }
@@ -32,24 +32,28 @@ Z.PointSymbolizer=Z.Symbolizer.extend({
             }
         } else {
             //第一次渲染,添加markerDom
-            var style = this._translate();
-            markerDom = this._createMarkerDom(style);
+            var style = this.translate();
+            markerDom = this.createMarkerDom(style);
             if (zIndex) {
                 markerDom.style.zIndex = zIndex;
             }
             this.markers = [];
             for (i = 0, len=points.length;i<len;i++) {
                 markerNode = markerDom.cloneNode(true);
-                this.offsetMarker(markerNode, points[i]);
+                this._offsetMarker(markerNode, points[i]);
                 this.markers.push(markerNode);
                 container.appendChild(markerNode);
             }
         }
     },
 
+    _getRenderPoints:function() {
+        return this.geometry._getRenderPoints(this.getPlacement());
+    },
+
     //所有point symbolizer的共同的refresh方法
     refresh:function() {
-        this.renderPoints = this.geometry._getRenderPoints();
+        this.renderPoints = this._getRenderPoints();
         var layer = this.geometry.getLayer();
         if (!layer.isCanvasRender()) {
             this.symbolize();
@@ -67,7 +71,9 @@ Z.PointSymbolizer=Z.Symbolizer.extend({
     },
 
     //设置dom/svg/vml类型marker页面位置的方法
-    offsetMarker:function(marker, point) {
+    _offsetMarker:function(marker, pt) {
+        var d = this.getDxDy();
+        var point = pt.add(d);
         if (marker.tagName && marker.tagName === 'SPAN') {
             //dom
             marker.style.left = point['left']+'px';
@@ -79,8 +85,15 @@ Z.PointSymbolizer=Z.Symbolizer.extend({
                 marker.style.left = point['left'];
                 marker.style.top = point['top'];
             } else {
-                //svg
+                if (marker.tagName === 'text') {
+                    // svg text
+                    marker.setAttribute('x',point['left']);
+                    marker.setAttribute('y',point['top']);
+                } else {
+                    //svg
                 marker.setAttribute('transform', 'translate('+point['left']+' '+point['top']+')');
+                }
+
             }
         }
 

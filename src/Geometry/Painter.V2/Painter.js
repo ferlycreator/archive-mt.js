@@ -3,7 +3,9 @@ Z.Painter = Z.Class.extend({
     registerSymbolizers : [
         Z.StrokeAndFillSymbolizer,
         Z.ImageMarkerSymbolizer,
-        Z.VectorMarkerSymbolizer
+        Z.VectorMarkerSymbolizer,
+        Z.TextMarkerSymbolizer,
+        Z.ShieldMarkerSymbolizer
     ],
 
     initialize:function(geometry) {

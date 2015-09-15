@@ -20,12 +20,12 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
         var svgPath = this.geometry._getRenderPath();
         if (!this.svgDom) {
             var svgPaper = vectorContainer;//this.getMap()._getSvgPaper();
-            this.svgDom = Z.SVG.createShapeDom(svgPath);
+            this.svgDom = Z.SVG.path(svgPath);
             svgPaper.appendChild(this.svgDom);
         } else {
-            Z.SVG.updateShapeDom(this.svgDom, svgPath);
+            Z.SVG.updatePath(this.svgDom, svgPath);
         }
-        var style = this._translate();
+        var style = this.translate();
         if (this.geometry instanceof Z.Polygon) {
             Z.SVG.updateShapeStyle(this.svgDom, style['stroke'], style['fill']);
         } else {
@@ -36,7 +36,7 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
 
     canvas:function(ctx, resources) {
         var canvasResources = this.geometry._getRenderCanvasResources();
-        var style = this._translate();
+        var style = this.translate();
         Z.Canvas.setDefaultCanvasSetting(ctx);
         if (this.geometry instanceof Z.Polygon) {
             Z.Canvas.prepareCanvas(ctx, style['stroke'], style['fill'], resources);
@@ -56,7 +56,7 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
         }
     },
 
-    _translate:function() {
+    translate:function() {
         var s = this.strokeAndFillSymbol;
         var d = this.defaultSymbol;
         var result = {

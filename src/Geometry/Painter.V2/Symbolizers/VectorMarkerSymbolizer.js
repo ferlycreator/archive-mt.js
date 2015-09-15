@@ -18,11 +18,11 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
     initialize:function(symbol, geometry) {
         this.symbol = symbol;
         this.geometry = geometry;
-        this.renderPoints = this.geometry._getRenderPoints();
+        this.renderPoints = this._getRenderPoints();
     },
 
     svg:function(container, vectorcontainer, zIndex) {
-        this._svg(vectorcontainer, zIndex);
+        this._svgMarkers(vectorcontainer, zIndex);
     },
 
     canvas:function(ctx, resources) {
@@ -34,10 +34,10 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
         var cookedPoints = Z.Util.eachInArray(points,this,function(point) {
             return map._domOffsetToScreen(point);
         });
-        var style = this._translate();
+        var style = this.translate();
         var vectorArray = this._getVectorArray(style);
         var markerType = style['marker-type'].toLowerCase();
-        var strokeAndFill = this._translateStrokeAndFill(style);
+        var strokeAndFill = this.translateStrokeAndFill(style);
         Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'],strokeAndFill['fill'], null);
         var j;
         for (var i = cookedPoints.length - 1; i >= 0; i--) {
@@ -47,13 +47,13 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
                 Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']);
             } else if (markerType === 'cross' || markerType === 'x'){
                 for (j = vectorArray.length - 1; j >= 0; j--) {
-                    vectorArray[j].add(point);
+                    vectorArray[j]._add(point);
                 }
                 //线类型
                 Z.Canvas.path(ctx,vectorArray,null);
             } else {
                 for (j = vectorArray.length - 1; j >= 0; j--) {
-                    vectorArray[j].add(point);
+                    vectorArray[j]._add(point);
                 }
                 //面类型
                 Z.Canvas.polygon(ctx,vectorArray,null);
@@ -63,7 +63,18 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
 
     },
 
-    _translate:function() {
+    getPlacement:function() {
+        return this.symbol['marker-placement'];
+    },
+
+    getDxDy:function() {
+        var s = this.symbol;
+        var dx = s['marker-dx'] || 0,
+            dy = s['marker-dy'] || 0;
+        return new Z.Point(dx, dy);
+    },
+
+    translate:function() {
         var s = this.symbol;
         var d = this.defaultSymbol;
 
@@ -87,7 +98,7 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
         return result;
     },
 
-    _translateStrokeAndFill:function(s) {
+    translateStrokeAndFill:function(s) {
         var result = {
             "stroke" :{
                 "stroke" : s['marker-line-color'],
@@ -116,10 +127,10 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
      * 生成图片标注
      * @param point
      */
-    _createMarkerDom: function(style) {
+    createMarkerDom: function(style) {
         var svgPath = this._getMarkerSvgPath(style);
-        var svgDom = Z.SVG.createShapeDom(svgPath);
-        var svgStyle = this._translateStrokeAndFill(style);
+        var svgDom = Z.SVG.path(svgPath);
+        var svgStyle = this.translateStrokeAndFill(style);
         Z.SVG.updateShapeStyle(svgDom, svgStyle['stroke'], svgStyle['fill']);
         return svgDom;
     },
