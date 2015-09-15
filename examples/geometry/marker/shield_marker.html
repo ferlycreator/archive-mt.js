@@ -27,7 +27,7 @@
             subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
         }));
         //创建图层
-        var layer = new maptalks.VectorLayer('layer');
+        var layer = new maptalks.VectorLayer('layer',{'render':'canvas'});
         //将图层添加到地图对象
         mapObj.addLayer(layer);
         //创建点的坐标对象
@@ -41,16 +41,16 @@
 
             "shield-name"       : "这是一个shield marker",
             "shield-face-name"  : "arial",
-            "shield-size"       :  10,
-            "shield-fill"       : "#000000",
+            "shield-size"       :  40,
+            "shield-fill"       : "#ff0000",
             "shield-text-opacity": 1,
             "shield-halo-fill"  : "#ffffff",
-            "shield-halo-radius": 0,
+            "shield-halo-radius": 2,
 
             "shield-text-dx"    :  0,
             "shield-text-dy"    :  0,
 
-            "shield-horizontal-alignment"   : "middle", //left | middle | right | auto
+            "shield-horizontal-alignment"   : "right", //left | middle | right | auto
             "shield-vertical-alignment"     : "middle",   // top | middle | bottom | auto
             "shield-justify-alignment"      : "left"
         };

@@ -218,6 +218,28 @@ Z.Util = {
         return (typeof val === 'number') && !isNaN(val);
     },
 
+    _strRuler:null,
+
+    _getStrRuler:function(){
+        if (!Z.Util._strRuler) {
+            var span = document.createElement("span");
+            span.style.cssText="position:absolute;left:-10000px;top:-10000px;";
+            document.body.appendChild(span);
+            Z.Util._strRuler = span;
+        }
+
+        return Z.Util._strRuler;
+    },
+
+    stringLength:function(text, font, fontSize) {
+        var ruler = Z.Util._getStrRuler();
+        ruler.style.fontFamily = font;
+        ruler.style.fontSize = fontSize+'px';
+        ruler.style.fontWeight = 'bold';
+        ruler.innerHTML = text;
+        return new Z.Size(ruler.clientWidth+1, ruler.clientHeight+1);
+    },
+
     getLength : function(str) {
         var len = 0;
         for (var i = 0; i < str.length; i++) {

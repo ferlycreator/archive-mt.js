@@ -6,11 +6,15 @@ Z.Canvas = {
         context.fillStyle = this.getRgba("#ffffff",0);
         context.textAlign="start";
         context.textBaseline="hanging";
-        context.font="11px SIMHEI";
+        context.font="11px arial";
         if (context.setLineDash) {
             context.setLineDash([]);
         }
         context.save();
+    },
+
+    prepareCanvasFont:function(ctx, style) {
+        ctx.font='bold '+style['text-size']+'px '+style['text-face-name'];
     },
 
     prepareCanvas:function(context, strokeSymbol, fillSymbol, resources){
@@ -79,6 +83,43 @@ Z.Canvas = {
             b: parseInt(color.slice(5, 7), 16)
         };
         return "rgba("+rgb.r+","+rgb.g+","+rgb.b+","+op+")";
+    },
+
+    text:function(ctx, text, pt, style, size) {
+        var ratio = Z.Browser.retina ? 2:1;
+        //http://stackoverflow.com/questions/14126298/create-text-outline-on-canvas-in-javascript
+
+        //根据text-horizontal-alignment和text-vertical-alignment计算绘制起始点偏移量
+        var alignX, alignY;
+        var hAlign = style['text-horizontal-alignment'];
+        if (hAlign === 'right') {
+            alignX = -size['width'];
+        } else if (hAlign === 'middle') {
+            alignX = -size['width']/2;
+        } else {
+            alignX = 0;
+        }
+        var vAlign = style['text-vertical-alignment'];
+        if (vAlign === 'top') {
+            alignY = size['height']/2;
+        } else if (vAlign === 'middle') {
+            alignY = 0;
+        } else {
+            alignY = -size['height']/2;
+        }
+
+        var ptAlign = new Z.Point(Z.Util.canvasRound(alignX * ratio), Z.Util.canvasRound(alignY * ratio));
+
+        pt._add(ptAlign);
+
+        if (style['text-halo-radius']) {
+            ctx.miterLimit = 2;
+            ctx.lineJoin = 'circle';
+            ctx.lineWidth = style['text-halo-radius']*2-1;
+            ctx.strokeText(text, pt['left'], pt['top']);
+            ctx.lineWidth = 1;
+        }
+        ctx.fillText(text, pt['left'], pt['top']);
     },
 
     _path:function(context, points, lineDashArray) {

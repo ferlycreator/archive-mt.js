@@ -44,7 +44,6 @@ Z.Painter = Z.Class.extend({
 
     /**
      * 绘制图形
-     * @param  {Geometry} geometry 要绘制的图形
      */
     paint:function() {
         this._saveContext.apply(this, arguments);

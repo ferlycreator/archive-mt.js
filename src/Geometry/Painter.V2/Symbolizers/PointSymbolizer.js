@@ -91,7 +91,7 @@ Z.PointSymbolizer=Z.Symbolizer.extend({
                     marker.setAttribute('y',point['top']);
                 } else {
                     //svg
-                marker.setAttribute('transform', 'translate('+point['left']+' '+point['top']+')');
+                    marker.setAttribute('transform', 'translate('+point['left']+' '+point['top']+')');
                 }
 
             }

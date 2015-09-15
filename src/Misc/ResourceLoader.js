@@ -8,7 +8,7 @@ Z.ResourceLoader=Z.Class.extend({
     initialize:function(urls) {
         this.imgUrls = urls;
         this.resourcesCache={};
-        this.defaultIconUrl = null;
+        this.defaultIconUrl = 'images/marker.png';
     },
 
     load:function(successFn, invoker) {
@@ -20,7 +20,7 @@ Z.ResourceLoader=Z.Class.extend({
             this.defaultIconImg.onload=function() {
                 _this.loadImages();
             };
-            this.defaultIconImg.src=Z.host +this.defaultIconUrl;
+            this.defaultIconImg.src=Z.prefix +this.defaultIconUrl;
         } else {
             this.loadImages();
         }

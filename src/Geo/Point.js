@@ -15,6 +15,7 @@ Z.Point.prototype={
         if (!_point) {return;}
         this['left'] += _point['left'];
         this['top'] += _point['top'];
+        return this;
     },
 
     add: function(point) {
@@ -32,5 +33,6 @@ Z.Point.prototype={
     _multi: function(ratio) {
         this['left'] *= ratio;
         this['top'] *= ratio;
+        return this;
     }
 };

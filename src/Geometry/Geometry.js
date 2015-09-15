@@ -328,17 +328,22 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (!symbol) {
             return null;
         }
-        var icon = symbol['markerFile'];
+        var result = [];
+        var icon = symbol['marker-file'];
         if (icon) {
-            return icon;
+            result.push(icon);
         }
-        var fill = symbol['polygonFill'];
+        icon = symbol['shield-file'];
+        if (icon) {
+            result.push(icon);
+        }
+        var fill = symbol['polygon-pattern-file'];
         if (fill) {
             if (fill && fill.length>7 && "url" ===fill.substring(0,3)) {
-                return fill.substring(5,fill.length-2);
+                result.push(fill.substring(5,fill.length-2));
             }
         }
-        return null;
+        return result;
     },
 
     _getPainter:function() {

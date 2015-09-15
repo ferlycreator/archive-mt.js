@@ -85,9 +85,12 @@ Z.Render.Canvas.prototype = {
     },
 
     doRepaint: function() {
+        var me = this;
         var resourceLoad = this.resourceLoader;
-        if(resourceLoad.imgUrls || resourceLoad.defaultIconUrl) {
-            this._loadResource(this._doRepaint());
+        if(!resourceLoad.imgUrls || !resourceLoad.defaultIconUrl) {
+            this._loadResource(function() {
+                me._doRepaint();
+            });
         } else {
             this._doRepaint();
         }
@@ -158,8 +161,10 @@ Z.Render.Canvas.prototype = {
                 return;
             }
             var resource = geo._getExternalResource();
-            if (resource) {
-                me.resourceLoader.addResource(resource);
+            if (Z.Util.isArrayHasData(resource)) {
+                for (var i = resource.length - 1; i >= 0; i--) {
+                    me.resourceLoader.addResource(resource[i]);
+                }
             }
         });
         me.resourceLoader.load(function() {

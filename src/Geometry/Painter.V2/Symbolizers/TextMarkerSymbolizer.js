@@ -25,6 +25,30 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
         this._svgMarkers(vectorcontainer,zIndex);
     },
 
+    canvas:function(ctx, resources) {
+        var points = this.renderPoints;
+        if (!Z.Util.isArrayHasData(points)) {
+            return;
+        }
+        var map = this.getMap();
+        var cookedPoints = Z.Util.eachInArray(points,this,function(point) {
+            return map._domOffsetToScreen(point);
+        });
+        Z.Canvas.setDefaultCanvasSetting(ctx);
+
+        var style = this.translate();
+        var textContent = this._convertContent(style['text-name']);
+        var strokeAndFill = this.translateStrokeAndFill(style);
+        Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'], strokeAndFill['fill'], resources);
+        Z.Canvas.prepareCanvasFont(ctx,style);
+
+        var size = Z.Util.stringLength(textContent,style['text-face-name'],style['text-size']);
+        var ratio = Z.Browser.retina ? 2:1;
+        for (var i = 0, len=cookedPoints.length;i<len;i++) {
+            Z.Canvas.text(ctx, textContent, cookedPoints[i]._multi(ratio), style,size);
+        }
+    },
+
     getPlacement:function() {
         return this.symbol['text-placement'];
     },
@@ -36,7 +60,7 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
         return new Z.Point(dx, dy);
     },
 
-     translate:function() {
+    translate:function() {
         var s = this.symbol;
         var d = this.defaultSymbol;
         var result = {};
@@ -52,7 +76,7 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
     translateStrokeAndFill:function(s) {
         var result = {
             "stroke" :{
-                "stroke" : s['text-halo-fill'],
+                "stroke" : s['text-halo-radius']?s['text-halo-fill']:s['text-fill'],
                 "stroke-width" : s['text-halo-radius'],
                 "stroke-opacity" : s['text-opacity'],
                 "stroke-dasharray": null,
@@ -79,9 +103,10 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
      */
     createMarkerDom: function(style) {
         var textContent = this._convertContent(style['text-name']);
-        var svgText = Z.SVG.text(textContent);
         var textStyle = this.translate();
-        Z.SVG.updateTextStyle(svgText, textStyle);
+        var size = Z.Util.stringLength(textContent, textStyle['text-face-name'], textStyle['text-size']);
+        var svgText = Z.SVG.text(textContent, textStyle, size);
+        Z.SVG.updateTextStyle(svgText, textStyle, size);
         var strokeAndFill = this.translateStrokeAndFill(textStyle);
         Z.SVG.updateShapeStyle(svgText, strokeAndFill['stroke'], strokeAndFill['fill']);
         return svgText;
