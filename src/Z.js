@@ -1,4 +1,7 @@
 //package internally used
+/**
+ * @ignore
+ */
 var Z = {};
 
 Z.VERSION='2.0.0-dev';

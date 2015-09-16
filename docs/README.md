@@ -75,6 +75,33 @@
 #### 6、注意事项
         所有的/**...*/包含的内容都会被收纳到文档中，所以不是文档注释，建议用//;
         
+### 常用标签摘录：
+#### [标签在线文档](https://github.com/senchalabs/jsduck/wiki)
 
-
-
+        @author：作者  
+        @class：类  
+        @deprecated：标记此方法属性或者类不赞成使用，在升级过渡的时候需兼容之前的API时特别有用。  
+        @example：给类或者方法添加一个代码范例，jsduck不仅会给代码着色，还能给代码生成一个代码编辑器，编辑代码后可实时预览，使用@example需要四个空格的缩进。  
+        @extends：标记一个类继承自另一个类，生成后会有一个类型继承体系陈列在文档视图的右侧。  
+        @cfg：构造器的配置项，并在其后跟随“{className}”，再跟随参数名。  
+        范例：@cfg {String} fieldName配置项的描述。  
+        @return：与@cfg类似，标记一个函数成员调用过后的返回类型。  
+        范例：@return {Number} 文字描述  
+        @param：与@cfg类似，给一个函数成员标记其所需的参数类型和描述，如果参数类型为多种可以用“/”分割，如需要给参数进行更详细描述还能使用“[param.member]”描述符。  
+        范例：@param {Number/String} fieldName  
+        范例：@param {String[]} fieldName  
+        范例： /**  
+        * @cfg {Object} opt  
+        * @cfg {Number} [opt.age]  
+        * @cfg {Number} [opt.name=0]  
+        */  
+        @event：标记一个事件，随后通常会跟随@param标签给事件回调函数声明参数的说明。  
+        @inheritdoc：在其后跟随Class#member，常用在子类覆盖父类成员后，子类注释块还需继续使用父类注释的情况下使用。  
+        @private：将成员标记成私有，虽然也有@public但如果不特殊标明即为公有。  
+        @protected：将成员标记成受保护的。  
+        @static:将成员标记成静态的，静态成员也会在文档中进行分类展示。  
+        @img：在文档注释中链接一张图片，让文档变得更具可读性。  
+        @link：在文档注释中标记某个类或类成员的锚点。
+        
+        
+        

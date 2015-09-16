@@ -4,14 +4,15 @@
 "--seo":true,
 "-":["src//"],
 "--warnings": [
-    "-no_doc:extjs/src",
-    "-no_doc_member:extjs/src",
-    "-link:extjs/src",
-    "-type_name:extjs/src"
+    "-no_doc:src//",
+    "-no_doc_member:src//",
+    "-link:src//",
+    "-type_name:src//"
 ],
 "--ignore-html": [
     "locale",
     "debug"
 ],
-"--builtin-classes": true
+"--builtin-classes": false,
+"--no-source": true
 }
