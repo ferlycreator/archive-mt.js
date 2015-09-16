@@ -5,9 +5,7 @@
  */
 Z.Geometry.Poly={
     /**
-     * @method
-     * @public
-     * @desc 将points中的坐标转化为用于显示的容器坐标
+     * 将points中的坐标转化为用于显示的容器坐标
      * @param  {Point[]} points  points数组
      * @returns {Point[]} 容器坐标数组
      */
@@ -148,11 +146,10 @@ Z.Geometry.Poly={
     },
 
      /**
-      * @method
-      * @desc 计算坐标数组的extent, 数组内的元素可以坐标或者坐标数组,坐标为经纬度坐标,而不是投影坐标
+      * 计算坐标数组的extent, 数组内的元素可以坐标或者坐标数组,坐标为经纬度坐标,而不是投影坐标
       * @param  {Point[]} points  points数组
       * @param  {Projection[]} projection  projection对象
-      * @returns {Extent} {@seegoo Extent}
+      * @returns {Extent} {@link maptalks.Extent}
       */
     _computePointsExtent: function(points, projection) {
         var result=null;

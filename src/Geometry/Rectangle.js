@@ -1,3 +1,9 @@
+/**
+ * 矩形类
+ * @class maptalks.Rectangle
+ * @extends maptalks.Polygon
+ * @author Maptalks Team
+ */
 Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
 
     type:Z.Geometry['TYPE_RECT'],

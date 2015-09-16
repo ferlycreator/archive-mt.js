@@ -1,3 +1,10 @@
+/**
+ * 多边形类
+ * @class maptalks.Polyline
+ * @extends maptalks.Vector
+ * @mixins maptalks.Geometry.Poly
+ * @author Maptalks Team
+ */
 Z.LineString = Z.Polyline = Z.Vector.extend({
     includes:[Z.Geometry.Poly],
 

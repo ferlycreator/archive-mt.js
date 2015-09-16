@@ -1,3 +1,10 @@
+/**
+ * 点类
+ * @class maptalks.Marker
+ * @extends maptalks.Geometry
+ * @mixins maptalks.Geometry.Center
+ * @author Maptalks Team
+ */
 Z['Marker']=Z.Marker=Z.Geometry.extend({
     includes:[Z.Geometry.Center],
 

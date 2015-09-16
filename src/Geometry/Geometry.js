@@ -3,7 +3,7 @@ Z.Painter={};
  * 图形类
  * @class maptalks.Geometry
  * @extends maptalks.Class
- * @requires maptalks.Eventable
+ * @mixins maptalks.Eventable
  * @author Maptalks Team
  */
 Z['Geometry']=Z.Geometry=Z.Class.extend({

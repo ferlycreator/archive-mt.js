@@ -1,3 +1,9 @@
+/**
+ * 多图形类
+ * @class maptalks.MultiPoly
+ * @extends maptalks.GeometryCollection
+ * @author Maptalks Team
+ */
 Z.MultiPoly = Z.GeometryCollection.extend({
 
     initialize:function(data, opts) {

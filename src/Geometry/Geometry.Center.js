@@ -1,3 +1,8 @@
+/**
+ * 图形中心点类
+ * @class maptalks.Geometry.Center
+ * @author Maptalks Team
+ */
 Z.Geometry.Center = {
     /**
      * 计算Geometry中心点在地图容器中的相对坐标

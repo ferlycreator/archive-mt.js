@@ -1,3 +1,9 @@
+/**
+ * 扇形类
+ * @class maptalks.Sector
+ * @extends maptalks.Polygon
+ * @author Maptalks Team
+ */
 Z['Sector']=Z.Sector=Z.Polygon.extend({
     includes:[Z.Geometry.Center],
 

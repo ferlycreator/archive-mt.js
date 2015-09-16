@@ -1,3 +1,9 @@
+/**
+ * geometry集合类
+ * @class maptalks.GeometryCollection
+ * @extends maptalks.Geometry
+ * @author Maptalks Team
+ */
 Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
     type:Z.Geometry['TYPE_GEOMETRYCOLLECTION'],
 
