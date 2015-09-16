@@ -1,6 +1,7 @@
 Z.Geometry.include({
     /**
-     *  开始编辑Geometry
+     * 开始编辑Geometry
+     * @member maptalks.Geometry
      * @expose
      */
     startEdit: function(opts) {
@@ -9,9 +10,9 @@ Z.Geometry.include({
         this.editor.start();
     },
 
-
     /**
      * 结束编辑
+     * @member maptalks.Geometry
      * @expose
      */
     endEdit: function() {
@@ -22,6 +23,7 @@ Z.Geometry.include({
 
     /**
      * Geometry是否处于编辑状态中
+     * @member maptalks.Geometry
      * @return {Boolean} 是否处于编辑状态
      * @expose
      */

@@ -1,5 +1,9 @@
 Z.Geometry.include({
-
+    /**
+     * 生成事件参数
+     * @member maptalks.Geometry
+     * @param  {Event} event 事件对象
+     */
     _onEvent: function(event) {
         //还没加载到地图上时, 不处理事件
         if (!this.getMap()) {
@@ -24,8 +28,9 @@ Z.Geometry.include({
 
     /**
      * 生成事件参数
-     * @param  {[type]} event [description]
-     * @return {[type]}       [description]
+     * @member maptalks.Geometry
+     * @param  {Event} event 事件对象
+     * @return {Object} 事件返回参数
      */
     _getEventParams: function(event) {
         var map = this.getMap();
@@ -41,6 +46,12 @@ Z.Geometry.include({
         }
         var originalEvent = event.originalEvent || event;
         var params = this._getEventParams(originalEvent);
+        /**
+         * 触发geometry的mouseover事件
+         * @member maptalks.Geometry
+         * @event mouseover
+         * @return {Object} params: {'target':this, 'pixel':pixel, 'coordinate':coordinate}
+         */
         this._fireEvent('mouseover', params);
     },
 
@@ -50,6 +61,12 @@ Z.Geometry.include({
         }
         var originalEvent = event.originalEvent || event;
         var params = this._getEventParams(originalEvent);
+        /**
+         * 触发geometry的mouseout事件
+         * @member maptalks.Geometry
+         * @event mouseout
+         * @return {Object} params: {'target':this, 'pixel':pixel, 'coordinate':coordinate}
+         */
         this._fireEvent('mouseout', params);
     }
 });

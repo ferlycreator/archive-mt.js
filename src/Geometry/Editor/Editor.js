@@ -1,6 +1,18 @@
+/**
+ * 编辑工具类
+ * @class maptalks.Editor
+ * @extends maptalks.Class
+ * @mixins maptalks.Eventable
+ * @author Maptalks Team
+ */
 Z.Editor=Z.Class.extend({
     includes: [Z.Eventable],
 
+    /**
+     * @constructor
+     * @param {maptalks.Geometry} geometry 待编辑图形
+     * @param {Object} opts 属性
+     */
     initialize:function(geometry,opts) {
         this.geometry = geometry;
         if (!this.geometry) {return;}

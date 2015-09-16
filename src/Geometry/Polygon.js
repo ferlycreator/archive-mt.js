@@ -27,6 +27,7 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
             'INVALID_COORDINATES':'对于多边形无效的坐标.'
         }
     },
+
     /**
      * @constructor
      * @param {Coordinate[]} coordinates

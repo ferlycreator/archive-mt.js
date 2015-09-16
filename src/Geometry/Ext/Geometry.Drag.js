@@ -1,11 +1,20 @@
 Z.Geometry.mergeOptions({
+    /**
+     * @cfg {Boolean} [draggable="false"] geometry能否拖动
+     * @member maptalks.Geometry
+     */
 	'draggable': false,
+	/**
+	 * @cfg {String} [dragTrigger="mousedown"] geometry 拖动触发机制
+     * @member maptalks.Geometry
+     */
 	'dragTrigger': 'mousedown'//manual
 });
 
 Z.Geometry.include({
     /**
      * 开始移动Geometry, 进入移动模式
+     * @member maptalks.Geometry
      */
     startDrag: function() {
         this._map = this.getMap();
@@ -13,6 +22,12 @@ Z.Geometry.include({
         this._map.disableDrag();
         this._map.on('mousemove', this._dragging, this)
                  .on('mouseup', this._endDrag, this);
+        /**
+         * 触发geometry的dragstart事件
+         * @member maptalks.Geometry
+         * @event dragstart
+         * @return {Object} params: {'target':this}
+         */
         this.fire('dragstart', {'target': this});
     },
 
@@ -79,25 +94,38 @@ Z.Geometry.include({
            this._setPrjPoints(newLonlats);
         }
         this._updateCache();
+        /**
+         * 触发geometry的dragging事件
+         * @member maptalks.Geometry
+         * @event dragging
+         * @return {Object} params: {'target':this}
+         */
         this.fire('dragging', {'target': this});
     },
 
     /**
      * 结束移动Geometry, 退出移动模式
+     * @member maptalks.Geometry
      */
     _endDrag: function(event) {
         this.isDragging = false;
         this._map.enableDrag();
         this._map.off('mousemove', this._dragging, this)
                  .off('mouseup', this._endDrag, this);
+        /**
+         * 触发geometry的dragend事件
+         * @member maptalks.Geometry
+         * @event dragend
+         * @return {Object} params: {'target':this}
+         */
         this.fire('dragend', {'target': this});
         Z.DomUtil.setStyle(this._map._containerDOM, 'cursor: default');
     },
 
     /**
      * Geometry是否处于移动模式中
-     * @return
-      {Boolean} 是否处于移动模式中
+     * @member maptalks.Geometry
+     * @reutrn {Boolean} 是否处于移动模式中
      * @expose
      */
     isDragging: function() {

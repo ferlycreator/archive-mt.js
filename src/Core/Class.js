@@ -1,6 +1,7 @@
 /*
  * OOP facilities of the library.
  * Thanks to Leaflet's inspiration (http://www.leafletjs.com)
+ * @class maptalks.Class
  */
 Z.Class = function () {};
 
