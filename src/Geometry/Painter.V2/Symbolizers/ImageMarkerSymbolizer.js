@@ -1,5 +1,7 @@
 Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
 
+    defaultIcon: Z.prefix+'images/marker.png',
+
     initialize:function(symbol, geometry) {
         this.symbol = symbol;
         this.geometry = geometry;
@@ -11,6 +13,11 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
     },
 
     canvas:function(ctx, resources) {
+        var shouldComputeExtent = false;
+        if (!this.pxExtent) {
+            this.pxExtent = new Z.Extent();
+            shouldComputeExtent = true;
+        }
         var points = this.renderPoints;
         if (!Z.Util.isArrayHasData(points)) {
             return;
@@ -26,17 +33,25 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
             return;
         }
         //将完整图片地址写回到symbol中, 截图等模块需要
-        this.symbol['marker-file'] = img['src'];
+        if (img['src']) {
+            this.symbol['marker-file'] = img['src'];
+        }
+        var dxdy = this.getDxDy();
         var ratio = Z.Browser.retina ? 2:1;
+        var width = style['marker-width']*ratio;
+        var height = style['marker-height']*ratio;
+        if (!Z.Util.isNumber(width) || !Z.Util.isNumber(height)) {
+            width = img.width;
+            height = img.height;
+        }
         for (var i = 0, len=cookedPoints.length;i<len;i++) {
             var pt = cookedPoints[i]._multi(ratio);
-            var width = style['marker-width']*ratio;
-            var height = style['marker-height']*ratio;
-            if (width && height) {
-                ctx.drawImage(img,pt['left'],pt['top'],width,height);
-             } else {
-                ctx.drawImage(img,pt['left'],pt['top']);
-             }
+            pt._add(dxdy._multi(ratio));
+            ctx.drawImage(img,pt['left'],pt['top'],width,height);
+            if (shouldComputeExtent) {
+                var offset = map._screenToDomOffset(pt);
+                this.pxExtent = Z.Extent.combine(this.pxExtent, new Z.Extent(offset['left'],offset['top'],offset['left']+width, offset['top']+height));
+            }
         }
     },
 
@@ -95,11 +110,20 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
             markerIcon.style.top = symbol['marker-dy']+'px';
         }
         markerIcon.setAttribute('unselectable', 'on');
-        markerIcon.onerror = function() {
-            //TODO 默认样式
-            //this.src = _this.defaultIcon['url'];
-
+        var me = this;
+        markerIcon.onload = function() {
+            if (this.src) {
+                //相对地址转化成绝对地址
+                me.symbol['marker-file'] = this.src;
+            }
         };
+
+        //发生错误
+        markerIcon.onerror = function() {
+            //默认样式
+            this.src = me.defaultIcon;
+        };
+        //浏览器停止键
         markerIcon.onabort = function() {
             this.src = markerIcon.src;
         };
@@ -107,12 +131,8 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
         if (!Z.Util.isNil(symbol['marker-opacity'])) {
             Z.DomUtil.setOpacity(markerIcon, symbol['marker-opacity']);
         }
-        //相对地址转化成绝对地址
-        this.symbol['marker-file'] = markerIcon.src;
-
-        // geometry.markerIcon = markerIcon;
-        markerDom.appendChild(markerIcon);
         markerIcon.src = symbol['marker-file'];
+        markerDom.appendChild(markerIcon);
         return markerDom;
     }
 });

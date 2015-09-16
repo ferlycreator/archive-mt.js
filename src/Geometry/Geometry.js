@@ -126,7 +126,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     getSymbol:function() {
-        return this.options.symbol;
+        return this.options['symbol'] ||  Object.getPrototypeOf(this).options['symbol'];
     },
 
     /**
@@ -136,11 +136,11 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      */
     setSymbol:function(symbol) {
         if (!symbol) {
-            this.options.symbol = null;
+            this.options['symbol'] = null;
         } else {
             //属性的变量名转化为驼峰风格
             // var camelSymbol = Z.Util.convertFieldNameStyle(symbol,'camel');
-            this.options.symbol = symbol;
+            this.options['symbol'] = symbol;
         }
         this._onSymbolChanged();
         return this;

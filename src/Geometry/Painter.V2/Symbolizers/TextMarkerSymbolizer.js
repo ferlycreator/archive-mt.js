@@ -26,6 +26,11 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
     },
 
     canvas:function(ctx, resources) {
+        var shouldComputeExtent = false;
+        if (!this.pxExtent) {
+            this.pxExtent = new Z.Extent();
+            shouldComputeExtent = true;
+        }
         var points = this.renderPoints;
         if (!Z.Util.isArrayHasData(points)) {
             return;
@@ -45,7 +50,14 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
         var size = Z.Util.stringLength(textContent,style['text-face-name'],style['text-size']);
         var ratio = Z.Browser.retina ? 2:1;
         for (var i = 0, len=cookedPoints.length;i<len;i++) {
-            Z.Canvas.text(ctx, textContent, cookedPoints[i]._multi(ratio), style,size);
+            var extent = Z.Canvas.text(ctx, textContent, cookedPoints[i]._multi(ratio), style,size);
+            if (shouldComputeExtent) {
+                this.pxExtent = Z.Extent.combine(this.pxExtent,
+                    new Z.Extent(
+                        map._screenToDomOffset(new Z.Point(extent['xmin'],extent['ymin'])),
+                        map._screenToDomOffset(new Z.Point(extent['xmax'],extent['ymax']))
+                        ));
+            }
         }
     },
 

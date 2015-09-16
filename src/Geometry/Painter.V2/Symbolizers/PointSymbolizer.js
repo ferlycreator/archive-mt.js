@@ -1,7 +1,23 @@
 Z.PointSymbolizer=Z.Symbolizer.extend({
+    getPixelExtent:function() {
+        if (!this.pxExtent && Z.Util.isArrayHasData(this.markers)) {
+            this.pxExtent = new Z.Extent();
+            for (var i = this.markers.length - 1; i >= 0; i--) {
+                var boundingRect = this.markers[i].getBoundingClientRect();
+                this.pxExtent = Z.Extent.combine(new Z.Extent(boundingRect['left'],boundingRect['top'],boundingRect['right'],boundingRect['bottom']));
+            }
+        }
+        return this.pxExtent;
+    },
+
+    getSvgDom:function() {
+        return this.markers;
+    },
+
     //所有point symbolizer的共同的refresh方法
     refresh:function() {
         this.renderPoints = this._getRenderPoints();
+        this.pxExtent = null;
         var layer = this.geometry.getLayer();
         if (!layer.isCanvasRender()) {
             this.symbolize();

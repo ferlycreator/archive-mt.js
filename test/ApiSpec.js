@@ -1018,7 +1018,7 @@ describe('API', function () {
         });
 
         it('getSize', function() {
-            var marker = new Z.Marker({x: 0, y: 0});
+            var marker = new Z.Marker(map.getCenter());
             layer.addGeometry(marker);
             var size = marker.getSize();
 

@@ -17,28 +17,17 @@ Z.Browser.vml = !Z.Browser.svg && (function () {
 }());
 
 Z.SVG = {
-    defaultStrokeSymbol:{
-        'stroke':'#000000',
-        'strokeWidth': 2,
-        'strokeDasharray': ''//'', '-', '.', '-.', '-..', '. ', '- ', '--', '- .', '--.', '--..'
-    },
+    _ISURL: /^url\(['"]?(.+?)['"]?\)$/i,
 
-    defaultFillSymbol:{
-        'fill': '#ffffff',
-        'fillOpacity': 0
-    },
-
-    _ISURL: /^url\(['"]?(.+?)['"]?\)$/i
+    //Path中的闭合指令, svg中是Z, vml中是x, 默认为Z
+    closeChar: (function() {
+        if (Z.Browser.vml) {
+            return 'x';
+        } else {
+            return 'Z';
+        }
+    })()
 };
-
-//Path中的闭合指令, svg中是Z, vml中是x, 默认为Z
-Z.SVG.closeChar = (function() {
-    if (Z.Browser.vml) {
-        return 'x';
-    } else {
-        return 'Z';
-    }
-})();
 
 Z.SVG.SVG = {
     createContainer:function() {
@@ -78,6 +67,7 @@ Z.SVG.SVG = {
     },
 
     text:function(text, style, size) {
+        //TODO 改为textpath
         var svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         var textNode = document.createTextNode(text);
         svgText.appendChild(textNode);

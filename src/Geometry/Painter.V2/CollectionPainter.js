@@ -14,54 +14,60 @@ Z.CollectionPainter=Z.Class.extend({
         }
     },
 
-    _paint:function() {
+    paint:function() {
         if (!this.geometry) {
             return;
         }
         var symbol = this.geometry.getSymbol();
         //将collection的symbol放到末尾,覆盖painter原有的symbol
         Array.prototype.push.call(arguments, symbol);
-
+        var args = arguments;
         this._eachPainter(function(painter) {
-            painter.paint.apply(painter,arguments);
+            painter.paint.apply(painter,args);
         });
     },
 
     remove:function() {
+        var args = arguments;
         this._eachPainter(function(painter) {
-            painter.remove.apply(painter,arguments);
+            painter.remove.apply(painter,args);
         });
     },
 
     setZIndex:function(change) {
+        var args = arguments;
         this._eachPainter(function(painter) {
-            painter._setZIndex.apply(painter,arguments);
+            painter.setZIndex.apply(painter,args);
         });
     },
 
     show:function() {
+        var args = arguments;
         this._eachPainter(function(painter) {
-            painter.show.apply(painter,arguments);
+            painter.show.apply(painter,args);
         });
     },
 
     hide:function() {
+        var args = arguments;
         this._eachPainter(function(painter) {
-            painter.hide.apply(painter,arguments);
+            painter.hide.apply(painter,args);
         });
     },
 
     refresh:function(){
+        var args = arguments;
         this._eachPainter(function(painter) {
             painter.setSymbol(this.geometry.getSymbol());
-            painter.refresh.apply(painter,arguments);
+            painter.refresh.apply(painter,args);
         });
     },
 
     refreshSymbol:function(){
+        var args = arguments;
         this._eachPainter(function(painter) {
             painter.setSymbol(this.geometry.getSymbol());
-            painter.refreshSymbol.apply(painter,arguments);
+            painter.refreshSymbol.apply(painter,args);
         });
     },
 

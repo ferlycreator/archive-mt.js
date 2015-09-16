@@ -444,7 +444,7 @@ function registerGeometryCommonTest(geometry,_context) {
                 expect(resource).to.be(symbol['marker-file']);
             } else {
                 var symbol = {
-                    'polygon-fill':'url(\'http://foo.com/foo.png\')'
+                    'polygon-pattern-file':'url(\'http://foo.com/foo.png\')'
                 };
                 geometry.setSymbol(symbol);
                 var resource = geometry._getExternalResource();

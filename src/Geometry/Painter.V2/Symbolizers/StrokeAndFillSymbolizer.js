@@ -19,11 +19,10 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
     svg:function(container, vectorContainer, zIndex) {
         var svgPath = this.geometry._getRenderPath();
         if (!this.svgDom) {
-            var svgPaper = vectorContainer;//this.getMap()._getSvgPaper();
             this.svgDom = Z.SVG.path(svgPath);
             //鼠标样式
             this.svgDom.style.cursor = "pointer";
-            svgPaper.appendChild(this.svgDom);
+            vectorContainer.appendChild(this.svgDom);
         } else {
             Z.SVG.updatePath(this.svgDom, svgPath);
         }
@@ -51,6 +50,14 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
         }
     },
 
+    getSvgDom:function() {
+        return this.svgDom;
+    },
+
+    getPixelExtent:function() {
+        //doesn't need to caculate this.
+        return null;
+    },
     refresh:function() {
         var layer = this.geometry.getLayer();
         if (!layer.isCanvasRender()) {

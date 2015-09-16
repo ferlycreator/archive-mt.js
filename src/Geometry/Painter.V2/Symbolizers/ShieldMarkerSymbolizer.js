@@ -43,6 +43,11 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
     },
 
     canvas:function(ctx, resources) {
+        var shouldComputeExtent = false;
+        if (!this.pxExtent) {
+            this.pxExtent = new Z.Extent();
+            shouldComputeExtent = true;
+        }
         var points = this.renderPoints;
         if (!Z.Util.isArrayHasData(points)) {
             return;
@@ -63,12 +68,22 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
         var ratio = Z.Browser.retina ? 2:1;
 
         var img = resources.getImage(style['shield-file']);
-
+        var width = img.width,
+            height = img.height;
         for (var i = 0, len=cookedPoints.length;i<len;i++) {
             var pt = cookedPoints[i]._multi(ratio);
-            var imgPt = pt.substract(new Z.Point(img.width/2, img.height/2));
-            ctx.drawImage(img, imgPt['left'], imgPt['top'], img.width, img.height);
-            Z.Canvas.text(ctx, textContent,pt , style,size);
+            var imgPt = pt.substract(new Z.Point(width/2, height/2));
+            ctx.drawImage(img, imgPt['left'], imgPt['top'], width, height);
+            var extent = Z.Canvas.text(ctx, textContent,pt , style,size);
+            if (shouldComputeExtent) {
+                var offset = map._screenToDomOffset(imgPt);
+                this.pxExtent = Z.Extent.combine(this.pxExtent, new Z.Extent(offset['left'],offset['top'],offset['left']+width, offset['top']+height));
+                this.pxExtent = Z.Extent.combine(this.pxExtent,
+                    new Z.Extent(
+                        map._screenToDomOffset(new Z.Point(extent['xmin'],extent['ymin'])),
+                        map._screenToDomOffset(new Z.Point(extent['xmax'],extent['ymax']))
+                        ));
+            }
         }
     },
 

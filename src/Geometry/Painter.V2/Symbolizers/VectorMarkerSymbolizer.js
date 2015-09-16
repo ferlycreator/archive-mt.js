@@ -26,6 +26,11 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
     },
 
     canvas:function(ctx, resources) {
+        var shouldComputeExtent = false;
+        if (!this.pxExtent) {
+            this.pxExtent = new Z.Extent();
+            shouldComputeExtent = true;
+        }
         var points = this.renderPoints;
         if (!Z.Util.isArrayHasData(points)) {
             return;
@@ -38,12 +43,18 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
         var vectorArray = this._getVectorArray(style);
         var markerType = style['marker-type'].toLowerCase();
         var strokeAndFill = this.translateStrokeAndFill(style);
+        var dxdy = this.getDxDy();
         Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'],strokeAndFill['fill'], null);
         var j;
+
+        var width = style['marker-width'],
+            height = style['marker-height'];
+
         for (var i = cookedPoints.length - 1; i >= 0; i--) {
             var point = cookedPoints[i];
+            point._add(dxdy);
             if (markerType  === 'ellipse') {
-                Z.Canvas.ellipse(ctx, point, new Z.Size(style['marker-width'],style['marker-height']));
+                Z.Canvas.ellipse(ctx, point, new Z.Size(width,height));
                 Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']);
             } else if (markerType === 'cross' || markerType === 'x'){
                 for (j = vectorArray.length - 1; j >= 0; j--) {
@@ -58,6 +69,16 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
                 //面类型
                 Z.Canvas.polygon(ctx,vectorArray,null);
                 Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']);
+            }
+            if (shouldComputeExtent) {
+                var offset = map._screenToDomOffset(point);
+                //bar的基点在最下面,其他的在中间
+                if (markerType  === 'bar') {
+                    this.pxExtent = Z.Extent.combine(this.pxExtent, new Z.Extent(offset.add(new Z.Point(-width/2,-height)), offset.add(new Z.Point(width/2,0))));
+                } else {
+                    this.pxExtent = Z.Extent.combine(this.pxExtent, new Z.Extent(offset.add(new Z.Point(-width/2,-height/2)), offset.add(new Z.Point(width/2,height/2))));
+                }
+
             }
         }
 
