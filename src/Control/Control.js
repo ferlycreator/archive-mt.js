@@ -167,7 +167,7 @@ Z['Control'] = Z.Control = Z.Class.extend({
 
 
 Z.Map.include({
-    /*
+    /**
      * 添加control
      * @member maptalks.Map
      * @param {maptalks.Control} control
@@ -178,7 +178,7 @@ Z.Map.include({
         return this;
     },
 
-    /*
+    /**
      * 删除control
      * @member maptalks.Map
      * @param {maptalks.Control} control

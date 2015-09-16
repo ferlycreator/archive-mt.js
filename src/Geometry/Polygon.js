@@ -30,9 +30,9 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
 
     /**
      * @constructor
-     * @param {Coordinate[]} coordinates
+     * @param {maptalks.Coordinate[]} coordinates
      * @param {Object} opts
-     * @returns {Polygon}
+     * @returns {maptalks.Polygon}
      */
     initialize:function(coordinates, opts) {
         this.setCoordinates(coordinates);
