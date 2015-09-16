@@ -8,26 +8,7 @@ var runSequence = require('run-sequence');
 var karma = require('karma').server;
 var connect = require('gulp-connect');
 var browserSync = require('browser-sync');
-var jsdoc = require("gulp-jsdoc");
 var reload = browserSync.reload;
-
-var docTpl = {
-     path: 'docs/jaguarjs',
-     anyTemplateSpecificParameter: 'whatever'
-};
-var docInfos = {
-    name: 'MapTalks',
-    description: 'Talk with map and data, make your data more effective.',
-    version: '2.0',
-    licenses: [],
-    plugins: []
-};
-var docOpts = {
-    'private': false,
-    monospaceLinks: false,
-    cleverLinks: false,
-    outputSourceFiles: false
-};
 
 var minimist = require('minimist');
 
@@ -86,6 +67,15 @@ gulp.task('docs', function () {
   return gulp.src('src/**/*.js')
     .pipe(jsdoc('dist/docs', docTpl, docInfos, docOpts));
 });
+
+var shell = require('gulp-shell');
+gulp.task('docs', function () {
+    console.log("[JSDuck] Creating documentation");
+    return gulp.src('')
+        .pipe(shell(['jsduck']));
+});
+
+gulp.task('default', ['docs']);
 
 gulp.task('styles', function () {
   var AUTOPREFIXER_BROWSERS = [
