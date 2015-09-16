@@ -58,6 +58,9 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
     getPixelExtent:function() {
         var map = this.getMap();
         var extent = this.geometry.getExtent();
+        if (!extent) {
+            return null;
+        }
         var min = map._getProjection().project(new Z.Coordinate(extent['xmin'],extent['ymin'])),
             max = map._getProjection().project(new Z.Coordinate(extent['xmax'],extent['ymax']));
         return new Z.Extent(

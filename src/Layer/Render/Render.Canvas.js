@@ -118,11 +118,12 @@ Z.Render.Canvas.prototype = {
     _repaintInExtent: function(extent) {
         var me = this;
         var map = me.getMap();
+        var projection = map._getProjection();
         var mapExtent = map.getExtent();
         if (extent && extent.isIntersect(mapExtent)) {
             var pxExtent =  new Z.Extent(
-                map._transformToOffset(new Z.Coordinate(extent['xmin'],extent['ymin'])),
-                map._transformToOffset(new Z.Coordinate(extent['xmax'],extent['ymax']))
+                map._transformToOffset(projection.project(new Z.Coordinate(extent['xmin'],extent['ymin']))),
+                map._transformToOffset(projection.project(new Z.Coordinate(extent['xmax'],extent['ymax'])))
                 );
             this._clearCanvas(extent);
             me._eachGeometry(function(geo) {
