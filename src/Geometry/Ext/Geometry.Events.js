@@ -1,7 +1,6 @@
 Z.Geometry.include({
     /**
      * 生成事件参数
-     * @member maptalks.Geometry
      * @param  {Event} event 事件对象
      */
     _onEvent: function(event) {
@@ -28,7 +27,6 @@ Z.Geometry.include({
 
     /**
      * 生成事件参数
-     * @member maptalks.Geometry
      * @param  {Event} event 事件对象
      * @return {Object} 事件返回参数
      */

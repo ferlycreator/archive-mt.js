@@ -105,7 +105,6 @@ Z.Geometry.include({
 
     /**
      * 结束移动Geometry, 退出移动模式
-     * @member maptalks.Geometry
      */
     _endDrag: function(event) {
         this.isDragging = false;

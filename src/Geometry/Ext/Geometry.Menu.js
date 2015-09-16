@@ -1,8 +1,8 @@
 Z.Geometry.include({
     /**
     * 设置Geometry的菜单
-    * @param {Array} options 菜单项
-    * {"items":[], width:240, beforeopen:fn}
+    * @param {Object} options 菜单项 {"items":[], width:240, beforeopen:fn}
+    * @member maptalks.Geometry
     * @expose
     */
     setMenu: function(options) {
@@ -41,7 +41,8 @@ Z.Geometry.include({
 
     /**
     * 打开geometry菜单
-    * @param {Coordinate} 坐标
+    * @param {maptalks.Coordinate} 坐标
+    * @member maptalks.Geometry
     * @expose
     */
     openMenu: function(coordinate) {
@@ -54,6 +55,7 @@ Z.Geometry.include({
     /**
     * 添加菜单项目
     * @param {Array} 菜单项数组
+    * @member maptalks.Geometry
     * @expose
     */
     setMenuItem: function(items) {
@@ -63,6 +65,7 @@ Z.Geometry.include({
 
     /**
     * 关闭geometry菜单
+    * @member maptalks.Geometry
     * @expose
     */
     closeMenu: function() {

@@ -40,10 +40,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         'editable':true
     },
 
-    /**
-     * 初始化传入的option参数
-     * @param  {Object} opts 初始化属性
-     */
+    //初始化传入的option参数
     _initOptions:function(opts) {
         if (!opts) {
             return;
@@ -54,9 +51,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         Z.Util.setOptions(this,opts);
     },
 
-    /**
-     * 调用prepare时,layer已经注册到map上
-     */
+    //调用prepare时,layer已经注册到map上
     _prepare:function(layer) {
         this._rootPrepare(layer);
     },
@@ -304,10 +299,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         return this._internalId;
     },
 
-    /**
-     * 只能被图层调用
-     * @param {String} id geometry内部id
-     */
+    //只能被图层调用
     _setInternalId:function(id) {
         this._internalId = id;
     },
@@ -322,10 +314,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         // return null;
     },
 
-    /**
-     * 获取geometry样式中依赖的外部图片资源
-     * @returns {Object} 外部依赖资源
-     */
+    //获取geometry样式中依赖的外部图片资源
     _getExternalResource:function() {
         var geometry = this;
         var symbol = geometry.getSymbol();

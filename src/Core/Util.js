@@ -1,3 +1,8 @@
+/**
+ * 基础工具类
+ * @class maptalks.Util
+ * @author Maptalks Team
+ */
 Z.Util = {
 
     globalCounter:0,

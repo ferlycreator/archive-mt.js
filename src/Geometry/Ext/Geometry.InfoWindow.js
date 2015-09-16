@@ -2,6 +2,7 @@ Z.Geometry.include({
     /**
      * 设置Geometry的信息提示框设置
      * @param {Object} options 信息提示框设置
+     * @member maptalks.Geometry
      * @expose
      */
     setInfoWindow:function(options) {
@@ -42,6 +43,7 @@ Z.Geometry.include({
     /**
      * 获取Geometry的信息提示框设置
      * @return {Object} 信息提示框设置
+     * @member maptalks.Geometry
      * @expose
      */
     getInfoWindow:function() {
@@ -52,6 +54,7 @@ Z.Geometry.include({
     /**
      * 打开geometry的信息提示框
      * @param  {Coordinate} coordinate 提示框位置,可以为空
+     * @member maptalks.Geometry
      * @expose
      */
     openInfoWindow:function(coordinate) {
@@ -60,6 +63,7 @@ Z.Geometry.include({
 
     /**
      * 关闭Geometry的信息提示框
+     * @member maptalks.Geometry
      * @expose
      */
     closeInfoWindow:function() {
