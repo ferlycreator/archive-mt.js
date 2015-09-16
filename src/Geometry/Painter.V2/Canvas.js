@@ -120,7 +120,6 @@ Z.Canvas = {
             ctx.lineWidth = 1;
         }
         ctx.fillText(text, pt['left'], pt['top']);
-        return new Z.Extent(pt['left'], pt['top'], pt['left']+size['width'], pt['top']+size['height']);
     },
 
     _path:function(context, points, lineDashArray) {

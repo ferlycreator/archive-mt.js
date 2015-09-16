@@ -97,12 +97,12 @@ describe('Marker', function() {
             var marker = new Z.Marker(center);
             marker.on('symbolchanged', spy);
             marker.setSymbol({
-                'markerType' : 'circle',
-                'markerLineColor': '#ff0000',
-                'markerFill': '#ffffff',
-                'markerFillOpacity': 0.6,
-                'markerHeight' : 8,
-                'markerWidth' : 8
+                'marker-type' : 'ellipse',
+                'marker-line-color': '#ff0000',
+                'marker-fill': '#ffffff',
+                'marker-fill-opacity': 0.6,
+                'marker-height' : 8,
+                'marker-width' : 8
             });
 
             expect(spy.called).to.be.ok();

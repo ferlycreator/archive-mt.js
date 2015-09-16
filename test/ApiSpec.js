@@ -944,11 +944,11 @@ describe('API', function () {
             var geometry = new Z.Geometry();
             geometry._getPainter = getPainter;
             var symbol = {
-                strokeSymbol: {
-                    stroke: '#ff0000',
-                    'stroke-width': 3,
-                    opacity: 0.6
-                }
+
+                    'line-color': '#ff0000',
+                    'line-width': 3,
+                    'line-opacity': 0.6
+
             };
             var undef;
 
@@ -958,11 +958,10 @@ describe('API', function () {
             var got = geometry.getSymbol();
 
             expect(got).to.not.be(null);
-            var stroke = got.strokeSymbol;
-            expect(stroke).to.only.have.keys([
-                'stroke',
-                'stroke-width',
-                'opacity'
+            expect(got).to.only.have.keys([
+                'line-color',
+                'line-width',
+                'line-opacity'
             ]);
         });
 
@@ -1183,7 +1182,7 @@ describe('API', function () {
         });
 
         it('getSize', function() {
-            var ellipse = new Z.Ellipse({x: 0, y: 0}, 1, 1);
+            var ellipse = new Z.Ellipse({x: 0, y: 0}, 100, 100);
             layer.addGeometry(ellipse);
             var size = ellipse.getSize();
 

@@ -63,6 +63,18 @@ Z.Painter = Z.Class.extend({
     },
 
     /**
+     * 获取svg图形的dom
+     */
+    getSvgDom:function() {
+        var result = [];
+        for (var i = this.symbolizers.length - 1; i >= 0; i--) {
+            var doms = this.symbolizers[i].getSvgDom();
+            result = result.concat(doms);
+        }
+        return result;
+    },
+
+    /**
      * 保存paint被调用时的参数context, 以备未来刷新symbolizer时使用
      */
     _saveContext:function() {
@@ -86,11 +98,13 @@ Z.Painter = Z.Class.extend({
 
     //需要实现的接口方法
     getPixelExtent:function() {
-        var extent = new Z.Extent();
-        for (var i = this.symbolizers.length - 1; i >= 0; i--) {
-            extent = Z.Extent.combine(this.symbolizers[i].getPixelExtent(),extent);
+        if (!this.pxExtent) {
+            this.pxExtent = new Z.Extent();
+            for (var i = this.symbolizers.length - 1; i >= 0; i--) {
+                this.pxExtent = Z.Extent.combine(this.symbolizers[i].getPixelExtent(),this.pxExtent);
+            }
         }
-        return extent;
+        return this.pxExtent;
     },
 
     setZIndex:function(change) {
@@ -112,12 +126,14 @@ Z.Painter = Z.Class.extend({
     },
 
     refresh:function(){
+        this.pxExtent = null;
         this._eachSymbolizer(function(symbolizer) {
             symbolizer.refresh();
         });
     },
 
     refreshSymbol:function() {
+        this.pxExtent = null;
         this.remove();
         this._createSymbolizers();
         this.paint.apply(this, this.context);

@@ -3,6 +3,9 @@ Z['Extent']=Z.Extent = function(p1,p2,p3,p4) {
     this['xmax'] = null;
     this['ymin'] = null;
     this['ymax'] = null;
+    if (Z.Util.isNil(p1) || Z.Util.isNil(p2)) {
+        return;
+    }
     //构造方法一: 参数都是数字
     if (Z.Util.isNumber(p1) &&
         Z.Util.isNumber(p2) &&
@@ -15,30 +18,38 @@ Z['Extent']=Z.Extent = function(p1,p2,p3,p4) {
         return;
     } else {
         //构造方法二: 参数是两个坐标
-        if (p1 && p2 &&
-            !Z.Util.isNil(p1.x) &&
-            !Z.Util.isNil(p2.x) &&
-            !Z.Util.isNil(p1.y) &&
-            !Z.Util.isNil(p2.y)) {
-            if (p1.x>p2.x) {
-                this['xmin'] = p2.x;
-                this['xmax'] = p1.x;
+        var fieldX = (Z.Util.isNumber(p1['left'])?'left':'x');
+        var fieldY = (Z.Util.isNumber(p1['top'])?'top':'y');
+        if (Z.Util.isNumber(p1[fieldX]) &&
+            Z.Util.isNumber(p2[fieldX]) &&
+            Z.Util.isNumber(p1[fieldY]) &&
+            Z.Util.isNumber(p2[fieldY])) {
+            if (p1[fieldX]>p2[fieldX]) {
+                this['xmin'] = p2[fieldX];
+                this['xmax'] = p1[fieldX];
             } else {
-                this['xmin'] = p1.x;
-                this['xmax'] = p2.x;
+                this['xmin'] = p1[fieldX];
+                this['xmax'] = p2[fieldX];
             }
-            if (p1.y>p2.y) {
-                this['ymin'] = p2.y;
-                this['ymax'] = p1.y;
+            if (p1[fieldY]>p2[fieldY]) {
+                this['ymin'] = p2[fieldY];
+                this['ymax'] = p1[fieldY];
             } else {
-                this['ymin'] = p1.y;
-                this['ymax'] = p2.y;
+                this['ymin'] = p1[fieldY];
+                this['ymax'] = p2[fieldY];
             }
         }
     }
 };
 
 Z.Extent.prototype={
+    getMin:function() {
+        return new Z.Point(this['xmin'],this['ymin']);
+    },
+
+    getMax:function() {
+        return new Z.Point(this['xmax'],this['ymax']);
+    },
 
     toJson:function() {
         return {

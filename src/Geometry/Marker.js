@@ -27,14 +27,6 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
         return new Z.Extent({'x':coordinates.x,'y':coordinates.y},{'x':coordinates.x,'y':coordinates.y});
     },
 
-    _computeVisualExtent:function(projection) {
-        var map = this.getMap();
-        if (!map) {
-            return null;
-        }
-        return this._getPainter().getPixelExtent();
-    },
-
     _computeGeodesicLength:function(projection) {
         return 0;
     },

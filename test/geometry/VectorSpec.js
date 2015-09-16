@@ -38,7 +38,7 @@ describe('VectorSpec', function() {
             vector.on('click', spy);
             layer.addGeometry(vector);
             var painter = vector._getPainter();
-            happen.click(painter.vector);
+            happen.click(painter.getSvgDom()[0]);
 
             expect(spy.called).to.be.ok();
         });

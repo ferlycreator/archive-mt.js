@@ -28,7 +28,7 @@
 
     if (Z.Browser.mobile) {
         if (viewPortMeta === null) {
-            viewPortMeta=Z.DomUtil.createEl('meta');
+            viewPortMeta=document.createElement('meta');
             viewPortMeta.setAttribute("viewport");
             viewPortMeta.setAttribute("content","user-scalable=no");
             head.appendChild(viewPortMeta);
@@ -40,7 +40,7 @@
         }
     }
 
-    var controlStyle=Z.DomUtil.createEl('link');
+    var controlStyle=document.createElement('link');
     controlStyle.href=Z.prefix+"css/maptalks.css";
     controlStyle.rel='stylesheet';
     controlStyle.type='text/css';
@@ -49,7 +49,7 @@
     //ie插入vml定义
     if (Z.Browser.ielt9) {
         //chrome frame meta标签
-        var cfMeta = Z.DomUtil.createEl('meta');
+        var cfMeta = document.createElement('meta');
         cfMeta.setAttribute("http-equiv","X-UA-Compatible");
         cfMeta.setAttribute("content","IE=edge,chrome=1");
         head.appendChild(cfMeta);

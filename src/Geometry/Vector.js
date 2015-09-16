@@ -14,21 +14,5 @@ Z.Vector = Z.Geometry.extend({
         var symbol = this.getSymbol();
         var w = symbol['line-width'];
         return w ? w / 2 : 0;
-    },
-
-    _computeVisualExtent:function(projection) {
-        var width = 0;
-        var extent = this._getPrjExtent();
-        if (!extent) {
-            return null;
-        }
-        var map = this.getMap();
-        var res = map._getTileConfig().getResolution(map.getZoomLevel());
-        var expanded =  Z.Extent.expand(extent,res*width);
-        if (!expanded) {
-            return null;
-        }
-        return new Z.Extent(projection.unproject({x:expanded['xmin'],y:expanded['ymin']}),
-                projection.unproject({x:expanded['xmax'],y:expanded['ymax']}));
     }
 });

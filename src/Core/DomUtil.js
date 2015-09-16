@@ -182,6 +182,17 @@ Z.DomUtil = {
         }
     },
 
+    /*getBoundingClientRect:function(dom) {
+        var rect = dom.getBoundingClientRect();
+        var extent = new Z.Extent(rect['left'],rect['top'],rect['right'],rect['bottom']);
+        if (dom.childNodes.length>0) {
+            for (var i = dom.childNodes.length - 1; i >= 0; i--) {
+                extent = Z.Extent.combine(Z.DomUtil.getBoundingClientRect(dom.childNodes[i]),extent);
+            }
+        }
+        return extent;
+    },*/
+
     /**
      * 解析css translate3d值
      * @param  {[type]} dom [description]

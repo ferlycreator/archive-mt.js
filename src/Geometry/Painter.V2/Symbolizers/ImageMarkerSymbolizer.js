@@ -6,6 +6,7 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
         this.symbol = symbol;
         this.geometry = geometry;
         this.renderPoints = this._getRenderPoints();
+        this.style = this.translate();
     },
 
     svg:function(container, vectorcontainer, zIndex) {
@@ -13,11 +14,6 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
     },
 
     canvas:function(ctx, resources) {
-        var shouldComputeExtent = false;
-        if (!this.pxExtent) {
-            this.pxExtent = new Z.Extent();
-            shouldComputeExtent = true;
-        }
         var points = this.renderPoints;
         if (!Z.Util.isArrayHasData(points)) {
             return;
@@ -26,7 +22,7 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
         var cookedPoints = Z.Util.eachInArray(points,this,function(point) {
             return map._domOffsetToScreen(point);
         });
-        var style = this.translate();
+        var style = this.style;
         var url = style['marker-file'];
         var img = resources.getImage(url);
         if (!img) {
@@ -48,10 +44,6 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
             var pt = cookedPoints[i]._multi(ratio);
             pt._add(dxdy._multi(ratio));
             ctx.drawImage(img,pt['left'],pt['top'],width,height);
-            if (shouldComputeExtent) {
-                var offset = map._screenToDomOffset(pt);
-                this.pxExtent = Z.Extent.combine(this.pxExtent, new Z.Extent(offset['left'],offset['top'],offset['left']+width, offset['top']+height));
-            }
         }
     },
 
@@ -60,10 +52,18 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
     },
 
     getDxDy:function() {
-        var s = this.symbol;
-        var dx = s['marker-dx'] || 0,
-            dy = s['marker-dy'] || 0;
+        var s = this.style;
+        var dx = s['marker-dx'],
+            dy = s['marker-dy'];
         return new Z.Point(dx, dy);
+    },
+
+    getMarkerExtent:function() {
+        var width = this.style['marker-width'],
+            height = this.style['marker-height'];
+        var dxdy = this.getDxDy();
+        var extent = new Z.Extent(dxdy.add(new Z.Point(-width/2,0)),dxdy.add(new Z.Point(width/2,-height)));
+        return extent;
     },
 
     translate:function() {
@@ -82,8 +82,8 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
      * 生成图片标注
      * @param point
      */
-    createMarkerDom: function(style) {
-        var symbol = style;
+    createMarkerDom: function() {
+        var symbol = this.style;
         var markerDom = Z.DomUtil.createEl('span');
         markerDom.setAttribute('unselectable', 'on');
         //用gCenter的话，会出现标注图片无法显示的问题，原因未知
@@ -103,11 +103,11 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
         if (width && height) {
             markerIcon['width'] = width;
             markerIcon['height'] = height;
-            markerIcon.style.left = (-width/2+symbol['marker-dx'])+'px';
-            markerIcon.style.top = (-height+symbol['marker-dy'])+'px';
+            markerIcon.style.left = (-width/2)+'px';
+            markerIcon.style.top = (-height)+'px';
         } else {
-            markerIcon.style.left = symbol['marker-dx']+'px';
-            markerIcon.style.top = symbol['marker-dy']+'px';
+            markerIcon.style.left = '0px';
+            markerIcon.style.top = '0px';
         }
         markerIcon.setAttribute('unselectable', 'on');
         var me = this;

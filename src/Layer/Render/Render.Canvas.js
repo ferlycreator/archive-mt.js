@@ -120,14 +120,18 @@ Z.Render.Canvas.prototype = {
         var map = me.getMap();
         var mapExtent = map.getExtent();
         if (extent && extent.isIntersect(mapExtent)) {
+            var pxExtent =  new Z.Extent(
+                map._transformToOffset(new Z.Coordinate(extent['xmin'],extent['ymin'])),
+                map._transformToOffset(new Z.Coordinate(extent['xmax'],extent['ymax']))
+                );
             this._clearCanvas(extent);
             me._eachGeometry(function(geo) {
                 //geo的map可能为null,因为绘制为延时方法
-                if (!geo || !geo.isVisible() || !geo.getMap() || !geo.getLayer() || (!geo.getLayer().isCanvasRender())) {
+                if (!me.canvasCtx || !geo || !geo.isVisible() || !geo.getMap() || !geo.getLayer() || (!geo.getLayer().isCanvasRender())) {
                     return;
                 }
-                var ext = geo._computeVisualExtent(geo._getProjection());
-                if (!ext || !ext.isIntersect(extent)) {
+                var ext = geo._getPainter().getPixelExtent();
+                if (!ext || !ext.isIntersect(pxExtent)) {
                     return;
                 }
                 geo._getPainter().paint(me.canvasCtx, me.resourceLoader);
