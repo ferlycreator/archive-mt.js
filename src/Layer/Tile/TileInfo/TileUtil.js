@@ -23,9 +23,9 @@ Z.TileUtil={
     Default:{
         /**
          * 根据中心点投影坐标, 计算中心点对应的瓦片和瓦片内偏移量
-         * @param  {[type]} pLonlat   [description]
-         * @param  {[type]} zoomLevel [description]
-         * @return {[type]}           [description]
+         * @param  {Coordinate} pLonlat 投影坐标
+         * @param  {Number} zoomLevel 地图当前zoom级别
+         * @returns {Object}
          */
         getCenterTileIndex:function( pLonlat, zoomLevel) {
             if (!pLonlat || zoomLevel === null || zoomLevel === undefined) {return null;}
@@ -42,9 +42,9 @@ Z.TileUtil={
         },
         /**
          * 根据投影坐标,计算瓦片编号
-         * @param  {[type]} pLonlat   [description]
-         * @param  {[type]} zoomLevel [description]
-         * @return {[type]}           [description]
+         * @param  {Coordinate} pLonlat 投影坐标
+         * @param  {Number} zoomLevel 地图当前zoom级别
+         * @returns {Object}
          */
         getTileIndex:function(pLonlat, zoomLevel) {
             var tileSize=this['tileSize'];
@@ -56,21 +56,21 @@ Z.TileUtil={
         },
         /**
          * 根据给定的瓦片编号,和坐标编号偏移量,计算指定的瓦片编号
-         * @param  {[type]} tileY   [description]
-         * @param  {[type]} tileX   [description]
-         * @param  {[type]} offsetY [description]
-         * @param  {[type]} offsetX [description]
-         * @return {[type]}         [description]
+         * @param  {Number} tileY
+         * @param  {Number} tileX
+         * @param  {Number} offsetY
+         * @param  {Number} offsetX
+         * @returns {Object}
          */
         getNeighorTileIndex:function(tileY, tileX, offsetY,offsetX) {
             return {'y':(tileY+offsetY), 'x':(tileX+offsetX)};
         },
         /**
          * 计算瓦片左上角的经纬度坐标
-         * @param  {[type]} tileY     [description]
-         * @param  {[type]} tileX     [description]
-         * @param  {[type]} zoomLevel [description]
-         * @return {[type]}           [description]
+         * @param  {Number} tileY 瓦片编号
+         * @param  {Number} tileX 瓦片编号
+         * @param  {Number} zoomLevel 地图当前zoom级别
+         * @returns {Coordinate} 瓦片左上角坐标
          */
         getTileProjectedNw:function(tileY,tileX,zoomLevel) {
             var resolution = this['resolutions'][zoomLevel];

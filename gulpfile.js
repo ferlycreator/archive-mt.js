@@ -8,7 +8,26 @@ var runSequence = require('run-sequence');
 var karma = require('karma').server;
 var connect = require('gulp-connect');
 var browserSync = require('browser-sync');
+var jsdoc = require("gulp-jsdoc");
 var reload = browserSync.reload;
+
+var docTpl = {
+     //path: 'docs/templates/jaguarjs',
+     //anyTemplateSpecificParameter: 'whatever'
+};
+var docInfos = {
+    name: 'MapTalks',
+    description: 'Talk with map and data, make your data more effective.',
+    version: '2.0',
+    licenses: [],
+    plugins: []
+};
+var docOpts = {
+    'private': false,
+    monospaceLinks: false,
+    cleverLinks: false,
+    outputSourceFiles: false
+};
 
 var minimist = require('minimist');
 
@@ -61,6 +80,11 @@ gulp.task('libs', function () {
 gulp.task('examples', function () {
   return gulp.src('examples/**/*')
     .pipe(gulp.dest('dist/examples'));
+});
+
+gulp.task('docs', function () {
+  return gulp.src('src/**/*.js')
+    .pipe(jsdoc('dist/docs', docTpl, docInfos, docOpts));
 });
 
 gulp.task('styles', function () {

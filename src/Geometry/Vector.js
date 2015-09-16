@@ -1,3 +1,9 @@
+/**
+ * 矢量图形类
+ * @class maptalks.Vector
+ * @extends maptalks.Geometry
+ * @author Maptalks Team
+ */
 Z.Vector = Z.Geometry.extend({
     options:{
         'symbol':{
@@ -15,6 +21,10 @@ Z.Vector = Z.Geometry.extend({
         return w ? w / 2 : 0;
     },
 
+    /**
+     * 计算可视范围
+     *
+     */
     _computeVisualExtent:function(projection) {
         /*var strokeSymbol = this.getStrokeSymbol();*/
         var width = 0;

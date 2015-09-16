@@ -1,9 +1,24 @@
+/**
+ * 多边形类
+ * @class maptalks.Polygon
+ * @extends Vector
+ * @mixins maptalks.Geometry.Poly
+ * @author Maptalks Team
+ */
 Z['Polygon']=Z.Polygon = Z.Vector.extend({
+
     includes:[Z.Geometry.Poly],
 
+    /**
+     * 图形类型
+     * @static
+     */
     type:Z.Geometry['TYPE_POLYGON'],
 
-    //根据不同的语言定义不同的错误信息
+    /**
+     * 异常信息
+     * @static
+     */
     exceptionDefs:{
         'en-US':{
             'INVALID_COORDINATES':'invalid coordinates for polygon.'
@@ -12,12 +27,11 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
             'INVALID_COORDINATES':'对于多边形无效的坐标.'
         }
     },
-
     /**
-     * [多边形构造函数]
-     * @param  {坐标数组} coordinates [description]
-     * @param  {[type]} opts [description]
-     * @return {[type]}      [description]
+     * @constructor
+     * @param {Coordinate[]} coordinates
+     * @param {Object} opts
+     * @returns {Polygon}
      */
     initialize:function(coordinates, opts) {
         this.setCoordinates(coordinates);
@@ -25,8 +39,10 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
     },
 
     /**
+     * @method
+     * @name setCoordinates
      * 设置新的coordinates
-     * @param {[坐标数组]} coordinates [description]
+     * @param {Coordinate[]} coordinates 坐标数组
      */
     setCoordinates:function(coordinates) {
         if (!coordinates) {
@@ -54,8 +70,10 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
     },
 
     /**
+     * @method
+     * @name setCoordinates
      * 返回多边形的坐标数组
-     * @return {[Coordinate]} 坐标数组
+     * @returns {Coordinate[]} 坐标数组
      */
     getCoordinates:function() {
         if (!this.points) {
@@ -99,7 +117,7 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
 
     /**
      * 获取多边形的外环
-     * @return {Array} 多边形坐标数组
+     * @returns {Array} 多边形坐标数组
      * @expose
      */
     getShell:function() {
@@ -109,7 +127,7 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
 
     /**
      * 获取Polygon的空洞的坐标
-     * @return {Array} 空洞的坐标二维数组
+     * @returns {Array} 空洞的坐标二维数组
      * @expose
      */
     getHoles:function() {
@@ -121,7 +139,7 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
 
     /**
      * Polygon是否有空洞
-     * @return {Boolean} 是否有空洞
+     * @returns {Boolean} 是否有空洞
      * @expose
      */
     hasHoles:function() {
