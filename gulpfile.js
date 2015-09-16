@@ -12,8 +12,8 @@ var jsdoc = require("gulp-jsdoc");
 var reload = browserSync.reload;
 
 var docTpl = {
-     //path: 'docs/templates/jaguarjs',
-     //anyTemplateSpecificParameter: 'whatever'
+     path: 'docs/jaguarjs',
+     anyTemplateSpecificParameter: 'whatever'
 };
 var docInfos = {
     name: 'MapTalks',

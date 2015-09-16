@@ -1,7 +1,7 @@
 /**
  * 多边形类
  * @class maptalks.Polygon
- * @extends Vector
+ * @extends maptalks.Vector
  * @mixins maptalks.Geometry.Poly
  * @author Maptalks Team
  */
