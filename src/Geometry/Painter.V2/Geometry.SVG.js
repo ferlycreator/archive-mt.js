@@ -1,10 +1,8 @@
 var Symboling = {};
 //有中心点的图形的共同方法
 Symboling.Center = {
-    _getElementToSymbolize:function(placement) {
-        return {
-            "points"    : [this._getCenterDomOffset()]
-        };
+    _getRenderPoints:function(placement) {
+        return [this._getCenterDomOffset()];
     }
 };
 
@@ -12,16 +10,16 @@ Symboling.Center = {
  * 获取symbolizer所需的数据
  */
 Z.Marker.include(Symboling.Center, {
-    _getSvgPath:function() {
+    _getRenderPath:function() {
         //Marker has nothing for svg
         return null;
     }
 });
 //----------------------------------------------------
 Symboling.Ellipse = {
-    _getSvgPath:function() {
+    _getRenderPath:function() {
         var domCenter = this._getCenterDomOffset();
-        var size = this._getSvgSize();
+        var size = this._getRenderSize();
         var start = (domCenter['left']-size['width'])+','+domCenter['top'];
         var path;
         if (Z.Browser.vml) {
@@ -35,7 +33,7 @@ Symboling.Ellipse = {
 };
 
 Z.Ellipse.include(Symboling.Center,Symboling.Ellipse,{
-    _getSvgSize:function() {
+    _getRenderSize:function() {
         var w = this.getWidth(),
             h = this.getHeight();
         var map = this.getMap();
@@ -44,7 +42,7 @@ Z.Ellipse.include(Symboling.Center,Symboling.Ellipse,{
 });
 
 Z.Circle.include(Symboling.Center,Symboling.Ellipse, {
-    _getSvgSize:function() {
+    _getRenderSize:function() {
         var radius = this.getRadius();
         var map = this.getMap();
         return map.distanceToPixel(radius,radius);
@@ -52,7 +50,7 @@ Z.Circle.include(Symboling.Center,Symboling.Ellipse, {
 });
 //----------------------------------------------------
 Z.Sector.include(Symboling.Center,{
-    _getSvgPath:function() {
+    _getRenderPath:function() {
         /**
          * 计算扇形的svg path定义
          */
@@ -63,10 +61,10 @@ Z.Sector.include(Symboling.Center,{
                 y1 = cy + r * Math.sin(-startAngle * rad),
                 y2 = cy + r * Math.sin(-endAngle * rad);
                 //变成整数
-            x1 = Z.Util.canvasNumber(x1),
-            x2 = Z.Util.canvasNumber(x2),
-            y1 = Z.Util.canvasNumber(y1),
-            y2 = Z.Util.canvasNumber(y2),
+            x1 = Z.Util.canvasRound(x1),
+            x2 = Z.Util.canvasRound(x2),
+            y1 = Z.Util.canvasRound(y1),
+            y2 = Z.Util.canvasRound(y2),
             r = (0.5 + r) << 0;
             //notice there is no "roation" variable
             if (startAngle > endAngle) {
@@ -74,19 +72,18 @@ Z.Sector.include(Symboling.Center,{
                 endAngle = 360;
             }
             if (Z.Browser.vml) {
-                return "M "+cx+','+cy+'AE ' + cx+','+cy + ' ' + r + ',' + r + ' '+65535 * startAngle+','
-                + (65535 * (endAngle-startAngle))+' x e';
+                return "M "+cx+','+cy+'AE ' + cx+','+cy + ' ' + r + ',' + r + ' '+65535 * startAngle+',' + (65535 * (endAngle-startAngle))+' x e';
             } else {
                 return ["M", cx, cy, "L", x1, y1, "A", r, r, 0,
                 +(endAngle - startAngle > 180), 0, x2, y2, "z"].join(' ');
             }
         }
         var domCenter = this._getCenterDomOffset();
-        var size = this._getSvgSize();
+        var size = this._getRenderSize();
         return sector_update(domCenter['left'],domCenter['top'],size['width'],this.getStartAngle(),this.getEndAngle());
     },
 
-    _getSvgSize:function() {
+    _getRenderSize:function() {
         var radius = this.getRadius();
         var map = this.getMap();
         return map.distanceToPixel(radius,radius);
@@ -94,17 +91,15 @@ Z.Sector.include(Symboling.Center,{
 });
 //----------------------------------------------------
 Z.Rectangle.include({
-    _getElementToSymbolize:function(placement) {
+    _getRenderPoints:function(placement) {
         var domNw = this.getMap()._transformToOffset(this._getPNw());
-        return {
-            "points"    : [domNw]
-        };
+        return [domNw];
     },
 
-    _getSvgPath:function() {
+    _getRenderPath:function() {
         var map = this.getMap();
         var offset = map._transformToOffset(this._getPNw());
-        var size = this._getSvgSize();
+        var size = this._getRenderSize();
         var start = offset['left']+','+offset['top'];
         var path = 'M'+start+' L'+(offset['left']+size['width'])+','+offset['top']+
             ' L'+(offset['left']+size['width'])+','+(offset['top']+size['height'])+
@@ -117,7 +112,7 @@ Z.Rectangle.include({
         return path;
     },
 
-    _getSvgSize:function() {
+    _getRenderSize:function() {
         var w = this.getWidth(),
             h = this.getHeight();
         var map = this.getMap();
@@ -151,27 +146,26 @@ Symboling.Poly={
         return ret;
     },
 
-    _getElementToSymbolize:function(placement) {
+    _getRenderPoints:function(placement) {
         var map = this.getMap();
         var points;
         if ('vertex' === placement) {
             points = this._transformToOffset(this._getPrjPoints());
         } else if ('line' === placement) {
-            var vertexes = this._transformToOffset(this._getPrjPoints());
-            //TODO
+            //var vertexes = this._transformToOffset(this._getPrjPoints());
+            points = [];
+            //TODO 获取线段中心点
         } else {
             var center = this.getCenter();
-            var pcenter = this.getProjection().project(center);
+            var pcenter = this._getProjection().project(center);
             points = [map._transformToOffset(pcenter)];
         }
-        return {
-            "points" : points
-        };
+        return points;
     }
 };
 
 Z.Polyline.include(Symboling.Poly,{
-    _getSvgPath:function() {
+    _getRenderPath:function() {
         var offsets = this._transformToOffset(this._getPrjPoints());
         var path = this._domOffsetsToSVGPath(offsets,false,false);
         if (Z.Browser.vml) {
@@ -183,7 +177,7 @@ Z.Polyline.include(Symboling.Poly,{
 });
 
 Z.Polygon.include(Symboling.Poly, {
-    _getSvgPath:function() {
+    _getRenderPath:function() {
         var offsets = this._transformToOffset(this._getPrjPoints());
         var path = this._domOffsetsToSVGPath(offsets,true,false);
         var holePathes = this._getHolePathes();

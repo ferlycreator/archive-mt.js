@@ -274,31 +274,12 @@ Z.DomUtil = {
         node.style[this.TRANSFORM_ORIGIN] = transformOriginStr;
     },
 
-    /**
-     * 将fooProperty转化为foo-opacity格式
-     * @param  {[type]} obj [description]
-     * @return {[type]}     [description]
-     */
-    convertUpperCaseToSlash:function(p) {
-        function isUpperCase(chr) {
-            if (!chr) {return false;}
-            return (chr.charCodeAt(0)>=65)&&(chr.charCodeAt(0)<=90);
+    setOpacity:function(dom, opacity) {
+        if (Z.Browser.ielt9) {
+            dom.filters.alpha.opacity=opacity*100;
+        } else {
+            dom.style.opacity = opacity;
         }
-         if (Z.Util.isNil(p)) {return null;}
-        var ret=[];
-        for (var i=0, len=p.length;i<len;i++) {
-            var currChar = p[i];
-            if (Z.Util.isNil(currChar)) {
-                currChar = p.charAt(i);
-            }
-            if (isUpperCase(currChar)) {
-                ret.push("-");
-                ret.push(currChar.toLowerCase());
-            } else {
-                ret.push(currChar);
-            }
-        }
-        return ret.join("");
     },
 
     setStyle : function(dom, strCss) {
@@ -326,7 +307,7 @@ Z.DomUtil = {
          }
     },
 
-     hasClass: function (el, name) {
+    hasClass: function (el, name) {
         if (el.classList !== undefined) {
             return el.classList.contains(name);
         }

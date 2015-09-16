@@ -41,6 +41,9 @@ Z.Vector = Z.Geometry.extend({
             width = 1;
         }       */
         var extent = this._getPrjExtent();
+        if (!extent) {
+            return null;
+        }
         var map = this.getMap();
         var res = map._getTileConfig().getResolution(map.getZoomLevel());
         var expanded =  Z.Extent.expand(extent,res*width);

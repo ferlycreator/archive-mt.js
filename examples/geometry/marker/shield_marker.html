@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+        html,body{ margin:0px; height:100%; };
+    </style>
+    <title>maptalks 示例: 标注文本</title>
+</head>
+<body scroll="no" onload="initMap();">
+<div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
+<script type="text/javascript" >
+    var mapObj;
+    function initMap(){
+        //创建地图对象
+        mapObj = new maptalks.Map("mapObj",{
+            center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
+            zoomLevel:   17 //初始缩放级别
+        });
+        //设置底图图层
+        mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
+        {
+            tileInfo: 'web-mercator',
+            urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
+            subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
+        }));
+        //创建图层
+        var layer = new maptalks.VectorLayer('layer'/*,{'render':'canvas'}*/);
+        //将图层添加到地图对象
+        mapObj.addLayer(layer);
+        //创建点的坐标对象
+        var coordinate = new maptalks.Coordinate(121.489935,31.24432);
+        //设置矢量配置
+        var icon = {
+            "shield-placement"  : "vertex",
+
+             "shield-file"      :  "/images/marker.png",
+            "shield-opacity"    :  1,
+            "shield-dx"         :  0,
+            "shield-dy"         :  0,
+
+            "shield-name"       : "这是一个shield marker",
+            "shield-face-name"  : "arial",
+            "shield-size"       :  10,
+            "shield-fill"       : "#ff0000",
+            "shield-text-opacity": 1,
+            //"shield-halo-fill"  : "#ffffff",
+            //"shield-halo-radius": 1,
+
+            "shield-text-dx"    :  0,
+            "shield-text-dy"    :  0,
+
+            "shield-horizontal-alignment"   : "middle", //left | middle | right | auto
+            "shield-vertical-alignment"     : "middle",   // top | middle | bottom | auto
+            "shield-justify-alignment"      : "left"
+        };
+
+        var polygon = new maptalks.Polygon([[
+                                            [121.489935,31.24432], [121.488935,31.24432], [121.488935,31.24332],[121.489935,31.24432]
+                                                ]], {'symbol':icon});
+
+        /**
+        * 说明：
+        * 1、shield-type tip：气泡形；label：矩形标签；
+        * 2、在shield-type 为tip的情形下，设置shield-horizontal-alignment 与 shield-vertical-alignment
+        *    气泡的尖端会根据位置调整。
+        */
+        //创建点对象
+        var marker = new maptalks.Marker(coordinate,{'id':'marker_id','draggable':true});
+        marker.setProperties({
+            'marker_name':'上海大厦',
+            'marker_addr': '北苏州路20号'
+        });
+        //设置点样式
+        marker.setSymbol(icon);
+        //将点添加到Layer
+        layer.addGeometry([marker,polygon]);
+    }
+</script>
+<!-- 引擎javascript开发包-->
+<script type="text/javascript" src="../../../maptalks.js"></script>
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+  <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.min.js"></script>
+<![endif]-->
+</body>
+</html>

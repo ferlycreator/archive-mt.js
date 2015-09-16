@@ -17,10 +17,10 @@ Z.Sector.SVG=Z.Circle.SVG.extend({
                 y1 = cy + r * Math.sin(-startAngle * rad),
                 y2 = cy + r * Math.sin(-endAngle * rad);
                 //变成整数
-            x1 = Z.Util.canvasNumber(x1),
-            x2 = Z.Util.canvasNumber(x2),
-            y1 = Z.Util.canvasNumber(y1),
-            y2 = Z.Util.canvasNumber(y2),
+            x1 = Z.Util.canvasRound(x1),
+            x2 = Z.Util.canvasRound(x2),
+            y1 = Z.Util.canvasRound(y1),
+            y2 = Z.Util.canvasRound(y2),
             r = (0.5 + r) << 0;
             //notice there is no "roation" variable
             if (startAngle > endAngle) {

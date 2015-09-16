@@ -1,5 +1,3 @@
-Z.Browser.canvas = !!document.createElement("canvas").getContext;
-
 Z.Render.Canvas = function(layer, options) {
     this.layer = layer;
     this._visible = options['visible'];
@@ -87,9 +85,12 @@ Z.Render.Canvas.prototype = {
     },
 
     doRepaint: function() {
+        var me = this;
         var resourceLoad = this.resourceLoader;
-        if(resourceLoad.imgUrls || resourceLoad.defaultIconUrl) {
-            this._loadResource(this._doRepaint());
+        if(!resourceLoad.imgUrls || !resourceLoad.defaultIconUrl) {
+            this._loadResource(function() {
+                me._doRepaint();
+            });
         } else {
             this._doRepaint();
         }
@@ -122,7 +123,7 @@ Z.Render.Canvas.prototype = {
             this._clearCanvas(extent);
             me._eachGeometry(function(geo) {
                 //geo的map可能为null,因为绘制为延时方法
-                if (!geo || !geo.isVisible() || !geo.getMap() || !(geo._getPainter() instanceof Z.Painter.Canvas)) {
+                if (!geo || !geo.isVisible() || !geo.getMap() || !geo.getLayer() || (!geo.getLayer().isCanvasRender())) {
                     return;
                 }
                 var ext = geo._computeVisualExtent(geo._getProjection());
@@ -160,8 +161,10 @@ Z.Render.Canvas.prototype = {
                 return;
             }
             var resource = geo._getExternalResource();
-            if (resource) {
-                me.resourceLoader.addResource(resource);
+            if (Z.Util.isArrayHasData(resource)) {
+                for (var i = resource.length - 1; i >= 0; i--) {
+                    me.resourceLoader.addResource(resource[i]);
+                }
             }
         });
         me.resourceLoader.load(function() {
@@ -247,7 +250,7 @@ Z.Render.Canvas.prototype = {
         return this._visible;
     },
 
-    _setZIndex: function(zindex) {
+    setZIndex: function(zindex) {
         this.zindex=zindex;
     },
 
@@ -279,6 +282,9 @@ Z.Render.Canvas.prototype = {
     },
 
     _onZoomEnd: function(param) {
+        this._eachGeometry(function(geo) {
+            geo._onZoomEnd();
+        });
         this.repaint();
         this._showDom();
     },

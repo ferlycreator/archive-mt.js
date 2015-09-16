@@ -73,6 +73,7 @@ Z.Geometry.Center = {
      * @return {[type]} [description]
      */
     _updateCache:function() {
+        delete this._extent;
         var projection = this._getProjection();
         if (this._pcenter && projection) {
             this._coordinates = projection.unproject(this._pcenter);

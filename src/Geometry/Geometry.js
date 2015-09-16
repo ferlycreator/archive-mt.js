@@ -48,9 +48,9 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (!opts) {
             return;
         }
-        if (opts['symbol']) {
+        /*if (opts['symbol']) {
             opts['symbol'] = Z.Util.convertFieldNameStyle(opts['symbol'],'camel');
-        }
+        }*/
         Z.Util.setOptions(this,opts);
     },
 
@@ -145,8 +145,8 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
             this.options.symbol = null;
         } else {
             //属性的变量名转化为驼峰风格
-            var camelSymbol = Z.Util.convertFieldNameStyle(symbol,'camel');
-            this.options.symbol = camelSymbol;
+            // var camelSymbol = Z.Util.convertFieldNameStyle(symbol,'camel');
+            this.options.symbol = symbol;
         }
         this._onSymbolChanged();
         return this;
@@ -158,10 +158,10 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     getExtent:function() {
-        if (this.extent) {
-            return this.extent;
+        if (!this._extent) {
+            this._extent = this._computeExtent(this._getProjection());
         }
-        return this._computeExtent(this._getProjection());
+        return this._extent;
     },
 
     /**
@@ -332,22 +332,31 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (!symbol) {
             return null;
         }
-        var icon = symbol['markerFile'];
+        var result = [];
+        var icon = symbol['marker-file'];
         if (icon) {
-            return icon;
+            result.push(icon);
         }
-        var fill = symbol['polygonFill'];
+        icon = symbol['shield-file'];
+        if (icon) {
+            result.push(icon);
+        }
+        var fill = symbol['polygon-pattern-file'];
         if (fill) {
             if (fill && fill.length>7 && "url" ===fill.substring(0,3)) {
-                return fill.substring(5,fill.length-2);
+                result.push(fill.substring(5,fill.length-2));
             }
         }
-        return null;
+        return result;
     },
 
     _getPainter:function() {
-        if (!this._painter) {
-            this._painter = this._assignPainter();
+        if (this.getMap() && !this._painter) {
+            if (this instanceof Z.GeometryCollection) {
+                this._painter = new Z.CollectionPainter(this);
+            } else {
+                this._painter = new Z.Painter(this);
+            }
         }
         return this._painter;
     },
@@ -370,7 +379,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (painter) {
             painter.refresh();
         }
-        this.extent = null;
+        this._extent = null;
         if (!this.isEditing || !this.isEditing()) {
             this._fireEvent('shapechanged',{'target':this});
         }
@@ -381,7 +390,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (painter) {
             painter.refresh();
         }
-        this.extent = null;
+        this._extent = null;
         if (!this.isEditing || !this.isEditing()) {
             this._fireEvent('positionchanged',{'target':this});
         }

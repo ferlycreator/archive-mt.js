@@ -12,9 +12,22 @@ Z.Geometry.Poly={
      * @returns {Point[]} 容器坐标数组
      */
     _transformToOffset:function(points) {
-        var result = [];
         var map = this.getMap();
-        if (!map || !Z.Util.isArrayHasData(points)) {
+        return this._transformPoints(points, function(p) {
+            return map._transformToOffset(p);
+        });
+    },
+
+    _transformToScreenPoints:function(points) {
+        var map = this.getMap();
+        return this._transformPoints(points, function(p) {
+            return map._transform(p);
+        });
+    },
+
+    _transformPoints:function(points,fn) {
+        var result = [];
+        if (!Z.Util.isArrayHasData(points)) {
             return result;
         }
         var is2D = false;
@@ -31,12 +44,12 @@ Z.Geometry.Poly={
                     if (Z.Util.isNil(p[j])) {
                         continue;
                     }
-                    p_r.push(map._transformToOffset(p[j]));
+                    p_r.push(fn(p[j]));
                 }
                 var simplifiedPoints = Z.Simplify.simplify(p_r, 2, false);
                 result.push(simplifiedPoints);
             } else {
-                var pp = map._transformToOffset(p);
+                var pp = fn(p);//map._transformToOffset(p);
                 result.push(pp);
             }
         }
@@ -64,6 +77,7 @@ Z.Geometry.Poly={
      * 直接修改Geometry的投影坐标后调用该方法, 更新经纬度坐标缓存
      */
     _updateCache:function() {
+        delete this._extent;
         var projection = this._getProjection();
         if (!projection) {
             return;

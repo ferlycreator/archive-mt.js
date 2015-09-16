@@ -110,6 +110,7 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
 
 
     _updateCache:function() {
+        delete this._extent;
         if (this.isEmpty()) {
             return;
         }

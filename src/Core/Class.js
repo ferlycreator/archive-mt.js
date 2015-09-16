@@ -93,7 +93,11 @@ Z.Class.extend = function (props) {
 
 // method for adding properties to prototype
 Z.Class.include = function (props) {
-    Z.Util.extend(this.prototype, props);
+    var sources = arguments;
+    for (var j = 0, len = sources.length; j < len; j++) {
+        Z.Util.extend(this.prototype, sources[j]);
+    }
+
 };
 
 // merge new default options to the Class

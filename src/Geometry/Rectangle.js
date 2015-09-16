@@ -101,6 +101,7 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
      * @return {[type]} [description]
      */
     _updateCache:function() {
+        delete this._extent;
         var projection = this._getProjection();
         if (this.pnw && projection) {
             this._coordinates = projection.unproject(this.pnw);

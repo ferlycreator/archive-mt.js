@@ -90,15 +90,6 @@ Z.Util = {
                 continue;
             }
             if (Z.Util.isArray(p)) {
-               /* //二维数组
-                var p_r = [];
-                for (var j=0,jlen=p.length;j<jlen;j++) {
-                    if (Z.Util.isNil(p[j])) {
-                        continue;
-                    }
-                    p_r.push(fn.call(context,p[j]));
-                }
-                result.push(p_r);*/
                 result.push(Z.Util.eachInArray(p, context, fn));
             } else {
                 var pp = fn.call(context,p);
@@ -121,11 +112,74 @@ Z.Util = {
         }
 
         for (var i = 0, len=arr.length; i < len; i++) {
-            if (arr[i] == obj) {
+            if (arr[i] === obj) {
                 return i;
             }
         }
         return -1;
+    },
+    //判断a和b是否相同, 浅层判断, 不涉及子属性
+    objEqual:function(a, b) {
+        return Z.Util._objEqual(a,b);
+    },
+    //判断a和b是否相同, 深层判断, 子属性也必须相同,du
+    objDeepEqual:function(a, b) {
+        return Z.Util._objEqual(a,b, true);
+    },
+    /**
+     * 判断两个对象是否类型相同, 值相同,或者属性相同
+     * borrowed from expect.js
+     * @param  {Object} a
+     * @param  {Object} b
+     * @param {Boolean} isDeep 是否深度判断
+     * @return {Boolean}   true|false
+     */
+    _objEqual:function(a, b, isDeep) {
+        function getKeys (obj) {
+            if (Object.keys) {
+              return Object.keys(obj);
+            }
+            var keys = [];
+            for (var i in obj) {
+              if (Object.prototype.hasOwnProperty.call(obj, i)) {
+                keys.push(i);
+              }
+            }
+            return keys;
+        }
+        if (Z.Util.isNil(a) || Z.Util.isNil(b)) {
+          return false;
+        }
+        // an identical "prototype" property.
+        if (a.prototype !== b.prototype) {return false;}
+        var ka, kb, key, i;
+        try{
+            ka = getKeys(a);
+            kb = getKeys(b);
+        } catch (e) {//happens when one is a string literal and the other isn't
+          return false;
+        }
+        // having the same number of owned properties (keys incorporates hasOwnProperty)
+        if (ka.length !== kb.length){
+          return false;
+        }
+        //~~~cheap key test
+        for (i = ka.length - 1; i >= 0; i--) {
+          if (ka[i] != kb[i]){
+            return false;
+          }
+        }
+        //equivalent values for every corresponding key, and
+        //~~~possibly expensive deep test
+        if (isDeep) {
+            for (i = ka.length - 1; i >= 0; i--) {
+              key = ka[i];
+              if (!Z.Util.objEqual(a[key], b[key])) {
+                 return false;
+              }
+            }
+        }
+        return true;
     },
 
     /**
@@ -133,8 +187,8 @@ Z.Util = {
      * @param  {Number} num 坐标值
      * @return {Number}     处理后的坐标值
      */
-    canvasNumber:function(num) {
-        return (0.5 + num) << 0 + 0.5;
+    canvasRound:function(num) {
+        return (0.5 + num) << 0; //结果 + 0.5 据说能变得平滑
     },
 
     isCoordinate:function(obj) {
@@ -162,6 +216,28 @@ Z.Util = {
      */
     isNumber:function(val) {
         return (typeof val === 'number') && !isNaN(val);
+    },
+
+    _strRuler:null,
+
+    _getStrRuler:function(){
+        if (!Z.Util._strRuler) {
+            var span = document.createElement("span");
+            span.style.cssText="position:absolute;left:-10000px;top:-10000px;";
+            document.body.appendChild(span);
+            Z.Util._strRuler = span;
+        }
+
+        return Z.Util._strRuler;
+    },
+
+    stringLength:function(text, font, fontSize) {
+        var ruler = Z.Util._getStrRuler();
+        ruler.style.fontFamily = font;
+        ruler.style.fontSize = fontSize+'px';
+        ruler.style.fontWeight = 'bold';
+        ruler.innerHTML = text;
+        return new Z.Size(ruler.clientWidth+1, ruler.clientHeight+1);
     },
 
     getLength : function(str) {
@@ -192,7 +268,7 @@ Z.Util = {
     },
 
     setDefaultValue: function(value, defaultValue) {
-        return (!value)?defaultValue:value;
+        return (Z.Util.isNil(value))?defaultValue:value;
     },
 
     /**

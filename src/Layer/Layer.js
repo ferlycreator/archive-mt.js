@@ -28,7 +28,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
     _prepare:function(map,zIndex) {
         if (!map) {return;}
         this.map = map;
-        this._setZIndex(zIndex);
+        this._setZIndex(zIndex+this.baseZIndex);
 /*        if (Z.Util.isNil(this._visible)) {
             this._visible = true;
         }*/
@@ -36,7 +36,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
 
 
     getZIndex:function() {
-        return this.zIndex;
+        return this._zIndex;
     },
 
     /**
