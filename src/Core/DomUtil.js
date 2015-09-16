@@ -1,3 +1,8 @@
+/**
+ * Dom基础工具类
+ * @class maptalks.DomUtil
+ * @author Maptalks Team
+ */
 Z.DomUtil = {
 
     createEl:function(tagName) {

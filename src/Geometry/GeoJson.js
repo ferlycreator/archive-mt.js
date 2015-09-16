@@ -1,3 +1,8 @@
+/**
+ * geoJSON转化工具类
+ * @class maptalks.GeoJSON
+ * @author Maptalks Team
+ */
 Z['GeoJSON']=Z.GeoJson={
         /**
          * 将geoJson字符串或geoJson对象转化为Geometry对象

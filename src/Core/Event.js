@@ -1,6 +1,8 @@
-/*
-*   事件处理机制,为需要的类添加事件处理机制
-*/
+/**
+ * 事件处理机制,为需要的类添加事件处理机制
+ * @class maptalks.Eventable
+ * @author Maptalks Team
+ */
 Z.Eventable={
     "addEventListener":function(eventTypeArr, handler, context) {
         if (!eventTypeArr || !handler) {return this;}

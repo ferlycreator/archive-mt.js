@@ -1,3 +1,8 @@
+/**
+ * 点
+ * @class maptalks.Point
+ * @author Maptalks Team
+ */
 Z['Point']=Z.Point=function(left,top) {
      this['left']=left;
      this['top']=top;

@@ -63,6 +63,20 @@ gulp.task('examples', function () {
     .pipe(gulp.dest('dist/examples'));
 });
 
+gulp.task('docs', function () {
+  return gulp.src('src/**/*.js')
+    .pipe(jsdoc('dist/docs', docTpl, docInfos, docOpts));
+});
+
+var shell = require('gulp-shell');
+gulp.task('docs', function () {
+    console.log("[JSDuck] Creating documentation");
+    return gulp.src('')
+        .pipe(shell(['jsduck']));
+});
+
+gulp.task('default', ['docs']);
+
 gulp.task('styles', function () {
   var AUTOPREFIXER_BROWSERS = [
     'ie >= 10',

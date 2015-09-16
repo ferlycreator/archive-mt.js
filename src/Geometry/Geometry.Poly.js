@@ -1,8 +1,13 @@
+/**
+ * 多折线/多边形工具类
+ * @class maptalks.Geometry.Poly
+ * @author Maptalks Team
+ */
 Z.Geometry.Poly={
     /**
      * 将points中的坐标转化为用于显示的容器坐标
-     * @param  {[type]} points [description]
-     * @return {[type]}        [description]
+     * @param  {Point[]} points  points数组
+     * @returns {Point[]} 容器坐标数组
      */
     _transformToOffset:function(points) {
         var map = this.getMap();
@@ -140,13 +145,13 @@ Z.Geometry.Poly={
         return this._computePointsExtent(rings,projection);
     },
 
-    /**
-     * 计算坐标数组的extent, 数组内的元素可以坐标或者坐标数组,坐标为经纬度坐标,而不是投影坐标
-     * @param  {[type]} points     [description]
-     * @param  {[type]} projection [description]
-     * @return {[type]}            [description]
-     */
-    _computePointsExtent:function(points, projection) {
+     /**
+      * 计算坐标数组的extent, 数组内的元素可以坐标或者坐标数组,坐标为经纬度坐标,而不是投影坐标
+      * @param  {Point[]} points  points数组
+      * @param  {Projection[]} projection  projection对象
+      * @returns {Extent} {@link maptalks.Extent}
+      */
+    _computePointsExtent: function(points, projection) {
         var result=null;
         var ext;
         for ( var i = 0, len = points.length; i < len; i++) {

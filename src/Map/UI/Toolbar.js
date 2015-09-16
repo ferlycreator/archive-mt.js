@@ -1,5 +1,14 @@
+/**
+ * 工具栏控件
+ * @class maptalks.Toolbar
+ * @extends maptalks.Control
+ * @author Maptalks Team
+ */
 Z['Toolbar'] = Z.Toolbar = Z.Control.extend({
 
+    /**
+     * @cfg {Object} options 工具栏属性
+     */
 	options:{
 		'position' : {
 			'bottom': '0',
@@ -20,7 +29,7 @@ Z['Toolbar'] = Z.Toolbar = Z.Control.extend({
 		}]
 	},
 
-	buildOn: function (map) {
+	_buildOn: function (map) {
 		this._map = map;
 		this._toolbarContainer = Z.DomUtil.createEl('div');
 		if(this.options['className']) {

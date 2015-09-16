@@ -1,4 +1,18 @@
-Z['Extent']=Z.Extent = function(p1,p2,p3,p4) {
+/**
+ * 图形范围类
+ * @class maptalks.Extent
+ * @author Maptalks Team
+ */
+Z['Extent']= Z.Extent =
+ /**
+  * @constructor
+  * @param {maptalks.Coordinate} p1 坐标
+  * @param {maptalks.Coordinate} p2 坐标
+  * @param {maptalks.Coordinate} p3 坐标
+  * @param {maptalks.Coordinate} p4 坐标
+  * @returns {maptalks.Extent} extent对象
+  */
+ function(p1,p2,p3,p4) {
     this['xmin'] = null;
     this['xmax'] = null;
     this['ymin'] = null;
@@ -51,6 +65,10 @@ Z.Extent.prototype={
         return new Z.Point(this['xmax'],this['ymax']);
     },
 
+    /**
+     * 将extent对象转化为json对象
+     * @return {Object} jsonObject
+     */
     toJson:function() {
         return {
             'xmin':this['xmin'],
@@ -60,6 +78,11 @@ Z.Extent.prototype={
         };
     },
 
+
+    /**
+     * 判断extent是否有效
+     * @return {Boolean} true：表明有效
+     */
     isValid:function() {
         return Z.Util.isNumber(this['xmin']) &&
                 Z.Util.isNumber(this['ymin']) &&
@@ -67,6 +90,12 @@ Z.Extent.prototype={
                 Z.Util.isNumber(this['ymax']);
     },
 
+
+    /**
+     * 比较两个Extent是否相等
+     * @param  {maptalks.Extent}  ext2 比较的extent
+     * @return {Boolean} true：表明两个extent相等
+     */
     equals:function(ext2) {
         if (!ext2  || !(ext2 instanceof Z.Extent)) {
             return false;
@@ -79,8 +108,8 @@ Z.Extent.prototype={
 
     /**
      * 两个Extent是否相交
-     * @param  {[type]}  ext2 [description]
-     * @return {Boolean}      [description]
+     * @param  {maptalks.Extent}  ext2 比较的extent
+     * @return {Boolean} true：表明两个extent相交
      */
     isIntersect:function(ext2) {
         if (!ext2) {return false;}
@@ -99,8 +128,13 @@ Z.Extent.prototype={
     },
 
     /**
-    * 判断点是否在矩形中
+    *
     */
+    /**
+     * 判断坐标是否在extent中
+     * @param  {maptalks.Coordinate} coordinate
+     * @returns {Boolean} true：坐标在extent中
+     */
     contains: function(coordinate) {
         var x, y;
         if (coordinate instanceof Z.Coordinate) {
@@ -125,6 +159,9 @@ Z.Extent.prototype={
 Z.Util.extend(Z.Extent, {
     /**
      * 合并两个extent
+     * @param  {maptalks.Extent} ext1
+     * @param  {maptalks.Extent} ext2
+     * @returns {maptalks.Extent} 合并后的extent
      */
     combine:function(ext1,ext2) {
         if (!ext1 || !ext2) {
@@ -176,9 +213,9 @@ Z.Util.extend(Z.Extent, {
 
     /**
      * 扩大Extent
-     * @param  {[type]} ext      [description]
-     * @param  {[type]} distance [description]
-     * @return {[type]}          [description]
+     * @param  {maptalks.Extent} ext 初始extent
+     * @param  {maptalks.Extent} distance  像素距离
+     * @returns {maptalks.Extent} 扩大后的extent
      */
     expand:function(ext, distance) {
         return new Z.Extent(ext['xmin']-distance, ext['ymin']-distance,ext['xmax']+distance,ext['ymax']+distance);

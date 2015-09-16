@@ -1,7 +1,8 @@
 Z.Geometry.include({
 	/*
     * 添加label
-    * @param {Object} options/Z.Label
+    * @param {Object} options or {@link maptalks.Label}
+    * @member maptalks.Geometry
     * @expose
     */
     addLabel: function (options) {
@@ -27,53 +28,35 @@ Z.Geometry.include({
 
     /*
     * 删除label
-    * @param {Object} id or Z.Label
+    * @param {maptalks.Label} label
+    * @member maptalks.Geometry
     * @expose
     */
-    removeLabel: function (obj) {
-        label = this._getLabel(obj);
+    removeLabel: function (label) {
         label.removeLabel();
         return this;
     },
 
     /*
     * 删除label
-    * @param {Object} id or Z.Label
+    * @param {maptalks.Label} label
+    * @member maptalks.Geometry
     * @expose
     */
-    hideLabel: function(obj) {
-        label = this._getLabel(obj);
+    hideLabel: function(label) {
         label.hide();
         return this;
     },
 
     /*
     * 删除label
-    * @param {Object} id or Z.Label
+    * @param {maptalks.Label} label
+    * @member maptalks.Geometry
     * @expose
     */
-    showLabel: function(obj) {
-        label = this._getLabel(obj);
+    showLabel: function(label) {
         label.show();
         return this;
     },
-
-    /*
-    * 获取label
-    * @param {String} id
-    * @expose
-    */
-    getLabel: function(id) {
-        return Z.Label['getLabel'](id);
-    },
-
-    _getLabel: function(obj) {
-        if(!obj) return;
-        if(obj instanceof Z.Label) {
-            return obj;
-        } else {
-            return Z.Label['getLabel'](obj);
-        }
-    }
 
 });

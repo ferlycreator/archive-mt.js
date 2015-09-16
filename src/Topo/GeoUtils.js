@@ -1,4 +1,15 @@
+/**
+ * 空间计算工具类
+ * @class maptalks.GeoUtils
+ * @author Maptalks Team
+ */
 Z['GeoUtils']=Z.GeoUtils={
+    /**
+     *
+     * @param {maptalks.Point} p
+     * @param {maptalks.Point} p1
+     * @param {maptalks.Point} p2
+     */
     distanceToSegment: function(p, p1, p2) {
         var x = p.left,
             y = p.top,
@@ -24,6 +35,12 @@ Z['GeoUtils']=Z.GeoUtils={
         return Math.sqrt((x - px) * (x - px) + (y - py) * (y - py));
     },
 
+    /**
+     * 判断点坐标是否在面中
+     * @param {maptalks.Polygon} 面对象
+     * @param {maptalks.Coordinate} 点对象
+     * @return {Boolean} true：点在面中
+     */
     pointInsidePolygon: function(p, points) {
         var i, j, p1, p2,
             len = points.length;
@@ -106,17 +123,25 @@ Z['GeoUtils']=Z.GeoUtils={
 
             return -1;
         },
+
+        /**
+         * 判断点坐标是否在矩形范围中
+         * @param {maptalks.Point} 点对象
+         * @param {maptalks.Extent} 矩形范围
+         * @return {Boolean} true：点在范围中
+         */
         isPointInRect:function(point, extent) {
             if (!point || !(extent instanceof Z.Extent)) {
                 return false;
             }
             return (point.x >= extent['xmin'] && point.x <= extent['xmax'] && point.y >= extent['ymin'] && point.y <= extent['ymax']);
         },
+
         /**
         * 判断点是否多边形内
-        * @param {Coordinate} point 点对象
-        * @param {Polyline} polygon 多边形对象
-        * @returns {Boolean} 点在多边形内返回true,否则返回false
+        * @param {maptalks.Coordinate} point 点对象
+        * @param {maptalks.Polyline} polygon 多边形对象
+        * @return {Boolean} 点在多边形内返回true,否则返回false
         */
         isPointInPolygon: function(point, polygon) {
             var pts = polygon.getRing();//获取多边形点

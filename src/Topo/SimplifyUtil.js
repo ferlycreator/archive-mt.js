@@ -1,3 +1,8 @@
+/**
+ * 简化图形工具
+ * @class maptalks.Simplify
+ * @author Maptalks Team
+ */
 Z.Simplify={
 	// square distance between 2 points
     getSqDist:function(p1, p2) {

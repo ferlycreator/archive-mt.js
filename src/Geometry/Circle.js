@@ -1,3 +1,9 @@
+/**
+ * 圆形类
+ * @class maptalks.Circle
+ * @extends maptalks.Polygon
+ * @author Maptalks Team
+ */
 Z['Circle']=Z.Circle=Z.Polygon.extend({
     includes:[Z.Geometry.Center],
 

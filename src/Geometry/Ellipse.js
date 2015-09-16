@@ -1,3 +1,9 @@
+/**
+ * 椭圆形类
+ * @class maptalks.Ellipse
+ * @extends maptalks.Polygon
+ * @author Maptalks Team
+ */
 Z['Ellipse']=Z.Ellipse = Z.Polygon.extend({
     includes:[Z.Geometry.Center],
 

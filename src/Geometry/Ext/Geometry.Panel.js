@@ -1,7 +1,8 @@
 Z.Geometry.include({
 	/*
     * 添加面板
-    * @param {Object} options/Z.Panel
+    * @param {Object} options or {@link maptalks.Panel}
+    * @member maptalks.Geometry
     * @expose
     */
     addPanel: function (options) {
@@ -30,7 +31,8 @@ Z.Geometry.include({
 
     /*
     * 删除面板
-    * @param {Z.Panel} panel
+    * @param {maptalks.Panel} panel
+    * @member maptalks.Geometry
     * @expose
     */
     removePanel: function (panel) {
@@ -40,7 +42,8 @@ Z.Geometry.include({
 
     /*
     * 删除面板
-    * @param {Z.Panel} panel
+    * @param {maptalks.Panel} panel
+    * @member maptalks.Geometry
     * @expose
     */
     hidePanel: function(panel) {
@@ -50,7 +53,8 @@ Z.Geometry.include({
 
     /*
     * 删除面板
-    * @param {Z.Panel} panel
+    * @param {maptalks.Panel} panel
+    * @member maptalks.Geometry
     * @expose
     */
     showPanel: function(panel) {

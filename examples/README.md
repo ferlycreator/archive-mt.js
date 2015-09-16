@@ -5,6 +5,7 @@
 
 ###目录结构:
 -----------------
+    guide：       引导
 
     tile：        底图
     
@@ -12,7 +13,7 @@
     
     geometry：    图形
     
-    controls：    控件库
+    control：    控件库
     
     plugins：     插件库
     

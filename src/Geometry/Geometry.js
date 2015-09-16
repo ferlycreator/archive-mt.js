@@ -1,8 +1,14 @@
 Z.Painter={};
+/**
+ * 图形类
+ * @class maptalks.Geometry
+ * @extends maptalks.Class
+ * @mixins maptalks.Eventable
+ * @author Maptalks Team
+ */
 Z['Geometry']=Z.Geometry=Z.Class.extend({
     includes: [Z.Eventable],
 
-    //根据不同的语言定义不同的错误信息
     exceptionDefs:{
         'en-US':{
             'DUPLICATE_LAYER':'Geometry cannot be added to two or more layers at the same time.',
@@ -34,10 +40,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         'editable':true
     },
 
-    /**
-     * 初始化传入的option参数
-     * @param  {Object} opts [option参数]
-     */
+    //初始化传入的option参数
     _initOptions:function(opts) {
         if (!opts) {
             return;
@@ -48,9 +51,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         Z.Util.setOptions(this,opts);
     },
 
-    /**
-     * 调用prepare时,layer已经注册到map上
-     */
+    //调用prepare时,layer已经注册到map上
     _prepare:function(layer) {
         this._rootPrepare(layer);
     },
@@ -70,8 +71,8 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     },
 
     /**
-     * returns Geometry's ID
-     * @return {Object} Geometry's id
+     * 获取id
+     * @returns {String} geometry的id
      * @expose
      */
     getId:function() {
@@ -79,8 +80,8 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     },
 
     /**
-     * set ID
-     * @param {Object} id set Geometry's id
+     * 设置id
+     * @param {String} id 设置geometry的id
      * @expose
      */
     setId:function(id) {
@@ -92,7 +93,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     /**
      * 获取Geometry的Layer
-     * @return {Layer} Geometry所属的Layer
+     * @returns {Layer} Geometry所属的Layer
      * @expose
      */
     getLayer:function() {
@@ -102,7 +103,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     /**
      * 获取Geometry所属的地图对象
-     * @return {Map} 地图对象
+     * @returns {Map} 地图对象
      * @expose
      */
     getMap:function() {
@@ -112,7 +113,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     /**
      * 获取Geometry的类型
-     * @return {int} Geometry的类型
+     * @returns {Number} Geometry的类型
      * @expose
      */
     getType:function() {
@@ -122,7 +123,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     /**
      * 获取Geometry的Symbol
-     * @return {Symbol} Geometry的Symbol
+     * @returns {Symbol} Geometry的Symbol
      * @expose
      */
     getSymbol:function() {
@@ -148,7 +149,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     /**
      * 计算Geometry的外接矩形范围
-     * @return {Extent} [Geometry的外接矩形范围]
+     * @returns {Extent} Geometry的外接矩形范围
      * @expose
      */
     getExtent:function() {
@@ -160,7 +161,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     /**
      * 返回Geometry的像素长宽, 像素长宽只在当前比例尺上有效, 比例尺变化后, 其值也会发生变化
-     * @return {Size}     Size.width, Size.height
+     * @returns {Size}     Size.width, Size.height
      * @expose
      */
     getSize: function() {
@@ -184,7 +185,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     /**
      * 计算图形的中心点坐标
-     * @return {Coordinate} [中心点坐标]
+     * @returns {Coordinate} 中心点坐标
      * @expose
      */
     getCenter:function() {
@@ -193,7 +194,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     /**
      * 获取Geometry的Properties
-     * @return {Object} 自定义属性
+     * @returns {Object} 自定义属性
      * @expose
      */
     getProperties:function() {
@@ -238,7 +239,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     /**
      * 是否可见
-     * @return {Boolean} true|false
+     * @returns {Boolean} true|false
      * @expose
      */
     isVisible:function() {
@@ -250,7 +251,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     /**
      * 克隆一个不在任何图层上的属性相同的Geometry,但不包含事件注册
-     * @return {Geometry} 克隆的Geometry
+     * @returns {Geometry} 克隆的Geometry
      * @expose
      */
     copy:function() {
@@ -262,7 +263,6 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     /**
      * 将自身从图层中移除
-     * @return {[type]} [description]
      * @expose
      */
     remove:function() {
@@ -292,10 +292,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         return this._internalId;
     },
 
-    /**
-     * 只能被图层调用
-     * @param {String} id [内部id]
-     */
+    //只能被图层调用
     _setInternalId:function(id) {
         this._internalId = id;
     },
@@ -310,11 +307,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         // return null;
     },
 
-    /**
-     * 获取geometry样式中依赖的外部图片资源
-     * @param  {[type]} geometry [description]
-     * @return {[type]}          [description]
-     */
+    //获取geometry样式中依赖的外部图片资源
     _getExternalResource:function() {
         var geometry = this;
         var symbol = geometry.getSymbol();
@@ -412,8 +405,8 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     /**
      * 按照GeoJson规范生成GeoJson对象
-     * @param  {[type]} opts 输出配置
-     * @return {Object}      GeoJson对象
+     * @param  {[Object} opts 输出配置
+     * @returns {Object}      GeoJson对象
      * @expose
      */
     toJson:function(opts) {
@@ -457,7 +450,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     /**
      * 计算Geometry的地理长度,单位为米或像素(依据坐标类型)
-     * @return {Number} 地理长度
+     * @returns {Number} 地理长度
      * @expose
      */
     getLength:function() {
@@ -466,7 +459,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     /**
      * 计算Geometry的地理面积, 单位为平方米或平方像素(依据坐标类型)
-     * @return {Number} 地理面积
+     * @returns {Number} 地理面积
      * @expose
      */
     getArea:function() {
