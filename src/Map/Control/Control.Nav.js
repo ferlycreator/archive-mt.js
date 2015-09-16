@@ -1,10 +1,19 @@
+/**
+ * 导航控件
+ * @class maptalks.Control.Nav
+ * @extends maptalks.Control
+ * @author Maptalks Team
+ */
 Z['Control']['Nav'] = Z.Control.Nav = Z.Control.extend({
 
+    /**
+     * @cfg {Object} options 导航控件属性
+     */
     options:{
         'position' : Z.Control['bottom_right']
     },
 
-    buildOn: function (map) {
+    _buildOn: function (map) {
         this._map = map;
         this._navControlContainer = Z.DomUtil.createEl('div');
         this._panToLeftButton  = this._createButton('maptalks-control-nav-button maptalks-control-nav-left', this._panToLeft);
@@ -66,7 +75,15 @@ Z['Control']['Nav'] = Z.Control.Nav = Z.Control.extend({
 });
 
 Z.Map.mergeOptions({
+    /**
+     * @cfg {Boolean} [navControl="false"] 是否显示导航控件
+     * @member maptalks.Map
+     */
     'navControl' : false,
+    /**
+     * @cfg {Object}  navControlOptions 导航控件设置
+     * @member maptalks.Map
+     */
     'navControlOptions' : {
         'position' : Z.Control['bottom_right']
     }

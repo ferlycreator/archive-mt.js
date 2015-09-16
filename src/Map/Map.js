@@ -1,3 +1,10 @@
+/**
+ * 地图类
+ * @class maptalks.Map
+ * @extends maptalks.Class
+ * @mixins maptalks.Eventable
+ * @author Maptalks Team
+ */
 Z['Map']=Z.Map=Z.Class.extend({
 
     includes: [Z.Eventable],
@@ -38,7 +45,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     /**
-     * constructor
+     * @constructor
      * @param  {String} containerId
      * @param  {Object} options
      */
@@ -96,22 +103,9 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     /**
-     * Load Map
-     * @expose
+     * 判断地图是否加载完毕
+     * @return {Boolean} true：加载完毕
      */
-    /*Load:function(){
-        if (this._loaded) {return;}
-        if (!this._baseTileLayer || !this._baseTileLayer._getTileConfig) {
-            throw new Error(this.exceptions['NO_BASE_TILE_LAYER']);
-        }
-        var tileConfig = this._baseTileLayer._getTileConfig();
-        var _this=this;
-        this._setTileConfig(tileConfig,function() {
-            _this._Load();
-        });
-        return this;
-    },*/
-
     isLoaded:function() {
         return this._loaded;
     },
@@ -1246,8 +1240,10 @@ Z['Map']=Z.Map=Z.Class.extend({
     }
 });
 
-//--------------地图载入完成后的钩子处理----------------
 
+
+
+//--------------地图载入完成后的钩子处理----------------
 Z.Map.prototype._callOnLoadHooks=function() {
     var proto = Z.Map.prototype;
     for (var i = 0, len = proto._onLoadHooks.length; i < len; i++) {
@@ -1270,3 +1266,5 @@ Z.Map.addOnLoadHook = function (fn) { // (Function) || (String, args...)
     this.prototype._onLoadHooks = this.prototype._onLoadHooks || [];
     this.prototype._onLoadHooks.push(onload);
 };
+
+

@@ -1,5 +1,14 @@
+/**
+ * 比例尺控件
+ * @class maptalks.Control.Scale
+ * @extends maptalks.Control
+ * @author Maptalks Team
+ */
 Z['Control']['Scale'] = Z.Control.Scale = Z.Control.extend({
 
+    /**
+     * @cfg {Object} options 比例尺属性
+     */
     options:{
         'position' : Z.Control['bottom_left'],
         'maxWidth': 100,
@@ -13,7 +22,7 @@ Z['Control']['Scale'] = Z.Control.Scale = Z.Control.extend({
                           ';-moz-box-sizing: content-box;box-sizing: content-box;background: #fff; background: rgba(255, 255, 255, 0.5);'
     },
 
-    buildOn: function (map) {
+    _buildOn: function (map) {
         this._map = map;
         this._scaleContainer = Z.DomUtil.createEl('div');
         this._addScales();
@@ -93,7 +102,15 @@ Z['Control']['Scale'] = Z.Control.Scale = Z.Control.extend({
 });
 
 Z.Map.mergeOptions({
+    /**
+     * @cfg {Boolean} [scaleControl="false"] 是否显示比例尺
+     * @member maptalks.Map
+     */
     'scaleControl' : false,
+    /**
+     * @cfg {Object}  scaleControlOptions 比例尺控件设置
+     * @member maptalks.Map
+     */
     'scaleControlOptions' : {
         'position' : Z.Control['bottom_left'],
         'maxWidth': 100,

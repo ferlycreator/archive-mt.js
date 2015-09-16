@@ -1,6 +1,16 @@
+/**
+ * 面板控件
+ * @class maptalks.Panel
+ * @extends maptalks.Control
+ * @mixins maptalks.Eventable
+ * @author Maptalks Team
+ */
 Z['Panel'] = Z.Panel = Z.Control.extend({
     includes: [Z.Eventable],
 
+    /**
+     * @cfg {Object} options 面板属性
+     */
     options:{
         'position' : {
             'top': '0',
@@ -55,7 +65,7 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
         }
     },
 
-    buildOn: function (map) {
+    _buildOn: function (map) {
         if(!map || !this.options || !this.options['content']) return;
         this._map = map;
         this._internalLayer = this._getInternalLayer(map, '__mt__internal_layer_panel_link');
@@ -125,11 +135,7 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
         this._map.on('zoomend resize moving', this._changeLinkPath, this);
     },
 
-    /**
-    *获取距离coordinate最近的panel上的点
-    * @param {Coordinate}
-    * @return {Coordinate}
-    */
+    //获取距离coordinate最近的panel上的点
     _getNearestPoint: function(coordinate) {
         var points = [];
         var screenPoint = this._topLeftPoint();
@@ -269,7 +275,11 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
             parseInt(event.offsetX,0),
             parseInt(event.offsetY,0)
             );
-
+        /**
+         * 触发panel的dragstart事件
+         * @event dragstart
+         * @return {Object} params: {'target': this, 'position': {'top':0,'left':0}}}
+         */
         this.fire('dragstart', {'target': this, 'position': this._startOffset});
     },
 
@@ -304,6 +314,11 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
             if(domRight <= 0) {domRight = 1;}
             Z.DomUtil.setStyle(parentDom, 'right:' +  domRight+'px');
         }
+        /**
+         * 触发panel的dragging事件
+         * @event dragging
+         * @return {Object} params: {'target': this, 'position': {'top':0,'left':0}}}
+         */
         this.fire('dragging', {'target': this, 'position': this._endOffset});
     },
 
@@ -311,12 +326,18 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
         Z.DomUtil.setStyle(this._panelContainer, 'cursor: ' +  'default');
         this._map.enableDrag();
         Z.DomUtil.off(this._panelContainer, 'mousemove', this._onMouseMove, this);
-        /**if(this.options['target']) {
-            this._target.off('positionchanged', this._changeLinkPath, this)
-                    .off('remove', this.remove, this);
-            this.off('dragging', this._changeLinkPath, this);
-            this._map.off('zoomend resize moving', this._changeLinkPath, this);
-        }*/
+//        if(this.options['target']) {
+//            this._target.off('positionchanged', this._changeLinkPath, this)
+//                    .off('remove', this.remove, this);
+//            this.off('dragging', this._changeLinkPath, this);
+//            this._map.off('zoomend resize moving', this._changeLinkPath, this);
+//        }
+
+        /**
+         * 触发panel的dragend事件
+         * @event dragend
+         * @return {Object} params: {'target': this, 'position': {'top':0,'left':0}}}
+         */
         this.fire('dragend', {'target': this, 'position': this._endOffset});
     },
 

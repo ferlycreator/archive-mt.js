@@ -1,10 +1,19 @@
+/**
+ * 地图放大缩小控件
+ * @class maptalks.Control.Zoom
+ * @extends maptalks.Control
+ * @author Maptalks Team
+ */
 Z['Control']['Zoom'] = Z.Control.Zoom = Z.Control.extend({
 
+    /**
+     * @cfg {Object} options zoom控件属性
+     */
 	options:{
 		'position' : Z.Control['top_right']
 	},
 
-	buildOn: function (map) {
+	_buildOn: function (map) {
 		this._zoomControlContainer = Z.DomUtil.createElOn('div', 'display:inline-block;_zoom:1;*display:inline;');
         this._zoomInButton  = this._createButton('放大', 'maptalks-control-zoom-button maptalks-control-zoom-in', this._zoomIn);
 		this._zoomLevelLabel = this._createZoomLevelLabel();
@@ -138,7 +147,15 @@ Z['Control']['Zoom'] = Z.Control.Zoom = Z.Control.extend({
 });
 
 Z.Map.mergeOptions({
+    /**
+     * @cfg {Boolean} [zoomControl="false"] 是否显示zoom控件
+     * @member maptalks.Map
+     */
 	'zoomControl': false,
+	/**
+     * @cfg {Object}  zoomControlOptions zoom控件设置
+     * @member maptalks.Map
+     */
 	'zoomControlOptions' : {
 		'position' : Z.Control['top_right']
 	}
