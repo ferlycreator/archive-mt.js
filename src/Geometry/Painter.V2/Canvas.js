@@ -224,7 +224,7 @@ Z.Canvas = {
         ctx.stroke();
     },
 
-    sector:function(ctx, context, pt, size, startAngle, endAngle) {
+    sector:function(ctx, pt, size, startAngle, endAngle) {
         function sector(ctx, x, y, radius, startAngle, endAngle) {
             var rad = Math.PI / 180;
             var sDeg = rad*-endAngle;
@@ -254,6 +254,6 @@ Z.Canvas = {
             ctx.restore();
             ctx.stroke();
         }
-        sector(pt['left'],pt['top'],size['width'],startAngle,endAngle);
+        sector(ctx,pt['left'],pt['top'],size['width'],startAngle,endAngle);
     }
 };
