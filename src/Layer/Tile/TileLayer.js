@@ -1,6 +1,8 @@
 /**
- * [initialize description]
- *
+ * 瓦片图层
+ * @class maptalks.TileLayer
+ * @extends maptalks.Layer
+ * @author Maptalks Team
  */
 Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
 

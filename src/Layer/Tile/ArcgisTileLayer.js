@@ -1,6 +1,8 @@
 /**
- * [initialize description]
- *
+ * arcgis 瓦片图层
+ * @class maptalks.ArcgisTileLayer
+ * @extends maptalks.TileLayer
+ * @author Maptalks Team
  */
 Z['ArcgisTileLayer'] = Z.ArcgisTileLayer = Z.TileLayer.extend({
     //根据不同的语言定义不同的错误信息

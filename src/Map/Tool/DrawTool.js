@@ -1,9 +1,19 @@
+/**
+ * 测距鼠标工具类
+ * @class maptalks.DrawTool
+ * @extends maptalks.Class
+ * @mixins maptalks.Eventable
+ * @author Maptalks Team
+ */
 Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
     includes: [Z.Eventable],
+
     /**
-    * 初始化绘制工具
-    * options:{mode:Z.Geometry.TYPE_CIRCLE, afterdraw: fn, afterdrawdisable: true}
-    */
+     * 初始化绘制工具
+     * @constructor
+     * @param {Object} options:{mode:Z.Geometry.TYPE_CIRCLE, afterdraw: fn, afterdrawdisable: true}
+     * @param {maptalks.Map} map
+     */
     initialize: function(options, map) {
         Z.Util.extend(this, options);
         if(map) {
@@ -16,14 +26,19 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
      * @type {Object}
      */
     defaultStrokeSymbol: {
-            'lineColor':'#474cf8',
-            'lineWidth':2,
-            'lineOpacity':1,
-            'lineDasharray': '',
-            'polygonFill' : '#ffffff',
-            'polygonOpacity' : 1
+        'lineColor':'#474cf8',
+        'lineWidth':2,
+        'lineOpacity':1,
+        'lineDasharray': '',
+        'polygonFill' : '#ffffff',
+        'polygonOpacity' : 1
     },
 
+    /**
+     * 将绘图工具添加到map上
+     * @param {maptalks.Map} map
+     * @expose
+     */
     addTo: function(map) {
         //TODO options应该设置到this.options中
         this.map = map;
@@ -60,7 +75,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
 
     /**
      * 设置绘图模式
-     * @param {Number} [node] [绘图模式]
+     * @param {Number} mode 绘图模式
      * @expose
      */
     setMode:function(mode) {
@@ -75,7 +90,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
 
     /**
      * 获得drawtool的绘制样式
-     * @return {Object} [绘制样式]
+     * @return {Object} 绘制样式
      * @expose
      */
     getSymbol:function() {
@@ -90,7 +105,8 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
 
     /**
      * 设置drawtool的绘制样式
-     * @param {Object} symbol [绘制样式]
+     * @param {Object} symbol 绘制样式
+     * @expose
      */
     setSymbol:function(symbol) {
         if (!symbol) {
@@ -109,9 +125,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         return this._tileConfig.getProjectionInstance();
     },
 
-    /**
-     * 注册鼠标响应事件
-     */
+    //注册鼠标响应事件
     _registerEvents: function() {
         this._preventEvents();
         var mode = this.mode;
@@ -151,6 +165,11 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         if(this.afterdraw){
             this.afterdraw(param);
         }
+        /**
+         * 触发afterdraw事件
+         * @event afterdraw
+         * @return {Object} params: {'coordinate':coordinate, 'pixel':screenXY};
+         */
         this._fireEvent('afterdraw', param);
         if(this.afterdrawdisable) {
            this.disable();
@@ -168,11 +187,10 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
                 this.geometry.setSymbol(symbol);
             }
             /**
-            * 绘制开始事件
-            * @event startdraw
-            * @param coordinate {seegoo.maps.MLonLat} 初始坐标
-            * @param pixel {Pixel} 初始像素坐标
-            */
+             * 触发startdraw事件
+             * @event startdraw
+             * @return {Object} params: {'coordinate':coordinate, 'pixel':screenXY};
+             */
             this._fireEvent('startdraw', {'coordinate':coordinate,'pixel':screenXY});
         } else {
             var path = this._getLonlats();
@@ -181,10 +199,9 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
             // this._setLonlats(path);
             if (this.map.hasListeners('drawring')) {
                 /**
-                 * 端点绘制事件，当为多边形或者多折线绘制了一个新的端点后会触发此事件
+                 * 触发drawring事件：端点绘制事件，当为多边形或者多折线绘制了一个新的端点后会触发此事件
                  * @event drawring
-                 * @param coordinate {seegoo.maps.MLonLat} 新端点的地理坐标
-                 * @param pixel {Pixel} 新端点的像素坐标
+                 * @return {Object} params: {'target': this, 'coordinate':coordinate, 'pixel':screenXY};
                  */
                 this._fireEvent('drawring',{'target':this.geometry,'coordinate':coordinate,'pixel':screenXY});
             }
@@ -330,8 +347,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         /**
          * 绘制开始事件
          * @event startdraw
-         * @param coordinate {seegoo.maps.MLonLat} 初始坐标
-         * @param pixel {Pixel} 初始像素坐标
+         * @param {Object} param {'coordinate':coordinate,'pixel':screenXY}
          */
         this._fireEvent('startdraw',{'coordinate':coordinate,'pixel':screenXY});
         genGeometry(coordinate);
@@ -347,16 +363,16 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         var target = this.geometry.copy();
         this.geometry.remove();
         delete this.geometry;
-         /**
-         * 绘制结束事件
-         * @event afterdraw
-         * @param coordinate {seegoo.maps.MLonLat} 结束坐标
-         * @param pixel {Pixel} 结束像素坐标
-         */
+
          var param = {'target':target,'coordinate':target.getCoordinates(), 'pixel':screenXY};
          if(this.afterdraw){
             this.afterdraw(param);
          }
+          /**
+           * 绘制结束事件
+           * @event afterdraw
+           * @param {Object} param {'coordinate':coordinate,'pixel':screenXY}
+           */
          this._fireEvent('afterdraw', param);
          if(this.afterdrawdisable) {
            this.disable();

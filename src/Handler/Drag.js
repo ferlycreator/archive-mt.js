@@ -1,18 +1,34 @@
+/**
+ * 拖动
+ * @class maptalks.Handler.Drag
+ * @extends maptalks.Handler
+ * @author Maptalks Team
+ */
 Z.Handler.Drag = Z.Handler.extend({
 
+    /**
+     * @constructor
+     * @param {HTMLElement} dom
+     * @param {Object} opts
+     */
     initialize:function(dom, opts){
         this.dom = dom;
         if (opts) {
             Z.Util.extend(this,opts);
         }
-
     },
 
+    /**
+     * 激活
+     */
     enable:function(){
         if (!this.dom) {return;}
         Z.DomUtil.on(this.dom, 'mousedown', this.onMouseDown, this);
     },
 
+    /**
+     * 停止
+     */
     disable:function(){
         if (!this.dom) {return;}
         Z.DomUtil.off(this.dom, 'mousedown', this.onMouseDown);
@@ -44,12 +60,23 @@ Z.Handler.Drag = Z.Handler.extend({
             if (!dom.style.cursor || dom.style.cursor === 'default') {
                 dom.style.cursor = 'move';
             }
+            /**
+             * 触发dragstart事件
+             * @event dragstart
+             * @return {Object} mousePos: {'left': 0px, 'top': 0px}
+             */
             this.fire('dragstart',{
                 'mousePos':new Z.Point(this.startPos.left, this.startPos.top)
             });
             this.moved = true;
         }
         this.moving = true;
+
+        /**
+         * 触发dragging事件
+         * @event dragging
+         * @return {Object} mousePos: {'left': 0px, 'top': 0px}
+         */
         this.fire('dragging',{
             'mousePos': new Z.Point(event.clientX, event.clientY)
         });
@@ -68,6 +95,11 @@ Z.Handler.Drag = Z.Handler.extend({
             dom.style.cursor = 'default';
         }
         if (this.moved && this.moving) {
+            /**
+             * 触发dragend事件
+             * @event dragend
+             * @return {Object} mousePos: {'left': 0px, 'top': 0px}
+             */
             this.fire('dragend',{
                 'mousePos': new Z.Point(parseInt(event.clientX,0),parseInt(event.clientY,0))
             });

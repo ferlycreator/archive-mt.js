@@ -1,12 +1,19 @@
 /**
  * 测距鼠标工具类
+ * @class maptalks.DistanceTool
+ * @extends maptalks.Class
+ * @mixins maptalks.Eventable
+ * @author Maptalks Team
  */
 Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
     includes: [Z.Eventable],
+
     /**
-    * 初始化测距工具
-    * options:{aftermeasure: fn}
-    */
+     * 初始化测距工具
+     * @constructor
+     * @param {Object} options:{aftermeasure: fn}
+     * @param {maptalks.Map} map
+     */
     initialize: function(options, map) {
         Z.Util.extend(this, options);
         if(map) {
@@ -15,6 +22,11 @@ Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
         return this;
     },
 
+    /**
+     * 将工具添加到目标对象上
+     * @param {maptalks.Map} map
+     * @expose
+     */
     addTo: function(map) {
         //TODO options应该设置到this.options中
         this.map = map;
@@ -27,6 +39,10 @@ Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
         return this;
     },
 
+    /**
+     * 激活测距鼠标工具
+     * @expose
+     */
     enable:function() {
         if (!this.map) {
             return;
@@ -250,6 +266,7 @@ Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
         });
 
         closeBtn.setAttributes(counter);
+
         closeBtn.on('click',function() {
             _geo.remove();
             for (var i = 0, len = tmpMarkers.length;i<len;i++) {

@@ -1,11 +1,10 @@
 /**
  * 所有图层的基类
  * 供Map调用的图层方法有:
- * load,_onMoving, _onMoveEnd, _onResize, _onZoomStart, _onZoomEnd
- * @param  {[type]} map             [description]
- * @param  {[type]} zIndex)         {       if        (!map) {return;}      this.map [description]
- * @param  {[type]} getId:function( [description]
- * @return {[type]}                 [description]
+ * @class maptalks.Layer
+ * @extends maptalks.Class
+ * @mixins maptalks.Eventable
+ * @author Maptalks Team
  */
 Z['Layer']=Z.Layer=Z.Class.extend({
 

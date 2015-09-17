@@ -73,9 +73,4 @@ Z.Map.include({
     disableDoubleClickZoom: function() {
         this['doubleClickZoom'] = false;
     }
-
-    /*_draggableMoved: function (obj) {
-        obj = obj.options.draggable ? obj : this;
-        return (obj.dragging) || (this.boxZoom);
-    },*/
 });

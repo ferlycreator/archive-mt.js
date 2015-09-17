@@ -1,9 +1,12 @@
 /**
  * 瓦片系统描述类
- * @param  {Object} scale   x,y轴计算系数
- * @param  {Object} origin 计算原点
+ * @class maptalks.TileSystem
  */
-Z.TileSystem=function(sx, sy, ox, oy){
+Z.TileSystem =
+/**
+ * @method TileSystem
+ */
+function(sx, sy, ox, oy){
     if (Z.Util.isArray(sx)) {
         this.scale =  { x : sx[0] , y : sx[1] };
         this.origin = { x : sx[2] , y : sx[3] };

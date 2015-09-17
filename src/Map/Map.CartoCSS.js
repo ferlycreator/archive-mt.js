@@ -2,7 +2,6 @@
  * CartoCSS解析参考了CartoCSS.js
  * https://github.com/CartoDB/carto
  */
-
 Z.Map.include({
     /**
      * 为地图载入CartoCSS样式
