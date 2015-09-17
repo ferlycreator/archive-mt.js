@@ -19,6 +19,8 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
         this.symbol = symbol;
         this.geometry = geometry;
         this.renderPoints = this._getRenderPoints();
+        this.style = this.translate();
+        this.strokeAndFill = this.translateStrokeAndFill(this.style);
     },
 
     svg:function(container, vectorcontainer, zIndex) {
@@ -26,6 +28,7 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
     },
 
     canvas:function(ctx, resources) {
+
         var points = this.renderPoints;
         if (!Z.Util.isArrayHasData(points)) {
             return;
@@ -34,29 +37,36 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
         var cookedPoints = Z.Util.eachInArray(points,this,function(point) {
             return map._domOffsetToScreen(point);
         });
-        var style = this.translate();
+        var style = this.style;
         var vectorArray = this._getVectorArray(style);
         var markerType = style['marker-type'].toLowerCase();
-        var strokeAndFill = this.translateStrokeAndFill(style);
+        var strokeAndFill = this.strokeAndFill;
+        var dxdy = this.getDxDy();
         Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'],strokeAndFill['fill'], null);
         var j;
+
+        var width = style['marker-width'],
+            height = style['marker-height'];
+
         for (var i = cookedPoints.length - 1; i >= 0; i--) {
             var point = cookedPoints[i];
-            if (markerType  === 'ellipse') {
-                Z.Canvas.ellipse(ctx, point, new Z.Size(style['marker-width'],style['marker-height']));
-                Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']);
-            } else if (markerType === 'cross' || markerType === 'x'){
+            point._add(dxdy);
+            if (markerType === 'cross' || markerType === 'x'){
                 for (j = vectorArray.length - 1; j >= 0; j--) {
                     vectorArray[j]._add(point);
                 }
                 //线类型
                 Z.Canvas.path(ctx,vectorArray,null);
-            } else {
+            } else if (markerType === 'diamond' || markerType === 'bar' || markerType === 'square' || markerType === 'triangle'){
                 for (j = vectorArray.length - 1; j >= 0; j--) {
                     vectorArray[j]._add(point);
                 }
                 //面类型
                 Z.Canvas.polygon(ctx,vectorArray,null);
+                Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']);
+            } else {
+                //ellipse default
+                Z.Canvas.ellipse(ctx, point, new Z.Size(width,height));
                 Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']);
             }
         }
@@ -68,11 +78,25 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
     },
 
     getDxDy:function() {
-        var s = this.symbol;
-        var dx = s['marker-dx'] || 0,
-            dy = s['marker-dy'] || 0;
+        var s = this.style;
+        var dx = s['marker-dx'],
+            dy = s['marker-dy'];
         return new Z.Point(dx, dy);
     },
+
+    getMarkerExtent:function() {
+        var dxdy = this.getDxDy(),
+            style = this.style;
+        var markerType = style['marker-type'].toLowerCase();
+        var width = style['marker-width'],
+            height = style['marker-height'];
+        if (markerType  === 'bar') {
+            return new Z.Extent(dxdy.add(new Z.Point(-width/2,-height)), dxdy.add(new Z.Point(width/2,0)));
+        } else {
+            return new Z.Extent(dxdy.add(new Z.Point(-width/2,-height/2)), dxdy.add(new Z.Point(width/2,height/2)));
+        }
+    },
+
 
     translate:function() {
         var s = this.symbol;
@@ -82,8 +106,8 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
             "marker-type"       : s["marker-type"],
             "marker-width"      : Z.Util.setDefaultValue(s["marker-width"], d["marker-width"]),
             "marker-height"     : Z.Util.setDefaultValue(s["marker-height"], d["marker-height"]),
-            "marker-dx"         : Z.Util.setDefaultValue(s["marker-dx"], d["marker-height"]),
-            "marker-dy"         : Z.Util.setDefaultValue(s["marker-dy"], d["marker-height"]),
+            "marker-dx"         : Z.Util.setDefaultValue(s["marker-dx"], d["marker-dx"]),
+            "marker-dy"         : Z.Util.setDefaultValue(s["marker-dy"], d["marker-dy"]),
 
             "marker-fill"       : Z.Util.setDefaultValue(s["marker-fill"], d["marker-fill"]),
             "marker-fill-opacity": Z.Util.setDefaultValue(s["marker-fill-opacity"], d["marker-fill-opacity"]),
@@ -127,10 +151,11 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
      * 生成图片标注
      * @param point
      */
-    createMarkerDom: function(style) {
+    createMarkerDom: function() {
+        var style = this.style;
         var svgPath = this._getMarkerSvgPath(style);
         var svgDom = Z.SVG.path(svgPath);
-        var svgStyle = this.translateStrokeAndFill(style);
+        var svgStyle = this.strokeAndFill;
         Z.SVG.updateShapeStyle(svgDom, svgStyle['stroke'], svgStyle['fill']);
         return svgDom;
     },
@@ -140,17 +165,7 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
         var markerType = style['marker-type'].toLowerCase();
         var points = this._getVectorArray(style);
         var path;
-        if ('ellipse' === markerType) {
-            var width = style['marker-width'],
-                height = style['marker-height'];
-            var point = [0,0];
-            if (Z.Browser.vml) {
-                path = 'AL ' + point.join(',') + ' ' + width/2 + ',' + height/2 +
-                        ' 0,' + (65535 * 360) + ' x';
-            } else {
-                path = 'M'+point.join(',')+' a'+width/2 + ',' + height/2+' 0,1,0,0,-0.9Z';
-            }
-        } else if ('triangle' === markerType) {
+        if ('triangle' === markerType) {
             path = 'M'+points[0]['left']+','+points[0]['top']+ ' ' +
                      'L'+points[1]['left']+','+points[1]['top']+ ' ' +
                      'L'+points[2]['left']+','+points[2]['top']+ ' ' +
@@ -166,7 +181,19 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
                          'L'+points[2]['left']+','+points[2]['top']+ ' ' +
                          'L'+points[3]['left']+','+points[3]['top']+ ' ' +
                          Z.SVG.closeChar;
-        } /*else if ('tip' === markerType) {
+        } else {
+            //ellipse
+            var width = style['marker-width'],
+                height = style['marker-height'];
+            var point = [0,0];
+            if (Z.Browser.vml) {
+                path = 'AL ' + point.join(',') + ' ' + width/2 + ',' + height/2 +
+                        ' 0,' + (65535 * 360) + ' x';
+            } else {
+                path = 'M'+point.join(',')+' a'+width/2 + ',' + height/2+' 0,1,0,0,-0.9Z';
+            }
+        }
+        /*else if ('tip' === markerType) {
             path = 'M'+points[0]['left']+','+points[0]['top']+ ' ' +
                          'L'+points[1][0]+','+points[1][1]+ ' ' +
                          'L'+points[2][0]+','+points[2][1]+ ' ' +

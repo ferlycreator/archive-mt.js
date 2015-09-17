@@ -14,22 +14,22 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
     initialize:function(strokeAndFillSymbol, geometry) {
         this.strokeAndFillSymbol = strokeAndFillSymbol;
         this.geometry = geometry;
+        this.style = this.translate();
     },
 
-    svg:function(container, vectorContainer, zIndex) {
+    svg:function(container, vectorContainer , zIndex) {
         var svgPath = this.geometry._getRenderPath();
         if (!this.svgDom) {
-            var svgPaper = vectorContainer;//this.getMap()._getSvgPaper();
             this.svgDom = Z.SVG.path(svgPath);
             //鼠标样式
             this.svgDom.style.cursor = "pointer";
-            svgPaper.appendChild(this.svgDom);
+            vectorContainer.appendChild(this.svgDom);
         } else {
             Z.SVG.updatePath(this.svgDom, svgPath);
         }
-        var style = this.translate();
+        var style = this.style;
         if (this.geometry instanceof Z.Polygon) {
-            Z.SVG.updateShapeStyle(this.svgDom, style['stroke'], style['fill']);
+            Z.SVG.updateShapeStyle(this.svgDom, style['stroke'], style['fill'], this.getMap()._getSvgPaper());
         } else {
             Z.SVG.updateShapeStyle(this.svgDom, style['stroke'], {"fill": "#ffffff","fill-opacity": 0});
         }
@@ -38,7 +38,7 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
 
     canvas:function(ctx, resources) {
         var canvasResources = this.geometry._getRenderCanvasResources();
-        var style = this.translate();
+        var style = this.style;
         Z.Canvas.setDefaultCanvasSetting(ctx);
         if (this.geometry instanceof Z.Polygon) {
             Z.Canvas.prepareCanvas(ctx, style['stroke'], style['fill'], resources);
@@ -51,6 +51,23 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
         }
     },
 
+    getSvgDom:function() {
+        return [this.svgDom];
+    },
+
+    getPixelExtent:function() {
+        var map = this.getMap();
+        var extent = this.geometry.getExtent();
+        if (!extent) {
+            return null;
+        }
+        var min = map._getProjection().project(new Z.Coordinate(extent['xmin'],extent['ymin'])),
+            max = map._getProjection().project(new Z.Coordinate(extent['xmax'],extent['ymax']));
+        return new Z.Extent(
+            map._transformToOffset(min),
+            map._transformToOffset(max)
+            );
+    },
     refresh:function() {
         var layer = this.geometry.getLayer();
         if (!layer.isCanvasRender()) {
@@ -62,7 +79,7 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
     remove:function() {
         if (Z.Util.isArrayHasData(this.markers)) {
             for (var i = this.markers.length-1;i>=0;i--) {
-                Z.Util.removeDomNode(this.markers[i]);
+                Z.DomUtil.removeDomNode(this.markers[i]);
             }
         }
     },

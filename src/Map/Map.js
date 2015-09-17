@@ -769,17 +769,11 @@ Z['Map']=Z.Map=Z.Class.extend({
         }
         //tileConfig相同,无需改变
         if (this._tileConfig && this._tileConfig.equals(tileConfig, this.getZoomLevel())) {
-            // callbackFn(false);
             return false;
         }
         this._tileConfig = tileConfig;
         this._checkMapStatus();
         return true;
-        // callbackFn(true);
-        // tileConfig.load(function() {
-        //     _this._checkMapStatus();
-        //     callbackFn(true);
-        // });
     },
 
     /**
@@ -904,11 +898,6 @@ Z['Map']=Z.Map=Z.Class.extend({
         var point = [centerPoint[0]+ domPos['left'] - this.width / 2, centerPoint[1]+domPos['top'] - this.height / 2];
         var result = transformation.untransform(point, res);
         return new Z.Coordinate(result);
-       /* var res = this._tileConfig.getResolution(this.getZoomLevel());//['resolutions'][this._zoomLevel];
-        var pcenter = this._getPrjCenter();
-        var y = pcenter.y + this.dy*(this.height / 2 - domPos['top'])* res;
-        var x = pcenter.x + this.dx*(domPos['left'] - this.width / 2)* res;
-        return new Z.Coordinate(x, y);*/
     },
 
     /**
@@ -937,18 +926,6 @@ Z['Map']=Z.Map=Z.Class.extend({
             Math.round(this.width / 2 + point[0] - centerPoint[0]),
             Math.round(this.height / 2 + point[1] - centerPoint[1])
             );
-
-       /* var res = this._tileConfig['resolutions'][this._zoomLevel];
-        var pcenter = this._getPrjCenter();
-        // var _canvasDom = this.canvasDom;
-        var centerTop = this.dy*(pcenter.y - pCoordinate.y) / res;
-        var centerLeft = this.dx*(pCoordinate.x - pcenter.x) /res;
-
-        var result = {
-            "top" : Math.round(this.height / 2 + centerTop),
-            "left" : Math.round(this.width / 2 + centerLeft)
-        };
-        return result;*/
     },
 
     /**

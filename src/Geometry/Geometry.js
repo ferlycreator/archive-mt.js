@@ -127,7 +127,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     getSymbol:function() {
-        return this.options.symbol;
+        return this.options['symbol'] ||  Object.getPrototypeOf(this).options['symbol'];
     },
 
     /**
@@ -137,11 +137,11 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      */
     setSymbol:function(symbol) {
         if (!symbol) {
-            this.options.symbol = null;
+            this.options['symbol'] = null;
         } else {
             //属性的变量名转化为驼峰风格
-            // var camelSymbol = Z.Util.convertFieldNameStyle(symbol,'camel');
-            this.options.symbol = symbol;
+            var minusSymbol = Z.Util.convertFieldNameStyle(symbol,'minus');
+            this.options['symbol'] = minusSymbol;
         }
         this._onSymbolChanged();
         return this;
@@ -169,15 +169,8 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (!map) {
             return null;
         }
-        var projection = this._getProjection();
-        var extent = this._computeVisualExtent(projection);
-        var xmin = extent['xmin'],
-            xmax = extent['xmax'],
-            ymin = extent['ymin'],
-            ymax = extent['ymax'];
-        var width = map.computeDistance(new Z.Coordinate(xmin, ymax), new Z.Coordinate(xmax, ymax));
-        var height = map.computeDistance(new Z.Coordinate(xmin, ymax), new Z.Coordinate(xmin, ymin));
-        return map.distanceToPixel(width, height);
+        var pxExtent = this._getPainter().getPixelExtent();
+        return new Z.Size(Math.abs(pxExtent['xmax']-pxExtent['xmin']), Math.abs(pxExtent['ymax'] - pxExtent['ymin']));
     },
 
     _getPrjExtent:function() {

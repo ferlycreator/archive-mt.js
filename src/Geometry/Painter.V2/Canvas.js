@@ -86,8 +86,8 @@ Z.Canvas = {
     },
 
     text:function(ctx, text, pt, style, size) {
-        var ratio = Z.Browser.retina ? 2:1;
         //http://stackoverflow.com/questions/14126298/create-text-outline-on-canvas-in-javascript
+        var ratio = Z.Browser.retina ? 2:1;
 
         //根据text-horizontal-alignment和text-vertical-alignment计算绘制起始点偏移量
         var alignX, alignY;
@@ -218,13 +218,6 @@ Z.Canvas = {
     },
 
     rectangle:function(ctx, pt, size) {
-        /*var map = this.getMap();
-        var pt = map._transform(this._getPNw());
-        var size = this._getRenderSize();
-        ctx.beginPath();
-        ctx.rect(Z.Util.canvasRound(pt.left), Z.Util.canvasRound(pt.top),
-            Z.Util.canvasRound(size['width']),Z.Util.canvasRound(size['height']));
-        ctx.stroke();*/
         ctx.beginPath();
         ctx.rect(Z.Util.canvasRound(pt['left']), Z.Util.canvasRound(pt['top']),
             Z.Util.canvasRound(size['width']),Z.Util.canvasRound(size['height']));
@@ -261,12 +254,6 @@ Z.Canvas = {
             ctx.restore();
             ctx.stroke();
         }
-        /*var map = this.getMap();
-        var pcenter = this._getPCenter();
-        var pt = map._transform(pcenter);
-        var size = this._getRenderSize();
-        sector(pt['left'],pt['top'],size['width'],this.getStartAngle(),this.getEndAngle());*/
-
         sector(pt['left'],pt['top'],size['width'],startAngle,endAngle);
     }
 };

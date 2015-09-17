@@ -3,7 +3,7 @@ if (Z.Browser.canvas) {
 
     var ellipseReources = {
         _getRenderCanvasResources:function() {
-            var map = this.geoMap();
+            var map = this.getMap();
             var pcenter = this._getPCenter();
             var pt = map._transform(pcenter);
             var size = this._getRenderSize();

@@ -19,6 +19,10 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
         this.symbol = symbol;
         this.geometry = geometry;
         this.renderPoints = this._getRenderPoints();
+        this.style = this.translate();
+        this.strokeAndFill = this.translateStrokeAndFill(this.style);
+        this.textContent = this._convertContent(this.style['text-name']);
+        this.textSize = Z.Util.stringLength(this.textContent,this.style['text-face-name'],this.style['text-size']);
     },
 
     svg:function(container, vectorcontainer, zIndex) {
@@ -36,13 +40,14 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
         });
         Z.Canvas.setDefaultCanvasSetting(ctx);
 
-        var style = this.translate();
-        var textContent = this._convertContent(style['text-name']);
-        var strokeAndFill = this.translateStrokeAndFill(style);
+        var style = this.style,
+            textContent = this.textContent,
+            size = this.textSize,
+            strokeAndFill = this.strokeAndFill;
+
         Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'], strokeAndFill['fill'], resources);
         Z.Canvas.prepareCanvasFont(ctx,style);
 
-        var size = Z.Util.stringLength(textContent,style['text-face-name'],style['text-size']);
         var ratio = Z.Browser.retina ? 2:1;
         for (var i = 0, len=cookedPoints.length;i<len;i++) {
             Z.Canvas.text(ctx, textContent, cookedPoints[i]._multi(ratio), style,size);
@@ -54,10 +59,35 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
     },
 
     getDxDy:function() {
-        var s = this.symbol;
-        var dx = s['text-dx'] || 0,
-            dy = s['text-dy'] || 0;
+        var s = this.style;
+        var dx = s['text-dx'],
+            dy = s['text-dy'];
         return new Z.Point(dx, dy);
+    },
+
+    getMarkerExtent:function() {
+        var dxdy = this.getDxDy(),
+            style = this.style,
+            size = this.textSize;
+        var alignW, alignH;
+        if (style['text-horizontal-alignment'] === 'left') {
+            alignW = this.textSize['width'];
+        } else if (style['text-horizontal-alignment'] === 'middle') {
+            alignW = this.textSize['width']/2;
+        } else if (style['text-horizontal-alignment'] === 'right') {
+            alignW = 0;
+        }
+        if (style['text-vertical-alignment'] === 'top') {
+            alignH = this.textSize['height'];
+        } else if (style['text-vertical-alignment'] === 'middle') {
+            alignH = this.textSize['height']/2;
+        } else if (style['text-vertical-alignment'] === 'bottom') {
+            alignH = 0;
+        }
+        return new Z.Extent(
+                    dxdy.add(new Z.Point(alignW, alignH)),
+                    dxdy.add(new Z.Point(alignW-size['width'],alignH-size['height']))
+                );
     },
 
     translate:function() {
@@ -101,13 +131,14 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
      * 生成图片标注
      * @param point
      */
-    createMarkerDom: function(style) {
-        var textContent = this._convertContent(style['text-name']);
-        var textStyle = this.translate();
-        var size = Z.Util.stringLength(textContent, textStyle['text-face-name'], textStyle['text-size']);
-        var svgText = Z.SVG.text(textContent, textStyle, size);
-        Z.SVG.updateTextStyle(svgText, textStyle, size);
-        var strokeAndFill = this.translateStrokeAndFill(textStyle);
+    createMarkerDom: function() {
+        var style = this.style,
+            textContent = this.textContent,
+            size = this.textSize,
+            strokeAndFill = this.strokeAndFill;
+
+        var svgText = Z.SVG.text(textContent, style, size);
+        Z.SVG.updateTextStyle(svgText, style, size);
         Z.SVG.updateShapeStyle(svgText, strokeAndFill['stroke'], strokeAndFill['fill']);
         return svgText;
     },

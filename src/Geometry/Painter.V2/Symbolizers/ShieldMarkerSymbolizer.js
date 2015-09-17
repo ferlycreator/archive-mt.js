@@ -24,6 +24,10 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
         this.symbol = symbol;
         this.geometry = geometry;
         this.renderPoints = this._getRenderPoints();
+        this.style = this.translate();
+        this.strokeAndFill = this.translateStrokeAndFill(this.style);
+        this.textContent = this._convertContent(this.style['shield-name']);
+        this.textSize = Z.Util.stringLength(this.textContent,this.style['text-face-name'],this.style['text-size']);
     },
 
     svg:function(container, vectorcontainer, zIndex, _container, _vectorcontainer) {
@@ -53,22 +57,22 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
         });
         Z.Canvas.setDefaultCanvasSetting(ctx);
 
-        var style = this.translate();
-        var textContent = this._convertContent(style['shield-name']);
-        var strokeAndFill = this.translateStrokeAndFill(style);
+        var style = this.style,
+            strokeAndFill = this.strokeAndFill;
         Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'], strokeAndFill['fill'], resources);
         Z.Canvas.prepareCanvasFont(ctx,style);
 
-        var size = Z.Util.stringLength(textContent,style['text-face-name'],style['text-size']);
+
         var ratio = Z.Browser.retina ? 2:1;
 
         var img = resources.getImage(style['shield-file']);
-
+        var width = img.width,
+            height = img.height;
         for (var i = 0, len=cookedPoints.length;i<len;i++) {
             var pt = cookedPoints[i]._multi(ratio);
-            var imgPt = pt.substract(new Z.Point(img.width/2, img.height/2));
-            ctx.drawImage(img, imgPt['left'], imgPt['top'], img.width, img.height);
-            Z.Canvas.text(ctx, textContent,pt , style,size);
+            var imgPt = pt.substract(new Z.Point(width/2, height/2));
+            ctx.drawImage(img, imgPt['left'], imgPt['top'], width, height);
+            Z.Canvas.text(ctx, this.textContent,pt , style, this.textSize);
         }
     },
 
@@ -77,10 +81,39 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
     },
 
     getDxDy:function() {
-        var s = this.symbol;
-        var dx = s['shield-dx'] || 0,
-            dy = s['shield-dy'] || 0;
+        var s = this.style;
+        var dx = s['shield-dx'],
+            dy = s['shield-dy'];
         return new Z.Point(dx, dy);
+    },
+
+    getMarkerExtent:function() {
+        var dxdy = this.getDxDy(),
+            style = this.style,
+            size = this.textSize;
+        var fileExtent = new Z.Extent(dxdy.add(-this.shieldFileWidth/2, - this.shieldFileHeight/2),
+                    dxdy.add(this.shieldFileWidth/2, this.shieldFileHeight/2));
+        var textDxDy = new Z.Point(this.style['text-dx'], this.style['text-dy']);
+        var alignW, alignH;
+        if (style['text-horizontal-alignment'] === 'left') {
+            alignW = this.textSize['width'];
+        } else if (style['text-horizontal-alignment'] === 'middle') {
+            alignW = this.textSize['width']/2;
+        } else if (style['text-horizontal-alignment'] === 'right') {
+            alignW = 0;
+        }
+        if (style['text-vertical-alignment'] === 'top') {
+            alignH = this.textSize['height'];
+        } else if (style['text-vertical-alignment'] === 'middle') {
+            alignH = this.textSize['height']/2;
+        } else if (style['text-vertical-alignment'] === 'bottom') {
+            alignH = 0;
+        }
+        var textExtent = new Z.Extent(
+                    textDxDy.add(new Z.Point(alignW, alignH)),
+                    textDxDy.add(new Z.Point(alignW-size['width'],alignH-size['height']))
+                );
+        return Z.Extent.combine(fileExtent, textExtent);
     },
 
     translate:function() {
@@ -117,7 +150,8 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
      * 生成图片标注
      * @param point
      */
-    createMarkerDom: function(style) {
+    createMarkerDom: function() {
+        var style = this.style;
         var svgGroup = Z.SVG.group();
 
          if (style['shield-file']) {
@@ -125,12 +159,9 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
             this._offsetMarker(svgImage, new Z.Point(-this.shieldFileWidth/2, -this.shieldFileHeight/2));
             svgGroup.appendChild(svgImage);
         }
-        var textStyle = this.translate();
-        var textContent = this._convertContent(style['shield-name']);
-        var size = Z.Util.stringLength(textContent, textStyle['text-face-name'], textStyle['text-size']);
-        this.contentSize = size;
-        var svgText = Z.SVG.text(textContent, textStyle, size);
-        Z.SVG.updateTextStyle(svgText, textStyle, size);
+        var textStyle = this.style;
+        var svgText = Z.SVG.text(this.textContent, textStyle, this.textSize);
+        Z.SVG.updateTextStyle(svgText, textStyle, this.textSize);
         var strokeAndFill = this.translateStrokeAndFill(textStyle);
         Z.SVG.updateShapeStyle(svgText, strokeAndFill['stroke'], strokeAndFill['fill']);
 
@@ -172,8 +203,8 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
             var arr = content.match(regex);
             if(arr&&arr.length>0) {
                 var props = this.geometry.getProperties();
-                var key = arr[0].substring(1,arr[0].length-1);
                 if(props) {
+                    var key = arr[0].substring(1,arr[0].length-1);
                     if(props[key]) {
                         return content.replace(regex, props[key]);
                     }

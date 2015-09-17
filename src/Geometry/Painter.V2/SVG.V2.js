@@ -17,28 +17,17 @@ Z.Browser.vml = !Z.Browser.svg && (function () {
 }());
 
 Z.SVG = {
-    defaultStrokeSymbol:{
-        'stroke':'#000000',
-        'strokeWidth': 2,
-        'strokeDasharray': ''//'', '-', '.', '-.', '-..', '. ', '- ', '--', '- .', '--.', '--..'
-    },
+    _ISURL: /^url\(['"]?(.+?)['"]?\)$/i,
 
-    defaultFillSymbol:{
-        'fill': '#ffffff',
-        'fillOpacity': 0
-    },
-
-    _ISURL: /^url\(['"]?(.+?)['"]?\)$/i
+    //Path中的闭合指令, svg中是Z, vml中是x, 默认为Z
+    closeChar: (function() {
+        if (Z.Browser.vml) {
+            return 'x';
+        } else {
+            return 'Z';
+        }
+    })()
 };
-
-//Path中的闭合指令, svg中是Z, vml中是x, 默认为Z
-Z.SVG.closeChar = (function() {
-    if (Z.Browser.vml) {
-        return 'x';
-    } else {
-        return 'Z';
-    }
-})();
 
 Z.SVG.SVG = {
     createContainer:function() {
@@ -78,6 +67,7 @@ Z.SVG.SVG = {
     },
 
     text:function(text, style, size) {
+        //TODO 改为textpath
         var svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         var textNode = document.createTextNode(text);
         svgText.appendChild(textNode);
@@ -126,7 +116,7 @@ Z.SVG.SVG = {
         return svgGroup;
     },
 
-    updateShapeStyle:function(svgShape, strokeSymbol, fillSymbol) {
+    updateShapeStyle:function(svgShape, strokeSymbol, fillSymbol, paper) {
         var key;
 
         if(Z.Util.isArrayHasData(strokeSymbol['stroke-dasharray'])) {
@@ -149,7 +139,7 @@ Z.SVG.SVG = {
                     }
                     var isUrl = fillValue.match(Z.SVG._ISURL);
                     if (isUrl) {
-                        var pattern = Z.SVG.SVG.fillWithPattern(isUrl, svgShape, svgShape.parentNode);
+                        var pattern = Z.SVG.SVG.fillWithPattern(isUrl, svgShape, paper);
                         svgShape.setAttribute(key, pattern);
                         continue;
                     }
@@ -182,8 +172,8 @@ Z.SVG.SVG = {
             }
             return el;
         }
-        function create(el) {
-            var el = document.createElementNS("http://www.w3.org/2000/svg", el);
+        function create(_el) {
+            var el = document.createElementNS("http://www.w3.org/2000/svg", _el);
             el.style && (el.style['webkitTapHighlightColor'] = "rgba(0,0,0,0)");
             return el;
         }
@@ -201,51 +191,63 @@ Z.SVG.SVG = {
             document.body.appendChild(img);
             img.src = src;
         }
-        var uid = Z.Util.GUID();
-        var pattern = create('pattern');
-        pattern.id = uid;
-        setAttributes(pattern, {
-            'x':0,
-            'y':0,
-            'patternUnits':'userSpaceOnUse',
-            'height': 1,
-            'width': 1
-        });
-        var image = create('image');
-        setAttributes(image, {
-            'x':0,
-            'y':0,
-            "xlink:href": isUrl[1]
-        });
-
-        pattern.appendChild(image);
-
-        svgShape._pattern = pattern;
-
-        (function () {
-        _preload(isUrl[1], function() {
-            var w = this.offsetWidth,
-                h = this.offsetHeight;
+        var imgSrc = isUrl[1];
+        var pattern;
+        if (!paper['_maptalks_patterns']) {
+            paper['_maptalks_patterns']={};
+        } else {
+            pattern = paper['_maptalks_patterns'][imgSrc];
+        }
+        if (!pattern) {
+            //不重复定义pattern.
+            var uid = Z.Util.GUID();
+            pattern = create('pattern');
+            pattern.id = uid;
             setAttributes(pattern, {
-                'width':w,
-                'height':h
+                'x':0,
+                'y':0,
+                'patternUnits':'userSpaceOnUse',
+                'height': 1,
+                'width': 1
             });
+            var image = create('image');
             setAttributes(image, {
-                'width':w,
-                'height':h
+                'x':0,
+                'y':0,
+                "xlink:href": imgSrc
             });
-        });
-        })();
-        paper.defs.appendChild(pattern);
-        return "url(#" + uid + ")";
+
+            pattern.appendChild(image);
+
+            // svgShape._pattern = pattern;
+
+            (function () {
+            _preload(isUrl[1], function() {
+                var w = this.offsetWidth,
+                    h = this.offsetHeight;
+                setAttributes(pattern, {
+                    'width':w,
+                    'height':h
+                });
+                setAttributes(image, {
+                    'width':w,
+                    'height':h
+                });
+            });
+            })();
+            paper.defs.appendChild(pattern);
+            paper['_maptalks_patterns'][imgSrc] = pattern;
+        }
+
+        return "url(#" + pattern.id + ")";
 
     },
 
     removeVector:function(_container, svgShape) {
         //如果是模式填充, 需要删除模式定义元素
-        if (svgShape._pattern) {
+        /*if (svgShape._pattern) {
             Z.DomUtil.removeDomNode(svgShape._pattern);
-        }
+        }*/
         if (_container && svgShape) {
             _container.removeChild(svgShape);
         }

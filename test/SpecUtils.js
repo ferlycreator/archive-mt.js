@@ -113,7 +113,7 @@ var GeoEventsTester = {
         var vector = geometry;
         vector.on(this.eventsToTest, this._eventCallBack);
         layer.addGeometry(vector);
-        var dom = vector._getPainter().getVectorDom();
+        var dom = vector._getPainter().getSvgDom()[0];
         this._verifyGeometryEvents(dom);
     },
 
@@ -128,7 +128,7 @@ var GeoEventsTester = {
         var point = map.coordinateToScreenPoint(testPoint);
         var dom = layer.getRender().getCanvasContainer();
         var domPosition = Z.DomUtil.getPageCoordinate(dom);
-        point.add(domPosition);
+        point._add(domPosition);
         this._verifyGeometryEvents(dom,
             {
             'screenX':point.left,

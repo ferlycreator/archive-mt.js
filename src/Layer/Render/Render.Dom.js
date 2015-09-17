@@ -78,12 +78,14 @@ Z.Render.Dom.prototype= {
 
 
     _addTo:function() {
+        var layerContainer = this._layerContainer;
+        var zIndex = this._zIndex;
         var vectorPaper = this.getMap()._getSvgPaper();
         var fragment = document.createDocumentFragment();
         var vectorFragment = document.createDocumentFragment();
         this._layer._eachGeometry(function(geo) {
             if (geo._getPainter()) {
-                geo._getPainter().paint(fragment, vectorFragment,  this._zIndex, this._layerContainer, vectorPaper);
+                geo._getPainter().paint(fragment, vectorFragment,  zIndex, layerContainer, vectorPaper);
             }
         });
         this._layerContainer.appendChild(fragment);

@@ -1,9 +1,9 @@
 ../src/Z.js
+../src/Core/Browser.js
+../src/Core/Support.js
 ../src/Core/Constants.js
 ../src/Core/Util.js
 ../src/Core/DomUtil.js
-../src/Core/Browser.js
-../src/Core/Support.js
 ../src/Core/Event.js
 ../src/Core/Class.js
 ../src/Geo/Coordinate.js

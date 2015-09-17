@@ -14,17 +14,6 @@ Z.Painter = Z.Class.extend({
     },
 
     /**
-     * 监听geometry事件
-     */
-    _registerEvents:function() {
-        this.geometry.on('symbolchanged', function(param) {
-            this.remove();
-            this._createSymbolizers();
-            this.paint.apply(this, this.context);
-        }, this);
-    },
-
-    /**
      * 构造symbolizers
      * @return {[type]} [description]
      */
@@ -50,6 +39,39 @@ Z.Painter = Z.Class.extend({
         for (var i = this.symbolizers.length - 1; i >= 0; i--) {
             this.symbolizers[i].symbolize.apply(this.symbolizers[i], arguments);
         }
+        this._registerEvents();
+    },
+
+    _registerEvents:function() {
+        var layer = this.geometry.getLayer();
+        if (layer.isCanvasRender()) {
+            return;
+        }
+        //svg类型
+        var geometry = this.geometry;
+        for (var i = this.symbolizers.length - 1; i >= 0; i--) {
+            var doms = this.symbolizers[i].getSvgDom();
+            if (Z.Util.isArrayHasData(doms)) {
+                for (var j = doms.length - 1; j >= 0; j--) {
+                    Z.DomUtil.on(doms[j], 'mousedown mouseup click dblclick contextmenu', geometry._onEvent, geometry);
+                    Z.DomUtil.on(doms[j], 'mouseover', geometry._onMouseOver, geometry);
+                    Z.DomUtil.on(doms[j], 'mouseout', geometry._onMouseOut, geometry);
+                }
+            }
+        }
+
+    },
+
+    /**
+     * 获取svg图形的dom
+     */
+    getSvgDom:function() {
+        var result = [];
+        for (var i = this.symbolizers.length - 1; i >= 0; i--) {
+            var doms = this.symbolizers[i].getSvgDom();
+            result = result.concat(doms);
+        }
+        return result;
     },
 
     /**
@@ -75,6 +97,16 @@ Z.Painter = Z.Class.extend({
     },
 
     //需要实现的接口方法
+    getPixelExtent:function() {
+        if (!this.pxExtent) {
+            this.pxExtent = new Z.Extent();
+            for (var i = this.symbolizers.length - 1; i >= 0; i--) {
+                this.pxExtent = Z.Extent.combine(this.symbolizers[i].getPixelExtent(),this.pxExtent);
+            }
+        }
+        return this.pxExtent;
+    },
+
     setZIndex:function(change) {
         this._eachSymbolizer(function(symbolizer) {
             symbolizer.setZIndex();
@@ -94,9 +126,17 @@ Z.Painter = Z.Class.extend({
     },
 
     refresh:function(){
+        this.pxExtent = null;
         this._eachSymbolizer(function(symbolizer) {
             symbolizer.refresh();
         });
+    },
+
+    refreshSymbol:function() {
+        this.pxExtent = null;
+        this.remove();
+        this._createSymbolizers();
+        this.paint.apply(this, this.context);
     },
 
     remove:function() {

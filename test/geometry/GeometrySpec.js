@@ -53,7 +53,7 @@ describe('Geometry', function() {
     it("Circle._containsPoint", function() {
         var geometry = new Z.Circle(center, 10, {
             symbol: {
-                lineWidth: 6
+                'line-width': 6
             }
         });
         layer.addGeometry(geometry);
@@ -77,7 +77,7 @@ describe('Geometry', function() {
     it("Ellipse._containsPoint", function() {
         var geometry = new Z.Ellipse(center, 20, 10, {
             symbol: {
-                lineWidth: 6
+                'line-width': 6
             }
         });
         layer.addGeometry(geometry);
@@ -101,7 +101,7 @@ describe('Geometry', function() {
     it("Sector._containsPoint", function() {
         var geometry = new Z.Sector(center, 10, 90, 405, {
             symbol: {
-                lineWidth: 6
+                'line-width': 6
             }
         });
         layer.addGeometry(geometry);
@@ -125,7 +125,7 @@ describe('Geometry', function() {
     it("Rectangle._containsPoint", function() {
         var geometry = new Z.Rectangle(center, 20, 10, {
             symbol: {
-                lineWidth: 6
+                'line-width': 6
             }
         });
         layer.addGeometry(geometry);
@@ -153,7 +153,7 @@ describe('Geometry', function() {
             new Z.Coordinate([center.x + 0.002, center.y])
         ], {
             symbol: {
-                lineWidth: 6
+                'line-width': 6
             }
         });
         layer.addGeometry(geometry);
@@ -181,7 +181,7 @@ describe('Geometry', function() {
             new Z.Coordinate([center.x + 0.002, center.y])
         ]], {
             symbol: {
-                lineWidth: 6
+                'line-width': 6
             }
         });
         layer.addGeometry(geometry);
@@ -441,14 +441,16 @@ function registerGeometryCommonTest(geometry,_context) {
                 };
                 geometry.setSymbol(symbol);
                 var resource = geometry._getExternalResource();
-                expect(resource).to.be(symbol['marker-file']);
+                expect(resource).to.have.length(1);
+                expect(resource[0]).to.be(symbol['marker-file']);
             } else {
                 var symbol = {
-                    'polygon-fill':'url(\'http://foo.com/foo.png\')'
+                    'polygon-pattern-file':'url(\'http://foo.com/foo.png\')'
                 };
                 geometry.setSymbol(symbol);
                 var resource = geometry._getExternalResource();
-                expect(resource).to.be('http://foo.com/foo.png');
+                expect(resource).to.have.length(1);
+                expect(resource[0]).to.be('http://foo.com/foo.png');
             }
         });
 
