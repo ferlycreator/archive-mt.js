@@ -30,6 +30,17 @@ Z.Control.Attribution = Z.Control.extend({
 		return this._attributionContainer;
 	},
 
+	/**
+	 * 设置版权信息内容
+	 * @param {String} content 版权信息内容
+     * @expose
+     */
+    setContent: function (content) {
+        this.options['content'] = content;
+        this._update();
+        return this;
+    },
+
 	_update: function () {
 		if (!this._map) { return; }
 		this._attributionContainer.innerHTML = this.options['content'];
