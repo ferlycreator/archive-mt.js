@@ -387,41 +387,6 @@ Z.Util = {
 };
 
 
-//动画
-(function () {
-    // inspired by http://paulirish.com/2011/requestanimationframe-for-smart-animating/
-
-    function getPrefixed(name) {
-        return window['webkit' + name] || window['moz' + name] || window['ms' + name];
-    }
-
-    var lastTime = 0;
-
-    // fallback for IE 7-8
-    function timeoutDefer(fn) {
-        var time = +new Date(),
-            timeToCall = Math.max(0, 16 - (time - lastTime));
-
-        lastTime = time + timeToCall;
-        return window.setTimeout(fn, timeToCall);
-    }
-
-    var requestFn = window['requestAnimationFrame'] || getPrefixed('RequestAnimationFrame') || timeoutDefer,
-        cancelFn = window['cancelAnimationFrame'] || getPrefixed('CancelAnimationFrame') ||
-                   getPrefixed('CancelRequestAnimationFrame') || function (id) { window.clearTimeout(id); };
-
-
-    Z.Util.requestAnimFrame = function (fn) {
-            return requestFn.call(window, fn);
-    };
-
-    Z.Util.cancelAnimFrame = function (id) {
-        if (id) {
-            cancelFn.call(window, id);
-        }
-    };
-})();
-
 Z.Util.Ajax=function(sUrl,sRecvTyp,sQueryString,oResultFunc,responseType) {
     this.Url = sUrl;
     this.QueryString = sQueryString;
