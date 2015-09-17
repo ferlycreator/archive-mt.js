@@ -4,9 +4,16 @@
  * @author Maptalks Team
  */
 Z.Util = {
+    /**
+     * @property {Number} globalCounter
+     * @static
+     */
+    globalCounter: 0,
 
-    globalCounter:0,
-
+    /**
+     * 类扩展
+     * @param {Object} 父类
+     */
     extend: function (dest) { // (Object[, Object, ...]) ->
         var sources = Array.prototype.slice.call(arguments, 1),i, j, len, src;
 
@@ -21,6 +28,11 @@ Z.Util = {
         return dest;
     },
 
+    /**
+     * 设置options
+     * @param {Object} obj 对象
+     * @param {Object} options
+     */
     setOptions: function (obj, options) {
         if (!obj.hasOwnProperty('options')) {
             obj.options = obj.options ? Z.Util.create(obj.options) : {};
@@ -31,10 +43,20 @@ Z.Util = {
         return obj.options;
     },
 
+    /**
+     * 去除字符串某位空格
+     * @param {String} str 字符串
+     * @return {String} 处理后的字符串
+     */
     trim: function (str) {
         return str.trim ? str.trim() : str.replace(/^\s+|\s+$/g, '');
     },
 
+    /**
+     * 分割字符串
+     * @param {String} str 字符串
+     * @return {String} 处理后的字符串
+     */
     splitWords: function (str) {
         return Z.Util.trim(str).split(/\s+/);
     },
@@ -43,12 +65,21 @@ Z.Util = {
 
     },
 
+    /**
+     * 获取全局id
+     * @return {String} 全局id
+     */
     GUID: function() {
         return '___GLOBAL_'+(Z.Util.globalCounter++);
     },
 
     lastId: 0,
 
+    /**
+     * 将字符串转化为JSON对象
+     * @param {String} str 字符串
+     * @return {Object} JSON object
+     */
     parseJson:function(str) {
         if (!str || !Z.Util.isString(str)) {
             return str;
@@ -56,6 +87,10 @@ Z.Util = {
         return JSON.parse(str);
     },
 
+    /**
+     * 在低版本浏览器上实现create
+     * @method
+     */
     create: Object.create || (function () {
         function F() {}
         return function (proto) {
@@ -64,15 +99,17 @@ Z.Util = {
         };
     })(),
 
+    /**
+     * 在低版本浏览器上实现bind
+     * @param {Function} fn 执行的函数
+     * @param {Object} obj 执行的上下文
+     */
     bind: function (fn, obj) {
         var slice = Array.prototype.slice;
-
         if (fn.bind) {
             return fn.bind.apply(fn, slice.call(arguments, 1));
         }
-
         var args = slice.call(arguments, 2);
-
         return function () {
             return fn.apply(obj, args.length ? args.concat(slice.call(arguments)) : arguments);
         };
@@ -80,9 +117,10 @@ Z.Util = {
 
     /**
      * 遍历数组中的每个元素,并执行fn操作, 兼容N维数组, 如果数组中有null或undefined,则continue不作处理
-     * @param  {[type]}   points [description]
-     * @param  {Function} fn     [description]
-     * @return {[type]}          [description]
+     * @param {Array}   points 数组
+     * @param {Object} context 上下文
+     * @param {Function} fn 函数
+     * @return {Array} result
      */
     eachInArray:function(points, context, fn) {
         if (!this.isArray(points)) {
@@ -108,14 +146,13 @@ Z.Util = {
     /**
      * 在数组arr中查找obj,并返回其序号index
      * @param  {Object} obj 查找的对象
-     * @param  {目标数组} arr 查找的目标数组
+     * @param  {Array} arr 查找的目标数组
      * @return {Number}     序号
      */
     searchInArray:function(obj, arr) {
         if (!obj || arr) {
             return -1;
         }
-
         for (var i = 0, len=arr.length; i < len; i++) {
             if (arr[i] === obj) {
                 return i;
@@ -123,22 +160,31 @@ Z.Util = {
         }
         return -1;
     },
-    //判断a和b是否相同, 浅层判断, 不涉及子属性
-    objEqual:function(a, b) {
-        return Z.Util._objEqual(a,b);
-    },
-    //判断a和b是否相同, 深层判断, 子属性也必须相同,du
-    objDeepEqual:function(a, b) {
-        return Z.Util._objEqual(a,b, true);
-    },
+
     /**
-     * 判断两个对象是否类型相同, 值相同,或者属性相同
+     * 判断a和b是否相同, 浅层判断, 不涉及子属性
      * borrowed from expect.js
      * @param  {Object} a
      * @param  {Object} b
      * @param {Boolean} isDeep 是否深度判断
      * @return {Boolean}   true|false
      */
+    objEqual:function(a, b) {
+        return Z.Util._objEqual(a,b);
+    },
+
+    /**
+     * 判断a和b是否相同, 深层判断, 子属性也必须相同,du
+     * borrowed from expect.js
+     * @param  {Object} a
+     * @param  {Object} b
+     * @param {Boolean} isDeep 是否深度判断
+     * @return {Boolean}   true|false
+     */
+    objDeepEqual:function(a, b) {
+        return Z.Util._objEqual(a,b, true);
+    },
+
     _objEqual:function(a, b, isDeep) {
         function getKeys (obj) {
             if (Object.keys) {
@@ -190,12 +236,17 @@ Z.Util = {
     /**
      * canvas坐标值处理
      * @param  {Number} num 坐标值
-     * @return {Number}     处理后的坐标值
+     * @return {Number} 处理后的坐标值
      */
     canvasRound:function(num) {
         return (0.5 + num) << 0; //结果 + 0.5 据说能变得平滑
     },
 
+    /**
+     * 是否为坐标
+     * @param  {Object} obj 对象
+     * @return {Boolean} true：坐标
+     */
     isCoordinate:function(obj) {
         if (obj instanceof Z.Coordinate) {
             return true;
@@ -207,8 +258,8 @@ Z.Util = {
     },
     /**
      * 判断obj是否为undefined或者null
-     * @param  {[type]}  obj [description]
-     * @return {Boolean}     [description]
+     * @param  {Object}  obj 对象
+     * @return {Boolean}     true|false
      */
     isNil:function(obj) {
         return (obj === undefined || obj === null);
@@ -236,6 +287,13 @@ Z.Util = {
         return Z.Util._strRuler;
     },
 
+    /**
+     * 获取文本像素尺寸
+     * @param {String} text 文本
+     * @param {String} font 字体
+     * @param {String} fontSize 字体大小
+     * @return {maptalks.Size} size对象
+     */
     stringLength:function(text, font, fontSize) {
         var ruler = Z.Util._getStrRuler();
         ruler.style.fontFamily = font;
@@ -245,6 +303,11 @@ Z.Util = {
         return new Z.Size(ruler.clientWidth+1, ruler.clientHeight+1);
     },
 
+    /**
+     * 获取字符串长度
+     * @param {String} str 字符串
+     * @return {Number} 长度
+     */
     getLength : function(str) {
         var len = 0;
         for (var i = 0; i < str.length; i++) {
@@ -258,9 +321,17 @@ Z.Util = {
         return len;
     },
 
-    splitContent: function(content, textWidth, size, length) {
-        var rowNum = Math.ceil(textWidth/length);
-        var fontSize = parseInt(length/size);
+    /**
+     * 根据长度分割文本
+     * @param {String} content 文本
+     * @param {Number} textLength 文本长度
+     * @param {Number} size 字符大小
+     * @param {Number} width 限定宽度
+     * @return {String[]} 分割后的字符串数组
+     */
+    splitContent: function(content, textLength, size, width) {
+        var rowNum = Math.ceil(textLength/width);
+        var fontSize = parseInt(width/size);
         var result = [];
         for(var i=0;i<rowNum;i++) {
             if(i < rowNum -1 ) {
@@ -272,33 +343,58 @@ Z.Util = {
         return result;
     },
 
+    /**
+     * 设置默认值
+     * @param {Object} value 赋值
+     * @param {Object} defaultValue 默认值
+     */
     setDefaultValue: function(value, defaultValue) {
         return (Z.Util.isNil(value))?defaultValue:value;
     },
 
     /**
      * 数字四舍五入, 效率较高
-     * @param  {[type]} num [description]
-     * @return {[type]}     [description]
+     * @param  {Number} num 数字
+     * @return {Number}
      */
     roundNumber:function(num) {
         return (0.5+num) << 0;
     },
 
+    /**
+     * 判断数组中是否包含obj
+     * @param {Object} obj
+     * @return {Boolean} true|false
+     */
     isArrayHasData:function(obj) {
         return this.isArray(obj) && obj.length>0;
     },
 
+    /**
+     * 判断是否数组
+     * @param {Object} obj
+     * @return {Boolean} true|false
+     */
     isArray:function(obj) {
         if (!obj) {return false;}
         return typeof obj == 'array' || (obj.constructor !== null && obj.constructor == Array);
     },
 
+    /**
+     * 判断是否字符串
+     * @param {Object} _str
+     * @return {Boolean} true|false
+     */
     isString:function(_str) {
         if (_str === null || _str === undefined) {return false;}
         return typeof _str == 'string' || (_str.constructor!==null && _str.constructor == String);
     },
 
+    /**
+     * 判断是否函数
+     * @param {Object} _func
+     * @return {Boolean} true|false
+     */
     isFunction:function(_func) {
         if (this.isNil(_func)) {
             return false;
@@ -359,20 +455,22 @@ Z.Util = {
         return option;
     },
 
-    //borrowed from jquery, Evaluates a script in a global context
+    /**
+     * borrowed from jquery, Evaluates a script in a global context
+     * @param {String} code
+     */
     globalEval: function( code ) {
         var script = document.createElement( "script" );
-
         script.text = code;
         document.head.appendChild( script ).parentNode.removeChild( script );
     },
 
     /**
-    *获取异常信息
-    *@param {String} exceptionStr
-    *@param {Array} 参数数组
-    *@return {String} 异常字符串
-    */
+     * 获取异常信息
+     * @param {String} exceptionStr 异常字符串
+     * @param {String[]} 参数数组
+     * @return {String} 异常字符串
+     */
     getExceptionInfo: function(exceptionStr, params) {
         if(!params) return exceptionStr;
         if(this.isString(params)) params = [params];
@@ -422,7 +520,22 @@ Z.Util = {
     };
 })();
 
-Z.Util.Ajax=function(sUrl,sRecvTyp,sQueryString,oResultFunc,responseType) {
+/**
+ * Ajax
+ * @class maptalks.Util.Ajax
+ * @author Maptalks Team
+ */
+Z.Util.Ajax =
+    /**
+     * Ajax请求
+     * @method Ajax
+     * @param {String} sUrl 请求地址
+     * @param {String} sRecvTyp text/xml
+     * @param {String} sQueryString 参数
+     * @param {Function} oResultFunc 会到函数
+     * @param {String} responseType 响应类型 text/xml/json
+     */
+    function(sUrl,sRecvTyp,sQueryString,oResultFunc,responseType) {
     this.Url = sUrl;
     this.QueryString = sQueryString;
     this.resultFunc = oResultFunc;
@@ -442,6 +555,10 @@ Z.Util.Ajax=function(sUrl,sRecvTyp,sQueryString,oResultFunc,responseType) {
 };
 
 Z.Util.Ajax.prototype= {
+    /**
+     * XMLHttp Request
+     * @member maptalks.Util.Ajax
+     */
     createXMLHttpRequest : function() {
         if (Z.Browser.ie) {
             if (document["documentMode"] == 8) {
@@ -455,11 +572,19 @@ Z.Util.Ajax.prototype= {
         return null;
     },
 
+    /**
+     * 构造请求字符串
+     * @member maptalks.Util.Ajax
+     */
     createQueryString : function () {
         var queryString = this.QueryString;
         return queryString;
     },
 
+    /**
+     * doGet Request
+     * @member maptalks.Util.Ajax
+     */
     get : function () {
         var sUrl = this.Url;
         var xmlHttp = this.XmlHttp;
@@ -472,6 +597,10 @@ Z.Util.Ajax.prototype= {
         xmlHttp.send(null);
     },
 
+    /**
+     * doPost Request
+     * @member maptalks.Util.Ajax
+     */
     post : function() {
         var sUrl = this.Url;
         var queryString = this.createQueryString();
@@ -486,6 +615,13 @@ Z.Util.Ajax.prototype= {
         this.XmlHttp.send(queryString);
     },
 
+    /**
+     * ajax请求返回处理
+     * @param {Object} XmlHttp http request Obj
+     * @param {Object} sRecvTyp
+     * @param {Function} oResultFunc 回调函数
+     * @member maptalks.Util.Ajax
+     */
     handleStateChange : function (XmlHttp,sRecvTyp,oResultFunc) {
         if(XmlHttp.withCredentials !== undefined || (window.XDomainRequest && Z.Browser.ie && document["documentMode"] === 8)) {
             oResultFunc(XmlHttp.responseText);
@@ -510,7 +646,13 @@ Z.Util.Ajax.prototype= {
     }
 };
 
-//载入外部资源, 并执行回调函数, 参数为资源内容
+/**
+ * 载入外部资源, 并执行回调函数, 参数为资源内容
+ * @param {String} url 请求地址
+ * @param {Function} callback 请求回调函数
+ * @param {Object} context 上下文
+ * @member maptalks.Util.Ajax
+ */
 Z.Util.Ajax.getResource=function(url, callback, context) {
     var resourceAjax = new Z.Util.Ajax(url,0,null,function(responseText){
             if (callback) {
@@ -526,7 +668,13 @@ Z.Util.Ajax.getResource=function(url, callback, context) {
     resourceAjax = null;
 };
 
-//载入script, 执行script, 并执行回调
+/**
+ * 载入script, 执行script, 并执行回调
+ * @param {String} url 请求地址
+ * @param {Function} callback 请求回调函数
+ * @param {Object} context 上下文
+ * @member maptalks.Util.Ajax
+ */
 Z.Util.Ajax.getScript=function(url, callback, context) {
     var realCallback = function(responseText) {
         Z.Util.globalEval(responseText);

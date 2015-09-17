@@ -61,38 +61,82 @@
 		return supported;
 	}());
 
-
+    /**
+     * 浏览器
+     * @class maptalks.Browser
+     * @author Maptalks Team
+     */
 	Z.Browser = {
+	    /**
+         * @property {Boolean} 是否为id
+         * @static
+         */
 		ie: ie,
+		/**
+         * @property {Boolean} 是否为ie9以下
+         * @static
+         */
 		ielt9: ielt9,
 		webkit: webkit,
 		gecko: gecko && !webkit && !window.opera && !ie,
 
+        /**
+         * @property {Boolean} 是否为android系统
+         * @static
+         */
 		android: android,
 		android23: android23,
 
+        /**
+         * @property {Boolean} 是否为chrome
+         * @static
+         */
 		chrome: chrome,
 
+        /**
+         * @property {Boolean} 是否支持3D
+         * @static
+         */
 		ie3d: ie3d,
 		webkit3d: webkit3d,
 		gecko3d: gecko3d,
 		opera3d: opera3d,
 		any3d: any3d,
 
+        /**
+         * @property {Boolean} 是否为移动设备
+         * @static
+         */
 		mobile: mobile,
 		mobileWebkit: mobile && webkit,
 		mobileWebkit3d: mobile && webkit3d,
 		mobileOpera: mobile && window.opera,
 
+        /**
+         * @property {Boolean} 是否触摸屏
+         * @static
+         */
 		touch: touch,
 		msPointer: msPointer,
 		pointer: pointer,
 
+        /**
+         * @property {Boolean} 是否为retina屏
+         * @static
+         */
 		retina: retina,
 
+        /**
+         * @property {String} 语言
+         * @static
+         */
 		language:language,
 		translateDom:(any3d && !ie),
 
+        /**
+         * @property {Boolean} 是否支持canvas
+         * @static
+         */
 		canvas:!!document.createElement("canvas").getContext
 	};
 

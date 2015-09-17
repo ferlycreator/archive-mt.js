@@ -5,21 +5,37 @@
  */
 Z.DomUtil = {
 
+    /**
+     * 创建Html Element
+     * @param {String} tagName 标签名
+     * @return {HTMLElement} element
+     */
     createEl:function(tagName) {
         return document.createElement(tagName);
     },
 
-    createElOn:function(tagName, style, _container) {
+    /**
+     * 在指定的Html节点上创建Element
+     * @param {String} tagName 标签名
+     * @param {String} style 样式
+     * @param {HTMLElement} container html节点
+     * @return {HTMLElement} element
+     */
+    createElOn:function(tagName, style, container) {
         var el = this.createEl(tagName);
         if(style) {
             this.setStyle(el, style);
         }
-        if (_container) {
-            _container.appendChild(el);
+        if (container) {
+            container.appendChild(el);
         }
         return el;
     },
 
+    /**
+     * 删除dom节点
+     * @param {HTMLElement} node 待删除的节点
+     */
     removeDomNode:function(node){
         if (!node) {return;}
         if (Z.Browser.ie) {
@@ -34,6 +50,14 @@ Z.DomUtil = {
         }
     },
 
+    /**
+     * 向dom添加事件
+     * @param {HTMLElement} obj 添加事件的dom对象
+     * @param {String} typeArr 事件名字符串，多个事件名用空格分开
+     * @param {Function} handler 事件触发后的回调函数
+     * @param {Object} context 上下文对象
+     * @return {Object} 上下文对象
+     */
     addDomEvent:function(obj, typeArr, handler, context) {
         if (!obj || !typeArr || !handler) {return this;}
         var eventHandler = function (e) {
@@ -70,7 +94,14 @@ Z.DomUtil = {
         return this;
     },
 
-    removeDomEvent:function(obj,typeArr, handler) {
+    /**
+     * 从dom上移除事件
+     * @param {HTMLElement} obj 添加事件的dom对象
+     * @param {String} typeArr 事件名字符串，多个事件名用空格分开
+     * @param {Function} handler 事件触发后的回调函数
+     * @return {Object} 上下文对象
+     */
+    removeDomEvent:function(obj, typeArr, handler) {
         function doRemove(type,callback) {
             if ('removeEventListener' in obj) {
                 //滚轮事件的特殊处理
@@ -111,11 +142,11 @@ Z.DomUtil = {
     },
 
     /**
-     * 检查是否重复注册事件
-     * @param  {[type]}  obj     [description]
-     * @param  {[type]}  type    [description]
-     * @param  {[type]}  handler [description]
-     * @return {Boolean}         [description]
+     * 检查dom是存在某事件
+     * @param {HTMLElement} obj 添加事件的dom对象
+     * @param {String} typeArr 事件名字符串，多个事件名用空格分开
+     * @param {Function} handler 事件触发后的回调函数
+     * @return {Number}  大于0，存在；反之，不存在
      */
     hasDomEvent:function(obj, type, handler) {
         if (!obj || !obj['Z__'+type] || !handler) {
@@ -131,8 +162,9 @@ Z.DomUtil = {
     },
 
     /**
-     * [preventDefault Cancels the event if it is cancelable, without stopping further propagation of the event.]
-     * @param  {[Event]} event [Dom event]
+     * 阻止默认事件
+     * preventDefault Cancels the event if it is cancelable, without stopping further propagation of the event.
+     * @param {Event} event dom事件
      */
     preventDefault: function(event) {
         if (event.preventDefault) {
@@ -143,9 +175,9 @@ Z.DomUtil = {
     },
 
     /**
-     * 阻止时间冒泡
-     * @param  {[type]} e [description]
-     * @return {[type]}   [description]
+     * 阻止事件冒泡
+     * @param  {Event} e dom事件
+     * @return {HTMLElement} dom元素
      */
     stopPropagation: function (e) {
         if (e.stopPropagation) {
@@ -153,28 +185,33 @@ Z.DomUtil = {
         } else {
             e.cancelBubble = true;
         }
-
         return this;
     },
 
     /**
-     * return dom element's position offset
-     * @param  {Dom} dom dom Element
-     * @param {Object} [offset] [偏移量]
-     * @return {Object} position offset
+     * 让dom位置偏移offset
+     * @param  {HTMLElement} dom HTMLElement
+     * @param {Object} [offset] 偏移量
+     * @return {Object} dom位置偏移后的位置
      */
-    offsetDom: function(dom,offset) {
+    offsetDom: function(dom, offset) {
         if (!dom) {return null;}
         if (!offset) {
             return new Z.Point(parseInt(dom.style.left,0),parseInt(dom.style.top,0));
         } else {
-            dom['style']['left']= offset['left']+'px';
-            dom['style']['top'] = offset['top']+'px';
+            dom.style.left= offset.left+'px';
+            dom.style.top = offset.top +'px';
             return offset;
         }
     },
 
-    offsetDomTranslate:function(dom,offset) {
+    /**
+     * 让dom位置变换偏移offset
+     * @param  {HTMLElement} dom HTMLElement
+     * @param {Object} [offset] 偏移量
+     * @return {Object} dom位置偏移后的位置
+     */
+    offsetDomTranslate:function(dom, offset) {
         var useTranslate = (Z.Browser.translateDom);
         if (!useTranslate) {
             return null;
@@ -187,21 +224,10 @@ Z.DomUtil = {
         }
     },
 
-    /*getBoundingClientRect:function(dom) {
-        var rect = dom.getBoundingClientRect();
-        var extent = new Z.Extent(rect['left'],rect['top'],rect['right'],rect['bottom']);
-        if (dom.childNodes.length>0) {
-            for (var i = dom.childNodes.length - 1; i >= 0; i--) {
-                extent = Z.Extent.combine(Z.DomUtil.getBoundingClientRect(dom.childNodes[i]),extent);
-            }
-        }
-        return extent;
-    },*/
-
     /**
      * 解析css translate3d值
-     * @param  {[type]} dom [description]
-     * @return {[type]}     [description]
+     * @param  {HTMLElement} dom dom对象
+     * @return {maptalk.Point} 点
      */
     parseCssTranslate:function(dom) {
         var transValue = dom.style[this.TRANSFORM];
@@ -216,7 +242,7 @@ Z.DomUtil = {
 
     /**
      * 获取dom对象在页面上的屏幕坐标
-     * @param  {Dom Element} obj Dom对象
+     * @param  {HTMLElement} obj Dom对象
      * @return {Object}     屏幕坐标
      */
     getPageCoordinate:function(obj) {
@@ -230,7 +256,11 @@ Z.DomUtil = {
        return new Z.Point(leftValue, topValue);
     },
 
-
+    /**
+     * 获取事件触发页面的屏幕坐标
+     * @param  {Event} ev 事件
+     * @return {Object} 屏幕坐标
+     */
     getEventPageCoordinate:function(ev) {
         ev = window.event || ev;
         if(ev.pageX || ev.pageY){
@@ -252,22 +282,23 @@ Z.DomUtil = {
 
     /**
      * 获取鼠标在容器上的绝对坐标
-     * @param ev  触发的事件
-     * @return    left:鼠标在页面上的横向位置, top:鼠标在页面上的纵向位置
+     * @param {Event} ev  触发的事件
+     * @return {maptalks.Point} left:鼠标在页面上的横向位置, top:鼠标在页面上的纵向位置
      */
     getEventDomCoordinate:function(ev, dom) {
         if (!ev) {
             ev = window.event;
         }
         var domScreenPos = Z.DomUtil.getPageCoordinate(dom);
-        /*if (domScreenPos) {
-            domScreenPos = Z.DomUtil.getPageCoordinate(dom);
-            dom["map_position"] = domScreenPos;
-        }*/
         var mousePagePos = Z.DomUtil.getEventPageCoordinate(ev);
         return new Z.Point(mousePagePos.x-domScreenPos['left'],mousePagePos.y-domScreenPos['top']);
     },
 
+    /**
+     * 判断是否支持样式
+     * @param {Array} style数组
+     * @return {Boolean} true，支持；false，不支持
+     */
     testCssProp: function (props) {
         var style = document.documentElement.style;
         for (var i = 0; i < props.length; i++) {
@@ -278,18 +309,38 @@ Z.DomUtil = {
         return false;
     },
 
+    /**
+     * 为dom设置transform
+     * @param {HTMLElement} dom节点
+     * @param {String} transformStr
+     */
     setDomTransform:function(node,transformStr){
         node.style[this.TRANSFORM] = transformStr;
     },
 
+    /**
+     * 获取dom transform
+     * @param {HTMLElement} node dom节点
+     * @param {String} transformStr
+     */
     getDomTransformOrigin:function(node) {
         return node.style[this.TRANSFORM_ORIGIN];
     },
 
-    setDomTransformOrigin:function(node,transformOriginStr){
+    /**
+     * 为dom设置transform
+     * @param {HTMLElement} node dom节点
+     * @param {String} transformOriginStr
+     */
+    setDomTransformOrigin:function(node, transformOriginStr){
         node.style[this.TRANSFORM_ORIGIN] = transformOriginStr;
     },
 
+    /**
+     * 为dom设置透明度
+     * @param {HTMLElement} dom dom节点
+     * @param {Number} opacity 透明度值
+     */
     setOpacity:function(dom, opacity) {
         if (Z.Browser.ielt9) {
             dom.filters.alpha.opacity=opacity*100;
@@ -298,6 +349,11 @@ Z.DomUtil = {
         }
     },
 
+    /**
+     * 为dom设置样式
+     * @param {HTMLElement} dom dom节点
+     * @param {String} strCss 样式字符串
+     */
     setStyle : function(dom, strCss) {
         function endsWith(str, suffix) {
             var l = str.length - suffix.length;
@@ -311,10 +367,20 @@ Z.DomUtil = {
         dom.style.cssText = cssText + strCss;
     },
 
+    /**
+     * 清空dom样式
+     * @param {HTMLElement} dom dom节点
+     */
     removeStyle: function(dom) {
         dom.style.cssText = '';
     },
 
+    /**
+     * 为dom添加样式
+     * @param {HTMLElement} dom dom节点
+     * @param {String} attr 样式标签
+     * @param {String} value 样式值
+     */
     addStyle: function(dom, attr, value) {
          var css = dom.style.cssText;
          if(attr && value) {
@@ -323,6 +389,11 @@ Z.DomUtil = {
          }
     },
 
+    /**
+     * 判断元素是否包含class
+     * @param {HTMLElement} el html元素
+     * @param {String} name class名称
+     */
     hasClass: function (el, name) {
         if (el.classList !== undefined) {
             return el.classList.contains(name);
@@ -331,6 +402,11 @@ Z.DomUtil = {
         return className.length > 0 && new RegExp('(^|\\s)' + name + '(\\s|$)').test(className);
     },
 
+    /**
+     * 为dom添加class
+     * @param {HTMLElement} el html元素
+     * @param {String} name class名称
+     */
     addClass: function (el, name) {
         if (el.classList !== undefined) {
             var classes = Z.Util.splitWords(name);
@@ -343,6 +419,11 @@ Z.DomUtil = {
         }
     },
 
+    /**
+     * 移除dom class
+     * @param {HTMLElement} el html元素
+     * @param {String} name class名称
+     */
     removeClass: function (el, name) {
         if (el.classList !== undefined) {
             el.classList.remove(name);
@@ -351,6 +432,11 @@ Z.DomUtil = {
         }
     },
 
+    /**
+     * 设置dom class
+     * @param {HTMLElement} el html元素
+     * @param {String} name class名称
+     */
     setClass: function (el, name) {
         if (el.className.baseVal === undefined) {
             el.className = name;
@@ -359,10 +445,20 @@ Z.DomUtil = {
         }
     },
 
+    /**
+     * 获取dom class
+     * @param {String} name class名称
+     * @retrun {String} class字符串
+     */
     getClass: function (el) {
         return el.className.baseVal === undefined ? el.className : el.className.baseVal;
     },
 
+    /**
+     * 获取像素的数值
+     * @param {String} pixelStr 带单位的像素字符串，例如：100px
+     * @return {Number} pixel
+     */
     getPixelValue: function(pixelStr) {
         if(pixelStr&&pixelStr.length>2) {
             var str = pixelStr.substring(0,pixelStr.length-2);
@@ -372,18 +468,39 @@ Z.DomUtil = {
     }
 };
 
+/**
+ * @cfg TRANSFORM
+ * @member maptalks.DomUtil
+ */
 Z.DomUtil.TRANSFORM = Z.DomUtil.testCssProp(['transform', 'WebkitTransform', 'OTransform', 'MozTransform', 'msTransform']);
 
+/**
+ * @cfg TRANSFORM_ORIGIN
+ * @member maptalks.DomUtil
+ */
 Z.DomUtil.TRANSFORM_ORIGIN= Z.DomUtil.testCssProp(['transformOrigin', 'WebkitTransformOrigin', 'OTransformOrigin', 'MozTransformOrigin', 'msTransformOrigin']);
 
-
+/**
+ * 停止拖动
+ * @member maptalks.DomUtil
+ */
 Z.DomUtil.disableImageDrag = function () {
     Z.DomUtil.on(window, 'dragstart', Z.DomUtil.preventDefault);
 };
+
+/**
+ * 启用拖动
+ * @member maptalks.DomUtil
+ */
 Z.DomUtil.enableImageDrag = function () {
     Z.DomUtil.off(window, 'dragstart', Z.DomUtil.preventDefault);
 };
 
+/**
+ * 阻止outline
+ * @param {HTMLElement} element
+ * @member maptalks.DomUtil
+ */
 Z.DomUtil.preventOutline = function (element) {
     Z.DomUtil.restoreOutline();
     this._outlineElement = element;
@@ -392,6 +509,10 @@ Z.DomUtil.preventOutline = function (element) {
     Z.DomUtil.on(window, 'keydown', Z.DomUtil.restoreOutline, this);
 };
 
+/**
+ * 恢复outline
+ * @member maptalks.DomUtil
+ */
 Z.DomUtil.restoreOutline = function () {
     if (!this._outlineElement) { return; }
     this._outlineElement.style.outline = this._outlineStyle;
@@ -400,5 +521,23 @@ Z.DomUtil.restoreOutline = function () {
     Z.DomUtil.off(window, 'keydown', Z.DomUtil.restoreOutline, this);
 };
 
+/**
+ * 向dom添加事件
+ * @param {HTMLElement} obj 添加事件的dom对象
+ * @param {String} typeArr 事件名字符串，多个事件名用空格分开
+ * @param {Function} handler 事件触发后的回调函数
+ * @param {Object} context 上下文对象
+ * @member maptalks.DomUtil
+ * @return {Object} 上下文对象
+ */
 Z.DomUtil.on = Z.DomUtil.addDomEvent;
+
+/**
+ * 从dom上移除事件
+ * @param {HTMLElement} obj 添加事件的dom对象
+ * @param {String} typeArr 事件名字符串，多个事件名用空格分开
+ * @param {Function} handler 事件触发后的回调函数
+ * @member maptalks.DomUtil
+ * @return {Object} 上下文对象
+ */
 Z.DomUtil.off = Z.DomUtil.removeDomEvent;

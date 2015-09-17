@@ -1,3 +1,10 @@
+/**
+ * 多边形类
+ * @class maptalks.ResourceLoader
+ * @extends maptalks.Class
+ * @mixins maptalks.Eventable
+ * @author Maptalks Team
+ */
 Z.ResourceLoader=Z.Class.extend({
 
     includes:Z.Eventable,
