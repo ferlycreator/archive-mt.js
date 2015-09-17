@@ -103,5 +103,57 @@
         @img：在文档注释中链接一张图片，让文档变得更具可读性。  
         @link：在文档注释中标记某个类或类成员的锚点。
         
+### 类层级调整
+
+maptalks.Map
+        .Layer
+        .Geometry
+            .Marker
+            .Point
+            .Polyline
+            .Polygon
+            .MultiPoint
+            .MultiPolyline
+            .MultiPolygon
+            .Circle
+            .Ellipse
+            .Rectangle
+            .Sector
+            .Vector
+        .Control
+            .Attribution
+            .Nav
+            .Scale
+            .Zoom
+            .Toolbar
+            .Panel
+            .Button
+            .InfoWindow
+            .Label
+            .Menu
+        .Handler
+           .Drag
+           .Touch
+        .Tool
+            .ComputeAreaTool
+            .DistanceTool
+            .DrawTool
+        .Utility
+            .GeoUtils
+            .SimplifyUtil
+            .Util
+            .DomUtil
+            .Browser
+            .Class
+            .Event
+            .Support
+        .Render
+            .xxxxx
+        .Query
+            .RemoteQuery
+            .SpatialFilter
+         
+           
+    
         
         
