@@ -105,7 +105,8 @@
         
 ### 类层级调整
 
-maptalks.Map
+######maptalks
+        .Map
         .Layer
         .Geometry
             .Marker
@@ -127,7 +128,7 @@ maptalks.Map
             .Zoom
             .Toolbar
             .Panel
-            .Button
+            .Button 
             .InfoWindow
             .Label
             .Menu
