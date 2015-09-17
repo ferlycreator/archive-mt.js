@@ -194,6 +194,11 @@ Z['Map']=Z.Map=Z.Class.extend({
         var offset = this._getPixelDistance(_pcenter);
         // FIXME: call panBy() ?
         if (offset.left || offset.top) {
+            /**
+             * 触发map的movestart事件
+             * @member maptalks.Map
+             * @event movestart
+             */
             this._fireEvent('movestart');
             this._setPrjCenter(_pcenter);
             this.offsetPlatform(offset);
@@ -215,6 +220,11 @@ Z['Map']=Z.Map=Z.Class.extend({
         if (2*Math.random() > 1) {map._refreshSVGPaper();}
         if (map._baseTileLayer) {map._baseTileLayer._onMoving();}
         map._eachLayer(movingLayer, map._svgLayers);
+        /**
+         * 触发map的moving事件
+         * @member maptalks.Map
+         * @event moving
+         */
         map._fireEvent('moving');
     },
 
@@ -228,6 +238,11 @@ Z['Map']=Z.Map=Z.Class.extend({
         if (me._baseTileLayer) {me._baseTileLayer._onMoveEnd();}
         me._refreshSVGPaper();
         me._eachLayer(endMoveLayer,me._tileLayers,me._canvasLayers,me._dynLayers);
+        /**
+         * 触发map的moveend事件
+         * @member maptalks.Map
+         * @event moveend
+         */
         me._fireEvent('moveend');
     },
 
@@ -436,6 +451,12 @@ Z['Map']=Z.Map=Z.Class.extend({
             if (me._loaded) {
                 me._baseTileLayer.load();
                 if (changed) {
+                    /**
+                     * 瓦片配置改变事件
+                     * @member maptalks.Map
+                     * @event tileconfigchanged
+                     * @return {Object} param: {'target': map}
+                     */
                     me._fireEvent(me.events.TILECONFIG_CHANGED);
                 }
             } else {
@@ -618,6 +639,11 @@ Z['Map']=Z.Map=Z.Class.extend({
             return;
         }
         this.options['coordinateType'] = coordinateType;
+        /**
+         * 触发map的coordinatetypechanged事件
+         * @member maptalks.Map
+         * @event coordinatetypechanged
+         */
         this._fireEvent('coordinatetypechanged');
     },
 
@@ -1206,8 +1232,9 @@ Z['Map']=Z.Map=Z.Class.extend({
                 // 触发_onResize事件
                 /**
                  * 地图容器大小变化事件
+                 * @member maptalks.Map
                  * @event resize
-                 * @param target {seegoo.maps.Map} 触发事件的地图对象
+                 * @return {Object} param: {'target': map}
                  */
                 map.fire(map.events.RESIZE, {
                     'target' : map

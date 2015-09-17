@@ -1,8 +1,8 @@
 Z.Map.include({
-
     /**
      * 将地图移动到指定的坐标
-     * @param  {Coordinate} coordinate 指定的坐标
+     * @param  {maptalks.Coordinate} coordinate 指定的坐标
+     * @member maptalks.Map
      * @expose
      */
     panTo:function(coordinate) {
@@ -15,7 +15,8 @@ Z.Map.include({
 
     /**
      * 按指定的像素距离移动地图
-     * @param  {Point} point [description]
+     * @param  {maptalks.Point} point 点
+     * @member maptalks.Map
      * @expose
      */
     panBy:function(offset) {

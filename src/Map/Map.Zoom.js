@@ -11,6 +11,12 @@ Z.Map.include({
         me._eachLayer(zoomLayer,me._getAllLayers());
         this._hideOverlayLayers();
         me._animateStart(scale,focusPos);
+        /**
+         * 触发map的zoomstart事件
+         * @member maptalks.Map
+         * @event zoomstart
+         * @return {Object} params: {'target':this}
+         */
         me._fireEvent('zoomstart',{'target':this});
     },
 
@@ -29,6 +35,12 @@ Z.Map.include({
         if (this._baseTileLayer) {this._baseTileLayer._onZoomEnd();}
         this._eachLayer(zoomLayer,this._getAllLayers());
         this._showOverlayLayers();
+        /**
+         * 触发map的zoomend事件
+         * @member maptalks.Map
+         * @event zoomend
+         * @return {Object} params: {'target':this}
+         */
         this._fireEvent('zoomend',{'target':this});
     },
 

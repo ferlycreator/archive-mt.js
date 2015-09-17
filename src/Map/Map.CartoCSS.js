@@ -2,10 +2,19 @@
  * CartoCSS解析参考了CartoCSS.js
  * https://github.com/CartoDB/carto
  */
+Z.Map.mergeOptions({
+    /**
+     * @cfg {Boolean} [enableCartoCSS="true"] 启用CartoCss
+     * @member maptalks.Map
+     */
+    'enableCartoCSS' : true
+});
+
 Z.Map.include({
     /**
      * 为地图载入CartoCSS样式
      * @param  {String|URL} css css样式或者mss文件链接
+     * @member maptalks.Map
      */
     cartoCSS:function(css) {
         if (!Z.Util.isString(css) || css.length===0) {
@@ -57,8 +66,4 @@ Z.Map.include({
         var symbol = layerShader['getStyle'](geometry.getProperties(), { 'zoom': this.getZoomLevel() });
         return symbol;
     }
-});
-
-Z.Map.mergeOptions({
-    'enableCartoCSS' : true
 });

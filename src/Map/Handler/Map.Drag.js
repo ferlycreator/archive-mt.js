@@ -1,4 +1,8 @@
 Z.Map.mergeOptions({
+    /**
+     * @cfg {Boolean} [dragging="true"] 地图支持拖动
+     * @member maptalks.Map
+     */
     'dragging': true
 });
 
@@ -12,10 +16,9 @@ Z.Map.Drag = Z.Handler.extend({
                 this['draggable'] = new Z.Handler.Drag(this.dom);
             }
             //TODO 其它触摸屏幕
-            /*else {
-             this['draggable'] = new Z.Handler.Touch(this.dom);
-             }*/
-
+//            else {
+//                this['draggable'] = new Z.Handler.Touch(this.dom);
+//            }
             this['draggable'].on("dragstart", this._onDragStart, this);
             this['draggable'].on("dragging", this._onDragging, this);
             this['draggable'].on("dragend", this._onDragEnd, this);
@@ -53,7 +56,6 @@ Z.Map.Drag = Z.Handler.extend({
         me.map.offsetPlatform(new Z.Point(currentDomLeft-domOffset['left'],currentDomTop-domOffset['top']));
         map._offsetCenterByPixel(new Z.Point(-(currentDomLeft-domOffset['left']),-(currentDomTop-domOffset['top'])));
         me.map._onMoving({'target':map});
-        // map._fireEvent('moving');
     },
 
     _onDragEnd:function(param) {
@@ -69,7 +71,6 @@ Z.Map.Drag = Z.Handler.extend({
         } else {
             map._onMoveEnd({'target':map});
         }
-        // map._fireEvent('moveend');
     }
 });
 

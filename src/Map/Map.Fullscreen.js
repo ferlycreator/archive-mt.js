@@ -1,6 +1,7 @@
 Z.Map.include({
     /**
      * 全屏地图
+     * @member maptalks.Map
      * @expose
      */
     openFullscreen: function() {
@@ -16,7 +17,8 @@ Z.Map.include({
     },
 
     /**
-     * 全屏地图
+     * 退出全屏地图
+     * @member maptalks.Map
      * @expose
      */
     exitFullscreen: function() {

@@ -1,5 +1,13 @@
 Z.Map.mergeOptions({
+    /**
+     * @cfg {Boolean} [eventToGeometry="true"] geometry事件监控
+     * @member maptalks.Map
+     */
     'eventToGeometry': true,
+    /**
+     * @cfg {Array} 鼠标经过的目标数组
+     * @member maptalks.Map
+     */
     'mouseoverTarget': []
 });
 
