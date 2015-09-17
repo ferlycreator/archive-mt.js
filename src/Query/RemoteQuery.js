@@ -1,7 +1,13 @@
+/**
+ * 查询类
+ * @class maptalks.RemoteQuery
+ * @extends maptalks.Class
+ * @author Maptalks Team
+ */
 Z['RemoteQuery']=Z.RemoteQuery=Z.Class.extend({
     /**
      * 查询远程服务器上的数据
-     * @param  {[type]} opts [description]
+     * @param  {Object} opts 查询参数
      * @constructor
      */
     initialize:function(opts) {
@@ -13,6 +19,10 @@ Z['RemoteQuery']=Z.RemoteQuery=Z.Class.extend({
         this.mapdb = opts['mapdb'];
     },
 
+    /**
+     * 检查查询参数是否正常
+     * @return {Boolean} true|false
+     */
     check:function() {
         if (!this.mapdb) {
             return false;
@@ -20,6 +30,10 @@ Z['RemoteQuery']=Z.RemoteQuery=Z.Class.extend({
         return true;
     },
 
+    /**
+     * 获取空间库主机地址
+     * @return {String} 空间库主机地址
+     */
     getHost:function() {
         if (this.host && this.port) {
             return this.host+':'+this.port;
@@ -30,6 +44,7 @@ Z['RemoteQuery']=Z.RemoteQuery=Z.Class.extend({
     /**
      * Identify
      * @param  {Object} opts 查询参数
+     * @return 查询结果
      * @expose
      */
     identify:function(opts) {
@@ -128,6 +143,12 @@ Z['RemoteQuery']=Z.RemoteQuery=Z.Class.extend({
         ajax.post();
     },
 
+    /**
+     * 构造查询url
+     * @param  {Object} queryFilter 查询条件
+     * @return {String} 查询url
+     * @expose
+     */
     formQueryString:function(queryFilter) {
         var ret = "encoding=utf-8";
         //ret+="&method=add";
@@ -163,9 +184,6 @@ Z['RemoteQuery']=Z.RemoteQuery=Z.Class.extend({
         if (queryFilter['fields']) {
             ret += ("&fields="+queryFilter['fields']);
         }
-        // if (fieldFilter != null) {
-        //     ret += ("&cond="+encodeURIComponent(fieldFilter));
-        // }
         return ret;
     }
 });

@@ -1,4 +1,5 @@
 /**
+ * @class maptalks.Transformation
  * Class for Affine Transformation: transformation between projected coordinates and screen points.
  * Change the matrix for translate / rotate / scale effects.
  * parameter matrix is a 6-number array, for example:[0, 1, 1, 0, 3, 4].
@@ -19,7 +20,10 @@ Z.Transformation = function(matrix) {
 };
 
 Z.Transformation.prototype = {
-    //prj coordinate -> point
+    /**
+     * prj coordinate -> point
+     * @member maptalks.Transformation
+     */
     transform : function(coordinates, scale) {
         var matrix = this.matrix;
         var x,y;
@@ -36,7 +40,10 @@ Z.Transformation.prototype = {
         return [x_, y_];
     },
 
-    //point -> prj coordinate
+    /**
+     * point -> prj coordinate
+     * @member maptalks.Transformation
+     */
     untransform : function(point, scale) {
         var matrix = this.matrix;
         var x,y;

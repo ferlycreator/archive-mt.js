@@ -1,6 +1,8 @@
 /**
- * [initialize description]
- *
+ * Maptalks瓦片图层
+ * @class maptalks.MaptalksTileLayer
+ * @extends maptalks.TileLayer
+ * @author Maptalks Team
  */
 Z['MaptalksTileLayer'] = Z.MaptalksTileLayer = Z.TileLayer.extend({
     //根据不同的语言定义不同的错误信息

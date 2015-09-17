@@ -4,10 +4,7 @@
  * @author Maptalks Team
  */
 Z.Geometry.Center = {
-    /**
-     * 计算Geometry中心点在地图容器中的相对坐标
-     * @return {[type]} [description]
-     */
+    //计算Geometry中心点在地图容器中的相对坐标
     _getCenterDomOffset:function() {
         var pcenter = this._getPCenter();
         if (!pcenter) {return null;}
@@ -64,19 +61,13 @@ Z.Geometry.Center = {
         return this._pcenter;
     },
 
-    /**
-     * 设置投影坐标
-     * @param {Coordinate} pcenter 投影坐标
-     */
+    //设置投影坐标
     _setPCenter:function(pcenter) {
         this._pcenter=pcenter;
         this._onPositionChanged();
     },
 
-    /**
-     * 修改投影坐标后调用该方法更新经纬度坐标缓存.
-     * @return {[type]} [description]
-     */
+    //修改投影坐标后调用该方法更新经纬度坐标缓存.
     _updateCache:function() {
         delete this._extent;
         var projection = this._getProjection();

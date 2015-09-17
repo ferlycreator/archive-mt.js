@@ -1,5 +1,14 @@
+/**
+ * 按钮控件
+ * @class maptalks.Button
+ * @extends maptalks.Class
+ * @author Maptalks Team
+ */
 Z['Button'] = Z.Button = Z.Class.extend({
 
+    /**
+     * @cfg {Object} options 按钮属性
+     */
     options:{
         'icon' : '',
         'text' : '左',
@@ -9,6 +18,12 @@ Z['Button'] = Z.Button = Z.Class.extend({
         'children' : []
     },
 
+    /**
+     * 初始化按钮
+     * @constructor
+     * @param {Object} options
+     * @returns {maptalks.Button}
+     */
     initialize: function(options) {
         if(options) {
             this._dom = this._createDom(options);
@@ -199,7 +214,9 @@ Z['Button'] = Z.Button = Z.Class.extend({
         }
     },
 
-
+    /**
+     * 获取button dom
+     */
     getDom: function() {
         return this._dom;
     }

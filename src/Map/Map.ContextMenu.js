@@ -1,8 +1,8 @@
 Z.Map.include({
    /**
     * 设置Map的右键菜单
-    * @param {Array} menuOption 菜单项
-    * {"items":[], width:240, beforeopen:fn}
+    * @param {Object} menuOption 菜单项 {"items":[], width:240, beforeopen:fn}
+    * @member maptalks.Map
     * @expose
     */
     setContextMenu: function(menuOption) {
@@ -12,10 +12,7 @@ Z.Map.include({
         return this;
     },
 
-   /**
-    * 菜单打开前
-    * @param {Event} event 鼠标右击事件
-    */
+    //菜单打开前
     _beforeOpenContextMenu: function(event) {
         var pixel = Z.DomUtil.getEventDomCoordinate(event, this._containerDOM);
         var coordinate = this.screenPointToCoordinate(pixel);
@@ -35,7 +32,8 @@ Z.Map.include({
 
     /**
     * 打开Map右键菜单
-    * @param {Coordinate} 坐标
+    * @param {maptalks.Coordinate} 坐标
+    * @member maptalks.Map
     * @expose
     */
     openMenu: function(coordinate) {
@@ -48,6 +46,7 @@ Z.Map.include({
    /**
     * 添加菜单项目
     * @param {Array} 菜单项数组
+    * @member maptalks.Map
     * @expose
     */
     setMenuItem: function(items) {
@@ -59,6 +58,7 @@ Z.Map.include({
 
     /**
     * 关闭右键菜单
+    * @member maptalks.Map
     * @expose
     */
     closeMenu: function() {

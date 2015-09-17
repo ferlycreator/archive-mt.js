@@ -1,11 +1,14 @@
 /**
-* info window
-*/
+ * 信息窗控件
+ * @class maptalks.InfoWindow
+ * @extends maptalks.Class
+ * @author Maptalks Team
+ */
 Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
 
     /**
-    * 异常信息定义
-    */
+     * @cfg {Object} exceptionDefs 异常信息定义
+     */
     exceptionDefs:{
         'en-US':{
             'MUST_PROVIDE_OBJECT':'You must provide object which infowindow add to.'
@@ -15,6 +18,9 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         }
     },
 
+    /**
+     * @cfg {Object} options 信息窗属性
+     */
     options: {
         'width' : 300,
         'title' : '',
@@ -25,9 +31,11 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
     },
 
     /**
-    * 初始化信息窗口
-    * @return {InfoWindow}
-    */
+     * 初始化信息窗口
+     * @constructor
+     * @param {Object} options
+     * @return {maptalks.InfoWindow}
+     */
     initialize:function (options) {
         if(options) {
             this.setOptions(options);
@@ -37,9 +45,9 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
     },
 
     /**
-    * 将信息框添加到对象上
-    * @param {Object} map/geometry
-    */
+     * 将信息框添加到对象上
+     * @param {maptalks.Map} map/geometry
+     */
     addTo: function(target) {
         if(target instanceof Z.Map) {
             this._map = target;
@@ -58,9 +66,9 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
     },
 
     /**
-    * 显示信息窗口前
-    * @param 参数
-    */
+     * 显示信息窗口前
+     * @param {Object} param 参数
+     */
     beforeOpen: function(param) {
         var beforeOpenFn = this.options.beforeOpen;
         if(beforeOpenFn){
@@ -76,11 +84,10 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
     },
 
     /**
-    * 设置InfoWindow窗口
-    * @param {Array} options 项
-    * {"items":[], width:240, beforeOpen:fn}
-    * @expose
-    */
+     * 设置InfoWindow窗口
+     * @param {Array} options 项 {"items":[], width:240, beforeOpen:fn}
+     * @expose
+     */
     setOptions: function(options) {
         if (!options) {
             return;
@@ -103,10 +110,10 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
     },
 
     /**
-    * 返回infoWindow设置
-    * @return {Object} infoWindow设置
-    * @expose
-    */
+     * 返回infoWindow设置
+     * @return {Object} infoWindow设置
+     * @expose
+     */
     getOptions: function() {
         return this.options;
     },
@@ -122,9 +129,9 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
     },
 
     /**
-    * 隐藏信息框
-    * @expose
-    */
+     * 隐藏信息框
+     * @expose
+     */
     hide:function() {
         this._visible = false;
         this._tipDom.style.display = 'none';
@@ -132,7 +139,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
 
     /**
      * 判断信息框是否打开
-     * @returns {Boolean}
+     * @returns {Boolean} true|false
      * @expose
      */
     isOpen:function() {
@@ -140,10 +147,10 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
     },
 
     /**
-    * 显示infoWindow
-    * @param {Coordinate} 坐标
-    * @expose
-    */
+     * 显示infoWindow
+     * @param {maptalks.Coordinate} 坐标
+     * @expose
+     */
     show: function(coordinate) {
         var tipCoord = this._offsetTipDom(coordinate);
         var size = this._map.getSize();
@@ -261,11 +268,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         }
     },
 
-    /**
-    * 获取信息框打开位置
-    * @param {Coordiante} 信息框对象所在坐标
-    * @return {Pixel} 信息框打开位置
-    */
+    //获取信息框打开位置
     _offsetTipDom: function(coordinate) {
         var pxCoord = this._getShowPosition(coordinate);
         var tipDom = this._tipDom;
@@ -279,11 +282,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         return tipCoord;
     },
 
-    /**
-    * 获取显示位置
-    * @param {Coordinate} 显示位置
-    * @return {Pixel} 显示位置像素坐标
-    */
+    //获取显示位置
     _getShowPosition: function(coordinate) {
         var position;
         if(!coordinate) {

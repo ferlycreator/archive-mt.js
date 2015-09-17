@@ -1,5 +1,9 @@
 /**
  * 测面积鼠标工具类
+ * @class maptalks.ComputeAreaTool
+ * @extends maptalks.Class
+ * @mixins maptalks.Eventable
+ * @author Maptalks Team
  */
 Z['ComputeAreaTool'] = Z.ComputeAreaTool = Z.Class.extend({
 	includes: [Z.Eventable],
@@ -9,9 +13,11 @@ Z['ComputeAreaTool'] = Z.ComputeAreaTool = Z.Class.extend({
 	},
 
 	/**
-	* 初始化测面积工具
-	* options:{aftermeasure: fn}
-	*/
+	 * 初始化测面积工具
+     * @constructor
+     * @param {Object} opts
+     * @param {maptalks.Map} map
+     */
 	initialize: function(options, map) {
 		//TODO options应该设置到this.options中
 		Z.Util.extend(this, options);
@@ -21,6 +27,11 @@ Z['ComputeAreaTool'] = Z.ComputeAreaTool = Z.Class.extend({
 		return this;
 	},
 
+    /**
+     * 将测量面积工具添加到map上
+     * @param {maptalks.Map} map
+     * @expose
+     */
 	addTo: function(map) {
 		this.map = map;
 		if (!this.map) {return;}
@@ -34,10 +45,11 @@ Z['ComputeAreaTool'] = Z.ComputeAreaTool = Z.Class.extend({
 		this.enable();
 		return this;
 	},
+
 	/**
-	* 激活测距鼠标工具
-	* @expose
-	*/
+	 * 激活测面积鼠标工具
+	 * @expose
+	 */
 	enable: function() {
 		if (!this.map) {
 			return;
@@ -76,9 +88,9 @@ Z['ComputeAreaTool'] = Z.ComputeAreaTool = Z.Class.extend({
 	},
 
 	/**
-	* 停止测距鼠标工具
-	* @expose
-	*/
+	 * 停止测面积鼠标工具
+	 * @expose
+	 */
 	disable: function() {
 		this.clear();
 		if (this.drawTool !== null) {

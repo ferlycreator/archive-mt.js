@@ -1,9 +1,16 @@
+/**
+ * label控件
+ * @class maptalks.Label
+ * @extends maptalks.Class
+ * @mixins maptalks.Eventable
+ * @author Maptalks Team
+ */
 Z['Label'] = Z.Label = Z.Class.extend({
     includes: [Z.Eventable],
 
     /**
-    * 异常信息定义
-    */
+     * @cfg {Object} exceptionDefs 异常信息定义
+     */
     'exceptionDefs':{
         'en-US':{
             'NEED_TARGET':'You must set target to Label.'
@@ -13,6 +20,9 @@ Z['Label'] = Z.Label = Z.Class.extend({
         }
     },
 
+    /**
+     * @cfg {Object} options label属性
+     */
     options:{
         'symbol': {
             'shield-type': 'label',//label tip
@@ -50,16 +60,22 @@ Z['Label'] = Z.Label = Z.Class.extend({
     },
 
     /**
-    * @expose
-    */
+     * 初始化Label
+     * @constructor
+     * @param {Object} options
+     * @return {maptalks.Label}
+     * @expose
+     */
     initialize: function (options) {
         this.setOption(options);
         return this;
     },
 
     /**
-    * @expose
-    */
+     * 设置属性
+     * @param {Object} options
+     * @expose
+     */
     setOption: function(options) {
         Z.Util.setOptions(this, options);
         return this;
@@ -101,6 +117,10 @@ Z['Label'] = Z.Label = Z.Class.extend({
         this.fire('remove', {'target': this});
     },
 
+    /**
+     * 将Label添加到对象上
+     * @param {maptalks.Geometry} geometry
+     */
     addTo: function (geometry) {
         if(!geometry || !this.options || !this.options['symbol']) {return;}
         this._map = geometry.getMap();
@@ -179,11 +199,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
 
     },
 
-    /**
-    *获取距离coordinate最近的label上的点
-    * @param {Coordinate}
-    * @return {Coordinate}
-    */
+    //获取距离coordinate最近的label上的点
     _getNearestPoint: function(coordinate) {
         var points = [];
 
