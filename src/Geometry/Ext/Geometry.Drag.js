@@ -57,7 +57,7 @@ Z.Geometry.include({
             var pcenter = this._map._untransformFromOffset(newPosition);
             this._setPCenter(pcenter);
         } else if (this instanceof Z.Rectangle) {
-            var coordinate = this._dragGeometry.getCoordinates();
+            var coordinate = this.getCoordinates();
             if(!coordinate||!coordinate.x||!coordinate.y) return;
             var geometryPixel = this._map.coordinateToDomOffset(coordinate);
             var newPosition = new Z.Point(
@@ -65,7 +65,6 @@ Z.Geometry.include({
                 geometryPixel['top'] + dragOffset['top'] - mapOffset['top']
             );
             var pCoordinate = this._map._untransformFromOffset(newPosition);
-            //this._dragGeometry._setPNw(pCoordinate);
             this._setPNw(pCoordinate);
         } else if (this instanceof Z.Polyline) {
             var lonlats = this.getCoordinates();
