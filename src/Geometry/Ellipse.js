@@ -4,7 +4,7 @@
  * @extends maptalks.Polygon
  * @author Maptalks Team
  */
-Z['Ellipse']=Z.Ellipse = Z.Polygon.extend({
+Z.Ellipse = Z.Polygon.extend({
     includes:[Z.Geometry.Center],
 
     options:{

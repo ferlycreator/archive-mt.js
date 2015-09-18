@@ -4,7 +4,7 @@
  * @extends maptalks.Polygon
  * @author Maptalks Team
  */
-Z['Circle']=Z.Circle=Z.Polygon.extend({
+Z.Circle=Z.Polygon.extend({
     includes:[Z.Geometry.Center],
 
     options:{

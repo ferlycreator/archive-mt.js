@@ -88,6 +88,7 @@ Z.Canvas = {
     text:function(ctx, text, pt, style, size) {
         //http://stackoverflow.com/questions/14126298/create-text-outline-on-canvas-in-javascript
         var ratio = Z.Browser.retina ? 2:1;
+        size._multi(ratio);
 
         //根据text-horizontal-alignment和text-vertical-alignment计算绘制起始点偏移量
         var alignX, alignY;
@@ -149,13 +150,14 @@ Z.Canvas = {
             }
         }
         if (!Z.Util.isArrayHasData(points)) {return;}
-
+        var ratio = Z.Browser.retina ? 2:1;
         var isDashed = Z.Util.isArrayHasData(lineDashArray);
         for (var i=0, len=points.length; i<len;i++) {
             var point = new Z.Point(
                 Z.Util.canvasRound(points[i]['left']),
                 Z.Util.canvasRound(points[i]['top'])
             );
+            point._multi(ratio);
             if (!isDashed || context.setLineDash) {//ie9以上浏览器
                 if (i === 0) {
                     context.moveTo(point['left'], point['top']);
