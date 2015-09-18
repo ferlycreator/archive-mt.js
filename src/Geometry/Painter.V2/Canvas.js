@@ -41,7 +41,7 @@ Z.Canvas = {
                  var strokeDash=(strokeSymbol['stroke-dasharray']);
                  if (Z.Util.isArrayHasData(strokeDash)) {
                     if (ratio !== 1) {
-                        //dash数组也全都*2
+                        //dash数组也全都*ratio
                         strokeDash = Z.Util.eachInArray(strokeDash, this, function(dash) {
                             return dash*ratio;
                         });
@@ -74,7 +74,7 @@ Z.Canvas = {
 
     clearRect:function(ctx,x1,y1,x2,y2) {
         var ratio = Z.Browser.retina?2:1;
-        ctx.clearRect(x1*ratio, y1*2, x2*2, y2*2);
+        ctx.clearRect(x1*ratio, y1*ratio, x2*ratio, y2*ratio);
     },
 
     fillCanvas:function(context, fillSymbol){
