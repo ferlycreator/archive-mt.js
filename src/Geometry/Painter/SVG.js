@@ -422,31 +422,6 @@ Z.SVG.VML= {
         if (strokeSymbol['strokeOpacity']) {
             stroke.opacity = strokeSymbol['strokeOpacity'];
         }
-        /**
-        * vml中线形：solid|dot|dash|dashdot|longdash|longdashdot|longdashdotdot
-            Solid(默认): 实线
-            Dot:            .............
-            Dash:           -------------
-            DashDot:        -.-.-.-.-.-.-.
-            LongDash:       -- -- -- -- --
-            LongDashDot:    --.--.--.--.--.
-            LongDashDotDot: --..--..--..--..
-        if ('' === dashstyle) {
-            dashstyle = 'Solid';
-        } else if ('.' === dashstyle) {
-            dashstyle = 'Dot';
-        } else if ('-' === dashstyle) {
-            dashstyle = 'Dash';
-        } else if('-.' === dashstyle) {
-            dashstyle = 'DashDot';
-        } else if('--' === dashstyle) {
-            dashstyle = 'LongDash';
-        } else if('--.' === dashstyle) {
-            dashstyle = 'LongDashDot';
-        } else if('--..' === dashstyle) {
-            dashstyle = 'LongDashDotDot';
-        }
-        */
         var dashstyle = strokeSymbol['strokeDasharray'];
         if(dashstyle) {
             stroke.dashstyle = dashstyle;
@@ -511,8 +486,6 @@ Z.SVG.VML= {
         }
         if(vector) {
             vector.path['v'] = path;
-            //var textVector = vector.lastChild;
-            //this.refreshTextVector(textVector, vectorBean);
         }
     },
 

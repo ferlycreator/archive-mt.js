@@ -57,6 +57,6 @@ Z.Geometry.include({
     showLabel: function(label) {
         label.show();
         return this;
-    },
+    }
 
 });

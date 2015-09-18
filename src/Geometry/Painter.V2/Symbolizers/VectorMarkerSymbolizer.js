@@ -1,7 +1,7 @@
 Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
 
     defaultSymbol:{
-        "marker-type": "ellipse", //<----- ellipse | arrow | triangle | square | bar等,默认ellipse
+        "marker-type": "ellipse", //<----- ellipse | arrow | triangle | square | bar | pin等,默认ellipse
 
         "marker-fill": "#0000ff", //blue as cartoCSS
         "marker-fill-opacity": 1,
@@ -63,6 +63,12 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
                 }
                 //面类型
                 Z.Canvas.polygon(ctx,vectorArray,null);
+                Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']);
+            } else if (markerType === 'pin') {
+                for (j = vectorArray.length - 1; j >= 0; j--) {
+                    vectorArray[j]._add(point);
+                }
+                Z.Canvas.bezierCurve(ctx,vectorArray,null);
                 Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']);
             } else {
                 //ellipse default
@@ -166,21 +172,27 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
         var points = this._getVectorArray(style);
         var path;
         if ('triangle' === markerType) {
-            path = 'M'+points[0]['left']+','+points[0]['top']+ ' ' +
-                     'L'+points[1]['left']+','+points[1]['top']+ ' ' +
-                     'L'+points[2]['left']+','+points[2]['top']+ ' ' +
-                     Z.SVG.closeChar;
+           path='M'+points[0]['left']+','+points[0]['top']+ ' ' +
+                'L'+points[1]['left']+','+points[1]['top']+ ' ' +
+                'L'+points[2]['left']+','+points[2]['top']+ ' ' +
+                Z.SVG.closeChar;
         }  else if ('cross' === markerType || 'x' === markerType) {
-            path ='M'+points[0]['left']+','+points[0]['top']+ ' ' +
-                         'L'+points[1]['left']+','+points[1]['top']+ ' ' +
-                         'M'+points[2]['left']+','+points[2]['top']+ ' ' +
-                         'L'+points[3]['left']+','+points[3][1];
+           path='M'+points[0]['left']+','+points[0]['top']+ ' ' +
+                'L'+points[1]['left']+','+points[1]['top']+ ' ' +
+                'M'+points[2]['left']+','+points[2]['top']+ ' ' +
+                'L'+points[3]['left']+','+points[3][1];
         } else if ('diamond' === markerType || 'square' === markerType || 'bar' === markerType) {
-           path = 'M'+points[0]['left']+','+points[0]['top']+ ' ' +
-                         'L'+points[1]['left']+','+points[1]['top']+ ' ' +
-                         'L'+points[2]['left']+','+points[2]['top']+ ' ' +
-                         'L'+points[3]['left']+','+points[3]['top']+ ' ' +
-                         Z.SVG.closeChar;
+           path='M'+points[0]['left']+','+points[0]['top']+ ' ' +
+                'L'+points[1]['left']+','+points[1]['top']+ ' ' +
+                'L'+points[2]['left']+','+points[2]['top']+ ' ' +
+                'L'+points[3]['left']+','+points[3]['top']+ ' ' +
+                Z.SVG.closeChar;
+        } else if ('pin' === markerType) {
+           path='M'+points[0]['left']+','+points[0]['top']+ ' ' +
+                'C'+points[1]['left']+','+points[1]['top']+ ' ' +
+                points[2]['left']+','+points[2]['top']+ ' ' +
+                points[3]['left']+','+points[3]['top']+ ' ' +
+                Z.SVG.closeChar;
         } else {
             //ellipse
             var width = style['marker-width'],
@@ -247,13 +259,20 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
              v1 = new Z.Point(left+hw,top-hh);
              v2 = new Z.Point(left+hw,top+hh);
              v3 = new Z.Point(left-hw,top-hh);
-            return [v0,v1,v2,v3];
+             return [v0,v1,v2,v3];
         } else if ('bar' === markerType) {
              v0 = new Z.Point((left-hw),(top-height));
              v1 = new Z.Point((left+hw),(top-height));
              v2 = new Z.Point((left+hw),top);
              v3 = new Z.Point((left-hw),top);
-            return [v0,v1,v2,v3];
+             return [v0,v1,v2,v3];
+        } else if ('pin' === markerType) {
+              var extWidth = height*Math.atan(hw/hh);
+              v0 = new Z.Point(left,top);
+              v1 = new Z.Point((left-extWidth),(top-height));
+              v2 = new Z.Point((left+extWidth),(top-height));
+              v3 = new Z.Point(left,top);
+              return [v0,v1,v2,v3];
         }
         return null;
     }

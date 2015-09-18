@@ -222,6 +222,15 @@ Z.Canvas = {
         context.stroke();
     },
 
+    bezierCurve:function(context, points, lineDashArray) {
+
+        var ratio = Z.Browser.retina ? 2:1;
+        context.beginPath(points);
+        context.moveTo(points[0].left*ratio,points[0].top*ratio);
+        context.bezierCurveTo(points[1].left*ratio,points[1].top*ratio,points[2].left*ratio,points[2].top*ratio,points[3].left*ratio,points[3].top*ratio);
+        context.stroke();
+    },
+
     //各种图形的绘制方法
     ellipse:function (ctx, pt, size) {
         //TODO canvas scale后会产生错误?
