@@ -14,7 +14,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         'enableZoom':true,
         'enableInfoWindow':true,
         'zoomMode':'pointer',
-        'supportCoordinateTypes':['gcj02','bd09ll','wgs94','pixel'],
+        'supportCoordinateTypes':['gcj02','bd09ll','cgcs2000','wgs84','pixel'],
         'coordinateType':'gcj02'
     },
 

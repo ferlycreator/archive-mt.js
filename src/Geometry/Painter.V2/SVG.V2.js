@@ -342,7 +342,6 @@ Z.SVG.VML= {
 
     group:function() {
         var vmlGroup = Z.SVG.create('group');
-        //以下三行不设置的话, IE8无法显示vml图形,原因不明
         vmlGroup.style.width = '1px';
         vmlGroup.style.height = '1px';
         vmlGroup['coordsize'] = '1 1';
