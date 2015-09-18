@@ -32,7 +32,7 @@ Z.Geometry.include({
     },
 
     _dragging: function(event) {
-        this.isDragging = true;
+        this._isDragging = true;
         this.endPosition = Z.DomUtil.getEventDomCoordinate(event, this._map._containerDOM);
         if(!this.startPosition) {
             this.startPosition = this.endPosition;
@@ -42,7 +42,7 @@ Z.Geometry.include({
             this.endPosition['top'] - this.startPosition['top']
         );
         var center = this.getCenter();
-        if(!center||!center.x||!center.y) return;
+        if(!center||!center.x||!center.y) {return;}
         var geometryPixel = this._map.coordinateToDomOffset(center);
         var mapOffset = this._map.offsetPlatform();
         var newPosition = new Z.Point(
@@ -58,7 +58,7 @@ Z.Geometry.include({
             this._setPCenter(pcenter);
         } else if (this instanceof Z.Rectangle) {
             var coordinate = this.getCoordinates();
-            if(!coordinate||!coordinate.x||!coordinate.y) return;
+            if(!coordinate||!coordinate.x||!coordinate.y) {return;}
             var geometryPixel = this._map.coordinateToDomOffset(coordinate);
             var newPosition = new Z.Point(
                 geometryPixel['left'] + dragOffset['left'] - mapOffset['left'],
@@ -106,7 +106,7 @@ Z.Geometry.include({
      * 结束移动Geometry, 退出移动模式
      */
     _endDrag: function(event) {
-        this.isDragging = false;
+        this._isDragging = false;
         this._map.enableDrag();
         this._map.off('mousemove', this._dragging, this)
                  .off('mouseup', this._endDrag, this);
@@ -127,8 +127,8 @@ Z.Geometry.include({
      * @expose
      */
     isDragging: function() {
-        if (this.isDragging) {
-            return this.isDragging;
+        if (this._isDragging) {
+            return this._isDragging;
         }
         return false;
     }

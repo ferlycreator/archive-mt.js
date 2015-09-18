@@ -129,7 +129,8 @@ Z.Painter = Z.Class.extend({
         this.pxExtent = null;
         var layer = this.geometry.getLayer();
         if (layer.isCanvasRender()) {
-            var isRealTime = this.geometry.isEditing();
+            var isRealTime = (this.geometry.isEditing && this.geometry.isEditing())
+                                || (this.geometry.isDragging && this.geometry.isDragging());
             var render = this.geometry.getLayer().getRender();
             render.repaint(isRealTime);
         } else {
