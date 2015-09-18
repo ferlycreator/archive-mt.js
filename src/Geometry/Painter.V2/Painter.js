@@ -127,9 +127,16 @@ Z.Painter = Z.Class.extend({
 
     refresh:function(){
         this.pxExtent = null;
-        this._eachSymbolizer(function(symbolizer) {
-            symbolizer.refresh();
-        });
+        var layer = this.geometry.getLayer();
+        if (layer.isCanvasRender()) {
+            var isRealTime = this.geometry.isEditing();
+            var render = this.geometry.getLayer().getRender();
+            render.repaint(isRealTime);
+        } else {
+            this._eachSymbolizer(function(symbolizer) {
+                symbolizer.refresh();
+            });
+        }
     },
 
     refreshSymbol:function() {

@@ -19,8 +19,9 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
             return;
         }
         var map = this.getMap();
+        var dxdy = this.getDxDy();
         var cookedPoints = Z.Util.eachInArray(points,this,function(point) {
-            return map._domOffsetToScreen(point);
+            return map._domOffsetToScreen(point)._add(dxdy);
         });
         var style = this.style;
         var url = style['marker-file'];
@@ -32,18 +33,15 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
         if (img['src']) {
             this.symbol['marker-file'] = img['src'];
         }
-        var dxdy = this.getDxDy();
-        var ratio = Z.Browser.retina ? 2:1;
-        var width = style['marker-width']*ratio;
-        var height = style['marker-height']*ratio;
+
+        var width = style['marker-width'];
+        var height = style['marker-height'];
         if (!Z.Util.isNumber(width) || !Z.Util.isNumber(height)) {
             width = img.width;
             height = img.height;
         }
         for (var i = 0, len=cookedPoints.length;i<len;i++) {
-            var pt = cookedPoints[i]._multi(ratio);
-            pt._add(dxdy._multi(ratio));
-            ctx.drawImage(img,pt['left'],pt['top'],width,height);
+            Z.Canvas.image(ctx,cookedPoints[i], img, width, height);
         }
     },
 

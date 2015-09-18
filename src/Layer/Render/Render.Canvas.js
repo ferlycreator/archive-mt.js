@@ -97,17 +97,16 @@ Z.Render.Canvas.prototype = {
     },
 
     _doRepaint: function() {
-        var me = this;
-        var map = me.getMap();
+        var map = this.getMap();
         var mapSize = map.getSize();
-        me.canvasCtx.clearRect(0, 0, mapSize['width'], mapSize['height']);
+        Z.Canvas.clearRect(this.canvasCtx, 0, 0, mapSize['width'], mapSize['height']);
         var mapExtent = map.getExtent();
-        me._updateCanvasSize(me.layerCanvas);
+        this._updateCanvasSize(this.layerCanvas);
         var containerOffset = map.offsetPlatform();
-        me.layerCanvas.style.left=(-containerOffset['left'])+"px";
-        me.layerCanvas.style.top=(-containerOffset['top'])+"px";
+        this.layerCanvas.style.left=(-containerOffset['left'])+"px";
+        this.layerCanvas.style.top=(-containerOffset['top'])+"px";
         //载入资源后再进行绘制
-        me._repaintInExtent(mapExtent);
+        this._repaintInExtent(mapExtent);
     },
 
     /**
@@ -147,7 +146,7 @@ Z.Render.Canvas.prototype = {
             p2 = projection.project(new Z.Coordinate(extent['xmax'], extent['ymax']));
         var px1 = map._transform(p1),
             px2 = map._transform(p2);
-        this.canvasCtx.clearRect(Math.min(px1['left'], px2['left']), Math.min(px1['top'], px2['top']),
+        Z.Canvas.clearRect(this.canvasCtx,Math.min(px1['left'], px2['left']), Math.min(px1['top'], px2['top']),
                                  Math.abs(px1['left']-px2['left']), Math.abs(px1['top']-px2['top']));
     },
 
@@ -283,7 +282,7 @@ Z.Render.Canvas.prototype = {
     _onZoomStart: function(param) {
         this._hideDom();
         var mapSize = this.getMap().getSize();
-        this.canvasCtx.clearRect(0, 0, mapSize['width'], mapSize['height']);
+        Z.Canvas.clearRect(this.canvasCtx, 0, 0, mapSize['width'], mapSize['height']);
     },
 
     _onZoomEnd: function(param) {

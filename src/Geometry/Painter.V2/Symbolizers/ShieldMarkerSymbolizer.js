@@ -62,17 +62,14 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
         Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'], strokeAndFill['fill'], resources);
         Z.Canvas.prepareCanvasFont(ctx,style);
 
-
-        var ratio = Z.Browser.retina ? 2:1;
-
         var img = resources.getImage(style['shield-file']);
         var width = img.width,
             height = img.height;
         for (var i = 0, len=cookedPoints.length;i<len;i++) {
-            var pt = cookedPoints[i]._multi(ratio);
+            var pt = cookedPoints[i];
             var imgPt = pt.substract(new Z.Point(width/2, height/2));
-            ctx.drawImage(img, imgPt['left'], imgPt['top'], width, height);
-            Z.Canvas.text(ctx, this.textContent,pt , style, this.textSize);
+            Z.Canvas.image(ctx, img, imgPt, width, height);
+            Z.Canvas.text(ctx, this.textContent, pt , style, this.textSize);
         }
     },
 

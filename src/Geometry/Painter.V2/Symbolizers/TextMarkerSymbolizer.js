@@ -48,9 +48,8 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
         Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'], strokeAndFill['fill'], resources);
         Z.Canvas.prepareCanvasFont(ctx,style);
 
-        var ratio = Z.Browser.retina ? 2:1;
         for (var i = 0, len=cookedPoints.length;i<len;i++) {
-            Z.Canvas.text(ctx, textContent, cookedPoints[i]._multi(ratio), style,size);
+            Z.Canvas.text(ctx, textContent, cookedPoints[i], style,size);
         }
     },
 

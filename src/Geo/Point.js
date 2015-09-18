@@ -39,5 +39,8 @@ Z.Point.prototype={
         this['left'] *= ratio;
         this['top'] *= ratio;
         return this;
+    },
+    multi: function(ratio) {
+        return new Z.Point(this['left']*ratio, this['top']*ratio);
     }
 };
