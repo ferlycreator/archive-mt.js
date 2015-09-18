@@ -1,7 +1,8 @@
 /**
  * 简化图形工具
  * @class maptalks.Simplify
- * @author Maptalks Team
+ * @author mourner
+ * @link https://github.com/mourner/simplify-js
  */
 Z.Simplify={
 	// square distance between 2 points

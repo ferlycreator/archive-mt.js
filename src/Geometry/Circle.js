@@ -108,16 +108,6 @@ Z['Circle']=Z.Circle=Z.Polygon.extend({
         return Math.PI*Math.pow(this.radius,2);
     },
 
-    _assignPainter:function() {
-        var layer = this.getLayer();
-        if (!layer) {return null;}
-        if (layer.isCanvasRender()) {
-            return new Z.Circle.Canvas(this);
-        } else {
-            return new Z.Circle.SVG(this);
-        }
-        return null;
-    },
 
     _exportGeoJson:function(opts) {
         var center = this.getCoordinates();
