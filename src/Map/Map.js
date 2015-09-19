@@ -94,9 +94,12 @@ Z['Map']=Z.Map=Z.Class.extend({
         this._allowSlideMap = true;
 
         //坐标类型
-        if (!Z.Util.isNil(options['coordinateType']) && Z.Util.searchInArray(options['coordinateType'], this.options['supportCoordinateTypes'])<0) {
-            //默认采用GCJ02
-            options['coordinateType'] = this.options['coordinateType'];
+        if (!Z.Util.isNil(options['coordinateType'])) {
+            options['coordinateType'] = options['coordinateType'].toLowerCase();
+            if (Z.Util.searchInArray(options['coordinateType'], this.options['supportCoordinateTypes'])<0) {
+                //默认采用GCJ02
+                options['coordinateType'] = this.options['coordinateType'];
+            }
         }
         options = Z.Util.setOptions(this,options);
         this._initContainer();
