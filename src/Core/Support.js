@@ -22,6 +22,7 @@
         if (src.match(regex)) {
             var p = src.split(regex)[0];
             Z.prefix = p ? p + '/' : '';
+            Z.host = new Z.Host(Z.prefix);
             break;
         }
     }
@@ -62,3 +63,30 @@
         head.appendChild(script);
     }
 })();
+
+Z.Url = function(prefix) {
+    this.prefix = prefix;
+    var parts = this.prefix.split('/');
+    var hostIndex = 2;
+    if (this.prefix.indexOf('http') < 0) {
+        hostIndex = 0;
+    }
+    var hostport = parts[hostIndex];
+    var hostParts = hostport.split(':');
+    this.host = hostParts[0];
+    if (hostParts.length > 1) {
+        this.port = hostParts[1];
+    } else {
+        this.port = 80;
+    }
+};
+
+Z.Url.prototype = {
+    getHost:function() {
+        return this.host;
+    },
+
+    getPort:function() {
+        return this.port;
+    }
+};

@@ -48,10 +48,10 @@ Z.Editor=Z.Class.extend({
 
         this.editHandlers = [];
 
-        map.bind("zoomend",this.onRefreshEnd,this);
-        map.bind("zoomstart",this.onRefreshStart,this);
-        map.bind('moveend',this.onRefreshEnd,this);
-        map.bind("resize",this.onRefreshEnd,this);
+        map.on("zoomend",this.onRefreshEnd,this);
+        map.on("zoomstart",this.onRefreshStart,this);
+        map.on('moveend',this.onRefreshEnd,this);
+        map.on("resize",this.onRefreshEnd,this);
     },
 
     /**

@@ -3,7 +3,7 @@
  * @class maptalks.GeoJSON
  * @author Maptalks Team
  */
-Z['GeoJSON']=Z.GeoJson={
+Z.GeoJson={
         /**
          * 将geoJson字符串或geoJson对象转化为Geometry对象
          * @param  {String | Object | [Object]} json json对象
@@ -16,7 +16,7 @@ Z['GeoJSON']=Z.GeoJson={
             }
             if (Z.Util.isArray(geoJson)) {
                 var result = [];
-                for (var i=0,len=geoJson.length;i<len;i++) { 
+                for (var i=0,len=geoJson.length;i<len;i++) {
                     var geo = this._fromGeoJsonInstance(geoJson[i]);
                     result.push(geo);
                 }
@@ -117,7 +117,7 @@ Z['GeoJSON']=Z.GeoJson={
                     return new Z.GeometryCollection();
                 }
                 var mGeos = [];
-                var size = geometries.length;                
+                var size = geometries.length;
                 for (var i = 0; i < size; i++) {
                     mGeos.push(this._fromGeoJsonInstance(geometries[i]));
                 }

@@ -64,7 +64,8 @@
     /**
      * 浏览器
      * @class maptalks.Browser
-     * @author Maptalks Team
+     * @author mourner
+     * @link https://github.com/Leaflet/Leaflet/blob/master/src/core/Browser.js
      */
 	Z.Browser = {
 	    /**

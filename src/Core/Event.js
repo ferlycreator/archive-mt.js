@@ -11,7 +11,7 @@ Z.Eventable = {
      * @param {Object} context 上下文对象
      * @return {Object} 上下文对象
      */
-    "addEventListener":function(eventTypeArr, handler, context) {
+    'addEventListener':function(eventTypeArr, handler, context) {
         if (!eventTypeArr || !handler) {return this;}
         if (!this._eventMap) {
             this._eventMap = {};
@@ -48,7 +48,7 @@ Z.Eventable = {
      * @param {Object} context 上下文对象
      * @return {Object} 上下文对象
      */
-    "removeEventListener":function(eventTypeArr, handler, context) {
+    'removeEventListener':function(eventTypeArr, handler, context) {
         if (!eventTypeArr || !this._eventMap || !handler) {return this;}
         var eventTypes = eventTypeArr.split(' ');
         var eventType;
@@ -138,8 +138,6 @@ Z.Eventable.on = Z.Eventable['addEventListener'];
  */
 Z.Eventable.off = Z.Eventable['removeEventListener'];
 
-Z.Eventable.bind = Z.Eventable['addEventListener'];
-Z.Eventable.unbind = Z.Eventable['removeEventListener'];
 
 /**
  * 执行事件
@@ -147,10 +145,3 @@ Z.Eventable.unbind = Z.Eventable['removeEventListener'];
  * @param {Object} param 参数
  */
 Z.Eventable.fire = Z.Eventable._executeListeners;
-
-/**
- * 判断当前对象上是否绑定了某种类型的监听事件
- * @param {String} eventType 事件名
- * @return {Boolean} true,绑定了事件
- */
-Z.Eventable.isBind=Z.Eventable.hasListeners;

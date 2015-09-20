@@ -103,5 +103,5 @@
 ../src/Topo/SimplifyUtil.js
 ../src/Query/SpatialFilter.js
 ../src/Query/Query.js
-../src/Query/RemoteQuery.js
+../src/Query/FeatureQuery.js
 ../src/extern.js
