@@ -95,7 +95,7 @@ Z.PointSymbolizer=Z.Symbolizer.extend({
         } else {
             //第一次渲染,添加markerDom
             markerDom = this.createMarkerDom();
-            markerDom.style.cursor = "pointer";
+            markerDom.style.cursor = 'pointer';
             if (zIndex) {
                 markerDom.style.zIndex = zIndex;
             }

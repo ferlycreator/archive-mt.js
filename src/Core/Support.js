@@ -22,7 +22,6 @@
         if (src.match(regex)) {
             var p = src.split(regex)[0];
             Z.prefix = p ? p + '/' : '';
-            Z.host = new Z.Host(Z.prefix);
             break;
         }
     }

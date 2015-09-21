@@ -20,7 +20,7 @@ Z.SVG = {
     defaultStrokeSymbol:{
         'stroke':'#000000',
         'strokeWidth': 2,
-        'strokeDasharray': ''//'', '-', '.', '-.', '-..', '. ', '- ', '--', '- .', '--.', '--..'
+        'strokeDasharray': ''
     },
 
     defaultFillSymbol:{
@@ -623,27 +623,27 @@ Z.SVG.VML= {
 };
 
 Z.SVG.VML.create = (function () {
-        if (Z.Browser.vml) {
-            var doc = window.document;
-            if (doc.styleSheets.length < 31) {
-                doc.createStyleSheet().addRule('.zvml', 'behavior:url(#default#VML);display: inline-block;position:absolute;');
-            } else {
-                // no more room, add to the existing one
-                // http://msdn.microsoft.com/en-us/library/ms531194%28VS.85%29.aspx
-                doc.styleSheets[0].addRule('.zvml', 'behavior:url(#default#VML);display: inline-block;position:absolute;');
-            }
-            try {
-                !doc.namespaces['zvml'] && doc.namespaces.add('zvml', 'urn:schemas-microsoft-com:vml');
-                return function (tagName) {
-                    return doc.createElement('<zvml:' + tagName + ' class="zvml">');
-                };
-            } catch (e) {
-                return function (tagName) {
-                    return doc.createElement('<' + tagName + ' xmlns="urn:schemas-microsoft.com:vml" class="zvml">');
-                };
-            }
+    if (Z.Browser.vml) {
+        var doc = window.document;
+        if (doc.styleSheets.length < 31) {
+            doc.createStyleSheet().addRule('.zvml', 'behavior:url(#default#VML);display: inline-block;position:absolute;');
+        } else {
+            // no more room, add to the existing one
+            // http://msdn.microsoft.com/en-us/library/ms531194%28VS.85%29.aspx
+            doc.styleSheets[0].addRule('.zvml', 'behavior:url(#default#VML);display: inline-block;position:absolute;');
         }
-    })();
+        try {
+            !doc.namespaces['zvml'] && doc.namespaces.add('zvml', 'urn:schemas-microsoft-com:vml');
+            return function (tagName) {
+                return doc.createElement('<zvml:' + tagName + ' class="zvml">');
+            };
+        } catch (e) {
+            return function (tagName) {
+                return doc.createElement('<' + tagName + ' xmlns="urn:schemas-microsoft.com:vml" class="zvml">');
+            };
+        }
+    }
+})();
 
 if (Z.Browser.vml) {
     Z.Util.extend(Z.SVG, Z.SVG.VML);
