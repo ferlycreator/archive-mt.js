@@ -59,9 +59,9 @@ Z['Control']['Nav'] = Z.Control.Nav = Z.Control.extend({
         me._step = step;
         me._direction = direction;
         this._panExecutor = setInterval(function() {
-            if(me._direction === "left") {
+            if(me._direction === 'left') {
                 me._map.panBy(new Z.Point(me._step,0));
-            } else if (me._direction === "top") {
+            } else if (me._direction === 'top') {
                 me._map.panBy(new Z.Point(0,me._step));
             }
         },10);

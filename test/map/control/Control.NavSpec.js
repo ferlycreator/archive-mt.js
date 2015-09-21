@@ -90,7 +90,6 @@ describe("Control.Nav", function() {
 
             clock.tick(15);
             offset = map.offsetPlatform();
-
             expect(offset.left).to.eql(pos.left - 1);
             expect(offset.top).to.eql(pos.top);
         });

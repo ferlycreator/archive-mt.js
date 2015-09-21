@@ -13,6 +13,20 @@
     "locale",
     "debug"
 ],
+"--categories" : [
+  {
+    "name": "Geometry",
+    "classes": [
+      "maptalks.Marker",
+      "maptalks.Point",
+      "maptalks.Polyline",
+      "maptalks.Polygon",
+      "maptalks.MultiPoint",
+      "maptalks.MultiPolyline",
+      "maptalks.MultiPolygon"
+    ]
+  }
+],
 "--builtin-classes": false,
 "--no-source": true
 }
