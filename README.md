@@ -1,4 +1,4 @@
-MapTalks.js [![Build Status](https://travis-ci.org/MapTalks/maptalks.js.svg?branch=master)](https://travis-ci.org/MapTalks/maptalks.js)
+MapTalks.js [![Build Status](https://travis-ci.org/MapTalks/maptalks.js.svg?branch=master)](https://travis-ci.org/MapTalks/maptalks.js) [![Coverage Status](https://coveralls.io/repos/MapTalks/maptalks.js/badge.svg?branch=master&service=github)](https://coveralls.io/github/MapTalks/maptalks.js?branch=master)
 ------
 
 MapTalks地图引擎前端Javascript SDK库
