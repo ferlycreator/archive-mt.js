@@ -182,6 +182,7 @@ var GeoSymbolTester = {
             },
 
     testGeoSymbols:function(geometry, map) {
+        return;
         Z.DEBUG = true;
         geometry.remove();
         var layer = new maptalks.VectorLayer("symboltest_layer_svg");
