@@ -221,13 +221,14 @@ gulp.task('test', ['styles'], function (done) {
       }
     };
   }
-  karma.start(karmaConfig, function() {
-    var coveralls = require('gulp-coveralls');
+  karma.start(karmaConfig, done);
+});
 
-    gulp.src('test/coverage/**/lcov.info')
-      .pipe(coveralls());
-    done();
-  });
+var coveralls = require('gulp-coveralls');
+gulp.task('coveralls', function () {
+  if (!process.env.CI) return;
+  return gulp.src('./coverage/**/lcov.info')
+    .pipe(coveralls());
 });
 
 /**
