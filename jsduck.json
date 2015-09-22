@@ -1,14 +1,19 @@
 {
-  "-o":"dist//docs",
-  "--title":"MapTalks API",
+  "--output":"dist//docs",
+  "--title":"MapTalks API Documentation",
+  "--head-html": [],
+  "--footer":"publish by MapTalks.org",
+  "--welcome":"docs//welcome.html",
   "--seo":true,
   "-":["src//"],
   "--images":"docs//images//",
   "--ignore-html": [
-      "locale",
-      "debug"
+    "locale",
+    "debug"
   ],
   "--categories":"docs//categories.json",
+  "--examples-base-url":"../../dist/examples/",
+  "--examples":"docs//examples.json",
   "--builtin-classes": false,
   "--no-source": true
 }
