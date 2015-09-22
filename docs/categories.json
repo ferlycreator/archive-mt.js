@@ -1,0 +1,88 @@
+[
+  {
+    "name": "Base",
+    "groups": [
+      {
+        "name": "Map",
+        "classes": [
+          "maptalks.Map"
+        ]
+      },
+      {
+        "name": "Layer",
+        "classes": [
+          "maptalks.Layer"
+        ]
+      },
+      {
+        "name": "Geometry",
+        "classes": [
+          "maptalks.Geometry",
+          "maptalks.Marker",
+          "maptalks.Polyline",
+          "maptalks.Polygon",
+          "maptalks.MultiPoint",
+          "maptalks.MultiPoly",
+          "maptalks.MultiPolyline",
+          "maptalks.MultiPolygon",
+          "maptalks.Circle",
+          "maptalks.Ellipse",
+          "maptalks.Rectangle",
+          "maptalks.Sector",
+          "maptalks.Rectangle",
+          "maptalks.Extent",
+          "maptalks.Geometry.Center",
+          "maptalks.Geometry.Poly",
+          "maptalks.GeometryCollection"
+        ]
+      },
+      {
+        "name": "Control",
+        "classes": [
+          "maptalks.Control.Attribution",
+          "maptalks.Control.Nav",
+          "maptalks.Control.Scale",
+          "maptalks.Control.Zoom",
+          "maptalks.Button",
+          "maptalks.InfoWindow",
+          "maptalks.Label",
+          "maptalks.Menu",
+          "maptalks.Panel",
+          "maptalks.Toolbar"
+        ]
+      },
+      {
+        "name": "Handler",
+        "classes": [
+          "maptalks.Handler.Drag"
+        ]
+      },
+      {
+        "name": "Tool",
+        "classes": [
+          "maptalks.ComputeAreaTool",
+          "maptalks.DistanceTool",
+          "maptalks.DrawTool"
+        ]
+      },
+      {
+        "name": "Utility",
+        "classes": [
+          "maptalks.Browser",
+          "maptalks.DomUtil",
+          "maptalks.Eventable",
+          "maptalks.GeoUtils",
+          "maptalks.SimplifyUtil",
+          "maptalks.Util"
+        ]
+      },
+      {
+        "name": "Query",
+        "classes": [
+          "maptalks.FeatureQuery",
+          "maptalks.SpatialFilter"
+        ]
+      }
+    ]
+  }
+]
