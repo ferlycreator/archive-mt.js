@@ -8,6 +8,7 @@ Z.Geometry.Poly={
      * 将points中的坐标转化为用于显示的容器坐标
      * @param  {Point[]} points  points数组
      * @returns {Point[]} 容器坐标数组
+     * @ignore
      */
     _transformToOffset:function(points) {
         var map = this.getMap();

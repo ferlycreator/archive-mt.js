@@ -1222,6 +1222,7 @@ Z['Map']=Z.Map=Z.Class.extend({
 
     /**
      * 设置地图的watcher, 用来监视地图容器的大小变化
+     * @ignore
      */
     _initContainerWatcher:function() {
         var map = this;
