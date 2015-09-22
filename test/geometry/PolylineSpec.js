@@ -94,4 +94,14 @@ describe('PolylineSpec', function() {
             GeoEventsTester.testCanvasEvents(vector, map, vector.getCenter());
         });
     });
+
+    it('can have various symbols',function() {
+        var points = [
+                {x: 0, y: 0},
+                {x: 0, y: 10},
+                {x: 0, y: 90}
+            ];
+            var vector = new Z.Polyline(points);
+        GeoSymbolTester.testGeoSymbols(vector, map);
+    });
 });

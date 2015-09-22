@@ -85,5 +85,8 @@ describe('EllipseSpec', function() {
         });
     });
 
-
+    it('can have various symbols',function() {
+        var vector = new Z.Ellipse(center,100,50);
+        GeoSymbolTester.testGeoSymbols(vector, map);
+    });
 });

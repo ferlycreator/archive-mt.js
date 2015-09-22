@@ -67,7 +67,7 @@ Z.CollectionPainter=Z.Class.extend({
     refresh:function(){
         var args = arguments;
         this._eachPainter(function(painter) {
-            painter.setSymbol(this.geometry.getSymbol());
+            // painter.setSymbol(this.geometry.getSymbol());
             painter.refresh.apply(painter,args);
         });
     },
@@ -75,7 +75,7 @@ Z.CollectionPainter=Z.Class.extend({
     refreshSymbol:function(){
         var args = arguments;
         this._eachPainter(function(painter) {
-            painter.setSymbol(this.geometry.getSymbol());
+            // painter.setSymbol(this.geometry.getSymbol());
             painter.refreshSymbol.apply(painter,args);
         });
     },

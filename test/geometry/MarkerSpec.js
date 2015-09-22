@@ -122,4 +122,9 @@ describe('Marker', function() {
         });
     });
 
+    it('can have various symbols',function() {
+        var vector = new Z.Marker(center);
+        GeoSymbolTester.testGeoSymbols(vector, map);
+    });
+
 });

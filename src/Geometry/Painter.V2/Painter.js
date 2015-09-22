@@ -75,6 +75,10 @@ Z.Painter = Z.Class.extend({
      * 保存paint被调用时的参数context, 以备未来刷新symbolizer时使用
      */
     _saveContext:function() {
+        //context只需要save一次即可
+        if (this.context) {
+            return;
+        }
         var layer = this.geometry.getLayer();
         if (layer.isCanvasRender()) {
             this.context = arguments;
@@ -106,7 +110,7 @@ Z.Painter = Z.Class.extend({
 
     setZIndex:function(change) {
         this._eachSymbolizer(function(symbolizer) {
-            symbolizer.setZIndex();
+            symbolizer.setZIndex(change);
         });
     },
 
@@ -137,13 +141,18 @@ Z.Painter = Z.Class.extend({
     },
 
     refreshSymbol:function() {
-        this.pxExtent = null;
-        this.remove();
+        this._removeSymbolizers();
         this._createSymbolizers();
         this.paint.apply(this, this.context);
     },
 
     remove:function() {
+        delete this.context;
+        this._removeSymbolizers();
+    },
+
+    _removeSymbolizers:function() {
+        delete this.pxExtent;
         this._eachSymbolizer(function(symbolizer) {
             symbolizer.remove();
         });

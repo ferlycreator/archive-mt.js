@@ -182,7 +182,8 @@ var GeoSymbolTester = {
             },
 
     testGeoSymbols:function(geometry, map) {
-        var layer = new maptalks.VectorLayer("layer");
+        geometry.remove();
+        var layer = new maptalks.VectorLayer("symboltest_layer_svg");
         map.addLayer(layer);
         layer.addGeometry(geometry);
         var i;
@@ -191,7 +192,7 @@ var GeoSymbolTester = {
         }
         geometry.setSymbol(this.lineAndFill);
         geometry.remove();
-        layer = new maptalks.VectorLayer("canvas",{"render":"canvas"});
+        layer = new maptalks.VectorLayer("symboltest_layer_canvas",{"render":"canvas"});
         map.addLayer(layer);
         layer.addGeometry(geometry);
         for (i = this.markerSymbols.length - 1; i >= 0; i--) {
