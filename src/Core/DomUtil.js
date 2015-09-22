@@ -59,7 +59,7 @@ Z.DomUtil = {
      * @return {Object} 上下文对象
      */
     addDomEvent:function(obj, typeArr, handler, context) {
-        if (!obj || !typeArr || !handler) {return this;}
+        if (!obj || !typeArr || !handler) {return Z.DomUtil;}
         var eventHandler = function (e) {
             if (!e) {
                 e = window.event;
@@ -77,8 +77,10 @@ Z.DomUtil = {
                 obj['Z__'+type]=[];
 
             }
-            if (this.hasDomEvent(obj,type,handler) >= 0) {
-                return this;
+            var hit = Z.DomUtil.hasDomEvent(obj,type,handler);
+            if (hit >= 0) {
+                //return Z.DomUtil;
+                obj['Z__'+type].splice(hit,1);
             }
             obj['Z__'+type].push({callback:eventHandler,src:handler});
             if ('addEventListener' in obj) {
@@ -91,7 +93,7 @@ Z.DomUtil = {
                 obj.attachEvent('on' + type, eventHandler);
             }
         }
-        return this;
+        return Z.DomUtil;
     },
 
     /**
