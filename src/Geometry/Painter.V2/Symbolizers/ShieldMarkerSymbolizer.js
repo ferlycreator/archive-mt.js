@@ -34,10 +34,11 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
         if (this.symbol['shield-file']) {
             var me = this;
             var img = new Image();
+            var svgContainer = _vectorcontainer || vectorcontainer;
             img.onload=function() {
                 me.shieldFileWidth = this.width;
                 me.shieldFileHeight = this.height;
-                me._svgMarkers(_vectorcontainer,zIndex);
+                me._svgMarkers(svgContainer,zIndex);
             };
             img.src=this.symbol['shield-file'];
         } else {

@@ -94,6 +94,116 @@ function commonTearDownMap() {
 
 }
 
+
+var GeoSymbolTester = {
+    markerSymbols : [
+            {
+                "marker-placement":"point", //point | line | interior
+                "marker-file"   : "images/marker.png",
+                //设定marker-file后, 只有下面的属性起作用
+                "marker-width"  : 20,
+                "marker-height" : 20,
+                "marker-opacity": 1,
+                //两个cartocss里没有的扩展属性, 用来标注相对中心点的像素距离
+                "marker-dx"     : 0, //<-------
+                "marker-dy"     : 0  //<-------
+            },
+            {
+                "marker-placement":"point", //point | line | interior
+
+                //marker-type中定义了若干cartoCSS中没有的属性值
+                "marker-type": "ellipse", //<----- ellipse | triangle | square | bar等,默认ellipse
+                "marker-opacity": 1,
+                "marker-fill": "#ff0000",
+                "marker-fill-opacity": 1,
+                "marker-line-color": "#0000ff",
+                "marker-line-width": 1,
+                "marker-line-opacity": 1,
+                "marker-width": 30,
+                "marker-height": 30,
+
+                "marker-dx": 0,
+                "marker-dy": 0
+            },
+            {
+                "text-placement"    : "point", // point | vertex | line | interior
+
+                "text-name"         : "文本标注：[marker_name]",
+                "text-face-name"    : "arial",
+                "text-size"         : 12,
+                "text-fill"         : "#550033",
+                "text-opacity"      : 1,
+                "text-halo-fill"  : "#fff",
+                "text-halo-radius": 0,
+
+                "text-dx"           : 0,
+                "text-dy"           : 0,
+
+                "text-horizontal-alignment" : "middle", //left | middle | right | auto
+                "text-vertical-alignment"   : "middle",   // top | middle | bottom | auto
+                "text-align"                : "left" //left | right | center | auto
+            },
+            {
+                "shield-placement"  : "point", // point | vertex | line | interior
+
+                "shield-file"       : "images/marker.png",
+
+                "shield-name"       : "文本标注：[marker_name]",
+                "shield-face-name"  : "arial",
+                "shield-size"       :  12,
+                "shield-fill"       : "#550033",
+                "shield-opacity"    :  1,
+                "shield-text-opacity": 1,
+                "shield-halo-fill"  : "#fff",
+                "shield-halo-radius": 0,
+
+                "shield-dx"         :  0,
+                "shield-dy"         :  0,
+                "shield-text-dx"    :  0,
+                "shield-text-dy"    :  0,
+
+                "shield-horizontal-alignment"   : "middle", //left | middle | right | auto
+                "shield-vertical-alignment"     : "middle",   // top | middle | bottom | auto
+                "shield-justify-alignment"      : "left" //left | right | center | auto
+            }
+    ],
+
+    lineAndFill: {
+                "line-pattern-file" : "images/marker.png",
+                "line-color"        : "#f00",
+                "line-width"        : 5,
+                "line-opacity"      : 1,
+                "line-join"         : "miter", //round bevel
+                "line-cap"          : "round", //butt square
+                "line-dasharray"    : [20, 5, 20],
+                "polygon-pattern-file"  : "images/marker.png",
+                "polygon-fill"          : "#f00",
+                "polygon-opacity"       : 1
+            },
+
+    testGeoSymbols:function(geometry, map) {
+        return;
+        Z.DEBUG = true;
+        geometry.remove();
+        var layer = new maptalks.VectorLayer("symboltest_layer_svg");
+        map.addLayer(layer);
+        layer.addGeometry(geometry);
+        var i;
+        for (i = this.markerSymbols.length - 1; i >= 0; i--) {
+            geometry.setSymbol(this.markerSymbols[i]);
+        }
+        geometry.setSymbol(this.lineAndFill);
+        geometry.remove();
+        layer = new maptalks.VectorLayer("symboltest_layer_canvas",{"render":"canvas"});
+        map.addLayer(layer);
+        layer.addGeometry(geometry);
+        for (i = this.markerSymbols.length - 1; i >= 0; i--) {
+            geometry.setSymbol(this.markerSymbols[i]);
+        }
+        geometry.setSymbol(this.lineAndFill);
+    }
+};
+
 /**
  * geometry事件测试类
  * testSVGEvents测试SVG类图层上的事件响应

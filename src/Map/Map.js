@@ -656,7 +656,6 @@ Z['Map']=Z.Map=Z.Class.extend({
      * 将地理坐标转化为容器偏转坐标
      * @param {Coordinate} 地理坐标
      * @return {Point} 容器偏转坐标
-     * @expose
      */
     coordinateToDomOffset: function(coordinate) {
         var projection = this._getProjection();
@@ -669,7 +668,6 @@ Z['Map']=Z.Map=Z.Class.extend({
      * 将地理坐标转化为屏幕坐标
      * @param {Coordinate} 地理坐标
      * @return {Point} 屏幕坐标
-     * @expose
      */
     coordinateToScreenPoint: function(coordinate) {
         var projection = this._getProjection();
@@ -683,7 +681,6 @@ Z['Map']=Z.Map=Z.Class.extend({
      * 将屏幕像素坐标转化为地理坐标
      * @param {screenPoint} 屏幕坐标
      * @return {coordinate} 地理坐标
-     * @expose
      */
     screenPointToCoordinate: function(screenPoint) {
         //var domOffset = this._screenToDomOffset(screenPoint);

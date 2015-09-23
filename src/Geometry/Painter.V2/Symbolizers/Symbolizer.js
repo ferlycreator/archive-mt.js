@@ -16,7 +16,9 @@ Z.Symbolizer = Z.Class.extend({
     symbolize:function() {
         var layer = this.geometry.getLayer();
         if (layer.isCanvasRender()) {
-            this.canvas.apply(this, arguments);
+            if (!Z.Util.isNil(arguments) && arguments.length > 0) {
+                this.canvas.apply(this, arguments);
+            }
         } else {
             this.svg.apply(this, arguments);
         }

@@ -73,4 +73,40 @@ describe('PolygonSpec', function() {
         expect(extent.ymax).to.be.within(10 - delta, 10 + delta);
     });
 
+    describe('geometry fires events', function() {
+        it('svg events', function() {
+            var points = [
+                [ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0] ],
+                [ [100.2, 0.2], [100.8, 0.2], [100.8, 0.8], [100.2, 0.8], [100.2, 0.2] ]
+            ];
+            var vector = new Z.Polygon(points);
+            GeoEventsTester.testSVGEvents(vector, map);
+        });
+
+        it('canvas events', function() {
+            var points = [
+                [
+                    {x: 0, y: 0},
+                    {x: 0, y: 10},
+                    {x: 10, y: 10},
+                    {x: 10, y: 0}
+                ]
+            ];
+            var vector = new Z.Polygon(points);
+            GeoEventsTester.testCanvasEvents(vector, map, vector.getCenter());
+        });
+    });
+
+    it('can have various symbols',function() {
+        var points = [
+                [
+                    {x: 0, y: 0},
+                    {x: 0, y: 10},
+                    {x: 10, y: 10},
+                    {x: 10, y: 0}
+                ]
+            ];
+            var vector = new Z.Polygon(points);
+        GeoSymbolTester.testGeoSymbols(vector, map);
+    });
 });

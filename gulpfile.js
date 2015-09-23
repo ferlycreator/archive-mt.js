@@ -209,9 +209,13 @@ gulp.task('test', ['styles'], function (done) {
     karmaConfig.preprocessors = {
       'src/**/*.js': 'coverage'
     };
-    karmaConfig.coverageReporter = {
+    /*karmaConfig.coverageReporter = {
       type : 'html',
       dir : 'coverage/'
+    };*/
+    karmaConfig.coverageReporter = {
+      type: 'lcov', // lcov or lcovonly are required for generating lcov.info files
+      dir: 'coverage/'
     };
     karmaConfig.reporters = ['coverage'];
   }
@@ -223,6 +227,13 @@ gulp.task('test', ['styles'], function (done) {
     };
   }
   karma.start(karmaConfig, done);
+});
+
+var coveralls = require('gulp-coveralls');
+gulp.task('coveralls', function () {
+  if (!process.env.CI) return;
+  return gulp.src('./coverage/**/lcov.info')
+    .pipe(coveralls());
 });
 
 /**

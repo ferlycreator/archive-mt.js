@@ -35,5 +35,20 @@ describe('MultiPointSpec', function() {
 
     });
 
+    describe('geometry fires events', function() {
+        it('svg events', function() {
+            var vector = new Z.MultiPoint([center]);
+            GeoEventsTester.testSVGEvents(vector, map);
+        });
 
+        it('canvas events', function() {
+            var vector = new Z.MultiPoint([center]);
+            GeoEventsTester.testCanvasEvents(vector, map, vector.getCenter());
+        });
+    });
+
+    it('can have various symbols',function() {
+        var vector = new Z.MultiPoint([center]);
+        GeoSymbolTester.testGeoSymbols(vector, map);
+    });
 });

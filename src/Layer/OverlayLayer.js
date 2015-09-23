@@ -17,7 +17,6 @@ Z.OverlayLayer=Z.Layer.extend({
      * 通过geometry的id取得Geometry
      * @param  {[String|Integer]} id [Geometry的id]
      * @return {[Geometry]}    [Geometry]
-     * @expose
      */
     getGeometryById:function(id) {
         if (Z.Util.isNil(id) || id === '') {

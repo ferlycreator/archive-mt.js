@@ -25,6 +25,7 @@ Z.CollectionPainter=Z.Class.extend({
         this._eachPainter(function(painter) {
             painter.paint.apply(painter,args);
         });
+        this._registerEvents();
     },
 
     getPixelExtent:function() {
@@ -66,7 +67,7 @@ Z.CollectionPainter=Z.Class.extend({
     refresh:function(){
         var args = arguments;
         this._eachPainter(function(painter) {
-            painter.setSymbol(this.geometry.getSymbol());
+            // painter.setSymbol(this.geometry.getSymbol());
             painter.refresh.apply(painter,args);
         });
     },
@@ -74,12 +75,36 @@ Z.CollectionPainter=Z.Class.extend({
     refreshSymbol:function(){
         var args = arguments;
         this._eachPainter(function(painter) {
-            painter.setSymbol(this.geometry.getSymbol());
+            // painter.setSymbol(this.geometry.getSymbol());
             painter.refreshSymbol.apply(painter,args);
         });
     },
 
+    /**
+     * 获取svg图形的dom
+     */
+    getSvgDom:function() {
+        var result = [];
+        this._eachPainter(function(painter) {
+            result = result.concat(painter.getSvgDom());
+        });
+        return result;
+    },
+
     _registerEvents:function() {
-        //TODO GeometryCollection类型数据的处理
+        var layer = this.geometry.getLayer();
+        if (layer.isCanvasRender()) {
+            return;
+        }
+        //svg类型
+        var geometry = this.geometry;
+        var doms = this.getSvgDom();
+        if (Z.Util.isArrayHasData(doms)) {
+            for (var j = doms.length - 1; j >= 0; j--) {
+                Z.DomUtil.on(doms[j], 'mousedown mouseup click dblclick contextmenu', geometry._onEvent, geometry);
+                Z.DomUtil.on(doms[j], 'mouseover', geometry._onMouseOver, geometry);
+                Z.DomUtil.on(doms[j], 'mouseout', geometry._onMouseOut, geometry);
+            }
+        }
     }
 });

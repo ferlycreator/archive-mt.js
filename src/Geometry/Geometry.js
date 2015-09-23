@@ -2,6 +2,7 @@ Z.Painter={};
 /**
  * 图形类
  * @class maptalks.Geometry
+ * @abstract
  * @extends maptalks.Class
  * @mixins maptalks.Eventable
  * @author Maptalks Team

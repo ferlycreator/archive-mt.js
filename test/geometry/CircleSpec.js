@@ -99,4 +99,8 @@ describe('CircleSpec', function() {
         });
     });
 
+    it('can have various symbols',function() {
+        var vector = new Z.Circle(center,100);
+        GeoSymbolTester.testGeoSymbols(vector, map);
+    });
 });

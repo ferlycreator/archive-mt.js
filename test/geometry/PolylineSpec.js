@@ -73,4 +73,35 @@ describe('PolylineSpec', function() {
         expect(polyline.getExtent()).to.eql(new Z.Extent(0, 0, 0, 90));
     });
 
+    describe('geometry fires events', function() {
+        it('svg events', function() {
+            var points = [
+                {x: 0, y: 0},
+                {x: 0, y: 10},
+                {x: 0, y: 90}
+            ];
+            var vector = new Z.Polyline(points);
+            GeoEventsTester.testSVGEvents(vector, map);
+        });
+
+        it('canvas events', function() {
+            var points = [
+                {x: 0, y: 0},
+                {x: 0, y: 10},
+                {x: 0, y: 90}
+            ];
+            var vector = new Z.Polyline(points);
+            GeoEventsTester.testCanvasEvents(vector, map, vector.getCenter());
+        });
+    });
+
+    it('can have various symbols',function() {
+        var points = [
+                {x: 0, y: 0},
+                {x: 0, y: 10},
+                {x: 0, y: 90}
+            ];
+            var vector = new Z.Polyline(points);
+        GeoSymbolTester.testGeoSymbols(vector, map);
+    });
 });

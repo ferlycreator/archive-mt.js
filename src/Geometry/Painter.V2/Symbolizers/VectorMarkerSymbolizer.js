@@ -269,8 +269,8 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
         } else if ('pin' === markerType) {
               var extWidth = height*Math.atan(hw/hh);
               v0 = new Z.Point(left,top);
-              v1 = new Z.Point((left-extWidth),(top-height));
-              v2 = new Z.Point((left+extWidth),(top-height));
+              v1 = new Z.Point(Math.round(left-extWidth),Math.round(top-height));
+              v2 = new Z.Point(Math.round(left+extWidth),Math.round(top-height));
               v3 = new Z.Point(left,top);
               return [v0,v1,v2,v3];
         }

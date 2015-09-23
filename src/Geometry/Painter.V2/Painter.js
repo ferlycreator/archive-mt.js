@@ -49,17 +49,14 @@ Z.Painter = Z.Class.extend({
         }
         //svg类型
         var geometry = this.geometry;
-        for (var i = this.symbolizers.length - 1; i >= 0; i--) {
-            var doms = this.symbolizers[i].getSvgDom();
-            if (Z.Util.isArrayHasData(doms)) {
-                for (var j = doms.length - 1; j >= 0; j--) {
-                    Z.DomUtil.on(doms[j], 'mousedown mouseup click dblclick contextmenu', geometry._onEvent, geometry);
-                    Z.DomUtil.on(doms[j], 'mouseover', geometry._onMouseOver, geometry);
-                    Z.DomUtil.on(doms[j], 'mouseout', geometry._onMouseOut, geometry);
-                }
+        var doms = this.getSvgDom();
+        if (Z.Util.isArrayHasData(doms)) {
+            for (var j = doms.length - 1; j >= 0; j--) {
+                Z.DomUtil.on(doms[j], 'mousedown mouseup click dblclick contextmenu', geometry._onEvent, geometry);
+                Z.DomUtil.on(doms[j], 'mouseover', geometry._onMouseOver, geometry);
+                Z.DomUtil.on(doms[j], 'mouseout', geometry._onMouseOut, geometry);
             }
         }
-
     },
 
     /**
@@ -78,6 +75,10 @@ Z.Painter = Z.Class.extend({
      * 保存paint被调用时的参数context, 以备未来刷新symbolizer时使用
      */
     _saveContext:function() {
+        //context只需要save一次即可
+        if (this.context) {
+            return;
+        }
         var layer = this.geometry.getLayer();
         if (layer.isCanvasRender()) {
             this.context = arguments;
@@ -109,7 +110,7 @@ Z.Painter = Z.Class.extend({
 
     setZIndex:function(change) {
         this._eachSymbolizer(function(symbolizer) {
-            symbolizer.setZIndex();
+            symbolizer.setZIndex(change);
         });
     },
 
@@ -140,16 +141,20 @@ Z.Painter = Z.Class.extend({
     },
 
     refreshSymbol:function() {
-        this.pxExtent = null;
-        this.remove();
+        this._removeSymbolizers();
         this._createSymbolizers();
         this.paint.apply(this, this.context);
     },
 
     remove:function() {
+        delete this.context;
+        this._removeSymbolizers();
+    },
+
+    _removeSymbolizers:function() {
+        delete this.pxExtent;
         this._eachSymbolizer(function(symbolizer) {
             symbolizer.remove();
         });
     }
-
 });

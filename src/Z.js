@@ -6,7 +6,7 @@ var Z = {};
 
 Z.VERSION='2.0.0-dev';
 
-Z.DEBUG=true;
+Z.DEBUG=false;
 
 Z.loadModule=function(module,callback,context) {
     var suffix = '.min.js';

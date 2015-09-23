@@ -131,6 +131,7 @@ Z.FeatureQuery=Z.Class.extend({
                         opts['success']([]);
                     } else {
                         if (false === queryFilter['returnGeometry']) {
+                            //不返回Geometry,直接返回属性数据
                             opts['success'](datas);
                         } else {
                             var geos = Z.GeoJson.fromGeoJson(datas);
