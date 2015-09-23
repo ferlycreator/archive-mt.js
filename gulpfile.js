@@ -63,16 +63,21 @@ gulp.task('examples', function () {
     .pipe(gulp.dest('dist/examples'));
 });
 
-gulp.task('docs', function () {
-  return gulp.src('src/**/*.js')
-    .pipe(jsdoc('dist/docs', docTpl, docInfos, docOpts));
-});
-
 var shell = require('gulp-shell');
-gulp.task('docs', function () {
+gulp.task('generateDocs', ['build'], function () {
     console.log("[JSDuck] Creating documentation");
     return gulp.src('')
         .pipe(shell(['jsduck']));
+});
+
+gulp.task('copyIcon', ['generateDocs'], function () {
+  return gulp.src('docs/theme/*.ico')
+         .pipe(gulp.dest('dist/docs/'));
+});
+
+gulp.task('docs', ['generateDocs','copyIcon'], function () {
+  return gulp.src('docs/theme/**/*.*')
+         .pipe(gulp.dest('dist/docs/theme'));
 });
 
 gulp.task('default', ['docs']);

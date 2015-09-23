@@ -154,6 +154,9 @@
             .RemoteQuery
             .SpatialFilter
          
+      
+### JSDUCK安装路径
+/Library/Ruby/Gems/2.0.0/gems/jsduck-5.3.4
            
     
         

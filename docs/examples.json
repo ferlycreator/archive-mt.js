@@ -1,11 +1,11 @@
 [{
   "title": "Maptalks Examples",
   "items": [{
-      "name": "Maptalks示例",
+      "name": "快速上手",
       "title": "Maptalks示例",
       "description": "Maptalks示例.",
       "url": "index.html",
-      "icon": "examples.gif",
+      "icon": "guide.gif",
       "status": "updated"
   }]
 }]
