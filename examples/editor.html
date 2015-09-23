@@ -49,6 +49,9 @@
                 success: function(htmlContent) {
                     $("#codeArea").val(htmlContent);
                     initCodeEditior();
+                },
+                error: function() {
+                    window.location.href=htmlPath;
                 }
             });
 
@@ -111,7 +114,7 @@
     <script type="text/javascript" src="js/util/ParamKit.js"></script>
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
-      <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.min.js"></script>
+        <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.min.js"></script>
     <![endif]-->
 </body>
 </html>
