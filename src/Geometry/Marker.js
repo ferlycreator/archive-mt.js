@@ -25,6 +25,7 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
 
     _containsPoint: function(point) {
         var pxExtent = this._getPainter().getPixelExtent();
+        console.log(pxExtent);
         return pxExtent.contains(point);
     },
 
