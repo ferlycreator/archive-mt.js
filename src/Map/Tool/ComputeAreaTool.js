@@ -34,7 +34,7 @@ Z['ComputeAreaTool'] = Z.ComputeAreaTool = Z.Class.extend({
         if (!this.mode) {
             this.mode = Z.Geometry.TYPE_POLYGON;
         }
-        this.layerId = '____system_layer_computeareatool';
+        this.layerId = Z.internalLayerPrefix+'computeareatool';
         this.drawLayer = null;
         this.drawTool = null;
         this.rings = [];

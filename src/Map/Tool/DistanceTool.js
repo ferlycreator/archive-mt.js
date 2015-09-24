@@ -27,7 +27,7 @@ Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
         //TODO options应该设置到this.options中
         this.map = map;
         if (!this.map) {return;}
-        this.layerId = '____system_layer_distancetool';
+        this.layerId = Z.internalLayerPrefix+'distancetool';
         this.drawLayer = null;
         this.drawTool = null;
         this.rings = [];

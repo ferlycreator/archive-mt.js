@@ -166,7 +166,7 @@ Z.Map.include({
         for (var i=0, len=layers.length; i<len; i++) {
             var layer = layers[i];
             var layerId = layer.getId();
-            if(!layer || !layer.getMap() || layerId.indexOf('mt__internal_layer') >= 0) {
+            if(!layer || !layer.getMap() || layerId.indexOf(Z.internalLayerPrefix) >= 0) {
                 continue;
             }
             var allGeos = layers[i].getAllGeometries();

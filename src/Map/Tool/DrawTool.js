@@ -427,7 +427,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
     },
 
     _getDrawLayer:function() {
-        var drawLayerId = '____system_layer_drawtool';
+        var drawLayerId = Z.internalLayerPrefix+'drawtool';
         var drawToolLayer = this.map.getLayer(drawLayerId);
         if (!drawToolLayer) {
             drawToolLayer = new Z.VectorLayer(drawLayerId);

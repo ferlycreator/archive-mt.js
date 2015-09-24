@@ -66,9 +66,9 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
     },
 
     _buildOn: function (map) {
-        if(!map || !this.options || !this.options['content']) return;
+        if(!map || !this.options || !this.options['content']) {return;}
         this._map = map;
-        this._internalLayer = this._getInternalLayer(map, '__mt__internal_layer_panel_link');
+        this._internalLayer = this._getInternalLayer(map, Z.internalLayerPrefix+'panel_link');
         this._panelContainer = Z.DomUtil.createElOn('div', 'cursor:default;');
         var divCss = 'maptalks-panel-default';
         var titleCss = 'maptalks-panel-title-default';
