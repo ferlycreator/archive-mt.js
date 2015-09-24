@@ -168,14 +168,14 @@ describe('API', function () {
             expect(t).to.not.be(null);
         });
 
-        it('coordinateToScreenPoint', function () {
-            var point = map.coordinateToScreenPoint({x: 1, y: 1});
+        it('coordinateToContainerPoint', function () {
+            var point = map.coordinateToContainerPoint({x: 1, y: 1});
 
             expect(point).to.not.be(null);
         });
 
-        it('screenPointToCoordinate', function () {
-            var coord = map.screenPointToCoordinate(new Z.Point(0, 0));
+        it('containerPointToCoordinate', function () {
+            var coord = map.containerPointToCoordinate(new Z.Point(0, 0));
 
             expect(coord).to.not.be(null);
         });
@@ -380,7 +380,7 @@ describe('API', function () {
             var spy = sinon.spy();
             var layer = new Z.VectorLayer('id');
             var geometries = genAllTypeGeometries();
-            var point = map.coordinateToScreenPoint(center);
+            var point = map.coordinateToContainerPoint(center);
             layer.addGeometry(geometries);
             map.addLayer(layer);
 

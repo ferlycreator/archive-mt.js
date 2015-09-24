@@ -32,7 +32,7 @@ Z.Geometry.include({
     */
     _beforeOpenMenu: function() {
         var coordinate = this.getCenter();
-        var position = this.map.coordinateToDomOffset(coordinate);
+        var position = this.map.coordinateToViewPoint(coordinate);
         var param = {'coordinate':coordinate, 'pixel':position};
         this.menu.showPosition = position;
         this.menu.beforeOpen(param);

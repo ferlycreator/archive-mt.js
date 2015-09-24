@@ -158,7 +158,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
             mapHeight = size['height'];
         if (mapWidth===0||mapHeight===0) {return;}
         //只有当tip不是地图打开的时候，才做tip打开滑动操作
-        var absolute = this._map._domOffsetToScreen(tipCoord);
+        var absolute = this._map._viewPointToContainerPoint(tipCoord);
         var left=0,top=0,tipDom=this._tipDom;;
         if ((absolute['left'])<0) {
             left=-(absolute['left']-parseInt(tipDom.clientWidth)/2);
@@ -290,13 +290,13 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         }
         if(coordinate){
             if(coordinate instanceof Z.Coordinate) {
-                position = this.coordinateToDomOffset(coordinate);
+                position = this.coordinateToViewPoint(coordinate);
             } else {
                 position = coordinate;
             }
         } else {
             var center = this._target.getCenter();
-            position = this._map.coordinateToDomOffset(center);
+            position = this._map.coordinateToViewPoint(center);
         }
         return position;
     }

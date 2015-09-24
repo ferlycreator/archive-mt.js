@@ -295,13 +295,13 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
         }
         if(coordinate){
             if(coordinate instanceof Z.Coordinate) {
-                position = this._map.coordinateToDomOffset(coordinate);
+                position = this._map.coordinateToViewPoint(coordinate);
             } else {
                 position = coordinate;
             }
         } else {
             var center = this._target.getCenter();
-            position = this._map.coordinateToDomOffset(center);
+            position = this._map.coordinateToViewPoint(center);
         }
         return position;
     }

@@ -74,7 +74,7 @@ Z.Circle=Z.Polygon.extend({
     },
 
     _containsPoint: function(point) {
-        var center = this._getCenterDomOffset(),
+        var center = this._getCenterViewPoint(),
             size = this.getSize(),
             t = this._hitTestTolerance(),
             pc = new Z.Point(center.left, center.top),

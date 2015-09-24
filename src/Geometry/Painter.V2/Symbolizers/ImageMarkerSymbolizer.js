@@ -21,7 +21,7 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
         var map = this.getMap();
         var dxdy = this.getDxDy();
         var cookedPoints = Z.Util.eachInArray(points,this,function(point) {
-            return map._domOffsetToScreen(point)._add(dxdy);
+            return map._viewPointToContainerPoint(point)._add(dxdy);
         });
         var style = this.style;
         var url = style['marker-file'];

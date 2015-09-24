@@ -5,14 +5,14 @@
  */
 Z.Geometry.Center = {
     //计算Geometry中心点在地图容器中的相对坐标
-    _getCenterDomOffset:function() {
+    _getCenterViewPoint:function() {
         var pcenter = this._getPCenter();
         if (!pcenter) {return null;}
         var map=this.getMap();
         if (!map) {
             return null;
         }
-        return map._transformToOffset(pcenter);
+        return map._transformToViewPoint(pcenter);
     },
 
     /**

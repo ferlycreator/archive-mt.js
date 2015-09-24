@@ -4,16 +4,6 @@
  * @author Maptalks Team
  */
 Z['Point']=Z.Point=function(left,top) {
-     /*if(left>0) {
-        this['left']=(0.5+left)<<0;
-     } else {
-        this['left']=(-0.5+left)<<0;
-     }
-     if(top>0){
-        this['top']=(0.5+top)<<0;
-     } else {
-        this['top']=(-0.5+top)<<0;
-     }*/
      this['top'] = top;
      this['left'] = left;
 };

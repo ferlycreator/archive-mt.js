@@ -30,7 +30,7 @@ Z.Map.ScrollWheelZoom = Z.Handler.extend({
         if (evt.detail) {
             _levelValue *= -1;
         }
-        var mouseOffset = Z.DomUtil.getEventDomCoordinate(evt, _containerDOM);
+        var mouseOffset = Z.DomUtil.getEventContainerPoint(evt, _containerDOM);
         if (this.wheelExecutor) {
             clearTimeout(this.wheelExecutor);
         }

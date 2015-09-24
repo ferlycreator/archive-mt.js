@@ -10,10 +10,10 @@ Z.Geometry.Poly={
      * @returns {Point[]} 容器坐标数组
      * @ignore
      */
-    _transformToOffset:function(points) {
+    _transformToViewPoint:function(points) {
         var map = this.getMap();
         return this._transformPoints(points, function(p) {
-            return map._transformToOffset(p);
+            return map._transformToViewPoint(p);
         });
     },
 
@@ -48,7 +48,7 @@ Z.Geometry.Poly={
                 var simplifiedPoints = Z.Simplify.simplify(p_r, 2, false);
                 result.push(simplifiedPoints);
             } else {
-                var pp = fn(p);//map._transformToOffset(p);
+                var pp = fn(p);//map._transformToViewPoint(p);
                 result.push(pp);
             }
         }

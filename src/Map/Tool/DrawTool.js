@@ -11,14 +11,10 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
     /**
      * 初始化绘制工具
      * @constructor
-     * @param {Object} options:{mode:Z.Geometry.TYPE_CIRCLE, afterdraw: fn, afterdrawdisable: true}
-     * @param {maptalks.Map} map
+     * @param {Object} options:{mode:Z.Geometry.TYPE_CIRCLE, disableOnDrawEnd: true}
      */
-    initialize: function(options, map) {
+    initialize: function(options) {
         Z.Util.extend(this, options);
-        if(map) {
-            this.addTo(map);
-        }
         return this;
     },
     /**
@@ -37,7 +33,6 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
     /**
      * 将绘图工具添加到map上
      * @param {maptalks.Map} map
-     * @expose
      */
     addTo: function(map) {
         //TODO options应该设置到this.options中
@@ -71,6 +66,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         this._endDraw();
         this.map.removeLayer(this._getDrawLayer());
         this._clearEvents();
+        return this;
     },
 
     /**
@@ -158,27 +154,23 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         this.map['doubleClickZoom'] = true;
     },
 
-    _clickForPoint: function(event) {
-        var screenXY = this._getMouseScreenXY(event);
-        var coordinate = this._screenXYToLonlat(screenXY);
-        var param = {'coordinate':coordinate, 'pixel':screenXY};
-        if(this.afterdraw){
-            this.afterdraw(param);
-        }
+    _clickForPoint: function(param) {
+        var geometry = new Z.Marker(param['coordinate']);
+        param['geometry'] = geometry;
         /**
-         * 触发afterdraw事件
-         * @event afterdraw
-         * @return {Object} params: {'coordinate':coordinate, 'pixel':screenXY};
+         * 触发drawend事件
+         * @event drawend
+         * @return {Object} params: {'coordinate':coordinate, 'pixel':containerPoint};
          */
-        this._fireEvent('afterdraw', param);
-        if(this.afterdrawdisable) {
+        this._fireEvent('drawend', param);
+        if(this.disableOnDrawEnd) {
            this.disable();
         }
     },
 
-    _clickForPath:function(event) {
-        var screenXY = this._getMouseScreenXY(event);
-        var coordinate = this._screenXYToLonlat(screenXY);
+    _clickForPath:function(param) {
+        var containerPoint = this._getMouseContainerPoint(param);
+        var coordinate = this._containerPointToLonlat(containerPoint);
         if (!this.geometry) {
             //无论画线还是多边形, 都是从线开始的
             this.geometry = new Z.Polyline([coordinate]);
@@ -187,32 +179,32 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
                 this.geometry.setSymbol(symbol);
             }
             /**
-             * 触发startdraw事件
-             * @event startdraw
-             * @return {Object} params: {'coordinate':coordinate, 'pixel':screenXY};
+             * 触发 drawstart 事件
+             * @event drawstart
+             * @return {Object} params: {'coordinate':coordinate, 'pixel':containerPoint};
              */
-            this._fireEvent('startdraw', {'coordinate':coordinate,'pixel':screenXY});
+            this._fireEvent('drawstart', param);
         } else {
             var path = this._getLonlats();
             path.push(coordinate);
             //这一行代码取消注册后, 会造成dblclick无法响应, 可能是存在循环调用,造成浏览器无法正常响应事件
             // this._setLonlats(path);
-            if (this.map.hasListeners('drawring')) {
+            if (this.map.hasListeners('drawvertex')) {
                 /**
-                 * 触发drawring事件：端点绘制事件，当为多边形或者多折线绘制了一个新的端点后会触发此事件
-                 * @event drawring
-                 * @return {Object} params: {'target': this, 'coordinate':coordinate, 'pixel':screenXY};
+                 * 触发drawvertex事件：端点绘制事件，当为多边形或者多折线绘制了一个新的端点后会触发此事件
+                 * @event drawvertex
+                 * @return {Object} params: {'target': this, 'coordinate':coordinate, 'pixel':containerPoint};
                  */
-                this._fireEvent('drawring',{'target':this.geometry,'coordinate':coordinate,'pixel':screenXY});
+                this._fireEvent('drawvertex',param);
             }
         }
     },
 
-    _mousemoveForPath : function(event) {
+    _mousemoveForPath : function(param) {
         if (!this.geometry) {return;}
-        var screenXY = this._getMouseScreenXY(event);
-        if (!this._isValidScreenXY(screenXY)) {return;}
-        var coordinate = this._screenXYToLonlat(screenXY);
+        var containerPoint = this._getMouseContainerPoint(param);
+        if (!this._isValidContainerPoint(containerPoint)) {return;}
+        var coordinate = this._containerPointToLonlat(containerPoint);
         var drawLayer = this._getDrawLayer();
         var path = this._getLonlats();
         if (path.length === 1) {
@@ -227,11 +219,11 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         // this.drawToolLayer.addGeometry(this.geometry);
     },
 
-    _dblclickForPath:function(event) {
+    _dblclickForPath:function(param) {
         if (!this.geometry) {return;}
-        var screenXY = this._getMouseScreenXY(event);
-        if (!this._isValidScreenXY(screenXY)) {return;}
-        var coordinate = this._screenXYToLonlat(screenXY);
+        var containerPoint = this._getMouseContainerPoint(param);
+        if (!this._isValidContainerPoint(containerPoint)) {return;}
+        var coordinate = this._containerPointToLonlat(containerPoint);
         var path = this._getLonlats();
         path.push(coordinate);
         if (path.length < 2) {return;}
@@ -264,10 +256,10 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
             this.geometry.setCoordinates(path);
         }
         //<--
-        this._endDraw(coordinate, screenXY);
+        this._endDraw(param);
     },
 
-    _mousedownToDraw : function(event) {
+    _mousedownToDraw : function(param) {
         var me = this;
         var onMouseUp;
         function genGeometry(coordinate) {
@@ -322,9 +314,9 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
             if (!this.geometry) {
                 return false;
             }
-            var screenXY = this._getMouseScreenXY(_event);
-            if (!this._isValidScreenXY(screenXY)) {return;}
-            var coordinate = this._screenXYToLonlat(screenXY);
+            var containerPoint = this._getMouseContainerPoint(_event);
+            if (!this._isValidContainerPoint(containerPoint)) {return;}
+            var coordinate = this._containerPointToLonlat(containerPoint);
             genGeometry(coordinate);
             return false;
         }
@@ -332,49 +324,48 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
             if (!this.geometry) {
                 return false;
             }
-            var screenXY = this._getMouseScreenXY(_event);
-            if (!this._isValidScreenXY(screenXY)) {return;}
-            var coordinate = this._screenXYToLonlat(screenXY);
+            var containerPoint = this._getMouseContainerPoint(_event);
+            if (!this._isValidContainerPoint(containerPoint)) {return;}
+            var coordinate = this._containerPointToLonlat(containerPoint);
             genGeometry(coordinate);
             this.map.off('mousemove',onMouseMove, this);
             this.map.off('mouseup',onMouseUp, this);
-            this._endDraw(coordinate, screenXY);
+            this._endDraw(param);
             return false;
         };
-        var screenXY = this._getMouseScreenXY(event);
-        if (!this._isValidScreenXY(screenXY)) {return;}
-        var coordinate = this._screenXYToLonlat(screenXY);
+        var containerPoint = this._getMouseContainerPoint(param);
+        if (!this._isValidContainerPoint(containerPoint)) {return;}
+        var coordinate = this._containerPointToLonlat(containerPoint);
         /**
          * 绘制开始事件
-         * @event startdraw
-         * @param {Object} param {'coordinate':coordinate,'pixel':screenXY}
+         * @event drawstart
+         * @param {Object} param {'coordinate':coordinate,'pixel':containerPoint}
          */
-        this._fireEvent('startdraw',{'coordinate':coordinate,'pixel':screenXY});
+        this._fireEvent('drawstart',param);
         genGeometry(coordinate);
         this.map.on('mousemove',onMouseMove,this);
         this.map.on('mouseup',onMouseUp,this);
         return false;
     },
 
-    _endDraw : function(coordinate, screenXY) {
+    _endDraw : function(param) {
         if (!this.geometry) {
             return;
         }
         var target = this.geometry.copy();
         this.geometry.remove();
         delete this.geometry;
-
-         var param = {'target':target,'coordinate':target.getCoordinates(), 'pixel':screenXY};
-         if(this.afterdraw){
-            this.afterdraw(param);
-         }
+        if (!param) {
+            param = {};
+        }
+        param['geometry'] = target;
           /**
            * 绘制结束事件
-           * @event afterdraw
-           * @param {Object} param {'coordinate':coordinate,'pixel':screenXY}
+           * @event drawend
+           * @param {Object} param {'target':drawTool,'geometry':target};
            */
-         this._fireEvent('afterdraw', param);
-         if(this.afterdrawdisable) {
+         this._fireEvent('drawend', param);
+         if(this.disableOnDrawEnd) {
            this.disable();
          }
     },
@@ -403,9 +394,9 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
      * @param  {[type]} event [description]
      * @return {[type]}       [description]
      */
-    _getMouseScreenXY:function(event) {
-        Z.DomUtil.stopPropagation(event);
-        var result = Z.DomUtil.getEventDomCoordinate(event,this.map._containerDOM);
+    _getMouseContainerPoint:function(event) {
+        Z.DomUtil.stopPropagation(event['domEvent']);
+        var result = event['containerPoint'];//Z.DomUtil.getEventContainerPoint(event,this.map._containerDOM);
         return result;
     },
 
@@ -414,22 +405,22 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
      * @param  {[type]} event [description]
      * @return {[type]}       [description]
      */
-    _screenXYToLonlat:function(screenXY) {
+    _containerPointToLonlat:function(containerPoint) {
         var projection = this._getProjection(),
             map = this.map;
 
         //projected pLonlat
-        var pLonlat = map._untransform(screenXY);
+        var pLonlat = map._untransform(containerPoint);
         return projection.unproject(pLonlat);
     },
 
-    _isValidScreenXY:function(screenXY) {
+    _isValidContainerPoint:function(containerPoint) {
         var mapSize = this.map.getSize();
         var w = mapSize['width'],
             h = mapSize['height'];
-        if (screenXY['left'] < 0 || screenXY['top'] < 0) {
+        if (containerPoint['left'] < 0 || containerPoint['top'] < 0) {
             return false;
-        } else if (screenXY['left']> w || screenXY['top'] > h){
+        } else if (containerPoint['left']> w || containerPoint['top'] > h){
             return false;
         }
         return true;
@@ -449,6 +440,8 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         if (!param) {
             param = {};
         }
+        param['target'] = this;
+        param['type'] = eventName;
         this.fire(eventName, param);
     }
 

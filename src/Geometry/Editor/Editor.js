@@ -157,8 +157,8 @@ Z.Editor=Z.Class.extend({
             document.onmousemove = function(ev){
                 ev  = ev || window.event;
                 editor.hideContext();
-                var mousePos = Z.DomUtil.getEventDomCoordinate(ev,_containerDOM);
-                var handleDomOffset = editor.map._screenToDomOffset(mousePos);
+                var mousePos = Z.DomUtil.getEventContainerPoint(ev,_containerDOM);
+                var handleDomOffset = editor.map._containerPointToViewPoint(mousePos);
                 handle.style['top']=(handleDomOffset.top-5)+"px";
                 handle.style['left']=(handleDomOffset.left-5)+"px";
                 Z.DomUtil.stopPropagation(ev);
@@ -187,7 +187,7 @@ Z.Editor=Z.Class.extend({
         }
         var geometry = this.geometry;
         var map = this.map;
-        var pxCenter = map._transformToOffset(geometry._getPCenter());
+        var pxCenter = map._transformToViewPoint(geometry._getPCenter());
         //------------------------拖动标注--------------------------
         this.createHandle(pxCenter, {
             tip:"拖动以移动图形",
@@ -213,7 +213,7 @@ Z.Editor=Z.Class.extend({
                 this.fireEditEvent('positionchanged');
             },
             onRefresh:function() {
-                return map._transformToOffset(geometry._getPCenter());
+                return map._transformToViewPoint(geometry._getPCenter());
             }
         });
 
@@ -233,7 +233,7 @@ Z.Editor=Z.Class.extend({
         var geometry = this.geometry;
         var map = this.map;
         function radiusHandleOffset() {
-            var pxCenter = map._transformToOffset(geometry._getPCenter());
+            var pxCenter = map._transformToViewPoint(geometry._getPCenter());
             var r = geometry.getRadius();
             var p = map.distanceToPixel(r,0);
             var rPx= new Z.Point(pxCenter['left']+p['width'],pxCenter['top']);// {'left':pxCenter['left']+p['width'],'top':pxCenter['top']};
@@ -243,7 +243,7 @@ Z.Editor=Z.Class.extend({
         var radiusHandle = this.createHandle(rPx, {
             tip:"拖动以调整圆形半径",
             onMove:function(handleDomOffset) {
-                var pxCenter = map._transformToOffset(geometry._getPCenter());
+                var pxCenter = map._transformToViewPoint(geometry._getPCenter());
                 var rPx = handleDomOffset['left']-pxCenter['left'];
                 var rPy = handleDomOffset['top']-pxCenter['top'];
                 //if (rPx >= 0 && rPy >= 0) {
@@ -280,7 +280,7 @@ Z.Editor=Z.Class.extend({
         var geometry = this.geometry;
         var map = this.map;
         function radiusHandleOffset() {
-            var pxCenter = map._transformToOffset(geometry._getPCenter());
+            var pxCenter = map._transformToViewPoint(geometry._getPCenter());
             var rx = Math.round(geometry.getWidth()/2);
             var rh = Math.round(geometry.getHeight()/2);
             var p = map.distanceToPixel(rx,rh);
@@ -292,7 +292,7 @@ Z.Editor=Z.Class.extend({
         var rHandle = this.createHandle(rPx, {
             tip:"拖动以调整椭圆大小",
             onMove:function(handleDomOffset) {
-                var pxCenter = map._transformToOffset(geometry._getPCenter());
+                var pxCenter = map._transformToViewPoint(geometry._getPCenter());
                 var rxPx = handleDomOffset.left-pxCenter.left;
                 var ryPx = handleDomOffset.top-pxCenter.top;
                 if (rxPx >= 0 && ryPx>=0) {
@@ -332,7 +332,7 @@ Z.Editor=Z.Class.extend({
         var geometry = this.geometry;
         var map = this.map;
         function radiusHandleOffset() {
-            var pxNw = map._transformToOffset(geometry._getPNw());
+            var pxNw = map._transformToViewPoint(geometry._getPNw());
             var rw = Math.round(geometry.getWidth());
             var rh = Math.round(geometry.getHeight());
             var p = map.distanceToPixel(rw,rh);
@@ -344,7 +344,7 @@ Z.Editor=Z.Class.extend({
         var rHandle = this.createHandle(rPx, {
             tip:"拖动以调整矩形大小",
             onMove:function(handleDomOffset) {
-                var pxNw = map._transformToOffset(geometry._getPNw());
+                var pxNw = map._transformToViewPoint(geometry._getPNw());
                 var rxPx = handleDomOffset['left']-pxNw['left'];
                 var ryPx = handleDomOffset['top']-pxNw['top'];
                 if (rxPx >= 0 && ryPx>=0) {
@@ -365,7 +365,7 @@ Z.Editor=Z.Class.extend({
                 return radiusHandleOffset();
             }
         });
-        var pxNw = map._transformToOffset(geometry._getPNw());
+        var pxNw = map._transformToViewPoint(geometry._getPNw());
         //------------------------拖动标注--------------------------
         this.createHandle(pxNw, {
             tip:"拖动以移动图形",
@@ -388,7 +388,7 @@ Z.Editor=Z.Class.extend({
                 // geometry.fire("positionchanged",{"target":geometry});
             },
             onRefresh:function() {
-                return map._transformToOffset(geometry._getPNw());
+                return map._transformToViewPoint(geometry._getPNw());
             }
         });
     },
@@ -414,7 +414,7 @@ Z.Editor=Z.Class.extend({
         }
         function createVertexHandle(vertex) {
             //vertex是个引用
-            var pxVertex = map._transformToOffset(vertex);
+            var pxVertex = map._transformToViewPoint(vertex);
             //------------------------拖动标注--------------------------
             var handle = this.createHandle(pxVertex, {
                 tip:"拖动以调整"+title+"顶点",
@@ -432,7 +432,7 @@ Z.Editor=Z.Class.extend({
                     this.refreshHandles([centerHandle]);
                 },
                 onRefresh:function() {
-                    return map._transformToOffset(vertex);
+                    return map._transformToViewPoint(vertex);
                 }
             });
             Z.DomUtil.addDomEvent(handle,'mouseover',function(event){
@@ -495,7 +495,7 @@ Z.Editor=Z.Class.extend({
         function computePxCenter() {
             var center = geometry.getCenter();
             var pcenter = map._getProjection().project(center);
-            return map._transformToOffset(pcenter);
+            return map._transformToViewPoint(pcenter);
         }
         function createCenterHandle() {
             centerHandle = this.createHandle(computePxCenter(), {
@@ -515,7 +515,7 @@ Z.Editor=Z.Class.extend({
                     //TODO 移动vertex,重新赋值points
                     var lonlats = getLonlats();
                     for (var i=0,len=lonlats.length;i<len;i++) {
-                        var vo = map._transformToOffset(lonlats[i]);
+                        var vo = map._transformToViewPoint(lonlats[i]);
                         var n = map._untransformFromOffset(new Z.Point(vo['left']+dragged['left'], vo['top']+dragged['top']));
                         lonlats[i].x = n.x;
                         lonlats[i].y = n.y;
@@ -575,16 +575,16 @@ Z.Editor=Z.Class.extend({
 
         Z.DomUtil.addDomEvent(map._containerDOM,'mousemove',function(event) {
             var res = map._getTileConfig()['resolutions'][map.getZoomLevel()];
-            var eventOffset = Z.DomUtil.getEventDomCoordinate(event,map._containerDOM);
+            var eventOffset = Z.DomUtil.getEventContainerPoint(event,map._containerDOM);
             var plonlat = map._untransform(eventOffset);
             var tolerance = pxTolerance*res;
             var interIndex = Z.GeoUtils._isPointOnPath(plonlat, geometry,tolerance);
             var prjPoints = getLonlats();
             //不与端点重叠,如果重叠则不显示
             if (interIndex >= 0 && !isPointOverlapped(plonlat,prjPoints[interIndex],tolerance) && !isPointOverlapped(plonlat,prjPoints[interIndex+1],tolerance)) {
-                var domOffset = map._screenToDomOffset(eventOffset);
-                tmpHandle.style.left = (domOffset['left']-5)+'px';
-                tmpHandle.style.top = (domOffset['top']-5)+'px';
+                var viewPoint = map._containerPointToViewPoint(eventOffset);
+                tmpHandle.style.left = (viewPoint['left']-5)+'px';
+                tmpHandle.style.top = (viewPoint['top']-5)+'px';
                 tmpHandle.style.display="";
             } else {
                 tmpHandle.style.display="none";

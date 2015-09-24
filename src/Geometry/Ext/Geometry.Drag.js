@@ -28,12 +28,12 @@ Z.Geometry.include({
          * @event dragstart
          * @return {Object} params: {'target':this}
          */
-        this.fire('dragstart', {'target': this});
+        this.fire('dragstart', {'target':this});
     },
 
-    _dragging: function(event) {
+    _dragging: function(param) {
         this._isDragging = true;
-        this.endPosition = Z.DomUtil.getEventDomCoordinate(event, this._map._containerDOM);
+        this.endPosition = param['containerPoint'];
         if(!this.startPosition) {
             this.startPosition = this.endPosition;
         }
@@ -43,7 +43,7 @@ Z.Geometry.include({
         );
         var center = this.getCenter();
         if(!center||!center.x||!center.y) {return;}
-        var geometryPixel = this._map.coordinateToDomOffset(center);
+        var geometryPixel = this._map.coordinateToViewPoint(center);
         var mapOffset = this._map.offsetPlatform();
         var newPosition = new Z.Point(
             geometryPixel['left'] + dragOffset['left'] - mapOffset['left'],
@@ -59,7 +59,7 @@ Z.Geometry.include({
         } else if (this instanceof Z.Rectangle) {
             var coordinate = this.getCoordinates();
             if(!coordinate||!coordinate.x||!coordinate.y) {return;}
-            var geometryPixel = this._map.coordinateToDomOffset(coordinate);
+            var geometryPixel = this._map.coordinateToViewPoint(coordinate);
             var newPosition = new Z.Point(
                 geometryPixel['left'] + dragOffset['left'] - mapOffset['left'],
                 geometryPixel['top'] + dragOffset['top'] - mapOffset['top']
@@ -69,7 +69,7 @@ Z.Geometry.include({
         } else if (this instanceof Z.Polyline) {
             var lonlats = this.getCoordinates();
             for (var i=0,len=lonlats.length;i<len;i++) {
-                var plonlat = this._map.coordinateToDomOffset(lonlats[i]);
+                var plonlat = this._map.coordinateToViewPoint(lonlats[i]);
                 var coordinate = this._map._untransformFromOffset(new Z.Point(plonlat['left']+dragOffset['left'] - mapOffset['left'],
                         plonlat['top']+dragOffset['top'] - mapOffset['top']));
                 lonlats[i].x = coordinate.x;
@@ -82,7 +82,7 @@ Z.Geometry.include({
            for (var i=0,len=lonlats.length;i<len;i++) {
                 var coordinates = lonlats[i];
                 for (var j=0,clen=coordinates.length;j<clen;j++) {
-                    var plonlat = this._map.coordinateToDomOffset(coordinates[j]);
+                    var plonlat = this._map.coordinateToViewPoint(coordinates[j]);
                     var coordinate = this._map._untransformFromOffset(new Z.Point(
                         plonlat['left']+dragOffset['left'] - mapOffset['left'],
                         plonlat['top']+dragOffset['top'] - mapOffset['top']
@@ -93,30 +93,32 @@ Z.Geometry.include({
            this._setPrjPoints(newLonlats);
         }
         this._updateCache();
+        param['target'] = this;
         /**
          * 触发geometry的dragging事件
          * @member maptalks.Geometry
          * @event dragging
-         * @return {Object} params: {'target':this}
+         * @return {Object} params: {'target':geometry, 'containerPoint':containerPoint, 'coordinate':coordinate,'domEvent':event};
          */
-        this.fire('dragging', {'target': this});
+        this.fire('dragging', param);
     },
 
     /**
      * 结束移动Geometry, 退出移动模式
      */
-    _endDrag: function(event) {
+    _endDrag: function(param) {
         this._isDragging = false;
         this._map.enableDrag();
         this._map.off('mousemove', this._dragging, this)
                  .off('mouseup', this._endDrag, this);
+        param['target'] = this;
         /**
          * 触发geometry的dragend事件
          * @member maptalks.Geometry
          * @event dragend
          * @return {Object} params: {'target':this}
          */
-        this.fire('dragend', {'target': this});
+        this.fire('dragend', param);
         Z.DomUtil.setStyle(this._map._containerDOM, 'cursor: default');
     },
 
@@ -138,8 +140,8 @@ Z.Geometry.addInitHook(function () {
 	if (this.options['draggable']) {
 	    var trigger = this.options['dragTrigger'];
 	    if(!('manual' === trigger)) {
-            this.on(trigger, function() {
-                this.startDrag();
+            this.on(trigger, function(param) {
+                this.startDrag(param);
             }, this);
 	    }
 	}

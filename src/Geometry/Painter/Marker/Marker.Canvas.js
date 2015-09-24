@@ -22,7 +22,7 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
         }
         var offset = this.getMarkerDomOffset();
         var mapOffset = map.offsetPlatform();
-        var pt = map._domOffsetToScreen(new Z.Point(offset[0], offset[1]));
+        var pt = map._viewPointToContainerPoint(new Z.Point(offset[0], offset[1]));
         var icon = this.getGeoIcon();
         if(icon) {
             var url = icon['url'];
@@ -32,7 +32,7 @@ Z.Marker.Canvas = Z.Painter.Canvas.extend({
             }
             var markerType = icon['type'];
             if(markerType&&markerType.length>0) {
-                pt = geometry._getCenterDomOffset();
+                pt = geometry._getCenterViewPoint();
                 pt = new Z.Point(pt['left']+mapOffset['left'], pt['top']+mapOffset['top']);
                 this.paintVectorMarker(context, pt);
                 return;

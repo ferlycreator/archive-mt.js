@@ -138,75 +138,75 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
     //获取距离coordinate最近的panel上的点
     _getNearestPoint: function(coordinate) {
         var points = [];
-        var screenPoint = this._topLeftPoint();
+        var containerPoint = this._topLeftPoint();
         var width = this._panelContainer['clientWidth'],
             height = this._panelContainer['clientHeight'];
-        var topLeftPoint = this._map.screenPointToCoordinate(screenPoint);
+        var topLeftPoint = this._map.containerPointToCoordinate(containerPoint);
 
-        var topCenterPoint = this._map.screenPointToCoordinate(
+        var topCenterPoint = this._map.containerPointToCoordinate(
             new Z.Point(
-                screenPoint['left'] + Math.round(width/2),
-                screenPoint['top']
+                containerPoint['left'] + Math.round(width/2),
+                containerPoint['top']
                 )
         );
-        var topCenterBufferPoint = this._map.screenPointToCoordinate(
+        var topCenterBufferPoint = this._map.containerPointToCoordinate(
             new Z.Point(
-                screenPoint['left'] + Math.round(width/2),
-                screenPoint['top'] - 20
+                containerPoint['left'] + Math.round(width/2),
+                containerPoint['top'] - 20
                 )
         );
-        var topRightPoint = this._map.screenPointToCoordinate(
+        var topRightPoint = this._map.containerPointToCoordinate(
             new Z.Point(
-                screenPoint['left'] + width,
-                screenPoint['top']
+                containerPoint['left'] + width,
+                containerPoint['top']
                 )
         );
-        var bottomLeftPoint = this._map.screenPointToCoordinate(
+        var bottomLeftPoint = this._map.containerPointToCoordinate(
             new Z.Point(
-                screenPoint['left'],
-                screenPoint['top'] + height
+                containerPoint['left'],
+                containerPoint['top'] + height
                 )
         );
-        var bottomCenterPoint = this._map.screenPointToCoordinate(
+        var bottomCenterPoint = this._map.containerPointToCoordinate(
             new Z.Point(
-                screenPoint['left'] + Math.round(width/2),
-                screenPoint['top'] + height
+                containerPoint['left'] + Math.round(width/2),
+                containerPoint['top'] + height
                 )
         );
-        var bottomCenterBufferPoint = this._map.screenPointToCoordinate(
+        var bottomCenterBufferPoint = this._map.containerPointToCoordinate(
             new Z.Point(
-                screenPoint['left'] + Math.round(width/2),
-                screenPoint['top'] + height + 20
+                containerPoint['left'] + Math.round(width/2),
+                containerPoint['top'] + height + 20
                 )
         );
-        var bottomRightPoint = this._map.screenPointToCoordinate(
+        var bottomRightPoint = this._map.containerPointToCoordinate(
             new Z.Point(
-                screenPoint['left'] + width,
-                screenPoint['top'] + height
+                containerPoint['left'] + width,
+                containerPoint['top'] + height
                 )
         );
-        var middleLeftPoint = this._map.screenPointToCoordinate(
+        var middleLeftPoint = this._map.containerPointToCoordinate(
             new Z.Point(
-                screenPoint['left'],
-                screenPoint['top'] + Math.round(height/2)
+                containerPoint['left'],
+                containerPoint['top'] + Math.round(height/2)
                 )
         );
-        var middleLeftBufferPoint = this._map.screenPointToCoordinate(
+        var middleLeftBufferPoint = this._map.containerPointToCoordinate(
             new Z.Point(
-                screenPoint['left'] - 20,
-                screenPoint['top'] + Math.round(height/2)
+                containerPoint['left'] - 20,
+                containerPoint['top'] + Math.round(height/2)
                 )
         );
-        var middleRightPoint = this._map.screenPointToCoordinate(
+        var middleRightPoint = this._map.containerPointToCoordinate(
             new Z.Point(
-                screenPoint['left'] + width,
-                screenPoint['top'] + Math.round(height/2)
+                containerPoint['left'] + width,
+                containerPoint['top'] + Math.round(height/2)
                 )
         );
-        var middleRightBufferPoint = this._map.screenPointToCoordinate(
+        var middleRightBufferPoint = this._map.containerPointToCoordinate(
             new Z.Point(
-                screenPoint['left'] + width + 20,
-                screenPoint['top'] + Math.round(height/2)
+                containerPoint['left'] + width + 20,
+                containerPoint['top'] + Math.round(height/2)
                 )
         );
         var points = [topCenterPoint,middleRightPoint,bottomCenterPoint,middleLeftPoint];
