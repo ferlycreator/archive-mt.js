@@ -734,6 +734,17 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {[type]} [description]
      */
     getAllLayers:function() {
+        var layers = this._getAllLayers();
+        var result = [];
+        for (var i = layers.length - 1; i >= 0; i--) {
+            if (layers[i].getId().indexOf(Z.internalLayerPrefix) == -1) {
+                result.push(layers[i]);
+            }
+        }
+        return result;
+    },
+
+    _getAllLayers:function() {
         //TODO 可视化图层
         var result = [];
         return result.concat(this._tileLayers).concat(this._dynLayers)
