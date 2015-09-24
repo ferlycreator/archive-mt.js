@@ -38,7 +38,7 @@
         //将点绘制工具绑定到地图对象
         drawTool.addTo(mapObj);
         //监听绘制工具完成事件，获取绘制的点坐标等信息
-        drawTool.on('afterdraw', onAfterDrawMarker);
+        drawTool.on('drawend', onAfterDrawMarker);
     }
 
     //绘制完点后操作

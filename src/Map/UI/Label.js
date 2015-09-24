@@ -5,7 +5,7 @@
  * @mixins maptalks.Eventable
  * @author Maptalks Team
  */
-Z['Label'] = Z.Label = Z.Class.extend({
+Z.Label = Z.Class.extend({
     includes: [Z.Eventable],
 
     /**
@@ -24,35 +24,33 @@ Z['Label'] = Z.Label = Z.Class.extend({
      * @cfg {Object} options label属性
      */
     options:{
-        'symbol': {
-            'shield-type': 'label',//label tip
-            'shield-name': '',
-            'shield-opacity': 1,
-            'shield-line-color': '#000000',
-            'shield-line-width': 1,
-            'shield-line-opacity': 1,
-            'shield-fill': '#ffffff',
-            'shield-fill-opacity': 1,
-            'shield-file': '',
-            'shield-face-name': 'Serif',
-            'shield-unlock-image' : false,
-            'shield-size': 12,
-            'shield-text-fill': '#ff0000',
-            'shield-placement': 'point', //point line vertex interior
-            'shield-spacing': 30,
-            'shield-wrap-width': 100,
-            'shield-wrap-before': false,
-            'shield-wrap-character': '',
-            'shield-character-spacing': 0,
-            'shield-line-spacing': 8,
-            'shield-text-dx': 0,
-            'shield-text-dy': 0,
-            'shield-dx': 0,
-            'shield-dy': 0,
-            'shield-text-opacity': 1,
-            'shield-horizontal-alignment': 'right',//left middle right
-            'shield-vertical-alignment': 'top',//top middle bottom
-            'shield-justify-alignment': 'center'//left center right
+        "label-box" : "tip",
+        "label-box-style": {
+            'line-color': '#000000',
+            'line-width': 1,
+            'line-opacity': 1,
+            'polygon-opacity': 1,
+            'polygon-fill': '#ffffff',
+            'size': 12,
+            'text-fill': '#ff0000',
+            'placement': 'point', //point line vertex interior
+            'spacing': 30,
+            'wrap-width': 100,
+            'wrap-before': false,
+            'wrap-character': '',
+            'character-spacing': 0,
+            'line-spacing': 8,
+            'text-dx': 0,
+            'text-dy': 0,
+            'dx': 0,
+            'dy': 0,
+            'text-opacity': 1,
+            'horizontal-alignment': 'right',//left middle right
+            'vertical-alignment': 'top',//top middle bottom
+            'justify-alignment': 'center'//left center right
+        },
+        "label-text-style" : {
+            "text-face-name": "Serif",
         },
         'link': true,
         'draggable': true,
@@ -81,6 +79,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
         return this;
     },
 
+
     /**
     * 隐藏label
     * @expose
@@ -90,7 +89,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
         if(this.options['link']) {
             //this._link.hide();
         }
-        this.fire('hide', {'target': this});
+        this.fire('hide');
     },
 
     /**
@@ -102,7 +101,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
         if(this.options['link']) {
             //this._linkToTarget();
         }
-        this.fire('show', {'target': this});
+        this.fire('show');
     },
 
     /**
@@ -114,7 +113,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
         if(this.options['link']) {
             //this._link.remove();
         }
-        this.fire('remove', {'target': this});
+        this.fire('remove');
     },
 
     /**
@@ -208,74 +207,74 @@ Z['Label'] = Z.Label = Z.Class.extend({
         var width = 0, //textSize['width'],
             height = 0; //textSize['height'];
 
-        var screenPoint = this._topLeftPoint(width, height);
+        var containerPoint = this._topLeftPoint(width, height);
 
-        var topLeftPoint = this._map.screenPointToCoordinate(screenPoint);
+        var topLeftPoint = this._map.containerPointToCoordinate(containerPoint);
 
-        var topCenterPoint = this._map.screenPointToCoordinate(
+        var topCenterPoint = this._map.containerPointToCoordinate(
             new Z.Point(
-                screenPoint['left'] + Math.round(width/2),
-                screenPoint['top']
+                containerPoint['left'] + Math.round(width/2),
+                containerPoint['top']
                 )
         );
-        var topCenterBufferPoint = this._map.screenPointToCoordinate(
+        var topCenterBufferPoint = this._map.containerPointToCoordinate(
             new Z.Point(
-                screenPoint['left'] + Math.round(width/2),
-                screenPoint['top'] - 20
+                containerPoint['left'] + Math.round(width/2),
+                containerPoint['top'] - 20
                 )
         );
-        var topRightPoint = this._map.screenPointToCoordinate(
+        var topRightPoint = this._map.containerPointToCoordinate(
             new Z.Point(
-                screenPoint['left'] + width,
-                screenPoint['top']
+                containerPoint['left'] + width,
+                containerPoint['top']
                 )
         );
-        var bottomLeftPoint = this._map.screenPointToCoordinate(
+        var bottomLeftPoint = this._map.containerPointToCoordinate(
             new Z.Point(
-                screenPoint['left'],
-                screenPoint['top'] + height
+                containerPoint['left'],
+                containerPoint['top'] + height
                 )
         );
-        var bottomCenterPoint = this._map.screenPointToCoordinate(
+        var bottomCenterPoint = this._map.containerPointToCoordinate(
             new Z.Point(
-                screenPoint['left'] + Math.round(width/2),
-                screenPoint['top'] + height
+                containerPoint['left'] + Math.round(width/2),
+                containerPoint['top'] + height
                 )
         );
-        var bottomCenterBufferPoint = this._map.screenPointToCoordinate(
+        var bottomCenterBufferPoint = this._map.containerPointToCoordinate(
             new Z.Point(
-                screenPoint['left'] + Math.round(width/2),
-                screenPoint['top'] + height + 20
+                containerPoint['left'] + Math.round(width/2),
+                containerPoint['top'] + height + 20
                 )
         );
-        var bottomRightPoint = this._map.screenPointToCoordinate(
+        var bottomRightPoint = this._map.containerPointToCoordinate(
             new Z.Point(
-                screenPoint['left'] + width,
-                screenPoint['top'] + height
+                containerPoint['left'] + width,
+                containerPoint['top'] + height
                 )
         );
-        var middleLeftPoint = this._map.screenPointToCoordinate(
+        var middleLeftPoint = this._map.containerPointToCoordinate(
             new Z.Point(
-                screenPoint['left'],
-                screenPoint['top'] + Math.round(height/2)
+                containerPoint['left'],
+                containerPoint['top'] + Math.round(height/2)
                 )
         );
-        var middleLeftBufferPoint = this._map.screenPointToCoordinate(
+        var middleLeftBufferPoint = this._map.containerPointToCoordinate(
             new Z.Point(
-                screenPoint['left'] - 20,
-                screenPoint['top'] + Math.round(height/2)
+                containerPoint['left'] - 20,
+                containerPoint['top'] + Math.round(height/2)
                 )
         );
-        var middleRightPoint = this._map.screenPointToCoordinate(
+        var middleRightPoint = this._map.containerPointToCoordinate(
             new Z.Point(
-                screenPoint['left'] + width,
-                screenPoint['top'] + Math.round(height/2)
+                containerPoint['left'] + width,
+                containerPoint['top'] + Math.round(height/2)
                 )
         );
-        var middleRightBufferPoint = this._map.screenPointToCoordinate(
+        var middleRightBufferPoint = this._map.containerPointToCoordinate(
             new Z.Point(
-                screenPoint['left'] + width + 20,
-                screenPoint['top'] + Math.round(height/2)
+                containerPoint['left'] + width + 20,
+                containerPoint['top'] + Math.round(height/2)
                 )
         );
         var points = [topCenterPoint,middleRightPoint,bottomCenterPoint,middleLeftPoint];
@@ -311,7 +310,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
     _topLeftPoint: function(width, height) {
         var placement = this.options['symbol']['shield-vertical-alignment'];
         var center = this._label.getCenter();
-        var point = this._map.coordinateToDomOffset(center);
+        var point = this._map.coordinateToViewPoint(center);
         var mapOffset = this._map.offsetPlatform();
         if (placement === 'left') {
             return new Z.Point(
@@ -366,7 +365,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
         if(this.options['link']) {
             this._map.on('mousemove zoomend resize moving', this._changeLinkPath, this);
         }
-        this.fire('dragstart', {'target': this});
+        this.fire('dragstart');
     },
 
     _endMove: function(event) {
@@ -381,7 +380,7 @@ Z['Label'] = Z.Label = Z.Class.extend({
                 this._link.setSymbol(strokeSymbol);
             }
         }
-        this.fire('dragend', {'target': this});
+        this.fire('dragend');
     },
 
     _recoverMapEvents: function() {

@@ -64,8 +64,8 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
         var min = map._getProjection().project(new Z.Coordinate(extent['xmin'],extent['ymin'])),
             max = map._getProjection().project(new Z.Coordinate(extent['xmax'],extent['ymax']));
         return new Z.Extent(
-            map._transformToOffset(min),
-            map._transformToOffset(max)
+            map._transformToViewPoint(min),
+            map._transformToViewPoint(max)
             );
     },
     refresh:function() {

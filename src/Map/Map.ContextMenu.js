@@ -14,9 +14,9 @@ Z.Map.include({
 
     //菜单打开前
     _beforeOpenContextMenu: function(event) {
-        var pixel = Z.DomUtil.getEventDomCoordinate(event, this._containerDOM);
-        var coordinate = this.screenPointToCoordinate(pixel);
-        var position = this.coordinateToDomOffset(coordinate);
+        var pixel = Z.DomUtil.getEventContainerPoint(event, this._containerDOM);
+        var coordinate = this.containerPointToCoordinate(pixel);
+        var position = this.coordinateToViewPoint(coordinate);
         var param = {'coordinate':coordinate, 'pixel':position};
         var menuOptions = this._menu.getOptions();
         menuOptions.position = position;

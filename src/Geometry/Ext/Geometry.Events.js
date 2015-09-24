@@ -9,7 +9,7 @@ Z.Geometry.include({
             return;
         }
         //map抛过来的事件中有originEvent, 而dom直接抛的没有
-        var originalEvent = event.originalEvent || event;
+        var originalEvent = event;
         var eventType = originalEvent.type;
         var eventFired = eventType;
         //事件改名
@@ -21,7 +21,7 @@ Z.Geometry.include({
                 eventFired = 'rightclick';
             }
         }
-        var params = this._getEventParams(originalEvent);
+        var params = this._getEventParams(originalEvent, eventFired);
         this._fireEvent(eventFired, params);
     },
 
@@ -30,20 +30,20 @@ Z.Geometry.include({
      * @param  {Event} event 事件对象
      * @return {Object} 事件返回参数
      */
-    _getEventParams: function(event) {
+    _getEventParams: function(event,type) {
         var map = this.getMap();
-        var pixel = Z.DomUtil.getEventDomCoordinate(event, map.containterDom);
-        var coordinate = map._untransform(pixel);
+        var containerPoint = Z.DomUtil.getEventContainerPoint(event, map.containterDom);
+        var coordinate = map._untransform(containerPoint);
         //统一的参数, target是geometry引用, pixel是事件的屏幕坐标, coordinate是事件的经纬度坐标
-        return {'target':this, 'pixel':pixel, 'coordinate':coordinate};
+        return { 'containerPoint':containerPoint, 'coordinate':coordinate,'domEvent':event};
     },
 
     _onMouseOver: function(event) {
         if (!this.getMap()) {
             return;
         }
-        var originalEvent = event.originalEvent || event;
-        var params = this._getEventParams(originalEvent);
+        var originalEvent = event;
+        var params = this._getEventParams(originalEvent,'mouseover');
         /**
          * 触发geometry的mouseover事件
          * @member maptalks.Geometry
@@ -57,8 +57,8 @@ Z.Geometry.include({
         if (!this.getMap()) {
             return;
         }
-        var originalEvent = event.originalEvent || event;
-        var params = this._getEventParams(originalEvent);
+        var originalEvent = event;
+        var params = this._getEventParams(originalEvent,'mouseout');
         /**
          * 触发geometry的mouseout事件
          * @member maptalks.Geometry

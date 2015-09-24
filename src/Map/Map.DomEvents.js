@@ -68,9 +68,11 @@ Z.Map.include({
     },
 
     _fireDOMEvent: function (target, e, type) {
-    	//TODO DOM事件参数属性应该统一起来
+        var containerPoint = Z.DomUtil.getEventContainerPoint(e, this._containerDom);
         var data = {
-            'originalEvent': e
+            'coordinate': this.containerPointToCoordinate(containerPoint),
+            'containerPoint':containerPoint,
+            'domEvent': e
         };
         //阻止右键菜单
         if (type === 'contextmenu') {

@@ -9,7 +9,7 @@ Z.Geometry.include({
         if(this.getMap()) {
             this._setInfoWindow(options);
         } else {
-            this.on('afterAdd', function() {
+            this.on('addend', function() {
                 this._setInfoWindow(options);
             });
         }

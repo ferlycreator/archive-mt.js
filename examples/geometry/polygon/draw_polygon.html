@@ -50,7 +50,7 @@
         //将线绘制工具绑定到地图对象
         drawTool.addTo(mapObj);
         //监听绘制工具完成事件，获取绘制的面坐标数组等信息
-        drawTool.on('afterdraw', onAfterDrawPolygon);
+        drawTool.on('drawend', onAfterDrawPolygon);
     }
 
     //绘制完线面操作

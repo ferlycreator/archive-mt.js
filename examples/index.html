@@ -662,7 +662,7 @@ drawTool = new maptalks.DrawTool({
 //将点绘制工具绑定到地图对象
 drawTool.addTo(mapObj);
 //监听绘制工具完成事件，获取绘制的点坐标等信息
-drawTool.on('afterdraw', onAfterDrawMarker);
+drawTool.on('drawend', onAfterDrawMarker);
 //绘制完点后操作
 function onAfterDrawMarker(param) {
     var coordinate = param.coordinate;
@@ -767,7 +767,7 @@ drawTool = new maptalks.DrawTool({
 //将线绘制工具绑定到地图对象
 drawTool.addTo(mapObj);
 //监听绘制工具完成事件，获取绘制的线坐标数组等信息
-drawTool.on('afterdraw', onAfterDrawPolyline);
+drawTool.on('drawend', onAfterDrawPolyline);
 
 //绘制完线后操作
 function onAfterDrawPolyline(param) {
@@ -900,7 +900,7 @@ drawTool = new maptalks.DrawTool({
 //将线绘制工具绑定到地图对象
 drawTool.addTo(mapObj);
 //监听绘制工具完成事件，获取绘制的面坐标数组等信息
-drawTool.on('afterdraw', onAfterDrawPolygon);
+drawTool.on('drawend', onAfterDrawPolygon);
 
 //绘制完线面操作
 function onAfterDrawPolygon(param) {

@@ -11,14 +11,10 @@ Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
     /**
      * 初始化测距工具
      * @constructor
-     * @param {Object} options:{aftermeasure: fn}
-     * @param {maptalks.Map} map
+     * @param {Object} options:{}
      */
-    initialize: function(options, map) {
+    initialize: function(options) {
         Z.Util.extend(this, options);
-        if(map) {
-            this.addTo(map);
-        }
         return this;
     },
 
@@ -31,7 +27,7 @@ Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
         //TODO options应该设置到this.options中
         this.map = map;
         if (!this.map) {return;}
-        this.layerId = '____system_layer_distancetool';
+        this.layerId = Z.internalLayerPrefix+'distancetool';
         this.drawLayer = null;
         this.drawTool = null;
         this.rings = [];
@@ -65,12 +61,12 @@ Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
         drawTool = new Z.DrawTool({
             'mode':Z.Geometry.TYPE_POLYLINE,
             'symbol': {'strokeSymbol':{'stroke':'#ff0000', 'stroke-width':3, 'opacity':0.6}},
-            'afterdrawdisable': true
+            'disableOnDrawEnd': true
         }).addTo(this.map);
 
-        drawTool.on('startdraw', Z.Util.bind(this._startMeasure, this));
-        drawTool.on('drawring', Z.Util.bind(this._measureRing, this));
-        drawTool.on('afterdraw', Z.Util.bind(this._afterMeasure, this));
+        drawTool.on('drawstart', Z.Util.bind(this._startMeasure, this));
+        drawTool.on('drawvertex', Z.Util.bind(this._measureRing, this));
+        drawTool.on('drawend', Z.Util.bind(this._afterMeasure, this));
 
         this.drawTool = drawTool;
 
@@ -166,10 +162,10 @@ Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
         this.rings = [];
         /**
          * 距离量算结束事件
-         * @event aftermeasure
+         * @event measureend
          * @param result: 总长度
          */
-        this.fire('aftermeasure', {'result': lenSum});
+        this.fire('measureend', {'result': lenSum});
     },
 
     _caculateLenSum : function() {

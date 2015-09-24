@@ -6,10 +6,12 @@ Z.OverlayLayer=Z.Layer.extend({
     //根据不同的语言定义不同的错误信息
     exceptionDefs:{
         'en-US':{
-            'DUPLICATE_GEOMETRY_ID':'Duplicate ID for the geometry'
+            'DUPLICATE_GEOMETRY_ID':'Duplicate ID for the geometry',
+            'INVALID_GEOMETRY':'invalid geometry to add to layer.'
         },
         'zh-CN':{
-            'DUPLICATE_GEOMETRY_ID':'重复的Geometry ID'
+            'DUPLICATE_GEOMETRY_ID':'重复的Geometry ID',
+            'INVALID_GEOMETRY':'不合法的Geometry, 无法被加入图层.'
         }
     },
 
@@ -62,7 +64,9 @@ Z.OverlayLayer=Z.Layer.extend({
         var extent = null;
         for (var i=0, len=geometries.length;i<len;i++) {
             var geo = geometries[i];
-            if (!geo) {continue;}
+            if (!geo || !(geo instanceof Z.Geometry)) {
+                throw new Error(this.exceptions['INVALID_GEOMETRY']);
+            }
 
             var geoId = geo.getId();
             if (geoId) {
@@ -87,8 +91,7 @@ Z.OverlayLayer=Z.Layer.extend({
                 }
             }
             //图形添加到layer
-            //TODO 事件名需要都改成小写
-            geo._fireEvent('afterAdd', {'target':geo});
+            geo._fireEvent('addend', {'geometry':geo});
         }
         var map = this.getMap();
         if (map) {

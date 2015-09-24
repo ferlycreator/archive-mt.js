@@ -44,7 +44,7 @@
         //将线绘制工具绑定到地图对象
         drawTool.addTo(mapObj);
         //监听绘制工具完成事件，获取绘制的线坐标数组等信息
-        drawTool.on('afterdraw', onAfterDrawPolyline);
+        drawTool.on('drawend', onAfterDrawPolyline);
     }
 
     //绘制完线后操作

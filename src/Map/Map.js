@@ -657,11 +657,11 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @param {Coordinate} 地理坐标
      * @return {Point} 容器偏转坐标
      */
-    coordinateToDomOffset: function(coordinate) {
+    coordinateToViewPoint: function(coordinate) {
         var projection = this._getProjection();
         if (!coordinate || !projection) {return null;}
         var pCoordinate = projection.project(coordinate);
-        return this._transformToOffset(pCoordinate);
+        return this._transformToViewPoint(pCoordinate);
     },
 
     /**
@@ -669,7 +669,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @param {Coordinate} 地理坐标
      * @return {Point} 屏幕坐标
      */
-    coordinateToScreenPoint: function(coordinate) {
+    coordinateToContainerPoint: function(coordinate) {
         var projection = this._getProjection();
         if (!coordinate || !projection) {return null;}
         var pCoordinate = projection.project(coordinate);
@@ -679,14 +679,13 @@ Z['Map']=Z.Map=Z.Class.extend({
 
     /**
      * 将屏幕像素坐标转化为地理坐标
-     * @param {screenPoint} 屏幕坐标
+     * @param {containerPoint} 屏幕坐标
      * @return {coordinate} 地理坐标
      */
-    screenPointToCoordinate: function(screenPoint) {
-        //var domOffset = this._screenToDomOffset(screenPoint);
+    containerPointToCoordinate: function(containerPoint) {
         var projection = this._getProjection();
-        if (!screenPoint || !projection) {return null;}
-        var pCoordinate = this._untransform(screenPoint);
+        if (!containerPoint || !projection) {return null;}
+        var pCoordinate = this._untransform(containerPoint);
         var coordinate = projection.unproject(pCoordinate);
         return coordinate;
     },
@@ -705,10 +704,6 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     _fireEvent:function(eventName, param) {
-        if (!param) {
-            param = {};
-        }
-        param['target']=this;
         this.fire(eventName,param);
     },
 
@@ -721,7 +716,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         // this.callInitHooks();
         this._loaded = true;
         this._callOnLoadHooks();
-        //this.fire('mapready',{'target':this});
+        //this.fire('mapready');
     },
 
     _loadAllLayers:function() {
@@ -739,6 +734,17 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {[type]} [description]
      */
     getAllLayers:function() {
+        var layers = this._getAllLayers();
+        var result = [];
+        for (var i = layers.length - 1; i >= 0; i--) {
+            if (layers[i].getId().indexOf(Z.internalLayerPrefix) == -1) {
+                result.push(layers[i]);
+            }
+        }
+        return result;
+    },
+
+    _getAllLayers:function() {
         //TODO 可视化图层
         var result = [];
         return result.concat(this._tileLayers).concat(this._dynLayers)
@@ -904,10 +910,7 @@ Z['Map']=Z.Map=Z.Class.extend({
             return Z.DomUtil.offsetDom(this._panels.mapPlatform);
         } else {
             var domOffset = Z.DomUtil.offsetDom(this._panels.mapPlatform);
-            Z.DomUtil.offsetDom(this._panels.mapPlatform, new Z.Point(
-                    domOffset['left']+offset['left'],
-                    domOffset['top']+offset['top']
-            ));
+            Z.DomUtil.offsetDom(this._panels.mapPlatform, domOffset.add(offset));
             return this;
         }
     },
@@ -936,7 +939,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {[type]}        [description]
      */
     _untransformFromOffset:function(domPos) {
-        return this._untransform(this._domOffsetToScreen(domPos));
+        return this._untransform(this._viewPointToContainerPoint(domPos));
     },
 
     /**
@@ -963,39 +966,33 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @param  {Coordinate} pCoordinate 投影坐标
      * @return {Object}             容器相对坐标
      */
-    _transformToOffset:function(pCoordinate) {
-        var screenXY = this._transform(pCoordinate);
-        return this._screenToDomOffset(screenXY);
+    _transformToViewPoint:function(pCoordinate) {
+        var containerPoint = this._transform(pCoordinate);
+        return this._containerPointToViewPoint(containerPoint);
     },
 
     /**
      * 屏幕坐标到地图容器偏移坐标
      *
-     * @param screenXY
-     * @returns {domOffset}
+     * @param containerPoint
+     * @returns {viewPoint}
      */
-    _screenToDomOffset: function(screenXY) {
-        if (!screenXY) {return null;}
+    _containerPointToViewPoint: function(containerPoint) {
+        if (!containerPoint) {return null;}
         var platformOffset = this.offsetPlatform();
-        return new Z.Point(
-            screenXY['left'] - platformOffset['left'],
-            screenXY['top'] - platformOffset['top']
-        );
+        return containerPoint.substract(platformOffset);
     },
 
     /**
      * 地图容器偏移坐标到屏幕坐标的转换
      *
-     * @param domOffset
-     * @returns {screenXY}
+     * @param viewPoint
+     * @returns {containerPoint}
      */
-    _domOffsetToScreen: function(domOffset) {
-        if (!domOffset) {return null;}
+    _viewPointToContainerPoint: function(viewPoint) {
+        if (!viewPoint) {return null;}
         var platformOffset = this.offsetPlatform();
-        return new Z.Point(
-            domOffset["left"] + platformOffset["left"],
-            domOffset["top"] + platformOffset["top"]
-        );
+        return viewPoint.add(platformOffset);
     },
 
     /**
@@ -1241,9 +1238,7 @@ Z['Map']=Z.Map=Z.Class.extend({
                  * @event resize
                  * @return {Object} param: {'target': map}
                  */
-                map.fire(map.events.RESIZE, {
-                    'target' : map
-                });
+                map._fireEvent(map.events.RESIZE);
             }
         },800);
     }

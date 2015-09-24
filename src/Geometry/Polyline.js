@@ -1,6 +1,6 @@
 /**
- * 多边形类
- * @class maptalks.Polyline
+ * 多折线类
+ * @class maptalks.LineString
  * @extends maptalks.Vector
  * @mixins maptalks.Geometry.Poly
  * @author Maptalks Team
@@ -67,8 +67,8 @@ Z.LineString = Z.Polyline = Z.Vector.extend({
             extent = this.getExtent(),
             nw = new Z.Coordinate(extent.xmin, extent.ymax),
             se = new Z.Coordinate(extent.xmax, extent.ymin),
-            pxMin = map.coordinateToDomOffset(nw),
-            pxMax = map.coordinateToDomOffset(se),
+            pxMin = map.coordinateToViewPoint(nw),
+            pxMax = map.coordinateToViewPoint(se),
             pxExtent = new Z.Extent(pxMin.left - t, pxMin.top - t,
                                     pxMax.left + t, pxMax.top + t);
 
@@ -77,7 +77,7 @@ Z.LineString = Z.Polyline = Z.Vector.extend({
         if (!pxExtent.contains(point)) { return false; }
 
         // screen points
-        var points = this._transformToOffset(this._getPrjPoints());
+        var points = this._transformToViewPoint(this._getPrjPoints());
 
         var i, p1, p2,
             len = points.length;

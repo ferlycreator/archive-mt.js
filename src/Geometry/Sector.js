@@ -114,7 +114,7 @@ Z['Sector']=Z.Sector=Z.Polygon.extend({
     },
 
     _containsPoint: function(point) {
-        var center = this._getCenterDomOffset(),
+        var center = this._getCenterViewPoint(),
             t = this._hitTestTolerance(),
             size = this.getSize(),
             pc = new Z.Point(center.left, center.top),

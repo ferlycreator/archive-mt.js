@@ -166,7 +166,7 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
         if (this.isOpen()) {
             this._menuDom.style.display='none';
             if (this._target.hasListeners && this._target.hasListeners('closemenu')) {
-                this._target._executeListeners('closemenu', {'target':this._target});
+                this._target.fire('closemenu');
             }
         }
     },
@@ -268,7 +268,7 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
                  * @event openmenu
                  * @return {Object} params: {'target':this}
                  */
-                this._target.fire('openmenu', {'target':this._target});
+                this._target.fire('openmenu');
             }
         }
     },
@@ -295,13 +295,13 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
         }
         if(coordinate){
             if(coordinate instanceof Z.Coordinate) {
-                position = this._map.coordinateToDomOffset(coordinate);
+                position = this._map.coordinateToViewPoint(coordinate);
             } else {
                 position = coordinate;
             }
         } else {
             var center = this._target.getCenter();
-            position = this._map.coordinateToDomOffset(center);
+            position = this._map.coordinateToViewPoint(center);
         }
         return position;
     }

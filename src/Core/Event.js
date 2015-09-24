@@ -103,15 +103,16 @@ Z.Eventable = {
         if (!this.hasListeners(eventType)) {return;}
         var handlerChain = this._eventMap[eventType];
         if (!handlerChain) {return;}
+        if (!param) {
+            param = {};
+        }
         for (var i=0, len = handlerChain.length;i<len; i++) {
             if (!handlerChain[i]) {continue;}
             var context = handlerChain[i].context;
-            //增加一个type参数, 表示事件类型
+            //增加type和target参数, 表示事件类型和事件源对象
             param['type'] = eventType;
+            param['target'] = this;
             if (context) {
-                if (!param) {
-                    param = {};
-                }
                 handlerChain[i].handler.call(context,param);
             } else {
                 handlerChain[i].handler(param);

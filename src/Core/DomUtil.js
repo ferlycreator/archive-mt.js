@@ -263,7 +263,7 @@ Z.DomUtil = {
      * @param  {Event} ev 事件
      * @return {Object} 屏幕坐标
      */
-    getEventPageCoordinate:function(ev) {
+    getEventPagePoint:function(ev) {
         ev = window.event || ev;
         if(ev.pageX || ev.pageY){
             return {x:ev.pageX, y:ev.pageY};
@@ -283,16 +283,16 @@ Z.DomUtil = {
     },
 
     /**
-     * 获取鼠标在容器上的绝对坐标
+     * 获取鼠标在容器上相对容器左上角的坐标值
      * @param {Event} ev  触发的事件
      * @return {maptalks.Point} left:鼠标在页面上的横向位置, top:鼠标在页面上的纵向位置
      */
-    getEventDomCoordinate:function(ev, dom) {
+    getEventContainerPoint:function(ev, dom) {
         if (!ev) {
             ev = window.event;
         }
         var domScreenPos = Z.DomUtil.getPageCoordinate(dom);
-        var mousePagePos = Z.DomUtil.getEventPageCoordinate(ev);
+        var mousePagePos = Z.DomUtil.getEventPagePoint(ev);
         return new Z.Point(mousePagePos.x-domScreenPos['left'],mousePagePos.y-domScreenPos['top']);
     },
 

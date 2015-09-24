@@ -103,7 +103,7 @@ Z.Ellipse = Z.Polygon.extend({
             b = pb.height,
             c = Math.sqrt(Math.abs(a * a - b * b)),
             xfocus = a >= b;
-        var center = this._getCenterDomOffset();
+        var center = this._getCenterViewPoint();
         var f1, f2, d;
         if (xfocus) {
             f1 = new Z.Point(center.left - c, center.top);

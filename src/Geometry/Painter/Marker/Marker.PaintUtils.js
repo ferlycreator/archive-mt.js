@@ -1,10 +1,10 @@
 Z.Marker.PaintUtils = {
 
     getMarkerDomOffset: function() {
-        var domOffset = this.geometry._getCenterDomOffset();
-        if (!domOffset) {return null;}
+        var centerPoint = this.geometry._getCenterViewPoint();
+        if (!centerPoint) {return null;}
         var moffset = this.getIconOffset();
-        var gCenter = [(domOffset['left'] + moffset['left']), (domOffset['top'] + moffset['top'])];
+        var gCenter = [(centerPoint['left'] + moffset['left']), (centerPoint['top'] + moffset['top'])];
         return gCenter;
     },
 
@@ -127,7 +127,7 @@ Z.Marker.PaintUtils = {
     },
 
     _getLabelPoints: function(icon) {
-        var gCenter = this.geometry._getCenterDomOffset();
+        var gCenter = this.geometry._getCenterViewPoint();
         if (!gCenter) {return null;}
         var mapOffset = this.geometry.getMap().offsetPlatform();
         var dx = Z.Util.setDefaultValue(icon['dx'],0);
@@ -215,7 +215,7 @@ Z.Marker.PaintUtils = {
     },
 
      _getTipPoints: function(icon) {
-        var gCenter = this.geometry._getCenterDomOffset();
+        var gCenter = this.geometry._getCenterViewPoint();
         if (!gCenter) {return null;}
         var mapOffset = this.geometry.getMap().offsetPlatform();
         var dx = Z.Util.setDefaultValue(icon['dx'],0);

@@ -14,11 +14,6 @@ Z.Map.mergeOptions({
 Z.Map.EventToGeometry = Z.Handler.extend({
     addHooks: function() {
         /**
-        this.map.on('mousedown mouseup mousemove click dblclick contextmenu', this._queryGeometries, this)
-                .on('moving', this._stopQueryGeometries, this)
-                .on('moveend', this._startQueryGeometries, this);
-        */
-        /**
         * TODO Z.Render.Canvas.Base.getBaseCanvasRender(map) 在该扩展功能注册时为undefined
         * 故采用了之前的方式获取canvas容器。
         */
@@ -38,9 +33,10 @@ Z.Map.EventToGeometry = Z.Handler.extend({
     },
 
     _queryGeometries: function(event) {
-        var eventType = event.type;
-        var mouseOffset = Z.DomUtil.getEventDomCoordinate(event, this.map._containerDOM);
-        var mouseDomOffset = this.map._screenToDomOffset(mouseOffset);
+        var domEvent = event;
+        var eventType = domEvent.type;
+        var mouseOffset = Z.DomUtil.getEventContainerPoint(domEvent, this.map._containerDOM);
+        var mouseDomOffset = this.map._containerPointToViewPoint(mouseOffset);
         var layers = [];
         //2015-07-09 fuzhen dynamiclayer不需要做identify
         layers = layers.concat(this.map._canvasLayers)/*.concat(this.map._dynLayers)*/;
@@ -54,11 +50,11 @@ Z.Map.EventToGeometry = Z.Handler.extend({
         if ('mousemove' === eventType) {
             //mousemove才需要做15ms的判断
             var throttle = 15;//15毫秒
-            if (this.identifyTimeout) {
-                clearTimeout(this.identifyTimeout);
+            if (this._queryIdentifyTimeout) {
+                clearTimeout(this._queryIdentifyTimeout);
             }
             var me = this;
-            this.identifyTimeout = setTimeout(function() {
+            this._queryIdentifyTimeout = setTimeout(function() {
                 me.map.identify(me.options);
             },throttle);
         } else {
@@ -68,12 +64,13 @@ Z.Map.EventToGeometry = Z.Handler.extend({
 
         function fireGeometryEvent(result) {
             if(!result['success']){return;};
+            var i,len;
             var geometries = result['data'];
             var mouseoutTargets = [];
             if(eventType === 'mousemove') {
                 var oldTargets = me.map.options['mouseoverTarget'];
                 if (Z.Util.isArrayHasData(oldTargets)) {
-                    for(var i=0,len=oldTargets.length; i<len; i++) {
+                    for(i=0,len=oldTargets.length; i<len; i++) {
                         var oldTarget = oldTargets[i];
                         if(geometries && geometries.length>0) {
                             var mouseout = true;
@@ -88,24 +85,24 @@ Z.Map.EventToGeometry = Z.Handler.extend({
                                 }
                             }
                             if(mouseout) {
-                                oldTarget._onMouseOut(event);
+                                oldTarget._onMouseOut(domEvent);
                             }
                         } else {//鼠标新的位置不包含任何geometry，将触发之前target的mouseOut事件
-                            oldTarget._onMouseOut(event);
+                            oldTarget._onMouseOut(domEvent);
                         }
                     }
                 }
                 if(!geometries) {return;}
-                for(var i=0,len=geometries.length; i<len; i++) {
+                for(i=0,len=geometries.length; i<len; i++) {
                     var geometry = geometries[i];
-                    geometry._onMouseOver(event);
+                    geometry._onMouseOver(domEvent);
                 }
                 me.map.options['mouseoverTarget'] = geometries;
             } else {
                 if(!geometries) {return;}
-                for(var i=0,len=geometries.length; i<len; i++) {
+                for(i=0,len=geometries.length; i<len; i++) {
                     var geometry = geometries[i];
-                    geometry._onEvent(event);
+                    geometry._onEvent(domEvent);
                 }
             }
         };

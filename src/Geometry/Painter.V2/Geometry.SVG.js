@@ -2,7 +2,7 @@ var Symboling = {};
 //有中心点的图形的共同方法
 Symboling.Center = {
     _getRenderPoints:function(placement) {
-        return [this._getCenterDomOffset()];
+        return [this._getCenterViewPoint()];
     }
 };
 
@@ -18,7 +18,7 @@ Z.Marker.include(Symboling.Center, {
 //----------------------------------------------------
 Symboling.Ellipse = {
     _getRenderPath:function() {
-        var domCenter = this._getCenterDomOffset();
+        var domCenter = this._getCenterViewPoint();
         var size = this._getRenderSize();
         var start = (domCenter['left']-size['width'])+','+domCenter['top'];
         var path;
@@ -78,7 +78,7 @@ Z.Sector.include(Symboling.Center,{
                 +(endAngle - startAngle > 180), 0, x2, y2, "z"].join(' ');
             }
         }
-        var domCenter = this._getCenterDomOffset();
+        var domCenter = this._getCenterViewPoint();
         var size = this._getRenderSize();
         return sector_update(domCenter['left'],domCenter['top'],size['width'],this.getStartAngle(),this.getEndAngle());
     },
@@ -92,18 +92,18 @@ Z.Sector.include(Symboling.Center,{
 //----------------------------------------------------
 Z.Rectangle.include({
     _getRenderPoints:function(placement) {
-        var domNw = this.getMap()._transformToOffset(this._getPNw());
+        var domNw = this.getMap()._transformToViewPoint(this._getPNw());
         return [domNw];
     },
 
     _getRenderPath:function() {
         var map = this.getMap();
-        var offset = map._transformToOffset(this._getPNw());
+        var viewPoint = map._transformToViewPoint(this._getPNw());
         var size = this._getRenderSize();
-        var start = offset['left']+','+offset['top'];
-        var path = 'M'+start+' L'+(offset['left']+size['width'])+','+offset['top']+
-            ' L'+(offset['left']+size['width'])+','+(offset['top']+size['height'])+
-            ' L'+offset['left']+','+(offset['top']+size['height'])+
+        var start = viewPoint['left']+','+viewPoint['top'];
+        var path = 'M'+start+' L'+(viewPoint['left']+size['width'])+','+viewPoint['top']+
+            ' L'+(viewPoint['left']+size['width'])+','+(viewPoint['top']+size['height'])+
+            ' L'+viewPoint['left']+','+(viewPoint['top']+size['height'])+
             ' '+Z.SVG.closeChar;
         if (Z.Browser.vml) {
             //vml图形需要在末尾加个e表示图形结束
@@ -121,13 +121,13 @@ Z.Rectangle.include({
 });
 //----------------------------------------------------
 Symboling.Poly={
-    _domOffsetsToSVGPath:function(offsets,isClosePath,isHole) {
+    _viewPointsToSvgPath:function(viewPoints,isClosePath,isHole) {
         var seperator=',';
 
         var coords = [];
 
-        for ( var i = 0, len = offsets.length; i < len; i++) {
-            coords.push(offsets[i]['left']+seperator+offsets[i]['top']);
+        for ( var i = 0, len = viewPoints.length; i < len; i++) {
+            coords.push(viewPoints[i]['left']+seperator+viewPoints[i]['top']);
         }
         if (coords.length === 0) {
             return 'M0 0';
@@ -150,15 +150,15 @@ Symboling.Poly={
         var map = this.getMap();
         var points;
         if ('vertex' === placement) {
-            points = this._transformToOffset(this._getPrjPoints());
+            points = this._transformToViewPoint(this._getPrjPoints());
         } else if ('line' === placement) {
-            //var vertexes = this._transformToOffset(this._getPrjPoints());
+            //var vertexes = this._transformToViewPoint(this._getPrjPoints());
             points = [];
             //TODO 获取线段中心点
         } else {
             var center = this.getCenter();
             var pcenter = this._getProjection().project(center);
-            points = [map._transformToOffset(pcenter)];
+            points = [map._transformToViewPoint(pcenter)];
         }
         return points;
     }
@@ -166,8 +166,8 @@ Symboling.Poly={
 
 Z.Polyline.include(Symboling.Poly,{
     _getRenderPath:function() {
-        var offsets = this._transformToOffset(this._getPrjPoints());
-        var path = this._domOffsetsToSVGPath(offsets,false,false);
+        var viewPoint = this._transformToViewPoint(this._getPrjPoints());
+        var path = this._viewPointsToSvgPath(viewPoint,false,false);
         if (Z.Browser.vml) {
             //vml图形需要在末尾加个e表示图形结束
             path += ' e';
@@ -178,8 +178,8 @@ Z.Polyline.include(Symboling.Poly,{
 
 Z.Polygon.include(Symboling.Poly, {
     _getRenderPath:function() {
-        var offsets = this._transformToOffset(this._getPrjPoints());
-        var path = this._domOffsetsToSVGPath(offsets,true,false);
+        var viewPoints = this._transformToViewPoint(this._getPrjPoints());
+        var path = this._viewPointsToSvgPath(viewPoints,true,false);
         var holePathes = this._getHolePathes();
         if (Z.Util.isArrayHasData(holePathes)) {
             path += ' ' + holePathes.join(' ');
@@ -202,8 +202,8 @@ Z.Polygon.include(Symboling.Poly, {
         var prjHoles = this._getPrjHoles();
         var result = [];
         for (var i=0,len=prjHoles.length;i<len;i++) {
-            var holeOffset = this._transformToOffset(prjHoles[i]);
-            result.push(this._domOffsetsToSVGPath(holeOffset,true,true));
+            var holeViewPoints = this._transformToViewPoint(prjHoles[i]);
+            result.push(this._viewPointsToSvgPath(holeViewPoints,true,true));
         }
         return result;
     }

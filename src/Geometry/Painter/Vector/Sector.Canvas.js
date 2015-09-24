@@ -1,7 +1,7 @@
 Z.Sector.Canvas = Z.Polygon.Canvas.extend({
     doPaint:function(context,resources,platformOffset) {
         var geometry = this.geometry;
-        var center = geometry._getCenterDomOffset();
+        var center = geometry._getCenterViewPoint();
         var pt = new Z.Point(center["left"]+platformOffset['left'],center["top"]+platformOffset['top']);
         var pr = this.getPixelSize();
         this.sector(context, pt['left'],pt['top'],pr['width'],geometry.getStartAngle(),geometry.getEndAngle());

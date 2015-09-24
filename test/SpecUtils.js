@@ -238,7 +238,7 @@ var GeoEventsTester = {
         }
         vector.on(this.eventsToTest, this._eventCallBack );
         layer.addGeometry(vector);
-        var point = map.coordinateToScreenPoint(testPoint);
+        var point = map.coordinateToContainerPoint(testPoint);
         var dom = layer.getRender().getCanvasContainer();
         var domPosition = Z.DomUtil.getPageCoordinate(dom);
         point._add(domPosition);
@@ -255,8 +255,9 @@ var GeoEventsTester = {
         expect(param).to.be.ok();
         expect(param.type).to.be.ok();
         expect(param.target).to.be.ok();
-        expect(param.pixel).to.be.ok();
+        expect(param.containerPoint).to.be.ok();
         expect(param.coordinate).to.be.ok();
+        expect(param.domEvent).to.be.ok();
     },
 
     _verifyGeometryEvents:function(dom,options) {

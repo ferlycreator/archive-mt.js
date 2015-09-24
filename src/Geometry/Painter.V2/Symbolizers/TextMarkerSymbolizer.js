@@ -37,7 +37,7 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
         }
         var map = this.getMap();
         var cookedPoints = Z.Util.eachInArray(points,this,function(point) {
-            return map._domOffsetToScreen(point);
+            return map._viewPointToContainerPoint(point);
         });
         Z.Canvas.setDefaultCanvasSetting(ctx);
 
