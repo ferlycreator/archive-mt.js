@@ -70,8 +70,6 @@ Z.Map.include({
     _fireDOMEvent: function (target, e, type) {
         var containerPoint = Z.DomUtil.getEventContainerPoint(e, this._containerDom);
         var data = {
-            'type' : type,
-            'target':this,
             'coordinate': this.containerPointToCoordinate(containerPoint),
             'containerPoint':containerPoint,
             'domEvent': e

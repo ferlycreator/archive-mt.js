@@ -280,7 +280,7 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
          * @event dragstart
          * @return {Object} params: {'target': this, 'position': {'top':0,'left':0}}}
          */
-        this.fire('dragstart', {'target': this, 'position': this._startOffset});
+        this.fire('dragstart', {'position': this._startOffset});
     },
 
     _onMouseMove: function(event) {
@@ -319,7 +319,7 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
          * @event dragging
          * @return {Object} params: {'target': this, 'position': {'top':0,'left':0}}}
          */
-        this.fire('dragging', {'target': this, 'position': this._endOffset});
+        this.fire('dragging', {'position': this._endOffset});
     },
 
     _disableMove: function() {
@@ -338,7 +338,7 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
          * @event dragend
          * @return {Object} params: {'target': this, 'position': {'top':0,'left':0}}}
          */
-        this.fire('dragend', {'target': this, 'position': this._endOffset});
+        this.fire('dragend', {'position': this._endOffset});
     },
 
      _getInternalLayer: function(map, layerId, canvas) {

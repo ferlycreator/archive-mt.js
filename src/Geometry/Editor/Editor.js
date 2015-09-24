@@ -114,7 +114,7 @@ Z.Editor=Z.Class.extend({
         if (!this.geometry) {
             return;
         }
-        this.geometry.fire(eventName,{"target":this.geometry});
+        this.geometry.fire(eventName,{'type':eventName,"target":this.geometry});
     },
 
     createHandleDom:function(pixel,opts) {

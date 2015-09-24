@@ -88,7 +88,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     setId:function(id) {
         var oldId = this.getId();
         this._identifier=id;
-        this._fireEvent('_idchanged',{'target':this,'oldId':oldId,'newId':id});
+        this._fireEvent('_idchanged',{'oldId':oldId,'newId':id});
         return this;
     },
 
@@ -285,7 +285,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         layer._onGeometryRemove(this);
         delete this.layer;
         if (isFireEvent) {
-            this._fireEvent('remove',{'target':this});
+            this._fireEvent('remove');
         }
     },
 
@@ -364,7 +364,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
         this._extent = null;
         if (!this.isEditing || !this.isEditing()) {
-            this._fireEvent('shapechanged',{'target':this});
+            this._fireEvent('shapechanged');
         }
     },
 
@@ -375,7 +375,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
         this._extent = null;
         if (!this.isEditing || !this.isEditing()) {
-            this._fireEvent('positionchanged',{'target':this});
+            this._fireEvent('positionchanged');
         }
     },
 
@@ -384,14 +384,10 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (painter) {
             painter.refreshSymbol();
         }
-        this._fireEvent('symbolchanged',{'target':this});
+        this._fireEvent('symbolchanged');
     },
 
     _fireEvent:function(eventName, param) {
-        if (!param) {
-            param = {};
-        }
-        param['target'] = this;
         this.fire(eventName,param);
     },
 

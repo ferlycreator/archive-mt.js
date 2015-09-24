@@ -440,8 +440,6 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         if (!param) {
             param = {};
         }
-        param['target'] = this;
-        param['type'] = eventName;
         this.fire(eventName, param);
     }
 

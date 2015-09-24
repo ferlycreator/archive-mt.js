@@ -129,7 +129,7 @@ Z['ComputeAreaTool'] = Z.ComputeAreaTool = Z.Class.extend({
 
     _afterMeasure: function(param) {
         var coordinate = param['coordinate'];
-        var polygon = param['target'];
+        var polygon = param['geometry'];
         var area = this.map._computeGeodesicArea(polygon);
         var divContent = null;
         if (area > 1000000) {
@@ -143,10 +143,10 @@ Z['ComputeAreaTool'] = Z.ComputeAreaTool = Z.Class.extend({
         this.counter++;
         /**
          * 面积量算结束事件
-         * @event aftermeasure
+         * @event measureend
          * @param result: 总面积
          */
-        this.fire('aftermeasure', {'result' : area});
+        this.fire('measureend', {'result' : area});
     },
 
 

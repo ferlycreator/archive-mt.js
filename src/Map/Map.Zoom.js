@@ -17,7 +17,7 @@ Z.Map.include({
          * @event zoomstart
          * @return {Object} params: {'target':this}
          */
-        me._fireEvent('zoomstart',{'target':this});
+        me._fireEvent('zoomstart');
     },
 
     _onZoomEnd:function(nextZoomLevel) {
@@ -41,7 +41,7 @@ Z.Map.include({
          * @event zoomend
          * @return {Object} params: {'target':this}
          */
-        this._fireEvent('zoomend',{'target':this});
+        this._fireEvent('zoomend');
     },
 
     _resetContainer:function() {

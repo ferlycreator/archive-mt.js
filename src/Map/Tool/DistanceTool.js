@@ -11,7 +11,7 @@ Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
     /**
      * 初始化测距工具
      * @constructor
-     * @param {Object} options:{aftermeasure: fn}
+     * @param {Object} options:{}
      */
     initialize: function(options) {
         Z.Util.extend(this, options);
@@ -162,10 +162,10 @@ Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
         this.rings = [];
         /**
          * 距离量算结束事件
-         * @event aftermeasure
+         * @event measureend
          * @param result: 总长度
          */
-        this.fire('aftermeasure', {'result': lenSum});
+        this.fire('measureend', {'result': lenSum});
     },
 
     _caculateLenSum : function() {

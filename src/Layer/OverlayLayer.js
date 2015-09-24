@@ -91,8 +91,7 @@ Z.OverlayLayer=Z.Layer.extend({
                 }
             }
             //图形添加到layer
-            //TODO 事件名需要都改成小写
-            geo._fireEvent('afterAdd', {'target':geo});
+            geo._fireEvent('addend', {'geometry':geo});
         }
         var map = this.getMap();
         if (map) {

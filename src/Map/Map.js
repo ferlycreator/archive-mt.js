@@ -704,10 +704,6 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     _fireEvent:function(eventName, param) {
-        if (!param) {
-            param = {};
-        }
-        param['target']=this;
         this.fire(eventName,param);
     },
 
@@ -720,7 +716,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         // this.callInitHooks();
         this._loaded = true;
         this._callOnLoadHooks();
-        //this.fire('mapready',{'target':this});
+        //this.fire('mapready');
     },
 
     _loadAllLayers:function() {
@@ -1231,9 +1227,7 @@ Z['Map']=Z.Map=Z.Class.extend({
                  * @event resize
                  * @return {Object} param: {'target': map}
                  */
-                map.fire(map.events.RESIZE, {
-                    'target' : map
-                });
+                map._fireEvent(map.events.RESIZE);
             }
         },800);
     }

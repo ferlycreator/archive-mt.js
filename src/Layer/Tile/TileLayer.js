@@ -129,7 +129,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
                 domain = subdomains[rand];
             }
         }
-        return urlTemplate.replace(/{x}/g,x).replace(/{y}/g,y).replace(/{z}/g,z).replace(/{s}/g,domain);
+        return urlTemplate.replace(/{x}/g,x+'').replace(/{y}/g,y+'').replace(/{z}/g,z+'').replace(/{s}/g,domain+'');
     },
 
     /**
@@ -273,7 +273,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
                 me._completeExecutor=setTimeout(function() {
                     tileContainer.appendChild(dSegment);
                     me._fireEventExecutor=setTimeout(function() {
-                        me.fire(me.events.LAYER_LOADED,{'target':this});
+                        me.fire(me.events.LAYER_LOADED);
                     },500);
                 },10);
             }

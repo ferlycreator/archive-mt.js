@@ -35,7 +35,7 @@ Z.Geometry.include({
         var containerPoint = Z.DomUtil.getEventContainerPoint(event, map.containterDom);
         var coordinate = map._untransform(containerPoint);
         //统一的参数, target是geometry引用, pixel是事件的屏幕坐标, coordinate是事件的经纬度坐标
-        return {'type':type,'target':this, 'containerPoint':containerPoint, 'coordinate':coordinate,'domEvent':event};
+        return { 'containerPoint':containerPoint, 'coordinate':coordinate,'domEvent':event};
     },
 
     _onMouseOver: function(event) {

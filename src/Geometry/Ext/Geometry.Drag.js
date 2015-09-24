@@ -28,7 +28,7 @@ Z.Geometry.include({
          * @event dragstart
          * @return {Object} params: {'target':this}
          */
-        this.fire('dragstart', {'target':this});
+        this._fireEvent('dragstart');
     },
 
     _dragging: function(param) {
@@ -93,14 +93,13 @@ Z.Geometry.include({
            this._setPrjPoints(newLonlats);
         }
         this._updateCache();
-        param['target'] = this;
         /**
          * 触发geometry的dragging事件
          * @member maptalks.Geometry
          * @event dragging
          * @return {Object} params: {'target':geometry, 'containerPoint':containerPoint, 'coordinate':coordinate,'domEvent':event};
          */
-        this.fire('dragging', param);
+        this._fireEvent('dragging', param);
     },
 
     /**
@@ -111,14 +110,13 @@ Z.Geometry.include({
         this._map.enableDrag();
         this._map.off('mousemove', this._dragging, this)
                  .off('mouseup', this._endDrag, this);
-        param['target'] = this;
         /**
          * 触发geometry的dragend事件
          * @member maptalks.Geometry
          * @event dragend
          * @return {Object} params: {'target':this}
          */
-        this.fire('dragend', param);
+        this._fireEvent('dragend', param);
         Z.DomUtil.setStyle(this._map._containerDOM, 'cursor: default');
     },
 
