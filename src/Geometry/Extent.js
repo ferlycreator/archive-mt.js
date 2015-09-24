@@ -137,13 +137,10 @@ Z.Extent.prototype={
      */
     contains: function(coordinate) {
         var x, y;
-        if (coordinate instanceof Z.Coordinate) {
+        if (coordinate.x) {
             x = coordinate.x;
             y = coordinate.y;
-        } else if (coordinate instanceof Z.Point) {
-            x = coordinate.left;
-            y = coordinate.top;
-        } else {
+        } else if (coordinate.left) {
             x = coordinate.left;
             y = coordinate.top;
         }
