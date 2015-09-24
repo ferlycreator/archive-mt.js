@@ -149,7 +149,7 @@ Z.Map.include({
     /**
      * Identify
      * @member maptalks.Map
-     * @param  {opts} opts 查询参数 {point: point, "layers": [], "successFn": fn}
+     * @param  {opts} opts 查询参数 {point: point, "layers": [], "success": fn}
      * @expose
      */
     identify: function(opts) {
@@ -157,7 +157,7 @@ Z.Map.include({
             return;
         }
         var layers = opts['layers'];
-        if(!layers||layers.length===0) {
+        if(!Z.Util.isArrayHasData(layers)) {
             return;
         }
         var point = opts.point;

@@ -6,6 +6,7 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
         "text-opacity"      : 1,
         "text-halo-fill"    : "#ffffff",
         "text-halo-radius"  : 0,
+        "text-wrap-width"   : 100,
 
         "text-dx"           : 0,
         "text-dy"           : 0,

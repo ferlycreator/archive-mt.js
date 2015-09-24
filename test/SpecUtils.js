@@ -229,6 +229,9 @@ var GeoEventsTester = {
 
     testCanvasEvents:function(vector, map, testPoint) {
         var layer = new Z.VectorLayer('event_test_layer_canvas',{'render':'canvas'});
+        if (!layer.isCanvasRender()) {
+            return;
+        }
         map.addLayer(layer);
         if (!this.spy) {
             this.spy = sinon.spy(this,'_eventCallBack');

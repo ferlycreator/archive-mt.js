@@ -154,14 +154,14 @@ Z.FeatureQuery=Z.Class.extend({
      * @expose
      */
     formQueryString:function(queryFilter) {
-        var ret = "encoding=utf-8";
+        var ret = 'encoding=utf-8';
         //ret+="&method=add";
-        ret+="&mapdb="+this.mapdb;
+        ret+='&mapdb='+this.mapdb;
         if (queryFilter['coordinateType']) {
-            ret+="&coordinateType="+this.getCoordinateType();
+            ret+='&coordinateType='+this.getCoordinateType();
         }
         if (!Z.Util.isNil(queryFilter['returnGeometry'])) {
-            ret+="&returnGeometry="+queryFilter['returnGeometry'];
+            ret+='&returnGeometry='+queryFilter['returnGeometry'];
         }
         if (queryFilter['spatialFilter']) {
             var spatialFilter = queryFilter['spatialFilter'];
@@ -169,15 +169,19 @@ Z.FeatureQuery=Z.Class.extend({
                 if (queryFilter['coordinateType']) {
                     spatialFilter.getGeometry().setCoordinateType(queryFilter['coordinateType']);
                 }
-                ret += ("&spatialFilter="+encodeURIComponent(JSON.stringify(queryFilter['spatialFilter'].toJson())));
+                ret += ('&spatialFilter='+encodeURIComponent(JSON.stringify(queryFilter['spatialFilter'].toJson())));
             }
 
         }
         if (queryFilter['condition']) {
-            ret += ("&condition="+encodeURIComponent(queryFilter['condition']));
+            ret += ('&condition='+encodeURIComponent(queryFilter['condition']));
         }
         if (queryFilter['resultFields']) {
-            ret += ("&fields="+queryFilter['fields']);
+            var fields = queryFilter['resultFields'];
+            if (Z.Util.isArray(fields)) {
+                fields = fields.join(',');
+            }
+            ret += ('&fields='+fields);
         }
         return ret;
     }

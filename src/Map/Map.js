@@ -701,7 +701,7 @@ Z['Map']=Z.Map=Z.Class.extend({
             }
         }
         if (this._baseTileLayer) {this._baseTileLayer._onResize();}
-        this._eachLayer(resizeLayer,this._getAllLayers());
+        this._eachLayer(resizeLayer,this.getAllLayers());
     },
 
     _fireEvent:function(eventName, param) {
@@ -731,15 +731,19 @@ Z['Map']=Z.Map=Z.Class.extend({
             }
         }
         if (this._baseTileLayer) {this._baseTileLayer.load();}
-        this._eachLayer(loadLayer,this._getAllLayers());
+        this._eachLayer(loadLayer,this.getAllLayers());
     },
 
-    _getAllLayers:function() {
+    /**
+     * 获取所有图层
+     * @return {[type]} [description]
+     */
+    getAllLayers:function() {
+        //TODO 可视化图层
         var result = [];
-        return result.concat(this._tileLayers)
+        return result.concat(this._tileLayers).concat(this._dynLayers)
         .concat(this._canvasLayers)
-        .concat(this._svgLayers)
-        .concat(this._dynLayers);
+        .concat(this._svgLayers);
     },
 
     _eachLayer:function(fn) {

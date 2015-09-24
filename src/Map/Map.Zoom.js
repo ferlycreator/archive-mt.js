@@ -8,7 +8,7 @@ Z.Map.include({
         var me = this;
 
         if (me._baseTileLayer) {me._baseTileLayer._onZoomStart(true);}
-        me._eachLayer(zoomLayer,me._getAllLayers());
+        me._eachLayer(zoomLayer,me.getAllLayers());
         this._hideOverlayLayers();
         me._animateStart(scale,focusPos);
         /**
@@ -33,7 +33,7 @@ Z.Map.include({
         this._resetContainer();
         this._originZoomLevel=nextZoomLevel;
         if (this._baseTileLayer) {this._baseTileLayer._onZoomEnd();}
-        this._eachLayer(zoomLayer,this._getAllLayers());
+        this._eachLayer(zoomLayer,this.getAllLayers());
         this._showOverlayLayers();
         /**
          * 触发map的zoomend事件
@@ -86,7 +86,7 @@ Z.Map.include({
             me.offsetPlatform(move);
 
             if (me._baseTileLayer) {me._baseTileLayer._onZoomEnd();}
-            me._eachLayer(zoomLayer,me._getAllLayers());
+            me._eachLayer(zoomLayer,me.getAllLayers());
             return;
         }
         me._zoom(nextZoomLevel, param['pixel']);

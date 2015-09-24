@@ -128,7 +128,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     getSymbol:function() {
-        return this.options['symbol'] ||  Object.getPrototypeOf(this).options['symbol'];
+        return this.options['symbol'];
     },
 
     /**

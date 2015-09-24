@@ -1,7 +1,7 @@
 Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
 
     defaultSymbol:{
-        "marker-type": "ellipse", //<----- ellipse | arrow | triangle | square | bar | pin等,默认ellipse
+        "marker-type": "ellipse", //<----- ellipse | cross | x | triangle | diamond | square | bar | pin等,默认ellipse
 
         "marker-fill": "#0000ff", //blue as cartoCSS
         "marker-fill-opacity": 1,
