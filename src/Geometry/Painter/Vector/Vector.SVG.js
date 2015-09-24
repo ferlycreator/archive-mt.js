@@ -2,14 +2,14 @@ Z.Vector.SVG = Z.Painter.SVG.extend({
     /**
      * 将容器相对坐标数组转化为svg path定义
      */
-    domOffsetsToSVGPath:function(offsets,isClosePath,isHole) {
+    viewPointsToSvgPath:function(viewPoints,isClosePath,isHole) {
         var seperator=',';
 
         var coords = [];
         //TODO 这里可以做simplify
 
-        for ( var i = 0, len = offsets.length; i < len; i++) {
-            coords.push(offsets[i]['left']+seperator+offsets[i]['top']);
+        for ( var i = 0, len = viewPoints.length; i < len; i++) {
+            coords.push(viewPoints[i]['left']+seperator+viewPoints[i]['top']);
         }
         if (coords.length === 0) {
             return 'M0 0';

@@ -39,7 +39,7 @@ Z.Sector.SVG=Z.Circle.SVG.extend({
             }
         }
         var geometry = this.geometry;
-        var domCenter = geometry._getCenterDomOffset();
+        var domCenter = geometry._getCenterViewPoint();
         var pr = this.getPixelSize();
         var ret = {
             type : "path",

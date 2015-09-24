@@ -161,7 +161,6 @@ Z.Map.include({
             return;
         }
         var point = opts.point;
-        console.log(point);
         var fn = opts['success'];
         var hits = [];
         for (var i=0, len=layers.length; i<len; i++) {

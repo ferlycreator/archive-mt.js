@@ -10,7 +10,7 @@ Z.Ellipse.SVG=Z.Polygon.SVG.extend({
 
         //'M0 0' : 'AL ' + p.x + ',' + p.y + ' ' + r + ',' + r2 + ' 0,' + (65535 * 360))
         var geometry = this.geometry;
-        var domCenter = geometry._getCenterDomOffset();
+        var domCenter = geometry._getCenterViewPoint();
         var pr = this.getPixelSize();
         var direction = 0;
         var start = (domCenter['left']-pr['width'])+','+domCenter['top'];

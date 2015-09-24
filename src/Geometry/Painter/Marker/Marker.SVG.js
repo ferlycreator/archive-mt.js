@@ -122,7 +122,7 @@ Z.Marker.SVG = Z.Painter.SVG.extend({
      * @returns
      */
     _createVectorObj: function(icon) {
-        var gCenter = this.geometry._getCenterDomOffset();
+        var gCenter = this.geometry._getCenterViewPoint();
         if (!gCenter) {return null;}
         //矢量标注
         var markerType = icon['type'];
