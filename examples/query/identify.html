@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+        html,body{ margin:0px; height:100%; };
+    </style>
+    <title>MapTalks 示例: 空间查询</title>
+</head>
+<body scroll="no" onload="initMap();">
+<div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
+<script type="text/javascript" >
+    var mapObj;
+    function initMap(){
+        //创建地图对象
+        mapObj = new maptalks.Map('mapObj', //放置mapObj的div id
+        {
+            center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
+            zoomLevel:   17 //初始缩放级别
+        });
+        //设置底图图层
+        mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
+        {
+            tileInfo: 'web-mercator',
+            urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
+            subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
+        }));
+        //创建图层
+        var layer = new maptalks.VectorLayer('layer');
+        //将图层添加到地图对象
+        mapObj.addLayer(layer);
+        //构造查询对象
+        var featureQuery = new maptalks.FeatureQuery({
+            'host': 'SGH1PDMIS01',//空间数据库地址
+            'port': 8090,//端口
+            'mapdb': 'y-sde'//空间库名
+        });
+        featureQuery.query({
+            'page' : 0,
+            'count': 10,
+            'layer': 'yum_rest',
+            'queryFilter': {
+                /**
+                 * returnGeometry
+                 *  true，返回geometry对象，属性在geometry.properties；
+                 *  false，只返回geometry的properties的json格式对象。
+                 */
+                'returnGeometry': true,
+                /**
+                 * 设置空间查询条件
+                 */
+                'condition': 'city=\'e24abb211a2847d59da507bd9a317c6a\'', //查询条件
+                'resultFields': ['*'] //返回图形的属性，'*'表示返回全部
+            },
+            'success': function(geos) {
+                //将返回的图形添加到图层上
+                layer.addGeometry(geos,true);
+            },
+            'error': function(error) {
+                console.error(error);
+            }
+        });
+        //将identify操作在地图的邮件菜单中进行
+        mapObj.on('contextmenu', function(event){
+            var point = maptalks.DomUtil.getEventPageCoordinate(event);
+            mapObj.identify({
+                point: point,
+                layers: [layer],
+                success: function(geos){
+                    console.log(geos);
+                }
+            });
+        });
+    }
+</script>
+<!-- 引擎javascript开发包-->
+<!--<script type="text/javascript" src="http://SGH1PDMIS01:8090/maptalks/v2/maptalks.js"></script>-->
+<script type="text/javascript" src="../../maptalks.js"></script>
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+  <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.min.js"></script>
+<![endif]-->
+</body>
+</html>

@@ -161,19 +161,18 @@ Z.Map.include({
             return;
         }
         var point = opts.point;
+        console.log(point);
         var fn = opts['success'];
         var hits = [];
         for (var i=0, len=layers.length; i<len; i++) {
             var layer = layers[i];
             var layerId = layer.getId();
-
             if(!layer || !layer.getMap() || layerId.indexOf('mt__internal_layer') >= 0) {
                 continue;
             }
-
             var allGeos = layers[i].getAllGeometries();
             for (var j=0, length = allGeos.length; j<length; j++) {
-                var geo = allGeos[i];
+                var geo = allGeos[j];
                 if (geo&&geo._containsPoint(point)) {
                     hits.push(geo);
                 }

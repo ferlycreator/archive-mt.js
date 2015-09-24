@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+        html,body{ margin:0px; height:100%; };
+    </style>
+    <title>MapTalks 示例: 设置百度卫星地图</title>
+</head>
+<!-- 第一步：MapTalks JavaScript 开发包 -->
+<script type="text/javascript" src="../../maptalks.js"></script>
+<body scroll="no" onload="initMap();">
+<!-- 第二步、设置放置地图的Html Element -->
+<div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
+<!-- 第三步、创建地图对象，并设置底图图层 -->
+<script type="text/javascript" >
+    var mapObj;
+    function initMap(){
+        //创建地图对象
+        mapObj = new Z.Map('mapObj', //放置mapObj的div id
+        {
+            center:  new Z.Coordinate(121.489935,31.24432), //初始中心点坐标
+            zoomLevel:   11 //初始缩放级别
+        });
+        //定制地图底图(Tile Layer)
+        var tileLayer = new Z.TileLayer('tile', //底图id
+        {
+            /**
+             * 坐标系类型：
+             * web-mercator：谷歌, 必应,高德, 腾讯等地图服务采用的瓦片系统;
+             * baidu: 百度标注。
+             */
+            tileInfo: 'baidu',
+            /**
+             * 在线底图服务url
+             * http://shangetu2.map.bdimg.com/it/u=x=1648;y=445;z=13;v=009;type=sate&fm=46&udt=20150601
+             */
+            urlTemplate: 'http://shangetu{s}.map.bdimg.com/it/?u=x={x}&y={y}&z={z}&v=009&type=sate&fm=46',
+            /**
+             * urlTemplate中占位符{s}所有数值的数组
+             */
+            subdomains:[0,1,2,3,4,5,6,7,8,9]
+        });
+        //设置底图图层
+        mapObj.setBaseTileLayer(tileLayer);
+    }
+</script>
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+  <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.min.js"></script>
+<![endif]-->
+</body>
+</html>
