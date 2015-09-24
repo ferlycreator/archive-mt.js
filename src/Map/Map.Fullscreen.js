@@ -42,6 +42,16 @@ Z.Map.include({
             dom.webkitRequestFullscreen();
         } else if(dom.msRequestFullscreen) {
             dom.msRequestFullscreen();
+        } else {
+            var features = 'fullscreen=1,status=no,resizable=yes,top=0,left=0,scrollbars=no,'+
+                'titlebar=no,menubar=no,location=no,toolbar=no,z-look=yes,'+
+                'width='+(screen.availWidth-8)+',height='+(screen.availHeight-45);
+            var newWin = window.open(location.href,'_blank',features);
+            if(newWin != null){
+                window.opener = null;
+                //关闭父窗口
+                window.close();
+            }
         }
      },
 
@@ -52,6 +62,15 @@ Z.Map.include({
          document.mozCancelFullScreen();
        } else if(document.webkitExitFullscreen) {
          document.webkitExitFullscreen();
-       }
+       } else {
+            var features = 'fullscreen=no,status=yes,resizable=yes,scrollbars=no,'+
+                'titlebar=no,menubar=yes,location=yes,toolbar=yes,z-look=yes';
+            var newWin = window.open(location.href,'_blank',features);
+            if(newWin != null){
+                window.opener = null;
+                //关闭父窗口
+                window.close();
+            }
+        }
      }
 });

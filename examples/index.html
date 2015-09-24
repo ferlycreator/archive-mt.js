@@ -1345,6 +1345,43 @@ marker.on('click', function(){
                     </p>
                     </div>
 
+                    <h2>全屏地图</h2>
+                    <p>1、进入全屏状态：<code>mapObj.openFullscreen();</code>；</p>
+                    <p>2、退出全屏状态：<code>mapObj.exitFullscreen();</code></p>
+                    <div class="bs-docs-example">
+<pre class="linenums prettyprint">
+//构造全屏按钮控件
+var toolbar = new Z.Toolbar({
+    'position' : {
+        'top': '2',
+        'left': '2'
+    },
+    //'vertical' : true,
+    'items': [{
+        'type' : 'button',
+        'content': '进入全屏',
+        'click' : function(){
+            mapObj.openFullscreen();
+        }
+    }, {
+        'type' : 'button',
+        'content': '退出全屏',
+        'click' : function(){
+            mapObj.exitFullscreen();
+        }
+    }]
+});
+//将控件加到地图上
+mapObj.addControl(toolbar);
+</pre>
+                    <iframe src="control/fullscreen.html" width="100%">
+
+                    </iframe>
+                    <p>
+                        <a class="btn btn-success" href="editor.html?html=control/fullscreen.html&title=Full Screen" target="_blank">源码编辑器</a>
+                    </p>
+                    </div>
+
                 </section>
             </div>
         </div>
