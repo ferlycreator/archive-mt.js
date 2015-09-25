@@ -3,7 +3,7 @@
  * @class maptalks.GeoUtils
  * @author Maptalks Team
  */
-Z['GeoUtils']=Z.GeoUtils={
+Z.GeoUtils={
     /**
      *
      * @param {maptalks.Point} p

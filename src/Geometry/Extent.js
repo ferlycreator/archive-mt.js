@@ -136,13 +136,16 @@ Z.Extent.prototype={
      * @returns {Boolean} true：坐标在extent中
      */
     contains: function(coordinate) {
+        if (!coordinate) {
+            return false;
+        }
         var x, y;
-        if (coordinate.x) {
+        if (!Z.Util.isNil(coordinate.x)) {
             x = coordinate.x;
             y = coordinate.y;
-        } else if (coordinate.left) {
-            x = coordinate.left;
-            y = coordinate.top;
+        } else if (!Z.Util.isNil(coordinate['left'])) {
+            x = coordinate['left'];
+            y = coordinate['top'];
         }
         return (x >= this.xmin) &&
             (x <= this.xmax) &&

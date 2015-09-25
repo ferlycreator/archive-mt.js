@@ -20,7 +20,7 @@ Z.Eventable = {
         var eventType;
         if(!context) {context = this;}
         for (var j = 0, jl = eventTypes.length; j <jl; j++) {
-            eventType = eventTypes[j];
+            eventType = eventTypes[j].toLowerCase();
             var handlerChain = this._eventMap[eventType];
             if (!handlerChain) {
                 handlerChain = [];
@@ -54,7 +54,7 @@ Z.Eventable = {
         var eventType;
         if(!context) {context = this;}
         for (var j = 0, jl = eventTypes.length; j <jl; j++) {
-            eventType = eventTypes[j];
+            eventType = eventTypes[j].toLowerCase();
             var handlerChain =  this._eventMap[eventType];
             if (!handlerChain) {return this;}
             var hits = [];
@@ -76,8 +76,8 @@ Z.Eventable = {
     },
 
     _clearListeners:function(eventType) {
-        if (!this._eventMap) {return;}
-        var handlerChain =  this._eventMap[eventType];
+        if (!this._eventMap || !Z.Util.isString(eventType)) {return;}
+        var handlerChain =  this._eventMap[eventType.toLowerCase()];
         if (!handlerChain) {return;}
         this._eventMap[eventType] = null;
     },
@@ -92,8 +92,8 @@ Z.Eventable = {
      * @return {Boolean} true,绑定了事件
      */
     hasListeners:function(eventType) {
-        if (!this._eventMap) {return false;}
-        var handlerChain =  this._eventMap[eventType];
+        if (!this._eventMap || !Z.Util.isString(eventType)) {return false;}
+        var handlerChain =  this._eventMap[eventType.toLowerCase()];
         if (!handlerChain) {return false;}
         return handlerChain && handlerChain.length >0;
     },
@@ -101,7 +101,7 @@ Z.Eventable = {
     _executeListeners:function(eventType, param) {
         if (!this._eventMap) {return;}
         if (!this.hasListeners(eventType)) {return;}
-        var handlerChain = this._eventMap[eventType];
+        var handlerChain = this._eventMap[eventType.toLowerCase()];
         if (!handlerChain) {return;}
         if (!param) {
             param = {};

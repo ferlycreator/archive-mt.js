@@ -33,8 +33,6 @@
 ../src/Layer/DynamicLayer.js
 ../src/Layer/OverlayLayer.js
 ../src/Layer/VectorLayer.js
-../src/Layer/VisualizerLayer.js
-../src/Layer/HeatmapLayer.js
 ../src/Geometry/Geometry.js
 ../src/Geometry/Ext/Geometry.Edit.js
 ../src/Geometry/Ext/Geometry.Drag.js

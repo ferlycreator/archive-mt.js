@@ -149,7 +149,7 @@ Z.Map.include({
     /**
      * Identify
      * @member maptalks.Map
-     * @param  {opts} opts 查询参数 {point: point, "layers": [], "success": fn}
+     * @param  {opts} opts 查询参数 {coordinate: coordinate, "layers": [], "success": fn}
      * @expose
      */
     identify: function(opts) {
@@ -160,7 +160,7 @@ Z.Map.include({
         if(!Z.Util.isArrayHasData(layers)) {
             return;
         }
-        var point = opts.point;
+        var point = this.coordinateToViewPoint(opts['coordinate']);
         var fn = opts['success'];
         var hits = [];
         for (var i=0, len=layers.length; i<len; i++) {

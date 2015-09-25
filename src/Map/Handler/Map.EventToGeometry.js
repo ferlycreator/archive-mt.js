@@ -3,12 +3,7 @@ Z.Map.mergeOptions({
      * @cfg {Boolean} [eventToGeometry="true"] geometry事件监控
      * @member maptalks.Map
      */
-    'eventToGeometry': true,
-    /**
-     * @cfg {Array} 鼠标经过的目标数组
-     * @member maptalks.Map
-     */
-    'mouseoverTarget': []
+    'eventToGeometry': true
 });
 
 Z.Map.EventToGeometry = Z.Handler.extend({
@@ -42,7 +37,7 @@ Z.Map.EventToGeometry = Z.Handler.extend({
         layers = layers.concat(this.map._canvasLayers)/*.concat(this.map._dynLayers)*/;
 
         this.options = {
-            point: mouseDomOffset,
+            'coordinate': mouseDomOffset,
             'layers': layers,
             'success': Z.Util.bind(fireGeometryEvent, this)
         };
@@ -63,12 +58,11 @@ Z.Map.EventToGeometry = Z.Handler.extend({
         }
 
         function fireGeometryEvent(result) {
-            if(!result['success']){return;};
+            if(!result['success']){return;}
             var i,len;
             var geometries = result['data'];
-            var mouseoutTargets = [];
             if(eventType === 'mousemove') {
-                var oldTargets = me.map.options['mouseoverTarget'];
+                var oldTargets = me.prevMouseOverTargets;
                 if (Z.Util.isArrayHasData(oldTargets)) {
                     for(i=0,len=oldTargets.length; i<len; i++) {
                         var oldTarget = oldTargets[i];
@@ -97,7 +91,7 @@ Z.Map.EventToGeometry = Z.Handler.extend({
                     var geometry = geometries[i];
                     geometry._onMouseOver(domEvent);
                 }
-                me.map.options['mouseoverTarget'] = geometries;
+                me.prevMouseOverTargets = geometries;
             } else {
                 if(!geometries) {return;}
                 for(i=0,len=geometries.length; i<len; i++) {

@@ -72,6 +72,16 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     },
 
     /**
+     * 将Geometry加到图层上
+     * @param {Layer} layer   图层
+     * @param {Boolean} fitview 是否将地图自动聚焦到该Geometry上
+     */
+    addTo:function(layer, fitview) {
+        layer.addGeometry(this, fitview);
+        return this;
+    },
+
+    /**
      * 获取id
      * @returns {String} geometry的id
      * @expose
