@@ -126,14 +126,7 @@ Z.Label = Z.Class.extend({
         this._labelContrainer = this._map._containerDOM;
         this._target = geometry;
         if(!this._target) {throw new Error(this.exceptions['NEED_TARGET']);}
-
-        var layerId = '__mt__layer_label';
-        var canvas = false;
-        var targetLayer = this._target.getLayer();
-        if(targetLayer && targetLayer instanceof Z.VectorLayer && targetLayer.isCanvasRender()) {
-            canvas = true;
-        }
-        this._internalLayer = this._getInternalLayer(this._map, layerId, canvas);
+        this._internalLayer = this._getInternalLayer(this._target);
         var targetCenter = this._target.getCenter();
         this._label = new Z.Marker(targetCenter);
         this._label.setProperties(geometry.getProperties());
@@ -388,16 +381,17 @@ Z.Label = Z.Class.extend({
         this._map.enableDoubleClickZoom();
     },
 
-    _getInternalLayer: function(map, layerId, canvas) {
-        if(!map) {return;}
-        var layer = map.getLayer(layerId);
+    _getInternalLayer: function(target) {
+        var layerId = Z.internalLayerPrefix+'label';
+        var layer = this._map.getLayer(layerId);
         if(!layer) {
-            if(canvas) {
+            var targetLayer = target.getLayer();
+            if(targetLayer.isCanvasRender()) {
                 layer = new Z.VectorLayer(layerId,{'render':'canvas'});
             } else {
                 layer = new Z.VectorLayer(layerId);
             }
-            map.addLayer(layer);
+            this._map.addLayer(layer);
         }
         return layer;
     }
