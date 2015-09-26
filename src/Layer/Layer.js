@@ -33,6 +33,14 @@ Z['Layer']=Z.Layer=Z.Class.extend({
         }*/
     },
 
+    /**
+     * 将图层加到地图上
+     * @param {Map} map 地图
+     */
+    addTo:function(map) {
+        map.addLayer(this);
+        return this;
+    },
 
     getZIndex:function() {
         return this._zIndex;

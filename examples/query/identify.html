@@ -63,10 +63,9 @@
             }
         });
         //将identify操作在地图的邮件菜单中进行
-        mapObj.on('contextmenu', function(event){
-            var point = maptalks.DomUtil.getEventPageCoordinate(event);
+        mapObj.on('contextmenu', function(param){
             mapObj.identify({
-                point: {top:point.y,left:point.x},
+                coordinate: param.coordinate,
                 layers: [layer],
                 success: function(geos){
                     console.log(geos);

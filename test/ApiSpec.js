@@ -380,13 +380,13 @@ describe('API', function () {
             var spy = sinon.spy();
             var layer = new Z.VectorLayer('id');
             var geometries = genAllTypeGeometries();
-            var point = map.coordinateToContainerPoint(center);
+            //var point = map.coordinateToContainerPoint(center);
             layer.addGeometry(geometries);
             map.addLayer(layer);
 
             expect(function () {
                 map.identify({
-                    point: point,
+                    coordinate: center,
                     layers: [layer],
                     success: spy
                 });
