@@ -55,9 +55,10 @@
 
     //绘制完线面操作
     function onAfterDrawPolygon(param) {
+        drawTool.disable();
         console.log(param);
         //绘制的图形
-        var polygon = param.target;
+        var polygon = param.geometry;
         //将线添加到Layer
         layer.addGeometry(polygon);
     }

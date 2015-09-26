@@ -49,6 +49,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
      */
     enable:function() {
         if (!this.map) {return;}
+        this.map.disableDrag();
         this.drawToolLayer = this._getDrawLayer();
         this._clearEvents();
         this._registerEvents();
@@ -63,6 +64,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         if (!this.map) {
             return;
         }
+        this.map.enableDrag();
         this._endDraw();
         this.map.removeLayer(this._getDrawLayer());
         this._clearEvents();
@@ -140,7 +142,6 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
     },
 
     _preventEvents: function() {
-        this.map.disableDrag();
         this.map['doubleClickZoom'] = false;
     },
 
@@ -150,7 +151,6 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         this.map.off('mousemove',this._mousemoveForPath,this);
         this.map.off('dblclick',this._dblclickForPath,this);
         this.map.off('mousedown',this._mousedownToDraw,this);
-        this.map.enableDrag();
         this.map['doubleClickZoom'] = true;
     },
 
@@ -160,7 +160,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         /**
          * 触发drawend事件
          * @event drawend
-         * @return {Object} params: {'coordinate':coordinate, 'pixel':containerPoint};
+         * @return {Object} params: {'geometry':geometry};
          */
         this._fireEvent('drawend', param);
         if(this.disableOnDrawEnd) {
@@ -328,8 +328,8 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
             if (!this._isValidContainerPoint(containerPoint)) {return;}
             var coordinate = this._containerPointToLonlat(containerPoint);
             genGeometry(coordinate);
-            this.map.off('mousemove',onMouseMove, this);
-            this.map.off('mouseup',onMouseUp, this);
+            this.map.off('mousemove',onMouseMove,this);
+            this.map.off('mouseup',onMouseUp,this);
             this._endDraw(param);
             return false;
         };
