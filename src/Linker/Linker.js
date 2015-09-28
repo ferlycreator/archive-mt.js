@@ -190,29 +190,3 @@ Z.Linker = Z.Class.extend({
          return layer;
      }
 });
-
-
-Z.Geometry.include({
-    /**
-     * 添加连接器
-     * @member maptalks.Map
-     * @param {maptalks.Linker} linker
-     * @expose
-     */
-    linkTo: function (linker) {
-        linker.addTo(this);
-        return this;
-    },
-
-    /**
-     * 删除连接器
-     * @member maptalks.Map
-     * @param {maptalks.Linker} linker
-     * @expose
-     */
-    removeLinker: function (linker) {
-        linker.remove();
-        return this;
-    }
-
-});

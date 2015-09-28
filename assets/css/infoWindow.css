@@ -27,6 +27,7 @@
 
 .maptalks-infowindow-title {
     display:block;
+    width: 250px;
     float:left;
 }
 
