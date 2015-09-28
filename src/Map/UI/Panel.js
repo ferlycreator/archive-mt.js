@@ -69,7 +69,8 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
         Z.DomUtil.on(this._panelContainer, 'click dblclick contextmenu mousemove mousedown mouseup', Z.DomUtil.stopPropagation);
         if(this.options['draggable']) {
             Z.DomUtil.on(this._panelContainer, 'mousedown', this._onMouseDown, this)
-                     .on(this._panelContainer, 'mouseup', this._disableMove, this);
+                     .on(this._panelContainer, 'mouseup', this._disableMoveAndEnableDrag, this)
+                     .on(this._panelContainer, 'mouseout', this._disableMove, this);
         }
         return this._panelContainer;
     },
@@ -200,9 +201,7 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
         Z.DomUtil.setStyle(this._panelContainer,'cursor: move');
         this._map.disableDrag();
         Z.DomUtil.on(this._panelContainer,'mousemove',this._onMouseMove, this);
-        this._startOffset = new Z.Point(
-            parseInt(event.offsetX,0),
-            parseInt(event.offsetY,0));
+        this._startOffset = new Z.Point(parseInt(event.offsetX,0),parseInt(event.offsetY,0));
         /**
          * 触发panel的mousedown事件
          * @event mousedown
@@ -219,8 +218,8 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
 
     _onMouseMove: function(event) {
         this._endOffset = new Z.Point(parseInt(event.offsetX, 0),parseInt(event.offsetY, 0));
-        var offsetTop = this._endOffset['top'] - this._startOffset['top'];
-        var offsetLeft = this._endOffset['left'] - this._startOffset['left'];
+        var offsetTop = this._endOffset['top']-this._startOffset['top'];
+        var offsetLeft = this._endOffset['left']-this._startOffset['left'];
         var parentDom = this._panelContainer['parentNode'];
         var domStyle = parentDom['style'];
         var domTop = Z.DomUtil.getPixelValue(domStyle['top']);
@@ -262,9 +261,13 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
         this.fire('positionchanged',{'position': this._endOffset});
     },
 
-    _disableMove: function() {
-        Z.DomUtil.setStyle(this._panelContainer, 'cursor: ' +  'default');
+    _disableMoveAndEnableDrag: function() {
+        this._disableMove();
         this._map.enableDrag();
+    },
+
+    _disableMove: function() {
+        Z.DomUtil.setStyle(this._panelContainer, 'cursor: default');
         Z.DomUtil.off(this._panelContainer, 'mousemove', this._onMouseMove, this);
         /**
          * 触发panel的mouseup事件
