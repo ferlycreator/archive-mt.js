@@ -52,7 +52,6 @@ Z.Label = Z.Class.extend({
         "label-text-style" : {
             "text-face-name": "Serif",
         },
-        'link': true,
         'draggable': true,
         'trigger': 'hover'//click|hover
     },
@@ -65,7 +64,7 @@ Z.Label = Z.Class.extend({
      * @expose
      */
     initialize: function (options) {
-        this.setOption(options);
+        this.setOptions(options);
         return this;
     },
 
@@ -74,11 +73,10 @@ Z.Label = Z.Class.extend({
      * @param {Object} options
      * @expose
      */
-    setOption: function(options) {
+    setOptions: function(options) {
         Z.Util.setOptions(this, options);
         return this;
     },
-
 
     /**
     * 隐藏label
@@ -86,10 +84,12 @@ Z.Label = Z.Class.extend({
     */
     hide: function() {
         this._label.hide();
-        if(this.options['link']) {
-            //this._link.hide();
-        }
-        this.fire('hide');
+        /**
+         * 触发label的hide事件
+         * @event hide
+         * @return {Object} params: {'target': this}
+         */
+        this.fire('hide', {'target': this});
     },
 
     /**
@@ -98,10 +98,12 @@ Z.Label = Z.Class.extend({
     */
     show: function() {
         this._label.show();
-        if(this.options['link']) {
-            //this._linkToTarget();
-        }
-        this.fire('show');
+        /**
+         * 触发label的show事件
+         * @event show
+         * @return {Object} params: {'target': this}
+         */
+        this.fire('show', {'target': this});
     },
 
     /**
@@ -110,10 +112,12 @@ Z.Label = Z.Class.extend({
     */
     remove: function() {
         this._label.remove();
-        if(this.options['link']) {
-            //this._link.remove();
-        }
-        this.fire('remove');
+        /**
+         * 触发label的remove事件
+         * @event remove
+         * @return {Object} params: {'target': this}
+         */
+        this.fire('remove', {'target': this});
     },
 
     /**
@@ -145,23 +149,23 @@ Z.Label = Z.Class.extend({
         var me = this;
         if(trigger === 'hover') {
             this._target.on('mouseover', function showLabel() {
-                         me.show();
-                         me._map.disableDrag();
-                         me._map.disableDoubleClickZoom();
-                     }, this)
-                     .on('mouseout', function hideLabel() {
-                        setTimeout(function(){
-                            me.hide();
-                            me._map.enableDrag();
-                            me._map.enableDoubleClickZoom();
-                        }, 1000);
-                     }, this);
+                 me.show();
+                 me._map.disableDrag();
+                 me._map.disableDoubleClickZoom();
+             }, this)
+             .on('mouseout', function hideLabel() {
+                setTimeout(function(){
+                    me.hide();
+                    me._map.enableDrag();
+                    me._map.enableDoubleClickZoom();
+                }, 1000);
+             }, this);
         } else if(trigger === 'click') {
             this._target.on('click', function showLabel() {
-                         me.show();
-                         me._map.disableDrag();
-                         me._map.disableDoubleClickZoom();
-                     }, this);
+                 me.show();
+                 me._map.disableDrag();
+                 me._map.disableDoubleClickZoom();
+             }, this);
         } else {
             this.show();
         }
@@ -173,37 +177,17 @@ Z.Label = Z.Class.extend({
         return null;
     },
 
-    _linkToTarget: function() {
-        var center = this._target.getCenter();
-        var nearestPoints = this._getNearestPoint(center);
-        var path = [center, nearestPoints[0], nearestPoints[1]];
-        this._link = new Z.Polyline(path);
-
-        var strokeSymbol = {
-            'line-color': this.options['symbol']['shield-line-color'],
-            'line-width': this.options['symbol']['shield-line-width']
-        };
-        this._link.setSymbol(strokeSymbol);
-
-        this._internalLayer.addGeometry(this._link);
-        this._target.on('positionchanged', this._changeLinkPath, this)
-                .on('remove', this.remove, this);
-
-    },
-
-    //获取距离coordinate最近的label上的点
-    _getNearestPoint: function(coordinate) {
+    /**
+     * 获取label端点数组
+     */
+    getVertexs: function(coordinate) {
         var points = [];
-
         var painter = this._label._getPainter();
         var textSize = painter.measureTextMarker();
         var width = 0, //textSize['width'],
             height = 0; //textSize['height'];
-
         var containerPoint = this._topLeftPoint(width, height);
-
         var topLeftPoint = this._map.containerPointToCoordinate(containerPoint);
-
         var topCenterPoint = this._map.containerPointToCoordinate(
             new Z.Point(
                 containerPoint['left'] + Math.round(width/2),
@@ -270,34 +254,8 @@ Z.Label = Z.Class.extend({
                 containerPoint['top'] + Math.round(height/2)
                 )
         );
-        var points = [topCenterPoint,middleRightPoint,bottomCenterPoint,middleLeftPoint];
-        var lastDistance = 0;
-        var nearestPoint;
-        for(var i=0,len=points.length;i<len;i++) {
-            var point = points[i];
-            var distance = this._map.computeDistance(coordinate, point);
-            if(i === 0) {
-                nearestPoint = point;
-                lastDistance = distance;
-            } else {
-                if(distance < lastDistance) {
-                    nearestPoint = point;
-                }
-            }
-        }
-        //连接缓冲点，作用为美化
-        var bufferPoint;
-        if(Z.Coordinate.equals(nearestPoint, topCenterPoint)) {
-            bufferPoint = topCenterBufferPoint;
-        } else if(Z.Coordinate.equals(nearestPoint, middleRightPoint)) {
-            bufferPoint = middleRightBufferPoint;
-        } else if(Z.Coordinate.equals(nearestPoint, bottomCenterPoint)) {
-            bufferPoint = bottomCenterBufferPoint;
-        } else if(Z.Coordinate.equals(nearestPoint, middleLeftPoint)) {
-            bufferPoint = middleLeftBufferPoint;
-        }
-        var nearestPoints = [bufferPoint, nearestPoint];
-        return nearestPoints;
+        var vertexs = [topCenterPoint,middleRightPoint,bottomCenterPoint,middleLeftPoint];
+        return vertexs;
     },
 
     _topLeftPoint: function(width, height) {
@@ -307,42 +265,30 @@ Z.Label = Z.Class.extend({
         var mapOffset = this._map.offsetPlatform();
         if (placement === 'left') {
             return new Z.Point(
-                    point['left'] - width + mapOffset['left'],
-                    point['top'] - Math.round(height/2) + mapOffset['top']
-                    );
+                point['left'] - width + mapOffset['left'],
+                point['top'] - Math.round(height/2) + mapOffset['top']
+            );
         } else if (placement === 'top') {
             return new Z.Point(
-                    point['left'] - Math.round(width/2) + mapOffset['left'],
-                    point['top'] - height + mapOffset['top']
-                );
+                point['left'] - Math.round(width/2) + mapOffset['left'],
+                point['top'] - height + mapOffset['top']
+            );
         } else if (placement === 'right') {
             return new Z.Point(
-                    point['left'] + mapOffset['left'],
-                    point['top'] - Math.round(height/2) + mapOffset['top']
-                );
+                point['left'] + mapOffset['left'],
+                point['top'] - Math.round(height/2) + mapOffset['top']
+            );
         } else if(placement === 'bottom') {
             return new Z.Point(
-                    point['left'] - Math.round(width/2) + mapOffset['left'],
-                    point['top'] + mapOffset['top']
-                );
+                point['left'] - Math.round(width/2) + mapOffset['left'],
+                point['top'] + mapOffset['top']
+            );
         } else {//center
             return new Z.Point(
-                    point['left'] - Math.round(width/2) + mapOffset['left'],
-                    point['top'] - Math.round(height/2) + mapOffset['top']
-                );
+                point['left'] - Math.round(width/2) + mapOffset['left'],
+                point['top'] - Math.round(height/2) + mapOffset['top']
+            );
         }
-    },
-
-    _changeLinkPath: function() {
-        var center = this._target.getCenter();
-        var nearestPoints = this._getNearestPoint(center);
-        var path = [center, nearestPoints[0], nearestPoints[1]];
-        var strokeSymbol = {
-            'line-color': '#ff0000',
-            'line-width': this.options['symbol']['shield-line-width']
-        };
-        this._link.setSymbol(strokeSymbol);
-        this._link.setCoordinates(path);
     },
 
     _changeLabelPosition: function(event) {
@@ -355,25 +301,22 @@ Z.Label = Z.Class.extend({
         this._label.startDrag();
         this._map.disableDrag();
         this._map.disableDoubleClickZoom();
-        if(this.options['link']) {
-            this._map.on('mousemove zoomend resize moving', this._changeLinkPath, this);
-        }
-        this.fire('dragstart');
+        /**
+         * 触发label的dragstart事件
+         * @event dragstart
+         * @return {Object} params: {'target': this}
+         */
+        this.fire('dragstart', {'target': this});
     },
 
     _endMove: function(event) {
         Z.DomUtil.setStyle(this._labelContrainer, 'cursor: default');
-        if(this.options['link']) {
-            this._map.off('mousemove zoomend resize moving', this._changeLinkPath, this);
-            var strokeSymbol = {
-                'line-color': this.options['symbol']['shield-line-color'],
-                'line-width': this.options['symbol']['shield-line-width']
-            };
-            if(this._link) {
-                this._link.setSymbol(strokeSymbol);
-            }
-        }
-        this.fire('dragend');
+        /**
+         * 触发label的dragend事件
+         * @event dragend
+         * @return {Object} params: {'target': this}
+         */
+        this.fire('dragend', {'target': this});
     },
 
     _recoverMapEvents: function() {

@@ -20,14 +20,7 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
         'draggable': true,
         'title': '',
         'html': true,
-        'content': '',
-        'target': null,
-        'linksymbol': {
-            'line-color' : '#474cf8',
-            'line-width' : 1,
-            'line-dasharray' : null,
-            'line-opacity' : 1
-        }
+        'content': ''
     },
 
     /**
@@ -37,9 +30,6 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
     hide: function() {
         var parentDom = this._panelContainer['parentNode'];
         Z.DomUtil.setStyle(parentDom, 'display: none');
-        if(this.options['target']) {
-            this._link.hide();
-        }
     },
 
     /**
@@ -49,9 +39,6 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
     show: function() {
         var parentDom = this._panelContainer['parentNode'];
         Z.DomUtil.setStyle(parentDom, 'display: block');
-        if(this.options['target']) {
-            this._link.show();
-        }
     },
 
     /**
@@ -60,9 +47,6 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
     */
     removePanel: function() {
         this.remove();
-        if(this.options['target']) {
-            this._link.remove();
-        }
     },
 
     _buildOn: function (map) {
@@ -112,31 +96,10 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
         }
     },
 
-    _afterAdd: function() {
-        if(this.options['target']) {
-            this._linkToTarget();
-        }
-    },
-
-    _linkToTarget: function() {
-        this._target = this.options['target'];
-        var center = this._target.getCenter();
-        var nearestPoints = this._getNearestPoint(center);
-        var path = [center, nearestPoints[0], nearestPoints[1]];
-        this._link = new Z.Polyline(path);
-        if(this.options['linksymbol']) {
-            this._link.setSymbol(this.options['linksymbol']);
-        }
-        this._internalLayer.addGeometry(this._link);
-
-        this._target.on('positionchanged', this._changeLinkPath, this)
-                .on('remove', this.remove, this);
-        this.on('dragging', this._changeLinkPath, this);
-        this._map.on('zoomend resize moving', this._changeLinkPath, this);
-    },
-
-    //获取距离coordinate最近的panel上的点
-    _getNearestPoint: function(coordinate) {
+    /**
+     * 获取panel端点数组
+     */
+    getVertexs: function() {
         var points = [];
         var containerPoint = this._topLeftPoint();
         var width = this._panelContainer['clientWidth'],
@@ -147,96 +110,70 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
             new Z.Point(
                 containerPoint['left'] + Math.round(width/2),
                 containerPoint['top']
-                )
+            )
         );
         var topCenterBufferPoint = this._map.containerPointToCoordinate(
             new Z.Point(
                 containerPoint['left'] + Math.round(width/2),
                 containerPoint['top'] - 20
-                )
+            )
         );
         var topRightPoint = this._map.containerPointToCoordinate(
             new Z.Point(
                 containerPoint['left'] + width,
                 containerPoint['top']
-                )
+            )
         );
         var bottomLeftPoint = this._map.containerPointToCoordinate(
             new Z.Point(
                 containerPoint['left'],
                 containerPoint['top'] + height
-                )
+            )
         );
         var bottomCenterPoint = this._map.containerPointToCoordinate(
             new Z.Point(
                 containerPoint['left'] + Math.round(width/2),
                 containerPoint['top'] + height
-                )
+            )
         );
         var bottomCenterBufferPoint = this._map.containerPointToCoordinate(
             new Z.Point(
                 containerPoint['left'] + Math.round(width/2),
                 containerPoint['top'] + height + 20
-                )
+            )
         );
         var bottomRightPoint = this._map.containerPointToCoordinate(
             new Z.Point(
                 containerPoint['left'] + width,
                 containerPoint['top'] + height
-                )
+            )
         );
         var middleLeftPoint = this._map.containerPointToCoordinate(
             new Z.Point(
                 containerPoint['left'],
                 containerPoint['top'] + Math.round(height/2)
-                )
+            )
         );
         var middleLeftBufferPoint = this._map.containerPointToCoordinate(
             new Z.Point(
                 containerPoint['left'] - 20,
                 containerPoint['top'] + Math.round(height/2)
-                )
+            )
         );
         var middleRightPoint = this._map.containerPointToCoordinate(
             new Z.Point(
                 containerPoint['left'] + width,
                 containerPoint['top'] + Math.round(height/2)
-                )
+            )
         );
         var middleRightBufferPoint = this._map.containerPointToCoordinate(
             new Z.Point(
                 containerPoint['left'] + width + 20,
                 containerPoint['top'] + Math.round(height/2)
-                )
+            )
         );
-        var points = [topCenterPoint,middleRightPoint,bottomCenterPoint,middleLeftPoint];
-        var lastDistance = 0;
-        var nearestPoint;
-        for(var i=0,len=points.length;i<len;i++) {
-            var point = points[i];
-            var distance = this._map.computeDistance(coordinate, point);
-            if(i === 0) {
-                nearestPoint = point;
-                lastDistance = distance;
-            } else {
-                if(distance < lastDistance) {
-                    nearestPoint = point;
-                }
-            }
-        }
-        //连接缓冲点，作用为美化
-        var bufferPoint;
-        if(Z.Coordinate.equals(nearestPoint, topCenterPoint)) {
-            bufferPoint = topCenterBufferPoint;
-        } else if(Z.Coordinate.equals(nearestPoint, middleRightPoint)) {
-            bufferPoint = middleRightBufferPoint;
-        } else if(Z.Coordinate.equals(nearestPoint, bottomCenterPoint)) {
-            bufferPoint = bottomCenterBufferPoint;
-        } else if(Z.Coordinate.equals(nearestPoint, middleLeftPoint)) {
-            bufferPoint = middleLeftBufferPoint;
-        }
-        var nearestPoints = [bufferPoint, nearestPoint];
-        return nearestPoints;
+        var vertexs = [topCenterPoint,middleRightPoint,bottomCenterPoint,middleLeftPoint];
+        return vertexs;
     },
 
     _topLeftPoint: function() {
@@ -250,37 +187,34 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
             height = this._map._containerDOM.clientHeight;
         var panelWidth = this._panelContainer['clientWidth'],
             panelHeight = this._panelContainer['clientHeight'];
-        if(left === 0 && right >= 0) {
-            left = width - right - panelWidth;
+        if(left===0&&right>=0) {
+            left = width-right-panelWidth;
         }
-        if(top === 0 && bottom >= 0) {
-            top = height - bottom - panelHeight;
+        if(top===0&&bottom>=0) {
+            top = height-bottom-panelHeight;
         }
-        return new Z.Point(left, top);
-    },
-
-    _changeLinkPath: function() {
-        var geometry = this.options['target'];
-        var center = geometry.getCenter();
-        var nearestPoints = this._getNearestPoint(center);
-        var path = [center, nearestPoints[0], nearestPoints[1]];
-        this._link.setCoordinates(path);
+        return new Z.Point(left,top);
     },
 
     _onMouseDown: function(event) {
-        Z.DomUtil.setStyle(this._panelContainer, 'cursor: move');
+        Z.DomUtil.setStyle(this._panelContainer,'cursor: move');
         this._map.disableDrag();
-        Z.DomUtil.on(this._panelContainer, 'mousemove', this._onMouseMove, this);
+        Z.DomUtil.on(this._panelContainer,'mousemove',this._onMouseMove, this);
         this._startOffset = new Z.Point(
             parseInt(event.offsetX,0),
-            parseInt(event.offsetY,0)
-            );
+            parseInt(event.offsetY,0));
+        /**
+         * 触发panel的mousedown事件
+         * @event mousedown
+         * @return {Object} params: {'target': this, 'position': {'top':0,'left':0}}}
+         */
+        this.fire('mousedown',{'target': this,'position':this._startOffset});
         /**
          * 触发panel的dragstart事件
          * @event dragstart
          * @return {Object} params: {'target': this, 'position': {'top':0,'left':0}}}
          */
-        this.fire('dragstart', {'position': this._startOffset});
+        this.fire('dragstart',{'target': this,'position':this._startOffset});
     },
 
     _onMouseMove: function(event) {
@@ -319,29 +253,34 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
          * @event dragging
          * @return {Object} params: {'target': this, 'position': {'top':0,'left':0}}}
          */
-        this.fire('dragging', {'position': this._endOffset});
+        this.fire('dragging',{'position': this._endOffset});
+        /**
+         * 触发panel的positionchanged事件
+         * @event positionchanged
+         * @return {Object} params: {'target': this, 'position': {'top':0,'left':0}}}
+         */
+        this.fire('positionchanged',{'position': this._endOffset});
     },
 
     _disableMove: function() {
         Z.DomUtil.setStyle(this._panelContainer, 'cursor: ' +  'default');
         this._map.enableDrag();
         Z.DomUtil.off(this._panelContainer, 'mousemove', this._onMouseMove, this);
-//        if(this.options['target']) {
-//            this._target.off('positionchanged', this._changeLinkPath, this)
-//                    .off('remove', this.remove, this);
-//            this.off('dragging', this._changeLinkPath, this);
-//            this._map.off('zoomend resize moving', this._changeLinkPath, this);
-//        }
-
+        /**
+         * 触发panel的mouseup事件
+         * @event mouseup
+         * @return {Object} params: {'target': this, 'position': {'top':0,'left':0}}}
+         */
+        this.fire('mouseup',{'target': this,'position':this._endOffset});
         /**
          * 触发panel的dragend事件
          * @event dragend
          * @return {Object} params: {'target': this, 'position': {'top':0,'left':0}}}
          */
-        this.fire('dragend', {'position': this._endOffset});
+        this.fire('dragend',{'position': this._endOffset});
     },
 
-     _getInternalLayer: function(map, layerId, canvas) {
+    _getInternalLayer: function(map, layerId, canvas) {
          if(!map) {return;}
          var layer = map.getLayer(layerId);
          if(!layer) {

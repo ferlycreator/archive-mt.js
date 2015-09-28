@@ -471,6 +471,13 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      */
     getArea:function() {
         return this._computeGeodesicArea(this._getProjection());
+    },
+
+    /**
+     * 获取图形顶点坐标数组
+     */
+    getVertexs: function() {
+        return [this.getCenter()];
     }
 
 });

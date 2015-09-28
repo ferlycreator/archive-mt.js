@@ -7,7 +7,7 @@
     <style type="text/css">
         html,body{ margin:0px; height:100%; };
     </style>
-    <title>MapTalks 示例: Panel控件</title>
+    <title>MapTalks 示例: label控件</title>
 </head>
 <body scroll="no" onload="initMap();">
 <div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
@@ -31,24 +31,8 @@
             urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
             subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
         }));
-        //构建panel
-        var panel = new maptalks.Panel({
-            position : {//放置panel的位置
-                top: '15',
-                left: '15'
-            },
-            style: 'default',
-            draggable: true,//能否拖动
-            title: '面板标题',
-            html: true, //content值能否为html
-            content: '面板内容'
-        });
-        /**
-        * 将面板绑定到地图容器上
-        */
-        mapObj.addControl(panel);
         //创建图层
-        var layer = new maptalks.VectorLayer('layer',{render:'Canvas'});
+        var layer = new maptalks.VectorLayer('layer');
         //将图层添加到地图对象
         mapObj.addLayer(layer);
         //创建点的坐标对象
@@ -57,19 +41,40 @@
         var marker = new maptalks.Marker(markerCoordinate,'marker_id');
         layer.addGeometry(marker);
 
-        var markerPanelOptions = {
-            position : {
-                bottom: '15',
-                right: '15'
+        var labelOptions = {
+            "label-box" : "tip",
+            "label-box-style": {
+                'line-color': '#000000',
+                'line-width': 1,
+                'line-opacity': 1,
+                'polygon-opacity': 1,
+                'polygon-fill': '#ffffff',
+                'size': 12,
+                'text-fill': '#ff0000',
+                'placement': 'point', //point line vertex interior
+                'spacing': 30,
+                'wrap-width': 100,
+                'wrap-before': false,
+                'wrap-character': '',
+                'character-spacing': 0,
+                'line-spacing': 8,
+                'text-dx': 0,
+                'text-dy': 0,
+                'dx': 0,
+                'dy': 0,
+                'text-opacity': 1,
+                'horizontal-alignment': 'right',//left middle right
+                'vertical-alignment': 'top',//top middle bottom
+                'justify-alignment': 'center'//left center right
             },
-            style: 'default',
-            draggable: true,
-            title: '点信息面板',
-            html: true,
-            content: '信息正文'
+            "label-text-style" : {
+                "text-face-name": "Serif",
+            },
+            'draggable': true,
+            'trigger': 'hover'//click|hover
         };
-        var markerInfoPanel = new maptalks.Panel(markerPanelOptions);
-        marker.addPanel(markerInfoPanel);
+        var label = new maptalks.Label(labelOptions);
+        marker.addLabel(label);
     }
 </script>
 <script type="text/javascript" src="../../maptalks.js"></script>

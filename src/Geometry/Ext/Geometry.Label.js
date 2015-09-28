@@ -16,13 +16,28 @@ Z.Geometry.include({
     },
 
     _addLabel: function(options) {
+        var label;
         if(options instanceof Z.Label) {
             label = options;
             label.addTo(this);
         } else {
-            var label = new Z.Label(options);
+            label = new Z.Label(options);
             label.addTo(this);
         }
+
+        var linkerOptions = {
+            linkSource:this,
+            linkTarget:label,
+            trigger: 'click',
+            symbol:{
+                'line-color' : '#474cf8',
+                'line-width' : 1,
+                'line-dasharray' : null,
+                'line-opacity' : 1
+            }
+        };
+        var linker = new Z.Linker(linkerOptions);
+        linker.addTo(this.getMap());
         return this;
     },
 

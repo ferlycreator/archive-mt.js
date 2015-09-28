@@ -17,15 +17,27 @@ Z.Geometry.include({
     },
 
     _addPanel: function(options) {
+        var panel;
         if(options instanceof Z.Panel) {
-            var panel = options;
-            panel.options['target'] = this;
+            panel = options;
             panel.addTo(this.getMap());
         } else {
-            options['target'] = this;
-            var panel = new Z.Panel(options);
+            panel = new Z.Panel(options);
             panel.addTo(this.getMap());
         }
+        var linkerOptions = {
+            linkSource:this,
+            linkTarget:panel,
+            trigger: 'manual',
+            symbol:{
+                'line-color' : '#474cf8',
+                'line-width' : 1,
+                'line-dasharray' : null,
+                'line-opacity' : 1
+            }
+        };
+        var linker = new Z.Linker(linkerOptions);
+        linker.addTo(this.getMap());
         return this;
     },
 

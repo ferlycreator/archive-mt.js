@@ -97,6 +97,7 @@
 ../src/Map/UI/Toolbar.js
 ../src/Map/UI/Panel.js
 ../src/Map/UI/Label.js
+../src/Linker/Linker.js
 ../src/Topo/GeoUtils.js
 ../src/Topo/SimplifyUtil.js
 ../src/Query/SpatialFilter.js
