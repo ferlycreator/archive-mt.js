@@ -102,8 +102,11 @@ Z.Canvas = {
     image:function(ctx, pt, img, width, height) {
         var ratio = Z.Browser.retina ? 2:1;
         pt = pt.multi(ratio);
+        var left=pt['left'],top=pt['top'];
         if (Z.Util.isNumber(width) && Z.Util.isNumber(height)) {
-            ctx.drawImage(img,pt['left'],pt['top'],width*ratio,height*ratio);
+            var width=width*ratio,height=height*ratio;
+            left=left-width/2,top=top-height;
+            ctx.drawImage(img,left,top,width,height);
         } else {
             ctx.drawImage(img,pt['left'],pt['top']);
         }
