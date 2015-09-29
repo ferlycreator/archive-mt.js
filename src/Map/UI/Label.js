@@ -23,34 +23,34 @@ Z.Label = Z.Class.extend({
     /**
      * @cfg {Object} options label属性
      */
-    options:{
-        "label-box" : "tip",
-        "label-box-style": {
-            'line-color': '#000000',
-            'line-width': 1,
-            'line-opacity': 1,
-            'polygon-opacity': 1,
-            'polygon-fill': '#ffffff',
-            'size': 12,
-            'text-fill': '#ff0000',
-            'placement': 'point', //point line vertex interior
-            'spacing': 30,
-            'wrap-width': 100,
-            'wrap-before': false,
-            'wrap-character': '',
-            'character-spacing': 0,
-            'line-spacing': 8,
-            'text-dx': 0,
-            'text-dy': 0,
-            'dx': 0,
-            'dy': 0,
+    options: {
+        'symbol': {
+            'label-type': 'box',//box|tip
+
+            'label-line-color': '#000000',
+            'label-line-width': 1,
+            'label-line-opacity': 1,
+
+            'label-opacity': 1,
+            'label-fill': '#ffffff',
+            'label-wrap-width': 100,
+            'label-placement': 'point', //point line vertex interior
+            'label-horizontal-alignment': 'right',//left middle right
+            'label-vertical-alignment': 'top',//top middle bottom
+            'label-justify-alignment': 'center',//left center right
+            'label-dx': 0,
+            'label-dy': 0,
+
+            'text-face-name': 'arial',
+            'text-size': 12,
+            'text-fill': '#000000',
             'text-opacity': 1,
-            'horizontal-alignment': 'right',//left middle right
-            'vertical-alignment': 'top',//top middle bottom
-            'justify-alignment': 'center'//left center right
-        },
-        "label-text-style" : {
-            "text-face-name": "Serif",
+            'text-spacing': 30,
+            'text-wrap-before': false,
+            'text-wrap-character': '',
+            'text-line-spacing': 8,
+            'text-dx': 0,
+            'text-dy': 0
         },
         'draggable': true,
         'trigger': 'hover'//click|hover
@@ -180,7 +180,7 @@ Z.Label = Z.Class.extend({
     /**
      * 获取label端点数组
      */
-    getVertexs: function(coordinate) {
+    getVertexs: function() {
         var points = [];
         var painter = this._label._getPainter();
         var textSize = painter.measureTextMarker();
@@ -192,74 +192,74 @@ Z.Label = Z.Class.extend({
             new Z.Point(
                 containerPoint['left'] + Math.round(width/2),
                 containerPoint['top']
-                )
+            )
         );
         var topCenterBufferPoint = this._map.containerPointToCoordinate(
             new Z.Point(
                 containerPoint['left'] + Math.round(width/2),
                 containerPoint['top'] - 20
-                )
+            )
         );
         var topRightPoint = this._map.containerPointToCoordinate(
             new Z.Point(
                 containerPoint['left'] + width,
                 containerPoint['top']
-                )
+            )
         );
         var bottomLeftPoint = this._map.containerPointToCoordinate(
             new Z.Point(
                 containerPoint['left'],
                 containerPoint['top'] + height
-                )
+            )
         );
         var bottomCenterPoint = this._map.containerPointToCoordinate(
             new Z.Point(
                 containerPoint['left'] + Math.round(width/2),
                 containerPoint['top'] + height
-                )
+            )
         );
         var bottomCenterBufferPoint = this._map.containerPointToCoordinate(
             new Z.Point(
                 containerPoint['left'] + Math.round(width/2),
                 containerPoint['top'] + height + 20
-                )
+            )
         );
         var bottomRightPoint = this._map.containerPointToCoordinate(
             new Z.Point(
                 containerPoint['left'] + width,
                 containerPoint['top'] + height
-                )
+            )
         );
         var middleLeftPoint = this._map.containerPointToCoordinate(
             new Z.Point(
                 containerPoint['left'],
                 containerPoint['top'] + Math.round(height/2)
-                )
+            )
         );
         var middleLeftBufferPoint = this._map.containerPointToCoordinate(
             new Z.Point(
                 containerPoint['left'] - 20,
                 containerPoint['top'] + Math.round(height/2)
-                )
+            )
         );
         var middleRightPoint = this._map.containerPointToCoordinate(
             new Z.Point(
                 containerPoint['left'] + width,
                 containerPoint['top'] + Math.round(height/2)
-                )
+            )
         );
         var middleRightBufferPoint = this._map.containerPointToCoordinate(
             new Z.Point(
                 containerPoint['left'] + width + 20,
                 containerPoint['top'] + Math.round(height/2)
-                )
+            )
         );
         var vertexs = [topCenterPoint,middleRightPoint,bottomCenterPoint,middleLeftPoint];
         return vertexs;
     },
 
     _topLeftPoint: function(width, height) {
-        var placement = this.options['symbol']['shield-vertical-alignment'];
+        var placement = this.options['symbol']['vertical-alignment'];
         var center = this._label.getCenter();
         var point = this._map.coordinateToViewPoint(center);
         var mapOffset = this._map.offsetPlatform();

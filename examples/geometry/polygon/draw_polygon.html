@@ -28,7 +28,7 @@
             subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
         }));
         //创建图层
-        layer = new maptalks.VectorLayer('layer');
+        layer = new maptalks.VectorLayer('layer',{render:'Canvas'});
         //将图层添加到地图对象
         mapObj.addLayer(layer);
 
@@ -38,7 +38,7 @@
             *设置drawTool绘制的图形类型
             *TYPE_POLYGON： 多边形；TYPE_RECT：矩形；TYPE_CIRCLE：圆形
             */
-            mode: maptalks.Geometry.TYPE_POLYGON,
+            mode: maptalks.Geometry.TYPE_RECT,
             symbol: {
                 'line-color':'#0000ff',
                 'line-width':3,

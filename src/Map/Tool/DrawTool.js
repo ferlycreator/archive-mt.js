@@ -277,7 +277,8 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
                     break;
                 }
                 center =geometry.getCenter();
-                var radius = _map.computeDistance(center,coordinate);
+                var ratio = Z.Browser.retina?2:1;
+                var radius = _map.computeDistance(center,coordinate)*ratio;
                 geometry.setRadius(radius);
             break;
             case Z.Geometry['TYPE_ELLIPSE']:
@@ -288,8 +289,9 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
                     break;
                 }
                 center = geometry.getCenter();
-                var rx = _map.computeDistance(center,{x:coordinate.x, y:center.y});
-                var ry = _map.computeDistance(center,{x:center.x, y:coordinate.y});
+                var ratio = Z.Browser.retina?2:1;
+                var rx = _map.computeDistance(center,{x:coordinate.x, y:center.y})*ratio;
+                var ry = _map.computeDistance(center,{x:center.x, y:coordinate.y})*ratio;
                 geometry.setWidth(rx);
                 geometry.setHeight(ry);
             break;
@@ -301,8 +303,9 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
                     break;
                 }
                 var nw =geometry.getCoordinates();
-                var width = _map.computeDistance(nw,{x:coordinate.x, y:nw.y});
-                var height = _map.computeDistance(nw,{x:nw.x, y:coordinate.y});
+                var ratio = Z.Browser.retina?2:1;
+                var width = _map.computeDistance(nw,{x:coordinate.x, y:nw.y})*ratio;
+                var height = _map.computeDistance(nw,{x:nw.x, y:coordinate.y})*ratio;
                 geometry.setWidth(width);
                 geometry.setHeight(height);
             break;
