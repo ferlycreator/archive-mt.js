@@ -48,15 +48,11 @@ Z.Map.include({
      */
     buffer:function(geometry, distance, callback) {
         var defaultOption = {
-                "fillSymbol":{
-                    "fillOpacity" : 0
-                },
-                "strokeSymbol":{
-                    "stroke" : "#800040",
-                    "strokeWidth" : 2,
-                    "strokeOpacity" : 1,
-                    "strokeDasharray" : "--"
-                }
+                'line-color' : '#800040',
+                'line-width' : 2,
+                'line-opacity' : 1,
+                'line-dasharray' :[20,10,5,5,5,10],
+                'polygon-opacity': 0
         };
         var me = geometry;
         var result = null;
@@ -68,7 +64,7 @@ Z.Map.include({
         }
         // 点和圆形的buffer直接进行计算
         if (geometry instanceof Z.Marker) {
-            result = new Z.Circle(me._center, distance);
+            result = new Z.Circle(me.getCenter(), distance);
             result.setSymbol(defaultOption);
             callback({
                 "success" : true,
@@ -77,7 +73,7 @@ Z.Map.include({
             return;
         } else if (geometry instanceof Z.Circle) {
             var radius = me.radius + distance;
-            result = new Z.Circle(me._center, radius);
+            result = new Z.Circle(me.getCenter(), radius);
             result.setSymbol(defaultOption);
             callback({
                 "success" : true,

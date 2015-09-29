@@ -7,18 +7,18 @@
     <style type="text/css">
         html,body{ margin:0px; height:100%; };
     </style>
-    <title>MapTalks 示例: 绘制面</title>
+    <title>MapTalks 示例: 点缓冲</title>
 </head>
 <body scroll="no" onload="initMap();">
 <div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
 <script type="text/javascript" >
-    var mapObj,drawTool,layer;
+    var mapObj;
     function initMap(){
         //创建地图对象
         mapObj = new maptalks.Map('mapObj', //放置mapObj的div id
         {
             center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
-            zoomLevel:   17 //初始缩放级别
+            zoomLevel:   11 //初始缩放级别
         });
         //设置底图图层
         mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
@@ -28,40 +28,21 @@
             subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
         }));
         //创建图层
-        layer = new maptalks.VectorLayer('layer',{render:'Canvas'});
+        var layer = new maptalks.VectorLayer('layer',{render:'Canvas'});
         //将图层添加到地图对象
         mapObj.addLayer(layer);
-
-        //构造绘制面工具
-        drawTool = new maptalks.DrawTool({
-            /**
-            *设置drawTool绘制的图形类型
-            *TYPE_POLYGON： 多边形；TYPE_RECT：矩形；TYPE_CIRCLE：圆形
-            */
-            mode: maptalks.Geometry.TYPE_CIRCLE,
-            symbol: {
-                'line-color':'#0000ff',
-                'line-width':3,
-                'line-opacity':1,
-                'line-dasharray': '20,5,2,5',
-                'polygon-fill': '#ff0000',
-                'polygon-opacity': 0.6
-            }
+        //创建点的坐标对象
+        var markerCoordinate = new maptalks.Coordinate(121.489935,31.24432);
+        //创建点对象
+        var marker = new maptalks.Marker(markerCoordinate,{'id':'marker_id'});
+        //将点添加到Layer
+        layer.addGeometry(marker);
+        //点缓冲
+        mapObj.buffer(marker, 2000, function(result) {
+            console.log(result);
+            layer.addGeometry(result.data);
+            console.log();
         });
-        //将线绘制工具绑定到地图对象
-        drawTool.addTo(mapObj);
-        //监听绘制工具完成事件，获取绘制的面坐标数组等信息
-        drawTool.on('drawend', onAfterDrawPolygon);
-    }
-
-    //绘制完线面操作
-    function onAfterDrawPolygon(param) {
-        drawTool.disable();
-        console.log(param);
-        //绘制的图形
-        var polygon = param.geometry;
-        //将线添加到Layer
-        layer.addGeometry(polygon);
     }
 </script>
 <!-- 引擎javascript开发包-->
