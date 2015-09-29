@@ -18,7 +18,7 @@
         mapObj = new maptalks.Map('mapObj', //放置mapObj的div id
         {
             center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
-            zoomLevel:   17 //初始缩放级别
+            zoomLevel:   13 //初始缩放级别
         });
         //设置底图图层
         mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
@@ -28,7 +28,7 @@
             subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
         }));
         //创建图层
-        layer = new maptalks.VectorLayer('layer',{render:'Canvas'});
+        layer = new maptalks.VectorLayer('layer', {render:'Canvas'});
         //将图层添加到地图对象
         mapObj.addLayer(layer);
 

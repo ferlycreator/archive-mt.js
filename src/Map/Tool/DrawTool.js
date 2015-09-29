@@ -157,15 +157,6 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
     _clickForPoint: function(param) {
         var geometry = new Z.Marker(param['coordinate']);
         param['geometry'] = geometry;
-        /**
-         * 触发drawend事件
-         * @event drawend
-         * @return {Object} params: {'geometry':geometry};
-         */
-        this._fireEvent('drawend', param);
-        if(this.disableOnDrawEnd) {
-           this.disable();
-        }
     },
 
     _clickForPath:function(param) {
@@ -277,8 +268,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
                     break;
                 }
                 center =geometry.getCenter();
-                var ratio = Z.Browser.retina?2:1;
-                var radius = _map.computeDistance(center,coordinate)*ratio;
+                var radius = _map.computeDistance(center,coordinate);
                 geometry.setRadius(radius);
             break;
             case Z.Geometry['TYPE_ELLIPSE']:
@@ -289,9 +279,8 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
                     break;
                 }
                 center = geometry.getCenter();
-                var ratio = Z.Browser.retina?2:1;
-                var rx = _map.computeDistance(center,{x:coordinate.x, y:center.y})*ratio;
-                var ry = _map.computeDistance(center,{x:center.x, y:coordinate.y})*ratio;
+                var rx = _map.computeDistance(center,{x:coordinate.x, y:center.y});
+                var ry = _map.computeDistance(center,{x:center.x, y:coordinate.y});
                 geometry.setWidth(rx);
                 geometry.setHeight(ry);
             break;
@@ -356,6 +345,16 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
             return;
         }
         var target = this.geometry.copy();
+        var ratio = Z.Browser.retina?2:1;
+        switch (this.mode) {
+            case Z.Geometry['TYPE_CIRCLE']:
+                target.setRadius(target.getRadius()*ratio);
+            break;
+            case Z.Geometry['TYPE_ELLIPSE']:
+                target.setWidth(target.getWidth()*ratio);
+                target.setHeight(target.getHeight()*ratio);
+            break;
+        }
         this.geometry.remove();
         delete this.geometry;
         if (!param) {
