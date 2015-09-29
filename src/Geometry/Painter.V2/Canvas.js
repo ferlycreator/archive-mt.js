@@ -255,7 +255,7 @@ Z.Canvas = {
         if (size['width'] === size['height']) {
             //如果高宽相同,则直接绘制圆形, 提高效率
             ctx.beginPath();
-            ctx.arc(pt['left'],pt['top'],size['width']/2,0,2*Math.PI);
+            ctx.arc(pt['left'],pt['top'],size['width'],0,2*Math.PI);
             ctx.stroke();
         } else {
             bezierEllipse(pt['left'],pt['top'],size["width"],size["height"]);

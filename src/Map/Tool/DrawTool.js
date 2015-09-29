@@ -345,16 +345,6 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
             return;
         }
         var target = this.geometry.copy();
-        var ratio = Z.Browser.retina?2:1;
-        switch (this.mode) {
-            case Z.Geometry['TYPE_CIRCLE']:
-                target.setRadius(target.getRadius()*ratio);
-            break;
-            case Z.Geometry['TYPE_ELLIPSE']:
-                target.setWidth(target.getWidth()*ratio);
-                target.setHeight(target.getHeight()*ratio);
-            break;
-        }
         this.geometry.remove();
         delete this.geometry;
         if (!param) {
