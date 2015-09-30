@@ -17,7 +17,7 @@ Z.Point.prototype={
 
     //破坏性方法
     _add: function(_point) {
-        if (!_point) {return;}
+        // if (!_point) {return;}
         this['left'] += _point['left'];
         this['top'] += _point['top'];
         return this;

@@ -21,18 +21,20 @@ Z['Coordinate'] = Z.Coordinate = function(x, y) {
     }
 };
 
-//static functions on Coordinate class
-Z.Util.extend(Z.Coordinate,{
+Z.Coordinate.prototype={
+    add:function(d) {
+        return new Z.Coordinate(this.x+d.x, this.y+d.y);
+    },
     /**
      * 比较两个坐标是否相等
      * @param {maptalks.Coordinate} c1
      * @param {maptalks.Coordinate} c1
      * @return {Boolean} true：坐标相等
      */
-    equals:function(c1,c2) {
-        if (!Z.Util.isCoordinate(c1) || !Z.Util.isCoordinate(c2)) {
+    equals:function(c2) {
+        if (!Z.Util.isCoordinate(c2)) {
             return false;
         }
-        return c1.x === c2.x && c1.y === c2.y;
+        return this.x === c2.x && this.y === c2.y;
     }
-});
+};
