@@ -5,7 +5,8 @@ Z.Painter = Z.Class.extend({
         Z.ImageMarkerSymbolizer,
         Z.VectorMarkerSymbolizer,
         Z.TextMarkerSymbolizer,
-        Z.ShieldMarkerSymbolizer
+        Z.ShieldMarkerSymbolizer,
+        Z.LabelMarkerSymbolizer
     ],
 
     initialize:function(geometry) {
