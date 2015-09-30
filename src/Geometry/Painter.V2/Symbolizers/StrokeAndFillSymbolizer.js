@@ -77,10 +77,8 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
 
     //所有point symbolizer的共同的remove方法
     remove:function() {
-        if (Z.Util.isArrayHasData(this.markers)) {
-            for (var i = this.markers.length-1;i>=0;i--) {
-                Z.DomUtil.removeDomNode(this.markers[i]);
-            }
+        if (this.svgDom) {
+            Z.DomUtil.removeDomNode(this.svgDom);
         }
     },
 
