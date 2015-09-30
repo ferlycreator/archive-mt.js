@@ -151,28 +151,6 @@ Z.OverlayLayer=Z.Layer.extend({
         return this;
     },
 
-    /**
-     * 当geometry被移除时触发
-     * @param  {[type]} geometry [description]
-     * @return {[type]}          [description]
-     */
-    _onGeometryRemove:function(geometry) {
-        if (!geometry) {return;}
-        //考察geometry是否属于该图层
-        if (this != geometry.getLayer()) {
-            return;
-        }
-        var internalId = geometry._getInternalId();
-        if (Z.Util.isNil(internalId)) {
-            return;
-        }
-        var geoId = geometry.getId();
-        if (!Z.Util.isNil(geoId)) {
-            delete this._geoMap[geoId];
-        }
-        delete this._geoCache[internalId];
-    },
-
     _onRemove:function() {
         this.clear();
         delete this.map;
