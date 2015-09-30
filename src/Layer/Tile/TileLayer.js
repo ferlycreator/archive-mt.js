@@ -121,6 +121,9 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
             return this.options['errorTileUrl'];
         }
         var urlTemplate = this.options['urlTemplate'];
+        if (Z.Util.isFunction(urlTemplate)) {
+            return urlTemplate(x,y,z);
+        }
         var domain = '';
         if (this.options['subdomains']) {
             var subdomains = this.options['subdomains'];
