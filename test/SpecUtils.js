@@ -1,7 +1,7 @@
 function genAllTypeGeometries() {
     var center = new Z.Coordinate(118.846825, 32.046534);
     var w = 200, h = 200, r = 200;
-    var geometries = [
+    return [
         new Z.Marker(center),
         new Z.Circle(center, r),
         new Z.Ellipse(center, w, h),
@@ -45,7 +45,7 @@ function genAllTypeGeometries() {
             ]
         ])
     ];
-    return geometries;
+    // return geometries;
 }
 
 /*exports = module.exports = {
@@ -183,7 +183,6 @@ var GeoSymbolTester = {
 
     testGeoSymbols:function(geometry, map) {
         return;
-        Z.DEBUG = true;
         geometry.remove();
         var layer = new maptalks.VectorLayer("symboltest_layer_svg");
         map.addLayer(layer);

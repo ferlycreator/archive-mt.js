@@ -693,7 +693,7 @@ describe('API', function () {
         });
 
         it('removeGeometry', function() {
-            var layer = new Z.OverlayLayer();
+            var layer = new Z.VectorLayer('layer');
             layer.paintGeometries = paint;
             layer.setId('id');
             // map.addLayer(layer);
@@ -725,7 +725,7 @@ describe('API', function () {
         });
 
         it('clear', function() {
-            var layer = new Z.OverlayLayer();
+            var layer = new Z.VectorLayer('layer');
             layer.paintGeometries = paint;
             layer.setId('id');
             // map.addLayer(layer);
