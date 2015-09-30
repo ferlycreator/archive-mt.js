@@ -1066,6 +1066,17 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     /**
+     * 返回距离coordinate坐标距离为dx, dy的坐标
+     * @param  {Coordinate} coordinate 坐标
+     * @param  {Number} dx         x轴上的距离, 坐标为经纬度时,单位为米, 坐标为像素时, 单位为像素
+     * @param  {Number} dy         y轴上的距离, 坐标为经纬度时,单位为米, 坐标为像素时, 单位为像素
+     * @return {Coordinate}            新的坐标
+     */
+    locate:function(coordinate, dx, dy) {
+        return this._getProjection().locate(coordinate,dx,dy);
+    },
+
+    /**
      * [createVectorPaper description]
      * @return {[type]} [description]
      */
