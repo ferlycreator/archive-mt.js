@@ -67,6 +67,7 @@
 ../src/Geometry/Painter.V2/Symbolizers/VectorMarkerSymbolizer.js
 ../src/Geometry/Painter.V2/Symbolizers/TextMarkerSymbolizer.js
 ../src/Geometry/Painter.V2/Symbolizers/ShieldMarkerSymbolizer.js
+../src/Geometry/Painter.V2/Symbolizers/LabelMarkerSymbolizer.js
 ../src/Geometry/Painter.V2/Geometry.SVG.js
 ../src/Geometry/Painter.V2/Geometry.Canvas.js
 ../src/Geometry/Painter.V2/Painter.js

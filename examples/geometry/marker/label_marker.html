@@ -34,33 +34,35 @@
         var coordinate = new maptalks.Coordinate(121.489935,31.24432);
         //设置矢量配置
         var icon = {
-            'shield-type': 'tip',//label tip
-            'shield-name': '名    称: [marker_name]',
-            'shield-opacity': 1,
-            'shield-line-color': '#121212',
-            'shield-line-width': 1,
-            'shield-line-opacity': 1,
-            'shield-fill': '#536457',
-            'shield-fill-opacity': 1,
-            'shield-file': '',
-            'shield-face-name': 'Serif',
-            'shield-unlock-image' : false,
-            'shield-size': 12,
-            'shield-text-fill': '#ff0000',
-            'shield-placement': 'point', //point line vertex interior
-            'shield-wrap-width': 100,
-            'shield-wrap-before': false,
-            'shield-wrap-character': '',
-            'shield-character-spacing': 0,
-            'shield-line-spacing': 8,
-            'shield-text-dx': 0,
-            'shield-text-dy': 0,
-            'shield-dx': 0,
-            'shield-dy': 0,
-            'shield-text-opacity': 1,
-            'shield-horizontal-alignment': 'middle',//left middle right
-            'shield-vertical-alignment': 'top',//top middle bottom
-            'shield-justify-alignment': 'left'//left center right
+            'label-type': 'tip',//label tip
+            'label-name': '名    称: [marker_name]',
+            'label-type': 'box',//box|tip
+
+            'label-line-color': '#000000',
+            'label-line-width': 1,
+            'label-line-opacity': 1,
+
+            'label-opacity': 1,
+            'label-fill': '#ffffff',
+            'label-wrap-width': 100,
+            'label-placement': 'point', //point line vertex interior
+            'label-horizontal-alignment': 'middle',//left middle right
+            'label-vertical-alignment': 'middle',//top middle bottom
+            'label-justify-alignment': 'center',//left center right
+
+            'text-face-name'    : 'arial',
+            'text-size'         : 10,
+            'text-fill'         : '#000000',
+            'text-opacity'      : 1,
+            'text-halo-fill'    : '#ffffff',
+            'text-halo-radius'  : 0,
+            'text-wrap-width'   : 100,
+            'text-wrap-character': '',
+            'text-dx'           : 0,
+            'text-dy'           : 0,
+            'text-align'        : 'center', //left | right | center | auto
+            'dx': 0,
+            'dy': 0
         };
         /**
         * 说明：

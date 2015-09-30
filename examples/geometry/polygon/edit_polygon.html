@@ -77,7 +77,15 @@
                 type : 'button',
                 content: '停止编辑',
                 click : function(){
-                    polygon.endEdit();
+                    polygon.stopEdit();
+                }
+            }, {
+                type : 'button',
+                content: '删除图形',
+                click : function(){
+                    console.log(layer);
+                    layer.clear();
+                    // geometry.remove();
                 }
             }]
         });

@@ -26,6 +26,7 @@ Z.Label = Z.Class.extend({
     options: {
         'symbol': {
             'label-type': 'box',//box|tip
+            'label-name': '',
 
             'label-line-color': '#000000',
             'label-line-width': 1,
