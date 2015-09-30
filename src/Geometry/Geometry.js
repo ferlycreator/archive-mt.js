@@ -44,7 +44,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     //初始化传入的option参数
     _initOptions:function(opts) {
         if (!opts) {
-            return;
+            opts = {};
         }
         /*if (!Z.Util.isNil(opts['id'])) {
             this.setId(opts['id']);
@@ -101,7 +101,11 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      */
     setId:function(id) {
         var oldId = this.getId();
-        this.options['id']=id;
+        if (this.hasOwnProperty(this.options)) {
+            this.options['id']=id;
+        } else {
+            Z.Util.setOptions(this, {'id':id});
+        }
 
         //FIXME _idchanged没有被图层监听, layer.getGeometryById会出现bug
         this._fireEvent('_idchanged',{'oldId':oldId,'newId':id});
@@ -273,6 +277,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      */
     copy:function() {
         var json = this.toJson();
+        //FIXME symbol信息没有被拷贝过来
         var ret = Z.GeoJson.fromGeoJson(json);
         return ret;
     },
