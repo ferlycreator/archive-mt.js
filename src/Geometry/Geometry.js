@@ -46,6 +46,10 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (!opts) {
             return;
         }
+        /*if (!Z.Util.isNil(opts['id'])) {
+            this.setId(opts['id']);
+            delete opts['id'];
+        }*/
         /*if (opts['symbol']) {
             opts['symbol'] = Z.Util.convertFieldNameStyle(opts['symbol'],'camel');
         }*/
@@ -87,7 +91,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     getId:function() {
-        return this._identifier;
+        return this.options['id'];
     },
 
     /**
@@ -97,7 +101,9 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      */
     setId:function(id) {
         var oldId = this.getId();
-        this._identifier=id;
+        this.options['id']=id;
+
+        //FIXME _idchanged没有被图层监听, layer.getGeometryById会出现bug
         this._fireEvent('_idchanged',{'oldId':oldId,'newId':id});
         return this;
     },
