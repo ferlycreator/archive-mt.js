@@ -41,7 +41,9 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
             height = img.height;
         }
         for (var i = 0, len=cookedPoints.length;i<len;i++) {
-            Z.Canvas.image(ctx,cookedPoints[i], img, width, height);
+            //图片定位到中心底部
+            var pt = cookedPoints[i].add(new Z.Point(-width/2,-height));
+            Z.Canvas.image(ctx, pt, img, width, height);
         }
     },
 

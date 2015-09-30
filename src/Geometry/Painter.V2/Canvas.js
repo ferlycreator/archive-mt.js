@@ -104,8 +104,8 @@ Z.Canvas = {
         pt = pt.multi(ratio);
         var left=pt['left'],top=pt['top'];
         if (Z.Util.isNumber(width) && Z.Util.isNumber(height)) {
-            var width=width*ratio,height=height*ratio;
-            left=left-width/2,top=top-height;
+            width *= ratio;
+            height *= ratio;
             ctx.drawImage(img,left,top,width,height);
         } else {
             ctx.drawImage(img,pt['left'],pt['top']);

@@ -12,7 +12,7 @@ Z.Map.include({
      */
     computeDistance: function(lonlat1, lonlat2) {
         if (!Z.Util.isCoordinate(lonlat1) || !Z.Util.isCoordinate(lonlat2) || !this._getProjection()) {return null;}
-        if (Z.Coordinate.equals(lonlat1,lonlat2)) {return 0;}
+        if (lonlat1.equals(lonlat2)) {return 0;}
         return this._getProjection().getGeodesicLength(lonlat1, lonlat2);
     },
 
