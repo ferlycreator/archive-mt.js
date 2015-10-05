@@ -44,11 +44,10 @@ Z.Render.Canvas.prototype = {
             //初始化
             var layerCanvas = Z.DomUtil.createEl('canvas');
             layerCanvas.style.cssText = 'position:absolute;top:0px;left:0px;';
-            this._updateCanvasSize(layerCanvas);
             this.canvasContainer.appendChild(layerCanvas);
             this.layerCanvas = layerCanvas;
             this.canvasCtx = this.layerCanvas.getContext("2d");
-            this.canvasCtx.translate(0.5, 0.5);
+            this._updateCanvasSize(layerCanvas);
             this._setBaseCanvasContext(map);
         }
     },
@@ -62,6 +61,9 @@ Z.Render.Canvas.prototype = {
         canvas.width = r * mapSize['width'];
         canvas.style.width = mapSize['width']+'px';
         canvas.style.height = mapSize['height']+'px';
+        if (Z.Browser.retina) {
+            this.canvasCtx.scale(2, 2);
+        }
     },
 
     /**

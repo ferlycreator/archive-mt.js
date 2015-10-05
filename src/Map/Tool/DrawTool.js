@@ -281,8 +281,8 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
                 center = geometry.getCenter();
                 var rx = _map.computeDistance(center,{x:coordinate.x, y:center.y});
                 var ry = _map.computeDistance(center,{x:center.x, y:coordinate.y});
-                geometry.setWidth(rx);
-                geometry.setHeight(ry);
+                geometry.setWidth(rx * 2);
+                geometry.setHeight(ry * 2);
             break;
             case Z.Geometry['TYPE_RECT']:
                 if (!geometry) {
@@ -292,9 +292,8 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
                     break;
                 }
                 var nw =geometry.getCoordinates();
-                var ratio = Z.Browser.retina?2:1;
-                var width = _map.computeDistance(nw,{x:coordinate.x, y:nw.y})*ratio;
-                var height = _map.computeDistance(nw,{x:nw.x, y:coordinate.y})*ratio;
+                var width = _map.computeDistance(nw,{x:coordinate.x, y:nw.y});
+                var height = _map.computeDistance(nw,{x:nw.x, y:coordinate.y});
                 geometry.setWidth(width);
                 geometry.setHeight(height);
             break;

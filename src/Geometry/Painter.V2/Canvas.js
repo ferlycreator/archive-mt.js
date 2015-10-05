@@ -1,12 +1,12 @@
 Z.Canvas = {
 
     setDefaultCanvasSetting:function(context) {
-        context.lineWidth = Z.Browser.retina?6:3;
+        context.lineWidth = 3;
         context.strokeStyle = this.getRgba("#474cf8",1);
         context.fillStyle = this.getRgba("#ffffff",0);
         context.textAlign="start";
         context.textBaseline="hanging";
-        var fontSize = Z.Browser.retina?22:11;
+        var fontSize = 11;
         context.font=fontSize+"px arial";
         if (context.setLineDash) {
             context.setLineDash([]);
@@ -15,16 +15,14 @@ Z.Canvas = {
     },
 
     prepareCanvasFont:function(ctx, style) {
-        var ratio = Z.Browser.retina?2:1;
-        ctx.font='bold '+style['text-size']*ratio+'px '+style['text-face-name'];
+        ctx.font='bold '+style['text-size']+'px '+style['text-face-name'];
     },
 
     prepareCanvas:function(context, strokeSymbol, fillSymbol, resources){
-        var ratio = Z.Browser.retina ? 2:1;
         context.restore();
         if (strokeSymbol) {
             var strokeWidth = strokeSymbol['stroke-width'];
-            if (!Z.Util.isNil(strokeWidth)) {context.lineWidth = strokeWidth*ratio;}
+            if (!Z.Util.isNil(strokeWidth)) {context.lineWidth = strokeWidth;}
             var strokeOpacity = strokeSymbol['stroke-opacity'];
             if (strokeWidth === 0) {
                 strokeOpacity = 0;
@@ -40,12 +38,6 @@ Z.Canvas = {
              if (context.setLineDash) {
                  var strokeDash=(strokeSymbol['stroke-dasharray']);
                  if (Z.Util.isArrayHasData(strokeDash)) {
-                    if (ratio !== 1) {
-                        //dash数组也全都*ratio
-                        strokeDash = Z.Util.eachInArray(strokeDash, this, function(dash) {
-                            return dash*ratio;
-                        });
-                    }
                     context.setLineDash(strokeDash);
                  }
              }
@@ -73,8 +65,7 @@ Z.Canvas = {
     },
 
     clearRect:function(ctx,x1,y1,x2,y2) {
-        var ratio = Z.Browser.retina?2:1;
-        ctx.clearRect(x1*ratio, y1*ratio, x2*ratio, y2*ratio);
+        ctx.clearRect(x1, y1, x2, y2);
     },
 
     fillCanvas:function(context, fillSymbol){
@@ -100,12 +91,8 @@ Z.Canvas = {
     },
 
     image:function(ctx, pt, img, width, height) {
-        var ratio = Z.Browser.retina ? 2:1;
-        pt = pt.multi(ratio);
         var left=pt['left'],top=pt['top'];
         if (Z.Util.isNumber(width) && Z.Util.isNumber(height)) {
-            width *= ratio;
-            height *= ratio;
             ctx.drawImage(img,left,top,width,height);
         } else {
             ctx.drawImage(img,pt['left'],pt['top']);
@@ -114,9 +101,6 @@ Z.Canvas = {
 
     text:function(ctx, text, pt, style, size) {
         //http://stackoverflow.com/questions/14126298/create-text-outline-on-canvas-in-javascript
-        var ratio = Z.Browser.retina ? 2:1;
-        size = size.multi(ratio);
-
         //根据text-horizontal-alignment和text-vertical-alignment计算绘制起始点偏移量
         var alignX, alignY;
         var hAlign = style['text-horizontal-alignment'];
@@ -142,31 +126,22 @@ Z.Canvas = {
         if (style['text-halo-radius']) {
             ctx.miterLimit = 2;
             ctx.lineJoin = 'circle';
-            ctx.lineWidth = (style['text-halo-radius']*2-1)*ratio;
+            ctx.lineWidth = (style['text-halo-radius']*2-1);
             ctx.strokeText(text, pt['left'], pt['top']);
-            ctx.lineWidth = 1*ratio;
+            ctx.lineWidth = 1;
             ctx.miterLimit = 10; //default
         }
 
-
-        pt = pt.multi(ratio);
         ctx.fillText(text, pt['left'], pt['top']);
     },
 
     _path:function(context, points, lineDashArray) {
-        var ratio = Z.Browser.retina ? 2:1;
         /**
         * 出处：http://outofmemory.cn/code-snippet/10602/canvas-carry-arrow--IE8
         */
         function drawDashLine(startPoint, endPoint, dashArray) {
             var x = startPoint.left,y = startPoint.top,
                 x2 = endPoint.left,y2 = endPoint.top;
-            if (ratio !== 1) {
-                //dash数组也全都*ratio
-                dashArray = Z.Util.eachInArray(dashArray, this, function(dash) {
-                    return dash*ratio;
-                });
-            }
             var dashCount = dashArray.length;
             context.moveTo(x, y);
             var dx = Math.abs(x2 - x), dy = Math.abs(y2 - y);
@@ -180,7 +155,7 @@ Z.Canvas = {
                 var xStep = Math.sqrt(dashLength * dashLength / (1 + slope * slope));
                 x += xStep;
                 y += slope * xStep;
-                context[draw ? 'lineTo' : 'moveTo'](x*ratio, y*ratio);
+                context[draw ? 'lineTo' : 'moveTo'](x, y);
                 distRemaining -= dashLength;
                 draw = !draw;
             }
@@ -195,9 +170,9 @@ Z.Canvas = {
             );
             if (!isDashed || context.setLineDash) {//ie9以上浏览器
                 if (i === 0) {
-                    context.moveTo(point['left']*ratio, point['top']*ratio);
+                    context.moveTo(point['left'], point['top']);
                 } else {
-                    context.lineTo(point['left']*ratio,point['top']*ratio);
+                    context.lineTo(point['left'],point['top']);
                 }
             } else {
                 if (isDashed) {
@@ -226,11 +201,9 @@ Z.Canvas = {
     },
 
     bezierCurve:function(context, points, lineDashArray) {
-
-        var ratio = Z.Browser.retina ? 2:1;
         context.beginPath(points);
-        context.moveTo(points[0].left*ratio,points[0].top*ratio);
-        context.bezierCurveTo(points[1].left*ratio,points[1].top*ratio,points[2].left*ratio,points[2].top*ratio,points[3].left*ratio,points[3].top*ratio);
+        context.moveTo(points[0].left,points[0].top);
+        context.bezierCurveTo(points[1].left,points[1].top,points[2].left,points[2].top,points[3].left,points[3].top);
         context.stroke();
     },
 
@@ -252,9 +225,6 @@ Z.Canvas = {
            ctx.closePath();
            ctx.stroke();
         }
-        var ratio = Z.Browser.retina?2:1;
-        pt = pt.multi(ratio);
-        size = size.multi(ratio);
         if (size['width'] === size['height']) {
             //如果高宽相同,则直接绘制圆形, 提高效率
             ctx.beginPath();
@@ -267,9 +237,6 @@ Z.Canvas = {
     },
 
     rectangle:function(ctx, pt, size) {
-        var ratio = Z.Browser.retina?2:1;
-        pt = pt.multi(ratio);
-        size = size.multi(ratio);
         ctx.beginPath();
         ctx.rect(Z.Util.canvasRound(pt['left']), Z.Util.canvasRound(pt['top']),
             Z.Util.canvasRound(size['width']),Z.Util.canvasRound(size['height']));
@@ -306,9 +273,6 @@ Z.Canvas = {
             ctx.restore();
             ctx.stroke();
         }
-        var ratio = Z.Browser.retina?2:1;
-        pt = pt.multi(ratio);
-        size = size.multi(ratio);
         sector(ctx,pt['left'],pt['top'],size['width'],startAngle,endAngle);
     }
 };
