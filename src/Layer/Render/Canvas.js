@@ -18,7 +18,7 @@ Z.Canvas = {
         ctx.font='bold '+style['text-size']+'px '+style['text-face-name'];
     },
 
-    prepareCanvas:function(context, strokeSymbol, fillSymbol, resources){
+    prepareCanvas:function(context, strokeSymbol, fillSymbol){
         context.restore();
         if (strokeSymbol) {
             var strokeWidth = strokeSymbol['stroke-width'];
@@ -45,22 +45,8 @@ Z.Canvas = {
          if (fillSymbol) {
              var fill=fillSymbol['fill'];
              if (!fill) {return;}
-             if (Z.Util.isNil(fillSymbol['fill-opacity'])) {
-                 fillSymbol['fill-opacity'] = 1;
-             }
-             if (fill.length>7 && 'url' ===fill.substring(0,3)) {
-                 var imgUrl = fill.substring(5,fill.length-2);
-                 /*var imageTexture = document.createElement('img');
-                 imageTexture.src = imgUrl;*/
-                 //#23
-                 if (resources) {
-                    var imageTexture = resources.getImage(imgUrl);
-                    var woodfill = context.createPattern(imageTexture, 'repeat');
-                    context.fillStyle = woodfill;
-                 }
-             }else {
-                 context.fillStyle =this.getRgba(fill);
-             }
+             var fillOpacity = fillSymbol['fill-opacity'];
+             context.fillStyle =this.getRgba(fill, fillOpacity);
          }
     },
 
@@ -68,13 +54,18 @@ Z.Canvas = {
         ctx.clearRect(x1, y1, x2, y2);
     },
 
-    fillCanvas:function(context, fillSymbol){
-        if (fillSymbol) {
-             if (!Z.Util.isNil(fillSymbol['fill-opacity'])) {
-                 context.globalAlpha = fillSymbol['fill-opacity'];
-             }
-             context.fill('evenodd');
-             context.globalAlpha = 1;
+    fillCanvas:function(context, fillStyle, fillOpacity){
+        if (fillStyle) {
+            if (!Z.Util.isNil(fillOpacity)) {
+                context.globalAlpha = fillOpacity;
+            }
+            if (fillStyle instanceof CanvasPattern) {
+                context.fillStyle = fillStyle;
+            } else if (fillStyle instanceof String) {
+                context.fillStyle = this.getRgba(fillStyle, fillOpacity);
+            }
+            context.fill('evenodd');
+            context.globalAlpha = 1;
         }
     },
 

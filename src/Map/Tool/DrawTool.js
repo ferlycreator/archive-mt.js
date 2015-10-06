@@ -22,12 +22,12 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
      * @type {Object}
      */
     defaultStrokeSymbol: {
-        'lineColor':'#474cf8',
-        'lineWidth':2,
-        'lineOpacity':1,
-        'lineDasharray': '',
-        'polygonFill' : '#ffffff',
-        'polygonOpacity' : 1
+        'line-color':'#474cf8',
+        'line-width':2,
+        'line-opacity':1,
+        'line-dasharray': '',
+        'polygon-fill' : '#ffffff',
+        'polygon-opacity' : 1
     },
 
     /**
@@ -94,7 +94,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
     getSymbol:function() {
         var symbol = this.symbol;
         if(symbol) {
-            this.symbol = Z.Util.convertFieldNameStyle(symbol, 'camel');
+            // this.symbol = Z.Util.convertFieldNameStyle(symbol, 'camel');
             return this.symbol;
         } else {
             return this.defaultStrokeSymbol;

@@ -42,6 +42,7 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
         var markerType = style['marker-type'].toLowerCase();
         var strokeAndFill = this.strokeAndFill;
         var dxdy = this.getDxDy();
+        Z.Canvas.setDefaultCanvasSetting(ctx);
         Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'],strokeAndFill['fill'], null);
         var j;
 
