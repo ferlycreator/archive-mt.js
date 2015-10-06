@@ -82,11 +82,11 @@ Z.Canvas = {
         if (color.length === 6) {
             r = parseInt(color.slice(1, 3), 16);
             g = parseInt(color.slice(3, 5), 16);
-            r = parseInt(color.slice(5, 7), 16);
+            b = parseInt(color.slice(5, 7), 16);
         } else {
             r = parseInt(color.slice(1, 2), 16) * 17;
             g = parseInt(color.slice(2, 3), 16) * 17;
-            r = parseInt(color.slice(3, 4), 16) * 17;
+            b = parseInt(color.slice(3, 4), 16) * 17;
         }
         return "rgba("+r+","+g+","+b+","+op+")";
     },
