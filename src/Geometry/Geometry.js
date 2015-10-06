@@ -157,6 +157,10 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     setSymbol:function(symbol) {
+        //make sure this.options is owned by self
+        if (!this.hasOwnProperty(this.options)) {
+            Z.Util.setOptions(this, {});
+        }
         if (!symbol) {
             this.options['symbol'] = null;
         } else {

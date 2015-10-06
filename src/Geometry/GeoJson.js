@@ -87,9 +87,9 @@ Z.GeoJson={
                 }
                 geometry.setId(geoJsonObj['id']);
                 if (geoJsonObj['properties']) {
-                    if (geoJsonObj['properties'][Z.GeoJson.GeoFIELD_SYMBOL]) {
-                        geometry.setSymbol(geoJsonObj['properties'][Z.GeoJson.GeoFIELD_SYMBOL]);
-                        delete geoJsonObj['properties'][Z.GeoJson.GeoFIELD_SYMBOL];
+                    if (geoJsonObj['properties'][Z.GeoJson.FIELD_SYMBOL]) {
+                        geometry.setSymbol(geoJsonObj['properties'][Z.GeoJson.FIELD_SYMBOL]);
+                        delete geoJsonObj['properties'][Z.GeoJson.FIELD_SYMBOL];
                     }
                     if (geoJsonObj['properties'][Z.GeoJson.FIELD_COORDINATE_TYPE]) {
                         geometry.setCoordinateType(geoJsonObj['properties'][Z.GeoJson.FIELD_COORDINATE_TYPE]);

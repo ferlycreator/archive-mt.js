@@ -59,7 +59,7 @@ Z.Canvas = {
             if (!Z.Util.isNil(fillOpacity)) {
                 context.globalAlpha = fillOpacity;
             }
-            if (fillStyle instanceof CanvasPattern) {
+            if (!Z.Util.isString(fillStyle)/*fillStyle instanceof CanvasPattern*/) {
                 context.fillStyle = fillStyle;
             } else if (Z.Util.isString(fillStyle)) {
                 context.fillStyle = this.getRgba(fillStyle, fillOpacity);
