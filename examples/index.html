@@ -1008,9 +1008,9 @@ var rectangle = new maptalks.Rectangle(coordinate, 1000, 600, {
                         <h1>地图控件</h1>
                     </div>
 
-                    <h2>maptalks.omIn/maptalks.omOut控件</h2>
+                    <h2>maptalks.Zoom控件</h2>
                     <p>1、配置mapObj属性<code>zoomControl: true/false</code>打开或关闭zoom控件；</p>
-                    <p>2、使用<code>new maptalks.Control.maptalks.om(...)</code>创建多个zoom控件。</p>
+                    <p>2、使用<code>new maptalks.Control.Zoom(...)</code>创建多个zoom控件。</p>
                     <div class="bs-docs-example">
 <pre class="linenums prettyprint">
 /**
@@ -1027,7 +1027,7 @@ new maptalks.Map('mapObj',{
 /**
 * 创建多个zoom控件
 */
-var zoomControl = new maptalks.Control.maptalks.om({
+var zoomControl = new maptalks.Control.Zoom({
     //自定义控件放置位置
     position : {
         top: '40',
@@ -1036,7 +1036,7 @@ var zoomControl = new maptalks.Control.maptalks.om({
 });
 mapObj.addControl(zoomControl);
 
-var zoomControl2 = new maptalks.Control.maptalks.om({
+var zoomControl2 = new maptalks.Control.Zoom({
     position : maptalks.Control['bottom_right']
 });
 mapObj.addControl(zoomControl2);

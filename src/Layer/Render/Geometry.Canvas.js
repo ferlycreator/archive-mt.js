@@ -22,7 +22,6 @@ if (Z.Browser.canvas) {
         _getRenderCanvasResources:function() {
             var map = this.getMap();
             var pt = map._transform(this._getPNw());
-            pt = new Z.Point(Z.Util.canvasRound(pt['left']), Z.Util.canvasRound(pt['top']));
             var size = this._getRenderSize();
             return {
                 "fn" : Z.Canvas.rectangle,

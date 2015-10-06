@@ -104,7 +104,7 @@ Z.Map.include({
                 if ('picture' === resultType) {
                     url = Z.host + '/snapservice/snapshots/'+result["data"];
                 } else {
-                    url = Z.host + "/snapservice/snapshots/fetch.html?url="+result["data"];
+                    url = Z.host + "/snapservice/fetch.html?url="+result["data"];
                 }
                 callback(url);
             }

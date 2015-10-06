@@ -49,9 +49,7 @@
 
     //绘制完线后操作
     function onAfterDrawPolyline(param) {
-        var coordinates = param.coordinate;
-        //创建线对象
-        var polyline = new maptalks.Polyline(coordinates);
+        var polyline = param.geometry;
         //将线添加到Layer
         layer.addGeometry(polyline);
     }

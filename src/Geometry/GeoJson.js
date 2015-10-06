@@ -4,6 +4,8 @@
  * @author Maptalks Team
  */
 Z.GeoJson={
+        FIELD_SYMBOL:'__mtSymbol',
+        FIELD_COORDINATE_TYPE:'__mtCoordinateType',
         /**
          * 将geoJson字符串或geoJson对象转化为Geometry对象
          * @param  {String | Object | [Object]} json json对象
@@ -79,18 +81,22 @@ Z.GeoJson={
             var type = geoJsonObj['type'];
             if ('Feature' === type) {
                 var geoJsonGeo = geoJsonObj['geometry'];
-                var properties = geoJsonObj['properties'];
-                var geoId = geoJsonObj['id'];
-                if (!Z.Util.isNil(geoId)) {
-                    geoId = geoId.toString();
-                }
-                //TODO symbol和coordinateType的处理
                 var geometry = this._fromGeoJsonInstance(geoJsonGeo);
                 if (!geometry) {
                     return null;
                 }
-                geometry.setId(geoId);
-                geometry.setProperties(properties);
+                geometry.setId(geoJsonObj['id']);
+                if (geoJsonObj['properties']) {
+                    if (geoJsonObj['properties'][Z.GeoJson.FIELD_SYMBOL]) {
+                        geometry.setSymbol(geoJsonObj['properties'][Z.GeoJson.FIELD_SYMBOL]);
+                        delete geoJsonObj['properties'][Z.GeoJson.FIELD_SYMBOL];
+                    }
+                    if (geoJsonObj['properties'][Z.GeoJson.FIELD_COORDINATE_TYPE]) {
+                        geometry.setCoordinateType(geoJsonObj['properties'][Z.GeoJson.FIELD_COORDINATE_TYPE]);
+                        delete geoJsonObj['properties'][Z.GeoJson.FIELD_COORDINATE_TYPE];
+                    }
+                }
+                geometry.setProperties(geoJsonObj['properties']);
                 return geometry;
             } else if ('FeatureCollection' === type) {
                 var features = geoJsonObj['features'];
