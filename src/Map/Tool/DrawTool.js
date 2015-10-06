@@ -22,12 +22,12 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
      * @type {Object}
      */
     defaultStrokeSymbol: {
-        'lineColor':'#474cf8',
-        'lineWidth':2,
-        'lineOpacity':1,
-        'lineDasharray': '',
-        'polygonFill' : '#ffffff',
-        'polygonOpacity' : 1
+        'line-color':'#474cf8',
+        'line-width':2,
+        'line-opacity':1,
+        'line-dasharray': '',
+        'polygon-fill' : '#ffffff',
+        'polygon-opacity' : 1
     },
 
     /**
@@ -94,7 +94,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
     getSymbol:function() {
         var symbol = this.symbol;
         if(symbol) {
-            this.symbol = Z.Util.convertFieldNameStyle(symbol, 'camel');
+            // this.symbol = Z.Util.convertFieldNameStyle(symbol, 'camel');
             return this.symbol;
         } else {
             return this.defaultStrokeSymbol;
@@ -281,8 +281,8 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
                 center = geometry.getCenter();
                 var rx = _map.computeDistance(center,{x:coordinate.x, y:center.y});
                 var ry = _map.computeDistance(center,{x:center.x, y:coordinate.y});
-                geometry.setWidth(rx);
-                geometry.setHeight(ry);
+                geometry.setWidth(rx * 2);
+                geometry.setHeight(ry * 2);
             break;
             case Z.Geometry['TYPE_RECT']:
                 if (!geometry) {
@@ -292,9 +292,8 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
                     break;
                 }
                 var nw =geometry.getCoordinates();
-                var ratio = Z.Browser.retina?2:1;
-                var width = _map.computeDistance(nw,{x:coordinate.x, y:nw.y})*ratio;
-                var height = _map.computeDistance(nw,{x:nw.x, y:coordinate.y})*ratio;
+                var width = _map.computeDistance(nw,{x:coordinate.x, y:nw.y});
+                var height = _map.computeDistance(nw,{x:nw.x, y:coordinate.y});
                 geometry.setWidth(width);
                 geometry.setHeight(height);
             break;

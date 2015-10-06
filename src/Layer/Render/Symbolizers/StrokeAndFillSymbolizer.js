@@ -1,20 +1,21 @@
 Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
 
     defaultSymbol:{
-        "stroke" : "#474cf8",
-        "stroke-width" : 3,
-        "stroke-opacity" : 1,
-        "stroke-dasharray": [],
-        "stroke-linecap" : "butt", //“butt”, “square”, “round”
-        "stroke-linejoin" : "round", //“bevel”, “round”, “miter”
-        "fill": "#ffffff",
-        "fill-opacity": 0
+        "line-color" : "#474cf8",
+        "line-width" : 3,
+        "line-opacity" : 1,
+        "line-dasharray": [],
+        "line-cap" : "butt", //“butt”, “square”, “round”
+        "line-join" : "round", //“bevel”, “round”, “miter”
+        "polygon-fill": "#ffffff",
+        "polygon-opacity": 0
     },
 
-    initialize:function(strokeAndFillSymbol, geometry) {
-        this.strokeAndFillSymbol = strokeAndFillSymbol;
+    initialize:function(symbol, geometry) {
+        this.symbol = symbol;
         this.geometry = geometry;
         this.style = this.translate();
+        this.strokeAndFill = this.translateStrokeAndFill(this.style);
     },
 
     svg:function(container, vectorContainer , zIndex) {
@@ -27,27 +28,34 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
         } else {
             Z.SVG.updatePath(this.svgDom, svgPath);
         }
-        var style = this.style;
+        var strokeAndFill = this.strokeAndFill;
         if (this.geometry instanceof Z.Polygon) {
-            Z.SVG.updateShapeStyle(this.svgDom, style['stroke'], style['fill'], this.getMap()._getSvgPaper());
+            Z.SVG.updateShapeStyle(this.svgDom, strokeAndFill['stroke'], strokeAndFill['fill'], this.getMap()._getSvgPaper());
         } else {
-            Z.SVG.updateShapeStyle(this.svgDom, style['stroke'], {"fill": "#ffffff","fill-opacity": 0});
+            Z.SVG.updateShapeStyle(this.svgDom, strokeAndFill['stroke'], {"fill": "#ffffff","fill-opacity": 0});
         }
-
     },
 
     canvas:function(ctx, resources) {
         var canvasResources = this.geometry._getRenderCanvasResources();
-        var style = this.style;
+        var strokeAndFill = this.strokeAndFill;
         Z.Canvas.setDefaultCanvasSetting(ctx);
-        if (this.geometry instanceof Z.Polygon) {
-            Z.Canvas.prepareCanvas(ctx, style['stroke'], style['fill'], resources);
-        } else {
-            Z.Canvas.prepareCanvas(ctx, style['stroke'], null);
-        }
+        Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'], null);
         canvasResources['fn'].apply(this, [ctx].concat(canvasResources['context']));
         if (this.geometry instanceof Z.Polygon) {
-            Z.Canvas.fillCanvas(ctx, style['fill']);
+            var fillSymbol = strokeAndFill['fill'];
+             var fillOpacity = fillSymbol['fill-opacity'];
+             var fill=fillSymbol['fill'];
+             var fillStyle;
+             // if (this.style['polygon-pattern-file'])
+             if (fill.length>7 && 'url' ===fill.substring(0,3)) {
+                var imgUrl = fill.substring(5,fill.length-2);
+                var imageTexture = resources.getImage(imgUrl);
+                fillStyle = ctx.createPattern(imageTexture, 'repeat');
+            } else {
+                fillStyle = fill;
+            }
+            Z.Canvas.fillCanvas(ctx, fillStyle, fillOpacity);
         }
     },
 
@@ -101,21 +109,30 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
     },
 
     translate:function() {
-        var s = this.strokeAndFillSymbol;
+        var s = this.symbol;
         var d = this.defaultSymbol;
+        var result = {};
+        Z.Util.extend(result, d, s);
+        if (result['polygon-pattern-file']) {
+            delete result['polygon-fill'];
+        }
+        return result;
+    },
+
+    translateStrokeAndFill:function(s) {
         var result = {
             "stroke" :{
-                "stroke" : Z.Util.setDefaultValue(s['line-color'], d['stroke']),
-                "stroke-width" : Z.Util.setDefaultValue(s['line-width'], d['stroke-width']),
-                "stroke-opacity" : Z.Util.setDefaultValue(s['line-opacity'], d['stroke-opacity']),
-                "stroke-dasharray": Z.Util.setDefaultValue(s['line-dasharray'], d['stroke-dasharray']),
-                "stroke-linecap" : Z.Util.setDefaultValue(s['line-cap'], d['stroke-linecap']),
-                "stroke-linejoin" : Z.Util.setDefaultValue(s['line-join'], d['stroke-linejoin'])
+                "stroke" : s['line-color'],
+                "stroke-width" : s['line-width'],
+                "stroke-opacity" : s['line-opacity'],
+                "stroke-dasharray": s['line-dasharray'],
+                "stroke-linecap" : s['line-cap'],
+                "stroke-linejoin" : s['line-join']
             },
 
             "fill" : {
-                "fill": Z.Util.setDefaultValue(s['polygon-fill'] || s['polygon-pattern-file'], d['fill']),
-                "fill-opacity": Z.Util.setDefaultValue(s['polygon-opacity'], d['fill-opacity'])
+                "fill"          : s['polygon-fill'] || s['polygon-pattern-file'],
+                "fill-opacity"  : s["polygon-opacity"]
             }
         };
         //vml和svg对linecap的定义不同

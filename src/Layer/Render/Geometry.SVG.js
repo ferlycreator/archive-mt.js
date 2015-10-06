@@ -116,7 +116,7 @@ Z.Rectangle.include({
         var w = this.getWidth(),
             h = this.getHeight();
         var map = this.getMap();
-        return map.distanceToPixel(w/2,h/2);
+        return map.distanceToPixel(w, h);
     }
 });
 //----------------------------------------------------
