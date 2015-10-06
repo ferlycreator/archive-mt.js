@@ -347,9 +347,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
         var fill = symbol['polygon-pattern-file'];
         if (fill) {
-            if (fill && fill.length>7 && "url" ===fill.substring(0,3)) {
-                result.push(fill.substring(5,fill.length-2));
-            }
+            result.push(Z.Util.extractCssUrl(fill));
         }
         return result;
     },
