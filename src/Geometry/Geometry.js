@@ -448,9 +448,10 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (opts['symbol'] === undefined || opts['symbol']) {
             var symbol = this.getSymbol();
             if (symbol) {
-                properties['symbol']=symbol;
+                properties[Z.GeoJson.FIELD_SYMBOL]=symbol;
             }
         }
+        properties[Z.GeoJson.FIELD_COORDINATE_TYPE] = this.getCoordinateType();
         //opts没有设定properties或者设定的properties值为true,则导出properties
         if (opts['properties'] === undefined || opts['properties']) {
             var geoProperties = this.getProperties();
@@ -489,6 +490,28 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      */
     getVertexs: function() {
         return [this.getCenter()];
+    },
+
+    /**
+     * 返回Geometry的坐标类型
+     * @return {String} 坐标类型
+     */
+    getCoordinateType:function() {
+        //如果有map,则map的坐标类型优先级更高
+        var map = this.getMap();
+        if (map) {
+            return map.getCoordinateType();
+        }
+        return this._coordinateType;
+    },
+
+    /**
+     * 设置Geometry的坐标类型
+     * @param {String} coordinateType 坐标类型
+     */
+    setCoordinateType:function(coordinateType) {
+        this._coordinateType = coordinateType;
+        return this;
     }
 
 });
