@@ -61,7 +61,7 @@ Z.Canvas = {
             }
             if (fillStyle instanceof CanvasPattern) {
                 context.fillStyle = fillStyle;
-            } else if (fillStyle instanceof String) {
+            } else if (Z.Util.isString(fillStyle)) {
                 context.fillStyle = this.getRgba(fillStyle, fillOpacity);
             }
             context.fill('evenodd');
