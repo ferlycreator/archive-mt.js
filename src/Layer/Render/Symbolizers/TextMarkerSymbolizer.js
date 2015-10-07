@@ -1,19 +1,19 @@
 Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
     defaultSymbol:{
-        "text-face-name"    : "arial",
-        "text-size"         : 10,
-        "text-fill"         : "#000000",
-        "text-opacity"      : 1,
-        "text-halo-fill"    : "#ffffff",
-        "text-halo-radius"  : 0,
-        "text-wrap-width"   : 100,
+        "textFaceName"    : "arial",
+        "textSize"         : 10,
+        "textFill"         : "#000000",
+        "textOpacity"      : 1,
+        "textHaloFill"    : "#ffffff",
+        "textHaloRadius"  : 0,
+        "textWrapWidth"   : 100,
 
-        "text-dx"           : 0,
-        "text-dy"           : 0,
+        "textDx"           : 0,
+        "textDy"           : 0,
 
-        "text-horizontal-alignment" : "middle", //left | middle | right | auto
-        "text-vertical-alignment"   : "middle",   // top | middle | bottom | auto
-        "text-align"                : "center" //left | right | center | auto
+        "textHorizontalAlignment" : "middle", //left | middle | right | auto
+        "textVerticalAlignment"   : "middle",   // top | middle | bottom | auto
+        "textAlign"                : "center" //left | right | center | auto
     },
 
     initialize:function(symbol, geometry) {
@@ -22,8 +22,8 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
         this.renderPoints = this._getRenderPoints();
         this.style = this.translate();
         this.strokeAndFill = this.translateStrokeAndFill(this.style);
-        this.textContent = this._convertContent(this.style['text-name']);
-        this.textSize = Z.Util.stringLength(this.textContent,this.style['text-face-name'],this.style['text-size']);
+        this.textContent = this._convertContent(this.style['textName']);
+        this.textSize = Z.Util.stringLength(this.textContent,this.style['textFaceName'],this.style['textSize']);
     },
 
     svg:function(container, vectorcontainer, zIndex) {
@@ -55,13 +55,13 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
     },
 
     getPlacement:function() {
-        return this.symbol['text-placement'];
+        return this.symbol['textPlacement'];
     },
 
     getDxDy:function() {
         var s = this.style;
-        var dx = s['text-dx'],
-            dy = s['text-dy'];
+        var dx = s['textDx'],
+            dy = s['textDy'];
         return new Z.Point(dx, dy);
     },
 
@@ -70,24 +70,24 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
             style = this.style,
             size = this.textSize;
         var alignW, alignH;
-        if (style['text-horizontal-alignment'] === 'left') {
+        if (style['textHorizontalAlignment'] === 'left') {
             alignW = this.textSize['width'];
-        } else if (style['text-horizontal-alignment'] === 'middle') {
+        } else if (style['textHorizontalAlignment'] === 'middle') {
             alignW = this.textSize['width']/2;
-        } else if (style['text-horizontal-alignment'] === 'right') {
+        } else if (style['textHorizontalAlignment'] === 'right') {
             alignW = 0;
         }
-        if (style['text-vertical-alignment'] === 'top') {
+        if (style['textVerticalAlignment'] === 'top') {
             alignH = this.textSize['height'];
-        } else if (style['text-vertical-alignment'] === 'middle') {
+        } else if (style['textVerticalAlignment'] === 'middle') {
             alignH = this.textSize['height']/2;
-        } else if (style['text-vertical-alignment'] === 'bottom') {
+        } else if (style['textVerticalAlignment'] === 'bottom') {
             alignH = 0;
         }
         return new Z.Extent(
-                    dxdy.add(new Z.Point(alignW, alignH)),
-                    dxdy.add(new Z.Point(alignW-size['width'],alignH-size['height']))
-                );
+            dxdy.add(new Z.Point(alignW, alignH)),
+            dxdy.add(new Z.Point(alignW-size['width'],alignH-size['height']))
+        );
     },
 
     translate:function() {
@@ -99,24 +99,24 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
                 result[p] = Z.Util.setDefaultValue(s[p],d[p]);
             }
         }
-        result['text-name'] = s['text-name'];
+        result['textName'] = s['textName'];
         return result;
     },
 
     translateStrokeAndFill:function(s) {
         var result = {
             "stroke" :{
-                "stroke" : s['text-halo-radius']?s['text-halo-fill']:s['text-fill'],
-                "stroke-width" : s['text-halo-radius'],
-                "stroke-opacity" : s['text-opacity'],
+                "stroke" : s['textHaloRadius']?s['textHaloFill']:s['textFill'],
+                "stroke-width" : s['textHaloRadius'],
+                "stroke-opacity" : s['textOpacity'],
                 "stroke-dasharray": null,
                 "stroke-linecap" : "butt",
                 "stroke-linejoin" : "round"
             },
 
             "fill" : {
-                "fill"          : s["text-fill" ],
-                "fill-opacity"  : s["text-opacity"]
+                "fill"          : s["textFill" ],
+                "fill-opacity"  : s["textOpacity"]
             }
         };
         //vml和svg对linecap的定义不同
@@ -128,7 +128,7 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
         return result;
     },
     /**
-     * 生成图片标注
+     * 生成文字标注
      * @param point
      */
     createMarkerDom: function() {
@@ -167,7 +167,7 @@ Z.TextMarkerSymbolizer.test=function(geometry, symbol) {
     if (!geometry || !symbol) {
         return false;
     }
-    if (!Z.Util.isNil(symbol['text-name'])) {
+    if (!Z.Util.isNil(symbol['textName'])) {
         return true;
     }
     return false;

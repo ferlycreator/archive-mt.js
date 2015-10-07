@@ -206,16 +206,6 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
                 path = 'M'+point.join(',')+' a'+width/2 + ',' + height/2+' 0,1,0,0,-0.9Z';
             }
         }
-        /*else if ('tip' === markerType) {
-            path = 'M'+points[0]['left']+','+points[0]['top']+ ' ' +
-                         'L'+points[1][0]+','+points[1][1]+ ' ' +
-                         'L'+points[2][0]+','+points[2][1]+ ' ' +
-                         'L'+points[3][0]+','+points[3][1]+ ' ' +
-                         'L'+points[4][0]+','+points[4][1]+ ' ' +
-                         'L'+points[5][0]+','+points[5][1]+ ' ' +
-                         'L'+points[6][0]+','+points[6][1]+ ' ' +
-                         Z.SVG.closeChar;
-        }*/
         if (Z.Browser.vml) {
             path += ' e';
         }

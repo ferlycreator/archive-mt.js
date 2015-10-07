@@ -13,10 +13,10 @@ Z.Label = Z.Class.extend({
      */
     'exceptionDefs':{
         'en-US':{
-            'NEED_TARGET':'You must set target to Label.'
+            'NEED_geometry':'You must set target to Label.'
         },
         'zh-CN':{
-            'NEED_TARGET':'你必须设置Label绑定的Geometry目标。'
+            'NEED_geometry':'你必须设置Label绑定的Geometry目标。'
         }
     },
 
@@ -25,35 +25,33 @@ Z.Label = Z.Class.extend({
      */
     options: {
         'symbol': {
-            'label-type': 'box',//box|tip
-            'label-name': '',
+            'labelType': 'box',//box|tip
+            'labelLineColor': '#000000',
+            'labelLineWidth': 1,
+            'labelLineOpacity': 1,
 
-            'label-line-color': '#000000',
-            'label-line-width': 1,
-            'label-line-opacity': 1,
+            'labelOpacity': 1,
+            'labelFill': '#ffffff',
+            'labelWrapWidth': 100,
+            'labelHorizontalAlignment': 'middle',//left middle right
+            'labelVerticalAlignment': 'middle',//top middle bottom
+            'labelDx': 0,
+            'labelDy': 0,
 
-            'label-opacity': 1,
-            'label-fill': '#ffffff',
-            'label-wrap-width': 100,
-            'label-placement': 'point', //point line vertex interior
-            'label-horizontal-alignment': 'right',//left middle right
-            'label-vertical-alignment': 'top',//top middle bottom
-            'label-justify-alignment': 'center',//left center right
-            'label-dx': 0,
-            'label-dy': 0,
-
-            'text-face-name': 'arial',
-            'text-size': 12,
-            'text-fill': '#000000',
-            'text-opacity': 1,
-            'text-spacing': 30,
-            'text-wrap-before': false,
-            'text-wrap-character': '',
-            'text-line-spacing': 8,
-            'text-dx': 0,
-            'text-dy': 0
+            'textFaceName': 'arial',
+            'textSize': 12,
+            'textFill': '#000000',
+            'textOpacity': 1,
+            'textSpacing': 30,
+            'textWrapBefore': false,
+            'textWrapCharacter': '',
+            'textLineSpacing': 8,
+            'textAlign': 'center',
+            'textDx': 0,
+            'textDy': 0
         },
         'draggable': true,
+        'content': '',
         'trigger': 'hover'//click|hover
     },
 
@@ -66,6 +64,7 @@ Z.Label = Z.Class.extend({
      */
     initialize: function (options) {
         this.setOptions(options);
+        this.strokeAndFill = this._translateStrokeAndFill();
         return this;
     },
 
@@ -84,7 +83,7 @@ Z.Label = Z.Class.extend({
     * @expose
     */
     hide: function() {
-        this._label.hide();
+        this._label.style.display='none';
         /**
          * 触发label的hide事件
          * @event hide
@@ -98,7 +97,7 @@ Z.Label = Z.Class.extend({
     * @expose
     */
     show: function() {
-        this._label.show();
+        this._label.style.display='';
         /**
          * 触发label的show事件
          * @event show
@@ -112,7 +111,7 @@ Z.Label = Z.Class.extend({
     * @expose
     */
     remove: function() {
-        this._label.remove();
+        Z.DomUtil.removeDomNode(this._label);
         /**
          * 触发label的remove事件
          * @event remove
@@ -128,28 +127,26 @@ Z.Label = Z.Class.extend({
     addTo: function (geometry) {
         if(!geometry || !this.options || !this.options['symbol']) {return;}
         this._map = geometry.getMap();
-        this._labelContrainer = this._map._containerDOM;
-        this._target = geometry;
-        if(!this._target) {throw new Error(this.exceptions['NEED_TARGET']);}
-        this._internalLayer = this._getInternalLayer(this._target);
-        var targetCenter = this._target.getCenter();
-        this._label = new Z.Marker(targetCenter);
-        this._label.setProperties(geometry.getProperties());
-        this._label['target'] = this._target;
-        this._label.setSymbol(this.options['symbol']);
-        this._internalLayer.addGeometry(this._label);
-        this._label.hide();
+        this._labelContrainer = this._map._getSvgPaper();
+        this._geometry = geometry;
+        if(!this._geometry) {throw new Error(this.exceptions['NEED_geometry']);}
+        var targetCenter = this._geometry.getCenter();
 
-        this._target.on('shapechanged positionchanged symbolchanged', Z.Util.bind(this._changeLabelPosition, this), this)
+        this._label = this._createLabelDom();
+        this._label['geometry'] = this._geometry;
+        this.hide();
+        this._labelContrainer.appendChild(this._label);
+
+        this._geometry.on('shapechanged positionchanged symbolchanged', Z.Util.bind(this._changeLabelPosition, this), this)
                     .on('remove', this.removeLabel, this);
 
-        this._label.on('click dblclick rightclick', Z.DomUtil.stopPropagation, this);
+        Z.DomUtil.on(this._label, 'click dblclick rightclick', Z.DomUtil.stopPropagation, this);
 
 
         var trigger = this.options['trigger'];
         var me = this;
         if(trigger === 'hover') {
-            this._target.on('mouseover', function showLabel() {
+            this._geometry.on('mouseover', function showLabel() {
                  me.show();
                  me._map.disableDrag();
                  me._map.disableDoubleClickZoom();
@@ -162,7 +159,7 @@ Z.Label = Z.Class.extend({
                 }, 1000);
              }, this);
         } else if(trigger === 'click') {
-            this._target.on('click', function showLabel() {
+            this._geometry.on('click', function showLabel() {
                  me.show();
                  me._map.disableDrag();
                  me._map.disableDoubleClickZoom();
@@ -171,11 +168,22 @@ Z.Label = Z.Class.extend({
             this.show();
         }
         if(this.options['draggable']) {
-             this._label.on('mousedown', this._onMouseDown, this)
-                        .on('dragend', this._endMove, this)
-                        .on('mouseout', this._recoverMapEvents, this);
+             Z.DomUtil.on(this._label, 'mousedown', this._onMouseDown, this)
+                      .on(this._label, 'dragend', this._endMove, this)
+                      .on(this._label, 'mouseout', this._recoverMapEvents, this);
         }
         return null;
+    },
+
+    getDxDy:function() {
+        var symbol = this.options.symbol;
+        var dx = symbol['labelDx'],
+            dy = symbol['labelDy'];
+        return new Z.Point(dx, dy);
+    },
+
+    getLabelExtent:function() {
+        var dxdy = this.getDxDy();
     },
 
     /**
@@ -185,8 +193,8 @@ Z.Label = Z.Class.extend({
         var points = [];
         var painter = this._label._getPainter();
         var textSize = painter.measureTextMarker();
-        var width = 0, //textSize['width'],
-            height = 0; //textSize['height'];
+        var width = 0,
+            height = 0;
         var containerPoint = this._topLeftPoint(width, height);
         var topLeftPoint = this._map.containerPointToCoordinate(containerPoint);
         var topCenterPoint = this._map.containerPointToCoordinate(
@@ -293,8 +301,8 @@ Z.Label = Z.Class.extend({
     },
 
     _changeLabelPosition: function(event) {
-        this._target = event['target'];
-        this._label.setCoordinates(this._target.getCenter());
+        this._geometry = event['target'];
+        this._label.setCoordinates(this._geometry.getCenter());
     },
 
     _onMouseDown: function(event) {
@@ -325,19 +333,269 @@ Z.Label = Z.Class.extend({
         this._map.enableDoubleClickZoom();
     },
 
-    _getInternalLayer: function(target) {
-        var layerId = Z.internalLayerPrefix+'label';
-        var layer = this._map.getLayer(layerId);
-        if(!layer) {
-            var targetLayer = target.getLayer();
-            if(targetLayer.isCanvasRender()) {
-                layer = new Z.VectorLayer(layerId,{'render':'canvas'});
-            } else {
-                layer = new Z.VectorLayer(layerId);
-            }
-            this._map.addLayer(layer);
-        }
-        return layer;
-    }
+    _createLabelDom: function() {
+        var style = this.options.symbol;
+        var textContent = this.options['content'];
+        var svgGroup = Z.SVG.group();
 
+        var svgPath = this._getLabelSvgPath();
+        var svgDom = Z.SVG.path(svgPath);
+        var svgStyle = this.strokeAndFill;
+        Z.SVG.updateShapeStyle(svgDom, svgStyle['stroke'], svgStyle['fill']);
+        svgGroup.appendChild(svgDom);
+
+        var textSize = new Z.Size(style['labelWrapWidth'], style['textSize']);
+        style['textHorizontalAlignment'] = style['labelHorizontalAlignment'];
+        style['textVerticalAlignment'] = style['labelVerticalAlignment'];
+        var point = this._getVectorArray()[0];
+        style['textDx'] += style['labelDx']+point['left'];
+        style['textDy'] += style['labelDy']+point['top']+style['textSize'];
+        var svgText = Z.SVG.text(textContent, style, textSize);
+        Z.SVG.updateLabelStyle(svgText, style, textSize);
+        svgGroup.appendChild(svgText);
+
+        this._offsetLabel(svgGroup);
+        return svgGroup;
+    },
+
+    _getLabelSvgPath:function() {
+        var points = this._getVectorArray();
+        var path = '';
+        for(var i=0,len=points.length;i<len;i++){
+            if(i===0){
+                path+='M'
+            } else {
+                path+='L'
+            }
+            path+=points[i]['left']+','+points[i]['top']+ ' ';
+        }
+        path+=Z.SVG.closeChar;
+        if (Z.Browser.vml) {
+            path+=' e';
+        }
+        return path;
+    },
+
+    _getVectorArray: function() {
+        var symbol = this.options.symbol;
+        var labelType = symbol['labelType'].toLowerCase();
+
+        var left=0,top=0;
+        var width = Z.Util.setDefaultValue(symbol['labelWrapWidth'],0),
+            height = Z.Util.setDefaultValue(symbol['textSize'], 12);
+        var content = this.options['content'];
+        var fontSize = symbol['textSize'];
+        var size = fontSize/2;
+        var textWidth = Z.Util.getLength(content)*size;
+        var rowNum = 0;
+        if(textWidth>width){
+            rowNum = Math.ceil(textWidth/width);
+        }
+        height += rowNum*(fontSize/2);
+        width += fontSize;
+
+        var horizontal = Z.Util.setDefaultValue(symbol['labelHorizontalAlignment'],'middle');//水平
+        var vertical = Z.Util.setDefaultValue(symbol['labelVerticalAlignment'],'middle');//垂直
+
+        if ('box' === labelType) {
+            return  this._getBoxPoints(width, height, horizontal, vertical);
+        } else if ('tip' === labelType) {
+            return this._getTipPoints(left, top, width, height, horizontal, vertical);
+        }
+    },
+
+     _getBoxPoints: function(width, height, horizontal, vertical) {
+        var points = [];
+        var point0,point1,point2,point3;
+        if ('left' === horizontal) {
+            if('top' === vertical) {
+                point0 = new Z.Point(-width,-height);
+                point1 = new Z.Point(0,-height);
+                point2 = new Z.Point(0,0);
+                point3 = new Z.Point(-width,0);
+            } else if ('middle' === vertical) {
+                point0 = new Z.Point(-width,-height/2);
+                point1 = new Z.Point(0,-height/2);
+                point2 = new Z.Point(0,+height/2);
+                point3 = new Z.Point(-width,height/2);
+            } else if ('bottom' === vertical) {
+                point0 = new Z.Point(-width,0);
+                point1 = new Z.Point(0,0);
+                point2 = new Z.Point(0,height);
+                point3 = new Z.Point(-width,height);
+            }
+        } else if ('middle' === horizontal) {
+            if('top' === vertical) {
+                point0 = new Z.Point(-width/2,-height);
+                point1 = new Z.Point(width/2,-height);
+                point2 = new Z.Point(width/2,0);
+                point3 = new Z.Point(-width/2,0);
+            } else if ('middle' === vertical) {
+                point0 = new Z.Point(-width/2,-height/2);
+                point1 = new Z.Point(width/2,-height/2);
+                point2 = new Z.Point(width/2,height/2);
+                point3 = new Z.Point(-width/2,height/2);
+            } else if ('bottom' === vertical) {
+                point0 = new Z.Point(-width/2,0);
+                point1 = new Z.Point(width/2,0);
+                point2 = new Z.Point(width/2,height);
+                point3 = new Z.Point(-width/2,height);
+            }
+        } else if ('right' === horizontal) {
+            if('top' === vertical) {
+                point0 = new Z.Point(0,-height);
+                point1 = new Z.Point(width,-height);
+                point2 = new Z.Point(width,0);
+                point3 = new Z.Point(0,0);
+            } else if ('middle' === vertical) {
+                point0 = new Z.Point(0,-height/2);
+                point1 = new Z.Point(width,-height/2);
+                point2 = new Z.Point(width,height/2);
+                point3 = new Z.Point(0,height/2);
+            } else if ('bottom' === vertical) {
+                point0 = new Z.Point(0,0);
+                point1 = new Z.Point(width,0);
+                point2 = new Z.Point(width,height);
+                point3 = new Z.Point(0,height);
+            }
+        }
+        points = [point0, point1, point2, point3];
+        return points;
+     },
+
+     _getTipPoints: function(left, top, width, height, horizontal, vertical) {
+        var points = [];
+        var point0,point1,point2,point3,point4,point5,point6;
+        if ('left' === horizontal) {
+            var arrowWidth = arrowHeight = height/2;
+            if('top' === vertical) {
+                point0 = new Z.Point((left-width-arrowWidth),(top-height));
+                point1 = new Z.Point((left-arrowWidth),(top-height));
+                point2 = new Z.Point((left-arrowWidth),(top-arrowHeight));
+                point3 = new Z.Point(left, top);
+                point4 = new Z.Point(left, top);
+                point5 = new Z.Point(left, top);
+                point6 = new Z.Point((left-width-arrowWidth),(top));
+            } else if ('middle' === vertical) {
+                point0 = new Z.Point((left-width-arrowWidth),(top-height/2));
+                point1 = new Z.Point((left-arrowWidth),(top-height/2));
+                point2 = new Z.Point((left-arrowWidth),(top-arrowHeight/2));
+                point3 = new Z.Point(left, top);
+                point4 = new Z.Point((left-arrowWidth),(top+arrowHeight/2));
+                point5 = new Z.Point((left-arrowWidth),(top+height/2));
+                point6 = new Z.Point((left-width-arrowWidth),(top+height/2));
+            } else if ('bottom' === vertical) {
+                point0 = new Z.Point((left-width-arrowWidth),(top));
+                point1 = new Z.Point(left, top);
+                point2 = new Z.Point(left, top);
+                point3 = new Z.Point(left, top);
+                point4 = new Z.Point((left-arrowWidth),(top+arrowHeight));
+                point5 = new Z.Point((left-arrowWidth),(top+height));
+                point6 = new Z.Point((left-width-arrowWidth),(top+height));
+            }
+        } else if ('middle' === horizontal) {
+            var arrowWidth = Math.round(width/5);
+            var arrowHeight = Math.round(height/2);
+            if('top' === vertical
+            || 'middle' === vertical) {
+                point0 = new Z.Point((left-Math.round(width/2)),(top-height-arrowHeight));
+                point1 = new Z.Point((left+Math.round(width/2)),(top-height-arrowHeight));
+                point2 = new Z.Point((left+Math.round(width/2)),(top-arrowHeight));
+                point3 = new Z.Point((left+Math.round(arrowWidth/2)),(top-arrowHeight));
+                point4 = new Z.Point(left, top);
+                point5 = new Z.Point((left-Math.round(arrowWidth/2)),(top-arrowHeight));
+                point6 = new Z.Point((left-Math.round(width/2)),(top-arrowHeight));
+            } else if ('bottom' === vertical) {
+                point0 = new Z.Point((left-Math.round(width/2)),(top+arrowHeight));
+                point1 = new Z.Point((left-Math.round(arrowWidth/2)),(top+arrowHeight));
+                point2 = new Z.Point(left, top);
+                point3 = new Z.Point((left+Math.round(arrowWidth/2)),(top+arrowHeight));
+                point4 = new Z.Point((left+Math.round(width/2)),(top+arrowHeight));
+                point5 = new Z.Point((left+Math.round(width/2)),(top+height+arrowHeight));
+                point6 = new Z.Point((left-Math.round(width/2)),(top+height+arrowHeight));
+            }
+        } else if ('right' === horizontal) {
+            var arrowWidth = arrowHeight = height/2;
+            if('top' === vertical) {
+                point0 = new Z.Point((left+arrowWidth),(top-height));
+                point1 = new Z.Point((left+width+arrowWidth),(top-height));
+                point2 = new Z.Point((left+width+arrowWidth),(top));
+                point3 = new Z.Point((left+arrowWidth), top);
+                point4 = new Z.Point(left, top);
+                point5 = new Z.Point(left, top);
+                point6 = new Z.Point((left+arrowWidth),(top-arrowHeight));
+            } else if ('middle' === vertical) {
+                point0 = new Z.Point(left+arrowWidth, (top-height/2));
+                point1 = new Z.Point((left+width+arrowWidth),(top-height/2));
+                point2 = new Z.Point((left+width+arrowWidth),(top+height/2));
+                point3 = new Z.Point((left+arrowWidth),(top+height/2));
+                point4 = new Z.Point((left+arrowWidth),(top+arrowHeight/2));
+                point5 = new Z.Point(left, top);
+                point6 = new Z.Point((left+arrowWidth),(top-arrowHeight/2));
+            } else if ('bottom' === vertical) {
+                point0 = new Z.Point(left+arrowWidth, top);
+                point1 = new Z.Point((left+width+arrowWidth),(top));
+                point2 = new Z.Point((left+width+arrowWidth),(top+height));
+                point3 = new Z.Point((left+arrowWidth),(top+height));
+                point4 = new Z.Point((left+arrowWidth),(top+arrowHeight));
+                point5 = new Z.Point(left, top);
+                point6 = new Z.Point(left, top);
+            }
+        }
+        points = [point0, point1, point2, point3, point4, point5, point6];
+        return points;
+    },
+
+    _translateStrokeAndFill:function() {
+        var symbol = this.options.symbol;
+        var result = {
+            'stroke' : {
+                'stroke' : symbol['labelLineColor'],
+                'stroke-width' : symbol['labelLineWidth'],
+                'stroke-opacity' : symbol['labelLineOpacity'],
+                'stroke-dasharray': symbol['labelLineDasharray'],
+                'stroke-linecap' : 'butt',
+                'stroke-linejoin' : 'round'
+            },
+            'fill' : {
+                'fill'          : symbol['labelFill'],
+                'fill-opacity'  : symbol['labelOpacity']
+            }
+        };
+        //vml和svg对linecap的定义不同
+        if (result['stroke']['stroke-linecap'] === "butt") {
+            if (Z.Browser.vml) {
+                result['stroke']['stroke-linecap'] = "flat";
+            }
+        }
+        return result;
+     },
+
+     _offsetLabel:function(label) {
+         var d = this.getDxDy();
+         if(!this._geometry) return;
+         var point = this._geometry._getCenterViewPoint().add(d);
+         if (label.tagName && label.tagName === 'SPAN') {
+             label.style.left = point['left']+'px';
+             label.style.top = point['top']+'px';
+         } else {
+             if (Z.Browser.vml) {
+                 //vml
+                 label.style.position = 'absolute';
+                 label.style.left = point['left'];
+                 label.style.top = point['top'];
+             } else {
+                 if (label.tagName === 'text') {
+                     // svg text
+                     label.setAttribute('x',point['left']);
+                     label.setAttribute('y',point['top']);
+                 } else {
+                     //svg
+                     label.setAttribute('transform', 'translate('+point['left']+' '+point['top']+')');
+                 }
+
+             }
+         }
+
+     }
 });

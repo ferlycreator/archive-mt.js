@@ -69,15 +69,26 @@ Z.SVG.SVG = {
     text:function(text, style, size) {
         //TODO 改为textpath
         var svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        var textStyle = 'font-family:' + style['textFaceName'] + ';' +
+                        'font-size:' + style['textSize'] + ';' +
+                        'fill:' + style['textFill'] + ';' +
+                        'opacity:' + style['textOpacity'] + ';' +
+                        'text-align:' + style['textAlign'] + ';';
+        svgText.setAttribute('style', textStyle);
         var textNode = document.createTextNode(text);
         svgText.appendChild(textNode);
         return svgText;
     },
 
+    updateLabelStyle:function(svgText, style, size) {
+        svgText.setAttribute('dx', style['textDx']);
+        svgText.setAttribute('dy', style['textDy']);
+    },
+
     updateTextStyle:function(svgText, style, size) {
-        svgText.setAttribute('font-size', style['text-size']);
-        svgText.setAttribute('font-family', style['text-face-name']);
-        var textAnchor = style['text-horizontal-alignment'];
+        svgText.setAttribute('font-size', style['textSize']);
+        svgText.setAttribute('font-family', style['textFaceName']);
+        var textAnchor = style['textHorizontalAlignment'];
         if (textAnchor === 'left') {
             textAnchor = 'start';
         } else if (textAnchor === 'right') {
@@ -85,16 +96,40 @@ Z.SVG.SVG = {
         }
         svgText.setAttribute('font-weight','bold');
         svgText.setAttribute('text-anchor', textAnchor);
-        svgText.setAttribute('text-align', style['text-align']);
+        svgText.setAttribute('text-align', style['textAlign']);
 
         svgText.setAttribute('dx',0);
-        var hAlign = style['text-vertical-alignment'];
+        var hAlign = style['textVerticalAlignment'];
         if (hAlign === 'bottom') {
-            svgText.setAttribute('dy',-size['height']);
+            svgText.setAttribute('dy',size['height']);
         } else if (hAlign === 'middle') {
             svgText.setAttribute('dy',size['height']/2);
         } else {
+            svgText.setAttribute('dy',-size['height']);
+        }
+    },
+
+    updateTextStyle:function(svgText, style, size) {
+        svgText.setAttribute('font-size', style['textSize']);
+        svgText.setAttribute('font-family', style['textFaceName']);
+        var textAnchor = style['textHorizontalAlignment'];
+        if (textAnchor === 'left') {
+            textAnchor = 'start';
+        } else if (textAnchor === 'right') {
+            textAnchor = 'end';
+        }
+        svgText.setAttribute('font-weight','bold');
+        svgText.setAttribute('text-anchor', textAnchor);
+        svgText.setAttribute('text-align', style['textAlign']);
+
+        svgText.setAttribute('dx',0);
+        var hAlign = style['textVerticalAlignment'];
+        if (hAlign === 'bottom') {
             svgText.setAttribute('dy',size['height']);
+        } else if (hAlign === 'middle') {
+            svgText.setAttribute('dy',size['height']/2);
+        } else {
+            svgText.setAttribute('dy',-size['height']);
         }
     },
 
