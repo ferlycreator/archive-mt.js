@@ -26,7 +26,8 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
         this.renderPoints = this._getRenderPoints();
         this.style = this.translate();
         this.strokeAndFill = this.translateStrokeAndFill(this.style);
-        this.textContent = this._convertContent(this.style['shield-name']);
+        var props = this.geometry.getProperties();
+        this.textContent = Z.Util.content(this.style['shield-name'], props);
         this.textSize = Z.Util.stringLength(this.textContent,this.style['text-face-name'],this.style['text-size']);
     },
 
@@ -189,24 +190,8 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
             }
         }
         return result;
-    },
-
-    _convertContent:function(content) {
-        var regex = /\[.*\]/gi;
-        if(regex.test(content)) {
-            var arr = content.match(regex);
-            if(arr&&arr.length>0) {
-                var props = this.geometry.getProperties();
-                if(props) {
-                    var key = arr[0].substring(1,arr[0].length-1);
-                    if(props[key]) {
-                        return content.replace(regex, props[key]);
-                    }
-                }
-            }
-        }
-        return content;
     }
+
 });
 
 

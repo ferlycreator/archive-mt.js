@@ -22,7 +22,8 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
         this.renderPoints = this._getRenderPoints();
         this.style = this.translate();
         this.strokeAndFill = this.translateStrokeAndFill(this.style);
-        this.textContent = this._convertContent(this.style['text-name']);
+        var props = this.geometry.getProperties();
+        this.textContent = Z.Util.content(this.style['text-name'], props);
         this.textSize = Z.Util.stringLength(this.textContent,this.style['text-face-name'],this.style['text-size']);
     },
 
@@ -141,23 +142,6 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
         Z.SVG.updateTextStyle(svgText, style, size);
         Z.SVG.updateShapeStyle(svgText, strokeAndFill['stroke'], strokeAndFill['fill']);
         return svgText;
-    },
-
-    _convertContent:function(content) {
-        var regex = /\[.*\]/gi;
-        if(regex.test(content)) {
-            var arr = content.match(regex);
-            if(arr&&arr.length>0) {
-                var props = this.geometry.getProperties();
-                var key = arr[0].substring(1,arr[0].length-1);
-                if(props) {
-                    if(props[key]) {
-                        return content.replace(regex, props[key]);
-                    }
-                }
-            }
-        }
-        return content;
     }
 });
 
