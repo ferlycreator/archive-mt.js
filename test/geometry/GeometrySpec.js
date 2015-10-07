@@ -383,6 +383,28 @@ function registerGeometryCommonTest(geometry,_context) {
         });
     });
 
+    context(type+':has coordinateType',function() {
+        it ('can read coordinateType from json',function() {
+            var json = geometry.toJson();
+            json.crs = {
+                "type" : "cnCoordinateType",
+                "properties" : {
+                    "name" : "gcj02"
+                }
+            };
+            var parsed = Z.GeoJson.fromGeoJson(json);
+
+            expect(parsed.getCoordinateType()).to.eql('gcj02');
+        });
+
+        it ('has coordinateType',function() {
+            var coordinateType = "gcj02";
+            var json = geometry.setCoordinateType(coordinateType).toJson();
+            expect(json['crs']).to.be.ok();
+            expect(json['crs']).to.eql({"type":"cnCoordinateType","properties":{"name":coordinateType}});
+        });
+    });
+
     context(type+':remove',function() {
         it ('remove from layer',function() {
             //layer not on map

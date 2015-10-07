@@ -46,13 +46,10 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (!opts) {
             opts = {};
         }
-        /*if (!Z.Util.isNil(opts['id'])) {
-            this.setId(opts['id']);
-            delete opts['id'];
-        }*/
-        /*if (opts['symbol']) {
-            opts['symbol'] = Z.Util.convertFieldNameStyle(opts['symbol'],'camel');
-        }*/
+        if (!Z.Util.isNil(opts['coordinateType'])) {
+            this.setCoordinateType(opts['coordinateType']);
+            delete opts['coordinateType'];
+        }
         Z.Util.setOptions(this,opts);
     },
 
@@ -449,7 +446,15 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
                 properties[Z.GeoJson.FIELD_SYMBOL]=symbol;
             }
         }
-        properties[Z.GeoJson.FIELD_COORDINATE_TYPE] = this.getCoordinateType();
+        var coordinateType = this.getCoordinateType();
+        if (coordinateType) {
+            feature['crs'] = {
+                "type" : "cnCoordinateType",
+                "properties" : {
+                    "name" : coordinateType
+                }
+            };
+        }
         //opts没有设定properties或者设定的properties值为true,则导出properties
         if (opts['properties'] === undefined || opts['properties']) {
             var geoProperties = this.getProperties();
