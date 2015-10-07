@@ -136,6 +136,14 @@ Z.Canvas = {
         ctx.fillText(text, pt['left'], pt['top']);
     },
 
+    shield: function (ctx, point, img, text, textSize, style) {
+        var width = img.width,
+            height = img.height,
+            imgPos = point.substract(new Z.Point(width/2, height/2));
+        Z.Canvas.image(ctx, imgPos, img, width, height);
+        Z.Canvas.text(ctx, text, point, style, textSize);
+    },
+
     _path:function(context, points, lineDashArray) {
         /**
         * 出处：http://outofmemory.cn/code-snippet/10602/canvas-carry-arrow--IE8

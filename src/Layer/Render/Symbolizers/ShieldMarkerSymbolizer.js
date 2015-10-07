@@ -64,13 +64,9 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
         Z.Canvas.prepareCanvasFont(ctx,style);
 
         var img = resources.getImage(style['shield-file']);
-        var width = img.width,
-            height = img.height;
         for (var i = 0, len=cookedPoints.length;i<len;i++) {
             var pt = cookedPoints[i];
-            var imgPt = pt.substract(new Z.Point(width/2, height/2));
-            Z.Canvas.image(ctx, img, imgPt, width, height);
-            Z.Canvas.text(ctx, this.textContent, pt , style, this.textSize);
+            Z.Canvas.shield(ctx, pt, img, this.textContent, this.textSize, style);
         }
     },
 
