@@ -79,7 +79,7 @@ Z.Canvas = {
             return color;
         }
         var r, g, b;
-        if (color.length === 6) {
+        if (color.length === 7) {
             r = parseInt(color.slice(1, 3), 16);
             g = parseInt(color.slice(3, 5), 16);
             b = parseInt(color.slice(5, 7), 16);
