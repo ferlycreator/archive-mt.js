@@ -40,11 +40,12 @@
             */
             mode: maptalks.Geometry.TYPE_POLYGON,
             symbol: {
-                'line-color':'#0000ff',
+                'line-color':'#f00',
                 'line-width':3,
                 'line-opacity':1,
                 'line-dasharray': [20,5,2,5],
-                'polygon-fill': '#ff0000',
+                'polygon-fill': 'rgb(0, 255, 51)',
+                'polygon-pattern-file': 'url("https://mdn.mozillademos.org/files/222/Canvas_createpattern.png")',
                 'polygon-opacity': 0.6
             }
         });
@@ -56,7 +57,7 @@
 
     //绘制完线面操作
     function onAfterDrawPolygon(param) {
-        // drawTool.disable();
+        drawTool.disable();
         // console.log(param);
         //绘制的图形
         var polygon = param.geometry;

@@ -27,16 +27,16 @@
             subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
         }));
         //创建图层
-        var layer = new maptalks.VectorLayer('layer'/*,{'render':'canvas'}*/);
+        var layer = new maptalks.VectorLayer('layer',{'render':'canvas'});
         //将图层添加到地图对象
         mapObj.addLayer(layer);
         //创建点的坐标对象
-        var coordinate = new maptalks.Coordinate(121.489935,31.24432);
+        var coordinate = new maptalks.Coordinate(121.489315,31.24402);
         //设置矢量配置
         var icon = {
             "shield-placement"  : "vertex",
 
-             "shield-file"      :  "/images/marker.png",
+            "shield-file"      :  "/images/marker.png",
             "shield-opacity"    :  1,
             "shield-dx"         :  0,
             "shield-dy"         :  0,
