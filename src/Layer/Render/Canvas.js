@@ -11,6 +11,7 @@ Z.Canvas = {
         if (context.setLineDash) {
             context.setLineDash([]);
         }
+        context.globalAlpha = 1;
         context.save();
     },
 
@@ -56,16 +57,16 @@ Z.Canvas = {
 
     fillCanvas:function(context, fillStyle, fillOpacity){
         if (fillStyle) {
-            if (!Z.Util.isNil(fillOpacity)) {
+            /*if (!Z.Util.isNil(fillOpacity)) {
                 context.globalAlpha = fillOpacity;
-            }
+            }*/
             if (!Z.Util.isString(fillStyle)/*fillStyle instanceof CanvasPattern*/) {
                 context.fillStyle = fillStyle;
             } else if (Z.Util.isString(fillStyle)) {
                 context.fillStyle = this.getRgba(fillStyle, fillOpacity);
             }
             context.fill('evenodd');
-            context.globalAlpha = 1;
+            // context.globalAlpha = 1;
         }
     },
 
@@ -149,11 +150,13 @@ Z.Canvas = {
         * 出处：http://outofmemory.cn/code-snippet/10602/canvas-carry-arrow--IE8
         */
         function drawDashLine(startPoint, endPoint, dashArray) {
-            var x = startPoint.left,y = startPoint.top,
+            /*var x = startPoint.left,y = startPoint.top,
                 x2 = endPoint.left,y2 = endPoint.top;
             var dashCount = dashArray.length;
-            context.moveTo(x, y);
-            var dx = Math.abs(x2 - x), dy = Math.abs(y2 - y);
+            context.moveTo(Z.Util.canvasRound(x), Z.Util.canvasRound(y));
+            console.log('canvas:'+Z.Util.canvasRound(x)+','+ Z.Util.canvasRound(y));
+            var dx = Math.abs(x2 - x);
+            var dy = Math.abs(y2 - y);
             var slope = dy / dx;
             var distRemaining = Math.sqrt(dx * dx + dy * dy);
             var dashIndex = 0, draw = true;
@@ -164,10 +167,54 @@ Z.Canvas = {
                 var xStep = Math.sqrt(dashLength * dashLength / (1 + slope * slope));
                 x += xStep;
                 y += slope * xStep;
-                context[draw ? 'lineTo' : 'moveTo'](x, y);
+                context[draw ? 'lineTo' : 'moveTo'](Z.Util.canvasRound(x), Z.Util.canvasRound(y));
+                console.log('canvas:'+Z.Util.canvasRound(x)+','+ Z.Util.canvasRound(y));
                 distRemaining -= dashLength;
                 draw = !draw;
             }
+            console.log('----------------------');*/
+              // Our growth rate for our line can be one of the following:
+              //   (+,+), (+,-), (-,+), (-,-)
+              // Because of this, our algorithm needs to understand if the x-coord and
+              // y-coord should be getting smaller or larger and properly cap the values
+              // based on (x,y).
+              var fromX = startPoint.left,fromY = startPoint.top,
+                toX = endPoint.left,toY = endPoint.top;
+              var pattern = dashArray;
+              var lt = function (a, b) { return a <= b; };
+              var gt = function (a, b) { return a >= b; };
+              var capmin = function (a, b) { return Math.min(a, b); };
+              var capmax = function (a, b) { return Math.max(a, b); };
+
+              var checkX = { thereYet: gt, cap: capmin };
+              var checkY = { thereYet: gt, cap: capmin };
+
+              if (fromY - toY > 0) {
+                checkY.thereYet = lt;
+                checkY.cap = capmax;
+              }
+              if (fromX - toX > 0) {
+                checkX.thereYet = lt;
+                checkX.cap = capmax;
+              }
+
+              context.moveTo(fromX, fromY);
+              var offsetX = fromX;
+              var offsetY = fromY;
+              var idx = 0, dash = true;
+              while (!(checkX.thereYet(offsetX, toX) && checkY.thereYet(offsetY, toY))) {
+                var ang = Math.atan2(toY - fromY, toX - fromX);
+                var len = pattern[idx];
+
+                offsetX = checkX.cap(toX, offsetX + (Math.cos(ang) * len));
+                offsetY = checkY.cap(toY, offsetY + (Math.sin(ang) * len));
+
+                if (dash) {context.lineTo(offsetX, offsetY);}
+                else {context.moveTo(offsetX, offsetY);}
+
+                idx = (idx + 1) % pattern.length;
+                dash = !dash;
+              }
         }
         if (!Z.Util.isArrayHasData(points)) {return;}
 
@@ -179,18 +226,21 @@ Z.Canvas = {
             );
             if (!isDashed || context.setLineDash) {//ie9以上浏览器
                 if (i === 0) {
-                    context.moveTo(point['left'], point['top']);
+                    context.moveTo(Z.Util.canvasRound(point['left']), Z.Util.canvasRound(point['top']));
                 } else {
-                    context.lineTo(point['left'],point['top']);
+                    context.lineTo(Z.Util.canvasRound(point['left']),Z.Util.canvasRound(point['top']));
                 }
             } else {
                 if (isDashed) {
-                    if(i === len-1) {break;}
+                    if(i === len-1) {
+                        break;
+                    }
                     var nextPoint = new Z.Point(
                         Z.Util.canvasRound(points[i+1]['left']),
                         Z.Util.canvasRound(points[i+1]['top'])
                     );
                     drawDashLine(point, nextPoint, lineDashArray);
+
                 }
             }
          }
@@ -207,6 +257,25 @@ Z.Canvas = {
         Z.Canvas._path(context,points,lineDashArray);
         context.closePath();
         context.stroke();
+        //因为canvas只填充moveto,lineto,lineto的空间, 而dashline的moveto不再构成封闭空间, 所以重新绘制图形轮廓用于填充
+        if (Z.Util.isArrayHasData(lineDashArray) && !context.setLineDash) {
+            context.save();
+            context.beginPath();
+            context.strokeStyle = Z.Canvas.getRgba("#ffffff",0);
+            for (var j = points.length - 1; j >= 0; j--) {
+                var outline = points[j];
+                if (j === points.length - 1) {
+                    context.moveTo(Z.Util.canvasRound(outline['left']), Z.Util.canvasRound(outline['top']));
+                } else {
+                    context.lineTo(Z.Util.canvasRound(outline['left']),Z.Util.canvasRound(outline['top']));
+                }
+            }
+            context.closePath();
+            context.stroke();
+            context.restore();
+        }
+
+
     },
 
     bezierCurve:function(context, points, lineDashArray) {
