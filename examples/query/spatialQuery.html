@@ -23,12 +23,19 @@
         //设置底图图层
         mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
         {
-            tileInfo: 'web-mercator',
+            /*tileInfo: 'web-mercator',
             urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
-            subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
+            subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值*/
+            tileInfo : 'baidu',
+            urlTemplate:'http://online{s}.map.bdimg.com/tile/?qt=tile&x={x}&y={y}&z={z}&styles=pl',
+            /**
+            *urlTemplate中占位符{s}所有数值的数组
+            */
+            subdomains:[0,1,2,3,4,5,6,7,8,9]
         }));
+        mapObj.setCoordinateType('bd09ll');
         //创建图层
-        var layer = new maptalks.VectorLayer('layer');
+        var layer = new maptalks.VectorLayer('layer',{render:'canvas'});
         //将图层添加到地图对象
         mapObj.addLayer(layer);
         //构造查询对象
@@ -39,8 +46,8 @@
         });
         featureQuery.query({
             'page' : 0,
-            'count': 10,
-            'layer': 'yum_rest',
+            'count': 200000,
+            'layer': 'yum_tradezone',
             'queryFilter': {
                 /**
                  * returnGeometry
@@ -56,8 +63,9 @@
                 //      'relation' : maptalks.SpatialFilter.RELATION_INTERSECT //与空间参考图形的关系
                 //},
                 //'coordinateType':'gcj02', //返回图形的坐标的坐标系
-                'condition': 'city=\'e24abb211a2847d59da507bd9a317c6a\'', //查询条件
-                'resultFields': ['*'] //返回图形的属性，'*'表示返回全部
+                'coordinateType':'bd09ll',
+                'condition': "city='e24abb211a2847d59da507bd9a317c6a'", //查询条件 and name like '%浦南'
+                'resultFields': [] //返回图形的属性，'*'表示返回全部
             },
             'success': function(geos) {
                 //将返回的图形添加到图层上

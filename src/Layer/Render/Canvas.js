@@ -57,16 +57,12 @@ Z.Canvas = {
 
     fillCanvas:function(context, fillStyle, fillOpacity){
         if (fillStyle) {
-            /*if (!Z.Util.isNil(fillOpacity)) {
-                context.globalAlpha = fillOpacity;
-            }*/
             if (!Z.Util.isString(fillStyle)/*fillStyle instanceof CanvasPattern*/) {
                 context.fillStyle = fillStyle;
             } else if (Z.Util.isString(fillStyle)) {
                 context.fillStyle = this.getRgba(fillStyle, fillOpacity);
             }
             context.fill('evenodd');
-            // context.globalAlpha = 1;
         }
     },
 
