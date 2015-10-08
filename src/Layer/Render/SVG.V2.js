@@ -350,18 +350,60 @@ Z.SVG.VML= {
     },
 
     text:function(text, style, size) {
+        var font = style['textFaceName'];
+        var fontSize = style['textSize'];
+
+        var dx = style['textDx'],dy = style['textDy'];
+        var lineSpacing = style['textLineSpacing'];
+        var wrapChar = style['textWrapCharacter'];
+        var textWidth = Z.Util.stringLength(text,font,fontSize).width;
+        var wrapWidth = style['textWrapWidth'];
+        if(!wrapWidth) wrapWidth = textWidth;
+        var vmlText;
+        if(wrapChar) {
+            var texts = text.split(wrapChar);
+            var content = Z.Util.replaceAll(text, wrapChar, '<br/>');
+            vmlText = this._createTextbox(text, style);
+        } else {
+            if(textWidth>wrapWidth) {
+               vmlText = this._createTextbox(text, style);
+            } else {
+                vmlText = this._createTextPath(style);
+            }
+        }
+        return vmlText;
+    },
+
+    _createTextbox: function(content, style) {
+        var font = style['textFaceName'];
+        var fontSize = style['textSize'];
+        var color = style['textFill'];
+        var textWidth = style['textWrapWidth'];
+        var align = style['textAlign'];
+        textbox = Z.SVG.create('v:textbox');
+        textbox.style.fontSize  = fontSize +'px';
+        textbox.style.color  = color;
+        textbox.style.width  = textWidth +'px';
+        textbox.style.textAlign = align;
+        textbox.innerHTML   = content;
+        return textbox;
+
+    },
+
+    _createTextPath: function(style) {
         var vmlShape = Z.SVG.create('shape');
         vmlShape.style.width = '1px';
         vmlShape.style.height = '1px';
         vmlShape['coordsize'] = '1 1';
         vmlShape['coordorigin'] = '0 0';
+
         var vmlPath = Z.SVG.create('path');
         var vmlText = Z.SVG.create('textpath');
         vmlShape.appendChild(vmlPath);
         vmlShape.appendChild(vmlText);
 
         var startx, starty;
-        var hAlign = style['textHhorizontalAlignment'];
+        var hAlign = style['textHorizontalAlignment'];
         if (hAlign === 'right') {
             startx = -size['width'];
         } else if (hAlign === 'middle') {
@@ -379,7 +421,6 @@ Z.SVG.VML= {
         }
 
         vmlShape.path = 'm '+Math.round(startx)+','+Math.round(starty)+' l '+Math.round(startx+size['width'])+','+Math.round(starty)+' e';
-
         vmlPath.textpathok=true;
         vmlText.on=true;
         vmlText.fitpath = true;
@@ -395,9 +436,9 @@ Z.SVG.VML= {
     updateTextStyle:function(vmlShape, style, size) {
         var svgText = vmlShape.textNode;
         svgText.style.fontWeight = 'bold';
-        svgText.style.fontSize=style['text-size'];
-        svgText.style.fontFamily=style['text-face-name'];
-        svgText.style['v-text-align'] = style['text-align'];
+        svgText.style.fontSize=style['textSize'];
+        svgText.style.fontFamily=style['textFaceName'];
+        svgText.style['v-text-align'] = style['textAlign'];
     },
 
     image:function(url, width, height) {
@@ -431,8 +472,6 @@ Z.SVG.VML= {
         stroke.endcap = strokeSymbol['stroke-linecap'];
         if (strokeSymbol['stroke-pattern']) {
             stroke.src=strokeSymbol['stroke-pattern'];
-        } else {
-            stroke.src = null;
         }
         if (!vmlShape.strokeNode) {
             vmlShape.appendChild(stroke);

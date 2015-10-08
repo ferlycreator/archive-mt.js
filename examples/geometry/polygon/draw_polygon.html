@@ -38,7 +38,7 @@
             *设置drawTool绘制的图形类型
             *TYPE_POLYGON： 多边形；TYPE_RECT：矩形；TYPE_ELLIPSE：圆形
             */
-            mode: maptalks.Geometry.TYPE_ELLIPSE,
+            mode: maptalks.Geometry.TYPE_RECT,
             symbol: {
                 'line-color':'#f00',
                 'line-width':3,
@@ -58,7 +58,6 @@
     //绘制完线面操作
     function onAfterDrawPolygon(param) {
         drawTool.disable();
-        // console.log(param);
         //绘制的图形
         var polygon = param.geometry;
         //将线添加到Layer
