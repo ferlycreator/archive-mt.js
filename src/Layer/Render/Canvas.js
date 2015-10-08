@@ -69,16 +69,26 @@ Z.Canvas = {
         }
     },
 
+    hexColorRe: /^#([0-9a-f]{6}|[0-9a-f]{3})$/i,
+
     getRgba:function(color, op) {
         if (Z.Util.isNil(op)) {
             op = 1;
         }
-        var rgb = {
-            r: parseInt(color.slice(1, 3), 16),
-            g: parseInt(color.slice(3, 5), 16),
-            b: parseInt(color.slice(5, 7), 16)
-        };
-        return "rgba("+rgb.r+","+rgb.g+","+rgb.b+","+op+")";
+        if (!Z.Canvas.hexColorRe.test(color)) {
+            return color;
+        }
+        var r, g, b;
+        if (color.length === 7) {
+            r = parseInt(color.slice(1, 3), 16);
+            g = parseInt(color.slice(3, 5), 16);
+            b = parseInt(color.slice(5, 7), 16);
+        } else {
+            r = parseInt(color.slice(1, 2), 16) * 17;
+            g = parseInt(color.slice(2, 3), 16) * 17;
+            b = parseInt(color.slice(3, 4), 16) * 17;
+        }
+        return "rgba("+r+","+g+","+b+","+op+")";
     },
 
     image:function(ctx, pt, img, width, height) {
@@ -124,6 +134,14 @@ Z.Canvas = {
         }
 
         ctx.fillText(text, pt['left'], pt['top']);
+    },
+
+    shield: function (ctx, point, img, text, textSize, style) {
+        var width = img.width,
+            height = img.height,
+            imgPos = point.substract(new Z.Point(width/2, height/2));
+        Z.Canvas.image(ctx, imgPos, img, width, height);
+        Z.Canvas.text(ctx, text, point, style, textSize);
     },
 
     _path:function(context, points, lineDashArray) {

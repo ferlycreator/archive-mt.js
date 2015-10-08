@@ -455,6 +455,40 @@ Z.Util = {
         return option;
     },
 
+    // match: url('x'), url("x").
+    // TODO: url(x)
+    cssUrlRe: /^url\(([\'\"])(.+)\1\)$/i,
+
+    isCssUrl: function (str) {
+        return Z.Util.cssUrlRe.test(str);
+    },
+
+    extractCssUrl: function (str) {
+        if (Z.Util.isCssUrl(str)) {
+            var matches = Z.Util.cssUrlRe.exec(str);
+            return matches[2];
+        } else {
+            // return as is if not an css url
+            return str;
+        }
+    },
+
+    contentExpRe: /\[([\w_]+)\]/g,
+
+    content: function (str, props) {
+        // FIXME: isObject(props)
+        if (!props) {
+            return str;
+        }
+        return str.replace(Z.Util.contentExpRe, function (str, key) {
+            var value = props[key];
+            if (value === undefined) {
+                return str;
+            }
+            return value;
+        });
+    },
+
     /**
      * borrowed from jquery, Evaluates a script in a global context
      * @param {String} code

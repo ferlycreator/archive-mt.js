@@ -44,12 +44,12 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
         canvasResources['fn'].apply(this, [ctx].concat(canvasResources['context']));
         if (this.geometry instanceof Z.Polygon) {
             var fillSymbol = strokeAndFill['fill'];
-             var fillOpacity = fillSymbol['fill-opacity'];
-             var fill=fillSymbol['fill'];
-             var fillStyle;
-             // if (this.style['polygon-pattern-file'])
-             if (fill.length>7 && 'url' ===fill.substring(0,3)) {
-                var imgUrl = fill.substring(5,fill.length-2);
+            var fillOpacity = fillSymbol['fill-opacity'];
+            var fill=fillSymbol['fill'];
+            var fillStyle;
+            // FIXME: rule?
+            if (this.style['polygon-pattern-file']) {
+                var imgUrl = Z.Util.extractCssUrl(fill);
                 var imageTexture = resources.getImage(imgUrl);
                 fillStyle = ctx.createPattern(imageTexture, 'repeat');
             } else {
