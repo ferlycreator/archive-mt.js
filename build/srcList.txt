@@ -14,6 +14,7 @@
 ../src/Geo/Projection/Projection.Common.js
 ../src/Geo/Projection/Projection.EPSG3857.js
 ../src/Geo/Projection/Projection.EPSG4326.js
+../src/Geo/Projection/Projection.Baidu.js
 ../src/Geo/Projection/Projection.Pixel.js
 ../src/Handler/Handler.js
 ../src/Handler/Drag.js

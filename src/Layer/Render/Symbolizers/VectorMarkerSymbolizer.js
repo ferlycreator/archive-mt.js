@@ -73,7 +73,7 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
                 Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']);
             } else {
                 //ellipse default
-                Z.Canvas.ellipse(ctx, point, new Z.Size(width,height));
+                Z.Canvas.ellipse(ctx, point, new Z.Size(width/2,height/2));
                 Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']);
             }
         }
