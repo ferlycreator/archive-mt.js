@@ -109,30 +109,6 @@ Z.SVG.SVG = {
         }
     },
 
-    updateTextStyle:function(svgText, style, size) {
-        svgText.setAttribute('font-size', style['textSize']);
-        svgText.setAttribute('font-family', style['textFaceName']);
-        var textAnchor = style['textHorizontalAlignment'];
-        if (textAnchor === 'left') {
-            textAnchor = 'start';
-        } else if (textAnchor === 'right') {
-            textAnchor = 'end';
-        }
-        svgText.setAttribute('font-weight','bold');
-        svgText.setAttribute('text-anchor', textAnchor);
-        svgText.setAttribute('text-align', style['textAlign']);
-
-        svgText.setAttribute('dx',0);
-        var hAlign = style['textVerticalAlignment'];
-        if (hAlign === 'bottom') {
-            svgText.setAttribute('dy',size['height']);
-        } else if (hAlign === 'middle') {
-            svgText.setAttribute('dy',size['height']/2);
-        } else {
-            svgText.setAttribute('dy',-size['height']);
-        }
-    },
-
     image:function(url, width, height) {
         var svgImage = document.createElementNS('http://www.w3.org/2000/svg', 'image');
         var xlink = "http://www.w3.org/1999/xlink";
@@ -331,7 +307,7 @@ Z.SVG.VML= {
         vmlShape.appendChild(vmlText);
 
         var startx, starty;
-        var hAlign = style['text-horizontal-alignment'];
+        var hAlign = style['textHhorizontalAlignment'];
         if (hAlign === 'right') {
             startx = -size['width'];
         } else if (hAlign === 'middle') {
@@ -339,7 +315,7 @@ Z.SVG.VML= {
         } else {
             startx = 0;
         }
-        var vAlign = style['text-vertical-alignment'];
+        var vAlign = style['textVerticalAlignment'];
         if (vAlign === 'top') {
             starty = size['height']/2;
         } else if (vAlign === 'middle') {
@@ -356,6 +332,10 @@ Z.SVG.VML= {
         vmlText.string=text;
         vmlShape.textNode = vmlText;
         return vmlShape;
+    },
+
+    updateLabelStyle:function(vmlShape, style, size) {
+        this.updateTextStyle(vmlShape, style, size);
     },
 
     updateTextStyle:function(vmlShape, style, size) {

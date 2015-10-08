@@ -348,8 +348,8 @@ Z.Label = Z.Class.extend({
         style['textHorizontalAlignment'] = style['labelHorizontalAlignment'];
         style['textVerticalAlignment'] = style['labelVerticalAlignment'];
         var point = this._getVectorArray()[0];
-        style['textDx'] += style['labelDx']+point['left'];
-        style['textDy'] += style['labelDy']+point['top']+style['textSize'];
+        style['textDx'] += point['left'];
+        style['textDy'] += point['top']+style['textSize'];
         var svgText = Z.SVG.text(textContent, style, textSize);
         Z.SVG.updateLabelStyle(svgText, style, textSize);
         svgGroup.appendChild(svgText);
@@ -381,8 +381,9 @@ Z.Label = Z.Class.extend({
         var labelType = symbol['labelType'].toLowerCase();
 
         var left=0,top=0;
+        var lineSpacing = Z.Util.setDefaultValue(symbol['textLineSpacing'],0);
         var width = Z.Util.setDefaultValue(symbol['labelWrapWidth'],0),
-            height = Z.Util.setDefaultValue(symbol['textSize'], 12);
+            height = Z.Util.setDefaultValue(symbol['textSize'], 12)+lineSpacing;
         var content = this.options['content'];
         var fontSize = symbol['textSize'];
         var size = fontSize/2;
@@ -391,72 +392,72 @@ Z.Label = Z.Class.extend({
         if(textWidth>width){
             rowNum = Math.ceil(textWidth/width);
         }
-        height += rowNum*(fontSize/2);
+        height += rowNum*(fontSize+lineSpacing);
         width += fontSize;
 
         var horizontal = Z.Util.setDefaultValue(symbol['labelHorizontalAlignment'],'middle');//水平
         var vertical = Z.Util.setDefaultValue(symbol['labelVerticalAlignment'],'middle');//垂直
 
         if ('box' === labelType) {
-            return  this._getBoxPoints(width, height, horizontal, vertical);
+            return  this._getBoxPoints(left, top, width, height, horizontal, vertical);
         } else if ('tip' === labelType) {
             return this._getTipPoints(left, top, width, height, horizontal, vertical);
         }
     },
 
-     _getBoxPoints: function(width, height, horizontal, vertical) {
+     _getBoxPoints: function(left, top, width, height, horizontal, vertical) {
         var points = [];
         var point0,point1,point2,point3;
         if ('left' === horizontal) {
             if('top' === vertical) {
-                point0 = new Z.Point(-width,-height);
-                point1 = new Z.Point(0,-height);
-                point2 = new Z.Point(0,0);
-                point3 = new Z.Point(-width,0);
+                point0 = new Z.Point(left-width,top-height);
+                point1 = new Z.Point(left,top-height);
+                point2 = new Z.Point(left, top);
+                point3 = new Z.Point(left-width,top);
             } else if ('middle' === vertical) {
-                point0 = new Z.Point(-width,-height/2);
-                point1 = new Z.Point(0,-height/2);
-                point2 = new Z.Point(0,+height/2);
-                point3 = new Z.Point(-width,height/2);
+                point0 = new Z.Point(left-width,top-height/2);
+                point1 = new Z.Point(left,top-height/2);
+                point2 = new Z.Point(left,top+height/2);
+                point3 = new Z.Point(left-width,top+height/2);
             } else if ('bottom' === vertical) {
-                point0 = new Z.Point(-width,0);
-                point1 = new Z.Point(0,0);
-                point2 = new Z.Point(0,height);
-                point3 = new Z.Point(-width,height);
+                point0 = new Z.Point(left-width,top);
+                point1 = new Z.Point(left, top);
+                point2 = new Z.Point(left,top+height);
+                point3 = new Z.Point(left-width,top+height);
             }
         } else if ('middle' === horizontal) {
             if('top' === vertical) {
-                point0 = new Z.Point(-width/2,-height);
-                point1 = new Z.Point(width/2,-height);
-                point2 = new Z.Point(width/2,0);
-                point3 = new Z.Point(-width/2,0);
+                point0 = new Z.Point(left-width/2,top-height);
+                point1 = new Z.Point(left+width/2,top-height);
+                point2 = new Z.Point(left+width/2,top);
+                point3 = new Z.Point(left-width/2,top);
             } else if ('middle' === vertical) {
-                point0 = new Z.Point(-width/2,-height/2);
-                point1 = new Z.Point(width/2,-height/2);
-                point2 = new Z.Point(width/2,height/2);
-                point3 = new Z.Point(-width/2,height/2);
+                point0 = new Z.Point(left-width/2,top-height/2);
+                point1 = new Z.Point(left+width/2,top-height/2);
+                point2 = new Z.Point(left+width/2,top+height/2);
+                point3 = new Z.Point(left-width/2,top+height/2);
             } else if ('bottom' === vertical) {
-                point0 = new Z.Point(-width/2,0);
-                point1 = new Z.Point(width/2,0);
-                point2 = new Z.Point(width/2,height);
-                point3 = new Z.Point(-width/2,height);
+                point0 = new Z.Point(left-width/2,top);
+                point1 = new Z.Point(left+width/2,top);
+                point2 = new Z.Point(left+width/2,top+height);
+                point3 = new Z.Point(left-width/2,top+height);
             }
         } else if ('right' === horizontal) {
             if('top' === vertical) {
-                point0 = new Z.Point(0,-height);
-                point1 = new Z.Point(width,-height);
-                point2 = new Z.Point(width,0);
-                point3 = new Z.Point(0,0);
+                point0 = new Z.Point(left,top-height);
+                point1 = new Z.Point(left+width,top-height);
+                point2 = new Z.Point(left+width,top);
+                point3 = new Z.Point(left, top);
             } else if ('middle' === vertical) {
-                point0 = new Z.Point(0,-height/2);
-                point1 = new Z.Point(width,-height/2);
-                point2 = new Z.Point(width,height/2);
-                point3 = new Z.Point(0,height/2);
+                point0 = new Z.Point(left,top-height/2);
+                point1 = new Z.Point(left+width,top-height/2);
+                point2 = new Z.Point(left+width,top+height/2);
+                point3 = new Z.Point(left,top+height/2);
             } else if ('bottom' === vertical) {
-                point0 = new Z.Point(0,0);
-                point1 = new Z.Point(width,0);
-                point2 = new Z.Point(width,height);
-                point3 = new Z.Point(0,height);
+                point0 = new Z.Point(left, top);
+                point1 = new Z.Point(left+width,top);
+                point2 = new Z.Point(left+width,top+height);
+                point3 = new Z.Point(left,top+height);
             }
         }
         points = [point0, point1, point2, point3];
@@ -469,29 +470,29 @@ Z.Label = Z.Class.extend({
         if ('left' === horizontal) {
             var arrowWidth = arrowHeight = height/2;
             if('top' === vertical) {
-                point0 = new Z.Point((left-width-arrowWidth),(top-height));
-                point1 = new Z.Point((left-arrowWidth),(top-height));
+                point0 = new Z.Point((left-width-arrowWidth),top-height);
+                point1 = new Z.Point((left-arrowWidth),top-height);
                 point2 = new Z.Point((left-arrowWidth),(top-arrowHeight));
                 point3 = new Z.Point(left, top);
                 point4 = new Z.Point(left, top);
                 point5 = new Z.Point(left, top);
-                point6 = new Z.Point((left-width-arrowWidth),(top));
+                point6 = new Z.Point((left-width-arrowWidth),top);
             } else if ('middle' === vertical) {
-                point0 = new Z.Point((left-width-arrowWidth),(top-height/2));
-                point1 = new Z.Point((left-arrowWidth),(top-height/2));
+                point0 = new Z.Point((left-width-arrowWidth),top-height/2);
+                point1 = new Z.Point((left-arrowWidth),top-height/2);
                 point2 = new Z.Point((left-arrowWidth),(top-arrowHeight/2));
                 point3 = new Z.Point(left, top);
                 point4 = new Z.Point((left-arrowWidth),(top+arrowHeight/2));
-                point5 = new Z.Point((left-arrowWidth),(top+height/2));
-                point6 = new Z.Point((left-width-arrowWidth),(top+height/2));
+                point5 = new Z.Point((left-arrowWidth),top+height/2);
+                point6 = new Z.Point((left-width-arrowWidth),top+height/2);
             } else if ('bottom' === vertical) {
-                point0 = new Z.Point((left-width-arrowWidth),(top));
+                point0 = new Z.Point((left-width-arrowWidth),top);
                 point1 = new Z.Point(left, top);
                 point2 = new Z.Point(left, top);
                 point3 = new Z.Point(left, top);
                 point4 = new Z.Point((left-arrowWidth),(top+arrowHeight));
-                point5 = new Z.Point((left-arrowWidth),(top+height));
-                point6 = new Z.Point((left-width-arrowWidth),(top+height));
+                point5 = new Z.Point((left-arrowWidth),top+height);
+                point6 = new Z.Point((left-width-arrowWidth),top+height);
             }
         } else if ('middle' === horizontal) {
             var arrowWidth = Math.round(width/5);
@@ -517,26 +518,26 @@ Z.Label = Z.Class.extend({
         } else if ('right' === horizontal) {
             var arrowWidth = arrowHeight = height/2;
             if('top' === vertical) {
-                point0 = new Z.Point((left+arrowWidth),(top-height));
-                point1 = new Z.Point((left+width+arrowWidth),(top-height));
-                point2 = new Z.Point((left+width+arrowWidth),(top));
+                point0 = new Z.Point((left+arrowWidth),top-height);
+                point1 = new Z.Point((left+width+arrowWidth),top-height);
+                point2 = new Z.Point((left+width+arrowWidth),top);
                 point3 = new Z.Point((left+arrowWidth), top);
                 point4 = new Z.Point(left, top);
                 point5 = new Z.Point(left, top);
                 point6 = new Z.Point((left+arrowWidth),(top-arrowHeight));
             } else if ('middle' === vertical) {
-                point0 = new Z.Point(left+arrowWidth, (top-height/2));
-                point1 = new Z.Point((left+width+arrowWidth),(top-height/2));
-                point2 = new Z.Point((left+width+arrowWidth),(top+height/2));
-                point3 = new Z.Point((left+arrowWidth),(top+height/2));
+                point0 = new Z.Point(left+arrowWidth, top-height/2);
+                point1 = new Z.Point((left+width+arrowWidth),top-height/2);
+                point2 = new Z.Point((left+width+arrowWidth),top+height/2);
+                point3 = new Z.Point((left+arrowWidth),top+height/2);
                 point4 = new Z.Point((left+arrowWidth),(top+arrowHeight/2));
                 point5 = new Z.Point(left, top);
                 point6 = new Z.Point((left+arrowWidth),(top-arrowHeight/2));
             } else if ('bottom' === vertical) {
                 point0 = new Z.Point(left+arrowWidth, top);
-                point1 = new Z.Point((left+width+arrowWidth),(top));
-                point2 = new Z.Point((left+width+arrowWidth),(top+height));
-                point3 = new Z.Point((left+arrowWidth),(top+height));
+                point1 = new Z.Point((left+width+arrowWidth),top);
+                point2 = new Z.Point((left+width+arrowWidth),top+height);
+                point3 = new Z.Point((left+arrowWidth),top+height);
                 point4 = new Z.Point((left+arrowWidth),(top+arrowHeight));
                 point5 = new Z.Point(left, top);
                 point6 = new Z.Point(left, top);
