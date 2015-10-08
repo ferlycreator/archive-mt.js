@@ -222,7 +222,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         //reduce refresh frequency
         if (2*Math.random() > 1) {map._refreshSVGPaper();}
         if (map._baseTileLayer) {map._baseTileLayer._onMoving();}
-        map._eachLayer(movingLayer, map._svgLayers);
+        map._eachLayer(movingLayer, map._svgLayers, map._canvasLayers);
         /**
          * 触发map的moving事件
          * @member maptalks.Map
