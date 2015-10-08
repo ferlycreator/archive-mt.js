@@ -142,10 +142,12 @@ Z.Canvas = {
     },
 
     _path:function(context, points, lineDashArray) {
-        /**
-        * 出处：http://outofmemory.cn/code-snippet/10602/canvas-carry-arrow--IE8
-        */
+
         function drawDashLine(startPoint, endPoint, dashArray) {
+            /**
+            * 出处：http://outofmemory.cn/code-snippet/10602/canvas-carry-arrow--IE8
+            * 但貌似有bug
+            */
             /*var x = startPoint.left,y = startPoint.top,
                 x2 = endPoint.left,y2 = endPoint.top;
             var dashCount = dashArray.length;
@@ -169,11 +171,14 @@ Z.Canvas = {
                 draw = !draw;
             }
             console.log('----------------------');*/
-              // Our growth rate for our line can be one of the following:
-              //   (+,+), (+,-), (-,+), (-,-)
-              // Because of this, our algorithm needs to understand if the x-coord and
-              // y-coord should be getting smaller or larger and properly cap the values
-              // based on (x,y).
+
+          //https://davidowens.wordpress.com/2010/09/07/html-5-canvas-and-dashed-lines/
+          //
+          // Our growth rate for our line can be one of the following:
+          //   (+,+), (+,-), (-,+), (-,-)
+          // Because of this, our algorithm needs to understand if the x-coord and
+          // y-coord should be getting smaller or larger and properly cap the values
+          // based on (x,y).
               var fromX = startPoint.left,fromY = startPoint.top,
                 toX = endPoint.left,toY = endPoint.top;
               var pattern = dashArray;
