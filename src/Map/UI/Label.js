@@ -29,10 +29,8 @@ Z.Label = Z.Class.extend({
             'labelLineColor': '#000000',
             'labelLineWidth': 1,
             'labelLineOpacity': 1,
-
             'labelOpacity': 1,
             'labelFill': '#ffffff',
-            'labelWrapWidth': 100,
             'labelHorizontalAlignment': 'middle',//left middle right
             'labelVerticalAlignment': 'middle',//top middle bottom
             'labelDx': 0,
@@ -42,8 +40,9 @@ Z.Label = Z.Class.extend({
             'textSize': 12,
             'textFill': '#000000',
             'textOpacity': 1,
-            'textSpacing': 30,
-            'textWrapBefore': false,
+//            'textSpacing': 30,
+            'textWrapWidth': 100,
+//            'textWrapBefore': false,
             'textWrapCharacter': '',
             'textLineSpacing': 8,
             'textAlign': 'center',
@@ -344,7 +343,7 @@ Z.Label = Z.Class.extend({
         Z.SVG.updateShapeStyle(svgDom, svgStyle['stroke'], svgStyle['fill']);
         svgGroup.appendChild(svgDom);
 
-        var textSize = new Z.Size(style['labelWrapWidth'], style['textSize']);
+        var textSize = new Z.Size(style['textWrapWidth'], style['textSize']);
         style['textHorizontalAlignment'] = style['labelHorizontalAlignment'];
         style['textVerticalAlignment'] = style['labelVerticalAlignment'];
         var point = this._getVectorArray()[0];
@@ -382,26 +381,35 @@ Z.Label = Z.Class.extend({
 
         var left=0,top=0;
         var lineSpacing = Z.Util.setDefaultValue(symbol['textLineSpacing'],0);
-        var width = Z.Util.setDefaultValue(symbol['labelWrapWidth'],0),
-            height = Z.Util.setDefaultValue(symbol['textSize'], 12)+lineSpacing;
+        var wrapWidth = Z.Util.setDefaultValue(symbol['textWrapWidth'],0),
+            height = Z.Util.setDefaultValue(symbol['textSize'], 12)+lineSpacing/2;
         var content = this.options['content'];
         var fontSize = symbol['textSize'];
         var size = fontSize/2;
-        var textWidth = Z.Util.getLength(content)*size;
+        var font = symbol['textFaceName'];
+        var textWidth =  Z.Util.stringLength(content,font,fontSize).width;
+        //如果有换行符，需要替换掉换行符以后再计算字符串长度
+        var wrapChar = symbol['textWrapCharacter'];
+        if(!wrapWidth) wrapWidth = textWidth;
         var rowNum = 0;
-        if(textWidth>width){
-            rowNum = Math.ceil(textWidth/width);
+        if(wrapChar) {
+            rowNum = content.split(wrapChar).length;
+            wrapWidth = textWidth/rowNum;
+        } else {
+            if(textWidth>=wrapWidth){
+                rowNum = Math.ceil(textWidth/wrapWidth);
+            }
         }
-        height += rowNum*(fontSize+lineSpacing);
-        width += fontSize;
+        height += rowNum*(fontSize+lineSpacing/2);
+        wrapWidth += fontSize;
 
         var horizontal = Z.Util.setDefaultValue(symbol['labelHorizontalAlignment'],'middle');//水平
         var vertical = Z.Util.setDefaultValue(symbol['labelVerticalAlignment'],'middle');//垂直
 
         if ('box' === labelType) {
-            return  this._getBoxPoints(left, top, width, height, horizontal, vertical);
+            return  this._getBoxPoints(left, top, wrapWidth, height, horizontal, vertical);
         } else if ('tip' === labelType) {
-            return this._getTipPoints(left, top, width, height, horizontal, vertical);
+            return this._getTipPoints(left, top, wrapWidth, height, horizontal, vertical);
         }
     },
 
@@ -412,7 +420,7 @@ Z.Label = Z.Class.extend({
             if('top' === vertical) {
                 point0 = new Z.Point(left-width,top-height);
                 point1 = new Z.Point(left,top-height);
-                point2 = new Z.Point(left, top);
+                point2 = new Z.Point(left,top);
                 point3 = new Z.Point(left-width,top);
             } else if ('middle' === vertical) {
                 point0 = new Z.Point(left-width,top-height/2);
@@ -421,7 +429,7 @@ Z.Label = Z.Class.extend({
                 point3 = new Z.Point(left-width,top+height/2);
             } else if ('bottom' === vertical) {
                 point0 = new Z.Point(left-width,top);
-                point1 = new Z.Point(left, top);
+                point1 = new Z.Point(left,top);
                 point2 = new Z.Point(left,top+height);
                 point3 = new Z.Point(left-width,top+height);
             }

@@ -44,6 +44,18 @@ Z.Util = {
     },
 
     /**
+     * 全局替换字符
+     * @param {String} str 字符串
+     * @param {String} replaceStr 被替换的字符串
+     * @param {String} newStr 替换的字符串
+     * @return {String} 处理后的字符串
+     */
+    replaceAll: function (str, replaceStr, newStr) {
+        var reg = new RegExp(replaceStr, 'g');
+        return str.replace(reg, newStr);
+    },
+
+    /**
      * 去除字符串某位空格
      * @param {String} str 字符串
      * @return {String} 处理后的字符串
@@ -326,12 +338,12 @@ Z.Util = {
      * @param {String} content 文本
      * @param {Number} textLength 文本长度
      * @param {Number} size 字符大小
-     * @param {Number} width 限定宽度
+     * @param {Number} wrapWidth 限定宽度
      * @return {String[]} 分割后的字符串数组
      */
-    splitContent: function(content, textLength, size, width) {
-        var rowNum = Math.ceil(textLength/width);
-        var fontSize = parseInt(width/size);
+    splitContent: function(content, textLength, size, wrapWidth) {
+        var rowNum = Math.ceil(textLength/wrapWidth);
+        var fontSize = parseInt(wrapWidth/size);
         var result = [];
         for(var i=0;i<rowNum;i++) {
             if(i < rowNum -1 ) {

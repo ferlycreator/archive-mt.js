@@ -68,16 +68,70 @@ Z.SVG.SVG = {
 
     text:function(text, style, size) {
         //TODO 改为textpath
+        var font = style['textFaceName'];
+        var fontSize = style['textSize'];
         var svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        var textStyle = 'font-family:' + style['textFaceName'] + ';' +
-                        'font-size:' + style['textSize'] + ';' +
+        var textStyle = 'font-family:' + font + ';' +
+                        'font-size:' + fontSize + ';' +
                         'fill:' + style['textFill'] + ';' +
                         'opacity:' + style['textOpacity'] + ';' +
                         'text-align:' + style['textAlign'] + ';';
         svgText.setAttribute('style', textStyle);
-        var textNode = document.createTextNode(text);
-        svgText.appendChild(textNode);
+
+        var dx = style['textDx'],dy = style['textDy'];
+        var lineSpacing = style['textLineSpacing'];
+        var wrapChar = style['textWrapCharacter'];
+        var textWidth = Z.Util.stringLength(text,font,fontSize).width;
+        var wrapWidth = style['textWrapWidth'];
+        if(!wrapWidth) wrapWidth = textWidth;
+        if(wrapChar){
+            var texts = text.split(wrapChar);
+            for(var i=0,len=texts.length;i<len;i++) {
+                var t = texts[i];
+                var tWidth = Z.Util.stringLength(t,font,fontSize).width;
+                if(tWidth>wrapWidth) {
+                    svgText = this._splitTextToTSpan(svgText, text, textWidth, fontSize, wrapWidth, dx, dy, lineSpacing);
+                } else {
+                    var textNode = this._createtspan(t, dx, dy);
+                    if(i===0) {
+                        textNode = this._createtspan(t, 0, 0);
+                    }
+                    svgText.appendChild(textNode);
+                }
+                dy += fontSize+lineSpacing;
+            }
+        } else {
+            if(textWidth>wrapWidth) {
+               svgText = this._splitTextToTSpan(svgText, text, textWidth, fontSize, wrapWidth, dx, dy, lineSpacing);
+            } else {
+                var textNode = document.createTextNode(text);
+                svgText.appendChild(textNode);
+            }
+        }
         return svgText;
+    },
+
+    _splitTextToTSpan:function(svgText, text, textWidth, fontSize, wrapWidth, x, y,lineSpacing) {
+        var contents = Z.Util.splitContent(text, textWidth, fontSize, wrapWidth);
+        for(var i=0,len=contents.length;i<len;i++){
+            var content = contents[i];
+            var tspan = this._createtspan(content,x,y);
+            if(i===0) {
+                tspan = this._createtspan(content, 0, 0);
+            }
+            svgText.appendChild(tspan);
+            y += fontSize+lineSpacing;
+        }
+        return svgText;
+    },
+
+    _createtspan: function(content, x, y) {
+        var tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+        tspan.setAttribute('x', x);
+        tspan.setAttribute('y', y);
+        var textNode = document.createTextNode(content);
+        tspan.appendChild(textNode);
+        return tspan;
     },
 
     updateLabelStyle:function(svgText, style, size) {
