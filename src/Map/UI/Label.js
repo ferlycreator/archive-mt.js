@@ -366,7 +366,7 @@ Z.Label = Z.Class.extend({
             } else {
                 path+='L'
             }
-            path+=points[i]['left']+','+points[i]['top']+ ' ';
+            path+=Math.round(points[i]['left'])+','+Math.round(points[i]['top'])+ ' ';
         }
         path+=Z.SVG.closeChar;
         if (Z.Browser.vml) {

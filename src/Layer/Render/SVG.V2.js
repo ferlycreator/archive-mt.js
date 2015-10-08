@@ -336,7 +336,7 @@ Z.SVG.VML= {
         vmlShape['coordsize'] = '1 1';
         vmlShape['coordorigin'] = '0 0';
         var pathDom = Z.SVG.create('path');
-        pathDom.v = path;
+        pathDom.v = path+'';
         vmlShape.appendChild(pathDom);
         vmlShape.path = pathDom;
         return vmlShape;
@@ -361,9 +361,8 @@ Z.SVG.VML= {
         if(!wrapWidth) wrapWidth = textWidth;
         var vmlText;
         if(wrapChar) {
-            var texts = text.split(wrapChar);
             var content = Z.Util.replaceAll(text, wrapChar, '<br/>');
-            vmlText = this._createTextbox(text, style);
+            vmlText = this._createTextbox(content, style);
         } else {
             if(textWidth>wrapWidth) {
                vmlText = this._createTextbox(text, style);
@@ -430,7 +429,7 @@ Z.SVG.VML= {
     },
 
     updateLabelStyle:function(vmlShape, style, size) {
-        this.updateTextStyle(vmlShape, style, size);
+//        this.updateTextStyle(vmlShape, style, size);
     },
 
     updateTextStyle:function(vmlShape, style, size) {
