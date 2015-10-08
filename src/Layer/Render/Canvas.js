@@ -56,16 +56,12 @@ Z.Canvas = {
 
     fillCanvas:function(context, fillStyle, fillOpacity){
         if (fillStyle) {
-            if (!Z.Util.isNil(fillOpacity)) {
-                context.globalAlpha = fillOpacity;
-            }
             if (!Z.Util.isString(fillStyle)/*fillStyle instanceof CanvasPattern*/) {
                 context.fillStyle = fillStyle;
             } else if (Z.Util.isString(fillStyle)) {
                 context.fillStyle = this.getRgba(fillStyle, fillOpacity);
             }
             context.fill('evenodd');
-            context.globalAlpha = 1;
         }
     },
 
@@ -196,17 +192,17 @@ Z.Canvas = {
          }
     },
 
-    path:function(context, points, lineDashArray) {
+    path:function(context, points, lineDashArray, closed) {
         context.beginPath();
         Z.Canvas._path(context,points,lineDashArray);
+        if (closed) {
+            context.closePath();
+        }
         context.stroke();
     },
 
     polygon:function(context, points, lineDashArray) {
-        context.beginPath();
-        Z.Canvas._path(context,points,lineDashArray);
-        context.closePath();
-        context.stroke();
+        Z.Canvas.path(context, points, lineDashArray, true);
     },
 
     bezierCurve:function(context, points, lineDashArray) {
