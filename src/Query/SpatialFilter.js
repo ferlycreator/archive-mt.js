@@ -69,8 +69,12 @@ Z['SpatialFilter']=Z.SpatialFilter=Z.Class.extend({
      * @expose
      */
     toJson: function() {
+        var geojson = this.geometry.toJson();
+        if (geojson['type'] === 'Feature') {
+            geojson = geojson['geometry'];
+        }
         var jsonObj = {
-          "geometry": this.geometry.toJson(),
+          "geometry": geojson,
           "relation": this.relation
         };
         return jsonObj;

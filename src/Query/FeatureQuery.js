@@ -158,7 +158,7 @@ Z.FeatureQuery=Z.Class.extend({
         //ret+="&method=add";
         ret+='&mapdb='+this.mapdb;
         if (queryFilter['coordinateType']) {
-            ret+='&coordinateType='+this.getCoordinateType();
+            ret+='&coordinateType='+queryFilter['coordinateType'];
         }
         if (!Z.Util.isNil(queryFilter['returnGeometry'])) {
             ret+='&returnGeometry='+queryFilter['returnGeometry'];
