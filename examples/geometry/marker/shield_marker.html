@@ -34,6 +34,12 @@
         var coordinate = new maptalks.Coordinate(121.489315,31.24402);
         //设置矢量配置
         var icon = {
+            // polygon styles {{{
+            "polygon-fill": "#ff0000",
+            "polygon-opacity": 0.5,
+            // }}} polygon styles
+
+            // shield styles {{{
             "shield-placement"  : "vertex",
 
             "shield-file"      :  "/images/marker.png",
@@ -41,7 +47,7 @@
             "shield-dx"         :  0,
             "shield-dy"         :  0,
 
-            "shield-name"       : "这是一个shield marker",
+            "shield-name"       : "[name]-[addr]",
             "shield-face-name"  : "arial",
             "shield-size"       :  10,
             "shield-fill"       : "#ff0000",
@@ -55,11 +61,16 @@
             "shield-horizontal-alignment"   : "middle", //left | middle | right | auto
             "shield-vertical-alignment"     : "middle",   // top | middle | bottom | auto
             "shield-justify-alignment"      : "left"
+            // }}} shield style end
         };
 
         var polygon = new maptalks.Polygon([[
                                             [121.489935,31.24432], [121.488935,31.24432], [121.488935,31.24332],[121.489935,31.24432]
                                                 ]], {'symbol':icon});
+        polygon.setProperties({
+            'name':'上海大厦',
+            'addr': '北苏州路20号'
+        });
 
         /**
         * 说明：
@@ -70,8 +81,8 @@
         //创建点对象
         var marker = new maptalks.Marker(coordinate,{'id':'marker_id','draggable':true});
         marker.setProperties({
-            'marker_name':'上海大厦',
-            'marker_addr': '北苏州路20号'
+            'name':'上海大厦',
+            'addr': '北苏州路20号'
         });
         //设置点样式
         marker.setSymbol(icon);
