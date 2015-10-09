@@ -274,6 +274,15 @@ Z.Util = {
         return (typeof val === 'number') && !isNaN(val);
     },
 
+    /**
+     * 判断obj是否是一个Object类型且不为null
+     * @param  {[type]}  obj 要检查的对象
+     * @return {Boolean}     如果obj是Object类型且不为null，返回true；反之返回false
+     */
+    isObject: function (obj) {
+        return typeof obj === 'object' && !!obj;
+    },
+
     _strRuler:null,
 
     _getStrRuler:function(){
@@ -476,8 +485,7 @@ Z.Util = {
     contentExpRe: /\[([\w_]+)\]/g,
 
     content: function (str, props) {
-        // FIXME: isObject(props)
-        if (!props) {
+        if (!Z.Util.isObject(props)) {
             return str;
         }
         return str.replace(Z.Util.contentExpRe, function (str, key) {
