@@ -93,9 +93,6 @@ Z.SVG.SVG = {
                     svgText = this._splitTextToTSpan(svgText, text, textWidth, fontSize, wrapWidth, dx, dy, lineSpacing);
                 } else {
                     var textNode = this._createtspan(t, dx, dy);
-                    if(i===0) {
-                        textNode = this._createtspan(t, 0, 0);
-                    }
                     svgText.appendChild(textNode);
                 }
                 dy += fontSize+lineSpacing;
@@ -116,9 +113,6 @@ Z.SVG.SVG = {
         for(var i=0,len=contents.length;i<len;i++){
             var content = contents[i];
             var tspan = this._createtspan(content,x,y);
-            if(i===0) {
-                tspan = this._createtspan(content, 0, 0);
-            }
             svgText.appendChild(tspan);
             y += fontSize+lineSpacing;
         }
@@ -134,33 +128,11 @@ Z.SVG.SVG = {
         return tspan;
     },
 
-    updateLabelStyle:function(svgText, style, size) {
-        svgText.setAttribute('dx', style['textDx']);
-        svgText.setAttribute('dy', style['textDy']);
-    },
-
     updateTextStyle:function(svgText, style, size) {
         svgText.setAttribute('font-size', style['textSize']);
         svgText.setAttribute('font-family', style['textFaceName']);
-        var textAnchor = style['textHorizontalAlignment'];
-        if (textAnchor === 'left') {
-            textAnchor = 'start';
-        } else if (textAnchor === 'right') {
-            textAnchor = 'end';
-        }
         svgText.setAttribute('font-weight','bold');
-        svgText.setAttribute('text-anchor', textAnchor);
         svgText.setAttribute('text-align', style['textAlign']);
-
-        svgText.setAttribute('dx',0);
-        var hAlign = style['textVerticalAlignment'];
-        if (hAlign === 'bottom') {
-            svgText.setAttribute('dy',size['height']);
-        } else if (hAlign === 'middle') {
-            svgText.setAttribute('dy',size['height']/2);
-        } else {
-            svgText.setAttribute('dy',-size['height']);
-        }
     },
 
     image:function(url, width, height) {
@@ -354,7 +326,7 @@ Z.SVG.VML= {
         var fontSize = style['textSize'];
 
         var dx = style['textDx'],dy = style['textDy'];
-        var lineSpacing = style['textLineSpacing'];
+        var lineSpacing = Z.Util.setDefaultValue(style['textLineSpacing'],0);
         var wrapChar = style['textWrapCharacter'];
         var textWidth = Z.Util.stringLength(text,font,fontSize).width;
         var wrapWidth = style['textWrapWidth'];
@@ -406,23 +378,23 @@ Z.SVG.VML= {
         vmlShape.appendChild(vmlPath);
         vmlShape.appendChild(vmlText);
 
-        var startx, starty;
-        var hAlign = style['textHorizontalAlignment'];
-        if (hAlign === 'right') {
-            startx = -size['width'];
-        } else if (hAlign === 'middle') {
-            startx = -size['width']/2;
-        } else {
-            startx = 0;
-        }
-        var vAlign = style['textVerticalAlignment'];
-        if (vAlign === 'top') {
-            starty = size['height']/2;
-        } else if (vAlign === 'middle') {
-            starty = 0;
-        } else {
-            starty = -size['height']/2;
-        }
+//        var startx, starty;
+//        var hAlign = style['textHorizontalAlignment'];
+//        if (hAlign === 'right') {
+//            startx = -size['width'];
+//        } else if (hAlign === 'middle') {
+//            startx = -size['width']/2;
+//        } else {
+//            startx = 0;
+//        }
+//        var vAlign = style['textVerticalAlignment'];
+//        if (vAlign === 'top') {
+//            starty = size['height']/2;
+//        } else if (vAlign === 'middle') {
+//            starty = 0;
+//        } else {
+//            starty = -size['height']/2;
+//        }
 
         vmlShape.path = 'm '+Math.round(startx)+','+Math.round(starty)+' l '+Math.round(startx+size['width'])+','+Math.round(starty)+' e';
         vmlPath.textpathok=true;
@@ -433,16 +405,11 @@ Z.SVG.VML= {
         return vmlShape;
     },
 
-    updateLabelStyle:function(vmlShape, style, size) {
-//        this.updateTextStyle(vmlShape, style, size);
-    },
-
     updateTextStyle:function(vmlShape, style, size) {
-        var svgText = vmlShape.textNode;
-        svgText.style.fontWeight = 'bold';
-        svgText.style.fontSize=style['textSize'];
-        svgText.style.fontFamily=style['textFaceName'];
-        svgText.style['v-text-align'] = style['textAlign'];
+        vmlShape.style.fontWeight = 'bold';
+        vmlShape.style.fontSize=style['textSize'];
+        vmlShape.style.fontFamily=style['textFaceName'];
+        vmlShape.style['v-text-align'] = style['textAlign'];
     },
 
     image:function(url, width, height) {

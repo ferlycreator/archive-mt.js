@@ -1,18 +1,19 @@
 Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
 
     defaultSymbol:{
-        "marker-type": "ellipse", //<----- ellipse | cross | x | triangle | diamond | square | bar | pin等,默认ellipse
+        "markerType": "ellipse", //<----- ellipse | cross | x | triangle | diamond | square | bar | pin等,默认ellipse
 
-        "marker-fill": "#0000ff", //blue as cartoCSS
-        "marker-fill-opacity": 1,
-        "marker-line-color": "#000000", //black
-        "marker-line-width": 1,
-        "marker-line-opacity": 1,
-        "marker-width": 10,
-        "marker-height": 10,
+        "markerFill": "#0000ff", //blue as cartoCSS
+        "markerFillOpacity": 1,
+        "markerLineColor": "#000000", //black
+        "markerLineWidth": 1,
+        "markerLineOpacity": 1,
+        "markerLineDasharray":[],
+        "markerWidth": 10,
+        "markerHeight": 10,
 
-        "marker-dx": 0,
-        "marker-dy": 0
+        "markerDx": 0,
+        "markerDy": 0
     },
 
     initialize:function(symbol, geometry) {
@@ -39,15 +40,15 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
         });
         var style = this.style;
         var vectorArray = this._getVectorArray(style);
-        var markerType = style['marker-type'].toLowerCase();
+        var markerType = style['markerType'].toLowerCase();
         var strokeAndFill = this.strokeAndFill;
         var dxdy = this.getDxDy();
         Z.Canvas.setDefaultCanvasSetting(ctx);
         Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'],strokeAndFill['fill'], null);
         var j;
 
-        var width = style['marker-width'],
-            height = style['marker-height'];
+        var width = style['markerWidth'],
+            height = style['markerHeight'];
 
         for (var i = cookedPoints.length - 1; i >= 0; i--) {
             var point = cookedPoints[i];
@@ -81,22 +82,22 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
     },
 
     getPlacement:function() {
-        return this.symbol['marker-placement'];
+        return this.symbol['markerPlacement'];
     },
 
     getDxDy:function() {
         var s = this.style;
-        var dx = s['marker-dx'],
-            dy = s['marker-dy'];
+        var dx = s['markerDx'],
+            dy = s['markerDy'];
         return new Z.Point(dx, dy);
     },
 
     getMarkerExtent:function() {
         var dxdy = this.getDxDy(),
             style = this.style;
-        var markerType = style['marker-type'].toLowerCase();
-        var width = style['marker-width'],
-            height = style['marker-height'];
+        var markerType = style['markerType'].toLowerCase();
+        var width = style['markerWidth'],
+            height = style['markerHeight'];
         if (markerType  === 'bar') {
             return new Z.Extent(dxdy.add(new Z.Point(-width/2,-height)), dxdy.add(new Z.Point(width/2,0)));
         } else {
@@ -110,21 +111,22 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
         var d = this.defaultSymbol;
 
         var result = {
-            "marker-type"       : s["marker-type"],
-            "marker-width"      : Z.Util.setDefaultValue(s["marker-width"], d["marker-width"]),
-            "marker-height"     : Z.Util.setDefaultValue(s["marker-height"], d["marker-height"]),
-            "marker-dx"         : Z.Util.setDefaultValue(s["marker-dx"], d["marker-dx"]),
-            "marker-dy"         : Z.Util.setDefaultValue(s["marker-dy"], d["marker-dy"]),
+            "markerType"       : s["markerType"],
+            "markerWidth"      : Z.Util.setDefaultValue(s["markerWidth"], d["markerWidth"]),
+            "markerHeight"     : Z.Util.setDefaultValue(s["markerHeight"], d["markerHeight"]),
+            "markerDx"         : Z.Util.setDefaultValue(s["markerDx"], d["markerDx"]),
+            "markerDy"         : Z.Util.setDefaultValue(s["markerDy"], d["markerDy"]),
 
-            "marker-fill"       : Z.Util.setDefaultValue(s["marker-fill"], d["marker-fill"]),
-            "marker-fill-opacity": Z.Util.setDefaultValue(s["marker-fill-opacity"], d["marker-fill-opacity"]),
-            "marker-line-color" : Z.Util.setDefaultValue(s["marker-line-color"], d["marker-line-color"]),
-            "marker-line-width" : Z.Util.setDefaultValue(s["marker-line-width"], d["marker-line-width"]),
-            "marker-line-opacity": Z.Util.setDefaultValue(s["marker-line-opacity"], d["marker-line-opacity"])
+            "markerFill"       : Z.Util.setDefaultValue(s["markerFill"], d["markerFill"]),
+            "markerFillOpacity": Z.Util.setDefaultValue(s["markerFillOpacity"], d["markerFillOpacity"]),
+            "markerLineColor" : Z.Util.setDefaultValue(s["markerLineColor"], d["markerLineColor"]),
+            "markerLineWidth" : Z.Util.setDefaultValue(s["markerLineWidth"], d["markerLineWidth"]),
+            "markerLineDasharray": Z.Util.setDefaultValue(s["markerLineDasharray"], d["markerLineDasharray"]),
+            "markerLineOpacity": Z.Util.setDefaultValue(s["markerLineOpacity"], d["markerLineOpacity"])
         };
         //marker-opacity覆盖fill-opacity和line-opacity
-        if (Z.Util.isNumber(s["marker-opacity"])) {
-            result["marker-fill-opacity"] = result["marker-line-opacity"] = s["marker-opacity"];
+        if (Z.Util.isNumber(s["markerOpacity"])) {
+            result["markerFillOpacity"] = result["markerLineOpacity"] = s["markerOpacity"];
         }
         return result;
     },
@@ -132,17 +134,17 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
     translateStrokeAndFill:function(s) {
         var result = {
             "stroke" :{
-                "stroke" : s['marker-line-color'],
-                "stroke-width" : s['marker-line-width'],
-                "stroke-opacity" : s['marker-line-opacity'],
+                "stroke" : s['markerLineColor'],
+                "stroke-width" : s['markerLineWidth'],
+                "stroke-opacity" : s['markerLineOpacity'],
                 "stroke-dasharray": null,
                 "stroke-linecap" : "butt",
                 "stroke-linejoin" : "round"
             },
 
             "fill" : {
-                "fill"          : s["marker-fill" ],
-                "fill-opacity"  : s["marker-fill-opacity"]
+                "fill"          : s["markerFill" ],
+                "fill-opacity"  : s["markerFillOpacity"]
             }
         };
         //vml和svg对linecap的定义不同
@@ -169,7 +171,7 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
 
     _getMarkerSvgPath:function(style) {
         //矢量标注
-        var markerType = style['marker-type'].toLowerCase();
+        var markerType = style['markerType'].toLowerCase();
         var points = this._getVectorArray(style);
         var path;
         if ('triangle' === markerType) {
@@ -196,8 +198,8 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
                 Z.SVG.closeChar;
         } else {
             //ellipse
-            var width = style['marker-width'],
-                height = style['marker-height'];
+            var width = style['markerWidth'],
+                height = style['markerHeight'];
             var point = [0,0];
             if (Z.Browser.vml) {
                 path = 'AL ' + point.join(',') + ' ' + width/2 + ',' + height/2 +
@@ -214,9 +216,9 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
 
     _getVectorArray: function(style) {
         //ignore case
-        var markerType = style['marker-type'].toLowerCase();
-        var width = style['marker-width'],
-            height = style['marker-height'];
+        var markerType = style['markerType'].toLowerCase();
+        var width = style['markerWidth'],
+            height = style['markerHeight'];
         //half height and half width
         var hh = Math.round(height/2),
             hw = Math.round(width/2);
@@ -274,7 +276,7 @@ Z.VectorMarkerSymbolizer.test=function(geometry, symbol) {
     if (!geometry || !symbol) {
         return false;
     }
-    if (Z.Util.isNil(symbol['marker-file']) && !Z.Util.isNil(symbol['marker-type'])) {
+    if (Z.Util.isNil(symbol['markerFile']) && !Z.Util.isNil(symbol['markerType'])) {
         return true;
     }
     return false;

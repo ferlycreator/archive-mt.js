@@ -24,35 +24,33 @@ Z.Label = Z.Class.extend({
      * @cfg {Object} options label属性
      */
     options: {
+        'type': 'box',//box|tip
         'symbol': {
-            'labelType': 'box',//box|tip
-            'labelLineColor': '#000000',
-            'labelLineWidth': 1,
-            'labelLineOpacity': 1,
-            'labelLineDasharray': null,
-            'labelOpacity': 1,
-            'labelFill': '#ffffff',
-            'labelHorizontalAlignment': 'middle',//left middle right
-            'labelVerticalAlignment': 'middle',//top middle bottom
-            'labelDx': 0,
-            'labelDy': 0,
+            'lineColor': '#000000',
+            'lineWidth': 1,
+            'lineOpacity': 1,
+            'lineDasharray': null,
+            'fill': '#ffffff',
+            'fillOpacity': 1,
 
             'textFaceName': 'arial',
             'textSize': 12,
             'textFill': '#000000',
             'textOpacity': 1,
-//            'textSpacing': 30,
+            'textSpacing': 30,
             'textWrapWidth': 100,
-//            'textWrapBefore': false,
+            'textWrapBefore': false,
             'textWrapCharacter': '',
             'textLineSpacing': 8,
-            'textAlign': 'center',
-            'textDx': 0,
-            'textDy': 0
+            'textAlign': 'center'
         },
         'draggable': true,
         'content': '',
-        'trigger': 'hover'//click|hover
+        'trigger': 'hover',//click|hover
+        'horizontalAlignment': 'middle',//left middle right
+        'verticalAlignment': 'middle',//top middle bottom
+        'dx': 0,
+        'dy': 0
     },
 
     /**
@@ -64,6 +62,7 @@ Z.Label = Z.Class.extend({
      */
     initialize: function (options) {
         this.setOptions(options);
+        this.textStyle = this._translateTextStyle();
         this.strokeAndFill = this._translateStrokeAndFill();
         this.textContent = this.options['content'];
         var style = this.options.symbol;
@@ -86,7 +85,7 @@ Z.Label = Z.Class.extend({
     * @expose
     */
     hide: function() {
-        this._label.style.display='none';
+        this._label.hide();
         /**
          * 触发label的hide事件
          * @event hide
@@ -100,7 +99,7 @@ Z.Label = Z.Class.extend({
     * @expose
     */
     show: function() {
-        this._label.style.display='';
+        this._label.show();
         /**
          * 触发label的show事件
          * @event show
@@ -114,7 +113,7 @@ Z.Label = Z.Class.extend({
     * @expose
     */
     remove: function() {
-        Z.DomUtil.removeDomNode(this._label);
+        this._label.remove();
         /**
          * 触发label的remove事件
          * @event remove
@@ -132,25 +131,21 @@ Z.Label = Z.Class.extend({
         this._map = geometry.getMap();
         this._geometry = geometry;
         if(!this._geometry) {throw new Error(this.exceptions['NEED_GEOMETRY']);}
-        if(this._map) {
-            this._registerEvent();
-        } else {
-            var me = this;
-            this._geometry.on('addend', function(){
-                me._registerEvent();
-            });
-        }
+        this._registerEvent();
+        var me = this;
+        this._map.on('zoomend resize', function(){
+            me._label.remove();
+            me._registerEvent();
+        });
     },
 
     _registerEvent: function() {
         this._label = this._createLabel();
-        //        this.hide();
+        this.hide();
         this._geometry.on('shapechanged positionchanged symbolchanged', Z.Util.bind(this._changeLabelPosition, this), this)
                     .on('remove', this.removeLabel, this);
 
         Z.DomUtil.on(this._label, 'click dblclick rightclick', Z.DomUtil.stopPropagation, this);
-
-
         var trigger = this.options['trigger'];
         var me = this;
         if(trigger === 'hover') {
@@ -180,13 +175,13 @@ Z.Label = Z.Class.extend({
                       .on(this._label, 'dragend', this._endMove, this)
                       .on(this._label, 'mouseout', this._recoverMapEvents, this);
         }
-        return null;
+        this._geometry.getLayer().addGeometry(this._label.getGeometries());
+        return this;
     },
 
     getDxDy:function() {
-        var symbol = this.options.symbol;
-        var dx = symbol['labelDx'],
-            dy = symbol['labelDy'];
+        var dx = this.options['dx'],
+            dy = this.options['dy'];
         return new Z.Point(dx, dy);
     },
 
@@ -341,116 +336,67 @@ Z.Label = Z.Class.extend({
     },
 
     _createLabel: function() {
-        var layer = this._geometry.getLayer();
-        if(layer.isCanvasRender()) {
-            var render = layer.getRender();
-            var ctx = render.canvasCtx;
-            var canvasContainer = render.canvasContainer;
-            return this._createLabelOnCanvas(ctx, canvasContainer);
-        } else {
-            var svgContrainer = this._map._getSvgPaper();
-            var svgDom = this._createLabelOnSvg();
-            svgContrainer.appendChild(svgDom);
-            return svgDom;
-        }
-    },
+        var coordinates = this._getWrapPolygonCoordinate();
+        var boxCenter = coordinates[0];
+        var box = new Z.Marker(boxCenter);
+        var markerCenter = coordinates[0];
+        var textMarker = new Z.Marker(markerCenter);
 
-    _createLabelOnCanvas: function(ctx, canvasContainer) {
-        var style = this.options.symbol,
-            textContent = this.textContent,
-            strokeAndFill = this.strokeAndFill;
-        Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'], strokeAndFill['fill'], null);
-        //绘制边框
-        var geometryPoint = this._geometry._getCenterViewPoint();
-        var points = this._getVectorArray();
-        for(var i=0,len=points.length;i<len;i++) {
-            points[i] = points[i].add(geometryPoint);
-        }
-        var dasharray = style['labelLineDasharray'];
-        Z.Canvas.polygon(ctx, points, dasharray);
-        Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']);
-
-        var textSize = new Z.Size(style['textWrapWidth'], style['textSize']);
-        style['textHorizontalAlignment'] = style['labelHorizontalAlignment'];
-        style['textVerticalAlignment'] = style['labelVerticalAlignment'];
-        var point = points[0];
-        style['textDx'] += point['left'];
-        style['textDy'] += point['top']+style['textSize'];
-
-        var dx = style['textDx'],dy = style['textDy'];
-
-        var lineSpacing = style['textLineSpacing'];
-        var wrapChar = style['textWrapCharacter'];
+        var style = this.options.symbol;
         var font = style['textFaceName'];
         var fontSize = style['textSize'];
-        var textWidth = Z.Util.stringLength(textContent,font,fontSize).width;
+        var textWidth = Z.Util.stringLength(this.textContent,font,fontSize).width;
         var wrapWidth = style['textWrapWidth'];
+        var wrapChar = style['textWrapCharacter'];
+        var lineSpacing = style['textLineSpacing'];
         if(!wrapWidth) wrapWidth = textWidth;
-        //开始绘制文本信息
-        Z.Canvas.prepareCanvasFont(ctx,style);
-        var newPoint = new Z.Point(dx,dy);
-        Z.Canvas.text(ctx, textContent, newPoint, style, textSize);
-        return canvasContainer;
-    },
-
-    _splitTextToMultiRow:function(ctx, textContent, textWidth, fontSize, wrapWidth, x, y, lineSpacing, style) {
-        var contents = Z.Util.splitContent(textContent, textWidth, fontSize, wrapWidth);
-        for(var i=0,len=contents.length;i<len;i++){
-            var content = contents[i];
-            var newPoint = new Z.Point(x,y);
-            Z.Canvas.text(ctx, content, newPoint, style, textSize);
-            y += fontSize+lineSpacing;
-        }
-    },
-
-    _createLabelOnSvg: function() {
-        var style = this.options.symbol;
-        var svgGroup = Z.SVG.group();
-        var svgPath = this._getLabelSvgPath();
-        var svgDom = Z.SVG.path(svgPath);
-        var svgStyle = this.strokeAndFill;
-        Z.SVG.updateShapeStyle(svgDom, svgStyle['stroke'], svgStyle['fill']);
-        svgGroup.appendChild(svgDom);
-
-        var textSize = new Z.Size(style['textWrapWidth'], style['textSize']);
-        style['textHorizontalAlignment'] = style['labelHorizontalAlignment'];
-        style['textVerticalAlignment'] = style['labelVerticalAlignment'];
-        var point = this._getVectorArray()[0];
-        style['textDx'] += point['left'];
-        style['textDy'] += point['top']+style['textSize'];
-        var svgText = Z.SVG.text(this.textContent, style, textSize);
-        Z.SVG.updateLabelStyle(svgText, style, textSize);
-        svgGroup.appendChild(svgText);
-        this._offsetLabel(svgGroup);
-        return svgGroup;
-    },
-
-    _getLabelSvgPath:function() {
-        var points = this._getVectorArray();
-        var path = '';
-        for(var i=0,len=points.length;i<len;i++){
-            if(i===0){
-                path+='M'
-            } else {
-                path+='L'
+        var rowNum = 1;
+        if(wrapChar) {
+            rowNum = this.textContent.split(wrapChar).length;
+            wrapWidth = textWidth/rowNum;
+        } else {
+            if(textWidth>=wrapWidth){
+                rowNum = Math.ceil(textWidth/wrapWidth);
             }
-            path+=Math.round(points[i]['left'])+','+Math.round(points[i]['top'])+ ' ';
         }
-        path+=Z.SVG.closeChar;
-        if (Z.Browser.vml) {
-            path+=' e';
+        var height = rowNum*(fontSize+lineSpacing);
+
+        var markerPoint = this._map.coordinateToViewPoint(markerCenter);
+        if(Z.Browser.vml){
+            this.textStyle['textDx'] = wrapWidth/(rowNum*2);
+            this.textStyle['textDy'] = lineSpacing;
+        } else {
+            this.textStyle['textDx'] = markerPoint['left']+wrapWidth/(rowNum*2);
+            this.textStyle['textDy'] = markerPoint['top']+lineSpacing;
         }
-        return path;
+        textMarker.setSymbol(this.textStyle);
+
+        this.strokeAndFill['markerDx'] = textWidth/(rowNum*2);
+        this.strokeAndFill['markerDy'] = height/2;
+        this.strokeAndFill['markerWidth'] = wrapWidth;
+        this.strokeAndFill['markerHeight'] = height;
+        box.setSymbol(this.strokeAndFill);
+        return new Z.GeometryCollection([box,textMarker]);
     },
 
-    _getVectorArray: function() {
+    _getWrapPolygonCoordinate: function() {
+        var points = this._getPointsArray();
+        var coordinates=[];
+        for(var i=0,len=points.length;i<len;i++) {
+            var coordinate = this._map.containerPointToCoordinate(points[i]);
+            coordinates.push(coordinate);
+        }
+        return coordinates;
+    },
+
+    _getPointsArray: function() {
         var symbol = this.options.symbol;
-        var labelType = symbol['labelType'].toLowerCase();
+        var labelType = this.options['type'].toLowerCase();
 
         var left=0,top=0;
         var lineSpacing = Z.Util.setDefaultValue(symbol['textLineSpacing'],0);
         var wrapWidth = Z.Util.setDefaultValue(symbol['textWrapWidth'],0),
-            height = Z.Util.setDefaultValue(symbol['textSize'], 12)+lineSpacing/2;
+            height = 0;
         var content = this.options['content'];
         var fontSize = symbol['textSize'];
         var size = fontSize/2;
@@ -459,7 +405,7 @@ Z.Label = Z.Class.extend({
         //如果有换行符，需要替换掉换行符以后再计算字符串长度
         var wrapChar = symbol['textWrapCharacter'];
         if(!wrapWidth) wrapWidth = textWidth;
-        var rowNum = 0;
+        var rowNum = 1;
         if(wrapChar) {
             rowNum = content.split(wrapChar).length;
             wrapWidth = textWidth/rowNum;
@@ -468,17 +414,21 @@ Z.Label = Z.Class.extend({
                 rowNum = Math.ceil(textWidth/wrapWidth);
             }
         }
-        height += rowNum*(fontSize+lineSpacing/2);
-        wrapWidth += fontSize;
+        height = rowNum*(fontSize+lineSpacing);
 
-        var horizontal = Z.Util.setDefaultValue(symbol['labelHorizontalAlignment'],'middle');//水平
-        var vertical = Z.Util.setDefaultValue(symbol['labelVerticalAlignment'],'middle');//垂直
-
+        var horizontal = Z.Util.setDefaultValue(this.options['horizontalAlignment'],'middle');//水平
+        var vertical = Z.Util.setDefaultValue(this.options['verticalAlignment'],'middle');//垂直
+        var points = [];
         if ('box' === labelType) {
-            return  this._getBoxPoints(left, top, wrapWidth, height, horizontal, vertical);
+            points = this._getBoxPoints(left, top, wrapWidth, height, horizontal, vertical);
         } else if ('tip' === labelType) {
-            return this._getTipPoints(left, top, wrapWidth, height, horizontal, vertical);
+            points = this._getTipPoints(left, top, wrapWidth, height, horizontal, vertical);
         }
+        var geometryPoint = this._geometry._getCenterViewPoint();
+        for(var i=0,len=points.length;i<len;i++) {
+            points[i] = points[i].add(geometryPoint);
+        }
+        return points;
     },
 
      _getBoxPoints: function(left, top, width, height, horizontal, vertical) {
@@ -623,56 +573,38 @@ Z.Label = Z.Class.extend({
         return points;
     },
 
+    _translateTextStyle: function() {
+        var symbol = this.options.symbol;
+        var result = {
+            'textName': this.options['content'],
+            'textFaceName': symbol['textFaceName'],
+            'textSize': symbol['textSize'],
+            'textFill': symbol['textFill'],
+            'textOpacity': symbol['textOpacity'],
+            'textSpacing': symbol['textSpacing'],
+            'textWrapWidth': symbol['textWrapWidth'],
+            'textWrapBefore': symbol['textWrapBefore'],
+            'textWrapCharacter': symbol['textWrapCharacter'],
+            'textLineSpacing': symbol['textLineSpacing'],
+            'textHorizontalAlignment' : this.options['horizontalAlignment'],
+            'textVerticalAlignment'   : this.options['verticalAlignment'],
+            'textAlign'               : symbol['textAlign']
+        };
+        return result;
+    },
+
     _translateStrokeAndFill:function() {
         var symbol = this.options.symbol;
         var result = {
-            'stroke' : {
-                'stroke' : symbol['labelLineColor'],
-                'stroke-width' : symbol['labelLineWidth'],
-                'stroke-opacity' : symbol['labelLineOpacity'],
-                'stroke-dasharray': symbol['labelLineDasharray'],
-                'stroke-linecap' : 'butt',
-                'stroke-linejoin' : 'round'
-            },
-            'fill' : {
-                'fill'          : symbol['labelFill'],
-                'fill-opacity'  : symbol['labelOpacity']
-            }
+            'markerType': 'square',
+            'markerLineColor': symbol['lineColor'],
+            'markerLineWidth': symbol['lineWidth'],
+            'markerLineOpacity': symbol['lineOpacity'],
+            'markerLineDasharray': symbol['lineDasharray'],
+            'markerFill':  symbol['fill'],
+            'markerFillOpacity':  symbol['fillOpacity']
         };
-        //vml和svg对linecap的定义不同
-        if (result['stroke']['stroke-linecap'] === "butt") {
-            if (Z.Browser.vml) {
-                result['stroke']['stroke-linecap'] = "flat";
-            }
-        }
         return result;
-     },
-
-     _offsetLabel:function(label) {
-         var d = this.getDxDy();
-         if(!this._geometry) return;
-         var point = this._geometry._getCenterViewPoint().add(d);
-         if (label.tagName && label.tagName === 'SPAN') {
-             label.style.left = point['left']+'px';
-             label.style.top = point['top']+'px';
-         } else {
-             if (Z.Browser.vml) {
-                 //vml
-                 label.style.position = 'absolute';
-                 label.style.left = point['left'];
-                 label.style.top = point['top'];
-             } else {
-                 if (label.tagName === 'text') {
-                     // svg text
-                     label.setAttribute('x',point['left']);
-                     label.setAttribute('y',point['top']);
-                 } else {
-                     //svg
-                     label.setAttribute('transform', 'translate('+point['left']+' '+point['top']+')');
-                 }
-
-             }
-         }
-
      }
+
 });

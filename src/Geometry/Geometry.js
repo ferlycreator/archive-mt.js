@@ -158,8 +158,8 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
             this.options['symbol'] = null;
         } else {
             //属性的变量名转化为驼峰风格
-            var minusSymbol = Z.Util.convertFieldNameStyle(symbol,'minus');
-            this.options['symbol'] = minusSymbol;
+//            var minusSymbol = Z.Util.convertFieldNameStyle(symbol,'minus');
+            this.options['symbol'] = symbol;
         }
         this._onSymbolChanged();
         return this;

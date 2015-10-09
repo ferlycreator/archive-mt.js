@@ -7,6 +7,8 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
         "textHaloFill"    : "#ffffff",
         "textHaloRadius"  : 0,
         "textWrapWidth"   : 100,
+        "textWrapCharacter": "",
+        "textLineSpacing": 8,
 
         "textDx"           : 0,
         "textDy"           : 0,
@@ -23,8 +25,8 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
         this.style = this.translate();
         this.strokeAndFill = this.translateStrokeAndFill(this.style);
         var props = this.geometry.getProperties();
-        this.textContent = Z.Util.content(this.style['text-name'], props);
-        this.textSize = Z.Util.stringLength(this.textContent,this.style['text-face-name'],this.style['text-size']);
+        this.textContent = Z.Util.content(this.style['textName'], props);
+        this.textSize = Z.Util.stringLength(this.textContent,this.style['textFaceName'],this.style['textSize']);
     },
 
     svg:function(container, vectorcontainer, zIndex) {

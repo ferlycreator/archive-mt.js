@@ -27,45 +27,44 @@
             subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
         }));
         //创建图层
-        var layer = new maptalks.VectorLayer('layer',{render:'Canvas'});
+        var layer = new maptalks.VectorLayer('layer');
         //将图层添加到地图对象
         mapObj.addLayer(layer);
         //创建点的坐标对象
         var coordinate = new maptalks.Coordinate(121.489935,31.24432);
         //创建点对象
         var marker = new maptalks.Marker(coordinate);
+        //将点添加到Layer
+        layer.addGeometry(marker);
         //设置label属性
         var options = {
+            'type': 'box',//box|tip
             'symbol': {
-                'labelType': 'box',//box|tip
-                'labelLineColor': '#ff0000',
-                'labelLineWidth': 1,
-                'labelLineOpacity': 1,
-                'labelLineDasharray': [],
-
-                'labelOpacity': 1,
-                'labelFill': '#00ff00',
-                'labelHorizontalAlignment': 'right',//left middle right
-                'labelVerticalAlignment': 'bottom',//top middle bottom
-                'labelDx': 0,
-                'labelDy': 0,
+                'lineColor': '#ff0000',
+                'lineWidth': 1,
+                'lineOpacity': 1,
+                'lineDasharray': null,
+                'fill': '#0000ff',
+                'fillOpacity': 1,
 
                 'textFaceName': 'arial',
                 'textSize': 12,
-                'textFill': '#0000ff',
+                'textFill': '#00ff00',
                 'textOpacity': 1,
                 'textSpacing': 30,
-                'textWrapWidth': 50,
+                'textWrapWidth': 100,
                 'textWrapBefore': false,
                 'textWrapCharacter': '_',
                 'textLineSpacing': 8,
-                'textAlign': 'right',
-                'textDx': 0,
-                'textDy': 0
+                'textAlign': 'center'
             },
             'draggable': true,
-            'content': '上海大厦_上海大厦_上海大厦_上海大厦',
-            'trigger': ''//click|hover
+            'trigger': 'hover',//click|hover
+            'horizontalAlignment': 'left',//left middle right
+            'verticalAlignment': 'middle',//top middle bottom
+            'dx': 0,
+            'dy': 0,
+            'content': '上海大厦_上海大厦_上海大厦_上海大厦'
         };
         /**
         * 说明：
@@ -77,9 +76,6 @@
         var label = new maptalks.Label(options);
         //将label添加到marker上
         label.addTo(marker);
-
-        //将点添加到Layer
-        layer.addGeometry(marker);
 
     }
 </script>

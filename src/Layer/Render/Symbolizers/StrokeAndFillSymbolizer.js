@@ -1,14 +1,14 @@
 Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
 
     defaultSymbol:{
-        "line-color" : "#474cf8",
-        "line-width" : 3,
-        "line-opacity" : 1,
-        "line-dasharray": [],
-        "line-cap" : "butt", //“butt”, “square”, “round”
-        "line-join" : "round", //“bevel”, “round”, “miter”
-        "polygon-fill": "#ffffff",
-        "polygon-opacity": 0
+        "lineColor" : "#474cf8",
+        "lineWidth" : 3,
+        "lineOpacity" : 1,
+        "lineDasharray": [],
+        "lineCap" : "butt", //“butt”, “square”, “round”
+        "lineJoin" : "round", //“bevel”, “round”, “miter”
+        "polygonFill": "#ffffff",
+        "polygonOpacity": 0
     },
 
     initialize:function(symbol, geometry) {
@@ -48,7 +48,7 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
             var fill=fillSymbol['fill'];
             var fillStyle;
             // FIXME: rule?
-            if (this.style['polygon-pattern-file']) {
+            if (this.style['polygonPatternFile']) {
                 var imgUrl = Z.Util.extractCssUrl(fill);
                 var imageTexture = resources.getImage(imgUrl);
                 fillStyle = ctx.createPattern(imageTexture, 'repeat');
@@ -113,8 +113,8 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
         var d = this.defaultSymbol;
         var result = {};
         Z.Util.extend(result, d, s);
-        if (result['polygon-pattern-file']) {
-            delete result['polygon-fill'];
+        if (result['polygonPatternFile']) {
+            delete result['polygonFill'];
         }
         return result;
     },
@@ -122,17 +122,17 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
     translateStrokeAndFill:function(s) {
         var result = {
             "stroke" :{
-                "stroke" : s['line-color'],
-                "stroke-width" : s['line-width'],
-                "stroke-opacity" : s['line-opacity'],
-                "stroke-dasharray": s['line-dasharray'],
-                "stroke-linecap" : s['line-cap'],
-                "stroke-linejoin" : s['line-join']
+                "stroke" : s['lineColor'],
+                "stroke-width" : s['lineWidth'],
+                "stroke-opacity" : s['lineOpacity'],
+                "stroke-dasharray": s['lineDasharray'],
+                "stroke-linecap" : s['lineCap'],
+                "stroke-linejoin" : s['lineJoin']
             },
 
             "fill" : {
-                "fill"          : s['polygon-fill'] || s['polygon-pattern-file'],
-                "fill-opacity"  : s["polygon-opacity"]
+                "fill"          : s['polygonFill'] || s['polygonPatternFile'],
+                "fill-opacity"  : s["polygonOpacity"]
             }
         };
         //vml和svg对linecap的定义不同
