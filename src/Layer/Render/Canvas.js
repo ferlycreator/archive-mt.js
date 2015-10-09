@@ -19,6 +19,7 @@ Z.Canvas = {
         ctx.font='bold '+style['text-size']+'px '+style['text-face-name'];
     },
 
+    // TODO: no prepare, set style just before stroke/fill
     prepareCanvas:function(context, strokeSymbol, fillSymbol){
         context.restore();
         if (strokeSymbol) {
@@ -33,6 +34,9 @@ Z.Canvas = {
                  if (Z.Util.isNil(strokeOpacity)) {
                      strokeOpacity = 1;
                  }
+                 // 1
+                 // context.globalAlpha = strokeOpacity;
+                 // context.strokeStyle = strokeColor;
                  context.strokeStyle = this.getRgba(strokeColor,strokeOpacity);
              }
              //低版本ie不支持该属性
@@ -47,6 +51,10 @@ Z.Canvas = {
              var fill=fillSymbol['fill'];
              if (!fill) {return;}
              var fillOpacity = fillSymbol['fill-opacity'];
+             // 2
+             // will override 1 above if fillSymbol was set
+             // context.globalAlpha = fillOpacity;
+             // context.fillStyle = fill;
              context.fillStyle =this.getRgba(fill, fillOpacity);
          }
     },
@@ -58,16 +66,23 @@ Z.Canvas = {
     fillCanvas:function(context, fillStyle, fillOpacity){
         if (fillStyle) {
             if (!Z.Util.isString(fillStyle)/*fillStyle instanceof CanvasPattern*/) {
+                context.globalAlpha = fillOpacity;
                 context.fillStyle = fillStyle;
             } else if (Z.Util.isString(fillStyle)) {
+                if (!Z.Canvas.hexColorRe.test(fillStyle)) {
+                    context.globalAlpha = fillOpacity;
+                }
                 context.fillStyle = this.getRgba(fillStyle, fillOpacity);
             }
             context.fill('evenodd');
+            context.globalAlpha = 1; // restore here?
         }
     },
 
     hexColorRe: /^#([0-9a-f]{6}|[0-9a-f]{3})$/i,
 
+    // support #RRGGBB/#RGB now.
+    // if color was like [red, orange...]/rgb(a)/hsl(a), op will not combined to result
     getRgba:function(color, op) {
         if (Z.Util.isNil(op)) {
             op = 1;
