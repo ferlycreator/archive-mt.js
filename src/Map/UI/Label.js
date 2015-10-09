@@ -13,10 +13,10 @@ Z.Label = Z.Class.extend({
      */
     'exceptionDefs':{
         'en-US':{
-            'NEED_geometry':'You must set target to Label.'
+            'NEED_GEOMETRY':'You must set target to Label.'
         },
         'zh-CN':{
-            'NEED_geometry':'你必须设置Label绑定的Geometry目标。'
+            'NEED_GEOMETRY':'你必须设置Label绑定的Geometry目标。'
         }
     },
 
@@ -29,6 +29,7 @@ Z.Label = Z.Class.extend({
             'labelLineColor': '#000000',
             'labelLineWidth': 1,
             'labelLineOpacity': 1,
+            'labelLineDasharray': null,
             'labelOpacity': 1,
             'labelFill': '#ffffff',
             'labelHorizontalAlignment': 'middle',//left middle right
@@ -64,6 +65,9 @@ Z.Label = Z.Class.extend({
     initialize: function (options) {
         this.setOptions(options);
         this.strokeAndFill = this._translateStrokeAndFill();
+        this.textContent = this.options['content'];
+        var style = this.options.symbol;
+        this.textSize = Z.Util.stringLength(this.textContent, style['textFaceName'],style['textSize']);
         return this;
     },
 
@@ -126,15 +130,11 @@ Z.Label = Z.Class.extend({
     addTo: function (geometry) {
         if(!geometry || !this.options || !this.options['symbol']) {return;}
         this._map = geometry.getMap();
-        this._labelContrainer = this._map._getSvgPaper();
         this._geometry = geometry;
-        if(!this._geometry) {throw new Error(this.exceptions['NEED_geometry']);}
-        var targetCenter = this._geometry.getCenter();
+        if(!this._geometry) {throw new Error(this.exceptions['NEED_GEOMETRY']);}
 
-        this._label = this._createLabelDom();
-        this._label['geometry'] = this._geometry;
-        this.hide();
-        this._labelContrainer.appendChild(this._label);
+        this._label = this._createLabel();
+//        this.hide();
 
         this._geometry.on('shapechanged positionchanged symbolchanged', Z.Util.bind(this._changeLabelPosition, this), this)
                     .on('remove', this.removeLabel, this);
@@ -300,7 +300,6 @@ Z.Label = Z.Class.extend({
     },
 
     _changeLabelPosition: function(event) {
-        this._geometry = event['target'];
         this._label.setCoordinates(this._geometry.getCenter());
     },
 
@@ -332,11 +331,72 @@ Z.Label = Z.Class.extend({
         this._map.enableDoubleClickZoom();
     },
 
-    _createLabelDom: function() {
-        var style = this.options.symbol;
-        var textContent = this.options['content'];
-        var svgGroup = Z.SVG.group();
+    _createLabel: function() {
+        var layer = this._geometry.getLayer();
+        if(layer.isCanvasRender()) {
+            var render = layer.getRender();
+            var ctx = render.canvasCtx;
+            var canvasContainer = render.canvasContainer;
+            return this._createLabelOnCanvas(ctx, canvasContainer);
+        } else {
+            var svgContrainer = this._map._getSvgPaper();
+            var svgDom = this._createLabelOnSvg();
+            svgContrainer.appendChild(svgDom);
+            return svgDom;
+        }
+    },
 
+    _createLabelOnCanvas: function(ctx, canvasContainer) {
+        var style = this.options.symbol,
+            textContent = this.textContent,
+            strokeAndFill = this.strokeAndFill;
+        Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'], strokeAndFill['fill'], null);
+        //绘制边框
+        var geometryPoint = this._geometry._getCenterViewPoint();
+        var points = this._getVectorArray();
+        for(var i=0,len=points.length;i<len;i++) {
+            points[i] = points[i].add(geometryPoint);
+        }
+        var dasharray = style['labelLineDasharray'];
+        Z.Canvas.polygon(ctx, points, dasharray);
+        Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']);
+
+        var textSize = new Z.Size(style['textWrapWidth'], style['textSize']);
+        style['textHorizontalAlignment'] = style['labelHorizontalAlignment'];
+        style['textVerticalAlignment'] = style['labelVerticalAlignment'];
+        var point = points[0];
+        style['textDx'] += point['left'];
+        style['textDy'] += point['top']+style['textSize'];
+
+        var dx = style['textDx'],dy = style['textDy'];
+
+        var lineSpacing = style['textLineSpacing'];
+        var wrapChar = style['textWrapCharacter'];
+        var font = style['textFaceName'];
+        var fontSize = style['textSize'];
+        var textWidth = Z.Util.stringLength(textContent,font,fontSize).width;
+        var wrapWidth = style['textWrapWidth'];
+        if(!wrapWidth) wrapWidth = textWidth;
+        //开始绘制文本信息
+        Z.Canvas.prepareCanvasFont(ctx,style);
+        var newPoint = new Z.Point(dx,dy);
+        Z.Canvas.text(ctx, textContent, newPoint, style, textSize);
+        return canvasContainer;
+    },
+
+    _splitTextToMultiRow:function(ctx, textContent, textWidth, fontSize, wrapWidth, x, y, lineSpacing, style) {
+        var contents = Z.Util.splitContent(textContent, textWidth, fontSize, wrapWidth);
+        for(var i=0,len=contents.length;i<len;i++){
+            var content = contents[i];
+            var newPoint = new Z.Point(x,y);
+            Z.Canvas.text(ctx, content, newPoint, style, textSize);
+            y += fontSize+lineSpacing;
+        }
+    },
+
+    _createLabelOnSvg: function() {
+        var style = this.options.symbol;
+        var svgGroup = Z.SVG.group();
         var svgPath = this._getLabelSvgPath();
         var svgDom = Z.SVG.path(svgPath);
         var svgStyle = this.strokeAndFill;
@@ -349,10 +409,9 @@ Z.Label = Z.Class.extend({
         var point = this._getVectorArray()[0];
         style['textDx'] += point['left'];
         style['textDy'] += point['top']+style['textSize'];
-        var svgText = Z.SVG.text(textContent, style, textSize);
+        var svgText = Z.SVG.text(this.textContent, style, textSize);
         Z.SVG.updateLabelStyle(svgText, style, textSize);
         svgGroup.appendChild(svgText);
-
         this._offsetLabel(svgGroup);
         return svgGroup;
     },

@@ -15,13 +15,13 @@
   var mapObj;
   function initMap(){
     //创建地图对象
-    mapObj = new Z.Map('mapObj', //放置mapObj的div id
+    mapObj = new maptalks.Map('mapObj', //放置mapObj的div id
     {
         center:  new Z.Coordinate(121.489935,31.24432), //初始中心点坐标
         zoomLevel:   5 //初始缩放级别
     });
     //设置底图图层
-    mapObj.setBaseTileLayer(new Z.TileLayer('tile', //底图id
+    mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
     {
         tileInfo: 'web-mercator',
         urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
@@ -50,7 +50,7 @@
       lngField: 'x',
       valueField: 'count'
     };
-    var heatmap = new Z.HeatmapLayer(cfg);
+    var heatmap = new maptalks.HeatmapLayer(cfg);
     heatmap.addTo(mapObj);
     heatmap.setData(testData);
   }

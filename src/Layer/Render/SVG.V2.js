@@ -365,7 +365,12 @@ Z.SVG.VML= {
             vmlText = this._createTextbox(content, style);
         } else {
             if(textWidth>wrapWidth) {
-               vmlText = this._createTextbox(text, style);
+               var contents = Z.Util.splitContent(text, textWidth, fontSize, wrapWidth);
+               var contentStr = '';
+               for(var i=0,len=contents;i<len;i++) {
+                    contentStr +=contents[i]+'<br/>';
+               }
+               vmlText = this._createTextbox(contentStr, style);
             } else {
                 vmlText = this._createTextPath(style);
             }

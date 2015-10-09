@@ -2,12 +2,12 @@ Z.Canvas = {
 
     setDefaultCanvasSetting:function(context) {
         context.lineWidth = 3;
-        context.strokeStyle = this.getRgba("#474cf8",1);
-        context.fillStyle = this.getRgba("#ffffff",0);
-        context.textAlign="start";
-        context.textBaseline="hanging";
+        context.strokeStyle = this.getRgba('#474cf8',1);
+        context.fillStyle = this.getRgba('#ffffff',0);
+        context.textAlign='start';
+        context.textBaseline='hanging';
         var fontSize = 11;
-        context.font=fontSize+"px arial";
+        context.font=fontSize+'px arial';
         if (context.setLineDash) {
             context.setLineDash([]);
         }
@@ -16,7 +16,11 @@ Z.Canvas = {
     },
 
     prepareCanvasFont:function(ctx, style) {
-        ctx.font='bold '+style['text-size']+'px '+style['text-face-name'];
+        ctx.font='bold '+style['textSize']+'px '+style['textFaceName'];
+        var fill=style['textFill'];
+        if (!fill) {return;}
+        var fillOpacity = style['textOpacity'];
+        ctx.fillStyle =this.getRgba(fill, fillOpacity);
     },
 
     prepareCanvas:function(context, strokeSymbol, fillSymbol){
@@ -98,10 +102,54 @@ Z.Canvas = {
     },
 
     text:function(ctx, text, pt, style, size) {
+        var font = style['textFaceName'];
+        var fontSize = style['textSize'];
+
+        var dx = style['textDx'],dy = style['textDy'];
+        var lineSpacing = style['textLineSpacing'];
+        var wrapChar = style['textWrapCharacter'];
+        var textWidth = Z.Util.stringLength(text,font,fontSize).width;
+        var wrapWidth = style['textWrapWidth'];
+        if(!wrapWidth) wrapWidth = textWidth;
+        var dx=pt['left'],dy=pt['top'];
+        if(wrapChar){
+            var texts = text.split(wrapChar);
+            this._textOnMultiRow(ctx, texts, style, dx, dy);
+        } else {
+            if(textWidth>wrapWidth) {
+                var texts = Z.Util.splitContent(text, textWidth, fontSize, wrapWidth);
+                this._textOnMultiRow(ctx, texts, style, dx, dy);
+            } else {
+                var newPoint = new Z.Point(dx,dy);
+                this._textOnLine(ctx, textContent, newPoint, style, size);
+            }
+        }
+
+    },
+
+    _textOnMultiRow: function(ctx, texts, style, dx, dy) {
+        var fontSize = style['textSize'];
+        var lineSpacing = style['textLineSpacing'];
+        for(var i=0,len=texts.length;i<len;i++) {
+            var text = texts[i];
+            if (style['textHaloRadius']) {
+                ctx.miterLimit = 2;
+                ctx.lineJoin = 'circle';
+                ctx.lineWidth = (style['textHaloRadius']*2-1);
+                ctx.strokeText(text, pt['left'], pt['top']);
+                ctx.lineWidth = 1;
+                ctx.miterLimit = 10; //default
+            }
+            ctx.fillText(text, dx, dy);
+            dy += fontSize+lineSpacing;
+        }
+    },
+
+    _textOnLine: function(ctx, text, pt, style, size) {
         //http://stackoverflow.com/questions/14126298/create-text-outline-on-canvas-in-javascript
         //根据text-horizontal-alignment和text-vertical-alignment计算绘制起始点偏移量
         var alignX, alignY;
-        var hAlign = style['text-horizontal-alignment'];
+        var hAlign = style['textHorizontalAlignment'];
         if (hAlign === 'right') {
             alignX = -size['width'];
         } else if (hAlign === 'middle') {
@@ -109,7 +157,7 @@ Z.Canvas = {
         } else {
             alignX = 0;
         }
-        var vAlign = style['text-vertical-alignment'];
+        var vAlign = style['textVerticalAlignment'];
         if (vAlign === 'top') {
             alignY = size['height']/2;
         } else if (vAlign === 'middle') {
@@ -121,10 +169,10 @@ Z.Canvas = {
         var ptAlign = new Z.Point(Z.Util.canvasRound(alignX), Z.Util.canvasRound(alignY));
         pt = pt.add(ptAlign);
 
-        if (style['text-halo-radius']) {
+        if (style['textHaloRadius']) {
             ctx.miterLimit = 2;
             ctx.lineJoin = 'circle';
-            ctx.lineWidth = (style['text-halo-radius']*2-1);
+            ctx.lineWidth = (style['textHaloRadius']*2-1);
             ctx.strokeText(text, pt['left'], pt['top']);
             ctx.lineWidth = 1;
             ctx.miterLimit = 10; //default
@@ -132,6 +180,7 @@ Z.Canvas = {
 
         ctx.fillText(text, pt['left'], pt['top']);
     },
+
 
     shield: function (ctx, point, img, text, textSize, style) {
         var width = img.width,

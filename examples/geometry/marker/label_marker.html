@@ -27,7 +27,7 @@
             subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
         }));
         //创建图层
-        var layer = new maptalks.VectorLayer('layer');
+        var layer = new maptalks.VectorLayer('layer',{render:'Canvas'});
         //将图层添加到地图对象
         mapObj.addLayer(layer);
         //创建点的坐标对象
@@ -47,7 +47,7 @@
 
                 'labelOpacity': 1,
                 'labelFill': '#00ff00',
-                'labelHorizontalAlignment': 'left',//left middle right
+                'labelHorizontalAlignment': 'right',//left middle right
                 'labelVerticalAlignment': 'bottom',//top middle bottom
                 'labelDx': 0,
                 'labelDy': 0,
@@ -78,7 +78,9 @@
         //创建label
         var label = new maptalks.Label(options);
         //将label添加到marker上
-        label.addTo(marker);
+        setTimeout(function(){
+            label.addTo(marker);
+        }, 1000);
     }
 </script>
 <!-- 引擎javascript开发包-->
