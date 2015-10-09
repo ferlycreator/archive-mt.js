@@ -132,10 +132,19 @@ Z.Label = Z.Class.extend({
         this._map = geometry.getMap();
         this._geometry = geometry;
         if(!this._geometry) {throw new Error(this.exceptions['NEED_GEOMETRY']);}
+        if(this._map) {
+            this._registerEvent();
+        } else {
+            var me = this;
+            this._geometry.on('addend', function(){
+                me._registerEvent();
+            });
+        }
+    },
 
+    _registerEvent: function() {
         this._label = this._createLabel();
-//        this.hide();
-
+        //        this.hide();
         this._geometry.on('shapechanged positionchanged symbolchanged', Z.Util.bind(this._changeLabelPosition, this), this)
                     .on('remove', this.removeLabel, this);
 

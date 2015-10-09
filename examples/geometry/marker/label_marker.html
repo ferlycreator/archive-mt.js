@@ -34,8 +34,6 @@
         var coordinate = new maptalks.Coordinate(121.489935,31.24432);
         //创建点对象
         var marker = new maptalks.Marker(coordinate);
-        //将点添加到Layer
-        layer.addGeometry(marker);
         //设置label属性
         var options = {
             'symbol': {
@@ -78,9 +76,11 @@
         //创建label
         var label = new maptalks.Label(options);
         //将label添加到marker上
-        setTimeout(function(){
-            label.addTo(marker);
-        }, 1000);
+        label.addTo(marker);
+
+        //将点添加到Layer
+        layer.addGeometry(marker);
+
     }
 </script>
 <!-- 引擎javascript开发包-->
