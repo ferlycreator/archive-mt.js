@@ -27,7 +27,7 @@
             subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
         }));
         //创建放置图形的图层
-        var layer = new maptalks.VectorLayer('layer',{render:'canvas'});
+        var layer = new maptalks.VectorLayer('layer');
         //将图层添加到地图
         mapObj.addLayer(layer);
 
@@ -50,7 +50,8 @@
             'line-width' : 2,
             'line-dasharray' : [20,10,5,5,5,10],//线形
             'line-opacity' : 1,
-            'polygon-fill' : '#ff00ff',
+            // 'polygon-fill' : '#ff00ff',
+            'polygon-fill' : 'rgb(255, 0, 255)',
             'polygon-opacity' : 0.8
         };
         polygon.setSymbol(polygonSymbol);
