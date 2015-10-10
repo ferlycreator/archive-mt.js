@@ -118,31 +118,46 @@ Z.Canvas = {
 
     text:function(ctx, text, pt, style, size) {
         var font = style['textFaceName'];
-        var fontSize = style['textSize'];
+        var fontSize = Z.Util.setDefaultValue(style['textSize'],12);
 
-        var dx = style['textDx'],dy = style['textDy'];
-        var lineSpacing = style['textLineSpacing'];
+        var lineSpacing = Z.Util.setDefaultValue(style['textLineSpacing'],0);
         var wrapChar = style['textWrapCharacter'];
         var textWidth = Z.Util.stringLength(text,font,fontSize).width;
         var wrapWidth = style['textWrapWidth'];
         if(!wrapWidth) wrapWidth = textWidth;
-        var dx=pt['left'],dy=pt['top'];
+        var dx=pt['left']+style['textDx'],dy=pt['top']+style['textDy'];
+        var rowNum = 1;
         if(wrapChar){
             var texts = text.split(wrapChar);
-            this._textOnMultiRow(ctx, texts, style, dx, dy);
+            var textRows = [];
+            for(var i=0,len=texts.length;i<len;i++) {
+                var t = texts[i];
+                var textWidth = Z.Util.stringLength(t,font,fontSize).width;
+                if(textWidth>wrapWidth) {
+                    var contents = Z.Util.splitContent(t, textWidth, fontSize, wrapWidth);
+                    textRows = textRows.concat(contents);
+                } else {
+                    textRows.push(t);
+                }
+            }
+            rowNum = textRows.length;
+            var textSize = new Z.Size(wrapWidth, (fontSize+lineSpacing)*rowNum);
+            this._textOnMultiRow(ctx, textRows, style, dx, dy, textSize);
         } else {
             if(textWidth>wrapWidth) {
                 var texts = Z.Util.splitContent(text, textWidth, fontSize, wrapWidth);
-                this._textOnMultiRow(ctx, texts, style, dx, dy);
+                rowNum = texts.length;
+                var textSize = new Z.Size(wrapWidth, (fontSize+lineSpacing)*rowNum);
+                this._textOnMultiRow(ctx, texts, style, dx, dy, textSize);
             } else {
                 var newPoint = new Z.Point(dx,dy);
-                this._textOnLine(ctx, textContent, newPoint, style, size);
+                this._textOnLine(ctx, text, newPoint, style, size);
             }
         }
 
     },
 
-    _textOnMultiRow: function(ctx, texts, style, dx, dy) {
+    _textOnMultiRow: function(ctx, texts, style, dx, dy, textSize) {
         var fontSize = style['textSize'];
         var lineSpacing = style['textLineSpacing'];
         for(var i=0,len=texts.length;i<len;i++) {
@@ -151,11 +166,12 @@ Z.Canvas = {
                 ctx.miterLimit = 2;
                 ctx.lineJoin = 'circle';
                 ctx.lineWidth = (style['textHaloRadius']*2-1);
-                ctx.strokeText(text, pt['left'], pt['top']);
+                ctx.strokeText(text, dx, dy);
                 ctx.lineWidth = 1;
                 ctx.miterLimit = 10; //default
             }
-            ctx.fillText(text, dx, dy);
+            var pt = new Z.Point(dx, dy);
+            this._textOnLine(ctx, text, pt, style, textSize);
             dy += fontSize+lineSpacing;
         }
     },
@@ -166,19 +182,19 @@ Z.Canvas = {
         var alignX, alignY;
         var hAlign = style['textHorizontalAlignment'];
         if (hAlign === 'right') {
-            alignX = -size['width'];
+            alignX = 0;
         } else if (hAlign === 'middle') {
             alignX = -size['width']/2;
         } else {
-            alignX = 0;
+            alignX = -size['width'];
         }
         var vAlign = style['textVerticalAlignment'];
         if (vAlign === 'top') {
-            alignY = size['height']/2;
+            alignY = -size['height'];
         } else if (vAlign === 'middle') {
-            alignY = 0;
+            alignY = -size['height']/2;;
         } else {
-            alignY = -size['height']/2;
+            alignY = 0;
         }
 
         var ptAlign = new Z.Point(Z.Util.canvasRound(alignX), Z.Util.canvasRound(alignY));

@@ -25,23 +25,22 @@ Z.Label = Z.Class.extend({
      */
     options: {
         'symbol': {
-            'lineColor': '#000000',
+            'lineColor': '#ffffff',
             'lineWidth': 1,
-            'lineOpacity': 1,
+            'lineOpacity': 0.9,
             'lineDasharray': null,
-            'fill': '#ffffff',
-            'fillOpacity': 1,
+            'fill': '#4e98dd',
+            'fillOpacity': 0.9,
 
             'textFaceName': 'arial',
             'textSize': 12,
-            'textFill': '#000000',
+            'textFill': '#ebf2f9',
             'textOpacity': 1,
             'textSpacing': 30,
             'textWrapWidth': 100,
             'textWrapBefore': false,
             'textWrapCharacter': '',
-            'textLineSpacing': 8,
-            'textAlign': 'center'
+            'textLineSpacing': 8
         },
         'draggable': true,
         'content': '',
@@ -335,11 +334,9 @@ Z.Label = Z.Class.extend({
     },
 
     _createLabel: function() {
-        var coordinates = this._getWrapPolygonCoordinate();
-        var boxCenter = coordinates[0];
-        var box = new Z.Marker(boxCenter);
-        var markerCenter = coordinates[0];
-        var textMarker = new Z.Marker(markerCenter);
+        var center = this._geometry.getCenter();
+        var textMarker = new Z.Marker(center);
+        var box = new Z.Marker(center);
 
         var style = this.options.symbol;
         var font = style['textFaceName'];
@@ -351,8 +348,19 @@ Z.Label = Z.Class.extend({
         if(!wrapWidth) wrapWidth = textWidth;
         var rowNum = 1;
         if(wrapChar) {
-            rowNum = this.textContent.split(wrapChar).length;
-            wrapWidth = textWidth/rowNum;
+            var texts = this.textContent.split(wrapChar);
+            var textRows = [];
+            for(var i=0,len=texts.length;i<len;i++) {
+                var t = texts[i];
+                var textWidth = Z.Util.stringLength(t,font,fontSize).width;
+                if(textWidth>wrapWidth) {
+                    var contents = Z.Util.splitContent(t, textWidth, fontSize, wrapWidth);
+                    textRows = textRows.concat(contents);
+                } else {
+                    textRows.push(t);
+                }
+            }
+            rowNum = textRows.length;
         } else {
             if(textWidth>=wrapWidth){
                 rowNum = Math.ceil(textWidth/wrapWidth);
@@ -360,228 +368,51 @@ Z.Label = Z.Class.extend({
         }
         var height = rowNum*(fontSize+lineSpacing);
 
-        var markerPoint = this._map.coordinateToViewPoint(markerCenter);
-        if(Z.Browser.vml){
-            this.textStyle['textDx'] = wrapWidth/(rowNum*2);
-            this.textStyle['textDy'] = lineSpacing;
-        } else {
-            this.textStyle['textDx'] = markerPoint['left']+wrapWidth/(rowNum*2);
-            this.textStyle['textDy'] = markerPoint['top']+lineSpacing;
-        }
+        var hAlign = this.options['horizontalAlignment'];
+        var dx=this.options['dx'],dy=this.options['dy'];
         textMarker.setSymbol(this.textStyle);
+        if (hAlign === 'right') {
+            dx += wrapWidth/2;
+        } else if (hAlign === 'middle') {
+            dx += 0;
+        } else {
+            dx += -wrapWidth/2;
+        }
 
-        this.strokeAndFill['markerDx'] = textWidth/(rowNum*2);
-        this.strokeAndFill['markerDy'] = height/2;
+        var vAlign = this.options['verticalAlignment'];
+        if (vAlign === 'top') {
+            dy += -height/2;
+        } else if (vAlign === 'middle') {
+            dy += 0;;
+        } else {
+            dy += height/2;
+        }
+        this.strokeAndFill['markerDx'] = dx;
+        this.strokeAndFill['markerDy'] = dy;
         this.strokeAndFill['markerWidth'] = wrapWidth;
         this.strokeAndFill['markerHeight'] = height;
         box.setSymbol(this.strokeAndFill);
         return new Z.GeometryCollection([box,textMarker]);
     },
 
-    _getWrapPolygonCoordinate: function() {
-        var points = this._getPointsArray();
-        var coordinates=[];
-        for(var i=0,len=points.length;i<len;i++) {
-            var coordinate = this._map.containerPointToCoordinate(points[i]);
-            coordinates.push(coordinate);
-        }
-        return coordinates;
-    },
-
-    _getPointsArray: function() {
-        var symbol = this.options.symbol;
-
-        var left=0,top=0;
-        var lineSpacing = Z.Util.setDefaultValue(symbol['textLineSpacing'],0);
-        var wrapWidth = Z.Util.setDefaultValue(symbol['textWrapWidth'],0),
-            height = 0;
-        var content = this.options['content'];
-        var fontSize = symbol['textSize'];
-        var size = fontSize/2;
-        var font = symbol['textFaceName'];
-        var textWidth =  Z.Util.stringLength(content,font,fontSize).width;
-        //如果有换行符，需要替换掉换行符以后再计算字符串长度
-        var wrapChar = symbol['textWrapCharacter'];
-        if(!wrapWidth) wrapWidth = textWidth;
-        var rowNum = 1;
-        if(wrapChar) {
-            rowNum = content.split(wrapChar).length;
-            wrapWidth = textWidth/rowNum;
-        } else {
-            if(textWidth>=wrapWidth){
-                rowNum = Math.ceil(textWidth/wrapWidth);
-            }
-        }
-        height = rowNum*(fontSize+lineSpacing);
-
-        var horizontal = Z.Util.setDefaultValue(this.options['horizontalAlignment'],'middle');//水平
-        var vertical = Z.Util.setDefaultValue(this.options['verticalAlignment'],'middle');//垂直
-        var points = this._getBoxPoints(left, top, wrapWidth, height, horizontal, vertical);
-        var geometryPoint = this._geometry._getCenterViewPoint();
-        for(var i=0,len=points.length;i<len;i++) {
-            points[i] = points[i].add(geometryPoint);
-        }
-        return points;
-    },
-
-     _getBoxPoints: function(left, top, width, height, horizontal, vertical) {
-        var points = [];
-        var point0,point1,point2,point3;
-        if ('left' === horizontal) {
-            if('top' === vertical) {
-                point0 = new Z.Point(left-width,top-height);
-                point1 = new Z.Point(left,top-height);
-                point2 = new Z.Point(left,top);
-                point3 = new Z.Point(left-width,top);
-            } else if ('middle' === vertical) {
-                point0 = new Z.Point(left-width,top-height/2);
-                point1 = new Z.Point(left,top-height/2);
-                point2 = new Z.Point(left,top+height/2);
-                point3 = new Z.Point(left-width,top+height/2);
-            } else if ('bottom' === vertical) {
-                point0 = new Z.Point(left-width,top);
-                point1 = new Z.Point(left,top);
-                point2 = new Z.Point(left,top+height);
-                point3 = new Z.Point(left-width,top+height);
-            }
-        } else if ('middle' === horizontal) {
-            if('top' === vertical) {
-                point0 = new Z.Point(left-width/2,top-height);
-                point1 = new Z.Point(left+width/2,top-height);
-                point2 = new Z.Point(left+width/2,top);
-                point3 = new Z.Point(left-width/2,top);
-            } else if ('middle' === vertical) {
-                point0 = new Z.Point(left-width/2,top-height/2);
-                point1 = new Z.Point(left+width/2,top-height/2);
-                point2 = new Z.Point(left+width/2,top+height/2);
-                point3 = new Z.Point(left-width/2,top+height/2);
-            } else if ('bottom' === vertical) {
-                point0 = new Z.Point(left-width/2,top);
-                point1 = new Z.Point(left+width/2,top);
-                point2 = new Z.Point(left+width/2,top+height);
-                point3 = new Z.Point(left-width/2,top+height);
-            }
-        } else if ('right' === horizontal) {
-            if('top' === vertical) {
-                point0 = new Z.Point(left,top-height);
-                point1 = new Z.Point(left+width,top-height);
-                point2 = new Z.Point(left+width,top);
-                point3 = new Z.Point(left, top);
-            } else if ('middle' === vertical) {
-                point0 = new Z.Point(left,top-height/2);
-                point1 = new Z.Point(left+width,top-height/2);
-                point2 = new Z.Point(left+width,top+height/2);
-                point3 = new Z.Point(left,top+height/2);
-            } else if ('bottom' === vertical) {
-                point0 = new Z.Point(left, top);
-                point1 = new Z.Point(left+width,top);
-                point2 = new Z.Point(left+width,top+height);
-                point3 = new Z.Point(left,top+height);
-            }
-        }
-        points = [point0, point1, point2, point3];
-        return points;
-     },
-
-     _getTipPoints: function(left, top, width, height, horizontal, vertical) {
-        var points = [];
-        var point0,point1,point2,point3,point4,point5,point6;
-        if ('left' === horizontal) {
-            var arrowWidth = arrowHeight = height/2;
-            if('top' === vertical) {
-                point0 = new Z.Point((left-width-arrowWidth),top-height);
-                point1 = new Z.Point((left-arrowWidth),top-height);
-                point2 = new Z.Point((left-arrowWidth),(top-arrowHeight));
-                point3 = new Z.Point(left, top);
-                point4 = new Z.Point(left, top);
-                point5 = new Z.Point(left, top);
-                point6 = new Z.Point((left-width-arrowWidth),top);
-            } else if ('middle' === vertical) {
-                point0 = new Z.Point((left-width-arrowWidth),top-height/2);
-                point1 = new Z.Point((left-arrowWidth),top-height/2);
-                point2 = new Z.Point((left-arrowWidth),(top-arrowHeight/2));
-                point3 = new Z.Point(left, top);
-                point4 = new Z.Point((left-arrowWidth),(top+arrowHeight/2));
-                point5 = new Z.Point((left-arrowWidth),top+height/2);
-                point6 = new Z.Point((left-width-arrowWidth),top+height/2);
-            } else if ('bottom' === vertical) {
-                point0 = new Z.Point((left-width-arrowWidth),top);
-                point1 = new Z.Point(left, top);
-                point2 = new Z.Point(left, top);
-                point3 = new Z.Point(left, top);
-                point4 = new Z.Point((left-arrowWidth),(top+arrowHeight));
-                point5 = new Z.Point((left-arrowWidth),top+height);
-                point6 = new Z.Point((left-width-arrowWidth),top+height);
-            }
-        } else if ('middle' === horizontal) {
-            var arrowWidth = Math.round(width/5);
-            var arrowHeight = Math.round(height/2);
-            if('top' === vertical
-            || 'middle' === vertical) {
-                point0 = new Z.Point((left-Math.round(width/2)),(top-height-arrowHeight));
-                point1 = new Z.Point((left+Math.round(width/2)),(top-height-arrowHeight));
-                point2 = new Z.Point((left+Math.round(width/2)),(top-arrowHeight));
-                point3 = new Z.Point((left+Math.round(arrowWidth/2)),(top-arrowHeight));
-                point4 = new Z.Point(left, top);
-                point5 = new Z.Point((left-Math.round(arrowWidth/2)),(top-arrowHeight));
-                point6 = new Z.Point((left-Math.round(width/2)),(top-arrowHeight));
-            } else if ('bottom' === vertical) {
-                point0 = new Z.Point((left-Math.round(width/2)),(top+arrowHeight));
-                point1 = new Z.Point((left-Math.round(arrowWidth/2)),(top+arrowHeight));
-                point2 = new Z.Point(left, top);
-                point3 = new Z.Point((left+Math.round(arrowWidth/2)),(top+arrowHeight));
-                point4 = new Z.Point((left+Math.round(width/2)),(top+arrowHeight));
-                point5 = new Z.Point((left+Math.round(width/2)),(top+height+arrowHeight));
-                point6 = new Z.Point((left-Math.round(width/2)),(top+height+arrowHeight));
-            }
-        } else if ('right' === horizontal) {
-            var arrowWidth = arrowHeight = height/2;
-            if('top' === vertical) {
-                point0 = new Z.Point((left+arrowWidth),top-height);
-                point1 = new Z.Point((left+width+arrowWidth),top-height);
-                point2 = new Z.Point((left+width+arrowWidth),top);
-                point3 = new Z.Point((left+arrowWidth), top);
-                point4 = new Z.Point(left, top);
-                point5 = new Z.Point(left, top);
-                point6 = new Z.Point((left+arrowWidth),(top-arrowHeight));
-            } else if ('middle' === vertical) {
-                point0 = new Z.Point(left+arrowWidth, top-height/2);
-                point1 = new Z.Point((left+width+arrowWidth),top-height/2);
-                point2 = new Z.Point((left+width+arrowWidth),top+height/2);
-                point3 = new Z.Point((left+arrowWidth),top+height/2);
-                point4 = new Z.Point((left+arrowWidth),(top+arrowHeight/2));
-                point5 = new Z.Point(left, top);
-                point6 = new Z.Point((left+arrowWidth),(top-arrowHeight/2));
-            } else if ('bottom' === vertical) {
-                point0 = new Z.Point(left+arrowWidth, top);
-                point1 = new Z.Point((left+width+arrowWidth),top);
-                point2 = new Z.Point((left+width+arrowWidth),top+height);
-                point3 = new Z.Point((left+arrowWidth),top+height);
-                point4 = new Z.Point((left+arrowWidth),(top+arrowHeight));
-                point5 = new Z.Point(left, top);
-                point6 = new Z.Point(left, top);
-            }
-        }
-        points = [point0, point1, point2, point3, point4, point5, point6];
-        return points;
-    },
-
     _translateTextStyle: function() {
         var symbol = this.options.symbol;
         var result = {
             'textName': this.options['content'],
-            'textFaceName': symbol['textFaceName'],
-            'textSize': symbol['textSize'],
-            'textFill': symbol['textFill'],
-            'textOpacity': symbol['textOpacity'],
-            'textSpacing': symbol['textSpacing'],
+            'textFaceName': Z.Util.setDefaultValue(symbol['textFaceName'],'arial'),
+            'textSize': Z.Util.setDefaultValue(symbol['textSize'],12),
+            'textFill': Z.Util.setDefaultValue(symbol['textFill'],'#ebf2f9'),
+            'textOpacity': Z.Util.setDefaultValue(symbol['textOpacity'],1),
+            'textSpacing': Z.Util.setDefaultValue(symbol['textSpacing'],0),
             'textWrapWidth': symbol['textWrapWidth'],
-            'textWrapBefore': symbol['textWrapBefore'],
+            'textWrapBefore': Z.Util.setDefaultValue(symbol['textWrapBefore'],false),
             'textWrapCharacter': symbol['textWrapCharacter'],
-            'textLineSpacing': symbol['textLineSpacing'],
-            'textHorizontalAlignment' : this.options['horizontalAlignment'],
-            'textVerticalAlignment'   : this.options['verticalAlignment'],
-            'textAlign'               : symbol['textAlign']
+            'textLineSpacing': Z.Util.setDefaultValue(symbol['textLineSpacing'],0),
+            'textHorizontalAlignment' : Z.Util.setDefaultValue(this.options['horizontalAlignment'],'middle'),
+            'textVerticalAlignment'   : Z.Util.setDefaultValue(this.options['verticalAlignment'],'middle'),
+            'textAlign'               : Z.Util.setDefaultValue(symbol['textAlign'],'center'),
+            'textDx': Z.Util.setDefaultValue(this.options['dx'],0),
+            'textDy': Z.Util.setDefaultValue(this.options['dy'],0)
         };
         return result;
     },
@@ -590,12 +421,12 @@ Z.Label = Z.Class.extend({
         var symbol = this.options.symbol;
         var result = {
             'markerType': 'square',
-            'markerLineColor': symbol['lineColor'],
-            'markerLineWidth': symbol['lineWidth'],
-            'markerLineOpacity': symbol['lineOpacity'],
+            'markerLineColor': Z.Util.setDefaultValue(symbol['lineColor'],'#ffffff'),
+            'markerLineWidth': Z.Util.setDefaultValue(symbol['lineWidth'],1),
+            'markerLineOpacity': Z.Util.setDefaultValue(symbol['lineOpacity'],0.9),
             'markerLineDasharray': symbol['lineDasharray'],
-            'markerFill':  symbol['fill'],
-            'markerFillOpacity':  symbol['fillOpacity']
+            'markerFill':  Z.Util.setDefaultValue(symbol['fill'],'#4e98dd'),
+            'markerFillOpacity':  Z.Util.setDefaultValue(symbol['fillOpacity'],0.9)
         };
         return result;
      }

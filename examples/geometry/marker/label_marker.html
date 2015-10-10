@@ -27,7 +27,7 @@
             subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
         }));
         //创建图层
-        var layer = new maptalks.VectorLayer('layer');
+        var layer = new maptalks.VectorLayer('layer',{render:'Canvas'});
         //将图层添加到地图对象
         mapObj.addLayer(layer);
         //创建点的坐标对象
@@ -39,28 +39,27 @@
         //设置label属性
         var options = {
             'symbol': {
-                'lineColor': '#ff0000',
+                'lineColor': '#ffffff',
                 'lineWidth': 1,
-                'lineOpacity': 1,
+                'lineOpacity': 0.9,
                 'lineDasharray': null,
-                'fill': '#0000ff',
-                'fillOpacity': 1,
+                'fill': '#4e98dd',
+                'fillOpacity': 0.9,
 
                 'textFaceName': 'arial',
                 'textSize': 12,
-                'textFill': '#00ff00',
+                'textFill': '#ebf2f9',
                 'textOpacity': 1,
                 'textSpacing': 30,
-                'textWrapWidth': 100,
+                'textWrapWidth': 50,
                 'textWrapBefore': false,
                 'textWrapCharacter': '_',
-                'textLineSpacing': 8,
-                'textAlign': 'center'
+                'textLineSpacing': 8
             },
             'draggable': true,
             'trigger': 'hover',//click|hover
-            'horizontalAlignment': 'left',//left middle right
-            'verticalAlignment': 'middle',//top middle bottom
+            'horizontalAlignment': 'right',//left middle right
+            'verticalAlignment': 'bottom',//top middle bottom
             'dx': 0,
             'dy': 0,
             'content': '上海大厦_上海大厦_上海大厦_上海大厦'

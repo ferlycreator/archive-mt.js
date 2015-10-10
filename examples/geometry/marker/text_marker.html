@@ -28,7 +28,7 @@
             subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
         }));
         //创建图层
-        var layer = new maptalks.VectorLayer('layer',{'render':'canvas'});
+        var layer = new maptalks.VectorLayer('layer',{render:'Canvas'});
         //将图层添加到地图对象
         mapObj.addLayer(layer);
         //创建点的坐标对象
@@ -36,13 +36,15 @@
         //设置矢量配置
         var icon = {
             'textPlacement': 'point',
-            'textName': '文本标注：[marker_name]',
+            'textName': '[marker_name]',
             'textFaceName': 'arial',
-            'textSize': 50,
+            'textSize': 12,
             'textWrapWidth': 100,
             'textFill': '#ffff00',
             'textHorizontalAlignment': 'middle',
-            'textVerticalAlignment': 'bottom',
+            'textVerticalAlignment': 'middle',
+            'textWrapCharacter':'_',
+            'textLineSpacing': 8,
             'textAlign': 'left',
             'textOpacity': 1,
 
@@ -55,7 +57,7 @@
         //创建点对象
         var marker = new maptalks.Marker(coordinate, {'id':'marker_id','draggable':true});
         marker.setProperties({
-            'marker_name':'我是文字标签'
+            'marker_name':'上海大厦_上海大厦_上海大厦_上海大厦'
         });
         //设置点样式
         marker.setSymbol(icon);
