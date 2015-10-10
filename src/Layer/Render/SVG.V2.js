@@ -101,14 +101,14 @@ Z.SVG.SVG = {
             rowNum = textRows.length;
             var height = (fontSize+lineSpacing)*rowNum;
             var textSize = new Z.Size(wrapWidth, height);
-            svgText = this._splitTextToTSpan(svgText, textRows, style, textSize, dx, dy);
+            svgText = this._createTextRow(svgText, textRows, style, textSize, dx, dy);
         } else {
             if(textWidth>wrapWidth) {
                var contents = Z.Util.splitContent(text, textWidth, fontSize, wrapWidth);
                rowNum = contents.length;
                var height = (fontSize+lineSpacing)*rowNum;
                var textSize = new Z.Size(wrapWidth, height);
-               svgText = this._splitTextToTSpan(svgText, contents, style, textSize, dx, dy);
+               svgText = this._createTextRow(svgText, contents, style, textSize, dx, dy);
             } else {
                 var textNode = document.createTextNode(text);
                 svgText.appendChild(textNode);
@@ -117,7 +117,7 @@ Z.SVG.SVG = {
         return svgText;
     },
 
-    _splitTextToTSpan:function(svgText, contents, style, textSize, x, y) {
+    _createTextRow:function(svgText, contents, style, textSize, x, y) {
         var fontSize = style['textSize'];
         var lineSpacing = style['textLineSpacing'];
         for(var i=0,len=contents.length;i<len;i++){
@@ -350,89 +350,105 @@ Z.SVG.VML= {
         vmlShape.path['v'] = path;
     },
 
-    text:function(text, style, size) {
-        var font = style['textFaceName'];
-        var fontSize = style['textSize'];
-
-        var dx = style['textDx'],dy = style['textDy'];
-        var lineSpacing = Z.Util.setDefaultValue(style['textLineSpacing'],0);
-        var wrapChar = style['textWrapCharacter'];
-        var textWidth = Z.Util.stringLength(text,font,fontSize).width;
-        var wrapWidth = style['textWrapWidth'];
-        if(!wrapWidth) wrapWidth = textWidth;
-        var vmlText;
-        if(wrapChar) {
-            var content = Z.Util.replaceAll(text, wrapChar, '<br/>');
-            vmlText = this._createTextbox(content, style);
-        } else {
-            if(textWidth>wrapWidth) {
-               var contents = Z.Util.splitContent(text, textWidth, fontSize, wrapWidth);
-               var contentStr = '';
-               for(var i=0,len=contents;i<len;i++) {
-                    contentStr +=contents[i]+'<br/>';
-               }
-               vmlText = this._createTextbox(contentStr, style);
-            } else {
-                vmlText = this._createTextPath(text,style,size);
-            }
-        }
-        return vmlText;
-    },
-
-    _createTextbox: function(content, style) {
-        var font = style['textFaceName'];
-        var fontSize = style['textSize'];
-        var color = style['textFill'];
-        var textWidth = style['textWrapWidth'];
-        var align = style['textAlign'];
-        textbox = Z.SVG.create('v:textbox');
-        textbox.style.fontSize  = fontSize +'px';
-        textbox.style.color  = color;
-        textbox.style.width  = textWidth +'px';
-        textbox.style.textAlign = align;
-        textbox.innerHTML   = content;
-        return textbox;
-
-    },
-
-    _createTextPath: function(text,style,size) {
+    text:function(text, point, style, size) {
         var vmlShape = Z.SVG.create('shape');
         vmlShape.style.width = '1px';
         vmlShape.style.height = '1px';
         vmlShape['coordsize'] = '1 1';
         vmlShape['coordorigin'] = '0 0';
 
+        var font = style['textFaceName'];
+        var fontSize = style['textSize'];
+
+        var dx = style['textDx']+point['left'],dy = style['textDy']+point['top'];
+        var lineSpacing = Z.Util.setDefaultValue(style['textLineSpacing'],0);
+        var wrapChar = style['textWrapCharacter'];
+        var textWidth = Z.Util.stringLength(text,font,fontSize).width;
+        var wrapWidth = style['textWrapWidth'];
+        if(!wrapWidth) wrapWidth = textWidth;
+        var rowNum = 1;
+        if(wrapChar){
+            var texts = text.split(wrapChar);
+            var textRows = [];
+            for(var i=0,len=texts.length;i<len;i++) {
+                var t = texts[i];
+                var tWidth = Z.Util.stringLength(t,font,fontSize).width;
+                if(tWidth>wrapWidth) {
+                    var contents = Z.Util.splitContent(t, tWidth, fontSize, wrapWidth);
+                    textRows = textRows.concat(contents);
+                } else {
+                    textRows.push(t);
+                }
+            }
+            rowNum = textRows.length;
+            var height = (fontSize+lineSpacing)*rowNum;
+            var textSize = new Z.Size(wrapWidth, height);
+            vmlShape = this._createTextRow(vmlShape, textRows, style, textSize, dx, dy);
+        } else {
+            if(textWidth>wrapWidth) {
+               var contents = Z.Util.splitContent(text, textWidth, fontSize, wrapWidth);
+               rowNum = contents.length;
+               var height = (fontSize+lineSpacing)*rowNum;
+               var textSize = new Z.Size(wrapWidth, height);
+               vmlShape = this._createTextRow(vmlShape, contents, style, textSize, dx, dy);
+            } else {
+                var textSize = new Z.Size(wrapWidth, (fontSize+lineSpacing));
+                vmlShape = this._createTextPath(vmlShape, text, style, textSize, dx, dy);
+            }
+        }
+        return vmlShape;
+    },
+
+    _createTextRow:function(vmlShape, contents, style, textSize, x, y) {
+        var fontSize = style['textSize'];
+        var lineSpacing = style['textLineSpacing'];
+        for(var i=0,len=contents.length;i<len;i++){
+            var content = contents[i];
+            if(i===0) {
+                y += fontSize;
+            }
+            vmlShape = this._createTextPath(vmlShape, content, style, textSize, x, y);
+            y += fontSize+lineSpacing;
+        }
+        return vmlShape;
+    },
+
+    _createTextPath: function(vmlShape, text, style, textSize, x, y) {
+        var vmlLine = Z.SVG.create('line');
         var vmlPath = Z.SVG.create('path');
         vmlPath.strokeColor = style['textFill'];
         vmlPath.strokeWidth = style['textSize'];
         var vmlText = Z.SVG.create('textpath');
-        vmlShape.appendChild(vmlPath);
-        vmlShape.appendChild(vmlText);
+        vmlLine.appendChild(vmlPath);
+        vmlLine.appendChild(vmlText);
 
         var startx, starty;
         var hAlign = style['textHorizontalAlignment'];
-        if (hAlign === 'right') {
-            startx = -size['width'];
+        if (hAlign === 'left') {
+            startx = -textSize['width']+x;
         } else if (hAlign === 'middle') {
-            startx = -size['width']/2;
+            startx = -textSize['width']/2+x;
         } else {
-            startx = 0;
-        }
-        var vAlign = style['textVerticalAlignment'];
-        if (vAlign === 'top') {
-            starty = size['height']/2;
-        } else if (vAlign === 'middle') {
-            starty = 0;
-        } else {
-            starty = -size['height']/2;
+            startx = x;
         }
 
-        vmlShape.path = 'm '+Math.round(startx)+','+Math.round(starty)
-                      +' l '+Math.round(startx+size['width'])+','+Math.round(starty)+' e';
+        var vAlign = style['textVerticalAlignment'];
+        if (vAlign === 'top') {
+            starty = -textSize['height']+y;
+        } else if (vAlign === 'middle') {
+            starty = -textSize['height']/2+y;
+        } else {
+            starty = y;
+        }
+
+        vmlLine.path = 'm '+Math.round(startx)+','+Math.round(starty)
+                      +' l '+Math.round(startx+textSize['width'])+','+Math.round(starty)+' e';
+
         vmlPath.textpathok=true;
         vmlText.on=true;
         vmlText.fitpath = true;
         vmlText.string=text;
+        vmlShape.appendChild(vmlLine);
         return vmlShape;
     },
 
