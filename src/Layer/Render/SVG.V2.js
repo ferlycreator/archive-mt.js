@@ -344,7 +344,7 @@ Z.SVG.VML= {
                }
                vmlText = this._createTextbox(contentStr, style);
             } else {
-                vmlText = this._createTextPath(style);
+                vmlText = this._createTextPath(text,style,size);
             }
         }
         return vmlText;
@@ -366,7 +366,7 @@ Z.SVG.VML= {
 
     },
 
-    _createTextPath: function(style) {
+    _createTextPath: function(text,style,size) {
         var vmlShape = Z.SVG.create('shape');
         vmlShape.style.width = '1px';
         vmlShape.style.height = '1px';
@@ -374,34 +374,36 @@ Z.SVG.VML= {
         vmlShape['coordorigin'] = '0 0';
 
         var vmlPath = Z.SVG.create('path');
+        vmlPath.strokeColor = style['textFill'];
+        vmlPath.strokeWidth = style['textSize'];
         var vmlText = Z.SVG.create('textpath');
         vmlShape.appendChild(vmlPath);
         vmlShape.appendChild(vmlText);
 
-//        var startx, starty;
-//        var hAlign = style['textHorizontalAlignment'];
-//        if (hAlign === 'right') {
-//            startx = -size['width'];
-//        } else if (hAlign === 'middle') {
-//            startx = -size['width']/2;
-//        } else {
-//            startx = 0;
-//        }
-//        var vAlign = style['textVerticalAlignment'];
-//        if (vAlign === 'top') {
-//            starty = size['height']/2;
-//        } else if (vAlign === 'middle') {
-//            starty = 0;
-//        } else {
-//            starty = -size['height']/2;
-//        }
+        var startx, starty;
+        var hAlign = style['textHorizontalAlignment'];
+        if (hAlign === 'right') {
+            startx = -size['width'];
+        } else if (hAlign === 'middle') {
+            startx = -size['width']/2;
+        } else {
+            startx = 0;
+        }
+        var vAlign = style['textVerticalAlignment'];
+        if (vAlign === 'top') {
+            starty = size['height']/2;
+        } else if (vAlign === 'middle') {
+            starty = 0;
+        } else {
+            starty = -size['height']/2;
+        }
 
-        vmlShape.path = 'm '+Math.round(startx)+','+Math.round(starty)+' l '+Math.round(startx+size['width'])+','+Math.round(starty)+' e';
+        vmlShape.path = 'm '+Math.round(startx)+','+Math.round(starty)
+                      +' l '+Math.round(startx+size['width'])+','+Math.round(starty)+' e';
         vmlPath.textpathok=true;
         vmlText.on=true;
         vmlText.fitpath = true;
         vmlText.string=text;
-        vmlShape.textNode = vmlText;
         return vmlShape;
     },
 

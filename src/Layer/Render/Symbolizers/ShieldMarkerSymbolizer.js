@@ -1,23 +1,23 @@
 Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
     defaultSymbol:{
-        "shield-file"       : null,
-        "shield-opacity"    :  1,
-        "shield-dx"         :  0,
-        "shield-dy"         :  0,
+        "shieldFile"       : null,
+        "shieldOpacity"    :  1,
+        "shieldDx"         :  0,
+        "shieldDy"         :  0,
 
-        "shield-face-name"  : "arial",
-        "shield-size"       :  10,
-        "shield-fill"       : "#000000",
-        "shield-text-opacity": 1,
-        "shield-halo-fill"  : "#ffffff",
-        "shield-halo-radius": 0,
+        "shieldFaceName"  : "arial",
+        "shieldSize"       :  10,
+        "shieldFill"       : "#000000",
+        "shieldTextOpacity": 1,
+        "shieldHaloFill"  : "#ffffff",
+        "shieldHaloRadius": 0,
 
-        "shield-text-dx"    :  0,
-        "shield-text-dy"    :  0,
+        "shieldTextDx"    :  0,
+        "shieldTextDy"    :  0,
 
-        "shield-horizontal-alignment"   : "middle", //left | middle | right | auto
-        "shield-vertical-alignment"     : "middle",   // top | middle | bottom | auto
-        "shield-justify-alignment"      : "left" //left | right | center | auto
+        "shieldHorizontalAlignment"   : "middle", //left | middle | right | auto
+        "shieldVerticalAlignment"     : "middle",   // top | middle | bottom | auto
+        "shieldJustifyAlignment"      : "left" //left | right | center | auto
     },
 
     initialize:function(symbol, geometry) {
@@ -27,12 +27,12 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
         this.style = this.translate();
         this.strokeAndFill = this.translateStrokeAndFill(this.style);
         var props = this.geometry.getProperties();
-        this.textContent = Z.Util.content(this.style['shield-name'], props);
-        this.textSize = Z.Util.stringLength(this.textContent,this.style['text-face-name'],this.style['text-size']);
+        this.textContent = Z.Util.content(this.style['shieldName'], props);
+        this.textSize = Z.Util.stringLength(this.textContent,this.style['textFaceName'],this.style['textSize']);
     },
 
     svg:function(container, vectorcontainer, zIndex, _container, _vectorcontainer) {
-        if (this.symbol['shield-file']) {
+        if (this.symbol['shieldFile']) {
             var me = this;
             var img = new Image();
             var svgContainer = _vectorcontainer || vectorcontainer;
@@ -41,7 +41,7 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
                 me.shieldFileHeight = this.height;
                 me._svgMarkers(svgContainer,zIndex);
             };
-            img.src=this.symbol['shield-file'];
+            img.src=this.symbol['shieldFile'];
         } else {
             this._svgMarkers(vectorcontainer,zIndex);
         }
@@ -64,7 +64,7 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
         Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'], strokeAndFill['fill'], resources);
         Z.Canvas.prepareCanvasFont(ctx,style);
 
-        var img = resources.getImage(style['shield-file']);
+        var img = resources.getImage(style['shieldFile']);
         for (var i = 0, len=cookedPoints.length;i<len;i++) {
             var pt = cookedPoints[i];
             Z.Canvas.shield(ctx, pt, img, this.textContent, this.textSize, style);
@@ -72,13 +72,13 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
     },
 
     getPlacement:function() {
-        return this.symbol['shield-placement'];
+        return this.symbol['shieldPlacement'];
     },
 
     getDxDy:function() {
         var s = this.style;
-        var dx = s['shield-dx'],
-            dy = s['shield-dy'];
+        var dx = s['shieldDx'],
+            dy = s['shieldDy'];
         return new Z.Point(dx, dy);
     },
 
@@ -88,20 +88,20 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
             size = this.textSize;
         var fileExtent = new Z.Extent(dxdy.add(-this.shieldFileWidth/2, - this.shieldFileHeight/2),
                     dxdy.add(this.shieldFileWidth/2, this.shieldFileHeight/2));
-        var textDxDy = new Z.Point(this.style['text-dx'], this.style['text-dy']);
+        var textDxDy = new Z.Point(this.style['textDx'], this.style['textDy']);
         var alignW, alignH;
-        if (style['text-horizontal-alignment'] === 'left') {
+        if (style['textHorizontalAlignment'] === 'left') {
             alignW = this.textSize['width'];
-        } else if (style['text-horizontal-alignment'] === 'middle') {
+        } else if (style['textHorizontalAlignment'] === 'middle') {
             alignW = this.textSize['width']/2;
-        } else if (style['text-horizontal-alignment'] === 'right') {
+        } else if (style['textHorizontalAlignment'] === 'right') {
             alignW = 0;
         }
-        if (style['text-vertical-alignment'] === 'top') {
+        if (style['textVerticalAlignment'] === 'top') {
             alignH = this.textSize['height'];
-        } else if (style['text-vertical-alignment'] === 'middle') {
+        } else if (style['textVerticalAlignment'] === 'middle') {
             alignH = this.textSize['height']/2;
-        } else if (style['text-vertical-alignment'] === 'bottom') {
+        } else if (style['textVerticalAlignment'] === 'bottom') {
             alignH = 0;
         }
         var textExtent = new Z.Extent(
@@ -115,28 +115,28 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
         var s = this.symbol;
         var d = this.defaultSymbol;
         var result =  {
-            "shield-name"       : s['shield-name'],
+            "shieldName"       : s['shieldName'],
 
-            "shield-file"       : Z.Util.setDefaultValue(s['shield-file'],d['shield-file']),
-            "shield-opacity"    :  Z.Util.setDefaultValue(s['shield-opacity'],d['shield-opacity']),
+            "shieldFile"       : Z.Util.setDefaultValue(s['shieldFile'],d['shieldFile']),
+            "shieldOpacity"    :  Z.Util.setDefaultValue(s['shieldOpacity'],d['shieldOpacity']),
 
-            "shield-dx"         :  Z.Util.setDefaultValue(s['shield-dx'],d['shield-dx']),
-            "shield-dy"         :  Z.Util.setDefaultValue(s['shield-dy'],d['shield-dy']),
+            "shieldDx"         :  Z.Util.setDefaultValue(s['shieldDx'],d['shieldDx']),
+            "shieldDy"         :  Z.Util.setDefaultValue(s['shieldDy'],d['shieldDy']),
 
-            "text-face-name"  : Z.Util.setDefaultValue(s['shield-face-name'],d['shield-face-name']),
-            "text-size"       : Z.Util.setDefaultValue(s['shield-size'],d['shield-size']),
-            "text-fill"       : Z.Util.setDefaultValue(s['shield-fill'],d['shield-fill']),
-            "text-opacity"    : Z.Util.setDefaultValue(s['shield-text-opacity'],d['shield-text-opacity']),
-            "text-halo-fill"  : Z.Util.setDefaultValue(s['shield-halo-fill'],d['shield-halo-fill']),
-            "text-halo-radius": Z.Util.setDefaultValue(s['shield-halo-radius'],d['shield-halo-radius']),
+            "textFaceName"  : Z.Util.setDefaultValue(s['shieldFaceName'],d['shieldFaceName']),
+            "textSize"       : Z.Util.setDefaultValue(s['shieldSize'],d['shieldSize']),
+            "textFill"       : Z.Util.setDefaultValue(s['shieldFill'],d['shieldFill']),
+            "textOpacity"    : Z.Util.setDefaultValue(s['shieldTextOpacity'],d['shieldTextOpacity']),
+            "textHaloFill"  : Z.Util.setDefaultValue(s['shieldHaloFill'],d['shieldHaloFill']),
+            "textHaloRadius": Z.Util.setDefaultValue(s['shieldHaloRadius'],d['shieldHaloRadius']),
 
 
-            "text-dx"    :  Z.Util.setDefaultValue(s['shield-text-dx'],d['shield-text-dx']),
-            "text-dy"    :  Z.Util.setDefaultValue(s['shield-text-dy'],d['shield-text-dy']),
+            "textDx"    :  Z.Util.setDefaultValue(s['shieldTextDx'],d['shieldTextDx']),
+            "textDy"    :  Z.Util.setDefaultValue(s['shieldTextDy'],d['shieldTextDy']),
 
-            "text-horizontal-alignment"   : Z.Util.setDefaultValue(s['shield-horizontal-alignment'],d['shield-horizontal-alignment']),
-            "text-vertical-alignment"     : Z.Util.setDefaultValue(s['shield-vertical-alignment'],d['shield-vertical-alignment']),
-            "text-align"                  : Z.Util.setDefaultValue(s['shield-justify-alignment'],d['shield-justify-alignment'])
+            "textHorizontalAlignment"   : Z.Util.setDefaultValue(s['shieldHorizontalAlignment'],d['shieldHorizontalAlignment']),
+            "textVerticalAlignment"     : Z.Util.setDefaultValue(s['shieldVerticalAlignment'],d['shieldVerticalAlignment']),
+            "textAlign"                  : Z.Util.setDefaultValue(s['shieldJustifyAlignment'],d['shieldJustifyAlignment'])
         };
         return result;
     },
@@ -149,8 +149,8 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
         var style = this.style;
         var svgGroup = Z.SVG.group();
 
-         if (style['shield-file']) {
-            var svgImage = Z.SVG.image(style['shield-file'],this.shieldFileWidth,this.shieldFileHeight);
+         if (style['shieldFile']) {
+            var svgImage = Z.SVG.image(style['shieldFile'],this.shieldFileWidth,this.shieldFileHeight);
             this._offsetMarker(svgImage, new Z.Point(-this.shieldFileWidth/2, -this.shieldFileHeight/2));
             svgGroup.appendChild(svgImage);
         }
@@ -160,7 +160,7 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
         var strokeAndFill = this.translateStrokeAndFill(textStyle);
         Z.SVG.updateShapeStyle(svgText, strokeAndFill['stroke'], strokeAndFill['fill']);
 
-        this._offsetMarker(svgText, new Z.Point(style['text-dx'], style['text-dy']));
+        this._offsetMarker(svgText, new Z.Point(style['textDx'], style['textDy']));
 
         svgGroup.appendChild(svgText);
         return svgGroup;
@@ -170,17 +170,17 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
     translateStrokeAndFill:function(s) {
         var result = {
             "stroke" :{
-                "stroke" : s['text-halo-fill'],
-                "stroke-width" : s['text-halo-radius'],
-                "stroke-opacity" : s['text-opacity'],
+                "stroke" : s['textHaloFill'],
+                "stroke-width" : s['textHaloRadius'],
+                "stroke-opacity" : s['textOpacity'],
                 "stroke-dasharray": null,
                 "stroke-linecap" : "butt",
                 "stroke-linejoin" : "round"
             },
 
             "fill" : {
-                "fill"          : s["text-fill" ],
-                "fill-opacity"  : s["text-opacity"]
+                "fill"          : s["textFill" ],
+                "fill-opacity"  : s["textOpacity"]
             }
         };
         //vml和svg对linecap的定义不同
@@ -200,7 +200,7 @@ Z.ShieldMarkerSymbolizer.test=function(geometry, symbol) {
     if (!geometry || !symbol) {
         return false;
     }
-    if (!Z.Util.isNil(symbol['shield-name'])) {
+    if (!Z.Util.isNil(symbol['shieldName'])) {
         return true;
     }
     return false;

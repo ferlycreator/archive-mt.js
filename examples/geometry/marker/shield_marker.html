@@ -27,7 +27,7 @@
             subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
         }));
         //创建图层
-        var layer = new maptalks.VectorLayer('layer',{'render':'canvas'});
+        var layer = new maptalks.VectorLayer('layer');
         //将图层添加到地图对象
         mapObj.addLayer(layer);
         //创建点的坐标对象
@@ -35,32 +35,32 @@
         //设置矢量配置
         var icon = {
             // polygon styles {{{
-            "polygon-fill": "#ff0000",
-            "polygon-opacity": 0.5,
+            "polygonFill": "#ff0000",
+            "polygonOpacity": 0.5,
             // }}} polygon styles
 
             // shield styles {{{
-            "shield-placement"  : "vertex",
+            "shieldPlacement"  : "vertex",
 
-            "shield-file"      :  "/images/marker.png",
-            "shield-opacity"    :  1,
-            "shield-dx"         :  0,
-            "shield-dy"         :  0,
+            "shieldFile"      :  "/images/marker.png",
+            "shieldOpacity"    :  1,
+            "shieldDx"         :  0,
+            "shieldDy"         :  0,
 
-            "shield-name"       : "[name]-[addr]",
-            "shield-face-name"  : "arial",
-            "shield-size"       :  10,
-            "shield-fill"       : "#ff0000",
-            "shield-text-opacity": 1,
+            "shieldName"       : "[name]-[addr]",
+            "shieldFaceName"  : "arial",
+            "shieldSize"       :  10,
+            "shieldFill"       : "#ff0000",
+            "shieldTextOpacity": 1,
             //"shield-halo-fill"  : "#ffffff",
             //"shield-halo-radius": 1,
 
-            "shield-text-dx"    :  0,
-            "shield-text-dy"    :  0,
+            "shieldTextDx"    :  0,
+            "shieldTextDy"    :  0,
 
-            "shield-horizontal-alignment"   : "middle", //left | middle | right | auto
-            "shield-vertical-alignment"     : "middle",   // top | middle | bottom | auto
-            "shield-justify-alignment"      : "left"
+            "shieldHorizontalAlignment"   : "middle", //left | middle | right | auto
+            "shieldVerticalAlignment"     : "middle",   // top | middle | bottom | auto
+            "shieldJustifyAlignment"      : "left"
             // }}} shield style end
         };
 

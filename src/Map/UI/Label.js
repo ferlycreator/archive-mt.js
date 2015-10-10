@@ -24,7 +24,6 @@ Z.Label = Z.Class.extend({
      * @cfg {Object} options label属性
      */
     options: {
-        'type': 'box',//box|tip
         'symbol': {
             'lineColor': '#000000',
             'lineWidth': 1,
@@ -391,7 +390,6 @@ Z.Label = Z.Class.extend({
 
     _getPointsArray: function() {
         var symbol = this.options.symbol;
-        var labelType = this.options['type'].toLowerCase();
 
         var left=0,top=0;
         var lineSpacing = Z.Util.setDefaultValue(symbol['textLineSpacing'],0);
@@ -418,12 +416,7 @@ Z.Label = Z.Class.extend({
 
         var horizontal = Z.Util.setDefaultValue(this.options['horizontalAlignment'],'middle');//水平
         var vertical = Z.Util.setDefaultValue(this.options['verticalAlignment'],'middle');//垂直
-        var points = [];
-        if ('box' === labelType) {
-            points = this._getBoxPoints(left, top, wrapWidth, height, horizontal, vertical);
-        } else if ('tip' === labelType) {
-            points = this._getTipPoints(left, top, wrapWidth, height, horizontal, vertical);
-        }
+        var points = this._getBoxPoints(left, top, wrapWidth, height, horizontal, vertical);
         var geometryPoint = this._geometry._getCenterViewPoint();
         for(var i=0,len=points.length;i<len;i++) {
             points[i] = points[i].add(geometryPoint);
