@@ -53,6 +53,8 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
         Z.Canvas.prepareCanvasFont(ctx,style);
 
         for (var i = 0, len=cookedPoints.length;i<len;i++) {
+            console.log('canvas:');
+            console.log(cookedPoints[i]);
             Z.Canvas.text(ctx, textContent, cookedPoints[i], style,size);
         }
     },
@@ -139,8 +141,10 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
             textContent = this.textContent,
             size = this.textSize,
             strokeAndFill = this.strokeAndFill;
-
-        var svgText = Z.SVG.text(textContent, style, size);
+        var point = this.geometry._getCenterViewPoint();
+        console.log('createMarkerDom:');
+        console.log(point);
+        var svgText = Z.SVG.text(textContent, point, style, size);
         Z.SVG.updateTextStyle(svgText, style, size);
         Z.SVG.updateShapeStyle(svgText, strokeAndFill['stroke'], strokeAndFill['fill']);
         return svgText;

@@ -155,7 +155,8 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
             svgGroup.appendChild(svgImage);
         }
         var textStyle = this.style;
-        var svgText = Z.SVG.text(this.textContent, textStyle, this.textSize);
+        var point = this.geometry._getCenterViewPoint();
+        var svgText = Z.SVG.text(this.textContent, point, textStyle, this.textSize);
         Z.SVG.updateTextStyle(svgText, textStyle, this.textSize);
         var strokeAndFill = this.translateStrokeAndFill(textStyle);
         Z.SVG.updateShapeStyle(svgText, strokeAndFill['stroke'], strokeAndFill['fill']);

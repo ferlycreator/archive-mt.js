@@ -66,7 +66,7 @@ Z.SVG.SVG = {
         svgShape.setAttribute('d', path);
     },
 
-    text:function(text, style, size) {
+    text:function(text, point, style, size) {
         //TODO 改为textpath
         var font = style['textFaceName'];
         var fontSize = style['textSize'];
@@ -78,28 +78,37 @@ Z.SVG.SVG = {
                         'text-align:' + style['textAlign'] + ';';
         svgText.setAttribute('style', textStyle);
 
-        var dx = style['textDx'],dy = style['textDy'];
+        var dx = style['textDx']+point['left'],dy = style['textDy']+point['top'];
         var lineSpacing = style['textLineSpacing'];
         var wrapChar = style['textWrapCharacter'];
         var textWidth = Z.Util.stringLength(text,font,fontSize).width;
         var wrapWidth = style['textWrapWidth'];
         if(!wrapWidth) wrapWidth = textWidth;
+        var rowNum = 1;
         if(wrapChar){
             var texts = text.split(wrapChar);
+            var textRows = [];
             for(var i=0,len=texts.length;i<len;i++) {
                 var t = texts[i];
                 var tWidth = Z.Util.stringLength(t,font,fontSize).width;
                 if(tWidth>wrapWidth) {
-                    svgText = this._splitTextToTSpan(svgText, text, textWidth, fontSize, wrapWidth, dx, dy, lineSpacing);
+                    var contents = Z.Util.splitContent(t, tWidth, fontSize, wrapWidth);
+                    textRows = textRows.concat(contents);
                 } else {
-                    var textNode = this._createtspan(t, dx, dy);
-                    svgText.appendChild(textNode);
+                    textRows.push(t);
                 }
-                dy += fontSize+lineSpacing;
             }
+            rowNum = textRows.length;
+            var height = (fontSize+lineSpacing)*rowNum;
+            var textSize = new Z.Size(wrapWidth, height);
+            svgText = this._splitTextToTSpan(svgText, textRows, style, textSize, dx, dy);
         } else {
             if(textWidth>wrapWidth) {
-               svgText = this._splitTextToTSpan(svgText, text, textWidth, fontSize, wrapWidth, dx, dy, lineSpacing);
+               var contents = Z.Util.splitContent(text, textWidth, fontSize, wrapWidth);
+               rowNum = contents.length;
+               var height = (fontSize+lineSpacing)*rowNum;
+               var textSize = new Z.Size(wrapWidth, height);
+               svgText = this._splitTextToTSpan(svgText, contents, style, textSize, dx, dy);
             } else {
                 var textNode = document.createTextNode(text);
                 svgText.appendChild(textNode);
@@ -108,21 +117,41 @@ Z.SVG.SVG = {
         return svgText;
     },
 
-    _splitTextToTSpan:function(svgText, text, textWidth, fontSize, wrapWidth, x, y,lineSpacing) {
-        var contents = Z.Util.splitContent(text, textWidth, fontSize, wrapWidth);
+    _splitTextToTSpan:function(svgText, contents, style, textSize, x, y) {
+        var fontSize = style['textSize'];
+        var lineSpacing = style['textLineSpacing'];
         for(var i=0,len=contents.length;i<len;i++){
             var content = contents[i];
-            var tspan = this._createtspan(content,x,y);
+            if(i===0) {
+                y += fontSize;
+            }
+            var tspan = this._createtspan(content, style, textSize, x, y);
             svgText.appendChild(tspan);
             y += fontSize+lineSpacing;
         }
         return svgText;
     },
 
-    _createtspan: function(content, x, y) {
+    _createtspan: function(content, style, textSize, x, y) {
         var tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
-        tspan.setAttribute('x', x);
-        tspan.setAttribute('y', y);
+
+        var hAlign = style['textHorizontalAlignment'];
+        if (hAlign === 'left') {
+            tspan.setAttribute('x',-textSize['width']+x);
+        } else if (hAlign === 'middle') {
+            tspan.setAttribute('x',-textSize['width']/2+x);
+        } else {
+            tspan.setAttribute('x',x);
+        }
+
+        var vAlign = style['textVerticalAlignment'];
+        if (vAlign === 'top') {
+            tspan.setAttribute('y',-textSize['height']+y);
+        } else if (vAlign === 'middle') {
+            tspan.setAttribute('y',-textSize['height']/2+y);
+        } else {
+            tspan.setAttribute('y',y);
+        }
         var textNode = document.createTextNode(content);
         tspan.appendChild(textNode);
         return tspan;

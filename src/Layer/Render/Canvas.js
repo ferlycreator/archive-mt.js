@@ -197,7 +197,7 @@ Z.Canvas = {
             alignY = 0;
         }
 
-        var ptAlign = new Z.Point(Z.Util.canvasRound(alignX), Z.Util.canvasRound(alignY));
+        var ptAlign = new Z.Point(alignX, alignY);
         pt = pt.add(ptAlign);
 
         if (style['textHaloRadius']) {
@@ -208,8 +208,8 @@ Z.Canvas = {
             ctx.lineWidth = 1;
             ctx.miterLimit = 10; //default
         }
-
-        ctx.fillText(text, pt['left'], pt['top']);
+        //TODO magic number: “4”是个实验数据，但是只有设置这个svg与canvas上的文本位置才能完全匹配
+        ctx.fillText(text, pt['left'], pt['top']+4);
     },
 
 
