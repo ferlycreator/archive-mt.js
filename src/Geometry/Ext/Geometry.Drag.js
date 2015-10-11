@@ -4,11 +4,11 @@ Z.Geometry.mergeOptions({
      * @member maptalks.Geometry
      */
 	'draggable': false,
-	/**
-	 * @cfg {String} [dragTrigger="mousedown"] geometry 拖动触发机制
-     * @member maptalks.Geometry
-     */
-	'dragTrigger': 'mousedown'//manual
+//	/**
+//	 * @cfg {String} [dragTrigger="mousedown"] geometry 拖动触发机制
+//     * @member maptalks.Geometry
+//     */
+//	'dragTrigger': 'mousedown'//manual
 });
 
 Z.Geometry.include({
@@ -107,9 +107,9 @@ Z.Geometry.include({
      */
     _endDrag: function(param) {
         this._isDragging = false;
-        this._map.enableDrag();
         this._map.off('mousemove', this._dragging, this)
                  .off('mouseup', this._endDrag, this);
+        this._map.enableDrag();
         /**
          * 触发geometry的dragend事件
          * @member maptalks.Geometry
@@ -138,9 +138,7 @@ Z.Geometry.addInitHook(function () {
 	if (this.options['draggable']) {
 	    var trigger = this.options['dragTrigger'];
 	    if(!('manual' === trigger)) {
-            this.on(trigger, function(param) {
-                this.startDrag(param);
-            }, this);
+            this.on('mousedown', this.startDrag, this);
 	    }
 	}
 });

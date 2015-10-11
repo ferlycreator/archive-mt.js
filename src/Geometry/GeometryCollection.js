@@ -68,6 +68,20 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         this._rootRemove(true);
     },
 
+    hide:function() {
+        var geometries = this.getGeometries();
+        for (var i=0,len=geometries.length;i<len;i++) {
+            this._geometries[i].hide();
+        }
+    },
+
+    show:function() {
+        var geometries = this.getGeometries();
+        for (var i=0,len=geometries.length;i<len;i++) {
+            this._geometries[i].show();
+        }
+    },
+
     /**
      * _prepare this geometry collection
      * @param  {Z.Layer} layer [description]
@@ -290,8 +304,15 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         }
         var geometries = this.getGeometries();
         for (var i=0,len=geometries.length;i<len;i++) {
-            geometries[i].startDrag();
+            var geo = geometries[i];
+            geo.on('mousedown', geo.startDrag, geo);
         }
+        /**
+         * 触发dragstart事件
+         * @event dragstart
+         * @return {Object} params: {'target': this}
+         */
+        this.fire('dragstart', {'target': this});
         this.dragging = true;
         return this;
     },
@@ -306,9 +327,16 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         }
         var geometries = this.getGeometries();
         for (var i=0,len=geometries.length;i<len;i++) {
-            geometries[i].endDrag();
+            var geo = geometries[i];
+            geo.off('mousedown',geo.startDrag,geo);
         }
         this.dragging = false;
+        /**
+         * 触发dragend事件
+         * @event dragend
+         * @return {Object} params: {'target': this}
+         */
+        this.fire('dragend', {'target': this});
         return this;
     },
 

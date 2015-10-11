@@ -61,9 +61,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
      * @expose
      */
     disable:function() {
-        if (!this.map) {
-            return;
-        }
+        if (!this.map) {return;}
         this.map.enableDrag();
         this._endDraw();
         this.map.removeLayer(this._getDrawLayer());

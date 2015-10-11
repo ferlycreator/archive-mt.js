@@ -44,7 +44,7 @@ Z.Label = Z.Class.extend({
         },
         'draggable': true,
         'content': '',
-        'trigger': 'hover',//click|hover
+        'trigger': '',//click|hover
         'horizontalAlignment': 'middle',//left middle right
         'verticalAlignment': 'middle',//top middle bottom
         'dx': 0,
@@ -130,61 +130,37 @@ Z.Label = Z.Class.extend({
         this._geometry = geometry;
         if(!this._geometry) {throw new Error(this.exceptions['NEED_GEOMETRY']);}
         this._registerEvent();
-        var me = this;
-        this._map.on('zoomend resize', function(){
-            me._label.remove();
-            me._registerEvent();
-        });
     },
 
     _registerEvent: function() {
         this._label = this._createLabel();
         this.hide();
         this._geometry.on('shapechanged positionchanged symbolchanged', Z.Util.bind(this._changeLabelPosition, this), this)
-                    .on('remove', this.removeLabel, this);
+                      .on('remove', this.removeLabel, this);
 
-        Z.DomUtil.on(this._label, 'click dblclick rightclick', Z.DomUtil.stopPropagation, this);
         var trigger = this.options['trigger'];
         var me = this;
         if(trigger === 'hover') {
             this._geometry.on('mouseover', function showLabel() {
                  me.show();
-                 me._map.disableDrag();
-                 me._map.disableDoubleClickZoom();
              }, this)
              .on('mouseout', function hideLabel() {
                 setTimeout(function(){
                     me.hide();
-                    me._map.enableDrag();
-                    me._map.enableDoubleClickZoom();
                 }, 1000);
              }, this);
         } else if(trigger === 'click') {
             this._geometry.on('click', function showLabel() {
                  me.show();
-                 me._map.disableDrag();
-                 me._map.disableDoubleClickZoom();
              }, this);
         } else {
             this.show();
         }
         if(this.options['draggable']) {
-             Z.DomUtil.on(this._label, 'mousedown', this._onMouseDown, this)
-                      .on(this._label, 'dragend', this._endMove, this)
-                      .on(this._label, 'mouseout', this._recoverMapEvents, this);
+            this._label.startDrag();
         }
         this._geometry.getLayer().addGeometry(this._label.getGeometries());
         return this;
-    },
-
-    getDxDy:function() {
-        var dx = this.options['dx'],
-            dy = this.options['dy'];
-        return new Z.Point(dx, dy);
-    },
-
-    getLabelExtent:function() {
-        var dxdy = this.getDxDy();
     },
 
     /**
@@ -302,35 +278,11 @@ Z.Label = Z.Class.extend({
     },
 
     _changeLabelPosition: function(event) {
-        this._label.setCoordinates(this._geometry.getCenter());
-    },
-
-    _onMouseDown: function(event) {
-        Z.DomUtil.setStyle(this._labelContrainer, 'cursor: move');
-        this._label.startDrag();
-        this._map.disableDrag();
-        this._map.disableDoubleClickZoom();
-        /**
-         * 触发label的dragstart事件
-         * @event dragstart
-         * @return {Object} params: {'target': this}
-         */
-        this.fire('dragstart', {'target': this});
-    },
-
-    _endMove: function(event) {
-        Z.DomUtil.setStyle(this._labelContrainer, 'cursor: default');
-        /**
-         * 触发label的dragend事件
-         * @event dragend
-         * @return {Object} params: {'target': this}
-         */
-        this.fire('dragend', {'target': this});
-    },
-
-    _recoverMapEvents: function() {
-        this._map.enableDrag();
-        this._map.enableDoubleClickZoom();
+        var geometries = this._label.getGeometries();
+        for(var i=0,len=geometries.length;i<len;i++) {
+            var geometry = geometries[i];
+            geometry.setCoordinates(this._geometry.getCenter());
+        }
     },
 
     _createLabel: function() {

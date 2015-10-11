@@ -24,18 +24,18 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
             return map._viewPointToContainerPoint(point)._add(dxdy);
         });
         var style = this.style;
-        var url = style['marker-file'];
+        var url = style['markerFile'];
         var img = resources.getImage(url);
         if (!img) {
             return;
         }
         //将完整图片地址写回到symbol中, 截图等模块需要
         if (img['src']) {
-            this.symbol['marker-file'] = img['src'];
+            this.symbol['markerFile'] = img['src'];
         }
 
-        var width = style['marker-width'];
-        var height = style['marker-height'];
+        var width = style['markerWidth'];
+        var height = style['markerHeight'];
         if (!Z.Util.isNumber(width) || !Z.Util.isNumber(height)) {
             width = img.width;
             height = img.height;
@@ -48,19 +48,19 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
     },
 
     getPlacement:function() {
-        return this.symbol['marker-placement'];
+        return this.symbol['markerPlacement'];
     },
 
     getDxDy:function() {
         var s = this.style;
-        var dx = s['marker-dx'],
-            dy = s['marker-dy'];
+        var dx = s['markerDx'],
+            dy = s['markerDy'];
         return new Z.Point(dx, dy);
     },
 
     getMarkerExtent:function() {
-        var width = this.style['marker-width'],
-            height = this.style['marker-height'];
+        var width = this.style['markerWidth'],
+            height = this.style['markerHeight'];
         var dxdy = this.getDxDy();
         var extent = new Z.Extent(dxdy.add(new Z.Point(-width/2,0)),dxdy.add(new Z.Point(width/2,-height)));
         return extent;
@@ -69,12 +69,12 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
     translate:function() {
         var s = this.symbol;
         return {
-            "marker-file" : s["marker-file"],
-            "marker-width" : Z.Util.setDefaultValue(s["marker-width"], 0),
-            "marker-height" : Z.Util.setDefaultValue(s["marker-height"], 0),
-            "marker-opacity" : Z.Util.setDefaultValue(s["marker-opacity"], null),
-            "marker-dx" : Z.Util.setDefaultValue(s["marker-dx"], 0),
-            "marker-dy" : Z.Util.setDefaultValue(s["marker-dy"], 0)
+            "markerFile" : s["markerFile"],
+            "markerWidth" : Z.Util.setDefaultValue(s["markerWidth"], 0),
+            "markerHeight" : Z.Util.setDefaultValue(s["markerHeight"], 0),
+            "markerOpacity" : Z.Util.setDefaultValue(s["markerOpacity"], null),
+            "markerDx" : Z.Util.setDefaultValue(s["markerDx"], 0),
+            "markerDy" : Z.Util.setDefaultValue(s["markerDy"], 0)
         };
     },
 
@@ -94,11 +94,11 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
         markerIcon.style.cssText = 'border:none; position:absolute;'+
                 'max-width:none;-webkit-user-select: none;';
         var width, height;
-        if (!Z.Util.isNil(symbol['marker-width'])) {
-            width = parseInt(symbol['marker-width'],0);
+        if (!Z.Util.isNil(symbol['markerWidth'])) {
+            width = parseInt(symbol['markerWidth'],0);
         }
-        if (!Z.Util.isNil(symbol['marker-height'])) {
-            height = parseInt(symbol['marker-height'],0);
+        if (!Z.Util.isNil(symbol['markerHeight'])) {
+            height = parseInt(symbol['markerHeight'],0);
         }
         if (width && height) {
             markerIcon['width'] = width;
@@ -114,7 +114,7 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
         markerIcon.onload = function() {
             if (this.src) {
                 //相对地址转化成绝对地址
-                me.symbol['marker-file'] = this.src;
+                me.symbol['markerFile'] = this.src;
             }
         };
 
@@ -128,10 +128,10 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
             this.src = markerIcon.src;
         };
 
-        if (!Z.Util.isNil(symbol['marker-opacity'])) {
-            Z.DomUtil.setOpacity(markerIcon, symbol['marker-opacity']);
+        if (!Z.Util.isNil(symbol['markerOpacity'])) {
+            Z.DomUtil.setOpacity(markerIcon, symbol['markerOpacity']);
         }
-        markerIcon.src = symbol['marker-file'];
+        markerIcon.src = symbol['markerFile'];
         markerDom.appendChild(markerIcon);
         return markerDom;
     }
@@ -142,7 +142,7 @@ Z.ImageMarkerSymbolizer.test=function(geometry, symbol) {
     if (!geometry || !symbol) {
         return false;
     }
-    if (!Z.Util.isNil(symbol['marker-file'])) {
+    if (!Z.Util.isNil(symbol['markerFile'])) {
         return true;
     }
     return false;
