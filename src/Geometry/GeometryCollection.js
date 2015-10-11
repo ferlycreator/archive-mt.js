@@ -35,6 +35,17 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
             this._prepareGeometries();
             this._onShapeChanged();
         }
+        for(var i=0,len=geometries.length;i<len;i++) {
+            var geo = geometries[i];
+            geo.on('mousedown',this._mousedown, this);
+               geo.on('mouseup',this._mouseup, this);
+               geo.on('mouseover',this._mouseover, this);
+               geo.on('mouseout',this._mouseout, this);
+               geo.on('click',this._click, this);
+               geo.on('startdrag',this._startdrag, this);
+               geo.on('dragend',this._dragend, this);
+               geo.on('positionchanged',this._positionchanged, this);
+        }
         return this;
     },
 
@@ -127,8 +138,6 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         return null;
     },
 
-
-
     _updateCache:function() {
         delete this._extent;
         if (this.isEmpty()) {
@@ -175,14 +184,16 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         return false;
     },
 
-    _computeExtent:function(projection) {
-        if (!projection || this.isEmpty()) {
+    _computeExtent:function() {
+        if (this.isEmpty()) {
             return null;
         }
         var geometries = this.getGeometries();
         var result = null;
         for (var i=0, len=geometries.length;i<len;i++) {
-            result = Z.Extent.combine(geometries[i]._computeExtent(projection),result);
+            var geo = geometries[i];
+            var projection = geo.getMap()._getProjection();
+            result = Z.Extent.combine(geo._computeExtent(projection),result);
         }
         return result;
     },
@@ -307,12 +318,6 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
             var geo = geometries[i];
             geo.on('mousedown', geo.startDrag, geo);
         }
-        /**
-         * 触发dragstart事件
-         * @event dragstart
-         * @return {Object} params: {'target': this}
-         */
-        this.fire('dragstart', {'target': this});
         this.dragging = true;
         return this;
     },
@@ -331,12 +336,6 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
             geo.off('mousedown',geo.startDrag,geo);
         }
         this.dragging = false;
-        /**
-         * 触发dragend事件
-         * @event dragend
-         * @return {Object} params: {'target': this}
-         */
-        this.fire('dragend', {'target': this});
         return this;
     },
 
@@ -347,5 +346,92 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
      */
     isDragging:function() {
         return this.dragging;
+    },
+
+
+    /**
+     * 获取端点数组
+     */
+    getVertexs: function() {
+        var extent = this._computeExtent();
+        var vertexs = [
+            new Z.Coordinate(extent.xmin,extent.ymax),
+            new Z.Coordinate(extent.xmax,extent.ymin),
+            new Z.Coordinate(extent.xmin,extent.ymin),
+            new Z.Coordinate(extent.xmax,extent.ymax)
+        ];
+        return vertexs;
+    },
+
+    _mousedown: function() {
+        /**
+         * 触发mousedown事件
+         * @event mousedown
+         * @return {Object} params: {'target': this}
+         */
+        this.fire('mousedown', {'target': this});
+    },
+
+    _mouseup: function() {
+        /**
+         * 触发mouseup事件
+         * @event mouseup
+         * @return {Object} params: {'target': this}
+         */
+        this.fire('mouseup', {'target': this});
+    },
+
+    _click: function() {
+        /**
+         * 触发click事件
+         * @event click
+         * @return {Object} params: {'target': this}
+         */
+        this.fire('click', {'target': this});
+    },
+
+    _mouseover: function() {
+        /**
+         * 触发mouseover事件
+         * @event mouseover
+         * @return {Object} params: {'target': this}
+         */
+        this.fire('mouseover', {'target': this});
+    },
+
+    _mouseout: function() {
+        /**
+         * 触发mouseout事件
+         * @event mouseout
+         * @return {Object} params: {'target': this}
+         */
+        this.fire('mouseout', {'target': this});
+    },
+
+    _startdrag: function() {
+        /**
+         * 触发startdrag事件
+         * @event startdrag
+         * @return {Object} params: {'target': this}
+         */
+        this.fire('startdrag', {'target': this});
+    },
+
+    _dragend: function() {
+        /**
+         * 触发dragend事件
+         * @event dragend
+         * @return {Object} params: {'target': this}
+         */
+        this.fire('dragend', {'target': this});
+    },
+
+    _positionchanged: function() {
+        /**
+         * 触发positionchanged事件
+         * @event positionchanged
+         * @return {Object} params: {'target': this}
+         */
+        this.fire('positionchanged', {'target': this});
     }
 });

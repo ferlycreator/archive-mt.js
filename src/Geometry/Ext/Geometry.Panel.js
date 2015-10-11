@@ -30,10 +30,10 @@ Z.Geometry.include({
             linkTarget:panel,
             trigger: 'manual',
             symbol:{
-                'line-color' : '#474cf8',
-                'line-width' : 1,
-                'line-dasharray' : null,
-                'line-opacity' : 1
+                'lineColor' : '#474cf8',
+                'lineWidth' : 1,
+                'lineDasharray' : null,
+                'lineOpacity' : 1
             }
         };
         var linker = new Z.Linker(linkerOptions);

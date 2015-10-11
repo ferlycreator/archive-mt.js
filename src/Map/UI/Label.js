@@ -65,6 +65,7 @@ Z.Label = Z.Class.extend({
         this.textContent = this.options['content'];
         var style = this.options.symbol;
         this.textSize = Z.Util.stringLength(this.textContent, style['textFaceName'],style['textSize']);
+        this.labelSize = this._getLabelSize();
         return this;
     },
 
@@ -156,125 +157,25 @@ Z.Label = Z.Class.extend({
         } else {
             this.show();
         }
+        this._geometry.getLayer().addGeometry(this._label.getGeometries());
+
         if(this.options['draggable']) {
             this._label.startDrag();
+            var linkerOptions = {
+                linkSource:this._label,
+                linkTarget:this._geometry,
+                trigger: 'click',
+                symbol:{
+                    'lineColor' : '#ff0000',
+                    'lineWidth' : 1,
+                    'lineDasharray' : null,
+                    'lineOpacity' : 1
+                }
+            };
+            var linker = new Z.Linker(linkerOptions);
+            linker.addTo(this._map);
         }
-        this._geometry.getLayer().addGeometry(this._label.getGeometries());
         return this;
-    },
-
-    /**
-     * 获取label端点数组
-     */
-    getVertexs: function() {
-        var points = [];
-        var painter = this._label._getPainter();
-        var textSize = painter.measureTextMarker();
-        var width = 0,
-            height = 0;
-        var containerPoint = this._topLeftPoint(width, height);
-        var topLeftPoint = this._map.containerPointToCoordinate(containerPoint);
-        var topCenterPoint = this._map.containerPointToCoordinate(
-            new Z.Point(
-                containerPoint['left'] + Math.round(width/2),
-                containerPoint['top']
-            )
-        );
-        var topCenterBufferPoint = this._map.containerPointToCoordinate(
-            new Z.Point(
-                containerPoint['left'] + Math.round(width/2),
-                containerPoint['top'] - 20
-            )
-        );
-        var topRightPoint = this._map.containerPointToCoordinate(
-            new Z.Point(
-                containerPoint['left'] + width,
-                containerPoint['top']
-            )
-        );
-        var bottomLeftPoint = this._map.containerPointToCoordinate(
-            new Z.Point(
-                containerPoint['left'],
-                containerPoint['top'] + height
-            )
-        );
-        var bottomCenterPoint = this._map.containerPointToCoordinate(
-            new Z.Point(
-                containerPoint['left'] + Math.round(width/2),
-                containerPoint['top'] + height
-            )
-        );
-        var bottomCenterBufferPoint = this._map.containerPointToCoordinate(
-            new Z.Point(
-                containerPoint['left'] + Math.round(width/2),
-                containerPoint['top'] + height + 20
-            )
-        );
-        var bottomRightPoint = this._map.containerPointToCoordinate(
-            new Z.Point(
-                containerPoint['left'] + width,
-                containerPoint['top'] + height
-            )
-        );
-        var middleLeftPoint = this._map.containerPointToCoordinate(
-            new Z.Point(
-                containerPoint['left'],
-                containerPoint['top'] + Math.round(height/2)
-            )
-        );
-        var middleLeftBufferPoint = this._map.containerPointToCoordinate(
-            new Z.Point(
-                containerPoint['left'] - 20,
-                containerPoint['top'] + Math.round(height/2)
-            )
-        );
-        var middleRightPoint = this._map.containerPointToCoordinate(
-            new Z.Point(
-                containerPoint['left'] + width,
-                containerPoint['top'] + Math.round(height/2)
-            )
-        );
-        var middleRightBufferPoint = this._map.containerPointToCoordinate(
-            new Z.Point(
-                containerPoint['left'] + width + 20,
-                containerPoint['top'] + Math.round(height/2)
-            )
-        );
-        var vertexs = [topCenterPoint,middleRightPoint,bottomCenterPoint,middleLeftPoint];
-        return vertexs;
-    },
-
-    _topLeftPoint: function(width, height) {
-        var placement = this.options['symbol']['vertical-alignment'];
-        var center = this._label.getCenter();
-        var point = this._map.coordinateToViewPoint(center);
-        var mapOffset = this._map.offsetPlatform();
-        if (placement === 'left') {
-            return new Z.Point(
-                point['left'] - width + mapOffset['left'],
-                point['top'] - Math.round(height/2) + mapOffset['top']
-            );
-        } else if (placement === 'top') {
-            return new Z.Point(
-                point['left'] - Math.round(width/2) + mapOffset['left'],
-                point['top'] - height + mapOffset['top']
-            );
-        } else if (placement === 'right') {
-            return new Z.Point(
-                point['left'] + mapOffset['left'],
-                point['top'] - Math.round(height/2) + mapOffset['top']
-            );
-        } else if(placement === 'bottom') {
-            return new Z.Point(
-                point['left'] - Math.round(width/2) + mapOffset['left'],
-                point['top'] + mapOffset['top']
-            );
-        } else {//center
-            return new Z.Point(
-                point['left'] - Math.round(width/2) + mapOffset['left'],
-                point['top'] - Math.round(height/2) + mapOffset['top']
-            );
-        }
     },
 
     _changeLabelPosition: function(event) {
@@ -290,6 +191,37 @@ Z.Label = Z.Class.extend({
         var textMarker = new Z.Marker(center);
         var box = new Z.Marker(center);
 
+        var dx=this.options['dx'],dy=this.options['dy'];
+        textMarker.setSymbol(this.textStyle);
+
+        var width = this.labelSize['width'];
+        var height = this.labelSize['height'];
+        var hAlign = this.options['horizontalAlignment'];
+        if (hAlign === 'right') {
+            dx += width/2;
+        } else if (hAlign === 'middle') {
+            dx += 0;
+        } else {
+            dx += -width/2;
+        }
+
+        var vAlign = this.options['verticalAlignment'];
+        if (vAlign === 'top') {
+            dy += -height/2;
+        } else if (vAlign === 'middle') {
+            dy += 0;;
+        } else {
+            dy += height/2;
+        }
+        this.strokeAndFill['markerDx'] = dx;
+        this.strokeAndFill['markerDy'] = dy;
+        this.strokeAndFill['markerWidth'] = width;
+        this.strokeAndFill['markerHeight'] = height;
+        box.setSymbol(this.strokeAndFill);
+        return new Z.GeometryCollection([box]);
+    },
+
+    _getLabelSize: function() {
         var style = this.options.symbol;
         var font = style['textFaceName'];
         var fontSize = style['textSize'];
@@ -319,32 +251,7 @@ Z.Label = Z.Class.extend({
             }
         }
         var height = rowNum*(fontSize+lineSpacing);
-
-        var hAlign = this.options['horizontalAlignment'];
-        var dx=this.options['dx'],dy=this.options['dy'];
-        textMarker.setSymbol(this.textStyle);
-        if (hAlign === 'right') {
-            dx += wrapWidth/2;
-        } else if (hAlign === 'middle') {
-            dx += 0;
-        } else {
-            dx += -wrapWidth/2;
-        }
-
-        var vAlign = this.options['verticalAlignment'];
-        if (vAlign === 'top') {
-            dy += -height/2;
-        } else if (vAlign === 'middle') {
-            dy += 0;;
-        } else {
-            dy += height/2;
-        }
-        this.strokeAndFill['markerDx'] = dx;
-        this.strokeAndFill['markerDy'] = dy;
-        this.strokeAndFill['markerWidth'] = wrapWidth;
-        this.strokeAndFill['markerHeight'] = height;
-        box.setSymbol(this.strokeAndFill);
-        return new Z.GeometryCollection([box,textMarker]);
+        return new Z.Size(wrapWidth, height);
     },
 
     _translateTextStyle: function() {
