@@ -116,7 +116,7 @@ Z.PointSymbolizer=Z.Symbolizer.extend({
 
 
     //设置dom/svg/vml类型marker页面位置的方法
-    _offsetMarker:function(marker, pt) {
+    _offsetMarker: function(marker, pt) {
         var d = this.getDxDy();
         var point = pt.add(d);
         if (marker.tagName && marker.tagName === 'SPAN') {
@@ -124,23 +124,83 @@ Z.PointSymbolizer=Z.Symbolizer.extend({
             marker.style.left = point['left']+'px';
             marker.style.top = point['top']+'px';
         } else {
+            var textOffset = this._getTextOffset(point);
             if (Z.Browser.vml) {
                 //vml
                 marker.style.position = 'absolute';
-                marker.style.left = point['left'];
-                marker.style.top = point['top'];
+                marker.style.left = textOffset['left'];
+                marker.style.top = textOffset['top'];
             } else {
                 if (marker.tagName === 'text') {
                     // svg text
-                    marker.setAttribute('x',point['left']);
-                    marker.setAttribute('y',point['top']);
+                    marker.setAttribute('x',textOffset['left']);
+                    marker.setAttribute('y',textOffset['top']);
                 } else {
                     //svg
-                    marker.setAttribute('transform', 'translate('+point['left']+' '+point['top']+')');
+                    marker.setAttribute('transform', 'translate('+textOffset['left']+' '+textOffset['top']+')');
                 }
 
             }
         }
 
+    },
+
+    _getTextOffset: function(point) {
+        var style = this.geometry.getSymbol();
+        var props = this.geometry.getProperties();
+        //非文本marker
+        if(!style['textName']) return point;
+        var text = Z.Util.content(style['textName'], props);
+        var textSize = this._getTextSize(text, style);
+        var left = point['left'],top = point['top'];
+        var hAlign = style['textHorizontalAlignment'];
+        if (hAlign === 'left') {
+            left -= textSize['width'];
+        } else if (hAlign === 'middle') {
+            left -= textSize['width']/2;
+        }
+        var vAlign = style['textVerticalAlignment'];
+        if (vAlign === 'top') {
+            top -= textSize['height'];
+        } else if (vAlign === 'middle') {
+            top -= textSize['height']/2;
+        }
+        return new Z.Point(left,top);
+    },
+
+    _getTextSize: function(text, style) {
+        var font = style['textFaceName'];
+        var fontSize = style['textSize'];
+        var dx = style['textDx'],dy = style['textDy'];
+        var lineSpacing = style['textLineSpacing'];
+        var wrapChar = style['textWrapCharacter'];
+        var textWidth = Z.Util.stringLength(text,font,fontSize).width;
+        var wrapWidth = style['textWrapWidth'];
+        if(!wrapWidth) wrapWidth = textWidth;
+        var rowNum = 0;
+        if(wrapChar){
+            var texts = text.split(wrapChar);
+            for(var i=0,len=texts.length;i<len;i++) {
+                var t = texts[i];
+                var tWidth = Z.Util.stringLength(t,font,fontSize).width;
+                if(tWidth>wrapWidth) {
+                    var contents = Z.Util.splitContent(t, tWidth, fontSize, wrapWidth);
+                    rowNum += contents.length;
+                } else {
+                    rowNum ++;
+                }
+            }
+        } else {
+            if(textWidth>wrapWidth) {
+               var contents = Z.Util.splitContent(text, textWidth, fontSize, wrapWidth);
+               rowNum = contents.length;
+            } else {
+                rowNum = 1;
+            }
+        }
+        var rowHeight = fontSize+lineSpacing;
+        return new Z.Size(wrapWidth, rowHeight*rowNum);
     }
+
+
 });

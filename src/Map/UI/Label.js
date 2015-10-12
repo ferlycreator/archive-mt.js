@@ -218,7 +218,7 @@ Z.Label = Z.Class.extend({
         this.strokeAndFill['markerWidth'] = width;
         this.strokeAndFill['markerHeight'] = height;
         box.setSymbol(this.strokeAndFill);
-        return new Z.GeometryCollection([box]);
+        return new Z.GeometryCollection([box,textMarker]);
     },
 
     _getLabelSize: function() {
