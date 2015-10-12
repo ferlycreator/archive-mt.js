@@ -87,6 +87,16 @@ Z.FeatureQuery=Z.Class.extend({
         if (!layer) {
             throw new Error('layer is not specified in query options.');
         }
+        if (Z.Util.isArrayHasData(layer)) {
+            layer = layer.join(',');
+        } else if (Z.Util.isString(layer)) {
+            var segs = layer.split(',');
+            //去掉图层名前后两端的空格, 如 foo1, foo2 , foo3 ----> foo1,foo2,foo3
+            for (var i = segs.length - 1; i >= 0; i--) {
+                segs[i] = segs[i].replace(/(^\s*)|(\s*$)/g,'');
+            }
+            layer = segs.join(',');
+        }
         if (!Z.Util.isFunction(opts['success'])) {
             throw new Error('success callback function is not specified in query options.');
         }
