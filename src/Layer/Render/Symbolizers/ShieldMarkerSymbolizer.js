@@ -53,10 +53,6 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
         if (!Z.Util.isArrayHasData(points)) {
             return;
         }
-        var map = this.getMap();
-        var cookedPoints = Z.Util.eachInArray(points,this,function(point) {
-            return map._viewPointToContainerPoint(point);
-        });
         Z.Canvas.setDefaultCanvasSetting(ctx);
 
         var style = this.style,
@@ -64,6 +60,10 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
         Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'], strokeAndFill['fill'], resources);
         Z.Canvas.prepareCanvasFont(ctx,style);
 
+        var map = this.getMap();
+        var cookedPoints = Z.Util.eachInArray(points,this,function(point) {
+            return map._viewPointToContainerPoint(point);
+        });
         var img = resources.getImage(style['shieldFile']);
         for (var i = 0, len=cookedPoints.length;i<len;i++) {
             var pt = cookedPoints[i];
@@ -154,16 +154,28 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
             this._offsetMarker(svgImage, new Z.Point(-this.shieldFileWidth/2, -this.shieldFileHeight/2));
             svgGroup.appendChild(svgImage);
         }
+
+        var points = this.renderPoints;
+        if (!Z.Util.isArrayHasData(points)) {
+            return;
+        }
+        var map = this.getMap();
+        var cookedPoints = Z.Util.eachInArray(points,this,function(point) {
+            return map._viewPointToContainerPoint(point);
+        });
         var textStyle = this.style;
-        var point = this.geometry._getCenterViewPoint();
-        var svgText = Z.SVG.text(this.textContent, point, textStyle, this.textSize);
-        Z.SVG.updateTextStyle(svgText, textStyle, this.textSize);
-        var strokeAndFill = this.translateStrokeAndFill(textStyle);
-        Z.SVG.updateShapeStyle(svgText, strokeAndFill['stroke'], strokeAndFill['fill']);
+        for (var i = 0, len=cookedPoints.length;i<len;i++) {
+            var point = cookedPoints[i];
+            var svgText = Z.SVG.text(this.textContent, point, textStyle, this.textSize);
+            Z.SVG.updateTextStyle(svgText, textStyle, this.textSize);
+            var strokeAndFill = this.translateStrokeAndFill(textStyle);
+            Z.SVG.updateShapeStyle(svgText, strokeAndFill['stroke'], strokeAndFill['fill']);
 
-        this._offsetMarker(svgText, new Z.Point(style['textDx'], style['textDy']));
+            this._offsetMarker(svgText, new Z.Point(style['textDx'], style['textDy']));
 
-        svgGroup.appendChild(svgText);
+            svgGroup.appendChild(svgText);
+        }
+
         return svgGroup;
     },
 

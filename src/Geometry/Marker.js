@@ -28,6 +28,7 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
         return pxExtent.contains(point);
     },
 
+    //TODO 针对vector与text类型marker需要特殊处理
     _computeExtent:function(projection) {
         var coordinates = this.getCenter();
         if (!coordinates) {return null;}

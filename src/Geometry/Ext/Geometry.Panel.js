@@ -32,7 +32,7 @@ Z.Geometry.include({
             symbol:{
                 'lineColor' : '#474cf8',
                 'lineWidth' : 1,
-                'lineDasharray' : null,
+                'lineDasharray' : [20,5,2,5],
                 'lineOpacity' : 1
             }
         };
