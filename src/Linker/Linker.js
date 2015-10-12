@@ -152,8 +152,8 @@ Z.Linker = Z.Class.extend({
     },
 
     _computeLinkPoint: function() {
-        var sourceVertexs = this._linkSource.getVertexs();
-        var targetVertexs = this._linkTarget.getVertexs();
+        var sourceVertexs = this._linkSource.getLinkAnchors();
+        var targetVertexs = this._linkTarget.getLinkAnchors();
         var lastDistance = 0;
         var nearestSourcePoint,nearestTargetPoint;
         for(var i=0,len=sourceVertexs.length;i<len;i++) {

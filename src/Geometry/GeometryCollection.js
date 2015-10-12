@@ -184,7 +184,7 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         return false;
     },
 
-    _computeExtent:function() {
+    _computeExtent:function(projection) {
         if (this.isEmpty()) {
             return null;
         }
@@ -192,7 +192,6 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         var result = null;
         for (var i=0, len=geometries.length;i<len;i++) {
             var geo = geometries[i];
-            var projection = geo.getMap()._getProjection();
             result = Z.Extent.combine(geo._computeExtent(projection),result);
         }
         return result;
@@ -352,8 +351,9 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
     /**
      * 获取端点数组
      */
-    getVertexs: function() {
-        var extent = this._computeExtent();
+    getLinkAnchors: function() {
+        var projection = this._getProjection();
+        var extent = this._computeExtent(projection);
         var vertexs = [
             new Z.Coordinate(extent.xmin,extent.ymax),
             new Z.Coordinate(extent.xmax,extent.ymin),
@@ -361,6 +361,16 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
             new Z.Coordinate(extent.xmax,extent.ymax)
         ];
         return vertexs;
+    },
+
+    _getProjection: function() {
+        var projection;
+        var geometries = this.getGeometries();
+        for (var i=0,len=geometries.length;i<len;i++) {
+            projection = geometries[i].getMap()._getProjection();
+            if(projection) break;
+        }
+        return projection;
     },
 
     _mousedown: function() {

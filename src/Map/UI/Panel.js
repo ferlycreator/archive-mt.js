@@ -100,7 +100,7 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
     /**
      * 获取panel端点数组
      */
-    getVertexs: function() {
+    getLinkAnchors: function() {
         var points = [];
         var containerPoint = this._topLeftPoint();
         var width = this._panelContainer['clientWidth'],
