@@ -36,9 +36,9 @@
         var marker = new maptalks.Marker(new maptalks.Coordinate(121.489935,31.24432));
         //设置点图片
         var icon = {
-            'marker-file': '../../images/marker.png',
-            'marker-width': 22,
-            'marker-height': 30,
+            'markerFile': '../../images/marker.png',
+            'markerWidth': 22,
+            'markerHeight': 30,
             'dx': 0,
             'dy' :0
         };
@@ -57,10 +57,10 @@
             new maptalks.Coordinate(121.473427,31.222784)]);
         //设置线样式
         var polylineSymbol = {
-            'line-color' : '#ff00ff',
-            'line-width' : 5,
-            'line-dasharray' : '-',//线形
-            'line-opacity' : 1
+            'lineColor' : '#ff00ff',
+            'lineWidth' : 5,
+            'lineDasharray' : [20,10,5,5,5,10],//线形
+            'lineOpacity' : 1
         };
         polyline.setSymbol(polylineSymbol);
         //将线添加到Layer
@@ -81,12 +81,12 @@
             ]);
         //设置面样式
         var polygonSymbol = {
-            'line-color' : '#0000ff',
-            'line-width' : 2,
-            'line-dasharray' : '-',//线形
-            'line-opacity' : 1,
-            'polygon-fill' : '#ff00ff',
-            'polygon-opacity' : 0.8
+            'lineColor' : '#0000ff',
+            'lineWidth' : 2,
+            'lineDasharray' : [20,10,5,5,5,10],//线形
+            'lineOpacity' : 1,
+            'polygonFill' : '#ff00ff',
+            'polygonOpacity' : 0.8
         };
         polygon.setSymbol(polygonSymbol);
         //将面添加到Layer

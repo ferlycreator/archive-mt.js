@@ -39,14 +39,16 @@
             *TYPE_POLYGON： 多边形；TYPE_RECT：矩形；TYPE_ELLIPSE：圆形
             */
             mode: maptalks.Geometry.TYPE_POLYGON,
+            //绘制面的样式
             symbol: {
-                'line-color':'#f00',
-                'line-width':3,
-                'line-opacity':1,
-                'line-dasharray': [20,5,2,5],
-                'polygon-fill': 'rgb(0, 255, 51)',
-                'polygon-pattern-file': 'url("https://mdn.mozillademos.org/files/222/Canvas_createpattern.png")',
-                'polygon-opacity': 0.6
+                'lineColor':'#f00',
+                'lineWidth':3,
+                'lineOpacity':1,
+                'lineDasharray': [20,5,2,5],
+                'polygonFill': 'rgb(0, 255, 51)',
+                //面填充图片
+                'polygonPatternFile': 'url("https://mdn.mozillademos.org/files/222/Canvas_createpattern.png")',
+                'polygonOpacity': 0.6
             }
         });
         //将线绘制工具绑定到地图对象
