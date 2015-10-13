@@ -367,7 +367,9 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         var projection;
         var geometries = this.getGeometries();
         for (var i=0,len=geometries.length;i<len;i++) {
-            projection = geometries[i].getMap()._getProjection();
+            var map = geometries[i].getMap();
+            if(!map) break;
+            projection = map._getProjection();
             if(projection) break;
         }
         return projection;

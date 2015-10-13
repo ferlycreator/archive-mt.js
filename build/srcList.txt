@@ -68,7 +68,6 @@
 ../src/Layer/Render/Symbolizers/VectorMarkerSymbolizer.js
 ../src/Layer/Render/Symbolizers/TextMarkerSymbolizer.js
 ../src/Layer/Render/Symbolizers/ShieldMarkerSymbolizer.js
-../src/Layer/Render/Symbolizers/LabelMarkerSymbolizer.js
 ../src/Layer/Render/Geometry.SVG.js
 ../src/Layer/Render/Geometry.Canvas.js
 ../src/Layer/Render/Painter.js

@@ -97,37 +97,58 @@ Z.SVG.SVG = {
                     textRows.push(t);
                 }
             }
-            svgText = this._createTextRow(svgText, textRows, fontSize, rowHeight);
+            var rowNum = textRows.length;
+            var textSize = new Z.Size(wrapWidth, rowHeight*rowNum);
+            svgText = this._createTextRow(svgText, textRows, style, textSize, fontSize, lineSpacing);
         } else {
             if(textWidth>wrapWidth) {
-               var contents = Z.Util.splitContent(text, textWidth, fontSize, wrapWidth);
-               svgText = this._createTextRow(svgText, contents, fontSize, lineSpacing);
+                var contents = Z.Util.splitContent(text, textWidth, fontSize, wrapWidth);
+                var rowNum = contents.length;
+                var textWidth = new Z.Size(wrapWidth, rowHeight*rowNum);
+                svgText = this._createTextRow(svgText, contents, style, textSize, fontSize, lineSpacing);
             } else {
-                svgText = this._createtspan(text, fontSize);
+               svgText = this._createtspan(text, style, textSize, lineSpacing);
             }
         }
         return svgText;
     },
 
-    _createTextRow:function(svgText, contents, fontSize, lineSpacing) {
+    _createTextRow:function(svgText, contents, style, textSize, fontSize, lineSpacing) {
         var rowHeight = 0;
         for(var i=0,len=contents.length;i<len;i++){
             var content = contents[i];
             if(i===0) {
                 rowHeight = fontSize;
             } else {
-                rowHeight +=lineSpacing;
+                rowHeight +=fontSize+lineSpacing;
             }
-            var tspan = this._createtspan(content, rowHeight);
+            var tspan = this._createtspan(content, style, textSize, rowHeight);
             svgText.appendChild(tspan);
         }
         return svgText;
     },
 
-    _createtspan: function(content, rowHeight) {
+    _createtspan: function(content, style, textSize, rowHeight) {
         var tspan = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        tspan.setAttribute('dx', 0);
-        tspan.setAttribute('dy', rowHeight);
+        var left = style['textDx'],top = style['textDy'];
+        var hAlign = style['textHorizontalAlignment'];
+        if (hAlign === 'left') {
+            left -= textSize['width'];
+        } else if (hAlign === 'middle') {
+            left -= textSize['width']/2;
+        }
+
+        var vAlign = style['textVerticalAlignment'];
+        if (vAlign === 'top') {
+            top = -textSize['height'] + rowHeight;
+        } else if (vAlign === 'middle') {
+            top = -textSize['height']/2 + rowHeight;
+        } else {
+            top = rowHeight;
+        }
+
+        tspan.setAttribute('dx', left);
+        tspan.setAttribute('dy', top);
         var textNode = document.createTextNode(content);
         tspan.appendChild(textNode);
         return tspan;
@@ -381,10 +402,11 @@ Z.SVG.VML= {
         for(var i=0,len=contents.length;i<len;i++){
             var content = contents[i];
             if(i===0) {
-                y += fontSize;
+                y = fontSize;
+            } else {
+                y += fontSize+lineSpacing;
             }
             vmlShape = this._createTextPath(vmlShape, content, style, textSize, x, y);
-            y += fontSize+lineSpacing;
         }
         return vmlShape;
     },
@@ -392,9 +414,25 @@ Z.SVG.VML= {
     _createTextPath: function(vmlShape, text, style, textSize, x, y) {
         var vmlLine = Z.SVG.create('polyline');
         vmlLine.strokecolor = style['textFill'];
-        vmlLine.points = Math.round(x)+','+Math.round(y)
-                         +' '+Math.round(x+textSize['width'])+','+Math.round(y+1);
+        var left = style['textDx'],top = style['textDy'];
+        var hAlign = style['textHorizontalAlignment'];
+        if (hAlign === 'left') {
+            left -= textSize['width']+x;
+        } else if (hAlign === 'middle') {
+            left -= textSize['width']/2+x;
+        }
 
+        var vAlign = style['textVerticalAlignment'];
+        if (vAlign === 'top') {
+            top = -textSize['height'] + y;
+        } else if (vAlign === 'middle') {
+            top =  -textSize['height']/2 + y;
+        } else {
+            top = y;
+        }
+
+        vmlLine.points = Math.round(left)+','+Math.round(top)
+                         +' '+Math.round(left+textSize['width'])+','+Math.round(top+1);
         var vmlPath = Z.SVG.create('path');
         vmlPath.textpathok=true;
 
