@@ -139,8 +139,8 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
             textContent = this.textContent,
             size = this.textSize,
             strokeAndFill = this.strokeAndFill;
-        var point = this.geometry._getCenterViewPoint();
-        var svgText = Z.SVG.text(textContent, point, style, size);
+
+        var svgText = Z.SVG.text(textContent, style, size);
         Z.SVG.updateTextStyle(svgText, style, size);
         Z.SVG.updateShapeStyle(svgText, strokeAndFill['stroke'], strokeAndFill['fill']);
         return svgText;

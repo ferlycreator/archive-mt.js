@@ -321,7 +321,7 @@ Z.Util = {
         ruler.style.fontSize = fontSize+'px';
         ruler.style.fontWeight = 'bold';
         ruler.innerHTML = text;
-        return new Z.Size(ruler.clientWidth+1, ruler.clientHeight+1);
+        return new Z.Size(ruler.clientWidth, ruler.clientHeight);
     },
 
     /**

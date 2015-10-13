@@ -66,11 +66,11 @@ Z.SVG.SVG = {
         svgShape.setAttribute('d', path);
     },
 
-    text:function(text, point, style, size) {
+    text:function(text, style, size) {
         //TODO 改为textpath
         var font = style['textFaceName'];
         var fontSize = style['textSize'];
-        var svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        var svgText = document.createElementNS('http://www.w3.org/2000/svg', 'g');
         var textStyle = 'font-family:' + font + ';' +
                         'font-size:' + fontSize + ';' +
                         'fill:' + style['textFill'] + ';' +
@@ -78,13 +78,12 @@ Z.SVG.SVG = {
                         'text-align:' + style['textAlign'] + ';';
         svgText.setAttribute('style', textStyle);
 
-        var dx = style['textDx']+point['left'],dy = style['textDy']+point['top'];
         var lineSpacing = style['textLineSpacing'];
         var wrapChar = style['textWrapCharacter'];
         var textWidth = Z.Util.stringLength(text,font,fontSize).width;
         var wrapWidth = style['textWrapWidth'];
         if(!wrapWidth) wrapWidth = textWidth;
-        var rowNum = 1;
+        var rowHeight = fontSize + lineSpacing;
         if(wrapChar){
             var texts = text.split(wrapChar);
             var textRows = [];
@@ -92,66 +91,64 @@ Z.SVG.SVG = {
                 var t = texts[i];
                 var tWidth = Z.Util.stringLength(t,font,fontSize).width;
                 if(tWidth>wrapWidth) {
-                    var contents = Z.Util.splitContent(t, tWidth, fontSize, wrapWidth);
+                    var contents = Z.Util.splitContent(t, tWidth, fontSize, lineSpacing);
                     textRows = textRows.concat(contents);
                 } else {
                     textRows.push(t);
                 }
             }
-            rowNum = textRows.length;
-            var height = (fontSize+lineSpacing)*rowNum;
-            var textSize = new Z.Size(wrapWidth, height);
-            svgText = this._createTextRow(svgText, textRows, style, textSize, dx, dy);
+            var rowNum = textRows.length;
+            var textSize = new Z.Size(wrapWidth, rowHeight*rowNum);
+            svgText = this._createTextRow(svgText, textRows, style, textSize, fontSize, lineSpacing);
         } else {
             if(textWidth>wrapWidth) {
-               var contents = Z.Util.splitContent(text, textWidth, fontSize, wrapWidth);
-               rowNum = contents.length;
-               var height = (fontSize+lineSpacing)*rowNum;
-               var textSize = new Z.Size(wrapWidth, height);
-               svgText = this._createTextRow(svgText, contents, style, textSize, dx, dy);
+                var contents = Z.Util.splitContent(text, textWidth, fontSize, wrapWidth);
+                var rowNum = contents.length;
+                var textWidth = new Z.Size(wrapWidth, rowHeight*rowNum);
+                svgText = this._createTextRow(svgText, contents, style, textSize, fontSize, lineSpacing);
             } else {
-                var textNode = document.createTextNode(text);
-                svgText.appendChild(textNode);
+               svgText = this._createtspan(text, style, textSize, lineSpacing);
             }
         }
         return svgText;
     },
 
-    _createTextRow:function(svgText, contents, style, textSize, x, y) {
-        var fontSize = style['textSize'];
-        var lineSpacing = style['textLineSpacing'];
+    _createTextRow:function(svgText, contents, style, textSize, fontSize, lineSpacing) {
+        var rowHeight = 0;
         for(var i=0,len=contents.length;i<len;i++){
             var content = contents[i];
             if(i===0) {
-                y += fontSize;
+                rowHeight = fontSize;
+            } else {
+                rowHeight +=fontSize+lineSpacing;
             }
-            var tspan = this._createtspan(content, style, textSize, x, y);
+            var tspan = this._createtspan(content, style, textSize, rowHeight);
             svgText.appendChild(tspan);
-            y += fontSize+lineSpacing;
         }
         return svgText;
     },
 
-    _createtspan: function(content, style, textSize, x, y) {
-        var tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
-
+    _createtspan: function(content, style, textSize, rowHeight) {
+        var tspan = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        var left = style['textDx'],top = style['textDy'];
         var hAlign = style['textHorizontalAlignment'];
         if (hAlign === 'left') {
-            tspan.setAttribute('x',-textSize['width']+x);
+            left -= textSize['width'];
         } else if (hAlign === 'middle') {
-            tspan.setAttribute('x',-textSize['width']/2+x);
-        } else {
-            tspan.setAttribute('x',x);
+            left -= textSize['width']/2;
         }
 
         var vAlign = style['textVerticalAlignment'];
         if (vAlign === 'top') {
-            tspan.setAttribute('y',-textSize['height']+y);
+            top = -textSize['height'] + rowHeight;
         } else if (vAlign === 'middle') {
-            tspan.setAttribute('y',-textSize['height']/2+y);
+            top = -textSize['height']/2 + rowHeight;
         } else {
-            tspan.setAttribute('y',y);
+            top = rowHeight;
         }
+
+        tspan.setAttribute('dx', left);
+        tspan.setAttribute('dy', top);
         var textNode = document.createTextNode(content);
         tspan.appendChild(textNode);
         return tspan;
@@ -350,8 +347,8 @@ Z.SVG.VML= {
         vmlShape.path['v'] = path;
     },
 
-    text:function(text, point, style, size) {
-        var vmlShape = Z.SVG.create('shape');
+    text:function(text, style, size) {
+        var vmlShape = Z.SVG.create('group');
         vmlShape.style.width = '1px';
         vmlShape.style.height = '1px';
         vmlShape['coordsize'] = '1 1';
@@ -360,7 +357,7 @@ Z.SVG.VML= {
         var font = style['textFaceName'];
         var fontSize = style['textSize'];
 
-        var dx = style['textDx']+point['left'],dy = style['textDy']+point['top'];
+        var dx = style['textDx'],dy = style['textDy'];
         var lineSpacing = Z.Util.setDefaultValue(style['textLineSpacing'],0);
         var wrapChar = style['textWrapCharacter'];
         var textWidth = Z.Util.stringLength(text,font,fontSize).width;
@@ -405,49 +402,46 @@ Z.SVG.VML= {
         for(var i=0,len=contents.length;i<len;i++){
             var content = contents[i];
             if(i===0) {
-                y += fontSize;
+                y = fontSize;
+            } else {
+                y += fontSize+lineSpacing;
             }
             vmlShape = this._createTextPath(vmlShape, content, style, textSize, x, y);
-            y += fontSize+lineSpacing;
         }
         return vmlShape;
     },
 
     _createTextPath: function(vmlShape, text, style, textSize, x, y) {
-        var vmlLine = Z.SVG.create('line');
-        var vmlPath = Z.SVG.create('path');
-        vmlPath.strokeColor = style['textFill'];
-        vmlPath.strokeWidth = style['textSize'];
-        var vmlText = Z.SVG.create('textpath');
-        vmlLine.appendChild(vmlPath);
-        vmlLine.appendChild(vmlText);
-
-        var startx, starty;
+        var vmlLine = Z.SVG.create('polyline');
+        vmlLine.strokecolor = style['textFill'];
+        var left = style['textDx'],top = style['textDy'];
         var hAlign = style['textHorizontalAlignment'];
         if (hAlign === 'left') {
-            startx = -textSize['width']+x;
+            left -= textSize['width']+x;
         } else if (hAlign === 'middle') {
-            startx = -textSize['width']/2+x;
-        } else {
-            startx = x;
+            left -= textSize['width']/2+x;
         }
 
         var vAlign = style['textVerticalAlignment'];
         if (vAlign === 'top') {
-            starty = -textSize['height']+y;
+            top = -textSize['height'] + y;
         } else if (vAlign === 'middle') {
-            starty = -textSize['height']/2+y;
+            top =  -textSize['height']/2 + y;
         } else {
-            starty = y;
+            top = y;
         }
 
-        vmlLine.path = 'm '+Math.round(startx)+','+Math.round(starty)
-                      +' l '+Math.round(startx+textSize['width'])+','+Math.round(starty)+' e';
-
+        vmlLine.points = Math.round(left)+','+Math.round(top)
+                         +' '+Math.round(left+textSize['width'])+','+Math.round(top+1);
+        var vmlPath = Z.SVG.create('path');
         vmlPath.textpathok=true;
+
+        var vmlText = Z.SVG.create('textpath');
         vmlText.on=true;
         vmlText.fitpath = true;
         vmlText.string=text;
+        vmlLine.appendChild(vmlPath);
+        vmlLine.appendChild(vmlText);
         vmlShape.appendChild(vmlLine);
         return vmlShape;
     },

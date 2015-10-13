@@ -139,9 +139,9 @@ mapObj.addLayer(layer);
 var marker = new maptalks.Marker(new maptalks.Coordinate(121.489935,31.24432));
 //设置点图片
 var icon = {
-    'marker-file': '../images/marker.png',
-    'marker-width': 22,
-    'marker-height': 30,
+    'markerFile': '../images/marker.png',
+    'markerWidth': 22,
+    'markerHeight': 30,
     'dx': 0,
     'dy' :0
 };
@@ -160,10 +160,10 @@ var polyline = new maptalks.Polyline(
     new maptalks.Coordinate(121.473427,31.222784)]);
 //设置线样式
 var polylineSymbol = {
-    'line-color' : '#ff00ff',
-    'line-width' : 5,
-    'line-dasharray' : [20,10,5,5,5,10],//线形
-    'line-opacity' : 1
+    'lineColor' : '#ff00ff',
+    'lineWidth' : 5,
+    'lineDasharray' : [20,10,5,5,5,10],//线形
+    'lineOpacity' : 1
 };
 polyline.setSymbol(polylineSymbol);
 //将线添加到Layer
@@ -184,12 +184,12 @@ var polygon = new maptalks.Polygon(
     ]);
 //设置面样式
 var polygonSymbol = {
-    'line-color' : '#0000ff',
-    'line-width' : 2,
-    'line-dasharray' : [20,10,5,5,5,10],//线形
-    'line-opacity' : 1,
-    'polygon-fill' : '#ff00ff',
-    'polygon-opacity' : 0.8
+    'lineColor' : '#0000ff',
+    'lineWidth' : 2,
+    'lineDasharray' : [20,10,5,5,5,10],//线形
+    'lineOpacity' : 1,
+    'polygonFill' : '#ff00ff',
+    'polygonOpacity' : 0.8
 };
 polygon.setSymbol(polygonSymbol);
 //将面添加到Layer
@@ -209,45 +209,34 @@ layer.addGeometry(polygon);
                     <div class="bs-docs-example">
 <pre class="linenums prettyprint">
 //为marker添加tip标签
-var label = new maptalks.Label({
+var options = {
     'symbol': {
-        'shield-type': 'tip',//label tip
-        'shield-name': '名    称: [marker_name]',
-        'shield-opacity': 1,
-        'shield-line-color': '#121212',
-        'shield-line-width': 1,
-        'shield-line-opacity': 1,
-        'shield-fill': '#536457',
-        'shield-fill-opacity': 1,
-        'shield-file': '',
-        'shield-face-name': 'Serif',
-        'shield-unlock-image' : false,
-        'shield-size': 12,
-        'shield-text-fill': '#ff0000',
-        'shield-placement': 'point', //point line vertex interior
-        'shield-wrap-width': 100,
-        'shield-wrap-before': false,
-        'shield-wrap-character': '',
-        'shield-character-spacing': 0,
-        'shield-line-spacing': 8,
-        'shield-text-dx': 0,
-        'shield-text-dy': 0,
-        'shield-dx': 0,
-        'shield-dy': 0,
-        'shield-text-opacity': 1,
-        'shield-horizontal-alignment': 'middle',//left middle right
-        'shield-vertical-alignment': 'top',//top middle bottom
-        'shield-justify-alignment': 'left'//left center right
+        'lineColor': '#ffffff',
+        'lineWidth': 1,
+        'lineOpacity': 0.9,
+        'lineDasharray': null,
+        'fill': '#4e98dd',
+        'fillOpacity': 0.9,
+
+        'textFaceName': 'arial',
+        'textSize': 12,
+        'textFill': '#ebf2f9',
+        'textOpacity': 1,
+        'textSpacing': 30,
+        'textWrapWidth': 20,
+        'textWrapBefore': false,
+        'textWrapCharacter': '_',
+        'textLineSpacing': 8
     },
-    'link': false, //与geometry连线
-    'draggable': true, //能否拖动
-    'trigger': 'click'//click|hover //标签显示触发事件
-});
-//设置marker属性
-marker.setProperties({
-    'marker_name':'上海大厦',
-    'marker_addr': '北苏州路20号'
-});
+    'draggable': true,
+    'horizontalAlignment': 'middle',//left middle right
+    'verticalAlignment': 'middle',//top middle bottom
+    'dx': 0,
+    'dy': 0,
+    'content': '上海大厦'
+};
+//创建label
+var label = new maptalks.Label(options);
 //为marker添加label
 marker.addLabel(label);
 
@@ -404,14 +393,14 @@ layer.addGeometry(marker);
 var coordinate = new maptalks.Coordinate(121.489935,31.24432);
 //设置图片
 var icon = {
-    'marker-file': '../images/marker.png',
-    'marker-width': 22,
-    'marker-height': 30,
+    'markerFile': '../images/marker.png',
+    'markerWidth': 22,
+    'markerHeight': 30,
     'dx': 0,
     'dy' :0
 };
 //创建点对象
-var marker = new maptalks.Marker(coordinate, 'marker_id');
+var marker = new maptalks.Marker(coordinate, {id:'marker_id'});
 //设置点样式
 marker.setSymbol(icon);
 //将点添加到Layer
@@ -435,25 +424,25 @@ layer.addGeometry(marker);
 var coordinate = new maptalks.Coordinate(121.489935,31.24432);
 //设置矢量配置
 var icon = {
-    'marker-type': 'triangle',
-    'marker-opacity': 1,
-    'marker-fill-opacity': 1,
-    'marker-line-color': '#0000ff',
-    'marker-line-width': 1,
-    'marker-line-opacity': 1,
-    'marker-placement': 'point',
-    'marker-width': 30,
-    'marker-height': 30,
-    'marker-fill': '#ff0000',
-    'dx': 0,
-    'dy': 0
+    'markerType': 'pin',
+    'markerOpacity': 0.5,
+    'markerFillOpacity': 1,
+    'markerLineColor': '#0000ff',
+    'markerLineWidth': 5,
+    'markerLineOpacity': 1,
+    'markerPlacement': 'point',
+    'markerWidth': 30,
+    'markerHeight': 30,
+    'markerFill': '#ff0000',
+    'markerDx': 0,
+    'markerDy': 0
 };
 /**
 * marker-type 说明：
 * circle：圆形；triangle：三角形；cross：十字；diamond：菱形；square：正方形；x/X：X形；bar：柱状图；pin：水滴
 */
 //创建点对象
-var marker = new maptalks.Marker(coordinate, 'marker_id');
+var marker = new maptalks.Marker(coordinate, {id:'marker_id'});
 //设置点样式
 marker.setSymbol(icon);
 //将点添加到Layer
@@ -479,51 +468,51 @@ layer.addGeometry(marker);
 var coordinate = new maptalks.Coordinate(121.489935,31.24432);
 //设置矢量配置
 var bar1 = {
-    'marker-type': 'bar',
-    'marker-opacity': 1,
-    'marker-fill-opacity': 1,
-    'marker-line-color': '#0000ff',
-    'marker-line-width': 1,
-    'marker-line-opacity': 1,
-    'marker-placement': 'point',
-    'marker-width': 12,
-    'marker-height': 60,
-    'marker-fill': '#ff0000',
-    'dx': -12,
-    'dy': 0
+    'markerType': 'bar',
+    'markerOpacity': 1,
+    'markerFillOpacity': 1,
+    'markerLineColor': '#0000ff',
+    'markerLineWidth': 1,
+    'markerLineOpacity': 1,
+    'markerPlacement': 'point',
+    'markerWidth': 12,
+    'markerHeight': 60,
+    'markerFill': '#ff0000',
+    'markerDx': -12,
+    'markerDy': 0
 };
 var bar2 = {
-    'marker-type': 'bar',
-    'marker-opacity': 1,
-    'marker-fill-opacity': 1,
-    'marker-line-color': '#0000ff',
-    'marker-line-width': 1,
-    'marker-line-opacity': 1,
-    'marker-placement': 'point',
-    'marker-width': 12,
-    'marker-height': 60,
-    'marker-fill': '#ff0000',
-    'dx': 0,
-    'dy': 0
+    'markerType': 'bar',
+    'markerOpacity': 1,
+    'markerFillOpacity': 1,
+    'markerLineColor': '#ff00ff',
+    'markerLineWidth': 1,
+    'markerLineOpacity': 1,
+    'markerPlacement': 'point',
+    'markerWidth': 12,
+    'markerHeight': 30,
+    'markerFill': '#00ff00',
+    'markerDx': 0,
+    'markerDy': 0
 };
 var bar3 = {
-    'marker-type': 'bar',
-    'marker-opacity': 1,
-    'marker-fill-opacity': 1,
-    'marker-line-color': '#0000ff',
-    'marker-line-width': 1,
-    'marker-line-opacity': 1,
-    'marker-placement': 'point',
-    'marker-width': 12,
-    'marker-height': 60,
-    'marker-fill': '#ff0000',
-    'dx': 12,
-    'dy': 0
+    'markerType': 'bar',
+    'markerOpacity': 1,
+    'markerFillOpacity': 1,
+    'markerLineColor': '#333333',
+    'markerLineWidth': 1,
+    'markerLineOpacity': 1,
+    'markerPlacement': 'point',
+    'markerWidth': 12,
+    'markerHeight': 100,
+    'markerFill': '#0000ff',
+    'markerDx': 12,
+    'markerDy': 0
 };
 //创建点对象
-var barMarker1 = new maptalks.Marker(coordinate);
-var barMarker2 = new maptalks.Marker(coordinate);
-var barMarker3 = new maptalks.Marker(coordinate);
+var barMarker1 = new maptalks.Marker(coordinate, {'id':'barMarker1'});
+var barMarker2 = new maptalks.Marker(coordinate, {'id':'barMarker2'});
+var barMarker3 = new maptalks.Marker(coordinate, {'id':'barMarker3'});
 //设置点样式
 barMarker1.setSymbol(bar1);
 barMarker2.setSymbol(bar2);
@@ -552,25 +541,29 @@ layer.addGeometry(barMarker3);
 var coordinate = new maptalks.Coordinate(121.489935,31.24432);
 //设置矢量配置
 var icon = {
-    'text-name': '文本标注：[marker_name]',
-    'text-face-name': 'arial',
-    'text-size': 12,
-    'text-wrap-width': 100,
-    'text-fill': '#550033',
-    'text-horizontal-alignment': 'right',
-    'text-vertical-alignment': 'bottom',
-    'text-align': 'left',
-    'text-line-spacing': 8,
-    'text-opacity': 1,
-    'text-spacing': 30,
-    'text-placement': 'point',
-    'text-dx': 0,
-    'text-dy':0
+    'textPlacement': 'point',
+    'textName': '[marker_name]',
+    'textFaceName': 'arial',
+    'textSize': 12,
+    'textWrapWidth': 50,
+    'textFill': '#ffff00',
+    'textHorizontalAlignment': 'middle',//left middle right
+    'textVerticalAlignment': 'middle',//top middle bottom
+    'textWrapCharacter':'_',
+    'textLineSpacing': 0,
+    'textAlign': 'center',
+    'textOpacity': 1,
+
+    'textHaloFill' : '#000000',
+    'textHaloRadius' : 0,
+
+    'textDx': 0,
+    'textDy':0
 };
 //创建点对象
-var marker = new maptalks.Marker(coordinate, 'marker_id');
+var marker = new maptalks.Marker(coordinate, {'id':'marker_id','draggable':true});
 marker.setProperties({
-    'marker_name':'上海大厦'
+    'marker_name':'上海大厦_上海大厦_上海大厦_上海大厦'
 });
 //设置点样式
 marker.setSymbol(icon);
@@ -585,6 +578,71 @@ layer.addGeometry(marker);
                     </p>
                     </div>
 
+                    <h2>盾标</h2>
+                    <p>1、使用<code>new maptalks.Marker(...)</code>创建一个点（线或面）；</p>
+                    <p>2、构造盾标参数，并设置到Marker（Polyline或Polygon）上</p>
+                    <div class="bs-docs-example">
+<pre class="linenums prettyprint">
+//设置盾标配置
+var icon = {
+    // polygon styles {{{
+    "polygonFill": "#ff0000",
+    "polygonOpacity": 0.5,
+    // }}} polygon styles
+
+    // shield styles {{{
+    "shieldPlacement"  : "vertex",
+
+    "shieldFile"      :  "/images/marker.png",
+    "shieldOpacity"    :  1,
+    "shieldDx"         :  0,
+    "shieldDy"         :  0,
+
+    "shieldName"       : "[name]-[addr]",
+    "shieldFaceName"  : "arial",
+    "shieldSize"       :  10,
+    "shieldFill"       : "#ff0000",
+    "shieldTextOpacity": 1,
+    //"shield-halo-fill"  : "#ffffff",
+    //"shield-halo-radius": 1,
+
+    "shieldTextDx"    :  0,
+    "shieldTextDy"    :  0,
+
+    "shieldHorizontalAlignment"   : "middle", //left | middle | right | auto
+    "shieldVerticalAlignment"     : "middle",   // top | middle | bottom | auto
+    "shieldJustifyAlignment"      : "left"
+};
+//构造面并设置盾标样式
+var polygon = new maptalks.Polygon([[
+        [121.489935,31.24432],
+        [121.488935,31.24432],
+        [121.488935,31.24332],
+        [121.489935,31.24432]]],
+        {'symbol':icon,'draggable':true});
+polygon.setProperties({
+    'name':'上海大厦',
+    'addr': '北苏州路20号'
+});
+//创建点对象
+var marker = new maptalks.Marker(coordinate,{'id':'marker_id','draggable':true});
+marker.setProperties({
+    'name':'上海大厦',
+    'addr': '北苏州路20号'
+});
+//设置点样式
+marker.setSymbol(icon);
+//将点添加到Layer
+layer.addGeometry([marker,polygon]);
+</pre>
+                    <iframe src="geometry/marker/shield_marker.html" width="100%">
+
+                    </iframe>
+                    <p>
+                        <a class="btn btn-success" href="editor.html?html=geometry/marker/shield_marker.html&title=Add Shield To Geometry" target="_blank">源码编辑器</a>
+                    </p>
+                    </div>
+
 
                     <h2>设置点标签</h2>
                     <p>1、使用<code>new maptalks.Marker(...)</code>创建点；</p>
@@ -594,52 +652,37 @@ layer.addGeometry(marker);
 <pre class="linenums prettyprint">
 //创建点的坐标对象
 var coordinate = new maptalks.Coordinate(121.489935,31.24432);
-//设置矢量配置
-var icon = {
-    'shield-type': 'tip',//label tip
-    'shield-name': '测试标签: [marker_name]',
-    'shield-opacity': 1,
-    'shield-line-color': '#121212',
-    'shield-line-width': 1,
-    'shield-line-opacity': 1,
-    'shield-fill': '#536457',
-    'shield-fill-opacity': 1,
-    'shield-file': '',
-    'shield-face-name': 'Serif',
-    'shield-unlock-image' : false,
-    'shield-size': 12,
-    'shield-text-fill': '#ff0000',
-    'shield-placement': 'point', //point line vertex interior
-    'shield-wrap-width': 100,
-    'shield-wrap-before': false,
-    'shield-wrap-character': '',
-    'shield-character-spacing': 0,
-    'shield-line-spacing': 8,
-    'shield-text-dx': 0,
-    'shield-text-dy': 0,
-    'shield-dx': 0,
-    'shield-dy': 0,
-    'shield-text-opacity': 1,
-    'shield-horizontal-alignment': 'middle',//left middle right
-    'shield-vertical-alignment': 'top',//top middle bottom
-    'shield-justify-alignment': 'left'//left center right
+//设置label属性
+var options = {
+    'symbol': {
+        'lineColor': '#ffffff',
+        'lineWidth': 1,
+        'lineOpacity': 0.9,
+        'lineDasharray': null,
+        'fill': '#4e98dd',
+        'fillOpacity': 0.9,
+
+        'textFaceName': 'arial',
+        'textSize': 12,
+        'textFill': '#ff0000',
+        'textOpacity': 1,
+        'textSpacing': 30,
+        'textWrapWidth': 50,
+        'textWrapBefore': false,
+        'textWrapCharacter': '_',
+        'textLineSpacing': 8
+    },
+    'draggable': true,
+    'horizontalAlignment': 'middle',//left middle right
+    'verticalAlignment': 'middle',//top middle bottom
+    'dx': 0,
+    'dy': 0,
+    'content': '上海大厦'
 };
-/**
-* 说明：
-* 1、shield-type tip：气泡形；label：矩形标签；
-* 2、在shield-type 为tip的情形下，设置shield-horizontal-alignment 与 shield-vertical-alignment
-*    气泡的尖端会根据位置调整。
-*/
-//创建点对象
-var marker = new maptalks.Marker(coordinate, 'marker_id');
-marker.setProperties({
-    'marker_name':'上海大厦',
-    'marker_addr': '北苏州路20号'
-});
-//设置点样式
-marker.setSymbol(icon);
-//将点添加到Layer
-layer.addGeometry(marker);
+//创建label
+var label = new maptalks.Label(options);
+//将label添加到marker上
+marker.addLabel(label);
 </pre>
                     <iframe src="geometry/marker/label_marker.html" width="100%">
 
@@ -657,7 +700,15 @@ layer.addGeometry(marker);
 <pre class="linenums prettyprint">
 //构造绘制点工具
 drawTool = new maptalks.DrawTool({
-    mode: maptalks.Geometry.TYPE_POINT//设置drawTool绘制的图形类型
+    mode: maptalks.Geometry.TYPE_POINT,//设置drawTool绘制的图形类型
+    //设置标注点样式
+    symbol: {
+        'markerFile': '../images/marker.png',
+        'markerWidth': 22,
+        'markerHeight': 30,
+        'markerDx': 0,
+        'markerDy' :0
+    }
 });
 //将点绘制工具绑定到地图对象
 drawTool.addTo(mapObj);
@@ -665,20 +716,10 @@ drawTool.addTo(mapObj);
 drawTool.on('drawend', onAfterDrawMarker);
 //绘制完点后操作
 function onAfterDrawMarker(param) {
-    var coordinate = param.coordinate;
-    alert('您绘制的点的坐标为:{x:'+coordinate.x+',y:'+coordinate.y);        //创建点的坐标对象
-    //设置图片
-    var icon = {
-        'marker-file': '../images/marker.png',
-        'marker-width': 22,
-        'marker-height': 30,
-        'dx': 0,
-        'dy' :0
-    };
-    //创建点对象
-    var marker = new maptalks.Marker(coordinate,{'id':'marker_id'});
-    //设置点样式
-    marker.setSymbol(icon);
+    //关闭标注点工具
+    // drawTool.disable();
+    //绘制的图形
+    var marker = param.geometry;
     //将点添加到Layer
     layer.addGeometry(marker);
 }
@@ -732,10 +773,10 @@ var polyline = new maptalks.Polyline(
     new maptalks.Coordinate(121.473427,31.222784)]);
 //设置线样式
 var polylineSymbol = {
-    'line-color' : '#ff00ff',
-    'line-width' : 5,
-    'line-dasharray' : [20,10,5,5,5,10],//线形
-    'line-opacity' : 1
+    'lineColor' : '#ff00ff',
+    'lineWidth' : 5,
+    'lineDasharray' : [20,10,5,5,5,10],//线形
+    'lineOpacity' : 1
 };
 polyline.setSymbol(polylineSymbol);
 //将线添加到Layer
@@ -757,11 +798,13 @@ layer.addGeometry(polyline);
 <pre class="linenums prettyprint">
 //构造绘制线工具
 drawTool = new maptalks.DrawTool({
-    mode: maptalks.Geometry.TYPE_LINESTRING,//设置drawTool绘制的图形类型
+    //设置drawTool绘制的图形类型
+    mode: maptalks.Geometry.TYPE_LINESTRING,
+    //设置绘制线的样式
     symbol: {
-            'line-color':'#0000ff',
-            'line-width':2,
-            'line-opacity':1
+        'lineColor':'#0000ff',
+        'lineWidth':2,
+        'lineOpacity':1
     }
 });
 //将线绘制工具绑定到地图对象
@@ -771,9 +814,7 @@ drawTool.on('drawend', onAfterDrawPolyline);
 
 //绘制完线后操作
 function onAfterDrawPolyline(param) {
-    var coordinates = param.coordinate;
-    //创建线对象
-    var polyline = new maptalks.Polyline(coordinates);
+    var polyline = param.geometry;
     //将线添加到Layer
     layer.addGeometry(polyline);
 }
@@ -857,12 +898,13 @@ var polygon = new maptalks.Polygon(
     ]);
 //设置面样式
 var polygonSymbol = {
-    'line-color' : '#0000ff',
-    'line-width' : 2,
-    'line-dasharray' : [20,10,5,5,5,10],//线形
-    'line-opacity' : 1,
-    'polygon-fill' : '#ff00ff',
-    'polygon-opacity' : 0.8
+    'lineColor' : '#0000ff',
+    'lineWidth' : 2,
+    'lineDasharray' : [20,10,5,5,5,10],//线形
+    'lineOpacity' : 1,
+    // 'polygon-fill' : '#ff00ff',
+    'polygonFill' : 'rgb(255, 0, 255)',
+    'polygonOpacity' : 0.8
 };
 polygon.setSymbol(polygonSymbol);
 //将面添加到Layer
@@ -886,15 +928,19 @@ layer.addGeometry(polygon);
 drawTool = new maptalks.DrawTool({
     /**
     *设置drawTool绘制的图形类型
-    *TYPE_POLYGON： 多边形；TYPE_RECT：矩形；TYPE_CIRCLE：圆形
+    *TYPE_POLYGON： 多边形；TYPE_RECT：矩形；TYPE_ELLIPSE：圆形
     */
     mode: maptalks.Geometry.TYPE_POLYGON,
+    //绘制面的样式
     symbol: {
-        'line-color':'#0000ff',
-        'line-width':3,
-        'line-opacity':1,
-        'polygon-fill': '#ff0000',
-        'polygon-opacity': 0.6
+        'lineColor':'#f00',
+        'lineWidth':3,
+        'lineOpacity':1,
+        'lineDasharray': [20,5,2,5],
+        'polygonFill': 'rgb(0, 255, 51)',
+        //面填充图片
+        'polygonPatternFile': 'url("https://mdn.mozillademos.org/files/222/Canvas_createpattern.png")',
+        'polygonOpacity': 0.6
     }
 });
 //将线绘制工具绑定到地图对象
@@ -1120,7 +1166,7 @@ new maptalks.Map('mapObj',{
             'bottom': '0',
             'right': '0'
         },
-        content : '<a href="www.maptalks.org" target="_blank" style="text-decoration:none;cursor: pointer;color: #6490C4; ">@ MapTalks</a>'
+        content : '<a href="www.maptalks.org" target="_blank" style="text-decoration:none;cursor: pointer;color: #6490C4; ">@ MapTalks.org</a>'
     }
 });
 /**

@@ -148,34 +148,18 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
     createMarkerDom: function() {
         var style = this.style;
         var svgGroup = Z.SVG.group();
-
          if (style['shieldFile']) {
             var svgImage = Z.SVG.image(style['shieldFile'],this.shieldFileWidth,this.shieldFileHeight);
             this._offsetMarker(svgImage, new Z.Point(-this.shieldFileWidth/2, -this.shieldFileHeight/2));
             svgGroup.appendChild(svgImage);
         }
-
-        var points = this.renderPoints;
-        if (!Z.Util.isArrayHasData(points)) {
-            return;
-        }
-        var map = this.getMap();
-        var cookedPoints = Z.Util.eachInArray(points,this,function(point) {
-            return map._viewPointToContainerPoint(point);
-        });
         var textStyle = this.style;
-        for (var i = 0, len=cookedPoints.length;i<len;i++) {
-            var point = cookedPoints[i];
-            var svgText = Z.SVG.text(this.textContent, point, textStyle, this.textSize);
-            Z.SVG.updateTextStyle(svgText, textStyle, this.textSize);
-            var strokeAndFill = this.translateStrokeAndFill(textStyle);
-            Z.SVG.updateShapeStyle(svgText, strokeAndFill['stroke'], strokeAndFill['fill']);
-
-            this._offsetMarker(svgText, new Z.Point(style['textDx'], style['textDy']));
-
-            svgGroup.appendChild(svgText);
-        }
-
+        var svgText = Z.SVG.text(this.textContent, textStyle, this.textSize);
+        Z.SVG.updateTextStyle(svgText, textStyle, this.textSize);
+        var strokeAndFill = this.translateStrokeAndFill(textStyle);
+        Z.SVG.updateShapeStyle(svgText, strokeAndFill['stroke'], strokeAndFill['fill']);
+        this._offsetMarker(svgText, new Z.Point(style['textDx'], style['textDy']));
+        svgGroup.appendChild(svgText);
         return svgGroup;
     },
 

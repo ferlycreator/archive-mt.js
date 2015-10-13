@@ -34,11 +34,13 @@
 
         //构造绘制线工具
         drawTool = new maptalks.DrawTool({
-            mode: maptalks.Geometry.TYPE_LINESTRING,//设置drawTool绘制的图形类型
+            //设置drawTool绘制的图形类型
+            mode: maptalks.Geometry.TYPE_LINESTRING,
+            //设置绘制线的样式
             symbol: {
-                    'line-color':'#0000ff',
-                    'line-width':2,
-                    'line-opacity':1
+                'lineColor':'#0000ff',
+                'lineWidth':2,
+                'lineOpacity':1
             }
         });
         //将线绘制工具绑定到地图对象

@@ -155,6 +155,12 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
     _clickForPoint: function(param) {
         var geometry = new Z.Marker(param['coordinate']);
         param['geometry'] = geometry;
+        /**
+         * 触发 drawstart 事件
+         * @event drawstart
+         * @return {Object} params: {'coordinate':coordinate, 'pixel':containerPoint};
+         */
+        this._fireEvent('drawend', param);
     },
 
     _clickForPath:function(param) {

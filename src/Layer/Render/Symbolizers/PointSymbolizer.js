@@ -116,7 +116,7 @@ Z.PointSymbolizer=Z.Symbolizer.extend({
 
 
     //设置dom/svg/vml类型marker页面位置的方法
-    _offsetMarker:function(marker, pt) {
+    _offsetMarker: function(marker, pt) {
         var d = this.getDxDy();
         var point = pt.add(d);
         if (marker.tagName && marker.tagName === 'SPAN') {

@@ -3,12 +3,7 @@ Z.Geometry.mergeOptions({
      * @cfg {Boolean} [draggable="false"] geometry能否拖动
      * @member maptalks.Geometry
      */
-	'draggable': false,
-//	/**
-//	 * @cfg {String} [dragTrigger="mousedown"] geometry 拖动触发机制
-//     * @member maptalks.Geometry
-//     */
-//	'dragTrigger': 'mousedown'//manual
+	'draggable': false
 });
 
 Z.Geometry.include({
