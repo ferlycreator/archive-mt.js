@@ -41,10 +41,17 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
     },
 
     /**
-     * load the tile layer, can be overrided by sub-classes
+     * load the tile layer, can't be overrided by sub-classes
      */
     load:function(){
+        if (!this._render) {
+            this._initRender();
+        }
         this._load();
+    },
+
+    _initRender:function() {
+
     },
 
     /**

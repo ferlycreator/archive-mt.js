@@ -19,11 +19,11 @@ Z.VectorLayer=Z.OverlayLayer.extend({
         //动态加载Render
         if (Z.Browser.canvas &&
             ((!Z.Browser.svg && !Z.Browser.vml) || 'canvas' === this.options['render'].toLowerCase())) {
-            this._render = new Z.Render.Canvas(this,{
+            this._render = new Z.render.vectorlayer.Canvas(this,{
                 'visible':this.options['visible']
             });
         } else {
-            this._render = new Z.Render.Dom(this,{
+            this._render = new Z.render.vectorlayer.Dom(this,{
                 'visible':this.options['visible']
             });
         }

@@ -1,11 +1,11 @@
-Z.Render.Canvas = function(layer, options) {
+Z.render.vectorlayer.Canvas = function(layer, options) {
     this.layer = layer;
     this._visible = options['visible'];
     this.resourceLoader = new Z.ResourceLoader();
 };
 
 //load,_onMoving, _onMoveEnd, _onResize, _onZoomStart, _onZoomEnd
-Z.Render.Canvas.prototype = {
+Z.render.vectorlayer.Canvas.prototype = {
 
     load: function() {
         if (!this.canvasContainer) {

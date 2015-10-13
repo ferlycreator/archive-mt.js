@@ -10,7 +10,7 @@ Z.Map.include({
         if (me._baseTileLayer) {me._baseTileLayer._onZoomStart(true);}
         me._eachLayer(zoomLayer,me.getAllLayers());
         this._hideOverlayLayers();
-        me._animateStart(scale,focusPos);
+        me._zoomAnimationStart(scale,focusPos);
         /**
          * 触发map的zoomstart事件
          * @member maptalks.Map
@@ -27,9 +27,9 @@ Z.Map.include({
             }
         }
 
-        this._insertBackgroundDom();
+        this._insertBackground();
         if (this._baseTileLayer) {this._baseTileLayer.clear();}
-        this._animateEnd();
+        this._zoomAnimationEnd();
         this._resetContainer();
         this._originZoomLevel=nextZoomLevel;
         if (this._baseTileLayer) {this._baseTileLayer._onZoomEnd();}
@@ -55,7 +55,7 @@ Z.Map.include({
         }
     },
 
-    _insertBackgroundDom:function() {
+    _insertBackground:function() {
         this._backgroundDOM = this._panels.mapContainer.cloneNode(true);
         this._panels.mapPlatform.insertBefore(this._backgroundDOM,this._panels.mapViewPort);
     },
@@ -134,7 +134,7 @@ Z.Map.include({
         },this._getZoomMillisecs());
     },
 
-    _animateStart:function(scale,pixelOffset){
+    _zoomAnimationStart:function(scale,pixelOffset){
         if (Z.Browser.ielt9) {return;}
         var domOffset = this.offsetPlatform();
         var offsetTop = domOffset['top'];
@@ -160,7 +160,7 @@ Z.Map.include({
     },
 
 
-    _animateEnd:function() {
+    _zoomAnimationEnd:function() {
         if (Z.Browser.ielt9) {return;}
         var mapContainer = this._panels.mapContainer;
         mapContainer.className="MAP_CONTAINER";

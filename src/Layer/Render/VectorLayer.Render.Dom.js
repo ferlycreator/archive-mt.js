@@ -1,10 +1,10 @@
-Z.Render.Dom = function(layer,options) {
+Z.render.vectorlayer.Dom = function(layer,options) {
     this._layer = layer;
     this._visible=options['visible'];
     this._zIndex = options['zIndex'];
 };
 
-Z.Render.Dom.prototype= {
+Z.render.vectorlayer.Dom.prototype= {
     getMap:function() {
         return this._layer.getMap();
     },

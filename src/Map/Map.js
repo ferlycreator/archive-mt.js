@@ -850,7 +850,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         };
     },
 
-    _setMapSize:function(mSize) {
+    _updateMapSize:function(mSize) {
         if (!mSize) {return;}
         this.width = mSize['width'];
         this.height = mSize['height'];
@@ -1219,7 +1219,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         //初始化mapPlatform的偏移量, 适用css3 translate时设置初始值
         this.offsetPlatform(new Z.Point(0,0));
         var mapSize = this._getContainerDomSize();
-        this._setMapSize(mapSize);
+        this._updateMapSize(mapSize);
     },
 
     /**
@@ -1240,7 +1240,7 @@ Z['Map']=Z.Map=Z.Class.extend({
             if (map.width !== watched.width || map.height !== watched.height) {
                 var oldHeight = map.height;
                 var oldWidth = map.width;
-                map._setMapSize(watched);
+                map._updateMapSize(watched);
                 map._onResize(new Z.Point((watched.width-oldWidth) / 2,(watched.height-oldHeight) / 2));
                 // 触发_onResize事件
                 /**
