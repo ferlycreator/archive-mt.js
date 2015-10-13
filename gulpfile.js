@@ -9,6 +9,7 @@ var karma = require('karma').server;
 var connect = require('gulp-connect');
 var browserSync = require('browser-sync');
 var reload = browserSync.reload;
+var revCollector = require('gulp-rev-collector');
 
 var minimist = require('minimist');
 
@@ -59,7 +60,13 @@ gulp.task('libs', function () {
 });
 
 gulp.task('examples', function () {
-  return gulp.src('examples/**/*')
+  return gulp.src(['examples/**/*.*','!examples/replace.json'])
+    .pipe(gulp.dest('dist/examples'));
+});
+
+gulp.task('exportExamples', ['examples'], function () {
+  return gulp.src(['examples/replace.json', 'dist/examples/**/*.html'])
+    .pipe(revCollector())
     .pipe(gulp.dest('dist/examples'));
 });
 

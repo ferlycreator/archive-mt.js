@@ -39,9 +39,9 @@
         var layer = new maptalks.VectorLayer('layer',{'render': 'Canvas'});
         //将图层添加到地图
         mapObj.addLayer(layer);
-        //加载10000个点
+        //加载500个点
         var markers = [];
-        for(var i=0;i<10000;i++){
+        for(var i=0;i<500;i++){
             var random = Math.random()*0.1;
             var marker;
             if(i%2) {
