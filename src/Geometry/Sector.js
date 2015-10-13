@@ -163,17 +163,6 @@ Z['Sector']=Z.Sector=Z.Polygon.extend({
         return Math.PI*Math.pow(this.radius,2)*Math.abs(this.startAngle-this.endAngle)/360;
     },
 
-    _assignPainter:function() {
-        var layer = this.getLayer();
-        if (!layer) {return null;}
-        if (this.layer.isCanvasRender()) {
-            return new Z.Sector.Canvas(this);
-        } else {
-            return new Z.Sector.SVG(this);
-        }
-        return null;
-    },
-
     _exportGeoJson:function(opts) {
         var center  = this.getCenter();
         return {

@@ -102,7 +102,8 @@ Z['Map']=Z.Map=Z.Class.extend({
             }
         }
         options = Z.Util.setOptions(this,options);
-        this._initContainer();
+        this._initRender();
+        this._getRender().initContainer();
     },
 
     /**
@@ -212,23 +213,22 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     _onMoving:function(param) {
-        var map = this;
         function movingLayer(layer) {
             if (layer) {
                 layer._onMoving(param);
             }
         }
 
-        //reduce refresh frequency
-        if (2*Math.random() > 1) {map._refreshSVGPaper();}
-        if (map._baseTileLayer) {map._baseTileLayer._onMoving();}
-        map._eachLayer(movingLayer, map._svgLayers, map._canvasLayers);
+        /*//reduce refresh frequency
+        if (2*Math.random() > 1) {this._refreshSVGPaper();}*/
+        if (this._baseTileLayer) {this._baseTileLayer._onMoving();}
+        this._eachLayer(movingLayer, this._svgLayers, this._canvasLayers);
         /**
          * 触发map的moving事件
          * @member maptalks.Map
          * @event moving
          */
-        map._fireEvent('moving');
+        this._fireEvent('moving');
     },
 
     _onMoveEnd:function(param) {
@@ -237,16 +237,15 @@ Z['Map']=Z.Map=Z.Class.extend({
                 layer._onMoveEnd(param);
             }
         }
-        var me=this;
-        if (me._baseTileLayer) {me._baseTileLayer._onMoveEnd();}
-        me._refreshSVGPaper();
-        me._eachLayer(endMoveLayer,me._tileLayers,me._canvasLayers,me._dynLayers);
+        if (this._baseTileLayer) {this._baseTileLayer._onMoveEnd();}
+        /*this._refreshSVGPaper();*/
+        this._eachLayer(endMoveLayer,this._tileLayers,this._canvasLayers,this._dynLayers);
         /**
          * 触发map的moveend事件
          * @member maptalks.Map
          * @event moveend
          */
-        me._fireEvent('moveend');
+        this._fireEvent('moveend');
     },
 
     /**
@@ -437,17 +436,19 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     setBaseTileLayer:function(baseTileLayer) {
+        this._fireEvent('baselayerchangestart');
         if (this._baseTileLayer) {
-            this._removeBackGroundDOM();
+            // this._removeBackGroundDOM();
             this._baseTileLayer._onRemove();
         }
         baseTileLayer._prepare(this,-1);
         this._baseTileLayer = baseTileLayer;
         var me = this;
         //删除背景
-        this._baseTileLayer.on(baseTileLayer.events.LAYER_LOADED,function() {
-            me._removeBackGroundDOM();
-        });
+        this._baseTileLayer.on('layerloaded',function() {
+            // me._removeBackGroundDOM();
+            this._fireEvent('baselayerchangeend');
+        },this);
         this._baseTileLayer._loadTileConfig(function() {
             var tileConfig = me._baseTileLayer._getTileConfig();
             var changed = me._setTileConfig(tileConfig);
@@ -457,10 +458,10 @@ Z['Map']=Z.Map=Z.Class.extend({
                     /**
                      * 瓦片配置改变事件
                      * @member maptalks.Map
-                     * @event tileconfigchanged
+                     * @event tileconfigchange
                      * @return {Object} param: {'target': map}
                      */
-                    me._fireEvent(me.events.TILECONFIG_CHANGED);
+                    me._fireEvent('tileconfigchange');
                 }
             } else {
                 me._Load();
@@ -522,7 +523,7 @@ Z['Map']=Z.Map=Z.Class.extend({
                     layer.load();
                 }
             } else if (layer instanceof Z.VectorLayer) {
-                if (layer.isCanvasRender()) {
+                if (this.isCanvasRender() || layer.isCanvasRender()) {
                     // canvas render
                     layer._prepare(this, this._canvasLayers.length);
                     this._canvasLayers.push(layer);
@@ -693,7 +694,7 @@ Z['Map']=Z.Map=Z.Class.extend({
 
     _onResize:function(resizeOffset) {
         this._offsetCenterByPixel(resizeOffset);
-        this._refreshSVGPaper();
+        // this._refreshSVGPaper();
         function resizeLayer(layer) {
             if (layer) {
                 layer._onResize();
@@ -701,6 +702,12 @@ Z['Map']=Z.Map=Z.Class.extend({
         }
         if (this._baseTileLayer) {this._baseTileLayer._onResize();}
         this._eachLayer(resizeLayer,this.getAllLayers());
+        /**
+         * 触发map的resize事件
+         * @member maptalks.Map
+         * @event resize
+         */
+        this._fireEvent('resize');
     },
 
     _fireEvent:function(eventName, param) {
@@ -717,6 +724,26 @@ Z['Map']=Z.Map=Z.Class.extend({
         this._loaded = true;
         this._callOnLoadHooks();
         //this.fire('mapready');
+    },
+
+    _initRender:function() {
+        if (this.options['render'] === 'canvas') {
+            this._render = new Z.render.map.Canvas(this);
+        } else {
+            this._render = new Z.render.map.Dom(this);
+        }
+    },
+
+    _getRender:function() {
+        return this._render;
+    },
+
+    /**
+     * 地图是否采用Canvas渲染
+     * @return {Boolean}
+     */
+    isCanvasRender:function() {
+        return this._render && this._render instanceof Z.render.map.Canvas;
     },
 
     _loadAllLayers:function() {
@@ -769,8 +796,10 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {[type]} [description]
      */
     _showOverlayLayers:function() {
-        this._panels.svgContainer.style.display="";
-        this._panels.canvasLayerContainer.style.display="";
+        /*this._panels.svgContainer.style.display="";
+        this._panels.canvasLayerContainer.style.display="";*/
+        this._getRender().showOverlayLayers();
+        return this;
     },
 
     /**
@@ -778,9 +807,11 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {[type]} [description]
      */
     _hideOverlayLayers:function() {
-        this._panels.svgContainer.style.display="none";
+        /*this._panels.svgContainer.style.display="none";
         this._panels.canvasLayerContainer.style.display="none";
-        // me._panels.tipContainer.style.display="none";
+        // me._panels.tipContainer.style.display="none";*/
+        this._getRender().hideOverlayLayers();
+        return this;
     },
 
     _getTileConfig:function() {
@@ -851,7 +882,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     _updateMapSize:function(mSize) {
-        if (!mSize) {return;}
+        /*if (!mSize) {return;}
         this.width = mSize['width'];
         this.height = mSize['height'];
         var panels = this._panels;
@@ -860,7 +891,9 @@ Z['Map']=Z.Map=Z.Class.extend({
         panels.mapViewPort.style.width = this.width + 'px';
         panels.mapViewPort.style.height = this.height + 'px';
         panels.controlWrapper.style.width = this.width + 'px';
-        panels.controlWrapper.style.height = this.height + 'px';
+        panels.controlWrapper.style.height = this.height + 'px';*/
+        this._getRender()._updateMapSize(mSize);
+        return this;
     },
 
     /**
@@ -875,16 +908,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         this._prjCenter=pcenter;
     },
 
-    /**
-     * 移除背景Dom对象
-     */
-    _removeBackGroundDOM:function() {
-        if (this._backgroundDOM) {
-            this._backgroundDOM.innerHTML='';
-            Z.DomUtil.removeDomNode(this._backgroundDOM);
-            delete this._backgroundDOM;
-        }
-    },
+
 
     /**
      * 以像素距离移动地图中心点
@@ -906,13 +930,15 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     offsetPlatform:function(offset) {
-        if (!offset) {
+        /*if (!offset) {
             return Z.DomUtil.offsetDom(this._panels.mapPlatform);
         } else {
             var domOffset = Z.DomUtil.offsetDom(this._panels.mapPlatform);
             Z.DomUtil.offsetDom(this._panels.mapPlatform, domOffset.add(offset));
             return this;
-        }
+        }*/
+        this._getRender().offsetPlatform(offset);
+        return this;
     },
 
     /**
@@ -1076,30 +1102,12 @@ Z['Map']=Z.Map=Z.Class.extend({
         return this._getProjection().locate(coordinate,dx,dy);
     },
 
-    /**
-     * [createVectorPaper description]
-     * @return {[type]} [description]
-     */
-    _getSvgPaper: function(){
-        var map = this;
-        if (!map._vectorPaper) {
-            var svgContainer = this._panels.svgContainer;
-            map._vectorPaper = Z.SVG.createContainer();
-            this._refreshSVGPaper();
-            svgContainer.appendChild(map._vectorPaper);
-        }
-        return map._vectorPaper;
-    },
 
-    _refreshSVGPaper: function() {
-        var paper = this._getSvgPaper();
-        Z.SVG.refreshContainer(this,paper);
-    },
 
     /**
      * initialize _container DOM of panels
      */
-    _initContainer:function() {
+    /*_initContainer:function() {
         var _containerDOM;
         if (Z.Util.isString(this._container)) {
             _containerDOM = document.getElementById(this._container);
@@ -1220,13 +1228,14 @@ Z['Map']=Z.Map=Z.Class.extend({
         this.offsetPlatform(new Z.Point(0,0));
         var mapSize = this._getContainerDomSize();
         this._updateMapSize(mapSize);
-    },
+    },*/
 
     /**
     * 获取地图容器
     */
-    getPanels: function() {
-        return this._panels.mapViewPort;
+    getPanel: function() {
+        /*return this._panels.mapViewPort;*/
+        return this._getRender().getPanel();
     },
 
     /**

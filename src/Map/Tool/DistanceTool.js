@@ -52,7 +52,6 @@ Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
         if (this.drawLayer !== null) {
             this.map.removeLayer(this.layerId);
         }
-        // var _canvas = this.map._panels.canvasLayerContainer;
 
         this.drawLayer = new Z.VectorLayer(this.layerId);
 

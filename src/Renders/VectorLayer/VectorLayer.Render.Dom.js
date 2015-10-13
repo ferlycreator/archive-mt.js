@@ -59,7 +59,7 @@ Z.render.vectorlayer.Dom.prototype= {
      * @return {[type]}            [description]
      */
     _paintGeometries:function(geometries) {
-        var vectorPaper = this.getMap()._getSvgPaper();
+        var vectorPaper = this.getMap()._getRender().getSvgPaper();
         var fragment = document.createDocumentFragment();
         var vectorFragment = document.createDocumentFragment();
         for (var i=0,len=geometries.length;i<len;i++) {
@@ -80,7 +80,7 @@ Z.render.vectorlayer.Dom.prototype= {
     _addTo:function() {
         var layerContainer = this._layerContainer;
         var zIndex = this._zIndex;
-        var vectorPaper = this.getMap()._getSvgPaper();
+        var vectorPaper = this.getMap()._getRender().getSvgPaper();
         var fragment = document.createDocumentFragment();
         var vectorFragment = document.createDocumentFragment();
         this._layer._eachGeometry(function(geo) {

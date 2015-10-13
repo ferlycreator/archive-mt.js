@@ -16,6 +16,29 @@ Z.VectorLayer=Z.OverlayLayer.extend({
     initialize:function(id, options) {
         this.setId(id);
         Z.Util.setOptions(this, options);
+
+    },
+
+    /**
+     * 是否用Canvas渲染
+     * @return {Boolean}
+     * @expose
+     */
+    isCanvasRender:function() {
+        if (this._render instanceof Z.render.vectorlayer.Canvas) {
+            return true;
+        }
+        return false;
+    },
+
+    _initRender:function() {
+        //地图为canvas渲染方式时, VectorLayer只支持canvas渲染
+        if (this.getMap().isCanvasRender()) {
+            this._render = new Z.render.vectorlayer.Canvas(this,{
+                'visible':this.options['visible']
+            });
+            return;
+        }
         //动态加载Render
         if (Z.Browser.canvas &&
             ((!Z.Browser.svg && !Z.Browser.vml) || 'canvas' === this.options['render'].toLowerCase())) {
@@ -29,23 +52,15 @@ Z.VectorLayer=Z.OverlayLayer.extend({
         }
     },
 
-    /**
-     * 是否用Canvas渲染
-     * @return {Boolean}
-     * @expose
-     */
-    isCanvasRender:function() {
-        if (this._render instanceof Z.Render.Canvas) {
-            return true;
-        }
-        return false;
-    },
-
     getRender: function() {
         return this._render;
     },
 
     load:function() {
+        if (!this._render) {
+            this._initRender();
+            this._render.setZIndex(this._zIndex);
+        }
         this._render.load();
         return this;
     },
@@ -114,7 +129,10 @@ Z.VectorLayer=Z.OverlayLayer.extend({
     },
 
     _setZIndex:function(zIndex) {
-        this._render.setZIndex(zIndex);
+        if (this._render) {
+            this._render.setZIndex(zIndex);
+        }
+        this._zIndex = zIndex;
         return this;
     },
 

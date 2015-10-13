@@ -41,15 +41,5 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
 
     _computeGeodesicArea:function(projection) {
         return 0;
-    },
-
-    _assignPainter:function() {
-        if (!this.layer) {return null;}
-        if (this.layer.isCanvasRender()) {
-            return new Z.Marker.Canvas(this);
-        } else {
-            return new Z.Marker.SVG(this);
-        }
-        return null;
     }
 });

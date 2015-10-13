@@ -224,10 +224,6 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
     },
 
 
-    _assignPainter:function() {
-        return new Z.GeometryCollection.Painter(this);
-    },
-
    _exportGeoJson:function(opts) {
         var geoJsons = [];
         if (!this.isEmpty()) {

@@ -154,17 +154,6 @@ Z.Ellipse = Z.Polygon.extend({
     },
 
 
-    _assignPainter:function() {
-        var layer = this.getLayer();
-        if (!layer) {return null;}
-        if (layer.isCanvasRender()) {
-            return new Z.Ellipse.Canvas(this);
-        } else {
-            return new Z.Ellipse.SVG(this);
-        }
-        return null;
-    },
-
     _exportGeoJson:function(opts) {
         var center = this.getCenter();
         return {

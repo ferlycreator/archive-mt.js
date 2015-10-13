@@ -27,10 +27,10 @@ Z.Map.include({
             }
         }
 
-        this._insertBackground();
+        this._getRender().insertBackground();
         if (this._baseTileLayer) {this._baseTileLayer.clear();}
         this._zoomAnimationEnd();
-        this._resetContainer();
+        this._getRender().resetContainer();
         this._originZoomLevel=nextZoomLevel;
         if (this._baseTileLayer) {this._baseTileLayer._onZoomEnd();}
         this._eachLayer(zoomLayer,this.getAllLayers());
@@ -44,10 +44,10 @@ Z.Map.include({
         this._fireEvent('zoomend');
     },
 
-    _resetContainer:function() {
+    /*_resetContainer:function() {
         var position = this.offsetPlatform();
         Z.DomUtil.offsetDom(this._panels.mapPlatform, new Z.Point(0,0)); //{'left':0,'top':0}
-        this._refreshSVGPaper();
+        //this._refreshSVGPaper();
         if (this._backgroundDOM) {
             //Z.DomUtil.offsetDom(this._backgroundDOM,position);
             this._backgroundDOM.style.left=position["left"]+"px";
@@ -58,7 +58,18 @@ Z.Map.include({
     _insertBackground:function() {
         this._backgroundDOM = this._panels.mapContainer.cloneNode(true);
         this._panels.mapPlatform.insertBefore(this._backgroundDOM,this._panels.mapViewPort);
-    },
+    },*/
+
+    /**
+     * 移除背景Dom对象
+     */
+    /*_removeBackGroundDOM:function() {
+        if (this._backgroundDOM) {
+            this._backgroundDOM.innerHTML='';
+            Z.DomUtil.removeDomNode(this._backgroundDOM);
+            delete this._backgroundDOM;
+        }
+    },*/
 
     _checkZoomLevel:function(nextZoomLevel) {
         if (nextZoomLevel < this._minZoomLevel){
@@ -103,7 +114,7 @@ Z.Map.include({
         if (!focusPos) {
             focusPos = new Z.Point(this.width/2, this.height/2);
         }
-        this._removeBackGroundDOM();
+        this._getRender().removeBackGroundDOM();
         var resolutions=this._tileConfig['resolutions'];
         this._zoomLevel=nextZoomLevel;
         var scale = resolutions[this._originZoomLevel]/resolutions[nextZoomLevel];

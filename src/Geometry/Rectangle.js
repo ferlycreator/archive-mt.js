@@ -197,17 +197,6 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
     },
 
 
-    _assignPainter:function() {
-        var layer = this.getLayer();
-        if (!layer) {return null;}
-        if (this.layer.isCanvasRender()) {
-            return new Z.Rectangle.Canvas(this);
-        } else  {
-            return new Z.Rectangle.SVG(this);
-        }
-        return null;
-    },
-
     _exportGeoJson:function(opts) {
         var nw =this.getCoordinates();
         return {
