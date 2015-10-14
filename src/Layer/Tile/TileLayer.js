@@ -247,10 +247,10 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
 
     /**
      * 载入瓦片
-     * @param  {Boolean} isCheckTileLoad 检查瓦片是否载入完,如果为true,则在瓦片载入完后再显示图层容器元素
+     * @param  {Boolean} rendWhenReady 检查瓦片是否载入完,如果为true,则在瓦片载入完后再显示图层容器元素
      */
-    _fillTiles:function(isCheckTileLoad) {
-        // isCheckTileLoad = false;
+    _fillTiles:function(rendWhenReady) {
+        // rendWhenReady = false;
         var map =this.map;
         if (!map) {
             return;
@@ -283,7 +283,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
                 me._completeExecutor=setTimeout(function() {
                     tileContainer.appendChild(dSegment);
                     me._fireEventExecutor=setTimeout(function() {
-                        me.fire(me.events.LAYER_LOADED);
+                        me.fire('layerloaded');
                     },500);
                 },10);
             }
@@ -322,12 +322,12 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
                     var tileTop = centerOffset.top +tileSize["height"]*j-holderTop;
                     if (!currentTiles[tileId]) {
                         var tileUrl = this._getTileUrl(tileIndex["x"],tileIndex["y"],zoomLevel);
-                        var tileImage = this._createTileImage(tileLeft,tileTop, tileUrl,(isCheckTileLoad?checkAndLoad:null));
+                        var tileImage = this._createTileImage(tileLeft,tileTop, tileUrl,(rendWhenReady?checkAndLoad:null));
                         if (!tileImage) {
                             continue;
                         }
                         tileImage.id = tileId;
-                        if (isCheckTileLoad) {
+                        if (rendWhenReady) {
                             tileImages.push(tileImage);
                         }
                         dSegment.appendChild(tileImage);
@@ -343,7 +343,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
                     }
             }
         }
-        if (isCheckTileLoad) {
+        if (rendWhenReady) {
             checkAndLoad();
         } else {
             tileContainer.appendChild(dSegment);

@@ -10,10 +10,6 @@ Z['Layer']=Z.Layer=Z.Class.extend({
 
     includes: Z.Eventable,
 
-    events:{
-        LAYER_LOADED:'layerloaded'
-    },
-
 
     options:{
         //最大最小可视范围, -1表示不受限制

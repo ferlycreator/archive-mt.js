@@ -25,7 +25,11 @@ Z.VectorLayer=Z.OverlayLayer.extend({
      * @expose
      */
     isCanvasRender:function() {
-        if (this._render instanceof Z.render.vectorlayer.Canvas) {
+        if (this.getMap() && this.getMap().isCanvasRender()) {
+            return true;
+        }
+        if (Z.Browser.canvas &&
+            ((!Z.Browser.svg && !Z.Browser.vml) || 'canvas' === this.options['render'].toLowerCase())) {
             return true;
         }
         return false;
@@ -33,7 +37,7 @@ Z.VectorLayer=Z.OverlayLayer.extend({
 
     _initRender:function() {
         //地图为canvas渲染方式时, VectorLayer只支持canvas渲染
-        if (this.getMap().isCanvasRender()) {
+        /*if (this.getMap() && this.getMap().isCanvasRender()) {
             this._render = new Z.render.vectorlayer.Canvas(this,{
                 'visible':this.options['visible']
             });
@@ -42,6 +46,15 @@ Z.VectorLayer=Z.OverlayLayer.extend({
         //动态加载Render
         if (Z.Browser.canvas &&
             ((!Z.Browser.svg && !Z.Browser.vml) || 'canvas' === this.options['render'].toLowerCase())) {
+            this._render = new Z.render.vectorlayer.Canvas(this,{
+                'visible':this.options['visible']
+            });
+        } else {
+            this._render = new Z.render.vectorlayer.Dom(this,{
+                'visible':this.options['visible']
+            });
+        }*/
+        if (this.isCanvasRender()) {
             this._render = new Z.render.vectorlayer.Canvas(this,{
                 'visible':this.options['visible']
             });

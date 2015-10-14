@@ -13,11 +13,33 @@ Z.render.map.Dom.prototype = {
         this.map.on('moveend resize zoomend',function() {
             this._refreshSVGPaper();
         },this);
-        this.map.on('baselayerchangestart baselayerchangeend',function() {
+        this.map.on('baselayerchangestart baselayerchangeend baselayerload',function() {
             this.removeBackGroundDOM();
         },this);
     },
 
+    /**
+     * 获取图层渲染容器
+     * @param  {Layer} layer 图层
+     * @return {Dom}       容器Dom对象
+     */
+    getLayerRenderContainer:function(layer) {
+        if (layer instanceof Z.TileLayer) {
+            return this._panels.mapContainer;
+        } else if (layer instanceof Z.VectorLayer) {
+            if (layer.isCanvasRender()) {
+                return this._panels.canvasLayerContainer;
+            } else {
+                return this._panels.svgContainer;
+            }
+        }
+    },
+
+    /**
+     * 获取地图容器偏移量或更新地图容器偏移量
+     * @param  {Point} offset 偏移量
+     * @return {this | Point}
+     */
     offsetPlatform:function(offset) {
         if (!offset) {
             return Z.DomUtil.offsetDom(this._panels.mapPlatform);
@@ -30,15 +52,15 @@ Z.render.map.Dom.prototype = {
 
     updateMapSize:function(mSize) {
         if (!mSize) {return;}
-        this.width = mSize['width'];
-        this.height = mSize['height'];
+        var width = mSize['width'],
+            height = mSize['height'];
         var panels = this._panels;
-        panels.mapWrapper.style.width = this.width + 'px';
-        panels.mapWrapper.style.height = this.height + 'px';
-        panels.mapViewPort.style.width = this.width + 'px';
-        panels.mapViewPort.style.height = this.height + 'px';
-        panels.controlWrapper.style.width = this.width + 'px';
-        panels.controlWrapper.style.height = this.height + 'px';
+        panels.mapWrapper.style.width = width + 'px';
+        panels.mapWrapper.style.height = height + 'px';
+        panels.mapViewPort.style.width = width + 'px';
+        panels.mapViewPort.style.height = height + 'px';
+        panels.controlWrapper.style.width = width + 'px';
+        panels.controlWrapper.style.height = height + 'px';
     },
 
     resetContainer:function() {

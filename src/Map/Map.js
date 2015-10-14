@@ -18,12 +18,6 @@ Z['Map']=Z.Map=Z.Class.extend({
         'coordinateType':'gcj02'
     },
 
-    events:{
-        LOAD_MAP:'loadmap',
-        TILECONFIG_CHANGED:'tileconfigchanged',
-        RESIZE:'resize'
-    },
-
     //根据不同的语言定义不同的错误信息
     exceptionDefs:{
         'en-US':{
@@ -104,6 +98,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         options = Z.Util.setOptions(this,options);
         this._initRender();
         this._getRender().initContainer();
+        this._updateMapSize();
     },
 
     /**
@@ -436,9 +431,10 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     setBaseTileLayer:function(baseTileLayer) {
-        this._fireEvent('baselayerchangestart');
+        var isChange = false;
         if (this._baseTileLayer) {
-            // this._removeBackGroundDOM();
+            isChange = true;
+            this._fireEvent('baselayerchangestart');
             this._baseTileLayer._onRemove();
         }
         baseTileLayer._prepare(this,-1);
@@ -447,7 +443,10 @@ Z['Map']=Z.Map=Z.Class.extend({
         //删除背景
         this._baseTileLayer.on('layerloaded',function() {
             // me._removeBackGroundDOM();
-            this._fireEvent('baselayerchangeend');
+            this._fireEvent('baselayerload');
+            if (isChange) {
+                this._fireEvent('baselayerchangeend');
+            }
         },this);
         this._baseTileLayer._loadTileConfig(function() {
             var tileConfig = me._baseTileLayer._getTileConfig();
@@ -892,7 +891,9 @@ Z['Map']=Z.Map=Z.Class.extend({
         panels.mapViewPort.style.height = this.height + 'px';
         panels.controlWrapper.style.width = this.width + 'px';
         panels.controlWrapper.style.height = this.height + 'px';*/
-        this._getRender()._updateMapSize(mSize);
+        this._getRender().updateMapSize(mSize);
+        this.width = mSize['width'];
+        this.height = mSize['height'];
         return this;
     },
 
@@ -926,19 +927,16 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 获取地图容器偏移量或增加容器的偏移量
      * @param  {Pixel} offset 增加的偏移量,如果为null,则直接返回容器的偏移量
-     * @return {[type]}        [description]
+     * @return {Point | this} 如果offset为null,则直接返回容器的偏移量, 否则则返回map对象
      * @expose
      */
     offsetPlatform:function(offset) {
-        /*if (!offset) {
-            return Z.DomUtil.offsetDom(this._panels.mapPlatform);
+        if (!offset) {
+            return this._getRender().offsetPlatform(offset);
         } else {
-            var domOffset = Z.DomUtil.offsetDom(this._panels.mapPlatform);
-            Z.DomUtil.offsetDom(this._panels.mapPlatform, domOffset.add(offset));
+            this._getRender().offsetPlatform(offset);
             return this;
-        }*/
-        this._getRender().offsetPlatform(offset);
-        return this;
+        }
     },
 
     /**

@@ -183,7 +183,7 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
            path='M'+points[0]['left']+','+points[0]['top']+ ' ' +
                 'L'+points[1]['left']+','+points[1]['top']+ ' ' +
                 'M'+points[2]['left']+','+points[2]['top']+ ' ' +
-                'L'+points[3]['left']+','+points[3][1];
+                'L'+points[3]['left']+','+points[3]['top'];
         } else if ('diamond' === markerType || 'square' === markerType || 'bar' === markerType) {
            path='M'+points[0]['left']+','+points[0]['top']+ ' ' +
                 'L'+points[1]['left']+','+points[1]['top']+ ' ' +
