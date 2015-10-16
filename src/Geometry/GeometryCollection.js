@@ -37,14 +37,14 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         }
         for(var i=0,len=geometries.length;i<len;i++) {
             var geo = geometries[i];
-            geo.on('mousedown',this._mousedown, this);
-               geo.on('mouseup',this._mouseup, this);
-               geo.on('mouseover',this._mouseover, this);
-               geo.on('mouseout',this._mouseout, this);
-               geo.on('click',this._click, this);
-               geo.on('startdrag',this._startdrag, this);
-               geo.on('dragend',this._dragend, this);
-               geo.on('positionchanged',this._positionchanged, this);
+            geo.on('mousedown',this._mousedown, this)
+               .on('mouseup',this._mouseup, this)
+               .on('mouseover',this._mouseover, this)
+               .on('mouseout',this._mouseout, this)
+               .on('click',this._click, this)
+               .on('startdrag',this._startdrag, this)
+               .on('dragend',this._dragend, this)
+               .on('positionchanged',this._positionchanged, this);
         }
         return this;
     },
@@ -308,15 +308,27 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
      * 开始拖拽
      * @expose
      */
-    startDrag:function() {
+    startDrag: function() {
         if (this.isEmpty()) {
             return;
         }
-        var geometries = this.getGeometries();
-        for (var i=0,len=geometries.length;i<len;i++) {
-            var geo = geometries[i];
-            geo.on('mousedown', geo.startDrag, geo);
-        }
+        var _map = this._getMap();
+        var me = this;
+        this.on('mousedown', function(){
+            this._getMap().disableDrag();
+            var geometries = me.getGeometries();
+            for (var i=0,len=geometries.length;i<len;i++) {
+                geometries[i].startDrag(false);
+            }
+        });
+        this.on('mouseup', function(){
+            this._getMap().enableDrag();
+            var geometries = me.getGeometries();
+            for (var i=0,len=geometries.length;i<len;i++) {
+                geometries[i].endDrag();
+            }
+        });
+
         this.dragging = true;
         return this;
     },
@@ -328,11 +340,6 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
     endDrag:function() {
         if (this.isEmpty()) {
             return;
-        }
-        var geometries = this.getGeometries();
-        for (var i=0,len=geometries.length;i<len;i++) {
-            var geo = geometries[i];
-            geo.off('mousedown',geo.startDrag,geo);
         }
         this.dragging = false;
         return this;
@@ -363,16 +370,18 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         return vertexs;
     },
 
-    _getProjection: function() {
-        var projection;
+    _getMap: function() {
+        var map;
         var geometries = this.getGeometries();
         for (var i=0,len=geometries.length;i<len;i++) {
             var map = geometries[i].getMap();
             if(!map) break;
-            projection = map._getProjection();
-            if(projection) break;
         }
-        return projection;
+        return map;
+    },
+
+    _getProjection: function() {
+        return this._getMap()._getProjection();
     },
 
     _mousedown: function() {

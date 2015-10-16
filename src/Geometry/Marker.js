@@ -35,6 +35,8 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
         return new Z.Extent({'x':coordinates.x,'y':coordinates.y},{'x':coordinates.x,'y':coordinates.y});
     },
 
+    _getMaxPoint
+
     _computeGeodesicLength:function(projection) {
         return 0;
     },
