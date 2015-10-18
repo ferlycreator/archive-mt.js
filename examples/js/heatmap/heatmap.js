@@ -1,5 +1,5 @@
-/*
- * heatmap.js v2.0.0 | JavaScript Heatmap Library
+/* heatmap.js v2.0.0 | JavaScript Heatmap Library
+   *
  *
  * Copyright 2008-2014 Patrick Wied <heatmapjs@patrick-wied.at> - All rights reserved.
  * Dual licensed under MIT and Beerware license 
