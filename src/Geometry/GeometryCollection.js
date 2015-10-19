@@ -35,17 +35,6 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
             this._prepareGeometries();
             this._onShapeChanged();
         }
-        for(var i=0,len=geometries.length;i<len;i++) {
-            var geo = geometries[i];
-            geo.on('mousedown',this._mousedown, this)
-               .on('mouseup',this._mouseup, this)
-               .on('mouseover',this._mouseover, this)
-               .on('mouseout',this._mouseout, this)
-               .on('click',this._click, this)
-               .on('startdrag',this._startdrag, this)
-               .on('dragend',this._dragend, this)
-               .on('positionchanged',this._positionchanged, this);
-        }
         return this;
     },
 
@@ -80,17 +69,21 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
     },
 
     hide:function() {
+        this._visible = false;
         var geometries = this.getGeometries();
         for (var i=0,len=geometries.length;i<len;i++) {
             this._geometries[i].hide();
         }
+        return this;
     },
 
     show:function() {
+        this._visible = true;
         var geometries = this.getGeometries();
         for (var i=0,len=geometries.length;i<len;i++) {
             this._geometries[i].show();
         }
+        return this;
     },
 
     /**
@@ -112,6 +105,7 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         var layer = this.getLayer();
         var geometries = this.getGeometries();
         for (var i=0,len=geometries.length;i<len;i++) {
+            this._geometries[i]._setParent(this);
             this._geometries[i]._prepare(layer);
         }
     },
@@ -357,13 +351,13 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
     getLinkAnchors: function() {
         var projection = this._getProjection();
         var extent = this._computeExtent(projection);
-        var vertexs = [
+        var anchors = [
             new Z.Coordinate(extent.xmin,extent.ymax),
             new Z.Coordinate(extent.xmax,extent.ymin),
             new Z.Coordinate(extent.xmin,extent.ymin),
             new Z.Coordinate(extent.xmax,extent.ymax)
         ];
-        return vertexs;
+        return anchors;
     },
 
     _getMap: function() {
@@ -374,81 +368,5 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
             if(!map) break;
         }
         return map;
-    },
-
-    _getProjection: function() {
-        return this._getMap()._getProjection();
-    },
-
-    _mousedown: function() {
-        /**
-         * 触发mousedown事件
-         * @event mousedown
-         * @return {Object} params: {'target': this}
-         */
-        this.fire('mousedown', {'target': this});
-    },
-
-    _mouseup: function() {
-        /**
-         * 触发mouseup事件
-         * @event mouseup
-         * @return {Object} params: {'target': this}
-         */
-        this.fire('mouseup', {'target': this});
-    },
-
-    _click: function() {
-        /**
-         * 触发click事件
-         * @event click
-         * @return {Object} params: {'target': this}
-         */
-        this.fire('click', {'target': this});
-    },
-
-    _mouseover: function() {
-        /**
-         * 触发mouseover事件
-         * @event mouseover
-         * @return {Object} params: {'target': this}
-         */
-        this.fire('mouseover', {'target': this});
-    },
-
-    _mouseout: function() {
-        /**
-         * 触发mouseout事件
-         * @event mouseout
-         * @return {Object} params: {'target': this}
-         */
-        this.fire('mouseout', {'target': this});
-    },
-
-    _startdrag: function() {
-        /**
-         * 触发startdrag事件
-         * @event startdrag
-         * @return {Object} params: {'target': this}
-         */
-        this.fire('startdrag', {'target': this});
-    },
-
-    _dragend: function() {
-        /**
-         * 触发dragend事件
-         * @event dragend
-         * @return {Object} params: {'target': this}
-         */
-        this.fire('dragend', {'target': this});
-    },
-
-    _positionchanged: function() {
-        /**
-         * 触发positionchanged事件
-         * @event positionchanged
-         * @return {Object} params: {'target': this}
-         */
-        this.fire('positionchanged', {'target': this});
     }
 });

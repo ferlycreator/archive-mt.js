@@ -25,7 +25,7 @@ Z.CollectionPainter=Z.Class.extend({
         this._eachPainter(function(painter) {
             painter.paint.apply(painter,args);
         });
-        this._registerEvents();
+        // this._registerEvents();
     },
 
     getPixelExtent:function() {
@@ -89,7 +89,7 @@ Z.CollectionPainter=Z.Class.extend({
             result = result.concat(painter.getSvgDom());
         });
         return result;
-    },
+    }/*,
 
     _registerEvents:function() {
         var layer = this.geometry.getLayer();
@@ -106,5 +106,5 @@ Z.CollectionPainter=Z.Class.extend({
                 Z.DomUtil.on(doms[j], 'mouseout', geometry._onMouseOut, geometry);
             }
         }
-    }
+    }*/
 });

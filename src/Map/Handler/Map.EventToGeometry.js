@@ -8,10 +8,6 @@ Z.Map.mergeOptions({
 
 Z.Map.EventToGeometry = Z.Handler.extend({
     addHooks: function() {
-        /**
-        * TODO Z.Render.Canvas.Base.getBaseCanvasRender(map) 在该扩展功能注册时为undefined
-        * 故采用了之前的方式获取canvas容器。
-        */
         var canvasContainer = this.map._panels.canvasLayerContainer;
         if(canvasContainer) {
             Z.DomUtil.on(canvasContainer,'mousedown mouseup mousemove click dblclick contextmenu', this._queryGeometries, this);
@@ -41,14 +37,14 @@ Z.Map.EventToGeometry = Z.Handler.extend({
             'layers': layers,
             'success': Z.Util.bind(fireGeometryEvent, this)
         };
-
+        var me = this;
         if ('mousemove' === eventType) {
             //mousemove才需要做15ms的判断
             var throttle = 15;//15毫秒
             if (this._queryIdentifyTimeout) {
                 clearTimeout(this._queryIdentifyTimeout);
             }
-            var me = this;
+
             this._queryIdentifyTimeout = setTimeout(function() {
                 me.map.identify(me.options);
             },throttle);
@@ -88,18 +84,16 @@ Z.Map.EventToGeometry = Z.Handler.extend({
                 }
                 if(!geometries) {return;}
                 for(i=0,len=geometries.length; i<len; i++) {
-                    var geometry = geometries[i];
-                    geometry._onMouseOver(domEvent);
+                    geometries[i]._onMouseOver(domEvent);
                 }
                 me.prevMouseOverTargets = geometries;
             } else {
                 if(!geometries) {return;}
                 for(i=0,len=geometries.length; i<len; i++) {
-                    var geometry = geometries[i];
-                    geometry._onEvent(domEvent);
+                    geometries[i]._onEvent(domEvent);
                 }
             }
-        };
+        }
 
     }
 });
