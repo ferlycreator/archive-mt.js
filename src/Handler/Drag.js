@@ -35,6 +35,10 @@ Z.Handler.Drag = Z.Handler.extend({
     },
 
     onMouseDown:function(event) {
+        if (Z.Util.isNumber(event.button) && event.button === 2) {
+            //不响应右键事件
+            return;
+        }
         var dom = this.dom;
         if(dom.setCapture) {
             dom.setCapture();
