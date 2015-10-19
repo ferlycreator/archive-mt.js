@@ -1,10 +1,10 @@
-Z.render.map.Dom = function(map) {
-    this.map = map;
-    this._panels = map._panels;
-    this._registerEvents();
-};
+Z.render.map.Dom = Z.render.map.Render.extend({
+    initialize:function(map) {
+        this.map = map;
+        this._panels = map._panels;
+        this._registerEvents();
+    },
 
-Z.render.map.Dom.prototype = {
     _registerEvents:function() {
         this.map.on('moving', function() {
             //reduce refresh frequency
@@ -12,6 +12,8 @@ Z.render.map.Dom.prototype = {
         },this);
         this.map.on('moveend resize zoomend',function() {
             this._refreshSVGPaper();
+            this._resetCanvasPosition();
+            this.rend();
         },this);
         this.map.on('baselayerchangestart baselayerchangeend baselayerload',function() {
             this.removeBackGroundDOM();
@@ -28,11 +30,21 @@ Z.render.map.Dom.prototype = {
             return this._panels.mapContainer;
         } else if (layer instanceof Z.VectorLayer) {
             if (layer.isCanvasRender()) {
-                return this._panels.canvasLayerContainer;
+                if (!this._canvas) {
+                    this._createCanvas();
+                }
+                return this._canvas;
             } else {
                 return this._panels.svgContainer;
             }
         }
+    },
+
+    /**
+     * 绘制canvas渲染的VectorLayer
+     */
+    rend:function() {
+        this._rend(this.map._canvasLayers);
     },
 
     /**
@@ -48,19 +60,6 @@ Z.render.map.Dom.prototype = {
             Z.DomUtil.offsetDom(this._panels.mapPlatform, domOffset.add(offset));
             return this;
         }
-    },
-
-    updateMapSize:function(mSize) {
-        if (!mSize) {return;}
-        var width = mSize['width'],
-            height = mSize['height'];
-        var panels = this._panels;
-        panels.mapWrapper.style.width = width + 'px';
-        panels.mapWrapper.style.height = height + 'px';
-        panels.mapViewPort.style.width = width + 'px';
-        panels.mapViewPort.style.height = height + 'px';
-        panels.controlWrapper.style.width = width + 'px';
-        panels.controlWrapper.style.height = height + 'px';
     },
 
     resetContainer:function() {
@@ -99,10 +98,6 @@ Z.render.map.Dom.prototype = {
         this._panels.svgContainer.style.display="none";
         this._panels.canvasLayerContainer.style.display="none";
         // this._panels.tipContainer.style.display="none";
-    },
-
-    getPanel: function() {
-        return this._panels.mapViewPort;
     },
 
     /**
@@ -251,5 +246,5 @@ Z.render.map.Dom.prototype = {
         this.offsetPlatform(new Z.Point(0,0));
         var mapSize = this.map._getContainerDomSize();
         this.updateMapSize(mapSize);
-    },
-};
+    }
+});

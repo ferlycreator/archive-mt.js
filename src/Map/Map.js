@@ -98,7 +98,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         options = Z.Util.setOptions(this,options);
         this._initRender();
         this._getRender().initContainer();
-        this._updateMapSize();
+        this._updateMapSize(this._getContainerDomSize());
     },
 
     /**
@@ -134,10 +134,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         if (Z.Util.isNil(this.width) || Z.Util.isNil(this.height)) {
             return this._getContainerDomSize();
         }
-        return {
-            'width' : this.width,
-            'height' : this.height
-        };
+        return new Z.Size(this.width, this.height);
     },
 
     /**
@@ -208,16 +205,16 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     _onMoving:function(param) {
-        function movingLayer(layer) {
+        /*function movingLayer(layer) {
             if (layer) {
                 layer._onMoving(param);
             }
-        }
+        }*/
 
         /*//reduce refresh frequency
         if (2*Math.random() > 1) {this._refreshSVGPaper();}*/
-        if (this._baseTileLayer) {this._baseTileLayer._onMoving();}
-        this._eachLayer(movingLayer, this._svgLayers, this._canvasLayers);
+        /*if (this._baseTileLayer) {this._baseTileLayer._onMoving();}
+        this._eachLayer(movingLayer, this._svgLayers, this._canvasLayers);*/
         /**
          * 触发map的moving事件
          * @member maptalks.Map
@@ -227,14 +224,14 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     _onMoveEnd:function(param) {
-        function endMoveLayer(layer) {
+        /*function endMoveLayer(layer) {
             if (layer) {
                 layer._onMoveEnd(param);
             }
-        }
-        if (this._baseTileLayer) {this._baseTileLayer._onMoveEnd();}
+        }*/
+        // if (this._baseTileLayer) {this._baseTileLayer._onMoveEnd();}
         /*this._refreshSVGPaper();*/
-        this._eachLayer(endMoveLayer,this._tileLayers,this._canvasLayers,this._dynLayers);
+        // this._eachLayer(endMoveLayer,this._tileLayers,this._canvasLayers,this._dynLayers);
         /**
          * 触发map的moveend事件
          * @member maptalks.Map
@@ -694,13 +691,13 @@ Z['Map']=Z.Map=Z.Class.extend({
     _onResize:function(resizeOffset) {
         this._offsetCenterByPixel(resizeOffset);
         // this._refreshSVGPaper();
-        function resizeLayer(layer) {
+        /*function resizeLayer(layer) {
             if (layer) {
                 layer._onResize();
             }
         }
         if (this._baseTileLayer) {this._baseTileLayer._onResize();}
-        this._eachLayer(resizeLayer,this.getAllLayers());
+        this._eachLayer(resizeLayer,this.getAllLayers());*/
         /**
          * 触发map的resize事件
          * @member maptalks.Map
@@ -710,6 +707,8 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     _fireEvent:function(eventName, param) {
+        //fire internal events at first
+        this.fire('_'+eventName,param);
         this.fire(eventName,param);
     },
 
@@ -795,8 +794,6 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {[type]} [description]
      */
     _showOverlayLayers:function() {
-        /*this._panels.svgContainer.style.display="";
-        this._panels.canvasLayerContainer.style.display="";*/
         this._getRender().showOverlayLayers();
         return this;
     },
@@ -806,9 +803,6 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {[type]} [description]
      */
     _hideOverlayLayers:function() {
-        /*this._panels.svgContainer.style.display="none";
-        this._panels.canvasLayerContainer.style.display="none";
-        // me._panels.tipContainer.style.display="none";*/
         this._getRender().hideOverlayLayers();
         return this;
     },
@@ -881,19 +875,9 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     _updateMapSize:function(mSize) {
-        /*if (!mSize) {return;}
         this.width = mSize['width'];
         this.height = mSize['height'];
-        var panels = this._panels;
-        panels.mapWrapper.style.width = this.width + 'px';
-        panels.mapWrapper.style.height = this.height + 'px';
-        panels.mapViewPort.style.width = this.width + 'px';
-        panels.mapViewPort.style.height = this.height + 'px';
-        panels.controlWrapper.style.width = this.width + 'px';
-        panels.controlWrapper.style.height = this.height + 'px';*/
         this._getRender().updateMapSize(mSize);
-        this.width = mSize['width'];
-        this.height = mSize['height'];
         return this;
     },
 
@@ -1100,134 +1084,6 @@ Z['Map']=Z.Map=Z.Class.extend({
         return this._getProjection().locate(coordinate,dx,dy);
     },
 
-
-
-    /**
-     * initialize _container DOM of panels
-     */
-    /*_initContainer:function() {
-        var _containerDOM;
-        if (Z.Util.isString(this._container)) {
-            _containerDOM = document.getElementById(this._container);
-            if (!_containerDOM) {
-                throw new Error('invalid _container id: \''+this._container+'\'');
-            }
-        } else {
-            if (!this._container || !this._container.appendChild) {
-                throw new Error('invalid _container element');
-            }
-            _containerDOM = this._container;
-        }
-        this._containerDOM = _containerDOM;
-        _containerDOM.innerHTML = '';
-        _containerDOM.className = 'MAP_CONTAINER_TOP';
-
-        var controlWrapper = Z.DomUtil.createEl('div');
-        controlWrapper.className = 'MAP_CONTROL_WRAPPER';
-
-        var _controlsContainer = Z.DomUtil.createEl('div');
-        _controlsContainer.className = 'MAP_CONTROLS_CONTAINER';
-        _controlsContainer.style.cssText = 'z-index:3002';
-        controlWrapper.appendChild(_controlsContainer);
-        //map wrapper定义了全局的背景色, hidden overflow等css属性
-        var mapWrapper = Z.DomUtil.createEl('div');
-        mapWrapper.style.cssText = 'position:absolute;overflow:hidden;';
-        mapWrapper.className='MAP_WRAPPER';
-        _containerDOM.appendChild(mapWrapper);
-
-        // 最外层的div
-        var _mapPlatform = Z.DomUtil.createEl('div');
-        // _mapPlatform.id='_mapPlatform';
-        _mapPlatform.className = 'MAP_PLATFORM';
-        _mapPlatform.style.cssText = 'position:absolute;top:0px;left:0px;';
-        mapWrapper.appendChild(_mapPlatform);
-        mapWrapper.appendChild(controlWrapper);
-
-        var _mapViewPort = Z.DomUtil.createEl('div');
-        // _mapViewPort.id='_mapViewPort';
-        _mapViewPort.className = 'MAP_VIEWPORT';
-        _mapViewPort.style.cssText = 'position:absolute;top:0px;left:0px;z-index:10;-moz-user-select:none;-webkit-user-select: none;';
-        _mapPlatform.appendChild(_mapViewPort);
-
-        var _mapContainer = Z.DomUtil.createEl('div');
-        _mapContainer.className = 'MAP_CONTAINER';
-
-        _mapContainer.style.cssText = 'position:absolute;top:0px;left:0px;';
-        _mapContainer.style.border = 'none';
-        //var _backContainer = _mapContainer.cloneNode(false);
-        var _tipContainer = _mapContainer.cloneNode(false);
-        var _popMenuContainer = _mapContainer.cloneNode(false);
-        var _contextCtrlContainer = _mapContainer.cloneNode(false);
-        var _svgContainer = _mapContainer.cloneNode(false);
-        var _canvasLayerContainer = _mapContainer.cloneNode(false);
-
-        _tipContainer.className = 'MAP_TIP_CONTAINER';
-        _popMenuContainer.className = 'MAP_POPMENU_CONTAINER';
-        _contextCtrlContainer.className = 'MAP_CONTEXTCTRL_CONTAINER';
-        _svgContainer.className = 'MAP_SVG_CONTAINER';
-        _canvasLayerContainer.className = 'MAP_CANVAS_CONTAINER';
-
-        _mapContainer.style.zIndex = 10;
-        // _mapContainer.id='mapContainer';
-        _canvasLayerContainer.style.zIndex=100;
-        _svgContainer.style.zIndex = 200;
-        _popMenuContainer.style.zIndex = 3000;
-        _contextCtrlContainer.style.zIndex = 3000;
-        _tipContainer.style.zIndex = 3001;
-
-        _mapViewPort.appendChild(_mapContainer);
-
-        _contextCtrlContainer.appendChild(_tipContainer);
-        _contextCtrlContainer.appendChild(_popMenuContainer);
-        _mapPlatform.appendChild(_contextCtrlContainer);
-        _mapViewPort.appendChild(_canvasLayerContainer);
-        _mapViewPort.appendChild(_svgContainer);
-
-        //解决ie下拖拽矢量图形时，底图div会选中变成蓝色的bug
-        if (Z.Browser.ie) {
-            _mapViewPort['onselectstart'] = function(e) {
-                return false;
-            };
-            _mapViewPort['ondragstart'] = function(e) { return false; };
-            _mapViewPort.setAttribute('unselectable', 'on');
-
-            _mapContainer['onselectstart'] = function(e) {
-                return false;
-            };
-            _mapContainer['ondragstart'] = function(e) { return false; };
-            _mapContainer.setAttribute('unselectable', 'on');
-
-
-            controlWrapper['onselectstart'] = function(e) {
-                return false;
-            };
-            controlWrapper['ondragstart'] = function(e) { return false; };
-            controlWrapper.setAttribute('unselectable', 'on');
-
-            mapWrapper.setAttribute('unselectable', 'on');
-            _mapPlatform.setAttribute('unselectable', 'on');
-        }
-
-
-        //store panels
-        var panels = this._panels;
-        panels.controlWrapper = controlWrapper;
-        panels.mapWrapper = mapWrapper;
-        panels.mapViewPort = _mapViewPort;
-        panels.mapPlatform = _mapPlatform;
-        panels.mapContainer = _mapContainer;
-        panels.tipContainer = _tipContainer;
-        panels.popMenuContainer = _popMenuContainer;
-        panels.svgContainer = _svgContainer;
-        panels.canvasLayerContainer = _canvasLayerContainer;
-//
-//
-        //初始化mapPlatform的偏移量, 适用css3 translate时设置初始值
-        this.offsetPlatform(new Z.Point(0,0));
-        var mapSize = this._getContainerDomSize();
-        this._updateMapSize(mapSize);
-    },*/
-
     /**
     * 获取地图容器
     */
@@ -1249,14 +1105,6 @@ Z['Map']=Z.Map=Z.Class.extend({
                 var oldWidth = map.width;
                 map._updateMapSize(watched);
                 map._onResize(new Z.Point((watched.width-oldWidth) / 2,(watched.height-oldHeight) / 2));
-                // 触发_onResize事件
-                /**
-                 * 地图容器大小变化事件
-                 * @member maptalks.Map
-                 * @event resize
-                 * @return {Object} param: {'target': map}
-                 */
-                map._fireEvent(map.events.RESIZE);
             }
         },800);
     }

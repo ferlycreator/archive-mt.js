@@ -1,14 +1,14 @@
 Z.Map.include({
     _onZoomStart:function(scale,focusPos,nextZoomLevel) {
-        function zoomLayer(layer) {
+        /*function zoomLayer(layer) {
             if (layer&&layer._onZoomStart) {
                 layer._onZoomStart();
             }
-        }
+        }*/
         var me = this;
 
-        if (me._baseTileLayer) {me._baseTileLayer._onZoomStart(true);}
-        me._eachLayer(zoomLayer,me.getAllLayers());
+        // if (me._baseTileLayer) {me._baseTileLayer._onZoomStart(true);}
+        // me._eachLayer(zoomLayer,me.getAllLayers());
         this._hideOverlayLayers();
         me._zoomAnimationStart(scale,focusPos);
         /**
@@ -21,19 +21,19 @@ Z.Map.include({
     },
 
     _onZoomEnd:function(nextZoomLevel) {
-        function zoomLayer(layer) {
+        /*function zoomLayer(layer) {
             if (layer&&layer._onZoomEnd) {
                 layer._onZoomEnd();
             }
-        }
+        }*/
 
         this._getRender().insertBackground();
-        if (this._baseTileLayer) {this._baseTileLayer.clear();}
+        // if (this._baseTileLayer) {this._baseTileLayer.clear();}
         this._zoomAnimationEnd();
         this._getRender().resetContainer();
         this._originZoomLevel=nextZoomLevel;
-        if (this._baseTileLayer) {this._baseTileLayer._onZoomEnd();}
-        this._eachLayer(zoomLayer,this.getAllLayers());
+        // if (this._baseTileLayer) {this._baseTileLayer._onZoomEnd();}
+        // this._eachLayer(zoomLayer,this.getAllLayers());
         this._showOverlayLayers();
         /**
          * 触发map的zoomend事件
