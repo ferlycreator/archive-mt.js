@@ -10,9 +10,13 @@ Z.render.map.Dom = Z.render.map.Render.extend({
             //reduce refresh frequency
             if (2*Math.random() > 1) {this._refreshSVGPaper();}
         },this);
-        this.map.on('moveend resize zoomend',function() {
+        this.map.on('moveend resize',function() {
             this._refreshSVGPaper();
-            this._resetCanvasPosition();
+            this.rend();
+        },this);
+        this.map.on('_zoomend',function() {
+            this._refreshSVGPaper();
+            this._clearCanvas();
             this.rend();
         },this);
         this.map.on('baselayerchangestart baselayerchangeend baselayerload',function() {

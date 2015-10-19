@@ -13,9 +13,9 @@ Z.render.map.Render = Z.Class.extend({
         }
         if (!this._canvas) {
             this._createCanvas();
-        } else {
+        } /*else {
             Z.Canvas.clearRect(this._context, 0, 0, this._canvas.width, this._canvas.height);
-        }
+        }*/
         var me = this;
         var promises = [];
         for (var i = layers.length - 1; i >= 0; i--) {
@@ -27,6 +27,8 @@ Z.render.map.Render = Z.Class.extend({
     },
 
     _draw:function(layers) {
+
+        this._resetCanvasPosition();
         for (var i = layers.length - 1; i >= 0; i--) {
             layers[i]._getRender().draw(this._context);
             //采用putImageData实现会出现crossOrigin错误, 故直接传递_context给图层render
@@ -47,10 +49,15 @@ Z.render.map.Render = Z.Class.extend({
         this._panels.canvasLayerContainer.appendChild(this._canvas);
     },
 
+    _clearCanvas:function() {
+        Z.Canvas.clearRect(this._context, 0, 0, this._canvas.width, this._canvas.height);
+    },
+
     _resetCanvasPosition:function() {
         if (!this._canvas) {
             return;
         }
+        this._clearCanvas();
         var offset = this.offsetPlatform();
         this._canvas.style.left = -offset['left']+'px';
         this._canvas.style.top = -offset['top']+'px';
