@@ -46,10 +46,10 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (!opts) {
             opts = {};
         }
-        if (!Z.Util.isNil(opts['coordinateType'])) {
+        /*if (!Z.Util.isNil(opts['coordinateType'])) {
             this.setCoordinateType(opts['coordinateType']);
             delete opts['coordinateType'];
-        }
+        }*/
         Z.Util.setOptions(this,opts);
     },
 
@@ -334,15 +334,15 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
             return null;
         }
         var result = [];
-        var icon = symbol['marker-file'];
+        var icon = symbol['markerFile'];
         if (icon) {
             result.push(icon);
         }
-        icon = symbol['shield-file'];
+        icon = symbol['shieldFile'];
         if (icon) {
             result.push(icon);
         }
-        var fill = symbol['polygon-pattern-file'];
+        var fill = symbol['polygonPatternFile'];
         if (fill) {
             result.push(Z.Util.extractCssUrl(fill));
         }
@@ -402,9 +402,26 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
         this._fireEvent('symbolchanged');
     },
+    /**
+     * 设置Geometry的父Geometry, 父Geometry为包含该geometry的Collection类型Geometry
+     * @param {GeometryCollection} geometry 父Geometry
+     */
+    _setParent:function(geometry) {
+        if (geometry) {
+            this._parent = geometry;
+        }
+    },
+
+    _getParent:function() {
+        return this._parent;
+    },
 
     _fireEvent:function(eventName, param) {
         this.fire(eventName,param);
+        if (this._getParent()) {
+            param['target'] = this._getParent();
+            this._getParent().fire(eventName,param);
+        }
     },
 
     _exportGeoJson:function(opts) {
@@ -505,7 +522,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (map) {
             return map.getCoordinateType();
         }
-        return this._coordinateType;
+        return this.options['coordinateType'];
     },
 
     /**
@@ -513,7 +530,10 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @param {String} coordinateType 坐标类型
      */
     setCoordinateType:function(coordinateType) {
-        this._coordinateType = coordinateType;
+        if (!this.options || !this.hasOwnProperty(this.options)) {
+            Z.Util.setOptions(this, {});
+        }
+        this.options['coordinateType'] = coordinateType;
         return this;
     }
 
