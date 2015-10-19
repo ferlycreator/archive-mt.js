@@ -118,6 +118,39 @@ Z['Layer']=Z.Layer=Z.Class.extend({
         }
     },
 
+    /**
+     * 显示图层
+     */
+    show:function() {
+        if (!this.options['visible']) {
+            this._render.show();
+            this.options['visible'] = true;
+        }
+        return this;
+    },
+
+    /**
+     * 隐藏图层
+     */
+    hide:function() {
+        if (this.options['visible']) {
+            this._render.hide();
+            this.options['visible'] = false;
+        }
+        return this;
+    },
+
+    /**
+     * 瓦片图层是否可见
+     * @return {Boolean} true/false
+     */
+    isVisible:function() {
+        return this.options['visible'];
+    },
+
+    _getRender:function() {
+        return this._render;
+    },
 
     /**
      * 获取图层在图层列表中的index

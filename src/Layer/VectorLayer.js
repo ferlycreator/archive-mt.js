@@ -36,24 +36,6 @@ Z.VectorLayer=Z.OverlayLayer.extend({
     },
 
     _initRender:function() {
-        //地图为canvas渲染方式时, VectorLayer只支持canvas渲染
-        /*if (this.getMap() && this.getMap().isCanvasRender()) {
-            this._render = new Z.render.vectorlayer.Canvas(this,{
-                'visible':this.options['visible']
-            });
-            return;
-        }
-        //动态加载Render
-        if (Z.Browser.canvas &&
-            ((!Z.Browser.svg && !Z.Browser.vml) || 'canvas' === this.options['render'].toLowerCase())) {
-            this._render = new Z.render.vectorlayer.Canvas(this,{
-                'visible':this.options['visible']
-            });
-        } else {
-            this._render = new Z.render.vectorlayer.Dom(this,{
-                'visible':this.options['visible']
-            });
-        }*/
         if (this.isCanvasRender()) {
             this._render = new Z.render.vectorlayer.Canvas(this,{
                 'visible':this.options['visible']
@@ -65,44 +47,13 @@ Z.VectorLayer=Z.OverlayLayer.extend({
         }
     },
 
-    getRender: function() {
-        return this._render;
-    },
-
     load:function() {
         if (!this._render) {
             this._initRender();
             this._render.setZIndex(this._zIndex);
         }
-        this._render.load();
+        this._render.rend();
         return this;
-    },
-
-    /**
-     * 显示图层
-     * @expose
-     */
-    show:function() {
-        this._render.show();
-        return this;
-    },
-
-    /**
-     * 隐藏图层
-     * @expose
-     */
-    hide:function() {
-        this._render.hide();
-        return this;
-    },
-
-    /**
-     * 图层是否显示
-     * @return {Boolean} 图层是否显示
-     * @expose
-     */
-    isVisible:function() {
-        return this._render.isVisible();
     },
 
     /**
@@ -110,8 +61,8 @@ Z.VectorLayer=Z.OverlayLayer.extend({
      * @param  {[type]} geometries [description]
      * @return {[type]}            [description]
      */
-    _paintGeometries:function(geometries) {
-        this._render._paintGeometries(geometries);
+    _rend:function(geometries) {
+        this._render.rend(geometries);
         return this;
     },
 
@@ -136,9 +87,8 @@ Z.VectorLayer=Z.OverlayLayer.extend({
         }
         delete this._geoCache[internalId];
         if (this.isCanvasRender()) {
-            this._render.repaint();
+            this._render.rend();
         }
-
     },
 
     _setZIndex:function(zIndex) {
@@ -147,44 +97,5 @@ Z.VectorLayer=Z.OverlayLayer.extend({
         }
         this._zIndex = zIndex;
         return this;
-    },
-
-    _onMoveStart:function() {
-        this._render._onMoveStart();
-        return this;
-    },
-
-    /**
-     * 地图中心点变化时的响应函数
-     */
-    _onMoving:function() {
-        this._render._onMoving();
-        return this;
-    },
-
-    _onMoveEnd:function() {
-        this._render._onMoveEnd();
-        return this;
-    },
-
-    /**
-     * 地图放大缩小时的响应函数
-     * @return {[type]} [description]
-     */
-    _onZoomStart:function() {
-        this._render._onZoomStart();
-        return this;
-    },
-
-    _onZoomEnd:function() {
-        this._render._onZoomEnd();
-        return this;
-    },
-
-    _onResize:function() {
-       this._render._onResize();
-        return this;
     }
-
-
 });

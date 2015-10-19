@@ -1,19 +1,19 @@
-Z.render.vectorlayer.Dom = function(layer,options) {
+Z.render.vectorlayer.Dom = function(layer) {
     this._layer = layer;
-    this._visible=options['visible'];
-    this._zIndex = options['zIndex'];
+    this._registerEvents();
 };
 
 Z.render.vectorlayer.Dom.prototype= {
-    getMap:function() {
-        return this._layer.getMap();
+    _registerEvents:function() {
+        this.getMap().on('_zoomend',function(){
+            this._layer._eachGeometry(function(geo) {
+                geo._onZoomEnd();
+            });
+        },this);
     },
 
-    load:function() {
-        var map = this.getMap();
-        this._layerContainer = map._panels.svgContainer;
-        // map._createSVGPaper();
-        this._addTo();
+    getMap:function() {
+        return this._layer.getMap();
     },
 
     /**
@@ -21,13 +21,9 @@ Z.render.vectorlayer.Dom.prototype= {
      * @expose
      */
     show:function() {
-        if (this._visible) {
-            return;
-        }
         this._layer._eachGeometry(function(geo) {
             geo.show();
         });
-        this._visible=true;
     },
 
     /**
@@ -35,22 +31,9 @@ Z.render.vectorlayer.Dom.prototype= {
      * @expose
      */
     hide:function() {
-        if (!this._visible) {
-            return;
-        }
         this._layer._eachGeometry(function(geo) {
             geo.hide();
         });
-        this._visible=false;
-    },
-
-    /**
-     * 图层是否显示
-     * @return {Boolean} 图层是否显示
-     * @expose
-     */
-    isVisible:function() {
-        return this._visible/* && this._layerContainer && this._layerContainer.style.display !== 'none'*/;
     },
 
     /**
@@ -58,7 +41,14 @@ Z.render.vectorlayer.Dom.prototype= {
      * @param  {[type]} geometries [description]
      * @return {[type]}            [description]
      */
-    _paintGeometries:function(geometries) {
+    rend:function(geometries) {
+        if (!this._layerContainer) {
+            this._layerContainer = this.getMap()._getRender().getLayerRenderContainer(this._layer);
+        }
+        if (!geometries) {
+            this._rendAll();
+            return;
+        }
         var vectorPaper = this.getMap()._getRender().getSvgPaper();
         var fragment = document.createDocumentFragment();
         var vectorFragment = document.createDocumentFragment();
@@ -77,7 +67,7 @@ Z.render.vectorlayer.Dom.prototype= {
 
 
 
-    _addTo:function() {
+    _rendAll:function() {
         var layerContainer = this._layerContainer;
         var zIndex = this._zIndex;
         var vectorPaper = this.getMap()._getRender().getSvgPaper();
@@ -102,38 +92,5 @@ Z.render.vectorlayer.Dom.prototype= {
                 geo._getPainter().setZIndex(zIndex);
             }
         });
-    },
-
-    _onMoveStart:function() {
-        //nothing to do
-    },
-
-    /**
-     * 地图中心点变化时的响应函数
-     */
-    _onMoving:function() {
-        //nothing to do
-    },
-
-    _onMoveEnd:function() {
-        //nothing to do
-    },
-
-    /**
-     * 地图放大缩小时的响应函数
-     * @return {[type]} [description]
-     */
-    _onZoomStart:function() {
-        //this.hide();
-    },
-
-    _onZoomEnd:function() {
-        this._layer._eachGeometry(function(geo) {
-            geo._onZoomEnd();
-        });
-    },
-
-    _onResize:function() {
-        //nothing to do
     }
 };
