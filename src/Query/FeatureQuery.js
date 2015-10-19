@@ -4,26 +4,22 @@
  * @extends maptalks.Class
  * @author Maptalks Team
  */
-Z.FeatureQuery=Z.Class.extend({
-    /**
-     * 查询远程服务器上的数据
-     * @param  {Object} opts 查询参数
-     * @constructor
-     */
-    initialize:function(opts) {
-        if (!opts) {
-            return;
-        }
-        this.host = opts['host'];
-        this.port = opts['port'];
-        if (!this.host || !this.port) {
-            //默认采用js的服务地址作为查询地址
-            var url = new Z.Url(Z.prefix);
-            this.host = url.getHost();
-            this.port = url.getPort();
-        }
-        this.mapdb = opts['mapdb'];
-    },
+Z.FeatureQuery=function(opts) {
+    if (!opts) {
+        return;
+    }
+    this.host = opts['host'];
+    this.port = opts['port'];
+    if (!this.host || !this.port) {
+        //默认采用js的服务地址作为查询地址
+        var url = new Z.Url(Z.prefix);
+        this.host = url.getHost();
+        this.port = url.getPort();
+    }
+    this.mapdb = opts['mapdb'];
+};
+
+Z.FeatureQuery.prototype={
 
     /**
      * 检查查询参数是否正常
@@ -195,4 +191,4 @@ Z.FeatureQuery=Z.Class.extend({
         }
         return ret;
     }
-});
+};
