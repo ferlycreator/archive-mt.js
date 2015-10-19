@@ -34,12 +34,12 @@ describe('SectorSpec', function() {
     describe('geometry fires events', function() {
         it('svg events', function() {
             var vector = new Z.Sector(center, 1, 0, 270);
-            GeoEventsTester.testSVGEvents(vector, map);
+            new GeoEventsTester().testSVGEvents(vector, map);
         });
 
         it('canvas events', function() {
             var vector = new Z.Sector(center, 1, 0, 270);
-            GeoEventsTester.testCanvasEvents(vector, map, vector.getCenter());
+            new GeoEventsTester().testCanvasEvents(vector, map, vector.getCenter());
         });
     });
 

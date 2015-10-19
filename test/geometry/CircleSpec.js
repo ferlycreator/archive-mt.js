@@ -22,12 +22,12 @@ describe('CircleSpec', function() {
     describe('geometry fires events', function() {
         it('svg events', function() {
             var vector = new Z.Circle(center, 1);
-            GeoEventsTester.testSVGEvents(vector, map);
+            new GeoEventsTester().testSVGEvents(vector, map);
         });
 
         it('canvas events', function() {
             var vector = new Z.Circle(center, 1);
-            GeoEventsTester.testCanvasEvents(vector, map, vector.getCenter());
+            new GeoEventsTester().testCanvasEvents(vector, map, vector.getCenter());
         });
     });
 

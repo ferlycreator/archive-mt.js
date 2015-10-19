@@ -80,7 +80,7 @@ describe('PolygonSpec', function() {
                 [ [100.2, 0.2], [100.8, 0.2], [100.8, 0.8], [100.2, 0.8], [100.2, 0.2] ]
             ];
             var vector = new Z.Polygon(points);
-            GeoEventsTester.testSVGEvents(vector, map);
+            new GeoEventsTester().testSVGEvents(vector, map);
         });
 
         it('canvas events', function() {
@@ -93,7 +93,7 @@ describe('PolygonSpec', function() {
                 ]
             ];
             var vector = new Z.Polygon(points);
-            GeoEventsTester.testCanvasEvents(vector, map, vector.getCenter());
+            new GeoEventsTester().testCanvasEvents(vector, map, vector.getCenter());
         });
     });
 

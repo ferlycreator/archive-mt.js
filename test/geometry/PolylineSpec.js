@@ -81,7 +81,7 @@ describe('PolylineSpec', function() {
                 {x: 0, y: 90}
             ];
             var vector = new Z.Polyline(points);
-            GeoEventsTester.testSVGEvents(vector, map);
+            new GeoEventsTester().testSVGEvents(vector, map);
         });
 
         it('canvas events', function() {
@@ -91,7 +91,7 @@ describe('PolylineSpec', function() {
                 {x: 0, y: 90}
             ];
             var vector = new Z.Polyline(points);
-            GeoEventsTester.testCanvasEvents(vector, map, vector.getCenter());
+            new GeoEventsTester().testCanvasEvents(vector, map, vector.getCenter());
         });
     });
 

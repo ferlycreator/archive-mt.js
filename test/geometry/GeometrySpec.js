@@ -53,7 +53,7 @@ describe('Geometry', function() {
     it("Circle._containsPoint", function() {
         var geometry = new Z.Circle(center, 10, {
             symbol: {
-                'line-width': 6
+                'lineWidth': 6
             }
         });
         layer.addGeometry(geometry);
@@ -77,7 +77,7 @@ describe('Geometry', function() {
     it("Ellipse._containsPoint", function() {
         var geometry = new Z.Ellipse(center, 20, 10, {
             symbol: {
-                'line-width': 6
+                'lineWidth': 6
             }
         });
         layer.addGeometry(geometry);
@@ -101,7 +101,7 @@ describe('Geometry', function() {
     it("Sector._containsPoint", function() {
         var geometry = new Z.Sector(center, 10, 90, 405, {
             symbol: {
-                'line-width': 6
+                'lineWidth': 6
             }
         });
         layer.addGeometry(geometry);
@@ -125,7 +125,7 @@ describe('Geometry', function() {
     it("Rectangle._containsPoint", function() {
         var geometry = new Z.Rectangle(center, 20, 10, {
             symbol: {
-                'line-width': 6
+                'lineWidth': 6
             }
         });
         layer.addGeometry(geometry);
@@ -153,7 +153,7 @@ describe('Geometry', function() {
             new Z.Coordinate([center.x + 0.002, center.y])
         ], {
             symbol: {
-                'line-width': 6
+                'lineWidth': 6
             }
         });
         layer.addGeometry(geometry);
@@ -181,7 +181,7 @@ describe('Geometry', function() {
             new Z.Coordinate([center.x + 0.002, center.y])
         ]], {
             symbol: {
-                'line-width': 6
+                'lineWidth': 6
             }
         });
         layer.addGeometry(geometry);

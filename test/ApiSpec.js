@@ -945,9 +945,9 @@ describe('API', function () {
             geometry._getPainter = getPainter;
             var symbol = {
 
-                    'line-color': '#ff0000',
-                    'line-width': 3,
-                    'line-opacity': 0.6
+                    'lineColor': '#ff0000',
+                    'lineWidth': 3,
+                    'lineOpacity': 0.6
 
             };
             var undef;
@@ -959,9 +959,9 @@ describe('API', function () {
 
             expect(got).to.not.be(null);
             expect(got).to.only.have.keys([
-                'line-color',
-                'line-width',
-                'line-opacity'
+                'lineColor',
+                'lineWidth',
+                'lineOpacity'
             ]);
         });
 

@@ -182,7 +182,7 @@ var GeoSymbolTester = {
             },
 
     testGeoSymbols:function(geometry, map) {
-        return;
+        // return;
         geometry.remove();
         var layer = new maptalks.VectorLayer("symboltest_layer_svg");
         map.addLayer(layer);
@@ -209,7 +209,10 @@ var GeoSymbolTester = {
  * testCanvasEvents测试Canvas类图层上的事件响应
  * @type {Object}
  */
-var GeoEventsTester = {
+var GeoEventsTester = function() {
+};
+
+GeoEventsTester.prototype = {
     //happen 支持的事件种类
     eventsToTest : 'click mousedown mouseup dblclick', //mousemove
 
@@ -238,7 +241,7 @@ var GeoEventsTester = {
         vector.on(this.eventsToTest, this._eventCallBack );
         layer.addGeometry(vector);
         var point = map.coordinateToContainerPoint(testPoint);
-        var dom = layer.getRender().getCanvasContainer();
+        var dom = map._panels.canvasLayerContainer;
         var domPosition = Z.DomUtil.getPageCoordinate(dom);
         point._add(domPosition);
         this._verifyGeometryEvents(dom,
@@ -271,8 +274,7 @@ var GeoEventsTester = {
         }
         var spy = this.spy;
         expect(spy.callCount).to.be(events.length);
-        spy.reset();
-
+        // spy.reset();
     }
 
 };
