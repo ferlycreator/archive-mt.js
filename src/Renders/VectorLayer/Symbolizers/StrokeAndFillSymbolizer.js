@@ -69,12 +69,9 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
         if (!extent) {
             return null;
         }
-        var min = map._getProjection().project(new Z.Coordinate(extent['xmin'],extent['ymin'])),
-            max = map._getProjection().project(new Z.Coordinate(extent['xmax'],extent['ymax']));
-        return new Z.Extent(
-            map._transformToViewPoint(min),
-            map._transformToViewPoint(max)
-            );
+        var min = map.coordinateToViewPoint(new Z.Coordinate(extent['xmin'],extent['ymin'])),
+            max = map.coordinateToViewPoint(new Z.Coordinate(extent['xmax'],extent['ymax']));
+        return new Z.Extent(min,max);
     },
     refresh:function() {
         var layer = this.geometry.getLayer();

@@ -2,15 +2,17 @@ Z.render.vectorlayer.Canvas = function(layer, options) {
     this.layer = layer;
     this._mapRender = layer.getMap()._getRender();
     this._registerEvents();
-    this._hasResourceToLoad = true;
-    // this.resourceLoader = new Z.ResourceLoader();
 };
 
 //load,_onMoving, _onMoveEnd, _onResize, _onZoomStart, _onZoomEnd
 Z.render.vectorlayer.Canvas.prototype = {
 
     _registerEvents:function() {
-        this.getMap().on('_resize',this._createOrUpdateLayerCanvas, this);
+        this.getMap().on('_zoomend',function() {
+            this.layer._eachGeometry(function(geo) {
+                geo._onZoomEnd();
+            });
+        },this);
     },
 
     getMap: function() {
@@ -19,42 +21,26 @@ Z.render.vectorlayer.Canvas.prototype = {
 
     /**
      * 绘制geometry
-     * @param  {[type]} geometries [description]
-     * @return {[type]}            [description]
+     * @param  {[Geometry]} geometries 要绘制的图形
      */
     rend: function(geometries) {
-        if (!this._canvas) {
-            this._createOrUpdateLayerCanvas();
+        if (Z.Util.isArrayHasData(geometries)) {
+            delete this._resources;
         }
-        delete this._resources;
         this._requestMapToRend();
     },
 
-
-    _createOrUpdateLayerCanvas: function() {
-        if (!this._mapCanvas) {
-            this._mapCanvas = this.getMap()._getRender().getLayerRenderContainer(this.layer);
-        }
-        var mapCanvas = this._mapCanvas;
-        if (!this._canvas) {
-            this._canvas = Z.DomUtil.createEl('canvas');
-        }
-        this._canvas.width = mapCanvas.width;
-        this._canvas.height = mapCanvas.height;
-        this._canvas.style.width = mapCanvas.style.width;
-        this._canvas.style.height = mapCanvas.style.height;
-        if (!this._context) {
-            this._context = this._canvas.getContext('2d');
-            if (Z.Browser.retina) {
-                this._context.scale(2,2);
-            }
-        }
+    /**
+     * 实时绘制
+     */
+    rendRealTime:function() {
+        this._requestMapToRend(true);
     },
 
     promise:function() {
         var me = this;
         //如果resource已经存在, 则不再重复载入资源
-        if (!this._resources) {
+        if (this._resources) {
             return [new Z.Promise(function(resolve, reject) {resolve(me._resources);})];
         }
         //20150530 loadResource不加载canvasLayer中的geometry icon资源，故每次绘制canvas都去重新检查并下载资源
@@ -77,11 +63,11 @@ Z.render.vectorlayer.Canvas.prototype = {
                     var promise = new Z.Promise(function(resolve, reject) {
                         var img = new Image();
                         img.onload = function(){
-                            me._resouces.addResource(imgUrl,img);
+                            me._resources.addResource(imgUrl,img);
                             resolve({'url':imgUrl,'image':img});
                         };
                         img.onabort = function(){
-                            me._resouces.addResource(imgUrl,img);
+                            me._resources.addResource(imgUrl,img);
                             resolve({'url':imgUrl,'image':img});
                         };
                         img.onerror = function(){
@@ -97,29 +83,26 @@ Z.render.vectorlayer.Canvas.prototype = {
     },
 
 
-    draw:function() {
-        Z.Canvas.clearRect(this._context, 0, 0, this._mapCanvas.width, this._mapCanvas.height);
+    draw:function(_context) {
         //载入资源后再进行绘制
         var me = this;
         var map = this.getMap();
-        var projection = map._getProjection();
         var extent = map.getExtent();
         var pxExtent =  new Z.Extent(
-            map._transformToViewPoint(projection.project(new Z.Coordinate(extent['xmin'],extent['ymin']))),
-            map._transformToViewPoint(projection.project(new Z.Coordinate(extent['xmax'],extent['ymax'])))
+            map.coordinateToViewPoint(new Z.Coordinate(extent['xmin'],extent['ymin'])),
+            map.coordinateToViewPoint(new Z.Coordinate(extent['xmax'],extent['ymax']))
             );
         this.layer._eachGeometry(function(geo) {
             //geo的map可能为null,因为绘制为延时方法
-            if (!me._context || !geo || !geo.isVisible() || !geo.getMap() || !geo.getLayer() || (!geo.getLayer().isCanvasRender())) {
+            if (!_context || !geo || !geo.isVisible() || !geo.getMap() || !geo.getLayer() || (!geo.getLayer().isCanvasRender())) {
                 return;
             }
             var ext = geo._getPainter().getPixelExtent();
             if (!ext || !ext.isIntersect(pxExtent)) {
                 return;
             }
-            geo._getPainter().paint(me._context, me._resouces);
+            geo._getPainter().paint(_context, me._resources);
         });
-        return me._context;
     },
 
     /**
@@ -142,22 +125,22 @@ Z.render.vectorlayer.Canvas.prototype = {
         this._requestMapToRend();
     },
 
-    _requestMapToRend:function() {
-        this._mapRender.rend();
+    _requestMapToRend:function(isRealTime) {
+        this._mapRender.rend(isRealTime);
     }
 
 };
 
 Z.render.vectorlayer.Canvas.Resources=function() {
-    this._resouces = {};
+    this._resources = {};
 };
 
 Z.render.vectorlayer.Canvas.Resources.prototype={
     addResource:function(url, img) {
-        this._resouces[url] = img;
+        this._resources[url] = img;
     },
 
     getImage:function(url) {
-        return this._resouces[url];
+        return this._resources[url];
     }
 };

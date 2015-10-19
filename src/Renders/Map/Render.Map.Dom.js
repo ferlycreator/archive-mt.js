@@ -30,9 +30,6 @@ Z.render.map.Dom = Z.render.map.Render.extend({
             return this._panels.mapContainer;
         } else if (layer instanceof Z.VectorLayer) {
             if (layer.isCanvasRender()) {
-                if (!this._canvas) {
-                    this._createCanvas();
-                }
                 return this._canvas;
             } else {
                 return this._panels.svgContainer;
@@ -43,8 +40,18 @@ Z.render.map.Dom = Z.render.map.Render.extend({
     /**
      * 绘制canvas渲染的VectorLayer
      */
-    rend:function() {
-        this._rend(this.map._canvasLayers);
+    rend:function(isRealTime) {
+        if (this._rendCanvasTimeout) {
+            clearTimeout(this._rendCanvasTimeout);
+        }
+        if (!isRealTime) {
+            var me = this;
+            this._rendCanvasTimeout = setTimeout(function() {
+                me._rend(me.map._canvasLayers);
+            },10);
+        } else {
+            this._rend(this.map._canvasLayers);
+        }
     },
 
     /**

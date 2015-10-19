@@ -82,7 +82,7 @@ Z.SVG.SVG = {
         var wrapChar = style['textWrapCharacter'];
         var textWidth = Z.Util.stringLength(text,font,fontSize).width;
         var wrapWidth = style['textWrapWidth'];
-        if(!wrapWidth) wrapWidth = textWidth;
+        if(!wrapWidth) {wrapWidth = textWidth;}
         var rowHeight = fontSize + lineSpacing;
         if(wrapChar){
             var texts = text.split(wrapChar);
@@ -104,10 +104,10 @@ Z.SVG.SVG = {
             if(textWidth>wrapWidth) {
                 var contents = Z.Util.splitContent(text, textWidth, fontSize, wrapWidth);
                 var rowNum = contents.length;
-                var textWidth = new Z.Size(wrapWidth, rowHeight*rowNum);
+                var textSize = new Z.Size(wrapWidth, rowHeight*rowNum);
                 svgText = this._createTextRow(svgText, contents, style, textSize, fontSize, lineSpacing);
             } else {
-               svgText = this._createtspan(text, style, textSize, lineSpacing);
+               svgText = this._createtspan(text, style, new Z.Size(textWidth, rowHeight), lineSpacing);
             }
         }
         return svgText;

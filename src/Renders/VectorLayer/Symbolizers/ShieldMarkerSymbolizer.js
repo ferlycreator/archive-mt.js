@@ -129,7 +129,7 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
             "textOpacity"    : Z.Util.setDefaultValue(s['shieldTextOpacity'],d['shieldTextOpacity']),
             "textHaloFill"  : Z.Util.setDefaultValue(s['shieldHaloFill'],d['shieldHaloFill']),
             "textHaloRadius": Z.Util.setDefaultValue(s['shieldHaloRadius'],d['shieldHaloRadius']),
-
+            "textLineSpacing": 0,
 
             "textDx"    :  Z.Util.setDefaultValue(s['shieldTextDx'],d['shieldTextDx']),
             "textDy"    :  Z.Util.setDefaultValue(s['shieldTextDy'],d['shieldTextDy']),

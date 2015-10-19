@@ -5,11 +5,16 @@ Z.render.map={};
  */
 Z.render.map.Render = Z.Class.extend({
     /**
-     * 绘制canvas渲染的VectorLayer
+     * 基于Canvas的渲染方法, layers总定义了要渲染的图层
      */
     _rend:function(layers) {
         if (!Z.Util.isArrayHasData(layers)) {
             return;
+        }
+        if (!this._canvas) {
+            this._createCanvas();
+        } else {
+            Z.Canvas.clearRect(this._context, 0, 0, this._canvas.width, this._canvas.height);
         }
         var me = this;
         var promises = [];
@@ -23,9 +28,11 @@ Z.render.map.Render = Z.Class.extend({
 
     _draw:function(layers) {
         for (var i = layers.length - 1; i >= 0; i--) {
-            var layerCtx = layers[i]._getRender().draw();
-            var layerImg = layerCtx.getImageData(0,0,this._canvas.width,this._canvas.height);
-            this._context.putImageData(layerImg, 0, 0);
+            layers[i]._getRender().draw(this._context);
+            //采用putImageData实现会出现crossOrigin错误, 故直接传递_context给图层render
+            /*var layerCtx = layers[i]._getRender().draw();*/
+            // var layerImg = layerCtx.getImageData(0,0,this._canvas.width,this._canvas.height);
+            // this._context.putImageData(layerImg, 0, 0);
         }
     },
 
@@ -41,6 +48,9 @@ Z.render.map.Render = Z.Class.extend({
     },
 
     _resetCanvasPosition:function() {
+        if (!this._canvas) {
+            return;
+        }
         var offset = this.offsetPlatform();
         this._canvas.style.left = -offset['left']+'px';
         this._canvas.style.top = -offset['top']+'px';

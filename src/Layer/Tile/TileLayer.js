@@ -190,7 +190,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
      */
     _onRemove:function() {
         this.clear();
-        this._clearExecutors();
+        // this._clearExecutors();
         this._render.remove();
     },
 
