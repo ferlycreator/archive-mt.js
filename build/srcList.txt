@@ -80,9 +80,9 @@
 ../src/Renders/TileLayer/Render.TileLayer.Canvas.js
 ../src/Renders/VectorLayer/SVG.V2.js
 ../src/Renders/VectorLayer/Canvas.js
-../src/Renders/VectorLayer/VectorLayer.Render.js
-../src/Renders/VectorLayer/VectorLayer.Render.Dom.js
-../src/Renders/VectorLayer/VectorLayer.Render.Canvas.js
+../src/Renders/VectorLayer/Render.VectorLayer.js
+../src/Renders/VectorLayer/Render.VectorLayer.Dom.js
+../src/Renders/VectorLayer/Render.VectorLayer.Canvas.js
 ../src/Renders/VectorLayer/Symbolizers/Symbolizer.js
 ../src/Renders/VectorLayer/Symbolizers/StrokeAndFillSymbolizer.js
 ../src/Renders/VectorLayer/Symbolizers/PointSymbolizer.js
@@ -110,6 +110,6 @@
 ../src/Topo/GeoUtils.js
 ../src/Topo/SimplifyUtil.js
 ../src/Query/SpatialFilter.js
-../src/Query/Query.js
 ../src/Query/FeatureQuery.js
+../src/Query/TopoQuery.js
 ../src/extern.js
