@@ -50,6 +50,9 @@ Z.render.map.Render = Z.Class.extend({
     },
 
     _clearCanvas:function() {
+        if (!this._canvas) {
+            return;
+        }
         Z.Canvas.clearRect(this._context, 0, 0, this._canvas.width, this._canvas.height);
     },
 
