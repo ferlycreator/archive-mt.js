@@ -58,7 +58,8 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
                     vectorArray[j]._add(point);
                 }
                 //线类型
-                Z.Canvas.path(ctx,vectorArray,null);
+                Z.Canvas.path(ctx,vectorArray.slice(0,2),null);
+                Z.Canvas.path(ctx,vectorArray.slice(2,4),null);
             } else if (markerType === 'diamond' || markerType === 'bar' || markerType === 'square' || markerType === 'triangle'){
                 for (j = vectorArray.length - 1; j >= 0; j--) {
                     vectorArray[j]._add(point);
@@ -200,7 +201,7 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
             //ellipse
             var width = style['markerWidth'],
                 height = style['markerHeight'];
-            var point = [0,0];
+            var point = [-width/2, 0];
             if (Z.Browser.vml) {
                 path = 'AL ' + point.join(',') + ' ' + width/2 + ',' + height/2 +
                         ' 0,' + (65535 * 360) + ' x';

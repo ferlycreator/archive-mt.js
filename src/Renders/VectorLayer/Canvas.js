@@ -307,9 +307,9 @@ Z.Canvas = {
             );
             if (!isDashed || context.setLineDash) {//ie9以上浏览器
                 if (i === 0) {
-                    context.moveTo(Z.Util.canvasRound(point['left']), Z.Util.canvasRound(point['top']));
+                    context.moveTo(point['left'], point['top']);
                 } else {
-                    context.lineTo(Z.Util.canvasRound(point['left']),Z.Util.canvasRound(point['top']));
+                    context.lineTo(point['left'],point['top']);
                 }
             } else {
                 if (isDashed) {
