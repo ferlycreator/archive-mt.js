@@ -12,8 +12,10 @@ Z.Map.include({
      */
     computeDistance: function(lonlat1, lonlat2) {
         if (!Z.Util.isCoordinate(lonlat1) || !Z.Util.isCoordinate(lonlat2) || !this._getProjection()) {return null;}
-        if (lonlat1.equals(lonlat2)) {return 0;}
-        return this._getProjection().getGeodesicLength(lonlat1, lonlat2);
+        var p1 = new Z.Coordinate(lonlat1),
+            p2 = new Z.Coordinate(lonlat2);
+        if (p1.equals(p2)) {return 0;}
+        return this._getProjection().getGeodesicLength(p1, p2);
     },
 
     /**
@@ -159,6 +161,7 @@ Z.Map.include({
         var point = this.coordinateToViewPoint(opts['coordinate']);
         var fn = opts['success'];
         var hits = [];
+        // var pointExtent = new Z.Extent(point, point);
         for (var i=0, len=layers.length; i<len; i++) {
             var layer = layers[i];
             var layerId = layer.getId();
@@ -168,7 +171,14 @@ Z.Map.include({
             var allGeos = layers[i].getAllGeometries();
             for (var j=0, length = allGeos.length; j<length; j++) {
                 var geo = allGeos[j];
-                if (geo&&geo._containsPoint(point)) {
+                if (!geo) {
+                    continue;
+                }
+                /*var pxExtent = geo._getPainter().getPixelExtent();
+                if (!pointExtent.isIntersect(pxExtent)) {
+                    continue;
+                }*/
+                if (geo._containsPoint(point)) {
                     hits.push(geo);
                 }
             }

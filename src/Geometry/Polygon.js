@@ -190,15 +190,8 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
     },
 
     _containsPoint: function(point) {
-        var map = this.getMap(),
-            t = this._hitTestTolerance(),
-            extent = this.getExtent(),
-            nw = new Z.Coordinate(extent.xmin, extent.ymax),
-            se = new Z.Coordinate(extent.xmax, extent.ymin),
-            pxMin = map.coordinateToViewPoint(nw),
-            pxMax = map.coordinateToViewPoint(se),
-            pxExtent = new Z.Extent(pxMin.left - t, pxMin.top - t,
-                                    pxMax.left + t, pxMax.top + t);
+        var t = this._hitTestTolerance(),
+            pxExtent = Z.Extent.expand(this._getPainter().getPixelExtent(),t);
 
         point = new Z.Point(point.left, point.top);
 
