@@ -9,14 +9,18 @@ Z.Geometry.mergeOptions({
 Z.Geometry.include({
     /**
      * 开始移动Geometry, 进入移动模式
+     * @param {Boolean} enableMapEvent 是否阻止地图拖动事件 true,阻止
      * @member maptalks.Geometry
      */
-    startDrag: function() {
+    startDrag: function(enableMapEvent) {
         this._map = this.getMap();
         Z.DomUtil.setStyle(this._map._containerDOM, 'cursor: move');
-        this._map.disableDrag();
-        this._map.on('mousemove', this._dragging, this)
-                 .on('mouseup', this._endDrag, this);
+        this._enableMapEvent = enableMapEvent;
+        if(this._enableMapEvent) {
+            this._map.disableDrag();
+            this.on('mouseup', this.endDrag, this);
+        }
+        this._map.on('mousemove', this._dragging, this);
         /**
          * 触发geometry的dragstart事件
          * @member maptalks.Geometry
@@ -100,11 +104,12 @@ Z.Geometry.include({
     /**
      * 结束移动Geometry, 退出移动模式
      */
-    _endDrag: function(param) {
+    endDrag: function(param) {
         this._isDragging = false;
-        this._map.off('mousemove', this._dragging, this)
-                 .off('mouseup', this._endDrag, this);
-        this._map.enableDrag();
+        if(this._enableMapEvent) {
+            this._map.enableDrag();
+        }
+        this._map.off('mousemove', this._dragging, this);
         /**
          * 触发geometry的dragend事件
          * @member maptalks.Geometry
@@ -131,9 +136,9 @@ Z.Geometry.include({
 
 Z.Geometry.addInitHook(function () {
 	if (this.options['draggable']) {
-	    var trigger = this.options['dragTrigger'];
-	    if(!('manual' === trigger)) {
-            this.on('mousedown', this.startDrag, this);
-	    }
+	    var me = this;
+	    this.on('mousedown', function(){
+            me.startDrag(true);
+	    }, this);
 	}
 });
