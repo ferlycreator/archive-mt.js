@@ -24,7 +24,7 @@
 ../src/Layer/Tile/TileInfo/TileSystem.js
 ../src/Layer/Tile/TileInfo/TileInfo.js
 ../src/Layer/Tile/TileInfo/TileConfig.js
-../src/Misc/ResourceLoader.js
+../src/Misc/Promise.js
 ../src/Layer/Layer.js
 ../src/Layer/Tile/TileLayer.js
 ../src/Layer/Tile/ArcgisTileLayer.js
