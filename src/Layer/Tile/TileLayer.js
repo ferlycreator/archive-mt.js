@@ -16,6 +16,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         'tileInfo':'web-mercator'
     },
 
+
     /**
      * <pre>
      * 瓦片图层类构造函数

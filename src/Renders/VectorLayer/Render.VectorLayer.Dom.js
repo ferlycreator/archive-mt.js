@@ -4,6 +4,9 @@ Z.render.vectorlayer.Dom = function(layer) {
 };
 
 Z.render.vectorlayer.Dom.prototype= {
+    //瓦片图层的基础ZIndex
+    baseZIndex:200,
+
     _registerEvents:function() {
         this.getMap().on('_zoomend',function(){
             this._layer._eachGeometry(function(geo) {
@@ -86,7 +89,7 @@ Z.render.vectorlayer.Dom.prototype= {
 
 
     setZIndex:function(zIndex) {
-        this._zIndex=zIndex;
+        this._zIndex=zIndex+this.baseZIndex;
         this._layer._eachGeometry(function(geo) {
             if (geo._getPainter()) {
                 geo._getPainter().setZIndex(zIndex);
