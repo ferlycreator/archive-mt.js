@@ -257,10 +257,7 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
         if(!this._menuDom.addEvent) {
             this.hide();
             this._removeEvent();
-            this._map.on('zoomstart', this.hide, this);
-            this._map.on('zoomend', this.hide, this);
-            this._map.on('movestart', this.hide, this);
-            this._map.on('dblclick', this.hide, this);
+            this._map.on('_zoomstart _zoomend _movestart _dblclick', this.hide, this);
             this._menuDom.addEvent = true;
             if (this._target.hasListeners && this._target.hasListeners('openmenu')) {
                 /**
@@ -275,10 +272,7 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
 
     //菜单监听地图的事件
     _removeEvent: function() {
-        this._map.off('zoomstart', this.hide);
-        this._map.off('zoomend', this.hide);
-        this._map.off('movestart', this.hide);
-        this._map.off('dblclick', this.hide);
+        this._map.off('_zoomstart _zoomend _movestart _dblclick', this.hide, this);
     },
 
     //清理之前的事件，重新绑定新的事件

@@ -245,16 +245,16 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         if(!this._tipDom.addEvent) {
             this._removeEvent();
             Z.DomUtil.on(this._tipDom, 'mousedown dblclick', Z.DomUtil.stopPropagation);
-            this._map.on('zoomstart', this._onZoomStart, this);
-            this._map.on('zoomend', this._onZoomEnd, this);
+            this._map.on('_zoomstart', this._onZoomStart, this);
+            this._map.on('_zoomend', this._onZoomEnd, this);
             this._tipDom.addEvent = true;
         }
     },
 
     _removeEvent:function() {
         Z.DomUtil.off(this._tipDom, 'mousedown dblclick', Z.DomUtil.stopPropagation);
-        this._map.off('zoomstart', this._onZoomStart, this);
-        this._map.off('zoomend', this._onZoomEnd, this);
+        this._map.off('_zoomstart', this._onZoomStart, this);
+        this._map.off('_zoomend', this._onZoomEnd, this);
     },
 
     _onZoomStart:function() {
