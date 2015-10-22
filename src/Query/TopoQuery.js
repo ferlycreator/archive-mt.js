@@ -121,5 +121,5 @@ Z.TopoQuery.prototype={
             callback(result);
         });
         ajax.post();
-    },
+    }
 };

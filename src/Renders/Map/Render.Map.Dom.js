@@ -6,11 +6,11 @@ Z.render.map.Dom = Z.render.map.Render.extend({
     },
 
     _registerEvents:function() {
-        this.map.on('moving', function() {
+        this.map.on('_moving', function() {
             //reduce refresh frequency
             if (2*Math.random() > 1) {this._refreshSVGPaper();}
         },this);
-        this.map.on('moveend resize',function() {
+        this.map.on('_moveend _resize',function() {
             this._refreshSVGPaper();
             this.rend();
         },this);
@@ -19,7 +19,7 @@ Z.render.map.Dom = Z.render.map.Render.extend({
             this._clearCanvas();
             this.rend();
         },this);
-        this.map.on('baselayerchangestart baselayerchangeend baselayerload',function() {
+        this.map.on('_baselayerchangestart _baselayerchangeend _baselayerload',function() {
             this.removeBackGroundDOM();
         },this);
     },

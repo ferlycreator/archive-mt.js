@@ -20,12 +20,12 @@ Z['Control']['Zoom'] = Z.Control.Zoom = Z.Control.extend({
 		this._zoomOutButton = this._createButton('缩小', 'maptalks-control-zoom-button maptalks-control-zoom-out', this._zoomOut);
 		this._zoomSlider = this._createSlider();
 		this._updateDisabled();
-		map.on('zoomend zoomlevelschange', this._updateDisabled, this);
+		map.on('_zoomend', this._updateDisabled, this);
 		return this._zoomControlContainer;
 	},
 
 	_onRemove: function (map) {
-		map.off('zoomend zoomlevelschange', this._updateDisabled, this);
+		map.off('_zoomend', this._updateDisabled, this);
 	},
 
 	disable: function () {
