@@ -21,16 +21,16 @@ Z.render.map.Render = Z.Class.extend({
         for (var i = layers.length - 1; i >= 0; i--) {
             promises = promises.concat(layers[i]._getRender().promise());
         }
-        Z.Promise.all(promises).then(function() {
-            me._draw(layers);
+        Z.Promise.all(promises).then(function(reources) {
+            me._draw(layers,reources);
         });
     },
 
-    _draw:function(layers) {
+    _draw:function(layers,reources) {
 
         this._resetCanvasPosition();
         for (var i = layers.length - 1; i >= 0; i--) {
-            layers[i]._getRender().draw(this._context);
+            layers[i]._getRender().draw(this._context,reources);
             //采用putImageData实现会出现crossOrigin错误, 故直接传递_context给图层render
             /*var layerCtx = layers[i]._getRender().draw();*/
             // var layerImg = layerCtx.getImageData(0,0,this._canvas.width,this._canvas.height);

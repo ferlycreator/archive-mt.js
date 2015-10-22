@@ -34,6 +34,9 @@ Z.render.map.Dom = Z.render.map.Render.extend({
             return this._panels.mapContainer;
         } else if (layer instanceof Z.VectorLayer) {
             if (layer.isCanvasRender()) {
+                if (!this._canvas) {
+                    this._createCanvas();
+                }
                 return this._canvas;
             } else {
                 return this._panels.svgContainer;

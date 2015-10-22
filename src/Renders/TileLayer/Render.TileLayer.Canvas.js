@@ -6,7 +6,7 @@ Z.render.tilelayer.Canvas = function(layer) {
 
 Z.render.tilelayer.Canvas.prototype = {
     //瓦片图层的基础ZIndex
-    baseZIndex:15,
+    // baseZIndex:15,
 
     remove:function() {
         this._mapRender.render();
@@ -26,13 +26,13 @@ Z.render.tilelayer.Canvas.prototype = {
 
     clear:function() {
         this._tileMap = {};
-        this._clearContext();
+        // this._clearContext();
         this._mapRender.render();
     },
 
-    _clearContext:function() {
+    /*_clearContext:function() {
         this._context.clearRect(0,0,this._canvas.width, this._canvas.height);
-    },
+    },*/
 
     rend:function() {
         this._mapRender.rend();
@@ -72,18 +72,6 @@ Z.render.tilelayer.Canvas.prototype = {
             }
         }
         return promises;
-        /*
-
-            var tileExtent = new Z.Extent(nw, nw.add(new Z.Point(tileSize['width'],tileSize['height'])));
-            if (canvasExtent.isIntersect(tileExtent)) {
-                var tileImage = new Image();
-                tileImage.onload = function() {
-                    Z.Canvas.image(this._context, nw, tileImage, tileSize['width'],tileSize['height']);
-                };
-                tileImage.src = tile['url'];
-            }
-
-         */
     },
 
     /**
@@ -92,21 +80,20 @@ Z.render.tilelayer.Canvas.prototype = {
      * @param  {Boolean} rendWhenReady 是否待瓦片载入完成后再渲染
      * @return {Context}               Canvas Context
      */
-    draw:function(tiles) {
+    draw:function(_context, tiles) {
         var map = this.layer.getMap();
-        this._clearContext();
         var tileSize = this.layer._getTileSize();
         for (var i = tiles.length - 1; i >= 0; i--) {
             var tile = tiles[i];
             var nw = map._viewPointToContainerPoint(new Z.Point(tile['left'], tile['top']));
-            Z.Canvas.image(this._context, nw, tile['image'], tileSize['width'],tileSize['height']);
+            Z.Canvas.image(_context, nw, tile['image'], tileSize['width'],tileSize['height']);
         }
-        return this._context;
+        /*return this._context;*/
     },
 
     clearExecutors:function() {
         //nothing to do
-    },
+    }/*,
 
     initContainer:function() {
         this._canvas = document.createElement('canvas');
@@ -125,6 +112,6 @@ Z.render.tilelayer.Canvas.prototype = {
         canvas.height = mapCanvas.height;
         canvas.style.width = mapCanvas.style.width+'px';
         canvas.style.height = mapCanvas.style.height+'px';
-    }
+    }*/
 
 };
