@@ -4,8 +4,6 @@
  * @author Maptalks Team
  */
 Z.GeoJson={
-        FIELD_SYMBOL:'__mtSymbol',
-        FIELD_COORDINATE_TYPE:'__mtCoordinateType',
         /**
          * 将geoJson字符串或geoJson对象转化为Geometry对象
          * @param  {String | Object | [Object]} json json对象
@@ -100,11 +98,8 @@ Z.GeoJson={
                 }
                 //set CoordinateType
                 geometry.setId(geoJsonObj['id']);
-                if (geoJsonObj['properties']) {
-                    if (geoJsonObj['properties'][Z.GeoJson.FIELD_SYMBOL]) {
-                        geometry.setSymbol(geoJsonObj['properties'][Z.GeoJson.FIELD_SYMBOL]);
-                        delete geoJsonObj['properties'][Z.GeoJson.FIELD_SYMBOL];
-                    }
+                if (geoJsonObj['symbol']) {
+                    geometry.setSymbol(geoJsonObj['symbol']);
                 }
                 geometry.setProperties(geoJsonObj['properties']);
                 geometry.setCoordinateType(coordinateType);
@@ -114,6 +109,7 @@ Z.GeoJson={
                 if (!features) {
                     return null;
                 }
+                //返回geometry数组
                 var result = this.fromGeoJson(features, coordinateType);
                 return result;
             } else if ('Point' === type) {

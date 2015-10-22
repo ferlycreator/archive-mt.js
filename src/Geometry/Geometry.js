@@ -460,7 +460,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (opts['symbol'] === undefined || opts['symbol']) {
             var symbol = this.getSymbol();
             if (symbol) {
-                properties[Z.GeoJson.FIELD_SYMBOL]=symbol;
+                feature['symbol'] = symbol;
             }
         }
         var coordinateType = this.getCoordinateType();
