@@ -32,7 +32,7 @@ Z.Geometry.include({
      */
     _getEventParams: function(event,type) {
         var map = this.getMap();
-        var containerPoint = Z.DomUtil.getEventContainerPoint(event, map.containterDom);
+        var containerPoint = Z.DomUtil.getEventContainerPoint(event, map._containerDOM);
         var coordinate = map._untransform(containerPoint);
         //统一的参数, target是geometry引用, pixel是事件的屏幕坐标, coordinate是事件的经纬度坐标
         return { 'containerPoint':containerPoint, 'coordinate':coordinate,'domEvent':event};
