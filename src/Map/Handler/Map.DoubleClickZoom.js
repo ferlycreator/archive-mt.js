@@ -8,11 +8,11 @@ Z.Map.mergeOptions({
 
 Z.Map.DoubleClickZoom = Z.Handler.extend({
     addHooks: function () {
-        this.map.on('dblclick', this._onDoubleClick, this);
+        this.map.on('_dblclick', this._onDoubleClick, this);
     },
 
     removeHooks: function () {
-        this.map.off('dblclick', this._onDoubleClick, this);
+        this.map.off('_dblclick', this._onDoubleClick, this);
     },
 
     _onDoubleClick: function (param) {

@@ -68,7 +68,7 @@ Z.Map.include({
     },
 
     _fireDOMEvent: function (target, e, type) {
-        var containerPoint = Z.DomUtil.getEventContainerPoint(e, this._containerDom);
+        var containerPoint = Z.DomUtil.getEventContainerPoint(e, this._containerDOM);
         var data = {
             'coordinate': this.containerPointToCoordinate(containerPoint),
             'containerPoint':containerPoint,
@@ -78,7 +78,8 @@ Z.Map.include({
         if (type === 'contextmenu') {
             Z.DomUtil.preventDefault(e);
         }
-        target.fire(type, data, true);
+        this._fireEvent(type, data);
+        // target.fire(type, data);
     },
 
     /**
