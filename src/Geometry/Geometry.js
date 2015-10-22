@@ -256,6 +256,41 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     },
 
     /**
+     * 闪烁Geometry
+     *
+     * @param interval {Number} 闪烁间隔时间，以毫秒为单位
+     * @param count {Number} 闪烁次数
+     */
+    flash: function(interval, count) {
+        if (!interval) {
+            interval = 100;
+        }
+        if (!count) {
+            count = 4;
+        }
+        var me = this;
+        count = count * 2;
+        if (this._flashTimeout) {
+            clearTimeout(this._flashTimeout);
+        }
+        function flashGeo() {
+            if (count === 0) {
+                me.show();
+                return;
+            }
+
+            if (count % 2 === 0) {
+                me.hide();
+            } else {
+                me.show();
+            }
+            count--;
+            me._flashTimeout = setTimeout(flashGeo, interval);
+        }
+        this._flashTimeout = setTimeout(flashGeo, interval);
+    },
+
+    /**
      * 是否可见
      * @returns {Boolean} true|false
      * @expose
