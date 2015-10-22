@@ -20,7 +20,7 @@ Z.Geometry.include({
             this._map.disableDrag();
             this.on('mouseup', this.endDrag, this);
         }
-        this._map.on('mousemove', this._dragging, this);
+        this._map.on('_mousemove', this._dragging, this);
         /**
          * 触发geometry的dragstart事件
          * @member maptalks.Geometry
@@ -109,7 +109,7 @@ Z.Geometry.include({
         if(this._enableMapEvent) {
             this._map.enableDrag();
         }
-        this._map.off('mousemove', this._dragging, this);
+        this._map.off('_mousemove', this._dragging, this);
         /**
          * 触发geometry的dragend事件
          * @member maptalks.Geometry

@@ -447,7 +447,7 @@ Z.Editor=Z.Class.extend({
         function createRemoveHandle() {
             closeHandle = Z.DomUtil.createEl("div");
             closeHandle.style.cssText="display:none;position: absolute; cursor: pointer;top:-9999px;left:0px;";
-            closeHandle.innerHTML="<div title=\"点击删除端点\" style=\"display:block;width:14px;height:14px;background:url(' + Z.prefix + 'images/close.gif) 0px 0px no-repeat;\"></div>";
+            closeHandle.innerHTML='<div title="点击删除端点" style="display:block;width:14px;height:14px;background:url(' + Z.prefix + 'images/close.gif) 0px 0px no-repeat;"></div>';
             Z.DomUtil.addDomEvent(closeHandle,'click',function(ev) {
                 var ringhandle = closeHandle["source"];
                 hideCloseHandle();

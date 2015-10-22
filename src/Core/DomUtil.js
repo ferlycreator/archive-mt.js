@@ -249,6 +249,9 @@ Z.DomUtil = {
      */
     getPageCoordinate:function(obj) {
         var topValue= 0,leftValue= 0;
+        if (!obj) {
+            console.error('obj is null');
+        }
         leftValue+= parseInt(obj.offsetLeft,0);
         topValue+= parseInt(obj.offsetTop,0);
         obj= obj.offsetParent;
