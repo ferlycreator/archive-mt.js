@@ -136,12 +136,26 @@ Z.FeatureQuery.prototype={
                     if (!Z.Util.isArrayHasData(datas)) {
                         opts['success']([]);
                     } else {
+                        var i, len;
+                        var collections = [];
                         if (false === queryFilter['returnGeometry']) {
+                            for (i = 0, len=datas.length; i < len; i++) {
+                                collections.push({
+                                    "layer" : datas[i]['layer'],
+                                    "features" : datas[i]['features']
+                                });
+                            }
                             //不返回Geometry,直接返回属性数据
-                            opts['success'](datas);
+                            opts['success'](collections);
                         } else {
-                            var geos = Z.GeoJson.fromGeoJson(datas);
-                            opts['success'](geos);
+                            for (i = 0, len=datas.length; i < len; i++) {
+                                collections.push({
+                                    "layer" : datas[i]['layer'],
+                                    "features" : Z.GeoJson.fromGeoJson(datas[i]['features'])
+                                });
+                            }
+                            //不返回Geometry,直接返回属性数据
+                            opts['success'](collections);
                         }
                     }
                 }
