@@ -119,20 +119,26 @@ Z.Painter = Z.Class.extend({
         this._eachSymbolizer(function(symbolizer) {
             symbolizer.show();
         });
+        this._rendCanvas();
     },
 
     hide:function(){
         this._eachSymbolizer(function(symbolizer) {
             symbolizer.hide();
         });
+        this._rendCanvas();
     },
 
     refresh:function(){
         this.pxExtent = null;
-        var layer = this.geometry.getLayer();
         this._eachSymbolizer(function(symbolizer) {
             symbolizer.refresh();
         });
+        this._rendCanvas();
+    },
+
+    _rendCanvas:function() {
+        var layer = this.geometry.getLayer();
         if (layer.isCanvasRender()) {
             var isRealTime = (this.geometry.isEditing && this.geometry.isEditing())
                                 || (this.geometry.isDragging && this.geometry.isDragging());
