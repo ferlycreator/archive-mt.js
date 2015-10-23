@@ -242,14 +242,14 @@ Z['Map']=Z.Map=Z.Class.extend({
 
     /**
      * 获取指定的投影坐标与当前的地图中心点的像素距离
-     * @param  {Coordinate} _pcenter 像素坐标
+     * @param  {Coordinate} pcenter 像素坐标
      * @return {Point}          像素距离
      */
-    _getPixelDistance:function(_pcenter) {
-        var _current = this._getPrjCenter();
-        var curr_px = this._transform(_current);
-        var _pcenter_px = this._transform(_pcenter);
-        var span = new Z.Point((_pcenter_px['left']-curr_px['left']),(curr_px['top']-_pcenter_px['top']));
+    _getPixelDistance:function(pcenter) {
+        var current = this._getPrjCenter();
+        var curr_px = this._transform(current);
+        var pcenter_px = this._transform(pcenter);
+        var span = new Z.Point((-pcenter_px['left']+curr_px['left']),(curr_px['top']-pcenter_px['top']));
         return span;
     },
 
