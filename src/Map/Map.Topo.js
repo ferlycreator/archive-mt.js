@@ -79,7 +79,7 @@ Z.Map.include({
                 }
             }
         }
-        fn.call(this, {'success': hits.length > 0,'count':hits.length, 'data': hits});
+        fn.call(this, {'success': true, 'count':hits.length, 'data': hits});
     }
 
 });
