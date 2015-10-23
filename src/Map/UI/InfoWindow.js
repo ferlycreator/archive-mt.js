@@ -5,6 +5,7 @@
  * @author Maptalks Team
  */
 Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
+    includes: [Z.Eventable],
 
     /**
      * @cfg {Object} exceptionDefs 异常信息定义
@@ -26,8 +27,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         'title' : '',
         'content' : '',
         'style' : 'default',//black|white
-        'position' : null,
-        'beforeOpen': null
+        'position' : null
     },
 
     /**
@@ -37,10 +37,10 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
      * @return {maptalks.InfoWindow}
      */
     initialize:function (options) {
-        if(options) {
-            this.setOptions(options);
+        if(!options) {
+            options = {};
         }
-        this._tipDom = this._createTipDom();
+        Z.Util.setOptions(this,options);
         return this;
     },
 
@@ -59,9 +59,15 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         }
         this._target = target;
         var tipContainer = this._map._panels.tipContainer;
-        tipContainer.innerHTML = '';
-        tipContainer.appendChild(this._tipDom);
-        this._addEvent();
+        this._tipDom = tipContainer._tipDom;
+        if (!this._tipDom) {
+            this._tipDom = this._createTipDom();
+            tipContainer.innerHTML = '';
+            tipContainer.appendChild(this._tipDom);
+            tipContainer._tipDom = this._tipDom;
+            Z.DomUtil.on(this._tipDom, 'mousedown dblclick', Z.DomUtil.stopPropagation);
+        }
+        this._registerEvent();
         return this;
     },
 
@@ -69,7 +75,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
      * 显示信息窗口前
      * @param {Object} param 参数
      */
-    beforeOpen: function(param) {
+    /*beforeOpen: function(param) {
         var beforeOpenFn = this.options.beforeOpen;
         if(beforeOpenFn){
             var argLen = beforeOpenFn.length;
@@ -81,18 +87,18 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
             }
         }
         return this;
-    },
+    },*/
 
     /**
      * 设置InfoWindow窗口
      * @param {Array} options 项 {"items":[], width:240, beforeOpen:fn}
      * @expose
      */
-    setOptions: function(options) {
+    /*setOptions: function(options) {
         if (!options) {
             return;
         }
-        if(!options.style||options.style === 'default') {
+        if(Z.Util.isNil(options.style)||options.style === 'default') {
             options.style = '';
         } else {
             options.style = '-' + options.style;
@@ -107,7 +113,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         } else {
             this.options = options;
         }
-    },
+    },*/
 
     /**
      * 返回infoWindow设置
@@ -124,7 +130,8 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
      */
     remove: function() {
         this.hide();
-        delete this.options;
+        this._removeEvent();
+        // delete this.options;
         return this;
     },
 
@@ -152,6 +159,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
      * @expose
      */
     show: function(coordinate) {
+        this._fillInfoWindow();
         var tipCoord = this._offsetTipDom(coordinate);
         var size = this._map.getSize();
         var mapWidth = size['width'],
@@ -159,7 +167,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         if (mapWidth===0||mapHeight===0) {return;}
         //只有当tip不是地图打开的时候，才做tip打开滑动操作
         var absolute = this._map._viewPointToContainerPoint(tipCoord);
-        var left=0,top=0,tipDom=this._tipDom;;
+        var left=0,top=0,tipDom=this._tipDom;
         if ((absolute['left'])<0) {
             left=-(absolute['left']-parseInt(tipDom.clientWidth)/2);
         } else if ((absolute['left']+parseInt(tipDom.clientWidth)-35)>mapWidth) {
@@ -171,9 +179,30 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
             top = (mapHeight-absolute['top']-parseInt(tipDom.clientHeight))-30;
         }
         if (top!==0||left!==0) {
-            this.tipSlidingExecutor = this._map._animatePan({'left':left, 'top' :top});
+            /*this._tipSlidingExecutor = */this._map._animatePan({'left':left, 'top' :top});
         }
         return this;
+    },
+
+    _fillInfoWindow:function() {
+        var defaultWidth = 300;
+        var tipWidth = this.options['width'];
+        if (!tipWidth) {
+            tipWidth = defaultWidth;
+        }
+        this._tipDom.tipBoxDom.style.width = tipWidth+'px';
+
+        var tipTitle = this.options['title'];
+        if (Z.Util.isNil(tipTitle)) {
+            tipTitle = '';
+        }
+        this._tipDom.titleDom.innerHTML= tipTitle;
+
+        var tipContent = this.options['content'];
+        if (Z.Util.isNil(tipContent)) {
+            tipContent = '';
+        }
+        this._tipDom.contentDom.innerHTML= tipContent;
     },
 
     _createTipDom: function(){
@@ -182,7 +211,22 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         tipContainer.style.width = this.options.width+'px';
         var suffix = this.options.style;
         Z.DomUtil.setClass(tipContainer, 'maptalks-infowindow');
+
         var tipBoxDom = this._createTipBoxDom();
+
+
+        var titleDom = this._createTitleDom();
+        var contentDom = this._createContentDom();
+        var headerDom = this._createHeaderDom();
+        headerDom.appendChild(titleDom);
+        tipBoxDom.appendChild(headerDom);
+        tipBoxDom.appendChild(contentDom);
+        tipBoxDom.appendChild(this._createArrowDom());
+
+        tipContainer.titleDom = titleDom;
+        tipContainer.contentDom = contentDom;
+        tipContainer.tipBoxDom = tipBoxDom;
+
         tipContainer.appendChild(tipBoxDom);
         return tipContainer;
     },
@@ -190,26 +234,27 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
     _createTipBoxDom: function() {
         var tipBoxDom = Z.DomUtil.createEl('div');
         Z.DomUtil.setClass(tipBoxDom, 'maptalks-infowindow-box');
-        if (this.options.width) {
+        /*if (this.options.width) {
             tipBoxDom.style.width = this.options.width+'px';
-        }
-        tipBoxDom.appendChild(this._createHeaderDom());
-        tipBoxDom.appendChild(this._createContentDom());
-        tipBoxDom.appendChild(this._createArrowDom());
+        }*/
+
         return tipBoxDom;
+    },
+
+    _createTitleDom:function() {
+        var titleDom = Z.DomUtil.createEl('span');
+        Z.DomUtil.setClass(titleDom, 'maptalks-infowindow-title');
+        /*var title = this.options.title;
+        if(title) {
+            titleDom.innerHTML = title;
+        }*/
+        return titleDom;
     },
 
     _createHeaderDom: function() {
         var tipHeaderDom = Z.DomUtil.createEl('div');
         Z.DomUtil.setClass(tipHeaderDom, 'maptalks-infowindow-header');
-
-        var titleDom = Z.DomUtil.createEl('span');
-         Z.DomUtil.setClass(titleDom, 'maptalks-infowindow-title');
-        var title = this.options.title;
-        if(title) {
-            titleDom.innerHTML = title;
-        }
-        tipHeaderDom.appendChild(titleDom);
+        // tipHeaderDom.appendChild(titleDom);
 
         var closeDom = Z.DomUtil.createEl('a');
         var me = this;
@@ -228,10 +273,10 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
     _createContentDom: function() {
         var contentDom = Z.DomUtil.createEl('div');
         Z.DomUtil.setClass(contentDom, 'maptalks-infowindow-content');
-        var content = this.options.content;
+        /*var content = this.options.content;
         if(content) {
             contentDom.innerHTML = content;
-        }
+        }*/
         return contentDom;
     },
 
@@ -241,18 +286,12 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         return arrowDom;
     },
 
-    _addEvent:function() {
-        if(!this._tipDom.addEvent) {
-            this._removeEvent();
-            Z.DomUtil.on(this._tipDom, 'mousedown dblclick', Z.DomUtil.stopPropagation);
-            this._map.on('_zoomstart', this._onZoomStart, this);
-            this._map.on('_zoomend', this._onZoomEnd, this);
-            this._tipDom.addEvent = true;
-        }
+    _registerEvent:function() {
+        this._map.on('_zoomstart', this._onZoomStart, this);
+        this._map.on('_zoomend', this._onZoomEnd, this);
     },
 
     _removeEvent:function() {
-        Z.DomUtil.off(this._tipDom, 'mousedown dblclick', Z.DomUtil.stopPropagation);
         this._map.off('_zoomstart', this._onZoomStart, this);
         this._map.off('_zoomend', this._onZoomEnd, this);
     },
@@ -290,13 +329,19 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         }
         if(coordinate){
             if(coordinate instanceof Z.Coordinate) {
-                position = this.coordinateToViewPoint(coordinate);
+                position = this._map.coordinateToViewPoint(coordinate);
             } else {
-                position = coordinate;
+                //是point类型坐标
+                position = this._map._viewPointToContainerPoint(coordinate);
             }
         } else {
             var center = this._target.getCenter();
             position = this._map.coordinateToViewPoint(center);
+        }
+        //如果是标注, 则上移infowindow, 让箭头落在marker上沿
+        if (this._target instanceof Z.Marker) {
+            var size = this._target.getSize();
+            position._add(new Z.Point(0, -size['height']));
         }
         return position;
     }

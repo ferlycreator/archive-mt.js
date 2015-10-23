@@ -7,38 +7,39 @@ Z.Geometry.include({
      */
     setInfoWindow:function(options) {
         if(this.getMap()) {
-            this._setInfoWindow(options);
+            this._bindInfoWindow(options);
         } else {
             this.on('addend', function() {
-                this._setInfoWindow(options);
+                this._bindInfoWindow(options);
             });
         }
         return this;
 
     },
 
-    _setInfoWindow: function(options) {
+    _bindInfoWindow: function(options) {
         this.map = this.getMap();
-        this.infoWindow = new Z.InfoWindow(options);
-        this.infoWindow.addTo(this);
+        this._infoWindow = new Z.InfoWindow(options);
+        this._infoWindow.addTo(this);
+        /*
         var beforeopenFn = options.beforeOpen;
         if(beforeopenFn) {
             this._beforeOpenInfoWindow();
-        }
+        }*/
         return this;
     },
 
     /**
     * 信息窗口打开前
     */
-    _beforeOpenInfoWindow: function() {
+    /*_beforeOpenInfoWindow: function() {
         var coordinate = this.getCenter();
         var position = this.getPostion();
         var param = {'coordinate':coordinate, 'pixel':position};
-        this.infoWindow.options['position'] = position;
-        this.infoWindow.beforeOpen(param);
+        this._infoWindow.options['position'] = position;
+        this._infoWindow.beforeOpen(param);
         return this;
-    },
+    },*/
 
     /**
      * 获取Geometry的信息提示框设置
@@ -47,8 +48,8 @@ Z.Geometry.include({
      * @expose
      */
     getInfoWindow:function() {
-        if (!this.infoWindow) {return null;}
-        return this.infoWindow;
+        if (!this._infoWindow) {return null;}
+        return this._infoWindow;
     },
 
     /**
@@ -58,7 +59,8 @@ Z.Geometry.include({
      * @expose
      */
     openInfoWindow:function(coordinate) {
-        this.infoWindow.show(coordinate);
+        this._infoWindow.show(coordinate);
+        return this;
     },
 
     /**
@@ -67,8 +69,8 @@ Z.Geometry.include({
      * @expose
      */
     closeInfoWindow:function() {
-        if (this.infoWindow) {
-            this.infoWindow.hide();
+        if (this._infoWindow) {
+            this._infoWindow.hide();
         }
     }
 
