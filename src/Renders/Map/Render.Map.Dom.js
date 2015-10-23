@@ -6,17 +6,19 @@ Z.render.map.Dom = Z.render.map.Render.extend({
     },
 
     _registerEvents:function() {
-        this.map.on('_moving', function() {
+        // this.map.on('_moving', function() {
             //reduce refresh frequency
-            if (2*Math.random() > 1) {this._refreshSVGPaper();}
-        },this);
+            //if (2*Math.random() > 1) {this._refreshSVGPaper();}
+        // },this);
         this.map.on('_moveend _resize',function() {
             this.rend();
             this._refreshSVGPaper();
         },this);
+        this.map.on('_zoomstart',function() {
+            this._clearCanvas();
+        },this);
         this.map.on('_zoomend',function() {
             this._refreshSVGPaper();
-            this._clearCanvas();
             this.rend();
         },this);
         this.map.on('_baselayerchangestart _baselayerchangeend _baselayerload',function() {
