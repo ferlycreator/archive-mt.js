@@ -316,6 +316,7 @@ Z.Util = {
      * @return {maptalks.Size} size对象
      */
     stringLength:function(text, font, fontSize) {
+        //TODO 该函数在非浏览器环境下无法执行
         var ruler = Z.Util._getStrRuler();
         ruler.style.fontFamily = font;
         ruler.style.fontSize = fontSize+'px';
@@ -329,7 +330,7 @@ Z.Util = {
      * @param {String} str 字符串
      * @return {Number} 长度
      */
-    getLength : function(str) {
+    /*getLength : function(str) {
         var len = 0;
         for (var i = 0; i < str.length; i++) {
             var a = str.charAt(i);
@@ -340,7 +341,7 @@ Z.Util = {
             }
         }
         return len;
-    },
+    },*/
 
     /**
      * 根据长度分割文本

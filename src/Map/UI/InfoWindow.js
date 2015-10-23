@@ -178,8 +178,8 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         } else if (absolute['top']>mapHeight){
             top = (mapHeight-absolute['top']-parseInt(tipDom.clientHeight))-30;
         }
-        if (top!==0||left!==0) {
-            /*this._tipSlidingExecutor = */this._map._animatePan({'left':left, 'top' :top});
+        if (top!==0 || left!==0) {
+            /*this._tipSlidingExecutor = */this._map._animatePan(new Z.Point(left,top));
         }
         return this;
     },
@@ -332,7 +332,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
                 position = this._map.coordinateToViewPoint(coordinate);
             } else {
                 //是point类型坐标
-                position = this._map._viewPointToContainerPoint(coordinate);
+                position = this._map._containerPointToViewPoint(coordinate);
             }
         } else {
             var center = this._target.getCenter();

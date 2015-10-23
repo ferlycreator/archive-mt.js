@@ -87,9 +87,9 @@ Z.Editor=Z.Class.extend({
         if (!map || !this.geometry) {
             return;
         }
-        map.off('zoomend', this.onRefreshEnd,this);
-        map.off('zoomstart', this.onRefreshStart,this);
-        map.off('resize', this.onRefreshEnd,this);
+        map.off('_zoomend', this.onRefreshEnd,this);
+        map.off('_zoomstart', this.onRefreshStart,this);
+        map.off('_resize', this.onRefreshEnd,this);
         for (var i=0,len=this.editHandlers.length;i<len;i++) {
             Z.DomUtil.removeDomNode(this.editHandlers[i]);
         }

@@ -87,11 +87,10 @@ Z.Map.include({
         // var pxLeft = 0;
         var counter = 0;
         //var isAnimeSupported = !seegoo.maps.config.browser.mobile && !(seegoo.maps.config.browser.ie && document.documentMode < 9);
-        if (_map.dynLayerSlideTimeout) {
-            clearTimeout(_map.dynLayerSlideTimeout);
+        if (_map._dynLayerSlideTimeout) {
+            clearTimeout(_map._dynLayerSlideTimeout);
         }
-        _map.isBusy = true;
-        var _this=this;
+        _map._isBusy = true;
         slideMap();
 
         function slideMap() {
@@ -120,10 +119,10 @@ Z.Map.include({
                 setTimeout(slideMap, 8 + counter);
             } else {
                 // 用setTimeout方式调用解决了地图滑动结束时，如果添加有动态图层，或者canvasLayer上有大量数据时，地图会发生顿卡现象的问题
-                _map.dynLayerSlideTimeout = setTimeout(function() {
+                _map._dynLayerSlideTimeout = setTimeout(function() {
                     //_map._drawTileLayers();
                      _map._onMoveEnd({'target':_map});
-                    _map.isBusy = false;
+                    _map._isBusy = false;
                 },50);
 
             }
