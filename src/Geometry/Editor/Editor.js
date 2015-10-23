@@ -434,6 +434,10 @@ Z.Editor=Z.Class.extend({
                 }
             });
             Z.DomUtil.addDomEvent(handle,'mouseover',function(event){
+                //当只存在三个端点和一个中心点, 再删除会变成无效的多边形,不再出现删除端点按钮
+                if (vertexHandles.length <= 4) {
+                    return;
+                }
                 closeHandle.style.top = (parseInt(handle.style.top)-2)+"px";
                 closeHandle.style.left = (parseInt(handle.style.left)+12)+"px";
                 closeHandle.style.display="block";
@@ -449,6 +453,9 @@ Z.Editor=Z.Class.extend({
             closeHandle.style.cssText="display:none;position: absolute; cursor: pointer;top:-9999px;left:0px;";
             closeHandle.innerHTML='<div title="点击删除端点" style="display:block;width:14px;height:14px;background:url(' + Z.prefix + 'images/close.gif) 0px 0px no-repeat;"></div>';
             Z.DomUtil.addDomEvent(closeHandle,'click',function(ev) {
+                if (vertexHandles.length <= 4) {
+                    return;
+                }
                 var ringhandle = closeHandle["source"];
                 hideCloseHandle();
                 if (!ringhandle) {
