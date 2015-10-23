@@ -30,10 +30,6 @@ Z.render.tilelayer.Canvas.prototype = {
         this._mapRender.render();
     },
 
-    /*_clearContext:function() {
-        this._context.clearRect(0,0,this._canvas.width, this._canvas.height);
-    },*/
-
     rend:function() {
         this._mapRender.rend();
     },
@@ -93,25 +89,6 @@ Z.render.tilelayer.Canvas.prototype = {
 
     clearExecutors:function() {
         //nothing to do
-    }/*,
-
-    initContainer:function() {
-        this._canvas = document.createElement('canvas');
-        this._updateCanvasSize();
-        this._context = this.canvas.getContext('2d');
-        if (Z.Browser.retina) {
-            this.context.scale(2, 2);
-        }
-        this.layer.getMap().on('_resize',this._updateCanvasSize,this);
-    },
-
-    _updateCanvasSize:function() {
-        var canvas = this._canvas;
-        var mapCanvas = this._mapRender.getLayerRenderContainer(this.layer);
-        canvas.width = mapCanvas.width;
-        canvas.height = mapCanvas.height;
-        canvas.style.width = mapCanvas.style.width+'px';
-        canvas.style.height = mapCanvas.style.height+'px';
-    }*/
+    }
 
 };

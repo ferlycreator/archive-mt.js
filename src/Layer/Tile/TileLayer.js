@@ -195,39 +195,6 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         this._render.remove();
     },
 
-    // /**
-    //  * 地图中心点变化时的响应函数
-    //  */
-    // _onMoving:function() {
-    //     this._fillTiles(false);
-    // },
-
-    // _onMoveEnd:function() {
-    //     this._fillTiles(false);
-    // },
-
-    // /**
-    //  * 地图放大缩小时的响应函数
-    //  * @return {[type]} [description]
-    //  */
-    // _onZoomStart:function(donotRemoveTiles) {
-    //     this._clearExecutors();
-    //     if (!donotRemoveTiles && this._tileContainer) {
-    //         this.clear();
-    //     }
-    // },
-
-    // _onZoomEnd:function() {
-    //     //this._fillTiles(true);
-    //     this.load();
-    // },
-
-    // _onResize:function() {
-    //     this._fillTiles(false);
-    // },
-
-
-
     clear:function() {
         this._render.clear();
     },

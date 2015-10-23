@@ -13,9 +13,7 @@ Z.render.map.Render = Z.Class.extend({
         }
         if (!this._canvas) {
             this._createCanvas();
-        } /*else {
-            Z.Canvas.clearRect(this._context, 0, 0, this._canvas.width, this._canvas.height);
-        }*/
+        }
         var me = this;
         var promises = [];
         for (var i = layers.length - 1; i >= 0; i--) {
@@ -27,7 +25,6 @@ Z.render.map.Render = Z.Class.extend({
     },
 
     _draw:function(layers,reources) {
-
         this._resetCanvasPosition();
         for (var i = layers.length - 1; i >= 0; i--) {
             layers[i]._getRender().draw(this._context,reources);
@@ -59,6 +56,11 @@ Z.render.map.Render = Z.Class.extend({
     _resetCanvasPosition:function() {
         if (!this._canvas) {
             return;
+        }
+        var mapSize = this.map.getSize();
+        if (mapSize['width'] !== parseInt(this._canvas.style.width)
+            || mapSize['height']!== parseInt(this._canvas.style.height)) {
+            this._updateCanvasSize();
         }
         this._clearCanvas();
         var offset = this.offsetPlatform();
@@ -93,7 +95,6 @@ Z.render.map.Render = Z.Class.extend({
         panels.mapViewPort.style.height = height + 'px';
         panels.controlWrapper.style.width = width + 'px';
         panels.controlWrapper.style.height = height + 'px';
-        this._updateCanvasSize();
     },
 
     getPanel: function() {

@@ -11,8 +11,8 @@ Z.render.map.Dom = Z.render.map.Render.extend({
             if (2*Math.random() > 1) {this._refreshSVGPaper();}
         },this);
         this.map.on('_moveend _resize',function() {
-            this._refreshSVGPaper();
             this.rend();
+            this._refreshSVGPaper();
         },this);
         this.map.on('_zoomend',function() {
             this._refreshSVGPaper();
