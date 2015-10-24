@@ -30,6 +30,12 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
      */
     setGeometries:function(_geometries) {
         var geometries = this._checkGeometries(_geometries);
+        //设置parent用来处理事件, setGeometries是所有Collection类型的Geometry都会调用的方法
+        if (Z.Util.isArray(geometries)) {
+            for (var i = geometries.length - 1; i >= 0; i--) {
+                geometries[i]._setParent(this);
+            }
+        }
         this._geometries = geometries;
         if (this.getLayer()) {
             this._prepareGeometries();
@@ -117,7 +123,6 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
     _checkGeometries:function(geometries) {
         if (geometries && !Z.Util.isArray(geometries)) {
             if (geometries instanceof Z.Geometry) {
-                geometries._setParent(this);
                 return [geometries];
             } else {
                 throw new Error(this.exceptions['INVALID_GEOMETRY']);
@@ -127,7 +132,6 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
                 if (!(geometries[i] instanceof Z.Geometry)) {
                    throw new Error(this.exceptions['INVALID_GEOMETRY']);
                 }
-                geometries[i]._setParent(this);
             }
             return geometries;
         }
