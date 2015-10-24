@@ -124,7 +124,7 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
             }
         } else if (Z.Util.isArray(geometries)) {
             for (var i=0, len=geometries.length;i<len;i++) {
-                if (!geometries[i] instanceof Z.Geometry) {
+                if (!(geometries[i] instanceof Z.Geometry)) {
                    throw new Error(this.exceptions['INVALID_GEOMETRY']);
                 }
                 geometries[i]._setParent(this);
