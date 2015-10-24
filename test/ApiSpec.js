@@ -398,7 +398,7 @@ describe('API', function () {
 
     describe('Map.UI.InfoWindow', function() {
 
-        it('setOption', function() {
+        /*it('setOption', function() {
             var win = new Z.InfoWindow();
             var options = {
                 title: 'title',
@@ -408,15 +408,16 @@ describe('API', function () {
             expect(function() {
                 win.setOptions(options);
             }).to.not.throwException();
-        });
+        });*/
 
         it('show/hide/isOpen', function() {
-            var win = new Z.InfoWindow();
+
             var options = {
                 title: 'title',
                 content: 'content'
             };
-            win.setOptions(options);
+            var win = new Z.InfoWindow(options);
+            // win.setOptions(options);
             win.addTo(map);
             var pos = {x: 10, y: 10};
 
