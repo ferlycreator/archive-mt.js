@@ -254,16 +254,16 @@ describe('API', function () {
 
     describe('Map.FullScreen', function() {
 
-        it('openFullScreen', function(done) {
+        it('requestFullScreen', function(done) {
             expect(function () {
-                map.openFullscreen();
+                map.requestFullScreen();
                 done();
             }).to.not.throwException();
         });
 
-        it('exitFullScreen', function(done) {
+        it('cancelFullScreen', function(done) {
             expect(function () {
-                map.exitFullscreen();
+                map.cancelFullScreen();
                 done();
             }).to.not.throwException();
         });
