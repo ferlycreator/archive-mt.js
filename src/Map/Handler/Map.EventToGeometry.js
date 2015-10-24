@@ -31,7 +31,7 @@ Z.Map.EventToGeometry = Z.Handler.extend({
         if (this.map._isBusy || !this.map._canvasLayers || this.map._canvasLayers.length === 0) {
             return;
         }
-        console.log('_queryGeometries');
+        // console.log('_queryGeometries');
         var domEvent = param['domEvent'];
         var eventType = param['domEvent'].type;
         // var mouseOffset = param['containerPoint'];//Z.DomUtil.getEventContainerPoint(domEvent, this.map._containerDOM);
