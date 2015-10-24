@@ -105,7 +105,7 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         var layer = this.getLayer();
         var geometries = this.getGeometries();
         for (var i=0,len=geometries.length;i<len;i++) {
-            this._geometries[i]._setParent(this);
+
             this._geometries[i]._prepare(layer);
         }
     },
@@ -117,15 +117,17 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
     _checkGeometries:function(geometries) {
         if (geometries && !Z.Util.isArray(geometries)) {
             if (geometries instanceof Z.Geometry) {
+                geometries._setParent(this);
                 return [geometries];
             } else {
                 throw new Error(this.exceptions['INVALID_GEOMETRY']);
             }
         } else if (Z.Util.isArray(geometries)) {
             for (var i=0, len=geometries.length;i<len;i++) {
-                if (    geometries instanceof Z.Geometry) {
+                if (!geometries[i] instanceof Z.Geometry) {
                    throw new Error(this.exceptions['INVALID_GEOMETRY']);
                 }
+                geometries[i]._setParent(this);
             }
             return geometries;
         }

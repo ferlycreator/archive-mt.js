@@ -454,7 +454,9 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     _fireEvent:function(eventName, param) {
         this.fire(eventName,param);
         if (this._getParent()) {
-            param['target'] = this._getParent();
+            if (param) {
+                param['target'] = this._getParent();
+            }
             this._getParent().fire(eventName,param);
         }
     },
