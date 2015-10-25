@@ -19,74 +19,108 @@ Z.TopoQuery=function(opts) {
 };
 
 Z.TopoQuery.prototype={
+    //默认结果的symbol
+    defaultSymbol : {
+                    'lineColor' : '#800040',
+                    'lineWidth' : 2,
+                    'lineOpacity' : 1,
+                    'lineDasharray' :[20,10,5,5,5,10],
+                    'polygonOpacity': 0
+                },
+    /**
+     * 获取空间库主机地址
+     * @return {String} 空间库主机地址
+     */
+    getHost:function() {
+        return this.host+':'+this.port;
+    },
     /**
      * 计算Geometry的外缓冲，该功能需要引擎服务器版的支持
      * @member maptalks.Map
-     * @param {maptalks.Geometry} [geometry] [做缓冲的geometry]
+     * @param {[maptalks.Geometry]} [geometry] [做缓冲的geometry]
      * @param {Number} distance 缓冲距离，单位为米
      * @param {Function} callback 计算完成后的回调函数，参数为返回的图形对象
      * @expose
      */
-    buffer:function(geometry, distance, callback) {
-        var defaultOption = {
-                'linecolor' : '#800040',
-                'linewidth' : 2,
-                'lineOpacity' : 1,
-                'lineDasharray' :[20,10,5,5,5,10],
-                'polygonOpacity': 0
-        };
-        var me = geometry;
-        var result = null;
+    buffer:function(opts) {
+        var geometries=opts['geometries'], distance=opts['distance'];
+        if (!Z.Util.isArrayHasData(geometries)) {
+            opts['success']([]);
+            return;
+        }
+        var symbol = this.defaultSymbol;
+        if (opts['symbol']) {
+            symbol = opts['symbol'];
+        }
+        if (!Z.Util.isArray(geometries)) {
+            geometries = [geometries];
+        }
+        var i, len;
+         //准备参数
+        var targets = [];
+        for (i = 0, len=geometries.length; i < len; i++) {
+            var geometry = geometries[i];
+            if (!(geometry instanceof Z.Marker) && !(geometry instanceof Z.Circle)) {
+                var geoJson = geometry._exportGeoJson();
+                Z.GeoJson.crsCoordinateType(geoJson, geometry.getCoordinateType());
+                targets.push(geoJson);
+            }
+        }
         function formQueryString() {
             var ret = "distance=" + distance;
-            ret += "&encoding=utf-8";
-            ret += "&data=" + encodeURIComponent(JSON.stringify(me.toJson()));
+            ret += "&targets=" + encodeURIComponent(JSON.stringify(targets));
             return ret;
         }
-        // 点和圆形的buffer直接进行计算
-        if (geometry instanceof Z.Marker) {
-            result = new Z.Circle(me.getCenter(), distance);
-            result.setSymbol(defaultOption);
-            callback({
-                "success" : true,
-                "data" : result
-            });
-            return;
-        } else if (geometry instanceof Z.Circle) {
-            var radius = me.radius + distance;
-            result = new Z.Circle(me.getCenter(), radius);
-            result.setSymbol(defaultOption);
-            callback({
-                "success" : true,
-                "data" : result
-            });
-            return;
+        function bufferPointOrCircle(p) {
+            // 点和圆形的buffer不需通过服务器而直接进行计算
+            if (p instanceof Z.Marker) {
+                return new Z.Circle(p.getCoordinates(), distance);
+            } else if (p instanceof Z.Circle) {
+                return new Z.Circle(p.getCoordinates(), p.getRadius()+distance);
+            }
+            return null;
+        }
+        var buffered = [];
+        if (targets.length === 0) {
+            //全都是点或者圆形
+            for (i = 0, len=geometries.length; i < len; i++) {
+                var r = bufferPointOrCircle(geometries[i]);
+                if (r) {
+                    r.setSymbol(symbol);
+                }
+                buffered.push(r);
+            }
+            opts['success'](buffered);
         } else {
-            var url =Z.host + "/enginerest/geometry/buffer";
+            var url ='http://'+this.getHost()+"/enginerest/geometry/analysis/buffer";
             var queryString = formQueryString();
             var ajax = new Z.Util.Ajax(url, 0, queryString, function(
                     resultText) {
                 var result = Z.Util.parseJson(resultText);
                 if (!result["success"]) {
-                    callback(result);
-                }
-                var resultGeo = Z.Geometry.fromJson(result["data"]);
-                if (!resultGeo) {
-                    callback({
-                        "success" : false,
-                        "data" : null
-                    });
+                    if (opts['error']) {
+                        opts['error'](result);
+                    }
                     return;
                 }
-                resultGeo.setSymbol(defaultOption);
-                callback({
-                    "success" : true,
-                    "data" : resultGeo
-                });
+                var svrBuffered = Z.GeoJson.fromGeoJson(result["data"]);
+                var tmpIndex = 0;
+                for (i = 0, len=geometries.length; i < len; i++) {
+                    var g;
+                    if ((geometries[i] instanceof Z.Marker) || (geometries[i] instanceof Z.Circle)) {
+                        g = bufferPointOrCircle(geometries[i]);
+                    } else {
+                        g = svrBuffered[tmpIndex++];
+                    }
+                    if (g) {
+                        g.setSymbol(symbol);
+                    }
+                    buffered.push(g);
+                }
+                opts['success'](buffered);
             });
             ajax.post();
         }
-
     },
 
     /**
@@ -98,27 +132,42 @@ Z.TopoQuery.prototype={
      * @param {Function} callback 回调函数，参数为布尔类型数组，数组长度与geometries参数数组相同，每一位代表相应的判断结果
      * @expose
      */
-    relate:function(geometry, geometries, relation, callback) {
-        if (!geometries || !geometries["length"] || relation < 0 || relation > 7) {
+    relate:function(opts) {
+        var source = opts['source'],
+            targets = opts['targets'],
+            relation = opts['relation'];
+
+        if (!source || !targets || relation < 0 || relation > 7) {
+            opts['success']([]);
             return;
         }
-        var _geometry = geometry;
         function formQueryString() {
-            var geoJsons = [];
-            for (var i=0, len=geometries.length;i<len;i++) {
-                geoJsons.push(JSON.stringify(geometries[i].toJson()));
+            var srcGeoJson = source._exportGeoJson();
+            Z.GeoJson.crsCoordinateType(srcGeoJson, source.getCoordinateType());
+            var targetGeoJsons = [];
+            for (var i=0, len=targets.length;i<len;i++) {
+                var t = targets[i]._exportGeoJson();
+                Z.GeoJson.crsCoordinateType(srcGeoJson, targets[i].getCoordinateType());
+                targetGeoJsons.push(t);
             }
-            var ret = "geo1=" + JSON.stringify(_geometry.toJson());
-            ret += "&geos=[" + geoJsons.join(",")+"]";
+            var ret = "source=" + JSON.stringify(srcGeoJson);
+            ret += "&targets=" + JSON.stringify(targetGeoJsons);
             ret += "&relation=" + relation;
             return ret;
         }
-        var url = Z.host + "/enginerest/geometry/relation";
+        var url = 'http://'+this.getHost()+'/enginerest/geometry/relation';
         var queryString = formQueryString();
         var ajax = new Z.Util.Ajax(url, 0, queryString, function(
                 resultText) {
-            var result = eval("(" + resultText + ")");
-            callback(result);
+            var result = Z.Util.parseJson(resultText);
+            if (!result["success"]) {
+                if (opts['error']) {
+                    opts['error'](result);
+                }
+                return;
+            } else {
+                opts['success'](result['data']);
+            }
         });
         ajax.post();
     }

@@ -4,6 +4,32 @@
  * @author Maptalks Team
  */
 Z.GeoJson={
+
+        /**
+         * 获取geojson或设置geojson的CoordinateType
+         * @param  {GeoJson} geoJson        geoJson
+         * @param  {String} coordinateType coordinateType
+         */
+        crsCoordinateType:function(geoJson, coordinateType) {
+            if (!coordinateType) {
+                if (geoJson && geoJson['crs'] && geoJson['crs']['properties']) {
+                    if ('cnCoordinateType' === geoJson['crs']['type']) {
+                        return geoJson['crs']['properties']['name'];
+                    }
+                }
+                return null;
+            } else {
+                if (geoJson) {
+                    geoJson['crs'] = {
+                        "type" : "cnCoordinateType",
+                        "properties" : {
+                            "name" : coordinateType
+                        }
+                    };
+                }
+                return this;
+            }
+        },
         /**
          * 将geoJson字符串或geoJson对象转化为Geometry对象
          * @param  {String | Object | [Object]} json json对象
@@ -83,12 +109,8 @@ Z.GeoJson={
             if (!geoJsonObj || Z.Util.isNil(geoJsonObj['type'])) {
                 return null;
             }
-            var coordinateType = null;
-            if (geoJsonObj['crs'] && geoJsonObj['crs']['properties']) {
-                if ('cnCoordinateType' === geoJsonObj['crs']['type']) {
-                    coordinateType = geoJsonObj['crs']['properties']['name'];
-                }
-            }
+            var coordinateType = Z.GeoJson.crsCoordinateType(geoJsonObj);
+
             var type = geoJsonObj['type'];
             if ('Feature' === type) {
                 var geoJsonGeo = geoJsonObj['geometry'];
