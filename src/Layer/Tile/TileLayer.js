@@ -128,8 +128,8 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         centerOffset.top=Math.round(parseFloat(mapHeight/2-centerTileIndex["offsetTop"]));
         centerOffset.left=Math.round(parseFloat(mapWidth/2-centerTileIndex["offsetLeft"]));
         //中心瓦片上下左右的瓦片数
-        var tileTopNum =Math.ceil(Math.abs(centerOffset.top)/tileSize["width"]),
-            tileLeftNum=Math.ceil(Math.abs(centerOffset.left)/tileSize["height"]),
+        var tileTopNum =Math.ceil(Math.abs(centerOffset.top)/tileSize["height"]),
+            tileLeftNum=Math.ceil(Math.abs(centerOffset.left)/tileSize["width"]),
             tileBottomNum=Math.ceil(Math.abs(mapHeight-centerOffset.top)/tileSize["height"]),
             tileRightNum=Math.ceil(Math.abs(mapWidth-centerOffset.left)/tileSize["width"]);
 
@@ -142,10 +142,10 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         for (var i=-(tileLeftNum);i<tileRightNum;i++){
             for (var j=-(tileTopNum);j<=tileBottomNum;j++){
                     var tileIndex = tileConfig.getNeighorTileIndex(centerTileIndex["y"], centerTileIndex["x"], j,i, zoomLevel, this.options['repeatWorld']);
-                    var tileId=[centerTileIndex["y"],centerTileIndex["x"],j,i].join('-');
                     var tileLeft = centerOffset.left + tileSize["width"]*i-holderLeft;
                     var tileTop = centerOffset.top +tileSize["height"]*j-holderTop;
                     var tileUrl = this._getTileUrl(tileIndex["x"],tileIndex["y"],zoomLevel);
+                    var tileId=[tileUrl,tileLeft,tileTop].join('__');
                     tiles.push({
                         'url' : tileUrl,
                         'left': tileLeft,
