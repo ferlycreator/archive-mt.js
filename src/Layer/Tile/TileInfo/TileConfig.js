@@ -172,9 +172,9 @@ Z.TileConfig=Z.Class.extend({
             var tileSystem = this.tileSystem;
             var x = (tileX+tileSystem['scale']['x']*offsetX);
             var y = (tileY-tileSystem['scale']['y']*offsetY);
-            var ext = this._getTileFullExtent(zoomLevel);
             //连续世界瓦片计算
             if (isRepeatWorld) {
+                var ext = this._getTileFullExtent(zoomLevel);
                 if (x < ext['xmin']) {
                     x = ext['xmax'] - (ext['xmin']-x) % (ext['xmax']-ext['xmin']);
                     if (x === ext['xmax']) {
