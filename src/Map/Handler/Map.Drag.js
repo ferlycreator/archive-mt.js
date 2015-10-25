@@ -1,33 +1,33 @@
 Z.Map.mergeOptions({
     /**
-     * @cfg {Boolean} [dragging="true"] 地图支持拖动
+     * @cfg {Boolean} [draggable="true"] 地图支持拖动
      * @member maptalks.Map
      */
-    'dragging': true
+    'draggable': true
 });
 
 Z.Map.Drag = Z.Handler.extend({
     addHooks: function () {
-        if (!this['draggable']) {
-            var map = this['map'];
-            if (!map) return;
-            this.dom = map._containerDOM;
-            if (!Z.Browser.mobile) {
-                this['draggable'] = new Z.Handler.Drag(this.dom);
-            }
-            //TODO 其它触摸屏幕
+        var map = this.map;
+        if (!map) {return;}
+        this.dom = map._containerDOM;
+        if (!Z.Browser.mobile) {
+            this._dragHandler = new Z.Handler.Drag(this.dom);
+        }
+        //TODO 其它触摸屏幕
 //            else {
 //                this['draggable'] = new Z.Handler.Touch(this.dom);
 //            }
-            this['draggable'].on("dragstart", this._onDragStart, this);
-            this['draggable'].on("dragging", this._onDragging, this);
-            this['draggable'].on("dragend", this._onDragEnd, this);
-        }
-        this['draggable'].enable();
+        this._dragHandler.on("dragstart", this._onDragStart, this);
+        this._dragHandler.on("dragging", this._onDragging, this);
+        this._dragHandler.on("dragend", this._onDragEnd, this);
+
+        this._dragHandler.enable();
     },
 
     removeHooks: function () {
-        this['draggable'].disable();
+        this._dragHandler.disable();
+        delete this._dragHandler;
     },
 
     _onDragStart:function(param) {
@@ -74,4 +74,4 @@ Z.Map.Drag = Z.Handler.extend({
     }
 });
 
-Z.Map.addInitHook('addHandler', 'dragging', Z.Map.Drag);
+Z.Map.addInitHook('addHandler', 'draggable', Z.Map.Drag);

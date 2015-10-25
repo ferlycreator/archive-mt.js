@@ -88,7 +88,9 @@ Z.Map.include({
      * @member maptalks.Map
      */
     enableDrag: function() {
-        this['dragging'].draggable.enable();
+        this.options['draggable'] = true;
+        this.addHandler('draggable',Z.Map.Drag);
+        return this;
     },
 
     /**
@@ -97,7 +99,9 @@ Z.Map.include({
      * @member maptalks.Map
      */
     disableDrag: function() {
-        this['dragging'].draggable.disable();
+        this.options['draggable'] = false;
+        this.removeHandler('draggable');
+        return this;
     },
 
     /**
@@ -106,7 +110,9 @@ Z.Map.include({
      * @member maptalks.Map
      */
     enableDoubleClickZoom: function() {
-        this['doubleClickZoom'] = true;
+        this.options['doubleClickZoom'] = true;
+        this.addHandler('doubleClickZoom',Z.Map.DoubleClickZoom);
+        return this;
     },
 
     /**
@@ -115,6 +121,8 @@ Z.Map.include({
      * @member maptalks.Map
      */
     disableDoubleClickZoom: function() {
-        this['doubleClickZoom'] = false;
+        this.options['doubleClickZoom'] = false;
+        this.removeHandler('doubleClickZoom');
+        return this;
     }
 });
