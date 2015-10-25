@@ -131,8 +131,10 @@ Z.render.map.Dom = Z.render.map.Render.extend({
     },
 
     _refreshSVGPaper: function() {
-        var paper = this.getSvgPaper();
-        Z.SVG.refreshContainer(this.map,paper);
+        if (!this._vectorPaper) {
+            return;
+        }
+        Z.SVG.refreshContainer(this.map,this._vectorPaper);
     },
 
     /**
