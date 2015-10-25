@@ -62,21 +62,21 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
         var ajax = new Z.Util.Ajax(url,0,queryString,function(responseText){
             var result = Z.Util.parseJson(responseText);
             if (result && result["success"]) {
-                me._fillTiles(me.options['showOnTileLoadComplete']);
+                me._render.rend(me.options['showOnTileLoadComplete']);
             }
         });
         //保证在高频率load时，dynamicLayer总能在zoom结束时只调用一次
-        if (this.loadDynamicTimeout) {
-            clearTimeout(this.loadDynamicTimeout);
+        if (this._loadDynamicTimeout) {
+            clearTimeout(this._loadDynamicTimeout);
         }
 
-        this.loadDynamicTimeout = setTimeout(function() {
+        this._loadDynamicTimeout = setTimeout(function() {
             ajax.post();
-            if (!me.heartBeator) {
-                me.heartBeator = new Z.Util.Ajax(Z.host+"/dynamic/heartbeat",0,"guid="+me.guid,function(responseText){
+            if (!me._heartBeator) {
+                me._heartBeator = new Z.Util.Ajax(Z.host+"/dynamic/heartbeat",0,"guid="+me.guid,function(responseText){
                 });
                 setInterval(function() {
-                    me.heartBeator.get();
+                    me._heartBeator.get();
                 },60*1000);
             }
         },map._getZoomMillisecs()+80);

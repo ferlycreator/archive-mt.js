@@ -13,7 +13,8 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         'subdomains':[''],
         //是否检查
         'showOnTileLoadComplete':true,
-        'tileInfo':'web-mercator'
+        'tileInfo':'web-mercator',
+        'repeatWorld' : true
     },
 
 
@@ -140,8 +141,8 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         //TODO 瓦片从中心开始加起
         for (var i=-(tileLeftNum);i<tileRightNum;i++){
             for (var j=-(tileTopNum);j<=tileBottomNum;j++){
-                    var tileIndex = tileConfig.getNeighorTileIndex(centerTileIndex["y"], centerTileIndex["x"], j,i);
-                    var tileId=tileIndex["y"]+","+tileIndex["x"];
+                    var tileIndex = tileConfig.getNeighorTileIndex(centerTileIndex["y"], centerTileIndex["x"], j,i, zoomLevel, this.options['repeatWorld']);
+                    var tileId=[centerTileIndex["y"],centerTileIndex["x"],j,i].join('-');
                     var tileLeft = centerOffset.left + tileSize["width"]*i-holderLeft;
                     var tileTop = centerOffset.top +tileSize["height"]*j-holderTop;
                     var tileUrl = this._getTileUrl(tileIndex["x"],tileIndex["y"],zoomLevel);
