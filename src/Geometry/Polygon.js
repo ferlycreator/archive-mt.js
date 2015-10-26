@@ -112,8 +112,8 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
      */
     _checkRing:function(ring) {
         this._cleanRing(ring);
-        if (!Z.Util.isArrayHasData(ring)) {
-            throw new Error(this.exceptions['INVALID_COORDINATES']);
+        if (!ring || !Z.Util.isArrayHasData(ring)) {
+            return false;
         }
         var lastPoint = ring[ring.length-1];
         var isClose = true;
@@ -133,7 +133,7 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
      */
     _trimRing:function(ring) {
         var isClose = this._checkRing(ring);
-        if (isClose) {
+        if (Z.Util.isArrayHasData(ring) && isClose) {
             return ring.slice(0,ring.length-1);
         } else {
             return ring;
@@ -145,7 +145,7 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
      */
     _closeRing:function(ring) {
         var isClose = this._checkRing(ring);
-        if (!isClose) {
+        if (Z.Util.isArrayHasData(ring) && !isClose) {
             return ring.concat([new Z.Coordinate(ring[0].x,ring[0].y)]);
         } else {
             return ring;
