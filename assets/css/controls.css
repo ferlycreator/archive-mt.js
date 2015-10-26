@@ -28,10 +28,10 @@
 .maptalks-control-button-hover {
     position: relative;
     cursor: pointer;
-    background-color: #6490C4;
+    //background-color: #ffffff;
     border: 0px;
-    border-right: 1px solid #ecedef;
-    color: #ffffff;
+    border: 1px solid #6490C4;
+    //color: #ffffff;
     font-size: 16px;
     white-space: nowrap;
 }

@@ -98,8 +98,10 @@ Z.Label = Z.Class.extend({
         this.options.symbol = symbol;
         this.textStyle = this._translateTextStyle();
         this.strokeAndFill = this._translateStrokeAndFill();
-        _textMarker.setSymbol(this.textStyle);
-        _box.setSymbol(this.strokeAndFill);
+//        this._textMarker.setSymbol(this.textStyle);
+//        this._box.setSymbol(this.strokeAndFill);
+        this._refreshLabel();
+        this._layer.addGeometry(this._label.getGeometries());
     },
 
     /**

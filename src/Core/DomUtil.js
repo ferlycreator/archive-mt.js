@@ -472,6 +472,19 @@ Z.DomUtil = {
             return parseInt(str);
         }
         return 0;
+    },
+
+    /**
+     * dom对象转化为html字符串
+     */
+    domToString: function(dom){
+        if(dom.outerHTML){
+            return dom.outerHTML;
+        } else {
+            var div= this.createEl('div');
+            div.appendChild(dom);
+            return div.innerHTML
+        }
     }
 };
 
