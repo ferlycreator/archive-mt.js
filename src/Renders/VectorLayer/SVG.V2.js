@@ -135,9 +135,9 @@ Z.SVG.SVG = {
         var left = style['textDx'],top = style['textDy'];
         var hAlign = style['textHorizontalAlignment'];
         if (hAlign === 'left') {
-            left -= textSize['width']/2;
+            left -= textSize['width'];
         } else if (hAlign === 'middle') {
-            left -= textSize['width']/4;
+            left -= textSize['width']/2;
         }
 
         var vAlign = style['textVerticalAlignment'];

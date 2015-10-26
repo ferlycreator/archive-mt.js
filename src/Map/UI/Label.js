@@ -198,6 +198,12 @@ Z.Label = Z.Class.extend({
             this._label = this._createLabel(this._center);
             this._registerEvent();
         }
+        if(this._label) {
+            var me = this;
+            this._label.on('mousedown mouseover mouseout click dblclick contextmenu', function(param){
+                me.fire(param.type, param);
+            });
+        }
     },
 
     _registerEvent: function() {
