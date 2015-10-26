@@ -53,7 +53,7 @@ Z.Geometry.include({
             || this instanceof Z.Circle
             || this instanceof Z.Ellipse
             || this instanceof Z.Sector) {
-            var pcenter = this._map._untransformFromOffset(newPosition);
+            var pcenter = this._map._untransformFromViewPoint(newPosition);
             this._setPCenter(pcenter);
         } else if (this instanceof Z.Rectangle) {
             var coordinate = this.getCoordinates();
@@ -63,13 +63,13 @@ Z.Geometry.include({
                 geometryPixel['left'] + dragOffset['left'] - mapOffset['left'],
                 geometryPixel['top'] + dragOffset['top'] - mapOffset['top']
             );
-            var pCoordinate = this._map._untransformFromOffset(newPosition);
+            var pCoordinate = this._map._untransformFromViewPoint(newPosition);
             this._setPNw(pCoordinate);
         } else if (this instanceof Z.Polyline) {
             var lonlats = this.getCoordinates();
             for (var i=0,len=lonlats.length;i<len;i++) {
                 var plonlat = this._map.coordinateToViewPoint(lonlats[i]);
-                var coordinate = this._map._untransformFromOffset(new Z.Point(plonlat['left']+dragOffset['left'] - mapOffset['left'],
+                var coordinate = this._map._untransformFromViewPoint(new Z.Point(plonlat['left']+dragOffset['left'] - mapOffset['left'],
                         plonlat['top']+dragOffset['top'] - mapOffset['top']));
                 lonlats[i].x = coordinate.x;
                 lonlats[i].y = coordinate.y;
@@ -82,7 +82,7 @@ Z.Geometry.include({
                 var coordinates = lonlats[i];
                 for (var j=0,clen=coordinates.length;j<clen;j++) {
                     var plonlat = this._map.coordinateToViewPoint(coordinates[j]);
-                    var coordinate = this._map._untransformFromOffset(new Z.Point(
+                    var coordinate = this._map._untransformFromViewPoint(new Z.Point(
                         plonlat['left']+dragOffset['left'] - mapOffset['left'],
                         plonlat['top']+dragOffset['top'] - mapOffset['top']
                     ));

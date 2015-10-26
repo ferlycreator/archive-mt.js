@@ -966,7 +966,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @param  {[type]} domPos [description]
      * @return {[type]}        [description]
      */
-    _untransformFromOffset:function(domPos) {
+    _untransformFromViewPoint:function(domPos) {
         return this._untransform(this._viewPointToContainerPoint(domPos));
     },
 
