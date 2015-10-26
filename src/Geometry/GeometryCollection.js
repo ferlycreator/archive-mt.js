@@ -318,7 +318,6 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
                 geometries[i].endDrag();
             }
         });
-
         this.dragging = true;
         return this;
     },

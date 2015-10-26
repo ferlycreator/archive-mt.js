@@ -86,12 +86,13 @@ Z.SVG.SVG = {
         var rowHeight = fontSize + lineSpacing;
         if(wrapChar){
             var texts = text.split(wrapChar);
+            wrapWidth = wrapWidth/texts.length;
             var textRows = [];
             for(var i=0,len=texts.length;i<len;i++) {
                 var t = texts[i];
                 var tWidth = Z.Util.stringLength(t,font,fontSize).width;
                 if(tWidth>wrapWidth) {
-                    var contents = Z.Util.splitContent(t, tWidth, fontSize, lineSpacing);
+                    var contents = Z.Util.splitContent(t, tWidth, fontSize, wrapWidth);
                     textRows = textRows.concat(contents);
                 } else {
                     textRows.push(t);
@@ -133,9 +134,9 @@ Z.SVG.SVG = {
         var left = style['textDx'],top = style['textDy'];
         var hAlign = style['textHorizontalAlignment'];
         if (hAlign === 'left') {
-            left -= textSize['width'];
-        } else if (hAlign === 'middle') {
             left -= textSize['width']/2;
+        } else if (hAlign === 'middle') {
+            left -= textSize['width']/4;
         }
 
         var vAlign = style['textVerticalAlignment'];
@@ -367,6 +368,7 @@ Z.SVG.VML= {
         if(wrapChar){
             var texts = text.split(wrapChar);
             var textRows = [];
+             wrapWidth = wrapWidth/texts.length;
             for(var i=0,len=texts.length;i<len;i++) {
                 var t = texts[i];
                 var tWidth = Z.Util.stringLength(t,font,fontSize).width;
@@ -417,9 +419,9 @@ Z.SVG.VML= {
         var left = style['textDx'],top = style['textDy'];
         var hAlign = style['textHorizontalAlignment'];
         if (hAlign === 'left') {
-            left -= textSize['width']+x;
-        } else if (hAlign === 'middle') {
             left -= textSize['width']/2+x;
+        } else if (hAlign === 'middle') {
+            left -= textSize['width']/4+x;
         }
 
         var vAlign = style['textVerticalAlignment'];

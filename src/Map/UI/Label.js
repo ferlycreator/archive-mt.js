@@ -13,10 +13,12 @@ Z.Label = Z.Class.extend({
      */
     'exceptionDefs':{
         'en-US':{
-            'NEED_GEOMETRY':'You must set target to Label.'
+            'NEED_TARGET':'You must set target to Label.',
+            'INVALID_TARGET': 'Target must be geometry or coordinate.'
         },
         'zh-CN':{
-            'NEED_GEOMETRY':'你必须设置Label绑定的Geometry目标。'
+            'NEED_TARGET':'你必须设置Label绑定的目标。',
+            'INVALID_TARGET':'绑定目标只能是geometry或coordinate。'
         }
     },
 
@@ -42,6 +44,7 @@ Z.Label = Z.Class.extend({
             'textWrapCharacter': '',
             'textLineSpacing': 8
         },
+        'target': null,//Geometry or Coordinate
         'draggable': true,
         'content': '',
         'trigger': '',//click|hover
@@ -60,13 +63,59 @@ Z.Label = Z.Class.extend({
      */
     initialize: function (options) {
         this.setOptions(options);
+        var target = this.options['target'];
+        if(!target)  {throw new Error(this.exceptions['NEED_TARGET']);}
+        if(!(target instanceof Z.Geometry) && !(target instanceof Z.Coordinate)) {
+            throw new Error(this.exceptions['INVALID_TARGET']);
+        }
+        this._target = target;
+        this._refreshLabel();
+        return this;
+    },
+
+    _refreshLabel: function() {
         this.textStyle = this._translateTextStyle();
         this.strokeAndFill = this._translateStrokeAndFill();
         this.textContent = this.options['content'];
         var style = this.options.symbol;
         this.textSize = Z.Util.stringLength(this.textContent, style['textFaceName'],style['textSize']);
         this.labelSize = this._getLabelSize();
+        this._initLabel(this._target);
         return this;
+    },
+
+    /**
+     * 获取label样式
+     */
+    getSymbol: function() {
+        return this.options.symbol;
+    },
+
+    /**
+     * 设置label样式
+     */
+    setSymbol: function(symbol) {
+        this.options.symbol = symbol;
+        this.textStyle = this._translateTextStyle();
+        this.strokeAndFill = this._translateStrokeAndFill();
+        _textMarker.setSymbol(this.textStyle);
+        _box.setSymbol(this.strokeAndFill);
+    },
+
+    /**
+     * 获取label内容
+     */
+    getContent: function() {
+        return this.options['content'];
+    },
+
+    /**
+     * 设置label内容
+     */
+    setContent: function(content) {
+        this.options['content'] = content;
+        this._refreshLabel();
+        this._layer.addGeometry(this._label.getGeometries());
     },
 
     /**
@@ -123,22 +172,38 @@ Z.Label = Z.Class.extend({
 
     /**
      * 将Label添加到对象上
-     * @param {maptalks.Geometry} geometry
+     * @param {maptalks.Layer} layer
      */
-    addTo: function (geometry) {
-        if(!geometry || !this.options || !this.options['symbol']) {return;}
-        this._map = geometry.getMap();
-        this._geometry = geometry;
-        if(!this._geometry) {throw new Error(this.exceptions['NEED_GEOMETRY']);}
-        this._registerEvent();
+    addTo: function (layer) {
+        if(!layer) {return;}
+        this._layer = layer;
+        this._map = this._layer.getMap();
+        this._layer.addGeometry(this._label.getGeometries());
+        return this;
+    },
+
+    _initLabel: function(targetObj) {
+        if(!targetObj || !this.options || !this.options['symbol']) {return;}
+        if(targetObj instanceof Z.Coordinate) {
+            this._center = targetObj;
+            this._label = this._createLabel(this._center);
+            if(this.options['draggable']) {
+                this._label.startDrag();
+            }
+        } else {
+            this._geometry = targetObj;
+            if(!this._geometry) {throw new Error(this.exceptions['NEED_GEOMETRY']);}
+            this._map = this._geometry.getMap();
+            this._center = this._geometry.getCenter();
+            this._label = this._createLabel(this._center);
+            this._registerEvent();
+        }
     },
 
     _registerEvent: function() {
-        this._label = this._createLabel();
         this.hide();
         this._geometry.on('shapechanged positionchanged symbolchanged', Z.Util.bind(this._changeLabelPosition, this), this)
-                      .on('remove', this.removeLabel, this);
-
+                      .on('remove', this.remove, this);
         var trigger = this.options['trigger'];
         var me = this;
         if(trigger === 'hover') {
@@ -157,8 +222,6 @@ Z.Label = Z.Class.extend({
         } else {
             this.show();
         }
-        this._geometry.getLayer().addGeometry(this._label.getGeometries());
-
         if(this.options['draggable']) {
             this._label.startDrag();
             var linkerOptions = {
@@ -186,13 +249,12 @@ Z.Label = Z.Class.extend({
         }
     },
 
-    _createLabel: function() {
-        var center = this._geometry.getCenter();
-        var textMarker = new Z.Marker(center);
-        var box = new Z.Marker(center);
+    _createLabel: function(center) {
+        this._textMarker = new Z.Marker(center);
+        this._box = new Z.Marker(center);
 
         var dx=this.options['dx'],dy=this.options['dy'];
-        textMarker.setSymbol(this.textStyle);
+        this._textMarker.setSymbol(this.textStyle);
 
         var width = this.labelSize['width'];
         var height = this.labelSize['height'];
@@ -217,8 +279,8 @@ Z.Label = Z.Class.extend({
         this.strokeAndFill['markerDy'] = dy;
         this.strokeAndFill['markerWidth'] = width;
         this.strokeAndFill['markerHeight'] = height;
-        box.setSymbol(this.strokeAndFill);
-        return new Z.GeometryCollection([box,textMarker]);
+        this._box.setSymbol(this.strokeAndFill);
+        return new Z.GeometryCollection([this._box,this._textMarker]);
     },
 
     _getLabelSize: function() {
@@ -233,6 +295,7 @@ Z.Label = Z.Class.extend({
         var rowNum = 1;
         if(wrapChar) {
             var texts = this.textContent.split(wrapChar);
+            wrapWidth = wrapWidth/texts.length;
             var textRows = [];
             for(var i=0,len=texts.length;i<len;i++) {
                 var t = texts[i];

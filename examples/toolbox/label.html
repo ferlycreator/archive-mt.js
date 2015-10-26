@@ -17,7 +17,7 @@
         //创建地图对象
         mapObj = new maptalks.Map("mapObj",{
             center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
-            zoomLevel:   11 //初始缩放级别
+            zoomLevel:   17 //初始缩放级别
         });
         //设置底图图层
         mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
@@ -32,12 +32,9 @@
         mapObj.addLayer(layer);
         //创建点的坐标对象
         var coordinate = new maptalks.Coordinate(121.489935,31.24432);
-        //创建点对象
-        var marker = new maptalks.Marker(coordinate);
         //将点添加到Layer
-        layer.addGeometry(marker);
         //设置label属性
-        var labelOptions = {
+        var options = {
             'symbol': {
                 'lineColor': '#ffffff',
                 'lineWidth': 1,
@@ -51,20 +48,51 @@
                 'textFill': '#ff0000',
                 'textOpacity': 1,
                 'textSpacing': 30,
-                'textWrapWidth': 50,
+                'textWrapWidth': null,//auto
                 'textWrapBefore': false,
-                'textWrapCharacter': '_',
+                'textWrapCharacter': '\n',
                 'textLineSpacing': 8
             },
             'draggable': true,
-            'horizontalAlignment': 'middle',//left middle right
-            'verticalAlignment': 'middle',//top middle bottom
+            'horizontalAlignment': 'right',//left middle right
+            'verticalAlignment': 'top',//top middle bottom
             'dx': 0,
             'dy': 0,
-            'content': '上海大厦'
+            'content': '上海大厦\n123123',
+            'target':coordinate
         };
-        //将label添加到指定的图层上
-        marker.addLabel(labelOptions);
+        //创建label
+        var label = new maptalks.Label(options).addTo(layer);
+
+        var toolbar = new maptalks.Toolbar({
+            id: 'toolbar',//toolbar id
+            position : { //工具条放置位置
+                top: '2',
+                right: '2'
+            },
+            vertical : false,
+            //工具项
+            items: [{
+                type : 'button',
+                content: '编辑Label',
+                click : function(){
+                    label.startEdit();
+                }
+            }, {
+                type : 'button',
+                content: '停止编辑Label',
+                click : function(){
+                    label.endEdit();
+                }
+            }, {
+                type : 'button',
+                content: '删除Label',
+                click : function(){
+                    label.remove();
+                }
+            }]
+        });
+        mapObj.addControl(toolbar);
     }
 </script>
 <!-- 引擎javascript开发包-->
