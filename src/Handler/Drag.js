@@ -47,10 +47,11 @@ Z.Handler.Drag = Z.Handler.extend({
         }
         dom['ondragstart'] = function() { return false; };
         this.moved = false;
-        if (this.moving) { return; }
+        // if (this.moving) { return; }
         this.startPos = new Z.Point(event.clientX, event.clientY);
-        Z.DomUtil.on(dom,'mousemove',this.onMouseMove,this);
-        Z.DomUtil.on(dom,'mouseup',this.onMouseUp,this);
+        //2015-10-26 fuzhen 改为document, 解决鼠标移出地图容器后的不可控现象
+        Z.DomUtil.on(document,'mousemove',this.onMouseMove,this);
+        Z.DomUtil.on(document,'mouseup',this.onMouseUp,this);
     },
 
     onMouseMove:function(event) {
@@ -74,7 +75,7 @@ Z.Handler.Drag = Z.Handler.extend({
             });
             this.moved = true;
         }
-        this.moving = true;
+        // this.moving = true;
 
         /**
          * 触发dragging事件
@@ -88,8 +89,8 @@ Z.Handler.Drag = Z.Handler.extend({
 
     onMouseUp:function(event){
         var dom = this.dom;
-        Z.DomUtil.off(dom,'mousemove',this.onMouseMove);
-        Z.DomUtil.off(dom,'mouseup',this.onMouseUp);
+        Z.DomUtil.off(document,'mousemove',this.onMouseMove);
+        Z.DomUtil.off(document,'mouseup',this.onMouseUp);
         if(dom['releaseCapture']) {
             dom['releaseCapture']();
         } else if(window.captureEvents) {
@@ -98,7 +99,7 @@ Z.Handler.Drag = Z.Handler.extend({
         if (dom.style.cursor === 'move') {
             dom.style.cursor = 'default';
         }
-        if (this.moved && this.moving) {
+        if (this.moved/* && this.moving*/) {
             /**
              * 触发dragend事件
              * @event dragend
@@ -108,6 +109,6 @@ Z.Handler.Drag = Z.Handler.extend({
                 'mousePos': new Z.Point(parseInt(event.clientX,0),parseInt(event.clientY,0))
             });
         }
-        this.moving = false;
+        // this.moving = false;
     }
 });
