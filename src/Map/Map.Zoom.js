@@ -110,7 +110,7 @@ Z.Map.include({
         if (this._originZoomLevel === nextZoomLevel) {
             return;
         }
-        this.zooming = true;
+        this._zooming = true;
         if (!focusPos) {
             focusPos = new Z.Point(this.width/2, this.height/2);
         }
@@ -136,11 +136,11 @@ Z.Map.include({
         this._offsetCenterByPixel(pixelOffset);
         this._onZoomStart(scale,focusPos,nextZoomLevel);
         var me = this;
-        if (this.zoom_timeout) {
-            clearTimeout(this.zoom_timeout);
+        if (this._zoom_timeout) {
+            clearTimeout(this._zoom_timeout);
         }
-        this.zoom_timeout=setTimeout(function() {
-            me.zooming = false;
+        this._zoom_timeout=setTimeout(function() {
+            me._zooming = false;
             me._onZoomEnd(nextZoomLevel);
         },this._getZoomMillisecs());
     },

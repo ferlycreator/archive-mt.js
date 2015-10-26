@@ -454,7 +454,9 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     _fireEvent:function(eventName, param) {
         this.fire(eventName,param);
         if (this._getParent()) {
-            param['target'] = this._getParent();
+            if (param) {
+                param['target'] = this._getParent();
+            }
             this._getParent().fire(eventName,param);
         }
     },
@@ -500,12 +502,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
         var coordinateType = this.getCoordinateType();
         if (coordinateType) {
-            feature['crs'] = {
-                "type" : "cnCoordinateType",
-                "properties" : {
-                    "name" : coordinateType
-                }
-            };
+            Z.GeoJson.crsCoordinateType(feature, coordinateType);
         }
         //opts没有设定properties或者设定的properties值为true,则导出properties
         if (opts['properties'] === undefined || opts['properties']) {

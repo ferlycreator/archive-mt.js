@@ -81,7 +81,9 @@ Z.Geometry.Poly={
         if (!projection) {
             return;
         }
-        this.points = this._unprojectPoints(this._getPrjPoints());
+        if (this.prjPoints) {
+            this.points = this._unprojectPoints(this._getPrjPoints());
+        }
         if (this.holes) {
             this.holes = this._unprojectPoints(this._getPrjHoles());
         }

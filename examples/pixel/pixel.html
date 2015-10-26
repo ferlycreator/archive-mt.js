@@ -1,0 +1,95 @@
+<!DOCTYPE>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>像素地图测试</title>
+    <!-- 引擎javascript开发包 -->
+    <script type="text/javascript" src="../../../maptalks.js"></script>
+
+    <!-- 公用的地图初始化代码，其中注册的地图载入完成回调函数名为onMapReady -->
+
+    <style type="text/css">
+            /* 在style中能用百分比定义容器高宽 */
+        html,body{
+            margin:0px;
+            height:100%;
+            width: 100%;
+         }
+    </style>
+</head>
+<body scroll="no" onload="mapInit();">
+<div style="width:20%;height:100%;float:left;" >
+    <ul>
+
+    </ul>
+</div>
+<div style="width:80%;height:100%;float:right;margin-top:0px" id="mapObj"></div>
+<script type="text/javascript" >
+
+var mapObj;
+var mapToolBar;
+/**
+ * 初始化地图
+ */
+function mapInit() {
+    //构造地图类,第一个参数为加载地图的容器，例如div的id
+    mapObj = new maptalks.Map("mapObj",{
+        center:     [0,0],
+        zoomLevel:  0,
+        enablePopTip:   true,
+        enableMoveSilde:true,
+        zoomControl:true,
+        doubleClickZoom:false
+    });
+
+    mapObj.setBaseTileLayer(new maptalks.TileLayer("tile",{
+        tileInfo:{
+            //像素投影
+            'projection':'pixel',
+            //瓦片系统, [x轴瓦片顺序, y轴瓦片顺序, x轴起始坐标, y轴起始坐标]
+            'tileSystem' : [1,1,0,0],
+            'maxZoomLevel':0, //最大缩放级别
+            'minZoomLevel':0, //最小缩放级别
+            'resolutions':[
+                1             //分辨率, 原图为1, 缩小一倍则为2
+            ],
+            //像素坐标范围, 一般以原图大小设置bottom和right值
+            'fullExtent': {
+                "top":0,
+                "left":0,
+                "bottom":-347,
+                "right":596
+            },
+            //瓦片大小, 如果没有切底图, 以单张图片作为底图, 则设为原图大小即可
+            'tileSize':{
+                'width':596,
+                'height':347
+            }
+        },
+        //瓦片url
+        urlTemplate:"tile.jpg",
+        repeatWorld:true //超出范围的底图瓦片是否继续循环显示, 默认为true
+    }));
+
+
+    var layer = new Z.VectorLayer('id');
+    layer.addGeometry(new Z.Polyline(
+        [
+            [0,0],
+            [300,-200],
+            [600,0]
+        ]
+        ,{
+            symbol:{
+                'polygon-opacity':0
+            }
+        })
+    );
+    layer.addGeometry(new maptalks.Marker(mapObj.getCenter()));
+    mapObj.addLayer(layer);
+}
+
+</script>
+</body>
+</html>

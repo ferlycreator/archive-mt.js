@@ -603,13 +603,33 @@ Z['Map']=Z.Map=Z.Class.extend({
      */
     addHandler: function (name, HandlerClass) {
         if (!HandlerClass) { return this; }
+        //handler已经存在
+        if (this['_'+name]) {
+            this['_'+name].enable();
+            return;
+        }
 
-        var handler = this[name] = new HandlerClass(this);
+        var handler = this['_'+name] = new HandlerClass(this);
 
         this._handlers.push(handler);
 
         if (this.options[name]) {
             handler.enable();
+        }
+        return this;
+    },
+
+    removeHandler: function(name) {
+        if (!name) {return this;}
+        //handler已经存在
+        var handler = this['_'+name];
+        if (handler) {
+            var hit = Z.Util.searchInArray(handler,this._handlers);
+            if (hit >= 0) {
+                this._handlers.splice(hit,1);
+            }
+            this['_'+name].disable();
+            delete this['_'+name];
         }
         return this;
     },

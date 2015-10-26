@@ -332,7 +332,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
                 position = this._map.coordinateToViewPoint(coordinate);
             } else {
                 //是point类型坐标
-                position = this._map._containerPointToViewPoint(coordinate);
+                position = this._map._containerPointToViewPoint(new Z.Point(coordinate['left'],coordinate['top']));
             }
         } else {
             var center = this._target.getCenter();

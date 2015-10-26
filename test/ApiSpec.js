@@ -254,16 +254,16 @@ describe('API', function () {
 
     describe('Map.FullScreen', function() {
 
-        it('openFullScreen', function(done) {
+        it('requestFullScreen', function(done) {
             expect(function () {
-                map.openFullscreen();
+                map.requestFullScreen();
                 done();
             }).to.not.throwException();
         });
 
-        it('exitFullScreen', function(done) {
+        it('cancelFullScreen', function(done) {
             expect(function () {
-                map.exitFullscreen();
+                map.cancelFullScreen();
                 done();
             }).to.not.throwException();
         });
@@ -398,7 +398,7 @@ describe('API', function () {
 
     describe('Map.UI.InfoWindow', function() {
 
-        it('setOption', function() {
+        /*it('setOption', function() {
             var win = new Z.InfoWindow();
             var options = {
                 title: 'title',
@@ -408,15 +408,16 @@ describe('API', function () {
             expect(function() {
                 win.setOptions(options);
             }).to.not.throwException();
-        });
+        });*/
 
         it('show/hide/isOpen', function() {
-            var win = new Z.InfoWindow();
+
             var options = {
                 title: 'title',
                 content: 'content'
             };
-            win.setOptions(options);
+            var win = new Z.InfoWindow(options);
+            // win.setOptions(options);
             win.addTo(map);
             var pos = {x: 10, y: 10};
 

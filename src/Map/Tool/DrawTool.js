@@ -140,7 +140,8 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
     },
 
     _preventEvents: function() {
-        this.map['doubleClickZoom'] = false;
+        // this.map.options['doubleClickZoom'] = false;
+        this.map.disableDoubleClickZoom();
     },
 
     _clearEvents: function() {
@@ -149,7 +150,8 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         this.map.off('mousemove',this._mousemoveForPath,this);
         this.map.off('dblclick',this._dblclickForPath,this);
         this.map.off('mousedown',this._mousedownToDraw,this);
-        this.map['doubleClickZoom'] = true;
+        // this.map.options['doubleClickZoom'] = true;
+        this.map.enableDoubleClickZoom();
     },
 
     _clickForPoint: function(param) {

@@ -165,12 +165,44 @@ Z.TileConfig=Z.Class.extend({
          * @param  {[type]} tileX   [description]
          * @param  {[type]} offsetY [description]
          * @param  {[type]} offsetX [description]
+         * @param  {[type]} zoomLevel [description]
          * @return {[type]}         [description]
          */
-        getNeighorTileIndex:function(tileY, tileX, offsetY,offsetX) {
+        getNeighorTileIndex:function(tileY, tileX, offsetY,offsetX, zoomLevel, isRepeatWorld) {
             var tileSystem = this.tileSystem;
-            return {'y':(tileY-tileSystem['scale']['y']*offsetY), 'x':(tileX+tileSystem['scale']['x']*offsetX)};
+            var x = (tileX+tileSystem['scale']['x']*offsetX);
+            var y = (tileY-tileSystem['scale']['y']*offsetY);
+            //连续世界瓦片计算
+            if (isRepeatWorld) {
+                var ext = this._getTileFullExtent(zoomLevel);
+                if (x < ext['xmin']) {
+                    x = ext['xmax'] - (ext['xmin']-x) % (ext['xmax']-ext['xmin']);
+                    if (x === ext['xmax']) {
+                        x = ext['xmin'];
+                    }
+                } else if (x>=ext['xmax']) {
+                    x = ext['xmin'] + (x-ext['xmin']) % (ext['xmax']-ext['xmin']);
+                }
+
+                if (y >= ext['ymax']) {
+                    y = ext['ymin'] + (y-ext['ymin']) % (ext['ymax']-ext['ymin']);
+                } else if (y<ext['ymin']) {
+                    y = ext['ymax'] - (ext['ymin']-y) % (ext['ymax']-ext['ymin']);
+                    if (y === ext['ymax']) {
+                        y = ext['ymin'];
+                    }
+                }
+            }
+            return {'x':x, 'y':y};
         },
+
+        _getTileFullExtent:function(zoomLevel) {
+            var ext = this.fullExtent;
+            var nwIndex = this.getTileIndex(new Z.Coordinate(ext['left'],ext['top']),zoomLevel);
+            var seIndex = this.getTileIndex(new Z.Coordinate(ext['right'],ext['bottom']),zoomLevel);
+            return new Z.Extent(nwIndex, seIndex);
+        },
+
         /**
          * 计算瓦片左上角的经纬度坐标
          * @param  {[type]} tileY     [description]

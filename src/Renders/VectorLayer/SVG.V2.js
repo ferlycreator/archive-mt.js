@@ -90,6 +90,7 @@ Z.SVG.SVG = {
             var textRows = [];
             for(var i=0,len=texts.length;i<len;i++) {
                 var t = texts[i];
+                //TODO stringLength是个比较昂贵的操作, 需降低其运行频率
                 var tWidth = Z.Util.stringLength(t,font,fontSize).width;
                 if(tWidth>wrapWidth) {
                     var contents = Z.Util.splitContent(t, tWidth, fontSize, wrapWidth);

@@ -39,13 +39,13 @@
                 'type' : 'button',
                 'content': '进入全屏',
                 'click' : function(){
-                    mapObj.openFullscreen();
+                    mapObj.requestFullScreen();
                 }
             }, {
                 'type' : 'button',
                 'content': '退出全屏',
                 'click' : function(){
-                    mapObj.exitFullscreen();
+                    mapObj.cancelFullScreen();
                 }
             }]
         });
