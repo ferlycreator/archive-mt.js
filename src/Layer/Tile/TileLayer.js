@@ -145,7 +145,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
                     var tileLeft = centerOffset.left + tileSize["width"]*i-holderLeft;
                     var tileTop = centerOffset.top +tileSize["height"]*j-holderTop;
                     var tileUrl = this._getTileUrl(tileIndex["x"],tileIndex["y"],zoomLevel);
-                    var tileId=[tileUrl,tileLeft,tileTop].join('__');
+                    var tileId=[tileIndex["y"], tileIndex["x"], j,i].join('__');
                     tiles.push({
                         'url' : tileUrl,
                         'left': tileLeft,
