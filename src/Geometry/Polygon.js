@@ -54,16 +54,14 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
         }
         var rings = Z.GeoJson.fromGeoJsonCoordinates(coordinates);
         var len = rings.length;
-        this.points = rings[0];
-        this._checkRing(this.points);
+        this.points = this._trimRing(rings[0]);
         if (len > 1) {
             var holes = [];
             for (var i=1; i<len;i++) {
                 if (!rings[i]) {
                     continue;
                 }
-                this._checkRing(rings[i]);
-                holes.push(rings[i]);
+                holes.push(this._trimRing(rings[i]));
             }
             this.holes = holes;
         }
@@ -80,10 +78,14 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
         if (!this.points) {
             return [];
         }
-        if (this.holes) {
-            return [this.points].concat(this.holes);
+        if (Z.Util.isArrayHasData(this.holes)) {
+            var holes = [];
+            for (var i = 0; i < this.holes.length; i++) {
+                holes.push(this._closeRing(this.holes[i]));
+            }
+            return [this._closeRing(this.points)].concat(holes);
         }
-        return [this.points];
+        return [this._closeRing(this.points)];
     },
 
     _projectRings:function() {
@@ -96,23 +98,57 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
         this._onShapeChanged();
     },
 
+    _cleanRing:function(ring) {
+        for (var i = ring.length - 1; i >= 0; i--) {
+            if (!ring[i]) {
+                ring.splice(i,1);
+            }
+        }
+    },
+
     /**
-     * 保证Ring都是合法且闭合的
+     * 检查ring是否合法, 并返回ring是否闭合
+     * @param  {[type]} ring [description]
      */
     _checkRing:function(ring) {
-        if (!Z.Util.isArray(ring)) {
+        this._cleanRing(ring);
+        if (!Z.Util.isArrayHasData(ring)) {
             throw new Error(this.exceptions['INVALID_COORDINATES']);
         }
-        // TODO:
-        if (ring.length < 3) {
-            return;
-        }
         var lastPoint = ring[ring.length-1];
-        if (!lastPoint) {
-            lastPoint = ring[ring.length-2];
-        }
+        var isClose = true;
+        var least = 4;
         if (ring[0].x != lastPoint.x || ring[0].y != lastPoint.y ) {
-            ring.push({x:ring[0].x,y:ring[0].y});
+            least = 3;
+            isClose = false;
+        }
+        if (ring.length < least) {
+            throw new Error(this.exceptions['INVALID_COORDINATES']+', ring length is only '+ring.length);
+        }
+        return isClose;
+    },
+
+    /**
+     * 如果最后一个端点与第一个端点相同, 则去掉最后一个端点
+     */
+    _trimRing:function(ring) {
+        var isClose = this._checkRing(ring);
+        if (isClose) {
+            return ring.slice(0,ring.length-1);
+        } else {
+            return ring;
+        }
+    },
+
+    /**
+     * 如果最后一个端点与第一个端点不同, 则在最后增加与第一个端点相同的点
+     */
+    _closeRing:function(ring) {
+        var isClose = this._checkRing(ring);
+        if (!isClose) {
+            return ring.concat([new Z.Coordinate(ring[0].x,ring[0].y)]);
+        } else {
+            return ring;
         }
     },
 

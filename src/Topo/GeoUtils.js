@@ -76,6 +76,9 @@ Z.GeoUtils={
                 return -1;
             }
             var pts = geo._getPrjPoints();
+            if (geo instanceof Z.Polygon) {
+                pts = pts.concat([pts[0]]);
+            }
             //判断点是否在线段上，设点为Q，线段为P1P2 ，
             //判断点Q在该线段上的依据是：( Q - P1 ) × ( P2 - P1 ) = 0，且 Q 在以 P1，P2为对角顶点的矩形内
             //var pts = polyline.getPath();
