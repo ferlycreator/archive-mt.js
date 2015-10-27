@@ -59,7 +59,9 @@ Z.Geometry.include({
      * @expose
      */
     openInfoWindow:function(coordinate) {
-        this._infoWindow.show(coordinate);
+        if (this._infoWindow) {
+            this._infoWindow.show(coordinate);
+        }
         return this;
     },
 
@@ -72,6 +74,7 @@ Z.Geometry.include({
         if (this._infoWindow) {
             this._infoWindow.hide();
         }
+        return this;
     }
 
 });
