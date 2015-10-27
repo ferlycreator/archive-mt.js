@@ -43,14 +43,6 @@ Z.render.vectorlayer.Canvas.prototype = {
         if (this._resources) {
             return [new Z.Promise(function(resolve, reject) {resolve(me._resources);})];
         }
-        function writeBackResource(url, field, symbol) {
-            //将完整图片地址写回到symbol中, 截图等模块需要
-            if (field === 'polygonPatternFile') {
-                symbol[field] = 'url("'+url+'")';
-            } else {
-                symbol[field] = url;
-            }
-        }
         //20150530 loadResource不加载canvasLayer中的geometry icon资源，故每次绘制canvas都去重新检查并下载资源
         var map = this.getMap();
         var mapExtent = map.getExtent();
@@ -68,23 +60,20 @@ Z.render.vectorlayer.Canvas.prototype = {
             if (Z.Util.isArrayHasData(resourceUrls)) {
                 var symbol = geo.getSymbol();
                 for (var i = resourceUrls.length - 1; i >= 0; i--) {
-                    var geoResource = resourceUrls[i];
                     var promise = new Z.Promise(function(resolve, reject) {
                         var img = new Image();
                         img.onload = function(){
-                            writeBackResource(this.src, geoResource['field'],symbol);
                             me._resources.addResource(this.src,this);
-                            resolve({'url':geoResource,'image':img});
+                            resolve({'url':this.src,'image':img});
                         };
                         img.onabort = function(){
-                            writeBackResource(this.src, geoResource['field'],symbol);
                             me._resources.addResource(this.src,this);
-                            resolve({'url':geoResource,'image':img});
+                            resolve({'url':this.src,'image':img});
                         };
                         img.onerror = function(){
-                            reject({'url':geoResource,'image':img});
+                            resolve({'url':this.src,'image':img});
                         };
-                        img.src = resourceUrls[i]['url'];
+                        img.src = resourceUrls[i];
                     });
                     promises.push(promise);
                 }

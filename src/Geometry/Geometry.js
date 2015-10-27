@@ -50,7 +50,12 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
             this.setCoordinateType(opts['coordinateType']);
             delete opts['coordinateType'];
         }*/
+        var symbol = opts['symbol'];
+        delete opts['symbol'];
         Z.Util.setOptions(this,opts);
+        if (symbol) {
+            this.setSymbol(symbol);
+        }
     },
 
     //调用prepare时,layer已经注册到map上
@@ -159,10 +164,56 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         } else {
             //属性的变量名转化为驼峰风格
            var camelSymbol = Z.Util.convertFieldNameStyle(symbol,'camel');
-            this.options['symbol'] = camelSymbol;
+           this._convertResouceUrl(camelSymbol);
+           this.options['symbol'] = camelSymbol;
         }
         this._onSymbolChanged();
         return this;
+    },
+
+    /**
+     * 资源url从相对路径转为绝对路径
+     * @param  {[type]} symbol [description]
+     * @return {[type]}        [description]
+     */
+    _convertResouceUrl:function(symbol) {
+        function isRel(url) {
+            if (url.indexOf('http://') >= 0 || url.indexOf('https://') >= 0 ) {
+                return false;
+            }
+            return true;
+        }
+        function absolute(base, relative) {
+            var stack = base.split("/"),
+                parts = relative.split("/");
+            stack.pop(); // remove current file name (or empty string)
+                         // (omit if "base" is the current folder without trailing slash)
+            for (var i=0; i<parts.length; i++) {
+                if (parts[i] == ".")
+                    continue;
+                if (parts[i] == "..")
+                    stack.pop();
+                else
+                    stack.push(parts[i]);
+            }
+            return stack.join("/");
+        }
+
+        var icon = symbol['markerFile'];
+        if (icon && isRel(icon)) {
+            symbol['markerFile'] = absolute(location.href,icon);
+        }
+        icon = symbol['shieldFile'];
+        if (icon && isRel(icon)) {
+            symbol['markerFile'] = absolute(location.href,icon);
+        }
+        var fill = symbol['polygonPatternFile'];
+        if (fill) {
+            icon = Z.Util.extractCssUrl(fill);
+            if (isRel(icon)) {
+                symbol['polygonPatternFile'] = 'url("'+absolute(location.href,icon)+'")';
+            }
+        }
     },
 
     /**
@@ -371,15 +422,15 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         var resources = [];
         var icon = symbol['markerFile'];
         if (icon) {
-            resources.push({'url':icon,'field':'markerFile'});
+            resources.push(icon);
         }
         icon = symbol['shieldFile'];
         if (icon) {
-            resources.push({'url':icon,'field':'shieldFile'});
+            resources.push(icon);
         }
         var fill = symbol['polygonPatternFile'];
         if (fill) {
-            resources.push({'url':Z.Util.extractCssUrl(fill),'field':'polygonPatternFile'});
+            resources.push(Z.Util.extractCssUrl(fill));
         }
         return resources;
     },
