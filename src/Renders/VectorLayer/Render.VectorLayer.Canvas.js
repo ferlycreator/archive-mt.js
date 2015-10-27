@@ -46,7 +46,7 @@ Z.render.vectorlayer.Canvas.prototype = {
         function writeBackResource(url, field, symbol) {
             //将完整图片地址写回到symbol中, 截图等模块需要
             if (field === 'polygonPatternFile') {
-                symbol[field] = 'url('+url+')';
+                symbol[field] = 'url("'+url+'")';
             } else {
                 symbol[field] = url;
             }
