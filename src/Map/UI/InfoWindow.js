@@ -8,18 +8,6 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
     includes: [Z.Eventable],
 
     /**
-     * @cfg {Object} exceptionDefs 异常信息定义
-     */
-    exceptionDefs:{
-        'en-US':{
-            'MUST_PROVIDE_OBJECT':'You must provide object which infowindow add to.'
-        },
-        'zh-CN':{
-            'MUST_PROVIDE_OBJECT':'必须提供添加信息框的对象。'
-        }
-    },
-
-    /**
      * @cfg {Object} options 信息窗属性
      */
     options: {
@@ -58,9 +46,6 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
             this._map = target;
         } else { //Geometry的情况
             this._map = target.getMap();
-        }
-        if(!this._map) {
-            throw new Error(this.exceptions['MUST_PROVIDE_OBJECT']);
         }
         this._target = target;
         var tipContainer = this._map._panels.tipContainer;
@@ -175,6 +160,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         var mapWidth = size['width'],
             mapHeight = size['height'];
         if (mapWidth===0||mapHeight===0) {return;}
+        this._target.fire('beforeopeninfowindow');
         //只有当tip不是地图打开的时候，才做tip打开滑动操作
         var absolute = this._map._viewPointToContainerPoint(tipCoord);
         var left=0,top=0,tipDom=this._tipDom;
@@ -191,6 +177,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         if (top!==0 || left!==0) {
             /*this._tipSlidingExecutor = */this._map._animatePan(new Z.Point(left,top));
         }
+        this._target.fire('openinfowindow');
         return this;
     },
 

@@ -193,6 +193,7 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
         if (coordinate['viewPoint']) {
             coordinate = coordinate['viewPoint'];
         }
+        this._target.fire('beforeopenmenu');
         var pxCoord = this._getShowPosition(coordinate);
         this._menuDom.innerHTML='';
         this._menuDom.style.top = pxCoord.top+'px';
