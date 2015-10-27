@@ -109,7 +109,7 @@ Z.Circle=Z.Polygon.extend({
     },
 
 
-    _exportGeoJson:function(opts) {
+    _exportGeoJson:function() {
         var center = this.getCoordinates();
         return {
             'type':'Circle',

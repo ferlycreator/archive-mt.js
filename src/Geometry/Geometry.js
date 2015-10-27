@@ -512,7 +512,16 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
     },
 
-    _exportGeoJson:function(opts) {
+    toGeometryJson:function(opts) {
+        var gJson = this._exportGeoJson();
+        if (!opts || opts['crs']) {
+            var coordinateType = this.getCoordinateType();
+            Z.GeoJson.crsCoordinateType(gJson, coordinateType);
+        }
+        return gJson;
+    },
+
+    _exportGeoJson:function() {
         var points = this.getCoordinates();
         var coordinates = Z.GeoJson.toGeoJsonCoordinates(points);
         return {
