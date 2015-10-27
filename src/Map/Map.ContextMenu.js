@@ -5,15 +5,29 @@ Z.Map.include({
     * @member maptalks.Map
     * @expose
     */
-    setContextMenu: function(menuOption) {
+    setMenu: function(menuOption) {
         this._menu = new Z.Menu(menuOption);
         this._menu.addTo(this);
-        this.on('contextmenu', this._beforeOpenContextMenu, this);
+        this.on('_contextmenu', this._defaultOpenMenu, this);
         return this;
     },
 
+    /**
+     * 应用没有注册contextmenu事件时, 默认在contextmenu事件时打开右键菜单
+     * 如果注册过contextmenu事件, 则不做任何操作
+     * @param  {[type]} param [description]
+     * @return {[type]}       [description]
+     */
+    _defaultOpenMenu:function(param) {
+        if (this.hasListeners('contextmenu')) {
+            return;
+        } else {
+            this.openMenu(param);
+        }
+    },
+
     //菜单打开前
-    _beforeOpenContextMenu: function(event) {
+    /*_beforeOpenContextMenu: function(event) {
         var pixel = Z.DomUtil.getEventContainerPoint(event, this._containerDOM);
         var coordinate = this.containerPointToCoordinate(pixel);
         var position = this.coordinateToViewPoint(coordinate);
@@ -28,7 +42,7 @@ Z.Map.include({
             this.openMenu();
         }
         return this;
-    },
+    },*/
 
     /**
     * 打开Map右键菜单
@@ -49,11 +63,19 @@ Z.Map.include({
     * @member maptalks.Map
     * @expose
     */
-    setMenuItem: function(items) {
+    setMenuItems: function(items) {
         if (this._menu) {
             this._menu.setItems(items);
         }
         return this;
+    },
+
+    getMenuItems:function() {
+        if (this._menu) {
+            return this._menu.getItems();
+        } else {
+            return null;
+        }
     },
 
     /**

@@ -28,7 +28,7 @@ Z.Eventable = {
             }
             for (var i=0, len=handlerChain.length;i<len;i++) {
                 if (handler == handlerChain[i].handler) {
-                    if ((context && handlerChain[i].context == context) || (Z.Util.isNil(context) && Z.Util.isNil(handlerChain[i].context))) {
+                    if ((context && handlerChain[i].context === context) || (Z.Util.isNil(context) && Z.Util.isNil(handlerChain[i].context))) {
                         return this;
                     }
                 }
@@ -92,10 +92,10 @@ Z.Eventable = {
      * @return {Boolean} true,绑定了事件
      */
     hasListeners:function(eventType) {
-        if (!this._eventMap || !Z.Util.isString(eventType)) {return false;}
+        if (!this._eventMap || !Z.Util.isString(eventType)) {return 0;}
         var handlerChain =  this._eventMap[eventType.toLowerCase()];
-        if (!handlerChain) {return false;}
-        return handlerChain && handlerChain.length >0;
+        if (!handlerChain) {return 0;}
+        return handlerChain.length;
     },
 
     _executeListeners:function(eventType, param) {
