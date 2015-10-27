@@ -74,17 +74,19 @@ Z.Handler.Drag = Z.Handler.extend({
                 'mousePos':new Z.Point(this.startPos.left, this.startPos.top)
             });
             this.moved = true;
+        } else {
+             /**
+             * 触发dragging事件
+             * @event dragging
+             * @return {Object} mousePos: {'left': 0px, 'top': 0px}
+             */
+            this.fire('dragging',{
+                'mousePos': new Z.Point(event.clientX, event.clientY)
+            });
         }
         // this.moving = true;
 
-        /**
-         * 触发dragging事件
-         * @event dragging
-         * @return {Object} mousePos: {'left': 0px, 'top': 0px}
-         */
-        this.fire('dragging',{
-            'mousePos': new Z.Point(event.clientX, event.clientY)
-        });
+
     },
 
     onMouseUp:function(event){
