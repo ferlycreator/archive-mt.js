@@ -122,14 +122,7 @@ Z['Control'] = Z.Control = Z.Class.extend({
      * @expose
      */
     setPosition: function (position) {
-//        var map = this._map;
-//        if (map) {
-//            map.removeControl(this);
-//        }
-//        this.options['position'] = position;
-//        if (map) {
-//            map.addControl(this);
-//        }
+        this.options['position'] = position;
         this._updateContainerPosition();
         return this;
     },
@@ -144,6 +137,20 @@ Z['Control'] = Z.Control = Z.Class.extend({
     },
 
     /**
+     *显示label属性面板
+     */
+    show: function() {
+        this._container.parentNode.style.display="";
+    },
+
+    /**
+     *隐藏label属性面板
+     */
+    hide: function() {
+        this._container.parentNode.style.display="none";
+    },
+
+    /**
      * 删除组件
      * @expose
      */
@@ -151,7 +158,7 @@ Z['Control'] = Z.Control = Z.Class.extend({
         if (!this._map) {
             return this;
         }
-        Z.DomUtil.removeDomNode(this._container.parentNode);
+        Z.DomUtil.removeDomNode(this._container);
         if (this._onRemove) {
             this._onRemove(this._map);
         }

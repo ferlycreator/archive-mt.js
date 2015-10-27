@@ -11,9 +11,8 @@
 </head>
 <body scroll="no" onload="initMap();">
 <div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
-<div id="LABEL-PROPERTY-PANEL"></div>
 <script type="text/javascript" >
-    var mapObj;
+    var mapObj,layer;
     function initMap(){
         //创建地图对象
         mapObj = new maptalks.Map("mapObj",{
@@ -28,12 +27,40 @@
             subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
         }));
         //创建图层
-        var layer = new maptalks.VectorLayer('layer');
+        layer = new maptalks.VectorLayer('layer');
         //将图层添加到地图对象
         mapObj.addLayer(layer);
-        //创建点的坐标对象
-        var coordinate = new maptalks.Coordinate(121.489935,31.24432);
-        //将点添加到Layer
+
+        //工具
+        var toolbar = new maptalks.Toolbar({
+            position : { //工具条放置位置
+                top: '10',
+                right: '10'
+            },
+            vertical : false,
+            //工具项
+            items: [{
+                type : 'button',
+                icon: 'font_grey.png',
+                click : function(param){
+                    var target = param.target;
+                    var src = target.src;
+                    if(!src) return;
+                    if(src.indexOf('font_grey.png')>=0) {
+                        target.src = 'font.png';
+                        mapObj.on('click', markerLabel);
+                    } else {
+                        target.src = 'font_grey.png';
+                        mapObj.off('click', markerLabel);
+                    }
+                }
+            }]
+        });
+        mapObj.addControl(toolbar);
+    }
+
+    function markerLabel(param) {
+        var coordinate = param.coordinate;
         //设置label属性
         var options = {
             'symbol': {
@@ -59,20 +86,16 @@
             'verticalAlignment': 'top',//top middle bottom
             'dx': 0,
             'dy': 0,
-            'content': '上海大厦\n123123',
+            'content': '文本标签',
             'target':coordinate
         };
         //创建label
         var label = new maptalks.Label(options).addTo(layer);
-
+        //label属性面板
         var labelPropertyPanel = new LabelPropertyPanel();
-        label.on('mouseover',function(){
-            var el = document.getElementById('LABEL-PROPERTY-PANEL');
-            labelPropertyPanel.addTo(label,el);
-        });
 
-        label.on('mouseout',function(){
-            // labelPropertyPanel.hide();
+        label.on('click', function(){
+            labelPropertyPanel.addTo(label);
         });
     }
 </script>

@@ -11,28 +11,63 @@ LabelPropertyPanel.prototype = {
         this._height = 38;
         this._label = label;
         this._map = this._label._map;
-        this._panel = this._createPanel();
-        this._registEvent();
+        this._panel = this._getPanelByKey(label);
+        if(!this._panel) {
+            this._panel = this._createPanel();
+            this._registEvent();
+            this._putPanelInMap(label, this._panel);
+        }
+    },
+
+    /**
+     *显示label属性面板
+     */
+    show: function() {
+        this._panel.show();
     },
 
     /**
      *隐藏label属性面板
      */
     hide: function() {
-        this._el.style.display='none';
+        this._panel.hide();
     },
 
     _registEvent: function() {
         var me = this;
-        this._map.on('moving zoomend', function(){
+        this._map.on('zoomend', function(){
             var viewPoint = me._map.coordinateToViewPoint(me._label._center)
                             .substract({left:me._width/2,top:-5});
             me._panel.setPosition(viewPoint);
         });
+
+        this._map.on('moving', function(){
+            var mapOffset = me._map.offsetPlatform();
+            var viewPoint = me._map.coordinateToViewPoint(me._label._center)
+                            .substract({left:me._width/2,top:-5})
+                            .add(mapOffset);
+            me._panel.setPosition(viewPoint);
+        });
+
+        this._map.on('movestart', function(){
+            me.hide();
+        });
+
+        this._map.on('moveend', function(){
+            me.show();
+        });
+
         this._label.on('positionchanged', function(param){
             var viewPoint = me._map.coordinateToViewPoint(me._label._center)
-                .substract({left:me._width/2,top:-5});
+                            .substract({left:me._width/2,top:-5});
             me._panel.setPosition(viewPoint);
+        });
+
+        this._label.on('dragstart', function(param){
+            me.hide();
+        });
+        this._label.on('dragend', function(param){
+            me.show();
         });
     },
 
@@ -54,6 +89,15 @@ LabelPropertyPanel.prototype = {
             vertical : false,
             //工具项
             items: [{
+                type : 'button',
+                icon: 'trash.png',
+                click : function(){
+                    if(confirm('您确认要删除该文本标签！')){
+                        me._label.remove();
+                        me._panel.remove();
+                    }
+                }
+            }, {
                 type : 'button',
                 icon : 'paint.png',
                 html: true,
@@ -114,8 +158,7 @@ LabelPropertyPanel.prototype = {
                 type : 'button',
                 icon: 'close.png',
                 click : function(){
-                    // me._label.remove();
-                    me._panel.remove();
+                    me._panel.hide();
                 }
             }]
         });
@@ -211,7 +254,7 @@ LabelPropertyPanel.prototype = {
             var newSize = target.value;
 
             var symbol = me._label.getSymbol();
-            symbol['textSize'] = newSize;
+            symbol['textSize'] = parseInt(newSize);
             me._label.setSymbol(symbol);
         });
         return textSizeDom;
@@ -222,6 +265,17 @@ LabelPropertyPanel.prototype = {
         colorDom.style.cssText = 'width:3px;height:15px;background-color:'+color+';border:1px solid #333';
         colorDom.readOnly = true;
         return colorDom;
-    }
+    },
 
+    _putPanelInMap: function(key, value) {
+        if(!this._panelMap) this._panelMap = {};
+        this._panelMap[key] = value;
+    },
+
+    _getPanelByKey: function(key) {
+        if(this._panelMap) {
+            return this._panelMap[key];
+        }
+        return false;
+    }
 };

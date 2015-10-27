@@ -98,10 +98,8 @@ Z.Label = Z.Class.extend({
         this.options.symbol = symbol;
         this.textStyle = this._translateTextStyle();
         this.strokeAndFill = this._translateStrokeAndFill();
-//        this._textMarker.setSymbol(this.textStyle);
-//        this._box.setSymbol(this.strokeAndFill);
-        this._refreshLabel();
-        this._layer.addGeometry(this._label.getGeometries());
+        this.labelSize = this._getLabelSize();
+        this._setLabelSymbol();
     },
 
     /**
@@ -273,9 +271,12 @@ Z.Label = Z.Class.extend({
     _createLabel: function(center) {
         this._textMarker = new Z.Marker(center);
         this._box = new Z.Marker(center);
+        this._setLabelSymbol();
+        return new Z.MultiPoint([this._box,this._textMarker]);
+    },
 
+    _setLabelSymbol: function() {
         var dx=this.options['dx'],dy=this.options['dy'];
-        this._textMarker.setSymbol(this.textStyle);
 
         var width = this.labelSize['width'];
         var height = this.labelSize['height'];
@@ -301,7 +302,7 @@ Z.Label = Z.Class.extend({
         this.strokeAndFill['markerWidth'] = width;
         this.strokeAndFill['markerHeight'] = height;
         this._box.setSymbol(this.strokeAndFill);
-        return new Z.GeometryCollection([this._box,this._textMarker]);
+        this._textMarker.setSymbol(this.textStyle);
     },
 
     _getLabelSize: function() {
