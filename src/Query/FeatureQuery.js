@@ -185,11 +185,12 @@ Z.FeatureQuery.prototype={
         }
         if (queryFilter['spatialFilter']) {
             var spatialFilter = queryFilter['spatialFilter'];
-            if (spatialFilter.getGeometry()) {
-                if (queryFilter['coordinateType']) {
-                    spatialFilter.getGeometry().setCoordinateType(queryFilter['coordinateType']);
-                }
-                ret += ('&spatialFilter='+encodeURIComponent(JSON.stringify(queryFilter['spatialFilter'].toJson())));
+            if (spatialFilter['geometry']) {
+                var paramFilter = {
+                    'geometry' : spatialFilter['geometry'].toGeometryJson(),
+                    'relation' : spatialFilter['relation']
+                };
+                ret += ('&spatialFilter='+encodeURIComponent(JSON.stringify(paramFilter)));
             }
 
         }
