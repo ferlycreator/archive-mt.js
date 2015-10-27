@@ -29,10 +29,6 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
         if (!img) {
             return;
         }
-        //将完整图片地址写回到symbol中, 截图等模块需要
-        if (img['src']) {
-            this.symbol['markerFile'] = img['src'];
-        }
 
         var width = style['markerWidth'];
         var height = style['markerHeight'];

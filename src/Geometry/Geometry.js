@@ -368,20 +368,20 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (!symbol) {
             return null;
         }
-        var result = [];
+        var resources = [];
         var icon = symbol['markerFile'];
         if (icon) {
-            result.push(icon);
+            resources.push({'url':icon,'field':'markerFile'});
         }
         icon = symbol['shieldFile'];
         if (icon) {
-            result.push(icon);
+            resources.push({'url':icon,'field':'shieldFile'});
         }
         var fill = symbol['polygonPatternFile'];
         if (fill) {
-            result.push(Z.Util.extractCssUrl(fill));
+            resources.push({'url':Z.Util.extractCssUrl(fill),'field':'polygonPatternFile'});
         }
-        return result;
+        return resources;
     },
 
     _getPainter:function() {
