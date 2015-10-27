@@ -42,11 +42,23 @@ Z.SpatialFilter.prototype={
      * @property {Number} RELATION_WITHIN 在内部
      */
     'RELATION_WITHIN' : 5,
+
+    /**
+     * @static
+     * @property {Number} RELATION_INTERECTNOTCONTAIN 相交但不包含关系即within 或 overlap
+     */
+    'RELATION_INTERECTNOTCONTAIN' : 100,
     /**
      * @static
      * @property {Number} RELATION_CONTAINCENTER 包含中心点
      */
-    'RELATION_CONTAINCENTER' : 7,
+    'RELATION_CONTAINCENTER' : 101,
+
+    /**
+     * @static
+     * @property {Number} RELATION_CENTERWITHIN 中心点被包含
+     */
+    'RELATION_CENTERWITHIN' : 102,
 
     /**
      * 获取SpatialFilter中的geometry
