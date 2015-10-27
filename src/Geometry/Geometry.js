@@ -164,7 +164,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         } else {
             //属性的变量名转化为驼峰风格
            var camelSymbol = Z.Util.convertFieldNameStyle(symbol,'camel');
-           this._convertResouceUrl(camelSymbol);
+           this._convertResourceUrl(camelSymbol);
            this.options['symbol'] = camelSymbol;
         }
         this._onSymbolChanged();
@@ -176,7 +176,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @param  {[type]} symbol [description]
      * @return {[type]}        [description]
      */
-    _convertResouceUrl:function(symbol) {
+    _convertResourceUrl:function(symbol) {
         function isRel(url) {
             if (url.indexOf('http://') >= 0 || url.indexOf('https://') >= 0 ) {
                 return false;
