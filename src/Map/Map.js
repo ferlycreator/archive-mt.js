@@ -710,14 +710,6 @@ Z['Map']=Z.Map=Z.Class.extend({
 
     _onResize:function(resizeOffset) {
         this._offsetCenterByPixel(resizeOffset);
-        // this._refreshSVGPaper();
-        /*function resizeLayer(layer) {
-            if (layer) {
-                layer._onResize();
-            }
-        }
-        if (this._baseTileLayer) {this._baseTileLayer._onResize();}
-        this._eachLayer(resizeLayer,this.getAllLayers());*/
         /**
          * 触发map的resize事件
          * @member maptalks.Map
