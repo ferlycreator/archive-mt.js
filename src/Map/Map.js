@@ -588,7 +588,7 @@ Z['Map']=Z.Map=Z.Class.extend({
             }
             for (var j=0, jlen=layerList.length;j<jlen;j++) {
                 if (layerList[j]._setZIndex) {
-                    layerList[j]._setZIndex(layerList[j].baseZIndex+j);
+                    layerList[j]._setZIndex(j);
                 }
             }
         }
