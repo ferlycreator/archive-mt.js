@@ -35,44 +35,35 @@ LabelPropertyPanel.prototype = {
 
     _registEvent: function() {
         var me = this;
-        this._map.on('zoomend', function(){
-            var viewPoint = me._map.coordinateToViewPoint(me._label._center)
-                            .substract({left:me._width/2,top:-5});
-            me._panel.setPosition(viewPoint);
-        });
+        this._map.on('moving zoomend', this._setPanelPosition, this)
+                 .on('movestart', this.hide, this)
+                 .on('moveend', this.show, this);
 
-        this._map.on('moving', function(){
-            var mapOffset = me._map.offsetPlatform();
-            var viewPoint = me._map.coordinateToViewPoint(me._label._center)
-                            .substract({left:me._width/2,top:-5})
+        this._label.on('positionchanged', this._setPanelPosition, this)
+                   .on('dragstart', this.hide, this)
+                   .on('dragend', this.show, this);
+    },
+
+    _removeEvent: function() {
+        var me = this;
+        this._map.off('moving zoomend', this._setPanelPosition, this)
+                 .off('movestart', this.hide, this)
+                 .off('moveend', this.show, this);
+
+        this._label.off('positionchanged', this._setPanelPosition, this)
+                    .off('dragstart', this.hide, this)
+                    .off('dragend', this.show, this);
+    },
+
+    _setPanelPosition: function() {
+        var mapOffset = this._map.offsetPlatform();
+        var viewPoint = this._map.coordinateToViewPoint(this._label._center)
+                            .substract({left:this._width/2,top:-5})
                             .add(mapOffset);
-            me._panel.setPosition(viewPoint);
-        });
-
-        this._map.on('movestart', function(){
-            me.hide();
-        });
-
-        this._map.on('moveend', function(){
-            me.show();
-        });
-
-        this._label.on('positionchanged', function(param){
-            var viewPoint = me._map.coordinateToViewPoint(me._label._center)
-                            .substract({left:me._width/2,top:-5});
-            me._panel.setPosition(viewPoint);
-        });
-
-        this._label.on('dragstart', function(param){
-            me.hide();
-        });
-        this._label.on('dragend', function(param){
-            me.show();
-        });
+        this._panel.setPosition(viewPoint);
     },
 
     _createPanel: function() {
-        // var labelHeight = this._label.strokeAndFill['markerHeight'];
         var viewPoint = this._map.coordinateToViewPoint(this._label._center).substract({left:this._width/2,top:-5});
         //背景颜色设置部分
         var bgDom = this._createBgDom();
@@ -93,6 +84,7 @@ LabelPropertyPanel.prototype = {
                 icon: 'trash.png',
                 click : function(){
                     if(confirm('您确认要删除该文本标签！')){
+                        me._removeEvent();
                         me._label.remove();
                         me._panel.remove();
                     }
@@ -101,6 +93,7 @@ LabelPropertyPanel.prototype = {
                 type : 'button',
                 icon : 'paint.png',
                 html: true,
+                trigger: 'click',
                 content: bgDom,
                 children : this._colorItems(function(param){
                     var target = param.target;
@@ -114,6 +107,7 @@ LabelPropertyPanel.prototype = {
                 type : 'button',
                 icon: 'stroke.png',
                 html: true,
+                trigger: 'click',
                 content: borderDom,
                 children : this._colorItems(function(param){
                     var target = param.target;
@@ -128,6 +122,7 @@ LabelPropertyPanel.prototype = {
                 type : 'button',
                 icon: 'font.png',
                 html: true,
+                trigger: 'click',
                 content: textColorDom,
                 children : this._colorItems(function(param){
                     var target = param.target;

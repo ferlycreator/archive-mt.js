@@ -74,12 +74,7 @@ Z.Label = Z.Class.extend({
     },
 
     _refreshLabel: function() {
-        this.textStyle = this._translateTextStyle();
-        this.strokeAndFill = this._translateStrokeAndFill();
-        this.textContent = this.options['content'];
-        var style = this.options.symbol;
-        this.textSize = Z.Util.stringLength(this.textContent, style['textFaceName'],style['textSize']);
-        this.labelSize = this._getLabelSize();
+        this._setProp();
         this._initLabel(this._target);
         return this;
     },
@@ -96,9 +91,7 @@ Z.Label = Z.Class.extend({
      */
     setSymbol: function(symbol) {
         this.options.symbol = symbol;
-        this.textStyle = this._translateTextStyle();
-        this.strokeAndFill = this._translateStrokeAndFill();
-        this.labelSize = this._getLabelSize();
+        this._setProp();
         this._setLabelSymbol();
     },
 
@@ -114,9 +107,19 @@ Z.Label = Z.Class.extend({
      */
     setContent: function(content) {
         this.options['content'] = content;
-        this._refreshLabel();
-        this._layer.addGeometry(this._label.getGeometries());
+        this._setProp();
+        this._setLabelSymbol();
     },
+
+    _setProp: function() {
+        this.textStyle = this._translateTextStyle();
+        this.strokeAndFill = this._translateStrokeAndFill();
+        this.textContent = this.options['content'];
+        this.labelSize = this._getLabelSize();
+        var style = this.options.symbol;
+        this.textSize = Z.Util.stringLength(this.textContent, style['textFaceName'],style['textSize']);
+    },
+
 
     /**
      * 设置属性
@@ -162,6 +165,9 @@ Z.Label = Z.Class.extend({
     */
     remove: function() {
         this._label.remove();
+        if(this._linker) {
+            this._linker.remove();
+        }
         /**
          * 触发label的remove事件
          * @event remove
@@ -254,8 +260,8 @@ Z.Label = Z.Class.extend({
                     'lineOpacity' : 1
                 }
             };
-            var linker = new Z.Linker(linkerOptions);
-            linker.addTo(this._map);
+            this._linker = new Z.Linker(linkerOptions);
+            this._linker.addTo(this._map);
         }
         return this;
     },

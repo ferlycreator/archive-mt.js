@@ -88,7 +88,7 @@ Z.Linker = Z.Class.extend({
         if (!this._map) {
             return this;
         }
-        if(!this._linker) {
+        if(this._linker) {
             this._linker.remove();
         }
         this._map.off('zoomend resize moving', this._changeLinkPath, this);
