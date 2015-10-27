@@ -184,6 +184,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
             return true;
         }
         function absolute(base, relative) {
+            //FIXME 需要处理relative以'/'开头的情况
             var stack = base.split("/"),
                 parts = relative.split("/");
             stack.pop(); // remove current file name (or empty string)
@@ -267,8 +268,8 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     getProperties:function() {
-        if (!this.properties) {return null;}
-        return this.properties;
+        if (!this._properties) {return null;}
+        return this._properties;
     },
 
     /**
@@ -277,7 +278,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     setProperties:function(properties) {
-        this.properties = properties;
+        this._properties = properties;
         //TODO 抛事件
         return this;
     },

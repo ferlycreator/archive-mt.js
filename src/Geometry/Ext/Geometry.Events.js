@@ -12,8 +12,14 @@ Z.Geometry.include({
         var originalEvent = event;
         var eventType = originalEvent.type;
         var eventFired = eventType;
+        //TODO 未来需要加入touch事件
+        if (eventFired !== 'mousedown' && eventFired !== 'mouseup') {
+            //只有mousedown和mouseup事件允许继续传递, 以让map能够拖动
+            Z.DomUtil.stopPropagation(originalEvent);
+        }
         //事件改名
         if (eventFired === 'contextmenu') {
+            Z.DomUtil.preventDefault(originalEvent);
             eventFired = 'rightclick';
         } else if (eventFired === 'click') {
             var button = originalEvent.button;
@@ -35,7 +41,12 @@ Z.Geometry.include({
         var containerPoint = Z.DomUtil.getEventContainerPoint(event, map._containerDOM);
         var coordinate = map._untransform(containerPoint);
         //统一的参数, target是geometry引用, pixel是事件的屏幕坐标, coordinate是事件的经纬度坐标
-        return { 'containerPoint':containerPoint, 'coordinate':coordinate,'domEvent':event};
+        return {
+            'containerPoint':containerPoint,
+            'coordinate':coordinate,
+            'viewPoint' : map._containerPointToViewPoint(containerPoint),
+            'domEvent':event
+        };
     },
 
     _onMouseOver: function(event) {
