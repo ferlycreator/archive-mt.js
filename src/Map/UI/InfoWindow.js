@@ -40,6 +40,11 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         if(!options) {
             options = {};
         }
+        if(Z.Util.isNil(options['style'])||options['style'] === 'default') {
+            options['style'] = '';
+        } else {
+            options['style'] = '-' + options['style'];
+        }
         Z.Util.setOptions(this,options);
         return this;
     },
@@ -140,7 +145,11 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
      * @expose
      */
     hide:function() {
-        this._visible = false;
+        this._tipDom._vis = false;
+        this._hideTipDom();
+    },
+
+    _hideTipDom:function() {
         this._tipDom.style.display = 'none';
     },
 
@@ -150,7 +159,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
      * @expose
      */
     isOpen:function() {
-        return this._visible;
+        return (this._tipDom._vis);
     },
 
     /**
@@ -159,6 +168,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
      * @expose
      */
     show: function(coordinate) {
+        this._tipDom._vis = true;
         this._fillInfoWindow();
         var tipCoord = this._offsetTipDom(coordinate);
         var size = this._map.getSize();
@@ -208,8 +218,8 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
     _createTipDom: function(){
         var tipContainer = Z.DomUtil.createEl('div');
         tipContainer.style.display = 'none';
-        tipContainer.style.width = this.options.width+'px';
-        var suffix = this.options.style;
+        tipContainer.style.width = this.options['width']+'px';
+        var suffix = this.options['style'];
         Z.DomUtil.setClass(tipContainer, 'maptalks-infowindow');
 
         var tipBoxDom = this._createTipBoxDom();
@@ -297,13 +307,15 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
     },
 
     _onZoomStart:function() {
-        this.hide();
+        if (this.isOpen()) {
+            this._hideTipDom();
+        }
     },
 
     _onZoomEnd:function() {
-        if (this._visible) {
-            this._tipDom.style.display='';
+        if (this.isOpen()) {
             this._offsetTipDom();
+            this._tipDom.style.display='';
         }
     },
 
