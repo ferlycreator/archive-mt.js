@@ -45,7 +45,7 @@ Z['Button'] = Z.Button = Z.Class.extend({
         var _buttonDom = Z.DomUtil.createEl('button');
         Z.DomUtil.on(_buttonDom, 'click dblclick contextmenu', Z.DomUtil.stopPropagation);
         Z.DomUtil.addClass(_buttonDom, 'maptalks-control-button');
-        _buttonDom.innerHTML = this._createIconDom(options);
+        _buttonDom.appendChild(this._createIconDom(options));
         if(options['click']) {
             Z.DomUtil.on(_buttonDom, 'click', options['click'], this);
         }
@@ -128,7 +128,7 @@ Z['Button'] = Z.Button = Z.Class.extend({
         }
         Z.DomUtil.on(_menuDom, 'click dblclick contextmenu', Z.DomUtil.stopPropagation);
         Z.DomUtil.addClass(_menuDom, 'maptalks-control-button');
-        _menuDom.innerHTML = this._createIconDom(options);
+        _menuDom.appendChild(this._createIconDom(options));
         if(options['click']) {
             Z.DomUtil.on(_menuDom, 'click', options['click'], this);
         }
@@ -153,19 +153,35 @@ Z['Button'] = Z.Button = Z.Class.extend({
     },
 
     _createIconDom : function(options) {
+        var _spanDom = Z.DomUtil.createEl('span');
         var icon = options['icon'];
         var content = options['content'];
         var html = options['html'];
         if(icon) {
-            var imgDom = '<img src='+icon+' border=0 />';
-            if(html) {
-                imgDom = '<img src='+icon+' border=0 />&nbsp;'+content;
-            } else {
-                imgDom = '<img src='+icon+' border=0 alt='+content+' />&nbsp;'+content;
+            var _imgDom = Z.DomUtil.createEl('img');
+            _imgDom.src = icon;
+            _imgDom.border =0;
+            _spanDom.appendChild(_imgDom);
+            if(content) {
+                if(html) {
+                    if(typeof content === 'string') {
+                        _spanDom.innerText = content;
+                    } else {
+                        _spanDom.appendChild(content);
+                    }
+                } else {
+                    _spanDom.innerText = content;
+                }
             }
-            return  imgDom;
+            return _spanDom;
         } else {
-           return content;
+            var _contentSpanDom = Z.DomUtil.createEl('span');
+            if(typeof content === 'string') {
+                _spanDom.innerText = content;
+            } else {
+                _spanDom.appendChild(content);
+            }
+           return _spanDom;
         }
     },
 

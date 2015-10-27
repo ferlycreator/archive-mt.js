@@ -122,14 +122,14 @@ Z['Control'] = Z.Control = Z.Class.extend({
      * @expose
      */
     setPosition: function (position) {
-        var map = this._map;
-        if (map) {
-            map.removeControl(this);
-        }
-        this.options['position'] = position;
-        if (map) {
-            map.addControl(this);
-        }
+//        var map = this._map;
+//        if (map) {
+//            map.removeControl(this);
+//        }
+//        this.options['position'] = position;
+//        if (map) {
+//            map.addControl(this);
+//        }
         this._updateContainerPosition();
         return this;
     },
@@ -151,7 +151,7 @@ Z['Control'] = Z.Control = Z.Class.extend({
         if (!this._map) {
             return this;
         }
-        Z.DomUtil.removeDomNode(this._container);
+        Z.DomUtil.removeDomNode(this._container.parentNode);
         if (this._onRemove) {
             this._onRemove(this._map);
         }

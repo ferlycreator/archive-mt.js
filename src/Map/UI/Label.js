@@ -202,9 +202,22 @@ Z.Label = Z.Class.extend({
         }
         if(this._label) {
             var me = this;
-            this._label.on('mousedown mouseover mouseout click dblclick contextmenu', function(param){
+            this._label.on('mousedown mouseover mouseout click dblclick contextmenu dragstart dragend positionchanged', function(param){
                 me.fire(param.type, param);
             });
+
+            this._label.on('positionchanged', function(param){
+                me._changeLabelCenter();
+            });
+        }
+    },
+
+    _changeLabelCenter: function() {
+        var geometries = this._label.getGeometries();
+        for(var i=0,len=geometries.length;i<len;i++) {
+            var geometry = geometries[i];
+            this._center = geometry.getCenter();
+            break;
         }
     },
 

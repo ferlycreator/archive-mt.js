@@ -310,15 +310,15 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         }
         var _map = this._getMap();
         var me = this;
-        this.on('mousedown', function(){
-            this._getMap().disableDrag();
+        this.on('mousedown', function(param){
+            me._getMap().disableDrag();
             var geometries = me.getGeometries();
             for (var i=0,len=geometries.length;i<len;i++) {
                 geometries[i].startDrag(false);
             }
         });
-        this.on('mouseup', function(){
-            this._getMap().enableDrag();
+        this.on('mouseup', function(param){
+            me._getMap().enableDrag();
             var geometries = me.getGeometries();
             for (var i=0,len=geometries.length;i<len;i++) {
                 geometries[i].endDrag();
