@@ -291,8 +291,11 @@ Z.Menu.Handler={
     */
     setMenu: function(options) {
         this._menuOptions = options;
-        this._unbindMenu();
-        this.on('contextmenu', this._defaultOpenMenu, this);
+        if (this._menu) {
+            this._menu.setOptions(options);
+        } else {
+            this.on('contextmenu', this._defaultOpenMenu, this);
+        }
         return this;
     },
 
