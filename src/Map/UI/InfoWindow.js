@@ -127,7 +127,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
      * @expose
      */
     isOpen:function() {
-        return (this._tipDom._vis && this._tipDom._target === this);
+        return (this._tipDom && this._tipDom._vis && this._tipDom._target === this);
     },
 
     /**

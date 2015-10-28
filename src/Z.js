@@ -8,6 +8,8 @@ Z.VERSION='2.0.0-dev';
 
 Z.DEBUG=false;
 
+Z.TESTMODE=false;
+
 Z.loadModule=function(module,callback,context) {
     var suffix = '.min.js';
     if (Z.DEBUG) {

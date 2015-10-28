@@ -38,6 +38,9 @@ Z.Painter = Z.Class.extend({
     paint:function() {
         this._painted = true;
         var contexts = this.geometry.getLayer()._getRender().getPaintContext();
+        if (!contexts) {
+            return;
+        }
         for (var i = this.symbolizers.length - 1; i >= 0; i--) {
             this.symbolizers[i].symbolize.apply(this.symbolizers[i], contexts);
         }
@@ -107,7 +110,10 @@ Z.Painter = Z.Class.extend({
 
     show:function(){
         if (!this._painted) {
-            this.paint();
+            var layer = this.geometry.getLayer();
+            if (!layer.isCanvasRender()) {
+                this.paint();
+            }
         } else {
             this._eachSymbolizer(function(symbolizer) {
                 symbolizer.show();

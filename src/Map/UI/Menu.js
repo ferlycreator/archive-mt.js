@@ -158,7 +158,7 @@ Z.Menu = Z.Class.extend({
      *  @expose
      */
     isOpen: function() {
-        return (this._menuDom.style.display!='none');
+        return (this._menuDom && this._menuDom.style.display!='none');
     },
 
     /**
@@ -267,7 +267,7 @@ Z.Menu = Z.Class.extend({
             if (coordinate['containerPoint']) {
                 coordinate = coordinate['containerPoint'];
             }
-            if(coordinate instanceof Z.Coordinate) {
+            if(Z.Util.isCoordinate(coordinate)) {
                 position = this._map.coordinateToViewPoint(coordinate);
             } else {
                 position = this._map._containerPointToViewPoint(coordinate);

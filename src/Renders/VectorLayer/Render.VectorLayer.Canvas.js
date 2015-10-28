@@ -1,5 +1,5 @@
 Z.render.vectorlayer.Canvas = function(layer, options) {
-    this.layer = layer;
+    this._layer = layer;
     this._mapRender = layer.getMap()._getRender();
     this._registerEvents();
 };
@@ -9,14 +9,14 @@ Z.render.vectorlayer.Canvas.prototype = {
 
     _registerEvents:function() {
         this.getMap().on('_zoomend',function() {
-            this.layer._eachGeometry(function(geo) {
+            this._layer._eachGeometry(function(geo) {
                 geo._onZoomEnd();
             });
         },this);
     },
 
     getMap: function() {
-        return this.layer.getMap();
+        return this._layer.getMap();
     },
 
     /**
@@ -46,7 +46,7 @@ Z.render.vectorlayer.Canvas.prototype = {
         var mapExtent = map.getExtent();
         var promises = [];
         this._resources = new Z.render.vectorlayer.Canvas.Resources();
-        this.layer._eachGeometry(function(geo) {
+        this._layer._eachGeometry(function(geo) {
             if (!geo || !geo.isVisible()) {
                 return;
             }
@@ -106,7 +106,7 @@ Z.render.vectorlayer.Canvas.prototype = {
             map.coordinateToViewPoint(new Z.Coordinate(extent['xmin'],extent['ymin'])),
             map.coordinateToViewPoint(new Z.Coordinate(extent['xmax'],extent['ymax']))
             );
-        this.layer._eachGeometry(function(geo) {
+        this._layer._eachGeometry(function(geo) {
             //geo的map可能为null,因为绘制为延时方法
             if (!_context || !geo || !geo.isVisible() || !geo.getMap() || !geo.getLayer() || (!geo.getLayer().isCanvasRender())) {
                 return;
@@ -120,6 +120,9 @@ Z.render.vectorlayer.Canvas.prototype = {
     },
 
     getPaintContext:function() {
+        if (!this._context) {
+            return null;
+        }
         return [this._context, this._resources];
     },
 

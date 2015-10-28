@@ -53,7 +53,7 @@ Z.render.map.Dom = Z.render.map.Render.extend({
         if (this._rendCanvasTimeout) {
             clearTimeout(this._rendCanvasTimeout);
         }
-        if (!isRealTime) {
+        if (!isRealTime && !Z.TESTMODE) {
             var me = this;
             this._rendCanvasTimeout = setTimeout(function() {
                 me._rend(me.map._canvasLayers);
