@@ -6,40 +6,26 @@ Z.Geometry.include({
      * @expose
      */
     setInfoWindow:function(options) {
-        if(this.getMap()) {
-            this._bindInfoWindow(options);
-        } else {
-            this.on('addend', function() {
-                this._bindInfoWindow(options);
-            });
-        }
+        this._infoWinOptions = options;
+        this._unbindInfoWindow();
         return this;
-
     },
 
     _bindInfoWindow: function(options) {
-        this.map = this.getMap();
         this._infoWindow = new Z.InfoWindow(options);
         this._infoWindow.addTo(this);
-        /*
-        var beforeopenFn = options.beforeOpen;
-        if(beforeopenFn) {
-            this._beforeOpenInfoWindow();
-        }*/
+
         return this;
     },
 
-    /**
-    * 信息窗口打开前
-    */
-    /*_beforeOpenInfoWindow: function() {
-        var coordinate = this.getCenter();
-        var position = this.getPostion();
-        var param = {'coordinate':coordinate, 'pixel':position};
-        this._infoWindow.options['position'] = position;
-        this._infoWindow.beforeOpen(param);
+    _unbindInfoWindow:function() {
+        if (this._infoWindow) {
+            this.closeInfoWindow();
+            this._infoWindow.remove();
+            delete this._infoWindow;
+        }
         return this;
-    },*/
+    },
 
     /**
      * 获取Geometry的信息提示框设置
@@ -59,7 +45,12 @@ Z.Geometry.include({
      * @expose
      */
     openInfoWindow:function(coordinate) {
-        if (this._infoWindow) {
+        if (!this._infoWindow) {
+            if (this._infoWinOptions && this.getMap()) {
+                this._bindInfoWindow(this._infoWinOptions);
+                this._infoWindow.show(coordinate);
+            }
+        } else {
             this._infoWindow.show(coordinate);
         }
         return this;
@@ -74,6 +65,15 @@ Z.Geometry.include({
         if (this._infoWindow) {
             this._infoWindow.hide();
         }
+        return this;
+    },
+
+    /**
+     * 移除信息提示框
+     */
+    removeInfoWindow:function() {
+        this._unbindInfoWindow();
+        delete this._infoWindow;
         return this;
     }
 

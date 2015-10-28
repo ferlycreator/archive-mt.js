@@ -127,7 +127,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
      * @expose
      */
     isOpen:function() {
-        return (this._tipDom._vis);
+        return (this._tipDom._vis && this._tipDom._target === this);
     },
 
     /**
@@ -137,6 +137,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
      */
     show: function(coordinate) {
         this._tipDom._vis = true;
+        this._tipDom._target = this;
         this._fillInfoWindow();
         var tipCoord = this._offsetTipDom(coordinate);
         var size = this._map.getSize();
@@ -164,12 +165,17 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         return this;
     },
 
-    _fillInfoWindow:function() {
+    _getTipWidth:function() {
         var defaultWidth = 300;
         var tipWidth = this.options['width'];
         if (!tipWidth) {
             tipWidth = defaultWidth;
         }
+        return tipWidth;
+    },
+
+    _fillInfoWindow:function() {
+        var tipWidth = this._getTipWidth();
         this._tipDom.tipBoxDom.style.width = tipWidth+'px';
 
         var tipTitle = this.options['title'];
@@ -188,7 +194,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
     _createTipDom: function(){
         var tipContainer = Z.DomUtil.createEl('div');
         tipContainer.style.display = 'none';
-        tipContainer.style.width = this.options['width']+'px';
+        tipContainer.style.width = this._getTipWidth();+'px';
         var suffix = this.options['style'];
         Z.DomUtil.setClass(tipContainer, 'maptalks-infowindow');
 
@@ -294,12 +300,15 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         var pxCoord = this._getShowPosition(coordinate);
         var tipDom = this._tipDom;
         tipDom.style.display = '';
+        console.log(tipDom.clientWidth+','+tipDom.clientHeight);
+        console.log(this.options['width']);
         var tipCoord = new Z.Point(
-            parseInt(pxCoord.left-parseInt(tipDom.clientWidth+38)/2),
-            parseInt(pxCoord.top-parseInt(tipDom.clientHeight))
+            parseInt(pxCoord['left']-parseInt(tipDom.clientWidth)/2+45),
+            parseInt(pxCoord['top']-parseInt(tipDom.clientHeight))
         );
-        tipDom.style.top = tipCoord.top+'px';
-        tipDom.style.left = tipCoord.left+'px';
+        tipDom.style.top = tipCoord['top']+'px';
+        tipDom.style.left = tipCoord['left']+'px';
+
         return tipCoord;
     },
 
@@ -310,6 +319,9 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
             coordinate = this.position;
         }
         if(coordinate){
+            if (coordinate['containerPoint']) {
+                coordinate = coordinate['containerPoint'];
+            }
             if(coordinate instanceof Z.Coordinate) {
                 position = this._map.coordinateToViewPoint(coordinate);
             } else {
@@ -319,12 +331,13 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         } else {
             var center = this._target.getCenter();
             position = this._map.coordinateToViewPoint(center);
+            //如果是标注, 则上移infowindow, 让箭头落在marker上沿
+            if (this._target instanceof Z.Marker) {
+                var size = this._target.getSize();
+                position._add(new Z.Point(0, -size['height']));
+            }
         }
-        //如果是标注, 则上移infowindow, 让箭头落在marker上沿
-        if (this._target instanceof Z.Marker) {
-            var size = this._target.getSize();
-            position._add(new Z.Point(0, -size['height']));
-        }
+
         return position;
     }
 });

@@ -377,9 +377,9 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
         //label
         //contextmenu
-        this.closeMenu();
+        this._unbindMenu();
         //infowindow
-        this.closeInfoWindow();
+        this._unbindInfoWindow();
 
         this._removePainter();
         layer._onGeometryRemove(this);
