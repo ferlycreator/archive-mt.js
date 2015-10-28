@@ -4,7 +4,7 @@
  * @extends maptalks.Class
  * @author Maptalks Team
  */
-Z['Menu'] = Z.Menu = Z.Class.extend({
+Z.Menu = Z.Class.extend({
 
     /**
      * @cfg {Object} options menu属性
@@ -136,6 +136,7 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
      */
     remove: function() {
         this.hide();
+        this._removeEvent();
         delete this.options;
         return this;
     },
@@ -166,13 +167,6 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
      * @expose
      */
     show: function(coordinate) {
-        if (coordinate['domEvent']) {
-            //禁止Geometry的事件传递到map上, map的菜单会覆盖Geometry的
-            Z.DomUtil.stopPropagation(coordinate['domEvent']);
-        }
-        if (coordinate['viewPoint']) {
-            coordinate = coordinate['viewPoint'];
-        }
         this._target.fire('beforeopenmenu');
         var pxCoord = this._getShowPosition(coordinate);
         this._menuDom.innerHTML='';
@@ -266,10 +260,17 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
             coordinate = this.options['position'];
         }
         if(coordinate){
+            if (coordinate['domEvent']) {
+                //禁止Geometry的事件传递到map上, map的菜单会覆盖Geometry的
+                Z.DomUtil.stopPropagation(coordinate['domEvent']);
+            }
+            if (coordinate['containerPoint']) {
+                coordinate = coordinate['containerPoint'];
+            }
             if(coordinate instanceof Z.Coordinate) {
                 position = this._map.coordinateToViewPoint(coordinate);
             } else {
-                position = coordinate;
+                position = this._map._containerPointoViewPoint(coordinate);
             }
         } else {
             var center = this._target.getCenter();
@@ -279,3 +280,119 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
     }
 
 });
+
+
+Z.Menu.Handler={
+    /**
+    * 设置Geometry的菜单
+    * @param {Object} options 菜单项 {"items":[], width:240, beforeopen:fn}
+    * @member maptalks.Geometry
+    * @expose
+    */
+    setMenu: function(options) {
+        this._menuOptions = options;
+        this._unbindMenu();
+        this.on('contextmenu', this._defaultOpenMenu, this);
+        return this;
+    },
+
+    _bindMenu: function(options) {
+        this._menu = new Z.Menu(options);
+        this._menu.addTo(this);
+
+        return this;
+    },
+
+    _unbindMenu:function() {
+        if (this._menu) {
+            this.closeMenu();
+            this._menu.remove();
+            delete this._menu;
+        }
+        return this;
+    },
+
+     /**
+     * 应用没有注册contextmenu事件时, 默认在contextmenu事件时打开右键菜单
+     * 如果注册过contextmenu事件, 则不做任何操作
+     * @param  {[type]} param [description]
+     * @return {[type]}       [description]
+     */
+    _defaultOpenMenu:function(param) {
+        if (this.hasListeners('contextmenu')>1) {
+            return;
+        } else {
+            this.openMenu(param);
+        }
+    },
+
+    /**
+    * 打开geometry菜单
+    * @param {maptalks.Coordinate} 坐标
+    * @member maptalks.Geometry
+    * @expose
+    */
+    openMenu: function(coordinate) {
+        var map = (this instanceof Z.Map)?this:this.getMap();
+        if (!this._menu) {
+            if (this._menuOptions && map) {
+                this._bindMenu(this._menuOptions);
+                this._menu.show(coordinate);
+            }
+        } else {
+            this._menu.show(coordinate);
+        }
+        return this;
+    },
+
+    /**
+    * 添加菜单项目
+    * @param {Array} 菜单项数组
+    * @member maptalks.Geometry
+    * @expose
+    */
+    setMenuItems: function(items) {
+        if (this._menuOptions) {
+            this._menuOptions['items'] = items;
+        }
+        if (this._menu) {
+            this._menu.setItems(items);
+        }
+        return this;
+    },
+
+    /**
+     * 获得菜单项
+     * @return {[type]} [description]
+     */
+    getMenuItems:function() {
+        if (this._menu) {
+            return this._menu.getItems();
+        } else {
+            return null;
+        }
+    },
+
+    /**
+    * 关闭geometry菜单
+    * @member maptalks.Geometry
+    * @expose
+    */
+    closeMenu: function() {
+        if(this._menu) {
+            this._menu.close();
+        }
+        return this;
+    },
+
+    /**
+     * 移除menu
+     */
+    removeMenu:function() {
+        this.off('contextmenu', this._defaultOpenMenu, this);
+        this._unbindMenu();
+        delete this._menuOptions;
+        return this;
+    }
+
+};
