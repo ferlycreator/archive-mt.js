@@ -60,9 +60,8 @@ Z.Map.EventToGeometry = Z.Handler.extend({
         }
 
         function fireGeometryEvent(result) {
-            if(!result['success']){return;}
             var i,len;
-            var geometries = result['data'];
+            var geometries = result;
             if(eventType === 'mousemove') {
                 var oldTargets = me.prevMouseOverTargets;
                 if (Z.Util.isArrayHasData(oldTargets)) {
