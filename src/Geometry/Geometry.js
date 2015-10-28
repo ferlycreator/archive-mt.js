@@ -93,7 +93,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     getId:function() {
-        return this.options['id'];
+        return this.id;
     },
 
     /**
@@ -103,12 +103,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      */
     setId:function(id) {
         var oldId = this.getId();
-        if (this.hasOwnProperty(this.options)) {
-            this.options['id']=id;
-        } else {
-            Z.Util.setOptions(this, {'id':id});
-        }
-
+        this.id = id;
         //FIXME _idchanged没有被图层监听, layer.getGeometryById会出现bug
         this._fireEvent('_idchanged',{'oldId':oldId,'newId':id});
         return this;

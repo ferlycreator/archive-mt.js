@@ -14,6 +14,9 @@ Z.Geometry.include({
      */
     startDrag: function(enableMapEvent) {
         var map = this.getMap();
+        if (!map) {
+            return;
+        }
         Z.DomUtil.setStyle(map._containerDOM, 'cursor: move');
         this._enableMapEvent = enableMapEvent;
         if(this._enableMapEvent) {
