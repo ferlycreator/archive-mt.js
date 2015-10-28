@@ -75,7 +75,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
         //更新缓存
         this._updateCache();
-        this.layer = layer;
+        this._layer = layer;
         //如果投影发生改变,则清除掉所有的投影坐标属性
         this._clearProjection();
         this.callInitHooks();
@@ -120,8 +120,8 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     getLayer:function() {
-        if (!this.layer) {return null;}
-        return this.layer;
+        if (!this._layer) {return null;}
+        return this._layer;
     },
 
     /**
@@ -130,8 +130,8 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     getMap:function() {
-        if (!this.layer) {return null;}
-        return this.layer.getMap();
+        if (!this._layer) {return null;}
+        return this._layer.getMap();
     },
 
     /**
@@ -388,7 +388,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
         this._removePainter();
         layer._onGeometryRemove(this);
-        delete this.layer;
+        delete this._layer;
         if (isFireEvent) {
             this._fireEvent('remove');
         }
