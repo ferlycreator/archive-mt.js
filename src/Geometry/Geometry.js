@@ -268,8 +268,8 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     getProperties:function() {
-        if (!this._properties) {return null;}
-        return this._properties;
+        if (!this.properties) {return null;}
+        return this.properties;
     },
 
     /**
@@ -278,7 +278,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     setProperties:function(properties) {
-        this._properties = properties;
+        this.properties = properties;
         //TODO 抛事件
         return this;
     },

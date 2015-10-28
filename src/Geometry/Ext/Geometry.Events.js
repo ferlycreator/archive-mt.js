@@ -20,11 +20,11 @@ Z.Geometry.include({
         //事件改名
         if (eventFired === 'contextmenu') {
             Z.DomUtil.preventDefault(originalEvent);
-            eventFired = 'rightclick';
+            // eventFired = 'rightclick';
         } else if (eventFired === 'click') {
             var button = originalEvent.button;
             if (button === 2) {
-                eventFired = 'rightclick';
+                eventFired = 'contextmenu';
             }
         }
         var params = this._getEventParams(originalEvent, eventFired);

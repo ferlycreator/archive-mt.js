@@ -13,7 +13,7 @@ Z.Geometry.include({
                 this._bindMenu(options);
             });
         }
-        this.on('rightclick', this._defaultOpenMenu, this);
+        this.on('contextmenu', this._defaultOpenMenu, this);
         return this;
     },
 
@@ -35,7 +35,7 @@ Z.Geometry.include({
      * @return {[type]}       [description]
      */
     _defaultOpenMenu:function(param) {
-        if (this.hasListeners('rightclick')>1) {
+        if (this.hasListeners('contextmenu')>1) {
             return;
         } else {
             this.openMenu(param);
