@@ -45,7 +45,7 @@ Z.Geometry.include({
         return {
             'containerPoint':containerPoint,
             'coordinate':coordinate,
-            'viewPoint' : map._containerPointToViewPoint(containerPoint),
+            //'viewPoint' : map._containerPointToViewPoint(containerPoint),
             'domEvent':event
         };
     },
