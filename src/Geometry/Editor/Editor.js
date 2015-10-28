@@ -136,13 +136,41 @@ Z.Editor=Z.Class.extend({
         }
         var handle = this.createHandleDom(pixel,opts);
         var _containerDOM = this.map._containerDOM;
+        var editor = this;
+        function onMouseMoveEvent(event) {
+            var ev  = ev || window.event;
+            editor.hideContext();
+            var mousePos = Z.DomUtil.getEventContainerPoint(ev,_containerDOM);
+            var handleDomOffset = editor.map._containerPointToViewPoint(mousePos);
+            handle.style['top']=(handleDomOffset.top-5)+"px";
+            handle.style['left']=(handleDomOffset.left-5)+"px";
+            Z.DomUtil.stopPropagation(ev);
+            if (opts.onMove) {
+                opts.onMove.call(editor,handleDomOffset);
+            }
+            return false;
+        }
+        function onMouseUpEvent(event) {
+            var ev  = ev || window.event;
+            Z.DomUtil.off(document,'mousemove',onMouseMoveEvent);
+            Z.DomUtil.off(document,'mouseup',onMouseUpEvent);
+            // document.onmousemove=null;
+            // document.onmouseup=null;
+            Z.DomUtil.stopPropagation(ev);
+            if (opts.onUp) {
+                opts.onUp.call(editor);
+            }
+            return false;
+        }
         Z.DomUtil.addDomEvent(handle,'mousedown',function(event) {
-            var editor = this;
+
             if (opts.onDown) {
                 opts.onDown.call(editor);
             }
             //鼠标拖动操作
-            document.onmouseup = function(ev) {
+            Z.DomUtil.on(document,'mouseup',onMouseUpEvent);
+            Z.DomUtil.on(document,'mousemove',onMouseMoveEvent);
+            /*document.onmouseup = function(ev) {
                 ev  = ev || window.event;
                 document.onmousemove=null;
                 document.onmouseup=null;
@@ -164,7 +192,7 @@ Z.Editor=Z.Class.extend({
                     opts.onMove.call(editor,handleDomOffset);
                 }
                 return false;
-            };
+            };*/
             Z.DomUtil.stopPropagation(event);
 
             return false;
@@ -195,7 +223,7 @@ Z.Editor=Z.Class.extend({
                 }
             },
             onMove:function(handleDomOffset) {
-                var pcenter = map._untransformFromOffset(handleDomOffset);
+                var pcenter = map._untransformFromViewPoint(handleDomOffset);
                 geometry._setPCenter(pcenter);
                 geometry._updateCache();
                 if (opts.onMove) {
@@ -371,7 +399,7 @@ Z.Editor=Z.Class.extend({
                 rHandle.style.display='none';
             },
             onMove:function(handleDomOffset) {
-                var pnw = map._untransformFromOffset(handleDomOffset);
+                var pnw = map._untransformFromViewPoint(handleDomOffset);
                 geometry._setPNw(pnw);
                 geometry._updateCache();
                 this.fireEditEvent('positionchanging');
@@ -418,7 +446,7 @@ Z.Editor=Z.Class.extend({
                 tip:"拖动以调整"+title+"顶点",
                 onMove:function(handleDomOffset) {
                     hideCloseHandle();
-                    var nVertex = map._untransformFromOffset(handleDomOffset);
+                    var nVertex = map._untransformFromViewPoint(handleDomOffset);
                     vertex.x = nVertex.x;
                     vertex.y = nVertex.y;
                     geometry._updateCache();
@@ -434,8 +462,8 @@ Z.Editor=Z.Class.extend({
                 }
             });
             Z.DomUtil.addDomEvent(handle,'mouseover',function(event){
-                //当只存在三个端点和一个中心点, 再删除会变成无效的多边形,不再出现删除端点按钮
-                if (vertexHandles.length <= 4) {
+                //当只存在三个端点, 再删除会变成无效的多边形,不再出现删除端点按钮
+                if (vertexHandles.length <= 3) {
                     return;
                 }
                 closeHandle.style.top = (parseInt(handle.style.top)-2)+"px";
@@ -453,7 +481,7 @@ Z.Editor=Z.Class.extend({
             closeHandle.style.cssText="display:none;position: absolute; cursor: pointer;top:-9999px;left:0px;";
             closeHandle.innerHTML='<div title="点击删除端点" style="display:block;width:14px;height:14px;background:url(' + Z.prefix + 'images/close.gif) 0px 0px no-repeat;"></div>';
             Z.DomUtil.addDomEvent(closeHandle,'click',function(ev) {
-                if (vertexHandles.length <= 4) {
+                if (vertexHandles.length <= 3) {
                     return;
                 }
                 var ringhandle = closeHandle["source"];
@@ -521,7 +549,7 @@ Z.Editor=Z.Class.extend({
                     var lonlats = getLonlats();
                     for (var i=0,len=lonlats.length;i<len;i++) {
                         var vo = map._transformToViewPoint(lonlats[i]);
-                        var n = map._untransformFromOffset(new Z.Point(vo['left']+dragged['left'], vo['top']+dragged['top']));
+                        var n = map._untransformFromViewPoint(new Z.Point(vo['left']+dragged['left'], vo['top']+dragged['top']));
                         lonlats[i].x = n.x;
                         lonlats[i].y = n.y;
                     }
@@ -567,7 +595,7 @@ Z.Editor=Z.Class.extend({
             //临时编辑按钮的点击
             var handleDomOffset = Z.DomUtil.offsetDom(tmpHandle);
             var res = map._getTileConfig()['resolutions'][map.getZoomLevel()];
-            var plonlat = map._untransformFromOffset(new Z.Point(handleDomOffset['left']+5,handleDomOffset['top']+5));
+            var plonlat = map._untransformFromViewPoint(new Z.Point(handleDomOffset['left']+5,handleDomOffset['top']+5));
             var interIndex = Z.GeoUtils._isPointOnPath(plonlat, geometry, pxTolerance*res);
             if (interIndex >= 0) {
                 vertexHandles.splice(interIndex+1,0,createVertexHandle.call(this,plonlat));

@@ -130,7 +130,7 @@ Z.OverlayLayer=Z.Layer.extend({
         if (!(geometry instanceof Z.Geometry)) {
             geometry = this.getGeometryById(geometry);
         }
-        if (!geometry) {return;}
+        if (!geometry) {return this;}
         if (this != geometry.getLayer()) {
             return;
         }

@@ -369,7 +369,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     getFitZoomLevel: function(extent) {
-        if (!extent && !(extent instanceof Z.Extent)) {
+        if (!extent || !(extent instanceof Z.Extent)) {
             return this._zoomLevel;
         }
         //点类型
@@ -588,7 +588,7 @@ Z['Map']=Z.Map=Z.Class.extend({
             }
             for (var j=0, jlen=layerList.length;j<jlen;j++) {
                 if (layerList[j]._setZIndex) {
-                    layerList[j]._setZIndex(layerList[j].baseZIndex+j);
+                    layerList[j]._setZIndex(j);
                 }
             }
         }
@@ -710,14 +710,6 @@ Z['Map']=Z.Map=Z.Class.extend({
 
     _onResize:function(resizeOffset) {
         this._offsetCenterByPixel(resizeOffset);
-        // this._refreshSVGPaper();
-        /*function resizeLayer(layer) {
-            if (layer) {
-                layer._onResize();
-            }
-        }
-        if (this._baseTileLayer) {this._baseTileLayer._onResize();}
-        this._eachLayer(resizeLayer,this.getAllLayers());*/
         /**
          * 触发map的resize事件
          * @member maptalks.Map
@@ -956,9 +948,9 @@ Z['Map']=Z.Map=Z.Class.extend({
         var pcenter = this._getPrjCenter();
         var centerPoint = transformation.transform(pcenter, res);
         //容器的像素坐标方向是固定方向的, 和html标准一致, 即从左到右增大, 从上到下增大
-        var point = [centerPoint[0]+ domPos['left'] - this.width / 2, centerPoint[1]+domPos['top'] - this.height / 2];
+        var point = new Z.Point(centerPoint['left']+ domPos['left'] - this.width / 2, centerPoint['top']+domPos['top'] - this.height / 2);
         var result = transformation.untransform(point, res);
-        return new Z.Coordinate(result);
+        return result;
     },
 
     /**
@@ -966,7 +958,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @param  {[type]} domPos [description]
      * @return {[type]}        [description]
      */
-    _untransformFromOffset:function(domPos) {
+    _untransformFromViewPoint:function(domPos) {
         return this._untransform(this._viewPointToContainerPoint(domPos));
     },
 
@@ -984,8 +976,8 @@ Z['Map']=Z.Map=Z.Class.extend({
 
         var point = transformation.transform(pCoordinate,res);
         return new Z.Point(
-            Math.round(this.width / 2 + point[0] - centerPoint[0]),
-            Math.round(this.height / 2 + point[1] - centerPoint[1])
+            Math.round(this.width / 2 + point['left'] - centerPoint['left']),
+            Math.round(this.height / 2 + point['top'] - centerPoint['top'])
             );
     },
 

@@ -44,9 +44,8 @@ Z.TopoQuery.prototype={
      */
     buffer:function(opts) {
         var geometries=opts['geometries'], distance=opts['distance'];
-        if (!Z.Util.isArrayHasData(geometries)) {
-            opts['success']([]);
-            return;
+        if (!Z.Util.isArrayHasData(geometries) || !Z.Util.isNumber(distance)) {
+            throw new Error('invalid parameters');
         }
         var symbol = this.defaultSymbol;
         if (opts['symbol']) {
@@ -136,11 +135,13 @@ Z.TopoQuery.prototype={
         var source = opts['source'],
             targets = opts['targets'],
             relation = opts['relation'];
-
-        if (!source || !targets || relation < 0 || relation > 7) {
-            opts['success']([]);
-            return;
+        if (targets && !Z.Util.isArray(targets)) {
+            targets = [targets];
         }
+        if (!source || !Z.Util.isArrayHasData(targets) || !Z.Util.isNumber(opts['relation'])) {
+            throw new Error('invalid parameters');
+        }
+
         function formQueryString() {
             var srcGeoJson = source._exportGeoJson();
             Z.GeoJson.crsCoordinateType(srcGeoJson, source.getCoordinateType());

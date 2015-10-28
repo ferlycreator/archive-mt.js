@@ -8,18 +8,6 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
     includes: [Z.Eventable],
 
     /**
-     * @cfg {Object} exceptionDefs 异常信息定义
-     */
-    exceptionDefs:{
-        'en-US':{
-            'MUST_PROVIDE_OBJECT':'You must provide object which infowindow add to.'
-        },
-        'zh-CN':{
-            'MUST_PROVIDE_OBJECT':'必须提供添加信息框的对象。'
-        }
-    },
-
-    /**
      * @cfg {Object} options 信息窗属性
      */
     options: {
@@ -37,10 +25,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
      * @return {maptalks.InfoWindow}
      */
     initialize:function (options) {
-        if(!options) {
-            options = {};
-        }
-        Z.Util.setOptions(this,options);
+        this.setOptions(options);
         return this;
     },
 
@@ -53,9 +38,6 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
             this._map = target;
         } else { //Geometry的情况
             this._map = target.getMap();
-        }
-        if(!this._map) {
-            throw new Error(this.exceptions['MUST_PROVIDE_OBJECT']);
         }
         this._target = target;
         var tipContainer = this._map._panels.tipContainer;
@@ -94,26 +76,17 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
      * @param {Array} options 项 {"items":[], width:240, beforeOpen:fn}
      * @expose
      */
-    /*setOptions: function(options) {
-        if (!options) {
-            return;
+    setOptions: function(options) {
+        if(!options) {
+            options = {};
         }
-        if(Z.Util.isNil(options.style)||options.style === 'default') {
-            options.style = '';
+        if(Z.Util.isNil(options['style'])||options['style'] === 'default') {
+            options['style'] = '';
         } else {
-            options.style = '-' + options.style;
+            options['style'] = '-' + options['style'];
         }
-        if(this.options) {
-            this.options.title = options.title;
-            this.options.content = options.content;
-            this.options.style = options.style;
-            if(options.beforeOpen) {
-                this.options.beforeOpen = options.beforeOpen;
-            }
-        } else {
-            this.options = options;
-        }
-    },*/
+        Z.Util.setOptions(this,options);
+    },
 
     /**
      * 返回infoWindow设置
@@ -140,7 +113,11 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
      * @expose
      */
     hide:function() {
-        this._visible = false;
+        this._tipDom._vis = false;
+        this._hideTipDom();
+    },
+
+    _hideTipDom:function() {
         this._tipDom.style.display = 'none';
     },
 
@@ -150,7 +127,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
      * @expose
      */
     isOpen:function() {
-        return this._visible;
+        return (this._tipDom._vis && this._tipDom._target === this);
     },
 
     /**
@@ -159,12 +136,15 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
      * @expose
      */
     show: function(coordinate) {
+        this._tipDom._vis = true;
+        this._tipDom._target = this;
         this._fillInfoWindow();
         var tipCoord = this._offsetTipDom(coordinate);
         var size = this._map.getSize();
         var mapWidth = size['width'],
             mapHeight = size['height'];
         if (mapWidth===0||mapHeight===0) {return;}
+        this._target.fire('beforeopeninfowindow');
         //只有当tip不是地图打开的时候，才做tip打开滑动操作
         var absolute = this._map._viewPointToContainerPoint(tipCoord);
         var left=0,top=0,tipDom=this._tipDom;
@@ -181,15 +161,21 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         if (top!==0 || left!==0) {
             /*this._tipSlidingExecutor = */this._map._animatePan(new Z.Point(left,top));
         }
+        this._target.fire('openinfowindow');
         return this;
     },
 
-    _fillInfoWindow:function() {
+    _getTipWidth:function() {
         var defaultWidth = 300;
         var tipWidth = this.options['width'];
         if (!tipWidth) {
             tipWidth = defaultWidth;
         }
+        return tipWidth;
+    },
+
+    _fillInfoWindow:function() {
+        var tipWidth = this._getTipWidth();
         this._tipDom.tipBoxDom.style.width = tipWidth+'px';
 
         var tipTitle = this.options['title'];
@@ -208,8 +194,8 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
     _createTipDom: function(){
         var tipContainer = Z.DomUtil.createEl('div');
         tipContainer.style.display = 'none';
-        tipContainer.style.width = this.options.width+'px';
-        var suffix = this.options.style;
+        tipContainer.style.width = this._getTipWidth();+'px';
+        var suffix = this.options['style'];
         Z.DomUtil.setClass(tipContainer, 'maptalks-infowindow');
 
         var tipBoxDom = this._createTipBoxDom();
@@ -297,13 +283,15 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
     },
 
     _onZoomStart:function() {
-        this.hide();
+        if (this.isOpen()) {
+            this._hideTipDom();
+        }
     },
 
     _onZoomEnd:function() {
-        if (this._visible) {
-            this._tipDom.style.display='';
+        if (this.isOpen()) {
             this._offsetTipDom();
+            this._tipDom.style.display='';
         }
     },
 
@@ -313,11 +301,12 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         var tipDom = this._tipDom;
         tipDom.style.display = '';
         var tipCoord = new Z.Point(
-            parseInt(pxCoord.left-parseInt(tipDom.clientWidth+38)/2),
-            parseInt(pxCoord.top-parseInt(tipDom.clientHeight))
+            parseInt(pxCoord['left']-parseInt(tipDom.clientWidth)/2+45),
+            parseInt(pxCoord['top']-parseInt(tipDom.clientHeight))
         );
-        tipDom.style.top = tipCoord.top+'px';
-        tipDom.style.left = tipCoord.left+'px';
+        tipDom.style.top = tipCoord['top']+'px';
+        tipDom.style.left = tipCoord['left']+'px';
+
         return tipCoord;
     },
 
@@ -328,6 +317,9 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
             coordinate = this.position;
         }
         if(coordinate){
+            if (coordinate['containerPoint']) {
+                coordinate = coordinate['containerPoint'];
+            }
             if(coordinate instanceof Z.Coordinate) {
                 position = this._map.coordinateToViewPoint(coordinate);
             } else {
@@ -337,12 +329,13 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         } else {
             var center = this._target.getCenter();
             position = this._map.coordinateToViewPoint(center);
+            //如果是标注, 则上移infowindow, 让箭头落在marker上沿
+            if (this._target instanceof Z.Marker) {
+                var size = this._target.getSize();
+                position._add(new Z.Point(0, -size['height']));
+            }
         }
-        //如果是标注, 则上移infowindow, 让箭头落在marker上沿
-        if (this._target instanceof Z.Marker) {
-            var size = this._target.getSize();
-            position._add(new Z.Point(0, -size['height']));
-        }
+
         return position;
     }
 });

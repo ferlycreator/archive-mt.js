@@ -4,8 +4,13 @@
  * @author Maptalks Team
  */
 Z['Point']=Z.Point=function(left,top) {
-     this['top'] = top;
-     this['left'] = left;
+     if (Z.Util.isArrayHasData(left)) {
+        this['left'] = left[0];
+        this['top'] = left[1];
+     } else {
+        this['top'] = top;
+        this['left'] = left;
+     }
 };
 
 Z.Point.prototype={

@@ -75,7 +75,7 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
     },
 
     hide:function() {
-        this._visible = false;
+        this.options['visible'] = false;
         var geometries = this.getGeometries();
         for (var i=0,len=geometries.length;i<len;i++) {
             this._geometries[i].hide();
@@ -84,7 +84,7 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
     },
 
     show:function() {
-        this._visible = true;
+        this.options['visible'] = true;
         var geometries = this.getGeometries();
         for (var i=0,len=geometries.length;i<len;i++) {
             this._geometries[i].show();
@@ -224,12 +224,12 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
     },
 
 
-   _exportGeoJson:function(opts) {
+   _exportGeoJson:function() {
         var geoJsons = [];
         if (!this.isEmpty()) {
             var geometries = this.getGeometries();
             for (var i=0,len=geometries.length;i<len;i++) {
-                geoJsons.push(geometries[i]._exportGeoJson(opts));
+                geoJsons.push(geometries[i]._exportGeoJson());
             }
         }
         return {

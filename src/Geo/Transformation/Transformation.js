@@ -21,6 +21,7 @@ Z.Transformation = function(matrix) {
 
 Z.Transformation.prototype = {
     /**
+     * 像素坐标方向是固定方向的, 和html标准一致, 即从左到右增大, 从上到下增大
      * prj coordinate -> point
      * @member maptalks.Transformation
      */
@@ -35,9 +36,9 @@ Z.Transformation.prototype = {
             y = coordinates.y;
         }
         // affine transformation
-        var x_ = (x*matrix[0]+matrix[2])/scale;
-        var y_ = (y*matrix[1]+matrix[3])/scale;
-        return [x_, y_];
+        var x_ = matrix[0]*(x-matrix[2])/scale;
+        var y_ = matrix[1]*(y-matrix[3])/scale;
+        return new Z.Point(x_,y_);
     },
 
     /**
@@ -47,16 +48,11 @@ Z.Transformation.prototype = {
     untransform : function(point, scale) {
         var matrix = this.matrix;
         var x,y;
-        if (Z.Util.isArray(point)) {
-            x = point[0];
-            y = point[1];
-        } else {
-            x = point.x;
-            y = point.y;
-        }
+        x = point['left'];
+        y = point['top'];
         //inverse matrix
-        var x_ = (x*scale-matrix[2])/matrix[0];
-        var y_ = (y*scale-matrix[3])/matrix[1];
-        return [x_, y_];
+        var x_ = (x*scale/matrix[0]+matrix[2]);
+        var y_ = (y*scale/matrix[1]+matrix[3]);
+        return new Z.Coordinate(x_,y_);
     }
 };

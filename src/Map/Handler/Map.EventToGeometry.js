@@ -9,33 +9,34 @@ Z.Map.mergeOptions({
 Z.Map.EventToGeometry = Z.Handler.extend({
     addHooks: function() {
         // return;
-        /*var canvasContainer = this.map._panels.canvasLayerContainer;
+        var canvasContainer = this.map._panels.canvasLayerContainer;
         if(canvasContainer) {
             Z.DomUtil.on(canvasContainer,'mousedown mouseup mousemove click dblclick contextmenu', this._queryGeometries, this);
-        }*/
-        this.map.on('_mousedown _mouseup _mousemove _click _dblclick _contextmenu', this._queryGeometries, this);
+        }
+        // this.map.on('_mousedown _mouseup _mousemove _click _dblclick _contextmenu', this._queryGeometries, this);
 
     },
 
     removeHooks: function() {
         /**
         this.map.off('mousedown mouseup mousemove click dblclick contextmenu', this._queryGeometries, this);*/
-        /*var canvasContainer = this.map._panels.canvasLayerContainer;
+        var canvasContainer = this.map._panels.canvasLayerContainer;
         if(canvasContainer) {
             Z.DomUtil.off(canvasContainer,'mousedown mouseup mousemove click dblclick contextmenu', this._queryGeometries, this);
-        }*/
-        this.map.off('_mousedown _mouseup _mousemove _click _dblclick _contextmenu', this._queryGeometries, this);
+        }
+        // this.map.off('_mousedown _mouseup _mousemove _click _dblclick _contextmenu', this._queryGeometries, this);
     },
 
-    _queryGeometries: function(param) {
+    _queryGeometries: function(event) {
         if (this.map._isBusy || !this.map._canvasLayers || this.map._canvasLayers.length === 0) {
             return;
         }
         // console.log('_queryGeometries');
-        var domEvent = param['domEvent'];
-        var eventType = param['domEvent'].type;
+        var domEvent = event;//param['domEvent'];
+        var eventType = domEvent.type;
         // var mouseOffset = param['containerPoint'];//Z.DomUtil.getEventContainerPoint(domEvent, this.map._containerDOM);
-        var coordinate = param['coordinate'];//this.map.containerPointToCoordinate(mouseOffset);
+        var containerPoint = Z.DomUtil.getEventContainerPoint(domEvent, this.map._containerDOM);
+        var coordinate = this.map.containerPointToCoordinate(containerPoint);
         this.options = {
             'coordinate' : coordinate,
             'layers': this.map._canvasLayers,
@@ -59,9 +60,8 @@ Z.Map.EventToGeometry = Z.Handler.extend({
         }
 
         function fireGeometryEvent(result) {
-            if(!result['success']){return;}
             var i,len;
-            var geometries = result['data'];
+            var geometries = result;
             if(eventType === 'mousemove') {
                 var oldTargets = me.prevMouseOverTargets;
                 if (Z.Util.isArrayHasData(oldTargets)) {

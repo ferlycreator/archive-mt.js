@@ -74,6 +74,8 @@ Z.TileConfig=Z.Class.extend({
                 c = tileSystem['origin']['x'],
                 d = tileSystem['origin']['y'];
             this.transformation = new Z.Transformation([a,b,c,d]);
+            //计算transform后的以像素为单位的原点
+            tileSystem['transOrigin'] = this.transformation.transform(tileSystem['origin'],1);
         },
 
         checkTileInfo:function(tileInfo) {
@@ -123,6 +125,21 @@ Z.TileConfig=Z.Class.extend({
             }
             return 0;
         },
+         getTileIndex:function(point, zoomLevel) {
+            var tileSystem = this.tileSystem, tileSize=this['tileSize'],
+                transOrigin = tileSystem['transOrigin'],
+                res = this['resolutions'][zoomLevel];
+
+            var tileX = Math.floor((point['left']-transOrigin['left'])/(tileSize['width']*res));
+            var tileY = -Math.floor((point['top']-transOrigin['top'])/(tileSize['height']*res));
+
+            return {'x':tileSystem['scale']['x']*tileX, 'y':tileSystem['scale']['y']*tileY};
+
+            // var resolution = this['resolutions'][zoomLevel];
+            // var tileY = Math.floor((tileSystem['origin']['y'] + tileSystem['scale']['y']*pLonlat.y) / ( resolution* tileSize['height']));
+            // var tileX = Math.floor((tileSystem['scale']['x']*pLonlat.x - tileSystem['origin']['x']) / (resolution * tileSize['width']));
+            // return {'y':tileY,'x':tileX};
+        },
 
         /**
          * 根据中心点投影坐标, 计算中心点对应的瓦片和瓦片内偏移量
@@ -131,7 +148,33 @@ Z.TileConfig=Z.Class.extend({
          * @return {[type]}           [description]
          */
         getCenterTileIndex:function( pLonlat, zoomLevel) {
-            var tileSystem = this.tileSystem;
+            var tileSystem = this.tileSystem,
+                resolution = this['resolutions'][zoomLevel],
+                tileSize = this['tileSize'];
+            var point = this.transformation.transform(pLonlat, 1);
+            var tileIndex = this.getTileIndex(point,zoomLevel);
+
+            var tileLeft = tileIndex['x']*tileSize['width'];
+            var tileTop = tileIndex['y']*tileSize['height'];
+
+            var offsetLeft = Math.round(point['left']/resolution-tileSystem['scale']['x']*tileLeft);
+            var offsetTop = Math.round(point['top']/resolution+tileSystem['scale']['y']*tileTop);
+
+            //如果x方向为左大右小
+            if (tileSystem['scale']['x']<0) {
+                tileIndex['x'] -= 1;
+            }
+            //如果y方向上大下小
+            if (tileSystem['scale']['y']>0) {
+                tileIndex['y'] -= 1;
+            }
+
+            //有可能tileIndex超出世界范围
+            tileIndex = this.getNeighorTileIndex(tileIndex['y'], tileIndex['x'],0,0,true);
+
+            return {'x':tileIndex['x'], 'y':tileIndex['y'], 'offsetLeft':offsetLeft, 'offsetTop':offsetTop};
+
+            /*var tileSystem = this.tileSystem;
             var resolution = this['resolutions'][zoomLevel];
             var tileSize = this['tileSize'];
             var tileIndex = this.getTileIndex(pLonlat, zoomLevel);
@@ -142,7 +185,7 @@ Z.TileConfig=Z.Class.extend({
             var tileTop = tileSystem['origin']['y'] + tileSystem['scale']['y']*(tileY+(tileSystem['scale']['y']==1?1:0))* resolution * tileSize['height'];
             var offsetLeft = Math.abs(Math.round((pLonlat.x-tileLeft)/resolution));
             var offsetTop = Math.abs(Math.round((pLonlat.y-tileTop)/resolution));
-            return {'x':tileX, 'y':tileY, 'offsetLeft':offsetLeft, 'offsetTop':offsetTop};
+            return {'x':tileX, 'y':tileY, 'offsetLeft':offsetLeft, 'offsetTop':offsetTop};*/
         },
         /**
          * 根据投影坐标,计算瓦片编号
@@ -150,7 +193,7 @@ Z.TileConfig=Z.Class.extend({
          * @param  {[type]} zoomLevel [description]
          * @return {[type]}           [description]
          */
-        getTileIndex:function(pLonlat, zoomLevel) {
+        /*getTileIndex:function(pLonlat, zoomLevel) {
             var tileSystem = this.tileSystem;
             var tileSize=this['tileSize'];
             // var maxExtent=tileSystem['origin'];
@@ -158,7 +201,7 @@ Z.TileConfig=Z.Class.extend({
             var tileY = Math.floor((tileSystem['origin']['y'] + tileSystem['scale']['y']*pLonlat.y) / ( resolution* tileSize['height']));
             var tileX = Math.floor((tileSystem['scale']['x']*pLonlat.x - tileSystem['origin']['x']) / (resolution * tileSize['width']));
             return {'y':tileY,'x':tileX};
-        },
+        },*/
         /**
          * 根据给定的瓦片编号,和坐标编号偏移量,计算指定的瓦片编号
          * @param  {[type]} tileY   [description]
@@ -198,8 +241,9 @@ Z.TileConfig=Z.Class.extend({
 
         _getTileFullExtent:function(zoomLevel) {
             var ext = this.fullExtent;
-            var nwIndex = this.getTileIndex(new Z.Coordinate(ext['left'],ext['top']),zoomLevel);
-            var seIndex = this.getTileIndex(new Z.Coordinate(ext['right'],ext['bottom']),zoomLevel);
+            var transformation = this.transformation;
+            var nwIndex = this.getTileIndex(transformation.transform(new Z.Coordinate(ext['left'],ext['top']),1),zoomLevel);
+            var seIndex = this.getTileIndex(transformation.transform(new Z.Coordinate(ext['right'],ext['bottom']),1),zoomLevel);
             return new Z.Extent(nwIndex, seIndex);
         },
 

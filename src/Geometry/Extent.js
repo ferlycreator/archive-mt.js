@@ -97,9 +97,6 @@ Z.Extent.prototype={
      * @return {Boolean} true：表明两个extent相等
      */
     equals:function(ext2) {
-        if (!ext2  || !(ext2 instanceof Z.Extent)) {
-            return false;
-        }
         return (this['xmin'] === ext2['xmin'] &&
             this['xmax'] === ext2['xmax'] &&
             this['ymin'] === ext2['ymin'] &&
@@ -112,13 +109,6 @@ Z.Extent.prototype={
      * @return {Boolean} true：表明两个extent相交
      */
     isIntersect:function(ext2) {
-        if (!ext2) {return false;}
-        if (!(ext2 instanceof Z.Extent)) {
-            return false;
-        }
-        if (!ext2.isValid()) {
-            return false;
-        }
         var rxmin = Math.max(this['xmin'], ext2['xmin']);
         var rymin = Math.max(this['ymin'], ext2['ymin']);
         var rxmax = Math.min(this['xmax'], ext2['xmax']);
@@ -136,9 +126,6 @@ Z.Extent.prototype={
      * @returns {Boolean} true：坐标在extent中
      */
     contains: function(coordinate) {
-        if (!coordinate) {
-            return false;
-        }
         var x, y;
         if (!Z.Util.isNil(coordinate.x)) {
             x = coordinate.x;

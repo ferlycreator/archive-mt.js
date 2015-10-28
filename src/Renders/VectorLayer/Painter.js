@@ -10,7 +10,7 @@ Z.Painter = Z.Class.extend({
 
     initialize:function(geometry) {
         this.geometry = geometry;
-        this._createSymbolizers();
+        this.symbolizers = this._createSymbolizers();
     },
 
     /**
@@ -19,12 +19,13 @@ Z.Painter = Z.Class.extend({
      */
     _createSymbolizers:function() {
         var symbol = this._getSymbol();
-        this.symbolizers = [];
+        var symbolizers = [];
         for (var i=0, len=this.registerSymbolizers.length;i<len;i++) {
             if (this.registerSymbolizers[i].test(this.geometry, symbol)) {
-                this.symbolizers.push(new this.registerSymbolizers[i](symbol, this.geometry));
+                symbolizers.push(new this.registerSymbolizers[i](symbol, this.geometry));
             }
         }
+        return symbolizers;
     },
 
     _getSymbol:function() {
@@ -35,9 +36,10 @@ Z.Painter = Z.Class.extend({
      * 绘制图形
      */
     paint:function() {
-        this._saveContext.apply(this, arguments);
+        this._painted = true;
+        var contexts = this.geometry.getLayer()._getRender().getPaintContext();
         for (var i = this.symbolizers.length - 1; i >= 0; i--) {
-            this.symbolizers[i].symbolize.apply(this.symbolizers[i], arguments);
+            this.symbolizers[i].symbolize.apply(this.symbolizers[i], contexts);
         }
         this._registerEvents();
     },
@@ -71,24 +73,11 @@ Z.Painter = Z.Class.extend({
         return result;
     },
 
-    /**
-     * 保存paint被调用时的参数context, 以备未来刷新symbolizer时使用
-     */
-    _saveContext:function() {
-        //context只需要save一次即可
-        if (this.context) {
-            return;
-        }
-        var layer = this.geometry.getLayer();
-        if (layer.isCanvasRender()) {
-            this.context = arguments;
-        } else {
-            //第3和第4个参数是真正的容器, 第1和第2个是为了提高效率而临时构造出来的fragment
-            this.context = [arguments[3], arguments[4]];
-        }
-    },
 
     _eachSymbolizer:function(fn,context) {
+        if (!this._painted) {
+            return;
+        }
         if (!context) {
             context = this;
         }
@@ -100,11 +89,12 @@ Z.Painter = Z.Class.extend({
     //需要实现的接口方法
     getPixelExtent:function() {
         if (!this.pxExtent) {
-            this.pxExtent = new Z.Extent();
-            for (var i = this.symbolizers.length - 1; i >= 0; i--) {
-                this.pxExtent = Z.Extent.combine(this.symbolizers[i].getPixelExtent(),this.pxExtent);
+            if (this.symbolizers) {
+                this.pxExtent = new Z.Extent();
+                for (var i = this.symbolizers.length - 1; i >= 0; i--) {
+                    this.pxExtent = Z.Extent.combine(this.symbolizers[i].getPixelExtent(),this.pxExtent);
+                }
             }
-
         }
         return this.pxExtent;
     },
@@ -116,9 +106,13 @@ Z.Painter = Z.Class.extend({
     },
 
     show:function(){
-        this._eachSymbolizer(function(symbolizer) {
-            symbolizer.show();
-        });
+        if (!this._painted) {
+            this.paint();
+        } else {
+            this._eachSymbolizer(function(symbolizer) {
+                symbolizer.show();
+            });
+        }
         this._rendCanvas();
     },
 
@@ -152,13 +146,30 @@ Z.Painter = Z.Class.extend({
     },
 
     refreshSymbol:function() {
-        this._removeSymbolizers();
-        this._createSymbolizers();
-        this.paint.apply(this, this.context);
+        if (!this.symbolizers) {
+            return;
+        }
+        //判断新的symbol是否需要重新建立symbolizers
+        var symbolizers = this._createSymbolizers();
+        var needRefresh = false;
+        if (symbolizers.length === this.symbolizers.length) {
+            for (var i = this.symbolizers.length - 1; i >= 0; i--) {
+                if (this.symbolizers[i].constructor!==symbolizers[i].constructor) {
+                    needRefresh = true;
+                    break;
+                }
+            }
+        } else {
+            needRefresh = true;
+        }
+        if (needRefresh) {
+            this._removeSymbolizers();
+            this.symbolizers = symbolizers;
+            this.paint();
+        }
     },
 
     remove:function() {
-        delete this.context;
         this._removeSymbolizers();
     },
 
@@ -167,5 +178,6 @@ Z.Painter = Z.Class.extend({
         this._eachSymbolizer(function(symbolizer) {
             symbolizer.remove();
         });
+        delete this.symbolizers;
     }
 });

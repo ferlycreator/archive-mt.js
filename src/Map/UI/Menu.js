@@ -4,19 +4,7 @@
  * @extends maptalks.Class
  * @author Maptalks Team
  */
-Z['Menu'] = Z.Menu = Z.Class.extend({
-
-    /**
-     * @cfg {Object} exceptionDefs 异常信息定义
-     */
-    exceptionDefs:{
-        'en-US':{
-            'ONLY_MAP_OR_GEOMETRY_CAN_ADD_MENU': 'The menu only can add to  map or geometry.'
-        },
-        'zh-CN':{
-            'ONLY_MAP_OR_GEOMETRY_CAN_ADD_MENU': '只有Map或Geometry对象才能添加菜单。'
-        }
-    },
+Z.Menu = Z.Class.extend({
 
     /**
      * @cfg {Object} options menu属性
@@ -25,7 +13,6 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
         'width' : 160,
         'style' : 'default',//black|white
         'position' : null,
-        'beforeOpen': null,
         'items' : []
     },
 
@@ -37,10 +24,8 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
      * @expose
      */
     initialize: function(options) {
-        if(options) {
-            this.setOptions(options);
-        }
-        this._menuDom = this._createMenuDom();
+
+        this.setOptions(options);
         return this;
     },
 
@@ -55,14 +40,18 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
         } else { //Geometry的情况
             this._map = target.getMap();
         }
-        if(!this._map) {
-            throw new Error(this.exceptions['ONLY_MAP_OR_GEOMETRY_CAN_ADD_MENU']);
-        }
         this._target = target;
+
         var popMenuContainer = this._map._panels.popMenuContainer;
-        popMenuContainer.innerHTML = '';
-        popMenuContainer.appendChild(this._menuDom);
-        this._addEvent();
+        this._menuDom = popMenuContainer._menuDom;
+        if (!this._menuDom) {
+            this._menuDom = this._createMenuDom();
+            popMenuContainer.innerHTML = '';
+            popMenuContainer.appendChild(this._menuDom);
+            popMenuContainer._menuDom = this._menuDom;
+            Z.DomUtil.on(this._menuDom, 'mousedown dblclick', Z.DomUtil.stopPropagation);
+            this._registerEvents();
+        }
         return this;
     },
 
@@ -70,7 +59,7 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
      * 显示菜单前
      * @param {Object} param 参数
      */
-    beforeOpen: function(param) {
+    /*beforeOpen: function(param) {
         var beforeOpenFn = this.options.beforeOpen;
         if(beforeOpenFn){
             var argLen = beforeOpenFn.length;
@@ -82,7 +71,7 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
             }
         }
         return this;
-    },
+    },*/
 
     /**
      * 设置Map的右键菜单
@@ -90,27 +79,18 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
      * @expose
      */
     setOptions: function(options) {
-        if (!options) {
-            return;
+        if(!options) {
+            options = {};
         }
-        if (!options.width) {
-            options.width = 160;
+        if (!options['width']) {
+            options['width'] = 160;
         }
-        if(!options.style||options.style === 'default') {
-            options.style = '';
+        if(!options['style'] || options['style'] === 'default') {
+            options['style'] = '';
         } else {
-            options.style = '-' + options.style;
+            options['style'] = '-' + options['style'];
         }
-        if(this.options) {
-            this.options.width = options.width;
-            this.options.style = options.style;
-            this.options.items = options.items;
-            if(options.beforeOpen) {
-                this.options.beforeOpen = options.beforeOpen;
-            }
-        } else {
-            this.options = options;
-        }
+        Z.Util.setOptions(this,options);
     },
 
    /**
@@ -129,15 +109,17 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
      * @expose
      */
     setItems: function(items) {
-        var options = this.getOptions() || this.options;
-        options.items = items;
-        this._menuDom = this._createMenuDom();
-        if(this._map) {
-            var popMenuContainer = this._map._panels.popMenuContainer;
-            popMenuContainer.innerHTML = '';
-            popMenuContainer.appendChild(this._menuDom);
-        }
+        var options = this.options;
+        options['items'] = items;
         return this;
+    },
+
+    /**
+     * 获取设置的菜单项
+     * @return {[type]} [description]
+     */
+    getItems:function() {
+        return this.options['items'];
     },
 
     /**
@@ -154,6 +136,7 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
      */
     remove: function() {
         this.hide();
+        this._removeEvent();
         delete this.options;
         return this;
     },
@@ -163,11 +146,9 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
      * @expose
      */
     hide: function() {
-        if (this.isOpen()) {
-            this._menuDom.style.display='none';
-            if (this._target.hasListeners && this._target.hasListeners('closemenu')) {
-                this._target.fire('closemenu');
-            }
+        this._menuDom.style.display='none';
+        if (this._target.hasListeners && this._target.hasListeners('closemenu')) {
+            this._target.fire('closemenu');
         }
     },
 
@@ -186,14 +167,25 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
      * @expose
      */
     show: function(coordinate) {
-        var options = this.options;
+        this._target.fire('beforeopenmenu');
         var pxCoord = this._getShowPosition(coordinate);
-        if (Z.Util.isNil(pxCoord) || Z.Util.isNil(options)) {
-            return this;
-        }
+        this._menuDom.innerHTML='';
         this._menuDom.style.top = pxCoord.top+'px';
         this._menuDom.style.left = pxCoord.left+'px';
+        this._menuItemsDom = this._createMenuItemDom();
+        this._menuDom.appendChild(this._menuItemsDom);
+        var suffix = this.options['style'];
+        Z.DomUtil.setClass(this._menuDom, 'maptalks-menu');
+        Z.DomUtil.addClass(this._menuDom, 'maptalks-menu-color'+suffix);
         this._menuDom.style.display = 'block';
+        if (this._target.hasListeners && this._target.hasListeners('openmenu')) {
+            /**
+             * 触发Menu的openmenu事件
+             * @event openmenu
+             * @return {Object} params: {'target':this}
+             */
+            this._target.fire('openmenu');
+        }
         return this;
     },
 
@@ -201,11 +193,8 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
         var menuContainer = Z.DomUtil.createEl('div');
         menuContainer.style.display = 'none';
         menuContainer.style.width = this.options.width+'px';
-        var suffix = this.options.style;
-        Z.DomUtil.setClass(menuContainer, 'maptalks-menu');
-        Z.DomUtil.addClass(menuContainer, 'maptalks-menu-color'+suffix);
-        this._menuItemsDom = this._createMenuItemDom();
-        menuContainer.appendChild(this._menuItemsDom);
+        // this._menuItemsDom = this._createMenuItemDom();
+        // menuContainer.appendChild(this._menuItemsDom);
         return menuContainer;
     },
 
@@ -253,32 +242,15 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
     },
 
     //菜单监听地图的事件
-    _addEvent: function() {
-        if(!this._menuDom.addEvent) {
-            this.hide();
-            this._removeEvent();
-            this._map.on('_zoomstart _zoomend _movestart _dblclick', this.hide, this);
-            this._menuDom.addEvent = true;
-            if (this._target.hasListeners && this._target.hasListeners('openmenu')) {
-                /**
-                 * 触发Menu的openmenu事件
-                 * @event openmenu
-                 * @return {Object} params: {'target':this}
-                 */
-                this._target.fire('openmenu');
-            }
-        }
+    _registerEvents: function() {
+        this._removeEvent();
+        this._map.on('_zoomstart _zoomend _movestart _dblclick _click', this.hide, this);
+
     },
 
     //菜单监听地图的事件
     _removeEvent: function() {
-        this._map.off('_zoomstart _zoomend _movestart _dblclick', this.hide, this);
-    },
-
-    //清理之前的事件，重新绑定新的事件
-    _clearDomAndBindEvent: function() {
-        Z.DomUtil.removeDomNode(this._menuDom);
-        this._addEvent();
+        this._map.off('_zoomstart _zoomend _movestart _dblclick _click', this.hide, this);
     },
 
     //获取菜单显示位置
@@ -288,10 +260,17 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
             coordinate = this.options['position'];
         }
         if(coordinate){
+            if (coordinate['domEvent']) {
+                //禁止Geometry的事件传递到map上, map的菜单会覆盖Geometry的
+                Z.DomUtil.stopPropagation(coordinate['domEvent']);
+            }
+            if (coordinate['containerPoint']) {
+                coordinate = coordinate['containerPoint'];
+            }
             if(coordinate instanceof Z.Coordinate) {
                 position = this._map.coordinateToViewPoint(coordinate);
             } else {
-                position = coordinate;
+                position = this._map._containerPointToViewPoint(coordinate);
             }
         } else {
             var center = this._target.getCenter();
@@ -301,3 +280,122 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
     }
 
 });
+
+
+Z.Menu.Handler={
+    /**
+    * 设置Geometry的菜单
+    * @param {Object} options 菜单项 {"items":[], width:240, beforeopen:fn}
+    * @member maptalks.Geometry
+    * @expose
+    */
+    setMenu: function(options) {
+        this._menuOptions = options;
+        if (this._menu) {
+            this._menu.setOptions(options);
+        } else {
+            this.on('contextmenu', this._defaultOpenMenu, this);
+        }
+        return this;
+    },
+
+    _bindMenu: function(options) {
+        this._menu = new Z.Menu(options);
+        this._menu.addTo(this);
+
+        return this;
+    },
+
+    _unbindMenu:function() {
+        if (this._menu) {
+            this.closeMenu();
+            this._menu.remove();
+            delete this._menu;
+        }
+        return this;
+    },
+
+     /**
+     * 应用没有注册contextmenu事件时, 默认在contextmenu事件时打开右键菜单
+     * 如果注册过contextmenu事件, 则不做任何操作
+     * @param  {[type]} param [description]
+     * @return {[type]}       [description]
+     */
+    _defaultOpenMenu:function(param) {
+        if (this.hasListeners('contextmenu')>1) {
+            return;
+        } else {
+            this.openMenu(param);
+        }
+    },
+
+    /**
+    * 打开geometry菜单
+    * @param {maptalks.Coordinate} 坐标
+    * @member maptalks.Geometry
+    * @expose
+    */
+    openMenu: function(coordinate) {
+        var map = (this instanceof Z.Map)?this:this.getMap();
+        if (!this._menu) {
+            if (this._menuOptions && map) {
+                this._bindMenu(this._menuOptions);
+                this._menu.show(coordinate);
+            }
+        } else {
+            this._menu.show(coordinate);
+        }
+        return this;
+    },
+
+    /**
+    * 添加菜单项目
+    * @param {Array} 菜单项数组
+    * @member maptalks.Geometry
+    * @expose
+    */
+    setMenuItems: function(items) {
+        if (this._menuOptions) {
+            this._menuOptions['items'] = items;
+        }
+        if (this._menu) {
+            this._menu.setItems(items);
+        }
+        return this;
+    },
+
+    /**
+     * 获得菜单项
+     * @return {[type]} [description]
+     */
+    getMenuItems:function() {
+        if (this._menu) {
+            return this._menu.getItems();
+        } else {
+            return null;
+        }
+    },
+
+    /**
+    * 关闭geometry菜单
+    * @member maptalks.Geometry
+    * @expose
+    */
+    closeMenu: function() {
+        if(this._menu) {
+            this._menu.close();
+        }
+        return this;
+    },
+
+    /**
+     * 移除menu
+     */
+    removeMenu:function() {
+        this.off('contextmenu', this._defaultOpenMenu, this);
+        this._unbindMenu();
+        delete this._menuOptions;
+        return this;
+    }
+
+};

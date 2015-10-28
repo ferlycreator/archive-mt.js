@@ -72,6 +72,7 @@ Z.Map.include({
         var data = {
             'coordinate': this.containerPointToCoordinate(containerPoint),
             'containerPoint':containerPoint,
+            /*'viewPoint':this._containerPointToViewPoint(containerPoint),*/
             'domEvent': e
         };
         //阻止右键菜单

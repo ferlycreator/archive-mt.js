@@ -24,9 +24,6 @@ Z['Layer']=Z.Layer=Z.Class.extend({
         if (!map) {return;}
         this.map = map;
         this._setZIndex(zIndex);
-/*        if (Z.Util.isNil(this._visible)) {
-            this._visible = true;
-        }*/
     },
 
     /**
@@ -95,7 +92,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
             layers.push(this);
         }
         for (var i=0, len=layers.length;i<len;i++) {
-            layers[i]._setZIndex(layers[i].baseZIndex+i);
+            layers[i]._setZIndex(i);
         }
     },
 
@@ -114,7 +111,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
             layers.push(this);
         }
         for (var i=0, len=layers.length;i<len;i++) {
-            layers[i]._setZIndex(layers[i].baseZIndex+i);
+            layers[i]._setZIndex(i);
         }
     },
 

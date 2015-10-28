@@ -38,7 +38,6 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         //TODO options应该设置到this.options中
         this.map = map;
         if (!this.map) {return;}
-        this._tileConfig = map._getTileConfig();
         this.enable();
         return this;
     },
@@ -115,10 +114,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
     },
 
     _getProjection:function() {
-        if (!this._tileConfig) {
-            return null;
-        }
-        return this._tileConfig.getProjectionInstance();
+        return this.map._getProjection();
     },
 
     //注册鼠标响应事件
@@ -156,6 +152,9 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
 
     _clickForPoint: function(param) {
         var geometry = new Z.Marker(param['coordinate']);
+        if (this.symbol) {
+            geometry.setSymbol(this.symbol);
+        }
         param['geometry'] = geometry;
         /**
          * 触发 drawstart 事件

@@ -477,17 +477,31 @@ Z.Util = {
         return option;
     },
 
+    //改原先的regex名字为xWithQuote；不带引号的regex，/^url\(([^\'\"].*[^\'\"])\)$/i，为xWithoutQuote。然后在is函数里||测试，extract函数里if...else处理。没引号的匹配后，取matches[1]
+
     // match: url('x'), url("x").
     // TODO: url(x)
-    cssUrlRe: /^url\(([\'\"])(.+)\1\)$/i,
+    cssUrlReWithQuote: /^url\(([\'\"])(.+)\1\)$/i,
+
+    cssUrlRe:/^url\(([^\'\"].*[^\'\"])\)$/i,
 
     isCssUrl: function (str) {
-        return Z.Util.cssUrlRe.test(str);
+         if (Z.Util.cssUrlRe.test(str)) {
+            return 1;
+         }
+         if (Z.Util.cssUrlReWithQuote.test(str)) {
+            return 2;
+         }
+         return 0;
     },
 
     extractCssUrl: function (str) {
-        if (Z.Util.isCssUrl(str)) {
-            var matches = Z.Util.cssUrlRe.exec(str);
+        var test = Z.Util.isCssUrl(str), matches;
+        if (test === 1) {
+            matches = Z.Util.cssUrlRe.exec(str);
+            return matches[1];
+        } if (test === 2) {
+            matches = Z.Util.cssUrlReWithQuote.exec(str);
             return matches[2];
         } else {
             // return as is if not an css url
