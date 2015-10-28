@@ -41,7 +41,7 @@
             //工具项
             items: [{
                 type : 'button',
-                icon: 'pic_grey.png',
+                icon: 'picture.png',
                 click : function(param){
                     mapObj.on('mousedown', markerPicLabel);
                 }
@@ -93,8 +93,8 @@
             'markerFile': url,
             'markerWidth': 128,
             'markerHeight': 128,
-            'markerDx': 64,
-            'markerDy' :0
+            'markerDx': 0,
+            'markerDy' :64
         };
         //创建点对象
         var marker = new maptalks.Marker(coordinate,{'draggable':true});
