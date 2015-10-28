@@ -79,9 +79,7 @@ Z.DomUtil = {
             }
             var hit = Z.DomUtil.hasDomEvent(obj,type,handler);
             if (hit >= 0) {
-                //return Z.DomUtil;
                 Z.DomUtil.removeDomEvent(obj,type,handler);
-                // obj['Z__'+type].splice(hit,1);
             }
             obj['Z__'+type].push({callback:eventHandler,src:handler});
             if ('addEventListener' in obj) {

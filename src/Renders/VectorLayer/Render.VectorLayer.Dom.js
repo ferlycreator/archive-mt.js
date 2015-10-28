@@ -1,6 +1,8 @@
 Z.render.vectorlayer.Dom = function(layer) {
     this._layer = layer;
     this._registerEvents();
+    this._layerContainer = this.getMap()._getRender().getLayerRenderContainer(this._layer);
+    this._vectorPaper = this.getMap()._getRender().getSvgPaper();
 };
 
 Z.render.vectorlayer.Dom.prototype= {
@@ -45,48 +47,48 @@ Z.render.vectorlayer.Dom.prototype= {
      * @return {[type]}            [description]
      */
     rend:function(geometries) {
-        if (!this._layerContainer) {
-            this._layerContainer = this.getMap()._getRender().getLayerRenderContainer(this._layer);
-        }
         if (!geometries) {
             this._rendAll();
             return;
         }
-        var vectorPaper = this.getMap()._getRender().getSvgPaper();
-        var fragment = document.createDocumentFragment();
-        var vectorFragment = document.createDocumentFragment();
+
+        this._contexts = [document.createDocumentFragment(), document.createDocumentFragment()];
         for (var i=0,len=geometries.length;i<len;i++) {
             var geo = geometries[i];
-            if (!geo) {
+            if (!geo || !geo.isVisible()) {
                 continue;
             }
             if (geo._getPainter()) {
-                geo._getPainter().paint(fragment, vectorFragment, this._zIndex, this._layerContainer, vectorPaper);
+                geo._getPainter().paint();
             }
         }
-        this._layerContainer.appendChild(fragment);
-        vectorPaper.appendChild(vectorFragment);
+        this._layerContainer.appendChild(this._contexts[0]);
+        this._vectorPaper.appendChild(this._contexts[1]);
+        delete this._contexts;
     },
 
 
 
     _rendAll:function() {
-        var layerContainer = this._layerContainer;
-        var zIndex = this._zIndex;
-        var vectorPaper = this.getMap()._getRender().getSvgPaper();
-        var fragment = document.createDocumentFragment();
-        var vectorFragment = document.createDocumentFragment();
+        this._contexts = [document.createDocumentFragment(), document.createDocumentFragment()];
         this._layer._eachGeometry(function(geo) {
-            if (geo._getPainter()) {
-                geo._getPainter().paint(fragment, vectorFragment,  zIndex, layerContainer, vectorPaper);
+            if (geo._getPainter() && geo.isVisible()) {
+                geo._getPainter().paint();
             }
         });
-        this._layerContainer.appendChild(fragment);
-        vectorPaper.appendChild(vectorFragment);
+        this._layerContainer.appendChild(this._contexts[0]);
+        this._vectorPaper.appendChild(this._contexts[1]);
+        delete this._contexts;
     },
 
+    getPaintContext:function() {
 
-
+        if (this._contexts) {
+            return this._contexts.concat([this._zIndex]);
+        } else {
+            return [this._layerContainer,this._vectorPaper, this._zIndex];
+        }
+    },
 
     setZIndex:function(zIndex) {
         this._zIndex=zIndex+this.baseZIndex;

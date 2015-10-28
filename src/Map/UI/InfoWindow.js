@@ -300,8 +300,6 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         var pxCoord = this._getShowPosition(coordinate);
         var tipDom = this._tipDom;
         tipDom.style.display = '';
-        console.log(tipDom.clientWidth+','+tipDom.clientHeight);
-        console.log(this.options['width']);
         var tipCoord = new Z.Point(
             parseInt(pxCoord['left']-parseInt(tipDom.clientWidth)/2+45),
             parseInt(pxCoord['top']-parseInt(tipDom.clientHeight))

@@ -38,6 +38,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     },
 
     options:{
+        'visible':true,
         'editable':true
     },
 
@@ -288,9 +289,9 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     show:function() {
-        this._visible = true;
-        if (this._painter) {
-            this._painter.show();
+        this.options['visible'] = true;
+        if (this.getMap()) {
+            this._getPainter().show();
         }
         return this;
     },
@@ -300,9 +301,9 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     hide:function() {
-        this._visible = false;
-        if (this._painter) {
-            this._painter.hide();
+        this.options['visible'] = false;
+        if (this.getMap()) {
+            this._getPainter().hide();
         }
         return this;
     },
@@ -348,10 +349,8 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     isVisible:function() {
-        if (Z.Util.isNil(this._visible)) {
-            return true;
-        }
-        return this._visible;
+
+        return this.options['visible'];
     },
 
     /**

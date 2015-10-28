@@ -24,9 +24,6 @@ Z['Layer']=Z.Layer=Z.Class.extend({
         if (!map) {return;}
         this.map = map;
         this._setZIndex(zIndex);
-/*        if (Z.Util.isNil(this._visible)) {
-            this._visible = true;
-        }*/
     },
 
     /**
