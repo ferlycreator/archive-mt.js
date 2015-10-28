@@ -252,7 +252,7 @@ Z.Label = Z.Class.extend({
             var linkerOptions = {
                 linkSource:this._label,
                 linkTarget:this._geometry,
-                trigger: 'click',
+//                trigger: 'click',
                 symbol:{
                     'lineColor' : '#ff0000',
                     'lineWidth' : 1,

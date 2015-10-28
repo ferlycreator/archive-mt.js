@@ -7,9 +7,9 @@
     <style type="text/css">
         html,body{ margin:0px; height:100%; };
     </style>
-    <title>MapTalks 示例: 自定义文本标签</title>
+    <title>MapTalks 示例: 图片标签</title>
 </head>
-<body scroll="no" onload="initMap();">
+<body scroll="no" onload="initMap();" style="width:99%;height:99%;">
 <div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
 <script type="text/javascript" >
     var mapObj,layer;
@@ -41,9 +41,9 @@
             //工具项
             items: [{
                 type : 'button',
-                icon: 'font_grey.png',
+                icon: 'pic_grey.png',
                 click : function(param){
-                     mapObj.on('click', markerLabel);
+                    mapObj.on('mousedown', markerPicLabel);
                 }
             }]
         });
@@ -59,12 +59,12 @@
             'style': 'black', //black|white
             'items' : [{'item': '添加标签', 'callback': function() {
                 var param = {coordinate:marker};
-                markerLabel(param);
+                markerPicLabel(param);
             }}]
         };
         //将菜单绑定到图形上
         marker.setMenu(menuOptions);
-        //设置打开菜单的事件
+        //设置打开菜单事件
         marker.on('click', function(){
             marker.openMenu();
         });
@@ -72,45 +72,44 @@
         layer.addGeometry(marker);
     }
 
-    function markerLabel(param) {
+    function getPicSize(url) {
+        var imageDom = document.getElementById('IMAGE_MARKER');
+        imageDom.src = url;
+        var image = new Image();
+        image.src = imageDom.src;
+        var width = image.width;
+        var height = image.height;
+        return {width:width,height:height};
+    }
+
+    function markerPicLabel(param) {
         var coordinate = param.coordinate;
-        //设置label属性
-        var options = {
-            'symbol': {
-                'lineColor': '#ff0000',
-                'lineWidth': 1,
-                'lineOpacity': 0.9,
-                'lineDasharray': null,
-                'fill': '#4e98dd',
-                'fillOpacity': 0.9,
-
-                'textFaceName': 'arial',
-                'textSize': 12,
-                'textFill': '#ff0000',
-                'textOpacity': 1,
-                'textSpacing': 30,
-                'textWrapWidth': null,//auto
-                'textWrapBefore': false,
-                'textWrapCharacter': '\n',
-                'textLineSpacing': 8
-            },
-            'draggable': true,
-            'horizontalAlignment': 'right',//left middle right
-            'verticalAlignment': 'top',//top middle bottom
-            'dx': 0,
-            'dy': 0,
-            'content': '文本标签',
-            'target':coordinate
+        var url = param.url;
+        if(!url) {
+            url = 'sample.png'
+        }
+        //设置图片
+        var icon = {
+            'markerFile': url,
+            'markerWidth': 128,
+            'markerHeight': 128,
+            'markerDx': 64,
+            'markerDy' :0
         };
-        //创建label
-        var label = new maptalks.Label(options).addTo(layer);
-        //label属性面板
-        var labelPropertyPanel = new LabelPropertyPanel();
+        //创建点对象
+        var marker = new maptalks.Marker(coordinate,{'draggable':true});
+        //设置点样式
+        marker.setSymbol(icon);
+        //将点添加到Layer
+        layer.addGeometry(marker);
 
-        label.on('click', function(){
-            labelPropertyPanel.addTo(label);
+        //picture属性面板
+        var picturePropertyPanel = new PicturePropertyPanel();
+
+        marker.on('click', function(){
+            picturePropertyPanel.addTo(marker);
         });
-        mapObj.off('click', markerLabel);
+        mapObj.off('mousedown', markerPicLabel);
     }
 </script>
 <!-- 引擎javascript开发包-->

@@ -140,14 +140,14 @@ Z['Control'] = Z.Control = Z.Class.extend({
      *显示label属性面板
      */
     show: function() {
-        this._container.parentNode.style.display="";
+        this._container.style.display="";
     },
 
     /**
      *隐藏label属性面板
      */
     hide: function() {
-        this._container.parentNode.style.display="none";
+        this._container.style.display="none";
     },
 
     /**

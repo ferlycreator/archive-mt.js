@@ -36,8 +36,8 @@ LabelPropertyPanel.prototype = {
     _registEvent: function() {
         var me = this;
         this._map.on('moving zoomend', this._setPanelPosition, this)
-                 .on('movestart', this.hide, this)
-                 .on('moveend', this.show, this);
+                 .on('movestart', this.hide, this);
+                 // .on('moveend', this.show, this);
 
         this._label.on('positionchanged', this._setPanelPosition, this)
                    .on('dragstart', this.hide, this)
@@ -47,8 +47,8 @@ LabelPropertyPanel.prototype = {
     _removeEvent: function() {
         var me = this;
         this._map.off('moving zoomend', this._setPanelPosition, this)
-                 .off('movestart', this.hide, this)
-                 .off('moveend', this.show, this);
+                 .off('movestart', this.hide, this);
+                 // .off('moveend', this.show, this);
 
         this._label.off('positionchanged', this._setPanelPosition, this)
                     .off('dragstart', this.hide, this)
