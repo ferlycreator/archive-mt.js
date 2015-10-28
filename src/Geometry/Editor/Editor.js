@@ -136,13 +136,41 @@ Z.Editor=Z.Class.extend({
         }
         var handle = this.createHandleDom(pixel,opts);
         var _containerDOM = this.map._containerDOM;
+        var editor = this;
+        function onMouseMoveEvent(event) {
+            var ev  = ev || window.event;
+            editor.hideContext();
+            var mousePos = Z.DomUtil.getEventContainerPoint(ev,_containerDOM);
+            var handleDomOffset = editor.map._containerPointToViewPoint(mousePos);
+            handle.style['top']=(handleDomOffset.top-5)+"px";
+            handle.style['left']=(handleDomOffset.left-5)+"px";
+            Z.DomUtil.stopPropagation(ev);
+            if (opts.onMove) {
+                opts.onMove.call(editor,handleDomOffset);
+            }
+            return false;
+        }
+        function onMouseUpEvent(event) {
+            var ev  = ev || window.event;
+            Z.DomUtil.off(document,'mousemove',onMouseMoveEvent);
+            Z.DomUtil.off(document,'mouseup',onMouseUpEvent);
+            // document.onmousemove=null;
+            // document.onmouseup=null;
+            Z.DomUtil.stopPropagation(ev);
+            if (opts.onUp) {
+                opts.onUp.call(editor);
+            }
+            return false;
+        }
         Z.DomUtil.addDomEvent(handle,'mousedown',function(event) {
-            var editor = this;
+
             if (opts.onDown) {
                 opts.onDown.call(editor);
             }
             //鼠标拖动操作
-            document.onmouseup = function(ev) {
+            Z.DomUtil.on(document,'mouseup',onMouseUpEvent);
+            Z.DomUtil.on(document,'mousemove',onMouseMoveEvent);
+            /*document.onmouseup = function(ev) {
                 ev  = ev || window.event;
                 document.onmousemove=null;
                 document.onmouseup=null;
@@ -164,7 +192,7 @@ Z.Editor=Z.Class.extend({
                     opts.onMove.call(editor,handleDomOffset);
                 }
                 return false;
-            };
+            };*/
             Z.DomUtil.stopPropagation(event);
 
             return false;

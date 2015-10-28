@@ -80,7 +80,8 @@ Z.DomUtil = {
             var hit = Z.DomUtil.hasDomEvent(obj,type,handler);
             if (hit >= 0) {
                 //return Z.DomUtil;
-                obj['Z__'+type].splice(hit,1);
+                Z.DomUtil.removeDomEvent(obj,type,handler);
+                // obj['Z__'+type].splice(hit,1);
             }
             obj['Z__'+type].push({callback:eventHandler,src:handler});
             if ('addEventListener' in obj) {
@@ -125,8 +126,8 @@ Z.DomUtil = {
             //如果handler为空,则删除所有的注册事件
             if (!handler && obj['Z__'+type]) {
                 var handlers = obj['Z__'+type];
-                for (var i=0,len=handlers.length;i<len;i++) {
-                    doRemove(handlers[i].callback);
+                for (var j=0,jlen=handlers.length;j<jlen;j++) {
+                    doRemove(handlers[j].callback);
                 }
                 delete obj['Z__'+type];
                 return this;
