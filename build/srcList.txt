@@ -36,7 +36,6 @@
 ../src/Geometry/Ext/Geometry.Edit.js
 ../src/Geometry/Ext/Geometry.Drag.js
 ../src/Geometry/Ext/Geometry.InfoWindow.js
-../src/Geometry/Ext/Geometry.Menu.js
 ../src/Geometry/Ext/Geometry.Events.js
 ../src/Geometry/Ext/Geometry.Panel.js
 ../src/Geometry/Ext/Geometry.Label.js
@@ -62,7 +61,6 @@
 ../src/Map/Map.Pan.js
 ../src/Map/Map.Zoom.js
 ../src/Map/Map.Topo.js
-../src/Map/Map.ContextMenu.js
 ../src/Map/Map.DomEvents.js
 ../src/Map/Map.Snap.js
 ../src/Map/Map.CartoCSS.js
@@ -94,9 +92,10 @@
 ../src/Renders/VectorLayer/Geometry.Canvas.js
 ../src/Renders/VectorLayer/Painter.js
 ../src/Renders/VectorLayer/CollectionPainter.js
-../src/Control/Control.js
 ../src/Map/UI/InfoWindow.js
 ../src/Map/UI/Menu.js
+../src/Map/Map.ContextMenu.js
+../src/Geometry/Ext/Geometry.Menu.js
 ../src/Control/Control.js
 ../src/Map/Control/Control.Zoom.js
 ../src/Map/Control/Control.Attribution.js
