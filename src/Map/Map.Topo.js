@@ -50,18 +50,26 @@ Z.Map.include({
         if (!opts) {
             return;
         }
-        var layers = opts['layers'];
-        if(!Z.Util.isArrayHasData(layers)) {
+        var reqLayers = opts['layers'];
+        if(!Z.Util.isArrayHasData(reqLayers)) {
             return;
+        }
+        var layers = [];
+        var i,len;
+        for (i = 0; i < reqLayers.length; i++) {
+            if (Z.Util.isString(reqLayers[i])) {
+                layers.push(this.getLayer(reqLayers[i]));
+            } else {
+                layers.push(reqLayers[i]);
+            }
         }
         var point = this.coordinateToViewPoint(opts['coordinate']);
         var fn = opts['success'];
         var hits = [];
         // var pointExtent = new Z.Extent(point, point);
-        for (var i=0, len=layers.length; i<len; i++) {
+        for (i=0, len=layers.length; i<len; i++) {
             var layer = layers[i];
-            var layerId = layer.getId();
-            if(!layer || !layer.getMap() || layerId.indexOf(Z.internalLayerPrefix) >= 0) {
+            if(!layer || !layer.getMap() || layer.getId().indexOf(Z.internalLayerPrefix) >= 0) {
                 continue;
             }
             var allGeos = layers[i].getAllGeometries();
