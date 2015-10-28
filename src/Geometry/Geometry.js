@@ -52,9 +52,14 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }*/
         var symbol = opts['symbol'];
         delete opts['symbol'];
+        var id = opts['id'];
+        delete opts['id'];
         Z.Util.setOptions(this,opts);
         if (symbol) {
             this.setSymbol(symbol);
+        }
+        if (!Z.Util.isNil(id)) {
+            this.setId(id);
         }
     },
 
