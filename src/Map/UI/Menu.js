@@ -180,6 +180,9 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
         this._menuDom.style.left = pxCoord.left+'px';
         this._menuItemsDom = this._createMenuItemDom();
         this._menuDom.appendChild(this._menuItemsDom);
+        var suffix = this.options['style'];
+        Z.DomUtil.setClass(this._menuDom, 'maptalks-menu');
+        Z.DomUtil.addClass(this._menuDom, 'maptalks-menu-color'+suffix);
         this._menuDom.style.display = 'block';
         if (this._target.hasListeners && this._target.hasListeners('openmenu')) {
             /**
@@ -196,9 +199,6 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
         var menuContainer = Z.DomUtil.createEl('div');
         menuContainer.style.display = 'none';
         menuContainer.style.width = this.options.width+'px';
-        var suffix = this.options.style;
-        Z.DomUtil.setClass(menuContainer, 'maptalks-menu');
-        Z.DomUtil.addClass(menuContainer, 'maptalks-menu-color'+suffix);
         // this._menuItemsDom = this._createMenuItemDom();
         // menuContainer.appendChild(this._menuItemsDom);
         return menuContainer;
