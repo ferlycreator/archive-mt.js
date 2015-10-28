@@ -13,19 +13,20 @@ Z.Geometry.include({
         var eventType = originalEvent.type;
         var eventFired = eventType;
         //TODO 未来需要加入touch事件
-        if (eventFired !== 'mousedown' && eventFired !== 'mouseup') {
+        /*if (eventFired !== 'mousedown' && eventFired !== 'mouseup' || e) {
             //只有mousedown和mouseup事件允许继续传递, 以让map能够拖动
             Z.DomUtil.stopPropagation(originalEvent);
-        }
+        }*/
         //事件改名
-        if (eventFired === 'contextmenu') {
-            Z.DomUtil.preventDefault(originalEvent);
-            // eventFired = 'rightclick';
-        } else if (eventFired === 'click') {
+        if ('click' === eventFired) {
             var button = originalEvent.button;
             if (button === 2) {
                 eventFired = 'contextmenu';
             }
+        }
+        if ('contextmenu' === eventFired) {
+            Z.DomUtil.stopPropagation(originalEvent);
+            Z.DomUtil.preventDefault(originalEvent);
         }
         var params = this._getEventParams(originalEvent, eventFired);
         this._fireEvent(eventFired, params);
