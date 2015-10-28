@@ -270,7 +270,7 @@ Z.Menu = Z.Class.extend({
             if(coordinate instanceof Z.Coordinate) {
                 position = this._map.coordinateToViewPoint(coordinate);
             } else {
-                position = this._map._containerPointoViewPoint(coordinate);
+                position = this._map._containerPointToViewPoint(coordinate);
             }
         } else {
             var center = this._target.getCenter();
