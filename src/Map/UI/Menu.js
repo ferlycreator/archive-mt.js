@@ -24,19 +24,8 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
      * @expose
      */
     initialize: function(options) {
-        if(!options) {
-            options = {};
-        }
-        if (!options['width']) {
-            options['width'] = 160;
-        }
-        if(!options['style'] || options['style'] === 'default') {
-            options['style'] = '';
-        } else {
-            options['style'] = '-' + options['style'];
-        }
-        Z.Util.setOptions(this,options);
 
+        this.setOptions(options);
         return this;
     },
 
@@ -89,29 +78,20 @@ Z['Menu'] = Z.Menu = Z.Class.extend({
      * @param {Array} options 菜单项
      * @expose
      */
-    /*setOptions: function(options) {
-        if (!options) {
-            return;
+    setOptions: function(options) {
+        if(!options) {
+            options = {};
         }
-        if (!options.width) {
-            options.width = 160;
+        if (!options['width']) {
+            options['width'] = 160;
         }
-        if(!options.style||options.style === 'default') {
-            options.style = '';
+        if(!options['style'] || options['style'] === 'default') {
+            options['style'] = '';
         } else {
-            options.style = '-' + options.style;
+            options['style'] = '-' + options['style'];
         }
-        if(this.options) {
-            this.options.width = options.width;
-            this.options.style = options.style;
-            this.options.items = options.items;
-            if(options.beforeOpen) {
-                this.options.beforeOpen = options.beforeOpen;
-            }
-        } else {
-            this.options = options;
-        }
-    },*/
+        Z.Util.setOptions(this,options);
+    },
 
    /**
     * 返回Map的菜单设置

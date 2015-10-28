@@ -204,14 +204,14 @@ describe('API', function () {
 
     describe('Map.ContextMenu', function() {
 
-        it('setContextMenu', function() {
+        it('setMenu', function() {
             var spy = sinon.spy();
 
             expect(function () {
-                map.setContextMenu({
+                map.setMenu({
                     items: []
                 });
-                map.setContextMenu({
+                map.setMenu({
                     items: [
                         {item: 'item1', callback: spy},
                         {item: 'item2', callback: spy}
@@ -221,7 +221,7 @@ describe('API', function () {
             }).to.not.throwException();
         });
 
-        it('setMenuItem', function() {
+        it('setMenuItems', function() {
             var spy = sinon.spy();
             var items_1 = [];
             var items_2 = [
@@ -230,8 +230,8 @@ describe('API', function () {
             ];
 
             expect(function () {
-                map.setMenuItem(items_1);
-                map.setMenuItem(items_2);
+                map.setMenuItems(items_1);
+                map.setMenuItems(items_2);
             }).to.not.throwException();
         });
 
@@ -398,7 +398,7 @@ describe('API', function () {
 
     describe('Map.UI.InfoWindow', function() {
 
-        /*it('setOption', function() {
+        it('setOption', function() {
             var win = new Z.InfoWindow();
             var options = {
                 title: 'title',
@@ -408,7 +408,7 @@ describe('API', function () {
             expect(function() {
                 win.setOptions(options);
             }).to.not.throwException();
-        });*/
+        });
 
         it('show/hide/isOpen', function() {
 

@@ -25,15 +25,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
      * @return {maptalks.InfoWindow}
      */
     initialize:function (options) {
-        if(!options) {
-            options = {};
-        }
-        if(Z.Util.isNil(options['style'])||options['style'] === 'default') {
-            options['style'] = '';
-        } else {
-            options['style'] = '-' + options['style'];
-        }
-        Z.Util.setOptions(this,options);
+        this.setOptions(options);
         return this;
     },
 
@@ -84,26 +76,17 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
      * @param {Array} options 项 {"items":[], width:240, beforeOpen:fn}
      * @expose
      */
-    /*setOptions: function(options) {
-        if (!options) {
-            return;
+    setOptions: function(options) {
+        if(!options) {
+            options = {};
         }
-        if(Z.Util.isNil(options.style)||options.style === 'default') {
-            options.style = '';
+        if(Z.Util.isNil(options['style'])||options['style'] === 'default') {
+            options['style'] = '';
         } else {
-            options.style = '-' + options.style;
+            options['style'] = '-' + options['style'];
         }
-        if(this.options) {
-            this.options.title = options.title;
-            this.options.content = options.content;
-            this.options.style = options.style;
-            if(options.beforeOpen) {
-                this.options.beforeOpen = options.beforeOpen;
-            }
-        } else {
-            this.options = options;
-        }
-    },*/
+        Z.Util.setOptions(this,options);
+    },
 
     /**
      * 返回infoWindow设置
