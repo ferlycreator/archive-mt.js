@@ -13,14 +13,14 @@ Z.Geometry.include({
      * @member maptalks.Geometry
      */
     startDrag: function(enableMapEvent) {
-        this._map = this.getMap();
-        Z.DomUtil.setStyle(this._map._containerDOM, 'cursor: move');
+        var map = this.getMap();
+        Z.DomUtil.setStyle(map._containerDOM, 'cursor: move');
         this._enableMapEvent = enableMapEvent;
         if(this._enableMapEvent) {
-            this._map.disableDrag();
+            map.disableDrag();
             this.on('mouseup', this.endDrag, this);
         }
-        this._map.on('_mousemove', this._dragging, this);
+        map.on('_mousemove', this._dragging, this);
         /**
          * 触发geometry的dragstart事件
          * @member maptalks.Geometry
@@ -31,6 +31,7 @@ Z.Geometry.include({
     },
 
     _dragging: function(param) {
+        var map = this.getMap();
         this._isDragging = true;
         this.endPosition = param['containerPoint'];
         if(!this.startPosition) {
@@ -42,8 +43,8 @@ Z.Geometry.include({
         );
         var center = this.getCenter();
         if(!center||!center.x||!center.y) {return;}
-        var geometryPixel = this._map.coordinateToViewPoint(center);
-        var mapOffset = this._map.offsetPlatform();
+        var geometryPixel = map.coordinateToViewPoint(center);
+        var mapOffset = map.offsetPlatform();
         var newPosition = new Z.Point(
             geometryPixel['left'] + dragOffset['left'] - mapOffset['left'],
             geometryPixel['top'] + dragOffset['top'] - mapOffset['top']
@@ -53,23 +54,23 @@ Z.Geometry.include({
             || this instanceof Z.Circle
             || this instanceof Z.Ellipse
             || this instanceof Z.Sector) {
-            var pcenter = this._map._untransformFromViewPoint(newPosition);
+            var pcenter = map._untransformFromViewPoint(newPosition);
             this._setPCenter(pcenter);
         } else if (this instanceof Z.Rectangle) {
             var coordinate = this.getCoordinates();
             if(!coordinate||!coordinate.x||!coordinate.y) {return;}
-            var geometryPixel = this._map.coordinateToViewPoint(coordinate);
+            var geometryPixel = map.coordinateToViewPoint(coordinate);
             var newPosition = new Z.Point(
                 geometryPixel['left'] + dragOffset['left'] - mapOffset['left'],
                 geometryPixel['top'] + dragOffset['top'] - mapOffset['top']
             );
-            var pCoordinate = this._map._untransformFromViewPoint(newPosition);
+            var pCoordinate = map._untransformFromViewPoint(newPosition);
             this._setPNw(pCoordinate);
         } else if (this instanceof Z.Polyline) {
             var lonlats = this.getCoordinates();
             for (var i=0,len=lonlats.length;i<len;i++) {
-                var plonlat = this._map.coordinateToViewPoint(lonlats[i]);
-                var coordinate = this._map._untransformFromViewPoint(new Z.Point(plonlat['left']+dragOffset['left'] - mapOffset['left'],
+                var plonlat = map.coordinateToViewPoint(lonlats[i]);
+                var coordinate = map._untransformFromViewPoint(new Z.Point(plonlat['left']+dragOffset['left'] - mapOffset['left'],
                         plonlat['top']+dragOffset['top'] - mapOffset['top']));
                 lonlats[i].x = coordinate.x;
                 lonlats[i].y = coordinate.y;
@@ -81,8 +82,8 @@ Z.Geometry.include({
            for (var i=0,len=lonlats.length;i<len;i++) {
                 var coordinates = lonlats[i];
                 for (var j=0,clen=coordinates.length;j<clen;j++) {
-                    var plonlat = this._map.coordinateToViewPoint(coordinates[j]);
-                    var coordinate = this._map._untransformFromViewPoint(new Z.Point(
+                    var plonlat = map.coordinateToViewPoint(coordinates[j]);
+                    var coordinate = map._untransformFromViewPoint(new Z.Point(
                         plonlat['left']+dragOffset['left'] - mapOffset['left'],
                         plonlat['top']+dragOffset['top'] - mapOffset['top']
                     ));
@@ -105,11 +106,12 @@ Z.Geometry.include({
      * 结束移动Geometry, 退出移动模式
      */
     endDrag: function(param) {
+        var map = this.getMap();
         this._isDragging = false;
         if(this._enableMapEvent) {
-            this._map.enableDrag();
+            map.enableDrag();
         }
-        this._map.off('_mousemove', this._dragging, this);
+        map.off('_mousemove', this._dragging, this);
         /**
          * 触发geometry的dragend事件
          * @member maptalks.Geometry
@@ -117,7 +119,7 @@ Z.Geometry.include({
          * @return {Object} params: {'target':this}
          */
         this._fireEvent('dragend', param);
-        Z.DomUtil.setStyle(this._map._containerDOM, 'cursor: default');
+        Z.DomUtil.setStyle(map._containerDOM, 'cursor: default');
     },
 
     /**
