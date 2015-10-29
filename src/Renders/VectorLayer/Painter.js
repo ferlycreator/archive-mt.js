@@ -130,7 +130,7 @@ Z.Painter = Z.Class.extend({
     },
 
     refresh:function(){
-        this.pxExtent = null;
+        this._removeCache();
         this._eachSymbolizer(function(symbolizer) {
             symbolizer.refresh();
         });
@@ -152,38 +152,35 @@ Z.Painter = Z.Class.extend({
     },
 
     refreshSymbol:function() {
-        if (!this.symbolizers) {
+        if (!this._painted) {
             return;
         }
-        //判断新的symbol是否需要重新建立symbolizers
-        var symbolizers = this._createSymbolizers();
-        var needRefresh = false;
-        if (symbolizers.length === this.symbolizers.length) {
-            for (var i = this.symbolizers.length - 1; i >= 0; i--) {
-                if (this.symbolizers[i].constructor!==symbolizers[i].constructor) {
-                    needRefresh = true;
-                    break;
-                }
-            }
+        this._removeCache();
+        this.symbolizers = this._createSymbolizers();
+        var layer = this.geometry.getLayer();
+        if (layer.isCanvasRender()) {
+            this._rendCanvas();
         } else {
-            needRefresh = true;
-        }
-        if (needRefresh) {
-            this._removeSymbolizers();
-            this.symbolizers = symbolizers;
             this.paint();
         }
     },
 
     remove:function() {
+        this._removeCache();
         this._removeSymbolizers();
     },
 
     _removeSymbolizers:function() {
-        delete this.pxExtent;
         this._eachSymbolizer(function(symbolizer) {
             symbolizer.remove();
         });
         delete this.symbolizers;
+    },
+
+    /**
+     * 删除缓存属性
+     */
+    _removeCache:function() {
+        delete this.pxExtent;
     }
 });
