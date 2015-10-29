@@ -207,7 +207,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
         icon = symbol['shieldFile'];
         if (icon && isRel(icon)) {
-            symbol['markerFile'] = absolute(location.href,icon);
+            symbol['shieldFile'] = absolute(location.href,icon);
         }
         var fill = symbol['polygonPatternFile'];
         if (fill) {

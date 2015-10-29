@@ -79,7 +79,7 @@ LabelPropertyPanel.prototype = {
             //工具项
             items: [{
                 type : 'button',
-                icon: 'trash.png',
+                icon: '../../toolbox/label/images/trash.png',
                 click : function(){
                     if(confirm('您确认要删除该文本标签！')){
                         me._removeEvent();
@@ -89,7 +89,7 @@ LabelPropertyPanel.prototype = {
                 }
             }, {
                 type : 'button',
-                icon : 'paint.png',
+                icon : '../../toolbox/label/images/paint.png',
                 html: true,
                 trigger: 'click',
                 content: bgDom,
@@ -103,7 +103,7 @@ LabelPropertyPanel.prototype = {
                 })
             }, {
                 type : 'button',
-                icon: 'stroke.png',
+                icon: '../../toolbox/label/images/stroke.png',
                 html: true,
                 trigger: 'click',
                 content: borderDom,
@@ -118,7 +118,7 @@ LabelPropertyPanel.prototype = {
 
             }, {
                 type : 'button',
-                icon: 'font.png',
+                icon: '../../toolbox/label/images/font.png',
                 html: true,
                 trigger: 'click',
                 content: textColorDom,
@@ -137,7 +137,7 @@ LabelPropertyPanel.prototype = {
 
             }, {
                 type : 'button',
-                icon: 'edit.png',
+                icon: '../../toolbox/label/images/edit.png',
                 click : function(){
                     me._label.startEdit();
                     var textEditor = me._label._textEditor;
@@ -149,7 +149,7 @@ LabelPropertyPanel.prototype = {
                 }
             }, {
                 type : 'button',
-                icon: 'stop_edit.png',
+                icon: '../../toolbox/label/images/stop_edit.png',
                 click : function(){
                     me._label.endEdit();
                     var textEditor = me._label._textEditor;
@@ -157,7 +157,7 @@ LabelPropertyPanel.prototype = {
                 }
             }, {
                 type : 'button',
-                icon: 'close.png',
+                icon: '../../toolbox/label/images/close.png',
                 click : function(){
                     me._panel.hide();
                 }

@@ -74,7 +74,7 @@ PicturePropertyPanel.prototype = {
             //工具项
             items: [{
                 type : 'button',
-                icon: 'trash.png',
+                icon: '../../toolbox/picture/images/trash.png',
                 click : function(){
                     if(confirm('您确认要删除该文本标签！')){
                         me._removeEvent();
@@ -93,20 +93,20 @@ PicturePropertyPanel.prototype = {
             },
             /**{
                 type : 'button',
-                icon: 'edit.png',
+                icon: '../../toolbox/picture/images/edit.png',
                 click : function(){
 
                 }
             }, {
                 type : 'button',
-                icon: 'stop_edit.png',
+                icon: '../../toolbox/picture/images/stop_edit.png',
                 click : function(){
 
                 }
             },*/
              {
                 type : 'button',
-                icon: 'close.png',
+                icon: '../../toolbox/picture/images/close.png',
                 click : function(){
                     me._panel.hide();
                 }
@@ -122,7 +122,7 @@ PicturePropertyPanel.prototype = {
         aDom.style.cssText='position:relative;display:inline-block;overflow:hidden;';
         var imageDom = maptalks.DomUtil.createEl('img');
         imageDom.border=0;
-        imageDom.src = 'upload.png';
+        imageDom.src = '../../toolbox/picture/images/upload.png';
         aDom.appendChild(imageDom);
         var inputDom = maptalks.DomUtil.createEl('input');
         inputDom.type = 'file';

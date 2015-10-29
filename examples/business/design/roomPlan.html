@@ -51,7 +51,7 @@
                     'height':512
                 }
             },
-            urlTemplate:'blank.png',//瓦片url
+            urlTemplate:'images/blank.png',//瓦片url
             repeatWorld:true //超出范围的底图瓦片是否继续循环显示, 默认为true
         }));
 
@@ -95,31 +95,37 @@
             //工具项
             items: [{
                 type : 'button',
-                icon: 'polyline.png',
+                icon: 'images/polyline.png',
                 click : function(){
                     drawTool.setMode(maptalks.Geometry.TYPE_LINESTRING);
                     drawTool.enable();
                 }
             }, {
                 type : 'button',
-                icon: 'polygon.png',
+                icon: 'images/polygon.png',
                 click : function(){
                     drawTool.setMode(maptalks.Geometry.TYPE_POLYGON);
                     drawTool.enable();
                 }
             }, {
                 type : 'button',
-                icon: 'rectangle.png',
+                icon: 'images/rectangle.png',
                 click : function(){
                     drawTool.setMode(maptalks.Geometry.TYPE_RECT);
                     drawTool.enable();
                 }
             }, {
                 type : 'button',
-                icon: 'ellipse.png',
+                icon: 'images/ellipse.png',
                 click : function(){
                     drawTool.setMode(maptalks.Geometry.TYPE_ELLIPSE);
                     drawTool.enable();
+                }
+            }, {
+                type : 'button',
+                icon: 'images/text.png',
+                click : function(){
+                    mapObj.on('click', markerLabel);
                 }
             }]
         });
@@ -134,8 +140,50 @@
         //将线添加到Layer
         layer.addGeometry(polygon);
     }
+    //标注文本信息
+    function markerLabel(param) {
+        mapObj.off('click', markerLabel);
+        var coordinate = param.coordinate;
+        //设置label属性
+        var options = {
+            'symbol': {
+                'lineColor': '#ff0000',
+                'lineWidth': 1,
+                'lineOpacity': 0.9,
+                'lineDasharray': null,
+                'fill': '#4e98dd',
+                'fillOpacity': 0.9,
+
+                'textFaceName': 'arial',
+                'textSize': 12,
+                'textFill': '#ff0000',
+                'textOpacity': 1,
+                'textSpacing': 30,
+                'textWrapWidth': null,//auto
+                'textWrapBefore': false,
+                'textWrapCharacter': '\n',
+                'textLineSpacing': 8
+            },
+            'draggable': true,
+            'horizontalAlignment': 'right',//left middle right
+            'verticalAlignment': 'top',//top middle bottom
+            'dx': 0,
+            'dy': 0,
+            'content': '文本标签',
+            'target':coordinate
+        };
+        //创建label
+        var label = new maptalks.Label(options).addTo(layer);
+        //label属性面板
+        var labelPropertyPanel = new LabelPropertyPanel();
+
+        label.on('click', function(){
+            labelPropertyPanel.addTo(label);
+        });
+    }
 </script>
 <script type="text/javascript" src="../../../maptalks.min.js"></script>
+<script type="text/javascript" src="../../toolbox/label/label_property.js"></script>
 <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
 <!--[if lt IE 9]>
   <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.min.js"></script>
