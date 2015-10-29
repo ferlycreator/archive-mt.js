@@ -57,16 +57,19 @@ PicturePropertyPanel.prototype = {
     },
 
     _setPanelPosition: function() {
+        this._panel.setPosition(this._getViewPoint());
+    },
+
+    _getViewPoint: function() {
         var mapOffset = this._map.offsetPlatform();
         var viewPoint = this._map.coordinateToViewPoint(this._imageMarker.getCenter())
                             .substract({left:this._width/2-this._dx,top:-5-this._dy})
                             .add(mapOffset);
-        this._panel.setPosition(viewPoint);
+        return viewPoint;
     },
 
     _createPanel: function() {
-        var viewPoint = this._map.coordinateToViewPoint(this._imageMarker.getCenter())
-                        .substract({left:this._width/2-this._dx,top:-5-this._dy});
+        var viewPoint = this._getViewPoint();
         var me = this;
         var panel = new maptalks.Toolbar({
             position : viewPoint,

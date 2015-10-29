@@ -43,7 +43,7 @@
                 type : 'button',
                 icon: 'images/picture.png',
                 click : function(param){
-                    mapObj.on('mousedown', markerPicLabel);
+                    mapObj.on('click', markerPicLabel);
                 }
             }]
         });
@@ -72,17 +72,8 @@
         layer.addGeometry(marker);
     }
 
-    function getPicSize(url) {
-        var imageDom = document.getElementById('IMAGE_MARKER');
-        imageDom.src = url;
-        var image = new Image();
-        image.src = imageDom.src;
-        var width = image.width;
-        var height = image.height;
-        return {width:width,height:height};
-    }
-
     function markerPicLabel(param) {
+        mapObj.off('click', markerPicLabel);
         var coordinate = param.coordinate;
         var url = param.url;
         if(!url) {
@@ -109,7 +100,6 @@
         marker.on('click', function(){
             picturePropertyPanel.addTo(marker);
         });
-        mapObj.off('mousedown', markerPicLabel);
     }
 </script>
 <!-- 引擎javascript开发包-->

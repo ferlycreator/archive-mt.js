@@ -54,15 +54,19 @@ LabelPropertyPanel.prototype = {
     },
 
     _setPanelPosition: function() {
+        this._panel.setPosition(this._getViewPoint());
+    },
+
+    _getViewPoint: function() {
         var mapOffset = this._map.offsetPlatform();
         var viewPoint = this._map.coordinateToViewPoint(this._label._center)
                             .substract({left:this._width/2,top:-5})
                             .add(mapOffset);
-        this._panel.setPosition(viewPoint);
+        return viewPoint;
     },
 
     _createPanel: function() {
-        var viewPoint = this._map.coordinateToViewPoint(this._label._center).substract({left:this._width/2,top:-5});
+        var viewPoint = this._getViewPoint();
         //背景颜色设置部分
         var bgDom = this._createBgDom();
         //边框颜色设置部分

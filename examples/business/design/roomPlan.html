@@ -13,7 +13,7 @@
 
 <div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
 <script type="text/javascript" >
-    var mapObj,drawTool,layer;
+    var mapObj,drawTool,layer,markerFile;
     function initMap(){
         //构造地图类,第一个参数为加载地图的容器，例如div的id
         mapObj = new maptalks.Map("mapObj",{
@@ -86,7 +86,6 @@
 
         //构造工具栏
         var toolbar = new maptalks.Toolbar({
-            id: 'toolbar',//toolbar id
             position : { //工具条放置位置
                 top: '20',
                 left: '10'
@@ -130,6 +129,67 @@
             }]
         });
         mapObj.addControl(toolbar);
+
+        //家具图标工具
+        //构造工具栏
+        var iconToolbar = new maptalks.Toolbar({
+            position : { //工具条放置位置
+                left: '300',
+                bottom: '20'
+            },
+            vertical : false,
+            //工具项
+            items: [{
+                type : 'button',
+                icon: 'images/icons/table.png',
+                click : function(param){
+                    addEventToMap(param);
+                }
+            }, {
+                type : 'button',
+                icon: 'images/icons/tv.png',
+                click : function(param){
+                    addEventToMap(param);
+                }
+            }, {
+                type : 'button',
+                icon: 'images/icons/drawer.png',
+                click : function(param){
+                    addEventToMap(param);
+                }
+            }, {
+                type : 'button',
+                icon: 'images/icons/pan.png',
+                click : function(param){
+                    addEventToMap(param);
+                }
+            }, {
+                type : 'button',
+                icon: 'images/icons/bed.png',
+                click : function(param){
+                    addEventToMap(param);
+                }
+            }, {
+                type : 'button',
+                icon: 'images/icons/bathroom.png',
+                click : function(param){
+                    addEventToMap(param);
+                }
+            }, {
+                type : 'button',
+                icon: 'images/icons/basin.png',
+                click : function(param){
+                    addEventToMap(param);
+                }
+            }, {
+                type : 'button',
+                icon: 'images/icons/closet.png',
+                click : function(param){
+                    addEventToMap(param);
+                }
+            }]
+        });
+        mapObj.addControl(iconToolbar);
     }
 
     //绘制完面操作
@@ -181,9 +241,43 @@
             labelPropertyPanel.addTo(label);
         });
     }
+
+    //添加标注图片时间到map上
+    function addEventToMap(param) {
+        markerFile = param.target.src;
+        mapObj.on('click', markerPicLabel);
+    }
+
+    //标注图片
+    function markerPicLabel(param) {
+        mapObj.off('click', markerPicLabel);
+        var coordinate = param.coordinate;
+        //设置图片
+        var icon = {
+            'markerFile': markerFile,
+            'markerWidth': 32,
+            'markerHeight': 32,
+            'markerDx': 0,
+            'markerDy': 16
+        };
+        //创建点对象
+        var marker = new maptalks.Marker(coordinate,{'draggable':true});
+        //设置点样式
+        marker.setSymbol(icon);
+        //将点添加到Layer
+        layer.addGeometry(marker);
+
+        //picture属性面板
+        var picturePropertyPanel = new PicturePropertyPanel();
+
+        marker.on('click', function(){
+            picturePropertyPanel.addTo(marker);
+        });
+    }
 </script>
 <script type="text/javascript" src="../../../maptalks.min.js"></script>
 <script type="text/javascript" src="../../toolbox/label/label_property.js"></script>
+<script type="text/javascript" src="../../toolbox/picture/picture_property.js"></script>
 <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
 <!--[if lt IE 9]>
   <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.min.js"></script>
