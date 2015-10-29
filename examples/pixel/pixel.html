@@ -24,7 +24,7 @@
 
     </ul>
 </div>
-<div style="width:80%;height:100%;float:right;margin-top:0px" id="mapObj"></div>
+<div style="width:100%;height:100%;" id="mapObj"></div>
 <script type="text/javascript" >
 
 var mapObj;
@@ -39,7 +39,7 @@ function mapInit() {
         zoomLevel:  0,
         enablePopTip:   true,
         enableMoveSilde:true,
-        zoomControl:true,
+        navControl:true,
         doubleClickZoom:false
     });
 
@@ -82,7 +82,7 @@ function mapInit() {
         ]
         ,{
             symbol:{
-                'polygon-opacity':0
+                'polygon-opacity':1
             }
         })
     );
