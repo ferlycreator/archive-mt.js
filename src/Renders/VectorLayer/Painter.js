@@ -157,17 +157,17 @@ Z.Painter = Z.Class.extend({
         }
         //判断新的symbol是否需要重新建立symbolizers
         var symbolizers = this._createSymbolizers();
-        var needRefresh = false;
-        if (symbolizers.length === this.symbolizers.length) {
-            for (var i = this.symbolizers.length - 1; i >= 0; i--) {
-                if (this.symbolizers[i].constructor!==symbolizers[i].constructor) {
-                    needRefresh = true;
-                    break;
-                }
-            }
-        } else {
-            needRefresh = true;
-        }
+        var needRefresh = true;
+//        if (symbolizers.length === this.symbolizers.length) {
+//            for (var i = this.symbolizers.length - 1; i >= 0; i--) {
+//                if (this.symbolizers[i].constructor!==symbolizers[i].constructor) {
+//                    needRefresh = true;
+//                    break;
+//                }
+//            }
+//        } else {
+//            needRefresh = true;
+//        }
         if (needRefresh) {
             this._removeSymbolizers();
             this.symbolizers = symbolizers;

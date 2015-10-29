@@ -118,18 +118,17 @@ PicturePropertyPanel.prototype = {
 
     _createUploadInput: function() {
         var aDom = maptalks.DomUtil.createEl('a');
-        aDom.href='javascript:;'
+        aDom.href='javascript:void(0);';
         aDom.style.cssText='position:relative;display:inline-block;overflow:hidden;';
         var imageDom = maptalks.DomUtil.createEl('img');
         imageDom.border=0;
         imageDom.src = 'upload.png';
         aDom.appendChild(imageDom);
         var inputDom = maptalks.DomUtil.createEl('input');
-        inputDom.style.cssText = 'background-image:url(upload.png)';
         inputDom.type = 'file';
+        inputDom.name = 'file';
         inputDom.accept='.gif,.jpg,.svg,.jpeg,.png';
-        inputDom.style.cssText = 'position:absolute;font-size:100px;right:0;top:0;opacity:0;';
-        inputDom.readOnly = true;
+        inputDom.style.cssText = 'cursor:pointer;position:absolute;left:0;top:0;width:100%;height:100%;z-index:999;opacity:0;';
         aDom.appendChild(inputDom);
         var me = this;
         Z.DomUtil.on(inputDom, 'change', function(param){

@@ -47,6 +47,26 @@
                 click : function(){
                     marker.endEdit();
                 }
+            }, {
+                type : 'button',
+                content: '变更样式',
+                click : function(){
+                    var icon = {
+                        'markerType': 'pin',
+                        'markerOpacity': 0.5,
+                        'markerFillOpacity': 1,
+                        'markerLineColor': '#0000ff',
+                        'markerLineWidth': 5,
+                        'markerLineOpacity': 1,
+                        'markerPlacement': 'point',
+                        'markerWidth': 30,
+                        'markerHeight': 30,
+                        'markerFill': '#ff0000',
+                        'markerDx': 0,
+                        'markerDy': 0
+                    };
+                    marker.setSymbol(icon);
+                }
             }]
         });
         mapObj.addControl(toolbar);

@@ -117,7 +117,7 @@ Z['Button'] = Z.Button = Z.Class.extend({
     _createHtmlDom : function(options) {
         var _htmlDom = Z.DomUtil.createEl('span');
         Z.DomUtil.on(_htmlDom, 'click dblclick contextmenu', Z.DomUtil.stopPropagation);
-        _htmlDom.innerHTML = options['content'];
+        _htmlDom.appendChild(options['content']);
         return _htmlDom;
     },
 

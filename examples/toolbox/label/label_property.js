@@ -37,7 +37,6 @@ LabelPropertyPanel.prototype = {
         var me = this;
         this._map.on('moving zoomend', this._setPanelPosition, this)
                  .on('movestart', this.hide, this);
-                 // .on('moveend', this.show, this);
 
         this._label.on('positionchanged', this._setPanelPosition, this)
                    .on('dragstart', this.hide, this)
@@ -48,7 +47,6 @@ LabelPropertyPanel.prototype = {
         var me = this;
         this._map.off('moving zoomend', this._setPanelPosition, this)
                  .off('movestart', this.hide, this);
-                 // .off('moveend', this.show, this);
 
         this._label.off('positionchanged', this._setPanelPosition, this)
                     .off('dragstart', this.hide, this)
@@ -142,12 +140,20 @@ LabelPropertyPanel.prototype = {
                 icon: 'edit.png',
                 click : function(){
                     me._label.startEdit();
+                    var textEditor = me._label._textEditor;
+                    textEditor.focus();
+                    var value = textEditor.value;
+                    textEditor.value = '';
+                    textEditor.value = value;
+                    maptalks.DomUtil.on(textEditor, 'click', me.show, me);
                 }
             }, {
                 type : 'button',
                 icon: 'stop_edit.png',
                 click : function(){
                     me._label.endEdit();
+                    var textEditor = me._label._textEditor;
+                    maptalks.DomUtil.off(textEditor, 'click', me.show, me);
                 }
             }, {
                 type : 'button',
@@ -244,7 +250,7 @@ LabelPropertyPanel.prototype = {
         var textSize = this._label.textStyle['textSize'];
         textSizeDom.value = textSize;
         var me = this;
-        Z.DomUtil.on(textSizeDom, 'blur', function(param){
+        maptalks.DomUtil.on(textSizeDom, 'blur', function(param){
             var target = param.target;
             var newSize = target.value;
 

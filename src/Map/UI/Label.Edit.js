@@ -53,11 +53,11 @@ Z.Label.include({
         var lineColor = this.strokeAndFill['markerLineColor'];
         var inputDom = Z.DomUtil.createEl('textarea');
         inputDom.style.cssText ='background:'+fill+';'+
-                                'border:1px solid '+lineColor+';'+
-                                'color:'+textColor+';'+
-                                'font-size:'+textSize+'px;'+
-                                'width:'+width+'px;'+
-                                'height:'+height+'px;';
+            'border:1px solid '+lineColor+';'+
+            'color:'+textColor+';'+
+            'font-size:'+textSize+'px;'+
+            'width:'+width+'px;'+
+            'height:'+height+'px;';
         var content = this.getContent();
         inputDom.value = content;
         return inputDom;
