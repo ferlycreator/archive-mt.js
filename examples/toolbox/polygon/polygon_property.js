@@ -1,34 +1,35 @@
-var LabelPropertyPanel = function(){
+var PolygonPropertyPanel = function(){
 
 };
 
-LabelPropertyPanel.prototype = {
+PolygonPropertyPanel.prototype = {
     /**
-     * 打开label属性面板
+     * 打开polygon属性面板
      */
-    addTo: function(label) {
+    addTo: function(polygon) {
         this._width = 200;
         this._height = 38;
-        this._label = label;
-        this._map = this._label._map;
-        this._panel = this._getPanelByKey(label);
+        this._polygon = polygon;
+        this._symbol = this._polygon.getSymbol();
+        this._map = this._polygon.getMap();
+        this._panel = this._getPanelByKey(polygon);
         if(!this._panel) {
             this._panel = this._createPanel();
             this._registEvent();
-            this._putPanelInMap(label, this._panel);
+            this._putPanelInMap(polygon, this._panel);
         }
         this._panel.show();
     },
 
     /**
-     *显示label属性面板
+     *显示polygon属性面板
      */
     show: function() {
         this._panel.show();
     },
 
     /**
-     *隐藏label属性面板
+     *隐藏polygon属性面板
      */
     hide: function() {
         this._panel.hide();
@@ -39,7 +40,7 @@ LabelPropertyPanel.prototype = {
         this._map.on('moving zoomend', this._setPanelPosition, this)
                  .on('movestart', this.hide, this);
 
-        this._label.on('positionchanged', this._setPanelPosition, this)
+        this._polygon.on('positionchanged', this._setPanelPosition, this)
                    .on('dragstart', this.hide, this)
                    .on('dragend', this.show, this);
     },
@@ -49,7 +50,7 @@ LabelPropertyPanel.prototype = {
         this._map.off('moving zoomend', this._setPanelPosition, this)
                  .off('movestart', this.hide, this);
 
-        this._label.off('positionchanged', this._setPanelPosition, this)
+        this._polygon.off('positionchanged', this._setPanelPosition, this)
                     .off('dragstart', this.hide, this)
                     .off('dragend', this.show, this);
     },
@@ -60,7 +61,7 @@ LabelPropertyPanel.prototype = {
 
     _getViewPoint: function() {
         var mapOffset = this._map.offsetPlatform();
-        var viewPoint = this._map.coordinateToViewPoint(this._label._center)
+        var viewPoint = this._map.coordinateToViewPoint(this._polygon.getCenter())
                             .substract({left:this._width/2,top:-5})
                             .add(mapOffset);
         return viewPoint;
@@ -68,14 +69,22 @@ LabelPropertyPanel.prototype = {
 
     _createPanel: function() {
         var viewPoint = this._getViewPoint();
+        var isPolyline = false;
+        if(this._polygon.getType() === maptalks.Geometry.TYPE_LINESTRING) {
+            isPolyline = true;
+        }
         //背景颜色设置部分
         var bgDom = this._createBgDom();
+        //填充透明度
+        var polygonOpacityDom = this._createOpacityDom('polygonOpacity');
+
         //边框颜色设置部分
         var borderDom = this._createBorderDom();
-        //文字大小
-        var textSizeDom = this._createTextSizeDom();
-        //文字颜色
-        var textColorDom = this._createTextColorDom();
+        //边框透明度
+        var lineOpacityDom = this._createOpacityDom('lineOpacity');
+        //边框线形
+        var lineDasharrayDom = this._createLineDasharrayDom();
+
         var me = this;
 
         var panel = new maptalks.Toolbar({
@@ -84,17 +93,18 @@ LabelPropertyPanel.prototype = {
             //工具项
             items: [{
                 type : 'button',
-                icon: '../../toolbox/label/images/trash.png',
+                icon: '../../toolbox/polygon/images/trash.png',
                 click : function(){
                     if(confirm('您确认要删除该文本标签！')){
                         me._removeEvent();
-                        me._label.remove();
+                        me._polygon.remove();
                         me._panel.remove();
                     }
                 }
             }, {
                 type : 'button',
-                icon : '../../toolbox/label/images/paint.png',
+                hidden: isPolyline,
+                icon : '../../toolbox/polygon/images/paint.png',
                 html: true,
                 trigger: 'click',
                 content: bgDom,
@@ -102,13 +112,18 @@ LabelPropertyPanel.prototype = {
                     var target = param.target;
                     var color = target.style['background-color'];
                     maptalks.DomUtil.setStyle(bgDom, 'background-color:'+color);
-                    var symbol = me._label.getSymbol();
-                    symbol['fill'] = color;
-                    me._label.setSymbol(symbol);
+                    var symbol = me._polygon.getSymbol();
+                    symbol['polygonFill'] = color;
+                    me._polygon.setSymbol(symbol);
                 })
             }, {
                 type : 'button',
-                icon: '../../toolbox/label/images/stroke.png',
+                hidden: isPolyline,
+                content: polygonOpacityDom,
+
+            }, {
+                type : 'button',
+                icon: '../../toolbox/polygon/images/stroke.png',
                 html: true,
                 trigger: 'click',
                 content: borderDom,
@@ -116,53 +131,33 @@ LabelPropertyPanel.prototype = {
                     var target = param.target;
                     var color = target.style['background-color'];
                     maptalks.DomUtil.setStyle(borderDom, 'background-color:'+color);
-                    var symbol = me._label.getSymbol();
+                    var symbol = me._polygon.getSymbol();
                     symbol['lineColor'] = color;
-                    me._label.setSymbol(symbol);
+                    me._polygon.setSymbol(symbol);
                 })
 
             }, {
+                type: 'button',
+                content: lineDasharrayDom,
+            }, {
                 type : 'button',
-                icon: '../../toolbox/label/images/font.png',
-                html: true,
-                trigger: 'click',
-                content: textColorDom,
-                children : this._colorItems(function(param){
-                    var target = param.target;
-                    var color = target.style['background-color'];
-                    maptalks.DomUtil.setStyle(textColorDom, 'background-color:'+color);
-                    var symbol = me._label.getSymbol();
-                    symbol['textFill'] = color;
-                    me._label.setSymbol(symbol);
-                })
+                content: lineOpacityDom,
 
             }, {
                 type : 'button',
-                content: textSizeDom,
-
-            }, {
-                type : 'button',
-                icon: '../../toolbox/label/images/edit.png',
+                icon: '../../toolbox/polygon/images/edit.png',
                 click : function(){
-                    me._label.startEdit();
-                    var textEditor = me._label._textEditor;
-                    textEditor.focus();
-                    var value = textEditor.value;
-                    textEditor.value = '';
-                    textEditor.value = value;
-                    maptalks.DomUtil.on(textEditor, 'click', me.show, me);
+                    me._polygon.startEdit();
                 }
             }, {
                 type : 'button',
-                icon: '../../toolbox/label/images/stop_edit.png',
+                icon: '../../toolbox/polygon/images/stop_edit.png',
                 click : function(){
-                    me._label.endEdit();
-                    var textEditor = me._label._textEditor;
-                    maptalks.DomUtil.off(textEditor, 'click', me.show, me);
+                    me._polygon.endEdit();
                 }
             }, {
                 type : 'button',
-                icon: '../../toolbox/label/images/close.png',
+                icon: '../../toolbox/polygon/images/close.png',
                 click : function(){
                     me._panel.hide();
                 }
@@ -233,37 +228,13 @@ LabelPropertyPanel.prototype = {
     },
 
     _createBgDom: function() {
-        var fillColor = this._label.strokeAndFill['markerFill'];
+        var fillColor = this._symbol['polygonFill'];
         return this._createColorDom(fillColor);
     },
 
     _createBorderDom: function() {
-        var borderColor = this._label.strokeAndFill['markerLineColor'];
+        var borderColor = this._symbol['lineColor'];
         return this._createColorDom(borderColor);
-    },
-
-    _createTextColorDom: function() {
-        var textColor = this._label.textStyle['textFill'];
-        return this._createColorDom(textColor);
-    },
-
-    _createTextSizeDom: function() {
-        var textSizeDom = maptalks.DomUtil.createEl('input');
-        textSizeDom.style.cssText = 'border:1px solid #333;font-weight:bold;font-size:16px;width:20px;height:18px;color:#333';
-        textSizeDom.type='text';
-        textSizeDom.maxLength = 2;
-        var textSize = this._label.textStyle['textSize'];
-        textSizeDom.value = textSize;
-        var me = this;
-        maptalks.DomUtil.on(textSizeDom, 'blur', function(param){
-            var target = param.target;
-            var newSize = target.value;
-
-            var symbol = me._label.getSymbol();
-            symbol['textSize'] = parseInt(newSize);
-            me._label.setSymbol(symbol);
-        });
-        return textSizeDom;
     },
 
     _createColorDom: function(color) {
@@ -271,6 +242,49 @@ LabelPropertyPanel.prototype = {
         colorDom.style.cssText = 'width:3px;height:15px;background-color:'+color+';border:1px solid #333';
         colorDom.readOnly = true;
         return colorDom;
+    },
+
+    _createOpacityDom: function(attrName) {
+        var opacityDom = maptalks.DomUtil.createEl('input');
+        opacityDom.style.cssText = 'border:1px solid #333;font-weight:bold;font-size:16px;width:30px;height:18px;color:#333';
+        opacityDom.type='text';
+        opacityDom.maxLength = 3;
+        var opacity = this._symbol[attrName];
+        opacityDom.value = opacity;
+        var me = this;
+        maptalks.DomUtil.on(opacityDom, 'blur', function(param){
+            var target = param.target;
+            var opacityValue = target.value;
+            var symbol = me._polygon.getSymbol();
+            symbol[attrName] = parseFloat(opacityValue);
+            me._polygon.setSymbol(symbol);
+        });
+        return opacityDom;
+    },
+
+    _createLineDasharrayDom: function() {
+        var dasharraySelectDom = maptalks.DomUtil.createEl('select');
+        dasharraySelectDom.style.cssText = 'border:1px solid #333;font-weight:bold;font-size:16px;width:30px;height:18px;color:#333';
+        var dasharray = this._symbol['lineDasharray'];
+        var optionDom = maptalks.DomUtil.createEl('option');
+        optionDom.value = [];
+        optionDom.text = '实线';
+        dasharraySelectDom.appendChild(optionDom);
+
+        var optionDom1 = maptalks.DomUtil.createEl('option');
+        optionDom1.value = [20,5,2,5];
+        optionDom1.text = '虚线';
+        optionDom1.selected = 'selected';
+        dasharraySelectDom.appendChild(optionDom1);
+        var me = this;
+        maptalks.DomUtil.on(dasharraySelectDom, 'change', function(param){
+            var target = param.target;
+            var dasharrayValue = target.value;
+            var symbol = me._polygon.getSymbol();
+            symbol['lineDasharray'] = dasharrayValue;
+            me._polygon.setSymbol(symbol);
+        });
+        return dasharraySelectDom;
     },
 
     _putPanelInMap: function(key, value) {

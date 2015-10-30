@@ -20,6 +20,7 @@ PicturePropertyPanel.prototype = {
             this._registEvent();
             this._putPanelInMap(imageMarker, this._panel);
         }
+        this._panel.show();
     },
 
     /**

@@ -10,6 +10,7 @@ Z['Button'] = Z.Button = Z.Class.extend({
      * @cfg {Object} options 按钮属性
      */
     options:{
+        'hidden': false,
         'icon' : '',
         'text' : '左',
         'click' : null,

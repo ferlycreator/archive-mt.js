@@ -45,10 +45,12 @@ Z['Toolbar'] = Z.Toolbar = Z.Control.extend({
 		if(items&&items.length>0) {
 			for(var i=0,len=items.length;i<len;i++) {
 				var item = items[i];
-				item['vertical'] = this.options['vertical'];
-				item['position'] = this.options['position'];
-				var buttonDom = new Z.Button(item).getDom();
-                this._toolbarContainer.appendChild(buttonDom);
+				if(!item['hidden']) {
+                    item['vertical'] = this.options['vertical'];
+                    item['position'] = this.options['position'];
+                    var buttonDom = new Z.Button(item).getDom();
+                    this._toolbarContainer.appendChild(buttonDom);
+				}
 			}
 		}
 		return this._toolbarContainer;

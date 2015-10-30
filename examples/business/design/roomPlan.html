@@ -199,7 +199,17 @@
         var polygon = param.geometry;
         //将线添加到Layer
         layer.addGeometry(polygon);
+        //多边形属性面板
+        var polygonPropertyPanel = new PolygonPropertyPanel();
+        //绑定激活多边形属性面板事件
+        polygon.on('click', function(){
+            polygonPropertyPanel.addTo(polygon);
+        });
+	    polygon.on('mousedown', function(){
+            polygon.startDrag(true);
+	    });
     }
+
     //标注文本信息
     function markerLabel(param) {
         mapObj.off('click', markerLabel);
@@ -266,10 +276,8 @@
         marker.setSymbol(icon);
         //将点添加到Layer
         layer.addGeometry(marker);
-
         //picture属性面板
         var picturePropertyPanel = new PicturePropertyPanel();
-
         marker.on('click', function(){
             picturePropertyPanel.addTo(marker);
         });
@@ -278,6 +286,7 @@
 <script type="text/javascript" src="../../../maptalks.min.js"></script>
 <script type="text/javascript" src="../../toolbox/label/label_property.js"></script>
 <script type="text/javascript" src="../../toolbox/picture/picture_property.js"></script>
+<script type="text/javascript" src="../../toolbox/polygon/polygon_property.js"></script>
 <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
 <!--[if lt IE 9]>
   <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.min.js"></script>
