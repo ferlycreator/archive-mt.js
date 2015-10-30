@@ -14,8 +14,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         'enableZoom':true,
         'enableInfoWindow':true,
         'zoomMode':'pointer',
-        'supportCoordinateTypes':['gcj02','bd09ll','cgcs2000','wgs84','pixel'],
-        'coordinateType':'gcj02'
+        'crs':Z.CRS.GCJ02
     },
 
     //根据不同的语言定义不同的错误信息
@@ -26,7 +25,8 @@ Z['Map']=Z.Map=Z.Class.extend({
             'INVALID_OPTION':'Invalid options provided.',
             'INVALID_CENTER':'Invalid Center',
             'INVALID_LAYER_ID':'Invalid id for the layer',
-            'DUPLICATE_LAYER_ID':'the id of the layer is duplicate with another layer'
+            'DUPLICATE_LAYER_ID':'the id of the layer is duplicate with another layer',
+            'INVALID_CRS' : 'the crs is invalid'
         },
         'zh-CN':{
             'NO_BASE_TILE_LAYER':'地图没有设置基础图层,请在调用Map.Load之前调用setBaseTileLayer设定基础图层',
@@ -34,7 +34,8 @@ Z['Map']=Z.Map=Z.Class.extend({
             'INVALID_OPTION':'无效的option.',
             'INVALID_CENTER':'无效的中心点',
             'INVALID_LAYER_ID':'图层的id无效',
-            'DUPLICATE_LAYER_ID':'重复的图层id'
+            'DUPLICATE_LAYER_ID':'重复的图层id',
+            'INVALID_CRS' : '非法的CRS.'
         }
     },
 
@@ -88,13 +89,6 @@ Z['Map']=Z.Map=Z.Class.extend({
         this._allowSlideMap = true;
 
         //坐标类型
-        if (!Z.Util.isNil(options['coordinateType'])) {
-            options['coordinateType'] = options['coordinateType'].toLowerCase();
-            if (Z.Util.searchInArray(options['coordinateType'], this.options['supportCoordinateTypes'])<0) {
-                //默认采用GCJ02
-                options['coordinateType'] = this.options['coordinateType'];
-            }
-        }
         options = Z.Util.setOptions(this,options);
         this._initRender();
         this._getRender().initContainer();
@@ -645,26 +639,26 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {String} 坐标类型
      * @expose
      */
-    getCoordinateType:function() {
-        return this.options['coordinateType'];
+    getCRS:function() {
+        return this.options['crs'];
     },
 
     /**
      * 设置地图的坐标类型
-     * @param {String} coordinateType 坐标类型
+     * @param {String} crs 坐标类型
      */
-    setCoordinateType:function(coordinateType) {
-        //判断coordinateType是否有效
-        if (!coordinateType || Z.Util.searchInArray(coordinateType, this.options['supportCoordinateTypes'] < 0)) {
-            return;
+    setCRS:function(crs) {
+        if (!crs || !(crs instanceof Z.CRS)) {
+            throw new Error(this.exceptions['INVALID_CRS']);
         }
-        this.options['coordinateType'] = coordinateType;
+        //判断coordinateType是否有效
+        this.options['crs'] = crs;
         /**
-         * 触发map的coordinatetypechanged事件
+         * 触发map的crschanged事件
          * @member maptalks.Map
-         * @event coordinatetypechanged
+         * @event crschanged
          */
-        this._fireEvent('coordinatetypechanged');
+        this._fireEvent('crschanged');
     },
 
 

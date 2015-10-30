@@ -58,6 +58,8 @@ Z.OverlayLayer=Z.Layer.extend({
         if (!Z.Util.isArray(geometries)) {
             this.addGeometry([geometries],fitView);
             return;
+        } else if (!Z.Util.isArrayHasData(geometries)) {
+            return;
         }
         var fitCounter = 0;
         var centerSum = {x:0,y:0};
