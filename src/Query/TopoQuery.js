@@ -60,8 +60,7 @@ Z.TopoQuery.prototype={
         for (i = 0, len=geometries.length; i < len; i++) {
             var geometry = geometries[i];
             if (!(geometry instanceof Z.Marker) && !(geometry instanceof Z.Circle)) {
-                var geoJson = geometry._exportGeoJson();
-                Z.GeoJson.crsCoordinateType(geoJson, geometry.getCoordinateType());
+                var geoJson = geometry.toGeometryJson();
                 targets.push(geoJson);
             }
         }
@@ -143,12 +142,10 @@ Z.TopoQuery.prototype={
         }
 
         function formQueryString() {
-            var srcGeoJson = source._exportGeoJson();
-            Z.GeoJson.crsCoordinateType(srcGeoJson, source.getCoordinateType());
+            var srcGeoJson = source.toGeometryJson();
             var targetGeoJsons = [];
             for (var i=0, len=targets.length;i<len;i++) {
-                var t = targets[i]._exportGeoJson();
-                Z.GeoJson.crsCoordinateType(srcGeoJson, targets[i].getCoordinateType());
+                var t = targets[i].toGeometryJson();
                 targetGeoJsons.push(t);
             }
             var ret = "source=" + JSON.stringify(srcGeoJson);
