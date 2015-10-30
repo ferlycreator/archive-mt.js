@@ -69,11 +69,11 @@
             mode: maptalks.Geometry.TYPE_POLYGON,
             //绘制面的样式
             symbol: {
-                'lineColor':'#f00',
+                'lineColor':'#0f0',
                 'lineWidth':3,
                 'lineOpacity':1,
-                'lineDasharray': [20,5,2,5],
-                'polygonFill': 'rgb(0, 255, 51)',
+                'lineDasharray': [],
+                'polygonFill': 'rgb(201, 156, 131)',
                 'polygonOpacity': 0.6
             }
         });
@@ -190,6 +190,7 @@
             }]
         });
         mapObj.addControl(iconToolbar);
+        layer.addGeometry(roomData);
     }
 
     //绘制完面操作
@@ -287,6 +288,7 @@
 <script type="text/javascript" src="../../toolbox/label/label_property.js"></script>
 <script type="text/javascript" src="../../toolbox/picture/picture_property.js"></script>
 <script type="text/javascript" src="../../toolbox/polygon/polygon_property.js"></script>
+<script type="text/javascript" src="../../business/design/roomData.js"></script>
 <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
 <!--[if lt IE 9]>
   <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.min.js"></script>
