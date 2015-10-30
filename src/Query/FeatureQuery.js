@@ -185,12 +185,16 @@ Z.FeatureQuery.prototype={
         }
         if (queryFilter['spatialFilter']) {
             var spatialFilter = queryFilter['spatialFilter'];
-            if (spatialFilter['geometry']) {
+            var filterGeo = spatialFilter['geometry'];
+            if (filterGeo) {
                 var paramFilter;
                 if (spatialFilter instanceof Z.SpatialFilter) {
                     paramFilter = spatialFilter.toJson();
                 } else {
                     paramFilter = spatialFilter;
+                    if (filterGeo instanceof Z.Geometry) {
+                        paramFilter['geometry'] = filterGeo.toGeometryJson();
+                    }
                 }
                 ret += ('&spatialFilter='+encodeURIComponent(JSON.stringify(paramFilter)));
             }

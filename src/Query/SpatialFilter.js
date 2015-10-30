@@ -27,7 +27,10 @@ Z.SpatialFilter.prototype={
      * @expose
      */
     toJson: function() {
-        var geojson = this.geometry.toGeometryJson();
+        var geojson = this.geometry;
+        if (this.geometry instanceof Z.Geometry) {
+            geojson = this.geometry.toGeometryJson();
+        }
         var jsonObj = {
           "geometry": geojson,
           "relation": this.relation
