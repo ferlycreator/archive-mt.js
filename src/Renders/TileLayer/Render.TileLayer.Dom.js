@@ -75,7 +75,7 @@ Z.render.tilelayer.Dom.prototype = {
                 }
             }
 
-            if (counter > len*2/3) {
+            if (counter >= len*3/4) {
                 if (me._completeExecutor) {
                     clearTimeout(me._completeExecutor);
                 }
