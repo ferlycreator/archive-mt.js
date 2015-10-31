@@ -138,7 +138,7 @@
          * @property {Boolean} 是否支持canvas
          * @static
          */
-		canvas:!!document.createElement("canvas").getContext
+		canvas:(!!document.createElement("canvas").getContext)
 	};
 
 }());

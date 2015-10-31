@@ -53,13 +53,14 @@ Z.render.map.Dom = Z.render.map.Render.extend({
         if (this._rendCanvasTimeout) {
             clearTimeout(this._rendCanvasTimeout);
         }
+        var layers = this.map._canvasLayers/*.concat([this.map._baseTileLayer]).concat(this.map._tileLayers);*/
         if (!isRealTime && !Z.TESTMODE) {
             var me = this;
             this._rendCanvasTimeout = setTimeout(function() {
-                me._rend(me.map._canvasLayers);
+                me._rend(layers);
             },10);
         } else {
-            this._rend(this.map._canvasLayers);
+            this._rend(layers);
         }
     },
 
@@ -90,7 +91,10 @@ Z.render.map.Dom = Z.render.map.Render.extend({
     },
 
     insertBackground:function() {
-        this._backgroundDOM = this._panels.mapContainer.cloneNode(true);
+        this._backgroundDOM=Z.DomUtil.createEl('div');
+        this._backgroundDOM.appendChild(this._panels.mapContainer.cloneNode(true));
+        this._backgroundDOM.appendChild(this._panels.canvasLayerContainer.cloneNode(true));
+        // this._backgroundDOM = this._panels.mapContainer.cloneNode(true);
         this._panels.mapPlatform.insertBefore(this._backgroundDOM,this._panels.mapViewPort);
     },
 
@@ -135,6 +139,51 @@ Z.render.map.Dom = Z.render.map.Render.extend({
             return;
         }
         Z.SVG.refreshContainer(this.map,this._vectorPaper);
+    },
+
+    onZoomStart:function(scale, focusPos) {
+        if (Z.Browser.ielt9) {return;}
+        //根据放大比例和中心点, 设置css3 transform放大或缩小底图
+        var domOffset = this.map.offsetPlatform();
+        var offsetTop = domOffset['top'];
+        var offsetLeft = domOffset['left'];
+        var mapContainer = this._panels.mapContainer;
+        var size = this.map.getSize();
+        this._panels.mapContainer.className ='maptalks-map-zoom_animated';
+        var origin = Z.DomUtil.getDomTransformOrigin(mapContainer);
+        var originX = Math.round(size['width']/2-offsetLeft),
+            originY = Math.round(size['height']/2-offsetTop);
+        if ((origin===null || ''===origin) && focusPos) {
+            var mouseOffset = new Z.Point(
+                    focusPos.left-size['width']/2,
+                    focusPos.top-size['height']/2
+                );
+            originX += mouseOffset['left'];
+            originY += mouseOffset['top'];
+            Z.DomUtil.setDomTransformOrigin(mapContainer, originX+'px '+ originY+'px');
+        } else if (!focusPos) {
+            Z.DomUtil.setDomTransformOrigin(mapContainer, originX+'px '+ originY+'px');
+        }
+
+        Z.DomUtil.setDomTransform(mapContainer," scale("+scale+","+scale+")");
+    },
+
+
+    onZoomEnd:function() {
+        this.insertBackground();
+        this._zoomAnimationEnd();
+        this.resetContainer();
+    },
+
+    _zoomAnimationEnd:function() {
+        if (Z.Browser.ielt9) {return;}
+        //恢复底图的css3 transform
+        var mapContainer = this._panels.mapContainer;
+        mapContainer.className="MAP_CONTAINER";
+        Z.DomUtil.setDomTransformOrigin(mapContainer,"");
+        Z.DomUtil.setDomTransform(mapContainer,"");
+        mapContainer.style.top=0+"px";
+        mapContainer.style.left=0+"px";
     },
 
     /**

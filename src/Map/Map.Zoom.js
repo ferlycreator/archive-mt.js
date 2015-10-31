@@ -1,16 +1,8 @@
 Z.Map.include({
     _onZoomStart:function(scale,focusPos,nextZoomLevel) {
-        /*function zoomLayer(layer) {
-            if (layer&&layer._onZoomStart) {
-                layer._onZoomStart();
-            }
-        }*/
         var me = this;
-
-        // if (me._baseTileLayer) {me._baseTileLayer._onZoomStart(true);}
-        // me._eachLayer(zoomLayer,me.getAllLayers());
         this._hideOverlayLayers();
-        me._zoomAnimationStart(scale,focusPos);
+        this._getRender().onZoomStart(scale,focusPos);
         /**
          * 触发map的zoomstart事件
          * @member maptalks.Map
@@ -21,19 +13,11 @@ Z.Map.include({
     },
 
     _onZoomEnd:function(nextZoomLevel) {
-        /*function zoomLayer(layer) {
-            if (layer&&layer._onZoomEnd) {
-                layer._onZoomEnd();
-            }
-        }*/
 
-        this._getRender().insertBackground();
-        // if (this._baseTileLayer) {this._baseTileLayer.clear();}
-        this._zoomAnimationEnd();
-        this._getRender().resetContainer();
+
+        this._getRender().onZoomEnd();
+
         this._originZoomLevel=nextZoomLevel;
-        // if (this._baseTileLayer) {this._baseTileLayer._onZoomEnd();}
-        // this._eachLayer(zoomLayer,this.getAllLayers());
         this._showOverlayLayers();
         /**
          * 触发map的zoomend事件
@@ -44,32 +28,6 @@ Z.Map.include({
         this._fireEvent('zoomend');
     },
 
-    /*_resetContainer:function() {
-        var position = this.offsetPlatform();
-        Z.DomUtil.offsetDom(this._panels.mapPlatform, new Z.Point(0,0)); //{'left':0,'top':0}
-        //this._refreshSVGPaper();
-        if (this._backgroundDOM) {
-            //Z.DomUtil.offsetDom(this._backgroundDOM,position);
-            this._backgroundDOM.style.left=position["left"]+"px";
-            this._backgroundDOM.style.top=position["top"]+"px";
-        }
-    },
-
-    _insertBackground:function() {
-        this._backgroundDOM = this._panels.mapContainer.cloneNode(true);
-        this._panels.mapPlatform.insertBefore(this._backgroundDOM,this._panels.mapViewPort);
-    },*/
-
-    /**
-     * 移除背景Dom对象
-     */
-    /*_removeBackGroundDOM:function() {
-        if (this._backgroundDOM) {
-            this._backgroundDOM.innerHTML='';
-            Z.DomUtil.removeDomNode(this._backgroundDOM);
-            delete this._backgroundDOM;
-        }
-    },*/
 
     _checkZoomLevel:function(nextZoomLevel) {
         if (nextZoomLevel < this._minZoomLevel){
@@ -143,42 +101,6 @@ Z.Map.include({
             me._zooming = false;
             me._onZoomEnd(nextZoomLevel);
         },this._getZoomMillisecs());
-    },
-
-    _zoomAnimationStart:function(scale,pixelOffset){
-        if (Z.Browser.ielt9) {return;}
-        var domOffset = this.offsetPlatform();
-        var offsetTop = domOffset['top'];
-        var offsetLeft = domOffset['left'];
-        var mapContainer = this._panels.mapContainer;
-        this._panels.mapContainer.className ='maptalks-map-zoom_animated';
-        var origin = Z.DomUtil.getDomTransformOrigin(mapContainer);
-        var originX = Math.round(this.width/2-offsetLeft),
-            originY = Math.round(this.height/2-offsetTop);
-        if ((origin===null || ''===origin) && pixelOffset) {
-            var mouseOffset = new Z.Point(
-                    pixelOffset.left-this.width/2,
-                    pixelOffset.top-this.height/2
-                );
-            originX += mouseOffset['left'];
-            originY += mouseOffset['top'];
-            Z.DomUtil.setDomTransformOrigin(mapContainer, originX+'px '+ originY+'px');
-        } else if (!pixelOffset) {
-            Z.DomUtil.setDomTransformOrigin(mapContainer, originX+'px '+ originY+'px');
-        }
-
-        Z.DomUtil.setDomTransform(mapContainer," scale("+scale+","+scale+")");
-    },
-
-
-    _zoomAnimationEnd:function() {
-        if (Z.Browser.ielt9) {return;}
-        var mapContainer = this._panels.mapContainer;
-        mapContainer.className="MAP_CONTAINER";
-        Z.DomUtil.setDomTransformOrigin(mapContainer,"");
-        Z.DomUtil.setDomTransform(mapContainer,"");
-        mapContainer.style.top=0+"px";
-        mapContainer.style.left=0+"px";
     },
 
     _getZoomMillisecs:function() {
