@@ -91,10 +91,7 @@ Z.render.map.Dom = Z.render.map.Render.extend({
     },
 
     insertBackground:function() {
-        this._backgroundDOM=Z.DomUtil.createEl('div');
-        this._backgroundDOM.appendChild(this._panels.mapContainer.cloneNode(true));
-        this._backgroundDOM.appendChild(this._panels.canvasLayerContainer.cloneNode(true));
-        // this._backgroundDOM = this._panels.mapContainer.cloneNode(true);
+        this._backgroundDOM = this._panels.mapContainer.cloneNode(true);
         this._panels.mapPlatform.insertBefore(this._backgroundDOM,this._panels.mapViewPort);
     },
 
