@@ -55,10 +55,18 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
 
     _initRender:function() {
         //不支持自行指定render
-        if (/*Z.Browser.canvas*/this.map._getRender() instanceof Z.render.map.Canvas) {
+        if (this.isCanvasRender()) {
             this._render = new Z.render.tilelayer.Canvas(this);
         } else {
             this._render = new Z.render.tilelayer.Dom(this);
+        }
+    },
+
+    isCanvasRender:function() {
+        if (/*Z.Browser.canvas*/this.map._getRender() instanceof Z.render.map.Canvas) {
+            return true;
+        } else {
+            return false;
         }
     },
 
