@@ -57,6 +57,14 @@ Z['Extent']= Z.Extent =
 };
 
 Z.Extent.prototype={
+    getWidth:function() {
+        return this['xmax'] - this['xmin'];
+    },
+
+    getHeight:function() {
+        return this['ymax'] - this['ymin'];
+    },
+
     getMin:function() {
         return new Z.Point(this['xmin'],this['ymin']);
     },

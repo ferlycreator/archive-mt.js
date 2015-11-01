@@ -8,6 +8,9 @@ Z.render.map.Render = Z.Class.extend({
      * 基于Canvas的渲染方法, layers总定义了要渲染的图层
      */
     _rend:function(layers) {
+        if (layers instanceof Z.Layer) {
+            layers = [layers];
+        }
         if (!Z.Util.isArrayHasData(layers)) {
             return;
         }
@@ -15,24 +18,55 @@ Z.render.map.Render = Z.Class.extend({
             this._createCanvas();
         }
         var me = this;
+        var drawRequests = [];
         var promises = [];
         for (var i = layers.length - 1; i >= 0; i--) {
-            promises = promises.concat(layers[i]._getRender().promise());
+            var layerPromise = layers[i]._getRender().promise();
+            if (layerPromise) {
+                promises = promises.concat(layerPromise);
+                drawRequests.push({'layer':layers[i],'promise':layerPromise});
+            }
+
         }
         Z.Promise.all(promises).then(function(reources) {
-            me._draw(layers,reources);
+            me._draw(drawRequests,reources);
         });
     },
 
-    _draw:function(layers,reources) {
-        this._resetCanvasPosition();
-        for (var i = layers.length - 1; i >= 0; i--) {
-            layers[i]._getRender().draw(this._context,reources);
-            //采用putImageData实现会出现crossOrigin错误, 故直接传递_context给图层render
-            /*var layerCtx = layers[i]._getRender().draw();*/
-            // var layerImg = layerCtx.getImageData(0,0,this._canvas.width,this._canvas.height);
-            // this._context.putImageData(layerImg, 0, 0);
+    _draw:function(drawRequests,reources) {
+        //this._resetCanvasPosition();
+
+        var i, len;
+        for (i = 0, len=drawRequests.length; i < len; i++) {
+            if (drawRequests[i]['promise']) {
+                //采用putImageData实现会出现crossOrigin错误, 故先绘制, 再获取canvas调用drawImage绘制
+                drawRequests[i]['layer']._getRender().draw();
+            }
         }
+        //改变大小, 顺便清空画布
+        this._updateCanvasSize();
+        var layers = this._getLayerToDraw();
+        for (i = 0, len=layers.length; i < len; i++) {
+            var render = layers[i]._getRender();
+            if (render) {
+                var layerImage = render.getCanvasImage();
+                if (layerImage && layerImage['canvas']) {
+                    Z.Canvas.image(this._context, layerImage['point'], layerImage['canvas']);
+                }
+            }
+
+        }
+    },
+
+    _getLayerToDraw:function() {
+        var layers = this.map._getAllLayers(function(layer) {
+            if (layer.isCanvasRender()) {
+                return true;
+            }
+            return false;
+        });
+
+        return layers;
     },
 
     _createCanvas:function() {

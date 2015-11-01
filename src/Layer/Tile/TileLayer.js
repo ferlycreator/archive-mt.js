@@ -63,7 +63,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
     },
 
     isCanvasRender:function() {
-        if (/*Z.Browser.canvas*/this.map._getRender() instanceof Z.render.map.Canvas) {
+        if (Z.Browser.canvas/*this.map._getRender() instanceof Z.render.map.Canvas*/) {
             return true;
         } else {
             return false;
@@ -156,8 +156,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
                     var tileId=[tileIndex["y"], tileIndex["x"], j,i].join('__');
                     tiles.push({
                         'url' : tileUrl,
-                        'left': tileLeft,
-                        'top' : tileTop,
+                        'viewPoint': new Z.Point(tileLeft, tileTop),
                         'id'  : tileId
                     });
             }

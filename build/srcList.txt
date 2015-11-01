@@ -72,7 +72,7 @@
 ../src/Map/Handler/Map.EventToGeometry.js
 ../src/Renders/render.js
 ../src/Renders/Map/Render.Map.js
-../src/Renders/Map/Render.Map.Dom.js
+../src/Renders/Map/Render.Map.Dom5.js
 ../src/Renders/Map/Render.Map.Canvas.js
 ../src/Renders/TileLayer/Render.TileLayer.js
 ../src/Renders/TileLayer/Render.TileLayer.Dom.js

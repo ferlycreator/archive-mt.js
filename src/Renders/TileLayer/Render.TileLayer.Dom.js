@@ -95,8 +95,8 @@ Z.render.tilelayer.Dom.prototype = {
 
         for (var i = tiles.length - 1; i >= 0; i--) {
             var tileId=tiles[i]['id'],
-                tileLeft = tiles[i]['left'],
-                tileTop = tiles[i]['top'],
+                tileLeft = tiles[i]['viewPoint']['left'],
+                tileTop = tiles[i]['viewPoint']['top'],
                 tileUrl = tiles[i]['url'];
             if (!currentTiles[tileId]) {
                 var tileImage = this._createTileImage(tileLeft,tileTop, tileUrl,(rendWhenReady?checkAndLoad:null));

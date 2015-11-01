@@ -1,11 +1,10 @@
-Z.render.vectorlayer.Canvas = function(layer, options) {
-    this._layer = layer;
-    this._mapRender = layer.getMap()._getRender();
-    this._registerEvents();
-};
+Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
 
-//load,_onMoving, _onMoveEnd, _onResize, _onZoomStart, _onZoomEnd
-Z.render.vectorlayer.Canvas.prototype = {
+    initialize:function(layer) {
+        this._layer = layer;
+        this._mapRender = layer.getMap()._getRender();
+        this._registerEvents();
+    },
 
     _registerEvents:function() {
         this.getMap().on('_zoomend',function() {
@@ -13,10 +12,21 @@ Z.render.vectorlayer.Canvas.prototype = {
                 geo._onZoomEnd();
             });
         },this);
+        this.getMap().on('_resize',function() {
+            this._resizeCanvas();
+        },this);
     },
 
     getMap: function() {
         return this._layer.getMap();
+    },
+
+    /**
+     * 是否懒载入? 即连续多次请求时, 只响应最后一次
+     * @return {Boolean} true | false
+     */
+    isLazy:function() {
+        return true;
     },
 
     /**
@@ -34,6 +44,10 @@ Z.render.vectorlayer.Canvas.prototype = {
         this._requestMapToRend(true);
     },
 
+    /**
+     * 读取并载入绘制所需的外部资源, 例如markerFile, shieldFile等
+     * @return {[Promise]} promise数组
+     */
     promise:function() {
         var me = this;
         var preResources = this._resources;
@@ -97,18 +111,22 @@ Z.render.vectorlayer.Canvas.prototype = {
     },
 
 
-    draw:function(_context) {
+    draw:function() {
         //载入资源后再进行绘制
-        this._context = _context;
+        if (!this._canvas) {
+            this._createCanvas();
+        }
+
         var map = this.getMap();
         var extent = map.getExtent();
         var pxExtent =  new Z.Extent(
             map.coordinateToViewPoint(new Z.Coordinate(extent['xmin'],extent['ymin'])),
             map.coordinateToViewPoint(new Z.Coordinate(extent['xmax'],extent['ymax']))
             );
+        this._clearCanvas();
         this._layer._eachGeometry(function(geo) {
             //geo的map可能为null,因为绘制为延时方法
-            if (!_context || !geo || !geo.isVisible() || !geo.getMap() || !geo.getLayer() || (!geo.getLayer().isCanvasRender())) {
+            if (!geo || !geo.isVisible() || !geo.getMap() || !geo.getLayer() || (!geo.getLayer().isCanvasRender())) {
                 return;
             }
             var ext = geo._getPainter().getPixelExtent();
@@ -153,10 +171,10 @@ Z.render.vectorlayer.Canvas.prototype = {
     },
 
     _requestMapToRend:function(isRealTime) {
-        this._mapRender.rend(isRealTime);
+        this._mapRender.rendLayer(this._layer ,isRealTime);
     }
+});
 
-};
 
 Z.render.vectorlayer.Canvas.Resources=function() {
     this._resources = {};
