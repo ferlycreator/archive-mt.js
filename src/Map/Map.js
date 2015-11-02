@@ -765,22 +765,31 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {[type]} [description]
      */
     getAllLayers:function() {
-        var layers = this._getAllLayers();
+        return this._getAllLayers(function(layer) {
+            if (layer === this._baseTileLayer || layer.getId().indexOf(Z.internalLayerPrefix) === -1) {
+                return false;
+            }
+            return true;
+        });
+    },
+
+    /**
+     * 获取符合filter过滤条件的图层
+     * @param  {fn} filter 过滤函数
+     * @return {[Layer]}        符合过滤条件的图层数组
+     */
+    _getAllLayers:function(filter) {
+        //TODO 可视化图层
+        var layers = [this._baseTileLayer].concat(this._tileLayers).concat(this._dynLayers)
+        .concat(this._canvasLayers)
+        .concat(this._svgLayers);
         var result = [];
-        for (var i = layers.length - 1; i >= 0; i--) {
-            if (layers[i].getId().indexOf(Z.internalLayerPrefix) == -1) {
+        for (var i = 0; i < layers.length; i++) {
+            if (!filter || filter.call(this,layers[i])) {
                 result.push(layers[i]);
             }
         }
         return result;
-    },
-
-    _getAllLayers:function() {
-        //TODO 可视化图层
-        var result = [];
-        return result.concat(this._tileLayers).concat(this._dynLayers)
-        .concat(this._canvasLayers)
-        .concat(this._svgLayers);
     },
 
     _eachLayer:function(fn) {
