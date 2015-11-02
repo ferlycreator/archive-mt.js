@@ -57,8 +57,8 @@ Z.FeatureQuery.prototype={
             'spatialFilter': spatialFilter,
             'condition': opts['condition']
         };
-        if (opts['coordinateType']) {
-            queryFilter['coordinateType'] = opts['coordinateType'];
+        if (opts['resultCRS']) {
+            queryFilter['resultCRS'] = opts['resultCRS'];
         }
         opts['queryFilter']=queryFilter;
         opts['page'] = 0;
@@ -177,19 +177,25 @@ Z.FeatureQuery.prototype={
         var ret = 'encoding=utf-8';
         //ret+="&method=add";
         ret+='&mapdb='+this.mapdb;
-        if (queryFilter['coordinateType']) {
-            ret+='&coordinateType='+queryFilter['coordinateType'];
+        if (queryFilter['resultCRS']) {
+            ret+='&resultCrs='+encodeURIComponent(JSON.stringify(queryFilter['resultCRS']));
         }
         if (!Z.Util.isNil(queryFilter['returnGeometry'])) {
             ret+='&returnGeometry='+queryFilter['returnGeometry'];
         }
         if (queryFilter['spatialFilter']) {
             var spatialFilter = queryFilter['spatialFilter'];
-            if (spatialFilter['geometry']) {
-                var paramFilter = {
-                    'geometry' : spatialFilter['geometry'].toGeometryJson(),
-                    'relation' : spatialFilter['relation']
-                };
+            var filterGeo = spatialFilter['geometry'];
+            if (filterGeo) {
+                var paramFilter;
+                if (spatialFilter instanceof Z.SpatialFilter) {
+                    paramFilter = spatialFilter.toJson();
+                } else {
+                    paramFilter = spatialFilter;
+                    if (filterGeo instanceof Z.Geometry) {
+                        paramFilter['geometry'] = filterGeo.toGeometryJson();
+                    }
+                }
                 ret += ('&spatialFilter='+encodeURIComponent(JSON.stringify(paramFilter)));
             }
 

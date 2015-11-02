@@ -151,11 +151,15 @@ Z.Painter = Z.Class.extend({
         }
     },
 
+    /**
+     * symbol发生变化后, 刷新symbol
+     */
     refreshSymbol:function() {
         if (!this._painted) {
             return;
         }
         this._removeCache();
+        this._removeSymbolizers();
         this.symbolizers = this._createSymbolizers();
         var layer = this.geometry.getLayer();
         if (layer.isCanvasRender()) {

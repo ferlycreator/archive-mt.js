@@ -383,8 +383,8 @@ function registerGeometryCommonTest(geometry,_context) {
         });
     });
 
-    context(type+':has coordinateType',function() {
-        it ('can read coordinateType from json',function() {
+    context(type+':has crs',function() {
+        it ('can read crs from json',function() {
             var json = geometry.toJson();
             json.crs = {
                 "type" : "cnCoordinateType",
@@ -394,14 +394,14 @@ function registerGeometryCommonTest(geometry,_context) {
             };
             var parsed = Z.GeoJson.fromGeoJson(json);
 
-            expect(parsed.getCoordinateType()).to.eql('gcj02');
+            expect(parsed.getCRS()).to.eql(json.crs);
         });
 
-        it ('has coordinateType',function() {
-            var coordinateType = "gcj02";
-            var json = geometry.setCoordinateType(coordinateType).toJson();
+        it ('has crs',function() {
+            var coordinateType = Z.CRS.GCJ02;
+            var json = geometry.setCRS(coordinateType).toJson();
             expect(json['crs']).to.be.ok();
-            expect(json['crs']).to.eql({"type":"cnCoordinateType","properties":{"name":coordinateType}});
+            expect(json['crs']).to.eql({"type":"cnCoordinateType","properties":{"name":"gcj02"}});
         });
     });
 

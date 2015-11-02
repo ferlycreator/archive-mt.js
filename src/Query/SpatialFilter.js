@@ -13,6 +13,35 @@ Z.SpatialFilter=function(geometry, relation) {
 
 Z.SpatialFilter.prototype={
     /**
+     * 获取SpatialFilter中的geometry
+     * @return {maptalks.Geometry} SpatialFilter的Geometry
+     * @expose
+     */
+    getGeometry: function() {
+        return this.geometry;
+    },
+
+    /**
+     * 获取SpatialFilter的json
+     * @return {String} spatialfilter
+     * @expose
+     */
+    toJson: function() {
+        var geojson = this.geometry;
+        if (this.geometry instanceof Z.Geometry) {
+            geojson = this.geometry.toGeometryJson();
+        }
+        var jsonObj = {
+          "geometry": geojson,
+          "relation": this.relation
+        };
+        return jsonObj;
+    }
+
+};
+
+Z.Util.extend(Z.SpatialFilter,{
+    /**
      * @static
      * @property {Number} RELATION_INTERSECT 相交
      */
@@ -58,32 +87,5 @@ Z.SpatialFilter.prototype={
      * @static
      * @property {Number} RELATION_CENTERWITHIN 中心点被包含
      */
-    'RELATION_CENTERWITHIN' : 102,
-
-    /**
-     * 获取SpatialFilter中的geometry
-     * @return {maptalks.Geometry} SpatialFilter的Geometry
-     * @expose
-     */
-    getGeometry: function() {
-        return this.geometry;
-    },
-
-    /**
-     * 获取SpatialFilter的json
-     * @return {String} spatialfilter
-     * @expose
-     */
-    toJson: function() {
-        var geojson = this.geometry.toJson();
-        if (geojson['type'] === 'Feature') {
-            geojson = geojson['geometry'];
-        }
-        var jsonObj = {
-          "geometry": geojson,
-          "relation": this.relation
-        };
-        return jsonObj;
-    }
-
-};
+    'RELATION_CENTERWITHIN' : 102
+});

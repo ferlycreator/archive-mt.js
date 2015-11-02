@@ -47,10 +47,6 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (!opts) {
             opts = {};
         }
-        /*if (!Z.Util.isNil(opts['coordinateType'])) {
-            this.setCoordinateType(opts['coordinateType']);
-            delete opts['coordinateType'];
-        }*/
         var symbol = opts['symbol'];
         delete opts['symbol'];
         var id = opts['id'];
@@ -515,8 +511,10 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     toGeometryJson:function(opts) {
         var gJson = this._exportGeoJson();
         if (!opts || opts['crs']) {
-            var coordinateType = this.getCoordinateType();
-            Z.GeoJson.crsCoordinateType(gJson, coordinateType);
+            var crs = this.getCRS();
+            if (crs) {
+                gJson['crs'] = crs;
+            }
         }
         return gJson;
     },
@@ -560,9 +558,9 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
                 feature['symbol'] = symbol;
             }
         }
-        var coordinateType = this.getCoordinateType();
-        if (coordinateType) {
-            Z.GeoJson.crsCoordinateType(feature, coordinateType);
+        var crs = this.getCRS();
+        if (crs) {
+            feature['crs'] = crs;
         }
         //opts没有设定properties或者设定的properties值为true,则导出properties
         if (opts['properties'] === undefined || opts['properties']) {
@@ -605,27 +603,24 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     },
 
     /**
-     * 返回Geometry的坐标类型
-     * @return {String} 坐标类型
+     * 返回Geometry的CRS
+     * @return {CRS} CRS
      */
-    getCoordinateType:function() {
+    getCRS:function() {
         //如果有map,则map的坐标类型优先级更高
         var map = this.getMap();
         if (map) {
-            return map.getCoordinateType();
+            return map.getCRS();
         }
-        return this.options['coordinateType'];
+        return this.options['crs'];
     },
 
     /**
-     * 设置Geometry的坐标类型
-     * @param {String} coordinateType 坐标类型
+     * 设置Geometry的CRS
+     * @param {CRS} crs CRS
      */
-    setCoordinateType:function(coordinateType) {
-        if (!this.options || !this.hasOwnProperty(this.options)) {
-            Z.Util.setOptions(this, {});
-        }
-        this.options['coordinateType'] = coordinateType;
+    setCRS:function(crs) {
+        this.options['crs'] = crs;
         return this;
     }
 

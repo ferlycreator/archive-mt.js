@@ -162,8 +162,8 @@ describe('API', function () {
         it('addLayer', function () {
         });
 
-        it('getCoordinateType', function () {
-            var t = map.getCoordinateType();
+        it('getCRS', function () {
+            var t = map.getCRS();
 
             expect(t).to.not.be(null);
         });
