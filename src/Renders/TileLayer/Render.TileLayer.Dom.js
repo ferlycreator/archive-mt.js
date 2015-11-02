@@ -12,20 +12,23 @@ Z.render.tilelayer.Dom.prototype = {
 
     _registerEvents:function() {
         var map = this.layer.getMap();
-        map.on('_moving _moveend _resize',function() {
+        map.on('_moving _moveend _resize _zoomend _zoomstart',this._onMapEvent,this);
+    },
+
+    _onMapEvent:function(param) {
+        if (param['type'] === '_moving' || param['type'] === '_moveend' || param['type'] === '_resize') {
             this.rend();
-        },this);
-        map.on('_zoomend',function() {
+        } else if (param['type'] === '_zoomend') {
             this.clear();
             this.rend(true);
-        },this);
-        map.on('_zoomstart',function() {
+        } else if (param['type'] === '_zoomstart') {
             this.clearExecutors();
-            //this.clear();
-        },this);
+        }
     },
 
     remove:function() {
+        var map = this.layer.getMap();
+        map.off('_moving _moveend _resize _zoomend _zoomstart',this._onMapEvent,this);
         if (this._tileContainer) {
             Z.DomUtil.removeDomNode(this._tileContainer);
         }

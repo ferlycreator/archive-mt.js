@@ -88,7 +88,7 @@ Z.OverlayLayer=Z.Layer.extend({
                 if (geoCenter && geoExtent) {
                     centerSum.x += geoCenter.x;
                     centerSum.y += geoCenter.y;
-                    extent = Z.Extent.combine(extent,geoExtent);
+                    extent = geoExtent.combine(extent);
                     fitCounter++;
                 }
             }

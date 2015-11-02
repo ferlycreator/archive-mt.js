@@ -7,46 +7,17 @@ Z.render.map.Render = Z.Class.extend({
     /**
      * 基于Canvas的渲染方法, layers总定义了要渲染的图层
      */
-    _rend:function(layers) {
-        if (layers instanceof Z.Layer) {
-            layers = [layers];
-        }
-        if (!Z.Util.isArrayHasData(layers)) {
-            return;
-        }
+    _rend:function() {
         if (!this._canvas) {
             this._createCanvas();
         }
-        var me = this;
-        var drawRequests = [];
-        var promises = [];
-        for (var i = layers.length - 1; i >= 0; i--) {
-            var layerPromise = layers[i]._getRender().promise();
-            if (layerPromise) {
-                promises = promises.concat(layerPromise);
-                drawRequests.push({'layer':layers[i],'promise':layerPromise});
-            }
-
-        }
-        Z.Promise.all(promises).then(function(reources) {
-            me._draw(drawRequests,reources);
-        });
-    },
-
-    _draw:function(drawRequests,reources) {
-        //this._resetCanvasPosition();
-
-        var i, len;
-        for (i = 0, len=drawRequests.length; i < len; i++) {
-            if (drawRequests[i]['promise']) {
-                //采用putImageData实现会出现crossOrigin错误, 故先绘制, 再获取canvas调用drawImage绘制
-                drawRequests[i]['layer']._getRender().draw();
-            }
-        }
-        //改变大小, 顺便清空画布
+        //更新画布的长宽, 顺便清空画布
         this._updateCanvasSize();
         var layers = this._getAllLayerToCanvas();
-        for (i = 0, len=layers.length; i < len; i++) {
+        for (var i = 0, len=layers.length; i < len; i++) {
+            if (!layers[i].isVisible()) {
+                continue;
+            }
             var render = layers[i]._getRender();
             if (render) {
                 var layerImage = render.getCanvasImage();
@@ -54,9 +25,9 @@ Z.render.map.Render = Z.Class.extend({
                     Z.Canvas.image(this._context, layerImage['point'], layerImage['canvas']);
                 }
             }
-
         }
     },
+
 
     _getAllLayerToCanvas:function() {
         var layers = this.map._getAllLayers(function(layer) {

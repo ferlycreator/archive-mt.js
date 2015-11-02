@@ -146,60 +146,51 @@ Z.Extent.prototype={
             (x <= this.xmax) &&
             (y >= this.ymin) &&
             (y <= this.ymax);
-    }
-};
+    },
 
-
-//static methods on Extent
-Z.Util.extend(Z.Extent, {
     /**
      * 合并两个extent
      * @param  {maptalks.Extent} ext1
      * @param  {maptalks.Extent} ext2
      * @returns {maptalks.Extent} 合并后的extent
      */
-    combine:function(ext1,ext2) {
-        if (!ext1 || !ext2) {
-            if (ext1) {
-                return ext1;
-            } else if (ext2) {
-                return ext2;
-            }
-            return null;
+    combine:function(extent) {
+        if (!extent) {
+            return this;
         }
-        var xmin = ext1['xmin'];
+        var xmin = this['xmin'];
         if (!Z.Util.isNumber(xmin)) {
-            xmin = ext2['xmin'];
-        } else if (Z.Util.isNumber(ext2['xmin'])) {
-            if (xmin>ext2['xmin']) {
-                xmin = ext2['xmin'];
+            xmin = extent['xmin'];
+        } else if (Z.Util.isNumber(extent['xmin'])) {
+            if (xmin>extent['xmin']) {
+                xmin = extent['xmin'];
             }
         }
 
-        var xmax = ext1['xmax'];
+        var xmax = this['xmax'];
         if (!Z.Util.isNumber(xmax)) {
-            xmax = ext2['xmax'];
-        } else if (Z.Util.isNumber(ext2['xmax'])) {
-            if (xmax<ext2['xmax']) {
-                xmax = ext2['xmax'];
+            xmax = extent['xmax'];
+        } else if (Z.Util.isNumber(extent['xmax'])) {
+            if (xmax<extent['xmax']) {
+                xmax = extent['xmax'];
             }
         }
 
-        var ymin = ext1['ymin'];
+        var ymin = this['ymin'];
         if (!Z.Util.isNumber(ymin)) {
-            ymin = ext2['ymin'];
-        } else if (Z.Util.isNumber(ext2['ymin'])) {
-            if (ymin>ext2['ymin']) {
-                ymin = ext2['ymin'];
+            ymin = extent['ymin'];
+        } else if (Z.Util.isNumber(extent['ymin'])) {
+            if (ymin>extent['ymin']) {
+                ymin = extent['ymin'];
             }
         }
 
-        var ymax = ext1['ymax'];
+        var ymax = this['ymax'];
         if (!Z.Util.isNumber(ymax)) {
-            ymax = ext2['ymax'];
-        } else if (Z.Util.isNumber(ext2['ymax'])) {
-            if (ymax<ext2['ymax']) {
-                ymax = ext2['ymax'];
+            ymax = extent['ymax'];
+        } else if (Z.Util.isNumber(extent['ymax'])) {
+            if (ymax<extent['ymax']) {
+                ymax = extent['ymax'];
             }
         }
 
@@ -212,7 +203,12 @@ Z.Util.extend(Z.Extent, {
      * @param  {maptalks.Extent} distance  像素距离
      * @returns {maptalks.Extent} 扩大后的extent
      */
-    expand:function(ext, distance) {
-        return new Z.Extent(ext['xmin']-distance, ext['ymin']-distance,ext['xmax']+distance,ext['ymax']+distance);
+    expand:function(distance) {
+        if (distance instanceof Z.Size) {
+            return new Z.Extent(this['xmin']-distance['width'], this['ymin']-distance['height'],this['xmax']+distance['width'],this['ymax']+distance['height']);
+        } else {
+            return new Z.Extent(this['xmin']-distance, this['ymin']-distance,this['xmax']+distance,this['ymax']+distance);
+        }
+
     }
-});
+};

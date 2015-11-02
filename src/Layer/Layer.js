@@ -120,7 +120,9 @@ Z['Layer']=Z.Layer=Z.Class.extend({
      */
     show:function() {
         if (!this.options['visible']) {
-            this._render.show();
+            if (this._getRender()) {
+                this._getRender().show();
+            }
             this.options['visible'] = true;
         }
         return this;
@@ -131,7 +133,9 @@ Z['Layer']=Z.Layer=Z.Class.extend({
      */
     hide:function() {
         if (this.options['visible']) {
-            this._render.hide();
+            if (this._getRender()) {
+                this._getRender().hide();
+            }
             this.options['visible'] = false;
         }
         return this;
@@ -143,6 +147,13 @@ Z['Layer']=Z.Layer=Z.Class.extend({
      */
     isVisible:function() {
         return this.options['visible'];
+    },
+
+    remove:function() {
+        if (this._getRender()) {
+            this._getRender().remove();
+        }
+        delete this._render;
     },
 
     _getRender:function() {

@@ -6,22 +6,19 @@ Z.render.map.Dom = Z.render.map.Render.extend({
     },
 
     _registerEvents:function() {
-        // this.map.on('_moving', function() {
-            //reduce refresh frequency
-            //if (2*Math.random() > 1) {this._refreshSVGPaper();}
-        // },this);
+
         this.map.on('_moveend _resize',function() {
-            this.rendAll();
+            this.rend();
             this._refreshSVGPaper();
         },this);
-         this.map.on('_moving',function() {
-            this.rendTiles();
+        this.map.on('_moving', function() {
+            this.rend();
         },this);
         this.map.on('_zoomstart',function() {
-            // this._clearCanvas();
+            this._clearCanvas();
         },this);
         this.map.on('_zoomend',function() {
-            this.rendAll();
+            this.rend();
             this._refreshSVGPaper();
         },this);
         this.map.on('_baselayerchangestart _baselayerchangeend _baselayerload',function() {
@@ -51,21 +48,10 @@ Z.render.map.Dom = Z.render.map.Render.extend({
     /**
      * 绘制所有图层
      */
-    rendAll:function() {
-        this._rend(this._getAllLayerToCanvas());
+    rend:function() {
+        this._rend();
     },
 
-    /**
-     * 只渲染瓦片图层
-     * @return {[type]} [description]
-     */
-    rendTiles:function() {
-        this._rend([this.map._baseTileLayer].concat(this.map._tileLayers));
-    },
-
-    rendLayer:function(layer, isRealTime) {
-         this._rend(layer, isRealTime);
-    },
 
     /**
      * 获取地图容器偏移量或更新地图容器偏移量

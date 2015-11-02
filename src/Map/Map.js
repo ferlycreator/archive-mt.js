@@ -159,6 +159,18 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     /**
+     * 获得地图可视范围的viewPoint范围
+     * @return {Extent} 可视范围的ViewPoint范围
+     */
+    _getViewExtent:function() {
+        var size = this.getSize();
+        var offset = this.offsetPlatform();
+        var min = new Z.Point(0,0);
+        var max = new Z.Point(size['width'],size['height']);
+        return new Z.Extent(min.substract(offset), max.substract(offset));
+    },
+
+    /**
      * 获取地图的中心点
      * @return {Coordinate} 坐标
      * @expose
@@ -553,6 +565,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         if (!map || map != this) {
             return this;
         }
+        layer.remove();
         if (layer instanceof Z.VectorLayer) {
             if (layer.isCanvasRender()) {
                 this._removeLayer(layer, this._canvasLayers);

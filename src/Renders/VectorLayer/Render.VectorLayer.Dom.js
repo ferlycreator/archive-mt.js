@@ -10,11 +10,19 @@ Z.render.vectorlayer.Dom.prototype= {
     baseZIndex:200,
 
     _registerEvents:function() {
-        this.getMap().on('_zoomend',function(){
+        this.getMap().on('_zoomend',this._onMapEvent,this);
+    },
+
+    _onMapEvent:function(param) {
+        if (param['type'] === '_zoomend') {
             this._layer._eachGeometry(function(geo) {
                 geo._onZoomEnd();
             });
-        },this);
+        }
+    },
+
+    remove:function() {
+        this.getMap().off('_zoomend',this._onMapEvent,this);
     },
 
     getMap:function() {
