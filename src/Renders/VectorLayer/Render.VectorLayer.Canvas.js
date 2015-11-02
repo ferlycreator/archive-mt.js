@@ -107,8 +107,14 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
                 }
             }
         });
+        var extent = map.getExtent();
+        this._fullExtent =  new Z.Extent(
+            map.coordinateToViewPoint(new Z.Coordinate(extent['xmin'],extent['ymin'])),
+            map.coordinateToViewPoint(new Z.Coordinate(extent['xmax'],extent['ymax']))
+            );
         return promises;
     },
+
 
 
     draw:function() {
@@ -116,14 +122,8 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         if (!this._canvas) {
             this._createCanvas();
         }
-
-        var map = this.getMap();
-        var extent = map.getExtent();
-        var pxExtent =  new Z.Extent(
-            map.coordinateToViewPoint(new Z.Coordinate(extent['xmin'],extent['ymin'])),
-            map.coordinateToViewPoint(new Z.Coordinate(extent['xmax'],extent['ymax']))
-            );
         this._clearCanvas();
+        var pxExtent = this._fullExtent;
         this._layer._eachGeometry(function(geo) {
             //geo的map可能为null,因为绘制为延时方法
             if (!geo || !geo.isVisible() || !geo.getMap() || !geo.getLayer() || (!geo.getLayer().isCanvasRender())) {
@@ -142,6 +142,11 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
             return null;
         }
         return [this._context, this._resources];
+    },
+
+      getCanvasImage:function() {
+        var point = this._fullExtent.getMin();
+        return {'canvas':this._canvas,'point':this.getMap()._viewPointToContainerPoint(point)};
     },
 
     /**

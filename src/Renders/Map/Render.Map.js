@@ -45,7 +45,7 @@ Z.render.map.Render = Z.Class.extend({
         }
         //改变大小, 顺便清空画布
         this._updateCanvasSize();
-        var layers = this._getLayerToDraw();
+        var layers = this._getAllLayerToCanvas();
         for (i = 0, len=layers.length; i < len; i++) {
             var render = layers[i]._getRender();
             if (render) {
@@ -58,7 +58,7 @@ Z.render.map.Render = Z.Class.extend({
         }
     },
 
-    _getLayerToDraw:function() {
+    _getAllLayerToCanvas:function() {
         var layers = this.map._getAllLayers(function(layer) {
             if (layer.isCanvasRender()) {
                 return true;

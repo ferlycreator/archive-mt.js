@@ -61,7 +61,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         //中心点不变时, 不做渲染
         var z=map.getZoomLevel(), preZ = this._preZ,
             c = map.getCenter(), preC = this._preC;
-        if ((z === preZ && c.equals(preC))) {
+        if (this._drawed === false || (z === preZ && c.equals(preC))) {
             return false;
         }
         this._drawed=false;
@@ -113,7 +113,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
             }
         }
 
-        console.log('draw tile');
+
         this._fullTileExtent = fullTileExtent;
         return promises;
     },
@@ -133,6 +133,8 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         var tiles = this._tiles;
         var tileSize = this.layer._getTileSize();
         this._resizeCanvas(this._fullTileExtent.getWidth(), this._fullTileExtent.getHeight());
+        this._clearCanvas();
+        console.log('draw tile');
         for (var i = tiles.length - 1; i >= 0; i--) {
             var tile = tiles[i];
             var point = tile['tile']['viewPoint'].substract(this._fullTileExtent.getMin());
