@@ -18,8 +18,8 @@ describe('VectorSpec', function() {
         map = new Z.Map(container, option);
         tile = new Z.TileLayer('tile', {
             tileInfo: 'web-mercator',
-            urlTemplate: 'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',
-            subdomains: [0, 1, 2, 3]
+            urlTemplate: 'http://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
+            subdomains: [1, 2, 3]
         });
         map.setBaseTileLayer(tile);
         layer = new Z.VectorLayer('id');

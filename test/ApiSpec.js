@@ -19,8 +19,8 @@ describe('API', function () {
         map = new Z.Map(container, option);
         tile = new Z.TileLayer('tile', {
             tileInfo: 'web-mercator',
-            urlTemplate: 'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',
-            subdomains: [0, 1, 2, 3]
+            urlTemplate: 'http://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
+            subdomains: [1, 2, 3]
         });
         map.setBaseTileLayer(tile);
     });
@@ -148,7 +148,7 @@ describe('API', function () {
         it('setBaseTileLayer', function () {
             var tile2 = new Z.TileLayer('tile2', {
                 tileInfo: 'web-mercator',
-                urlTemplate: 'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',
+                urlTemplate: 'http://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
                 subdomains: [0, 1, 2]
             });
             expect(function () {
@@ -2159,7 +2159,7 @@ describe('API', function () {
         it('static.combine', function() {
             var e1 = new Z.Extent(2, 2, 5, 5);
             var e2 = new Z.Extent(3, 3, 6, 6);
-            var combined = Z.Extent.combine(e1, e2);
+            var combined =e1.combine(e2);
 
             expect(combined.xmin).to.eql(2);
             expect(combined.ymin).to.eql(2);
@@ -2169,9 +2169,9 @@ describe('API', function () {
 
         it('static.expand', function() {
             var extent = new Z.Extent(2, 2, 6, 6);
-            var e1 = Z.Extent.expand(extent, 1);
-            var e2 = Z.Extent.expand(extent, -2);
-            var e3 = Z.Extent.expand(extent, -3);
+            var e1 = extent.expand(1);
+            var e2 = extent.expand(-2);
+            var e3 = extent.expand(-3);
 
             expect(e1.xmin).to.eql(1);
             expect(e1.ymin).to.eql(1);

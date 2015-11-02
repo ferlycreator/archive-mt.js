@@ -19,7 +19,7 @@ describe('Geometry', function() {
         map.addLayer(layer);
         context.map = map;
         context.layer = layer;
-        canvasContainer = map._panels.canvasLayerContainer;
+        canvasContainer = map._panels.mapPlatform;
     });
 
     afterEach(function() {
