@@ -247,7 +247,6 @@
         var label = new maptalks.Label(options).addTo(layer);
         //label属性面板
         var labelPropertyPanel = new LabelPropertyPanel();
-
         label.on('click', function(){
             labelPropertyPanel.addTo(label);
         });

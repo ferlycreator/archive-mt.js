@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+        html,body{ margin:0px; height:100%; };
+    </style>
+    <title>MapTalks 示例: 车辆路径播放与监控</title>
+</head>
+<body scroll="no" onload="initMap();" style="width:99%;height:99%;">
+<div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
+<script type="text/javascript" >
+    var mapObj,layer,topoQuery;
+    function initMap(){
+        //创建地图对象
+        mapObj = new maptalks.Map("mapObj",{
+            center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
+            zoomLevel:   15 //初始缩放级别
+        });
+        //设置底图图层
+        mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
+        {
+            tileInfo: 'web-mercator',
+            urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
+            subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
+        }));
+        //创建图层
+        layer = new maptalks.VectorLayer('layer');
+        //将图层添加到地图对象
+        mapObj.addLayer(layer);
+
+        //工具
+        var toolbar = new maptalks.Toolbar({
+            position : { //工具条放置位置
+                top: '10',
+                right: '10'
+            },
+            vertical : false,
+            //工具项
+            items: [{
+                type : 'button',
+                icon: 'images/signal.png',
+                click : function(param){
+                    mapObj.on('click', markerMonitorMarker);
+                }
+            }]
+        });
+        mapObj.addControl(toolbar);
+        //初始化空间查询
+        topoQuery = new maptalks.TopoQuery({host:'localhost',port:8090});
+    }
+
+    function markerMonitorMarker(param) {
+        mapObj.off('click', markerMonitorMarker);
+        var coordinate = param.coordinate;
+        //设置图片
+        var icon = {
+            'markerFile': 'images/signal.png',
+            'markerWidth': 32,
+            'markerHeight': 32,
+            'markerDx': 0,
+            'markerDy': 16
+        };
+        //创建点对象
+        var marker = new maptalks.Marker(coordinate);
+        //设置点样式
+        marker.setSymbol(icon);
+        //将点添加到Layer
+        layer.addGeometry(marker);
+        //添加默认缓冲区
+        var bufferSymbol = {
+            'lineColor' : '#d74555',
+            'lineWidth' : 3,
+            'lineOpacity' : 1,
+            'lineDasharray' :[],
+            'polygonFill': '#d74555',
+            'polygonOpacity': 0.2
+        };
+        topoQuery.buffer({
+            geometries:[marker],
+            distance:800,
+            success: function(geometries){
+                for(var i=0,len=geometries.length;i<len;i++) {
+                    var geo = geometries[i];
+                    geo.setSymbol(bufferSymbol);
+                    //多边形属性面板
+                    var polygonPropertyPanel = new PolygonPropertyPanel();
+                    //绑定激活多边形属性面板事件
+                    geo.on('click', function(){
+                        polygonPropertyPanel.addTo(geo);
+                    });
+                }
+                layer.addGeometry(geometries);
+            }
+        });
+
+        //monitor属性面板
+        var monitorPropertyPanel = new MonitorPropertyPanel();
+
+        marker.on('click', function(){
+            monitorPropertyPanel.addTo(marker);
+        });
+    }
+
+</script>
+<!-- 引擎javascript开发包-->
+<script type="text/javascript" src="../../../maptalks.js"></script>
+<script type="text/javascript" src="monitor_property.js"></script>
+<script type="text/javascript" src="../../toolbox/polygon/polygon_property.js"></script>
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+  <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.min.js"></script>
+<![endif]-->
+</body>
+</html>

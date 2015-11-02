@@ -21,12 +21,12 @@ Z.TopoQuery=function(opts) {
 Z.TopoQuery.prototype={
     //默认结果的symbol
     defaultSymbol : {
-                    'lineColor' : '#800040',
-                    'lineWidth' : 2,
-                    'lineOpacity' : 1,
-                    'lineDasharray' :[20,10,5,5,5,10],
-                    'polygonOpacity': 0
-                },
+        'lineColor' : '#800040',
+        'lineWidth' : 2,
+        'lineOpacity' : 1,
+        'lineDasharray' :[20,10,5,5,5,10],
+        'polygonOpacity': 0
+    },
     /**
      * 获取空间库主机地址
      * @return {String} 空间库主机地址
