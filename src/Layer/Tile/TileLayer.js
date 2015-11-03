@@ -153,7 +153,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
                     var tileLeft = centerOffset.left + tileSize["width"]*i-holderLeft;
                     var tileTop = centerOffset.top +tileSize["height"]*j-holderTop;
                     var tileUrl = this._getTileUrl(tileIndex["x"],tileIndex["y"],zoomLevel);
-                    var tileId=[tileIndex["y"], tileIndex["x"], j,i].join('__');
+                    var tileId=[tileIndex["y"], tileIndex["x"], zoomLevel].join('__');
                     tiles.push({
                         'url' : tileUrl,
                         'left': tileLeft,
@@ -176,8 +176,9 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         var domain = '';
         if (this.options['subdomains']) {
             var subdomains = this.options['subdomains'];
+
             if (Z.Util.isArrayHasData(subdomains)) {
-                var rand = Math.round(Math.random()*(subdomains.length-1));
+                var rand = Math.abs(x+y) % subdomains.length;
                 domain = subdomains[rand];
             }
         }
