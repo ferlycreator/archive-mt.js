@@ -11,7 +11,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
     _registerEvents:function() {
         var map = this.getMap();
         map.on('_moveend _resize _zoomend',this.rend,this);
-        map.on('_moving',Z.Util.throttle(this.rend,200,this),this);
+        map.on('_moving',Z.Util.throttle(this.rend,260,this),this);
     },
 
     remove:function() {
@@ -25,7 +25,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
     },
 
     show:function() {
-        this._requestMapToRend();
+        this.rend();
     },
 
     hide:function() {
