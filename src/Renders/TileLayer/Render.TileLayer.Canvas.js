@@ -4,12 +4,14 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         this.layer = layer;
         this._mapRender = layer.getMap()._getRender();
         this._tileMap={};
+        this._tileCache = new Z.TileLayer.TileCache();
         this._registerEvents();
     },
 
     _registerEvents:function() {
         var map = this.getMap();
         map.on('_moveend _resize _zoomend',this.rend,this);
+        map.on('_moving',Z.Util.throttle(this.rend,200,this),this);
     },
 
     remove:function() {
@@ -44,8 +46,8 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         if (!this._canvas) {
             this._createCanvas();
         }
-        var map = this.getMap();
-        var tileGrid = this.layer._getTiles(map.getSize().multi(2.2));
+
+        var tileGrid = this.layer._getTiles();
         var tiles = tileGrid['tiles'];
         var fullTileExtent = tileGrid['fullExtent'];
         var me=this;
@@ -58,13 +60,17 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         function onTileError() {
             me._clearTileRectAndRequest(this[propertyOfPointOnTile]);
         }
-        var preTileCache = this._tileCache;
-        this._tileCache = {};
+        // var preTileCache = this._tileCache;
+        // this._tileCache = {};
         //计算fullTileExtent
+        var tileCache = this._tileCache;
         var preFullTileExtent = this._fullTileExtent;
         this._fullTileExtent = fullTileExtent;
         if (!preFullTileExtent || !preFullTileExtent.equals(fullTileExtent)) {
             this._resizeCanvas(this._fullTileExtent.getWidth(), this._fullTileExtent.getHeight());
+        } else {
+            //相同
+            return;
         }
         //遍历瓦片
         var counter = 0;
@@ -72,11 +78,11 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
             var tile = tiles[i];
             var tileId = tiles[i]['id'];
             //如果缓存中已存有瓦片, 则从不再请求而从缓存中读取.
-            if (preTileCache && preTileCache[tileId]) {
-                this._tileCache[tileId] =preTileCache[tileId];
-                if (preTileCache[tileId]['complete']) {
+            var cached = tileCache.get(tileId);
+            if (cached) {
+                if (cached['complete']) {
                     //画瓦片
-                    this._drawTile(tile['viewPoint'], preTileCache[tileId]);
+                    this._drawTile(tile['viewPoint'], cached);
                 }
             } else {
                 var tileImage = new Image();
@@ -84,7 +90,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
                 tileImage.onload = onTileLoad;
                 tileImage.onabort = onTileError;
                 tileImage.onerror = onTileError;
-                this._tileCache[tileId] =tileImage;
+                tileCache.add(tileId, tileImage);
                 counter++;
                 tileImage.src = tiles[i]['url'];
             }
@@ -96,12 +102,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
 
     _drawTile:function(point, tileImage) {
         var tileSize = this.layer._getTileSize();
-        try {
-            Z.Canvas.image(this._context, point.substract(this._fullTileExtent.getMin()), tileImage, tileSize['width'],tileSize['height']);
-        } catch (err) {
-            //img may be in state of broken
-        }
-
+        Z.Canvas.image(this._context, point.substract(this._fullTileExtent.getMin()), tileImage, tileSize['width'],tileSize['height']);
     },
 
     /**

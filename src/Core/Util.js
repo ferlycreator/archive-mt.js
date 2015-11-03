@@ -127,6 +127,36 @@ Z.Util = {
         };
     },
 
+    //from leaflet
+    // return a function that won't be called more often than the given interval
+    throttle: function (fn, time, context) {
+        var lock, args, wrapperFn, later;
+
+        later = function () {
+            // reset lock and call if queued
+            lock = false;
+            if (args) {
+                wrapperFn.apply(context, args);
+                args = false;
+            }
+        };
+
+        wrapperFn = function () {
+            if (lock) {
+                // called too soon, queue to call later
+                args = arguments;
+
+            } else {
+                // call and lock until later
+                fn.apply(context, arguments);
+                setTimeout(later, time);
+                lock = true;
+            }
+        };
+
+        return wrapperFn;
+    },
+
     /**
      * 遍历数组中的每个元素,并执行fn操作, 兼容N维数组, 如果数组中有null或undefined,则continue不作处理
      * @param {Array}   points 数组

@@ -132,20 +132,19 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         var centerTileIndex =  tileConfig.getCenterTileIndex(map._getPrjCenter(), zoomLevel);
 
         //计算中心瓦片的top和left偏移值
-        var centerOffset={};
-        centerOffset.top=Math.round(parseFloat(mapHeight/2-centerTileIndex["offsetTop"]));
-        centerOffset.left=Math.round(parseFloat(mapWidth/2-centerTileIndex["offsetLeft"]));
-        if (!canvasSize) {
+        var centerTileViewPoint=new Z.Point(Math.round(parseFloat(mapWidth/2-centerTileIndex["offsetLeft"])),
+                                                Math.round(parseFloat(mapHeight/2-centerTileIndex["offsetTop"])));
+        if (!canvasSize || !(canvasSize instanceof Z.Size)) {
             canvasSize = new Z.Size(mapWidth, mapHeight);
         }
         //中心瓦片上下左右的瓦片数
-        var tileTopNum =Math.ceil(Math.abs((canvasSize['height'] - mapHeight)/2 + centerOffset.top)/tileSize["height"]),
-            tileLeftNum=Math.ceil(Math.abs((canvasSize['width']- mapWidth)/2 + centerOffset.left)/tileSize["width"]),
-            tileBottomNum=Math.ceil(Math.abs((canvasSize['height'] - mapHeight)/2 + mapHeight-centerOffset.top)/tileSize["height"]),
-            tileRightNum=Math.ceil(Math.abs((canvasSize['width'] - mapWidth)/2 + mapWidth-centerOffset.left)/tileSize["width"]);
+        var tileTopNum =Math.ceil(Math.abs((canvasSize['height'] - mapHeight)/2 + centerTileViewPoint.top)/tileSize["height"]),
+            tileLeftNum=Math.ceil(Math.abs((canvasSize['width']- mapWidth)/2 + centerTileViewPoint.left)/tileSize["width"]),
+            tileBottomNum=Math.ceil(Math.abs((canvasSize['height'] - mapHeight)/2 + mapHeight-centerTileViewPoint.top)/tileSize["height"]),
+            tileRightNum=Math.ceil(Math.abs((canvasSize['width'] - mapWidth)/2 + mapWidth-centerTileViewPoint.left)/tileSize["width"]);
 
     //  只加中心的瓦片，用做调试
-    //  var centerTileImg = this._createTileImage(centerOffset.left,centerOffset.top,this.config._getTileUrl(centerTileIndex["topIndex"],centerTileIndex["leftIndex"],zoomLevel),tileSize["height"],tileSize["width"]);
+    //  var centerTileImg = this._createTileImage(centerTileViewPoint.left,centerTileViewPoint.top,this.config._getTileUrl(centerTileIndex["topIndex"],centerTileIndex["leftIndex"],zoomLevel),tileSize["height"],tileSize["width"]);
     //  tileContainer.appendChild(centerTileImg);
 
         var tiles = [];
@@ -154,8 +153,8 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         for (var i=-(tileLeftNum);i<tileRightNum;i++){
             for (var j=-(tileTopNum);j<=tileBottomNum;j++){
                     var tileIndex = tileConfig.getNeighorTileIndex(centerTileIndex["y"], centerTileIndex["x"], j,i, zoomLevel, this.options['repeatWorld']);
-                    var tileLeft = centerOffset.left + tileSize["width"]*i-holderLeft;
-                    var tileTop = centerOffset.top +tileSize["height"]*j-holderTop;
+                    var tileLeft = centerTileViewPoint.left + tileSize["width"]*i-holderLeft;
+                    var tileTop = centerTileViewPoint.top +tileSize["height"]*j-holderTop;
                     var tileUrl = this._getTileUrl(tileIndex["x"],tileIndex["y"],zoomLevel);
                     var tileId=[tileIndex["y"], tileIndex["x"], zoomLevel].join('__');
                     var tileDesc = {
@@ -167,6 +166,9 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
                     fullExtent = fullExtent.combine(new Z.Extent(tileDesc['viewPoint'], tileDesc['viewPoint'].add(new Z.Point(tileSize['width'],tileSize['height']))));
             }
         }
+        tiles.sort(function (a, b) {
+            return b['viewPoint'].distanceTo(centerTileViewPoint)-a['viewPoint'].distanceTo(centerTileViewPoint);
+        });
         return {
             'tiles' : tiles,
             'fullExtent' : fullExtent
@@ -186,7 +188,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
             var subdomains = this.options['subdomains'];
             if (Z.Util.isArrayHasData(subdomains)) {
                 var length = subdomains.length;
-                var s = (x*y) % length;
+                var s = (x+y) % length;
                 // var rand = Math.round(Math.random()*(subdomains.length-1));
                 domain = subdomains[s];
             }
