@@ -12,9 +12,10 @@ Z.render.tilelayer.Dom.prototype = {
 
     _registerEvents:function() {
         var map = this.layer.getMap();
-        map.on('_moving _moveend _resize',function() {
+        map.on('_moveend _resize',function() {
             this.rend();
         },this);
+        map.on('_moving',Z.Util.throttle(this.rend, 200, this),this);
         map.on('_zoomend',function() {
             this.clear();
             this.rend(true);
