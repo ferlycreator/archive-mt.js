@@ -16,10 +16,10 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
                 geo._onZoomEnd();
             });
         } else if (param['type'] === '_moveend') {
-            this.rend(true);
+            this._draw();
         } else if (param['type'] === '_resize') {
             this._resizeCanvas();
-            this.rend(true);
+            this._draw();
         }
     },
 
