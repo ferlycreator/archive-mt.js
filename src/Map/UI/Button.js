@@ -160,8 +160,10 @@ Z['Button'] = Z.Button = Z.Class.extend({
         var html = options['html'];
         if(icon) {
             var _imgDom = Z.DomUtil.createEl('img');
-            _imgDom.src = icon;
-            _imgDom.border =0;
+            _imgDom.src=icon;
+            _imgDom.border=0;
+            _imgDom.width=16;
+            _imgDom.height=16;
             _spanDom.appendChild(_imgDom);
             if(content) {
                 if(html) {

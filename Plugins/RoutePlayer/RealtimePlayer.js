@@ -5,7 +5,7 @@
  * 
  * 初始化播放器时，按如下说明构造轨迹对象数组，传递给播放器进行初始化。可在轨迹对象中指定轨迹点和轨迹线的样式。
  * 
- * 在支持html5 canvas的浏览器中，轨迹线默认用CanvasLayer绘制，不支持则用Graphiclayer绘制。
+ * 在支持html5 canvas的浏览器中，轨迹线默认用CanvasLayer绘制，不支持则用Svglayer绘制。
  * 
  * 参数说明:
  * 		config: {

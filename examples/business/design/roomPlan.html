@@ -5,13 +5,18 @@
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style type="text/css">
-        html,body{ margin:0px; height:100%; };
+        html,body{margin: 0px; height:100%;};
     </style>
-    <title>MapTalks 示例: 室内设计</title>
+    <title>MapTalks 示例: 智能家居</title>
 </head>
 <body scroll="no" onload="initMap();">
-
-<div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
+<div id="banner" style="width:100%;height:8%;margin-top:0px;background-color:#000000;">
+    <span style="margin-left:30px;">
+        <img src="images/logo.png" width="33" height="25" style="margin-top:10px;"/>
+        <font style="margin-top:10px;color:#ffffff;font-size:16px;font-weight:bolder;">智能家居</font>
+    </span>
+</div>
+<div id="mapObj" style="width:100%;height:92%;float:right;margin-top:0px;"></div>
 <script type="text/javascript" >
     var mapObj,drawTool,layer,markerFile;
     function initMap(){
@@ -69,11 +74,11 @@
             mode: maptalks.Geometry.TYPE_POLYGON,
             //绘制面的样式
             symbol: {
-                'lineColor':'#0f0',
-                'lineWidth':3,
-                'lineOpacity':1,
+                'lineColor':'#000000',
+                'lineWidth':1,
+                'lineOpacity':0.8,
                 'lineDasharray': [],
-                'polygonFill': 'rgb(201, 156, 131)',
+                'polygonFill': '#ffffff',
                 'polygonOpacity': 0.6
             }
         });
@@ -126,6 +131,17 @@
                 click : function(){
                     mapObj.on('click', markerLabel);
                 }
+            }, {
+                type : 'button',
+                // icon: 'images/text.png',
+                content: '打印',
+                click : function(){
+                    var geometries = layer.getAllGeometries();
+                    for(var i=0,len=geometries.length;i<len;i++) {
+                        var geo = geometries[i];
+                        console.log(geo.toJson());
+                    }
+                }
             }]
         });
         mapObj.addControl(toolbar);
@@ -134,7 +150,7 @@
         //构造工具栏
         var iconToolbar = new maptalks.Toolbar({
             position : { //工具条放置位置
-                left: '300',
+                left: '390',
                 bottom: '20'
             },
             vertical : false,
@@ -153,13 +169,13 @@
                 }
             }, {
                 type : 'button',
-                icon: 'images/icons/drawer.png',
+                icon: 'images/icons/wardrobe.png',
                 click : function(param){
                     addEventToMap(param);
                 }
             }, {
                 type : 'button',
-                icon: 'images/icons/pan.png',
+                icon: 'images/icons/gas.png',
                 click : function(param){
                     addEventToMap(param);
                 }
@@ -171,7 +187,7 @@
                 }
             }, {
                 type : 'button',
-                icon: 'images/icons/bathroom.png',
+                icon: 'images/icons/shower.png',
                 click : function(param){
                     addEventToMap(param);
                 }
@@ -183,7 +199,13 @@
                 }
             }, {
                 type : 'button',
-                icon: 'images/icons/closet.png',
+                icon: 'images/icons/toilet.png',
+                click : function(param){
+                    addEventToMap(param);
+                }
+            }, {
+                type : 'button',
+                icon: 'images/icons/washing.png',
                 click : function(param){
                     addEventToMap(param);
                 }
@@ -263,12 +285,41 @@
         mapObj.off('click', markerPicLabel);
         var coordinate = param.coordinate;
         //设置图片
+        var markerWidth=32,markerHeight=32;
+        if(markerFile.indexOf('basin.png')>0) {
+            markerWidth=30;
+            markerHeight=81;
+        }else if(markerFile.indexOf('bed.png')>0) {
+            markerWidth=89;
+            markerHeight=68;
+        }else if(markerFile.indexOf('gas.png')>0) {
+            markerWidth=30;
+            markerHeight=81;
+        }else if(markerFile.indexOf('shower.png')>0) {
+            markerWidth=15;
+            markerHeight=23;
+        }else if(markerFile.indexOf('table.png')>0) {
+            markerWidth=23;
+            markerHeight=54;
+        }else if(markerFile.indexOf('toilet.png')>0) {
+            markerWidth=30;
+            markerHeight=48;
+        }else if(markerFile.indexOf('tv.png')>0) {
+            markerWidth=20;
+            markerHeight=69;
+        }else if(markerFile.indexOf('wardrobe.png')>0) {
+            markerWidth=102;
+            markerHeight=23;
+        }else if(markerFile.indexOf('washing.png')>0) {
+            markerWidth=39;
+            markerHeight=62;
+        }
         var icon = {
             'markerFile': markerFile,
-            'markerWidth': 32,
-            'markerHeight': 32,
+            'markerWidth': markerWidth,
+            'markerHeight': markerHeight,
             'markerDx': 0,
-            'markerDy': 16
+            'markerDy': markerHeight/2
         };
         //创建点对象
         var marker = new maptalks.Marker(coordinate,{'draggable':true});

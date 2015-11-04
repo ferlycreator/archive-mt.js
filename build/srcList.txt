@@ -114,3 +114,4 @@
 ../src/Query/FeatureQuery.js
 ../src/Query/TopoQuery.js
 ../src/extern.js
+../Plugins/RoutePlay/RoutePlayer.js

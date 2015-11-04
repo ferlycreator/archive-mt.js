@@ -345,7 +345,6 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     isVisible:function() {
-
         return this.options['visible'];
     },
 
