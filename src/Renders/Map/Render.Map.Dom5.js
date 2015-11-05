@@ -22,7 +22,7 @@ Z.render.map.Dom = Z.render.map.Render.extend({
             this._clearCanvas();
         },this);
         this.map.on('_zoomend',function() {
-            this.rend();
+            // this.rend();
             this._refreshSVGPaper();
         },this);
     },

@@ -7,7 +7,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
     },
 
     _registerEvents:function() {
-        this.getMap().on('_zoomend _moveend _resize',this._onMapEvent,this);
+        this.getMap().on('_zoomstart _zoomend _moveend _resize',this._onMapEvent,this);
     },
 
     _onMapEvent:function(param) {
@@ -15,6 +15,8 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
             this._layer._eachGeometry(function(geo) {
                 geo._onZoomEnd();
             });
+        } else if (param['type'] === '_zoomstart') {
+            this._clearCanvas();
         } else if (param['type'] === '_moveend') {
             this._draw();
         } else if (param['type'] === '_resize') {
