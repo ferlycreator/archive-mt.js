@@ -17,7 +17,9 @@ Z.render.map.Render = Z.Class.extend({
         }
         var mwidth = this._canvas.width,
             mheight = this._canvas.height;
-
+        if (this._canvasBackgroundImage) {
+            Z.Canvas.image(this._context, new Z.Point(0,0), this._canvasBackgroundImage);
+        }
         var layers = this._getAllLayerToCanvas();
         for (var i = 0, len=layers.length; i < len; i++) {
             if (!layers[i].isVisible()) {

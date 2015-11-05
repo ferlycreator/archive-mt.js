@@ -473,6 +473,15 @@ Z.DomUtil = {
         return 0;
     },
 
+    copyCanvas:function(src) {
+        var target = Z.DomUtil.createEl('canvas');
+        target.width = src.width;
+        target.height = src.height;
+
+        target.getContext('2d').drawImage(src,0,0);
+        return target;
+    },
+
     /**
      * 测试Canvas大小是否合法
      * @param  {size}   canvas大小

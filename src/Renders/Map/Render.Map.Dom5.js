@@ -6,7 +6,10 @@ Z.render.map.Dom = Z.render.map.Render.extend({
     },
 
     _registerEvents:function() {
-
+        this.map.on('_movestart _baselayerchangestart _baselayerchangeend _baselayerload',function() {
+           delete this._canvasBackgroundImage;
+           this.rend();
+        },this);
         this.map.on('_moveend _resize',function() {
             //this.rend();
             this._refreshSVGPaper();
@@ -15,14 +18,12 @@ Z.render.map.Dom = Z.render.map.Render.extend({
             this.rend();
         },this);
         this.map.on('_zoomstart',function() {
+            delete this._canvasBackgroundImage;
             this._clearCanvas();
         },this);
         this.map.on('_zoomend',function() {
             this.rend();
             this._refreshSVGPaper();
-        },this);
-        this.map.on('_baselayerchangestart _baselayerchangeend _baselayerload',function() {
-            this.removeBackGroundDOM();
         },this);
     },
 
@@ -72,29 +73,10 @@ Z.render.map.Dom = Z.render.map.Render.extend({
         var position = this.offsetPlatform();
         Z.DomUtil.offsetDom(this._panels.mapPlatform, new Z.Point(0,0)); //{'left':0,'top':0}
         this.map._resetMapViewPoint();
-        //this._refreshSVGPaper();
-        if (this._backgroundDOM) {
-            //Z.DomUtil.offsetDom(this._backgroundDOM,position);
-            this._backgroundDOM.style.left=position["left"]+"px";
-            this._backgroundDOM.style.top=position["top"]+"px";
-        }
+
     },
 
-    insertBackground:function() {
-        this._backgroundDOM = this._panels.mapContainer.cloneNode(true);
-        this._panels.mapPlatform.insertBefore(this._backgroundDOM,this._panels.mapViewPort);
-    },
 
-    /**
-     * 移除背景Dom对象
-     */
-    removeBackGroundDOM:function() {
-        if (this._backgroundDOM) {
-            this._backgroundDOM.innerHTML='';
-            Z.DomUtil.removeDomNode(this._backgroundDOM);
-            delete this._backgroundDOM;
-        }
-    },
 
     showOverlayLayers:function() {
         this._panels.svgContainer.style.display="";
@@ -128,7 +110,7 @@ Z.render.map.Dom = Z.render.map.Render.extend({
         Z.SVG.refreshContainer(this.map,this._vectorPaper);
     },
 
-    onZoomStart:function(scale, focusPos) {
+    onZoomStart:function(scale, focusPos, fn, context, args) {
         if (Z.Browser.ielt9) {return;}
         var map = this.map;
         // this._askBaseTileLayerToRend();
@@ -143,12 +125,6 @@ Z.render.map.Dom = Z.render.map.Render.extend({
             'scale2': scale,
             'duration' : 400
         }), map, function(frame) {
-            // this._context.restore();
-            // this._context.save();
-            // console.log(frame.scale);
-            // this._context.translate(focusPos['left'],focusPos['top']);
-            // this._clearCanvas();
-            // this._drawLayerCanvasImage(baseLayerImage, width, height, focusPos);
             this._context.save();
             this._clearCanvas();
             this._context.translate(focusPos['left'],focusPos['top']);
@@ -156,10 +132,9 @@ Z.render.map.Dom = Z.render.map.Render.extend({
             this._context.translate(-focusPos['left'],-focusPos['top']);
             this._drawLayerCanvasImage(baseLayerImage, width, height);
             this._context.restore();
-            // this._context.restore();
-
             if (frame.state['end']) {
-                this._context.restore();
+                this._canvasBackgroundImage = Z.DomUtil.copyCanvas(this._canvas);
+                fn.apply(context, args);
             }
         }, this);
     },
@@ -183,10 +158,6 @@ Z.render.map.Dom = Z.render.map.Render.extend({
         mapContainer.style.left=0+"px";
     },
 
-    zoomAnimation:function(destResolution) {
-
-    },
-
     panAnimation:function(moveOffset) {
         var map = this.map;
         var pcenter = map._getPrjCenter();
@@ -207,7 +178,6 @@ Z.render.map.Dom = Z.render.map.Render.extend({
         }, this);
 
     },
-
 
 
     /**

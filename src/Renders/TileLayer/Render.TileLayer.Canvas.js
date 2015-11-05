@@ -75,7 +75,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         var mapViewExtent = this.getMap()._getViewExtent();
         var tileSize = this.layer._getTileSize();
         //遍历瓦片
-        var counter = 0;
+        this._tileToLoadCounter = 0;
         for (var i = tiles.length - 1; i >= 0; i--) {
             var tile = tiles[i];
             var tileId = tiles[i]['id'];
@@ -90,19 +90,20 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
                     this._drawTile(tile['viewPoint'], cached);
                 }
             } else {
-                counter++;
                 if (mapViewExtent.isIntersect(new Z.Extent(tile['viewPoint'], tile['viewPoint'].add(new Z.Point(tileSize['width'], tileSize['height']))))) {
+                    this._tileToLoadCounter++;
                     this._tileQueue[tileId] = tile;
                 }
             }
         }
         this._requestMapToRend();
-        if (counter === 0){
-
+        this._rending = false;
+        if (this._tileToLoadCounter === 0){
+            this._fireLoadedEvent();
         } else {
             this._scheduleLoadTileQueue();
         }
-        this._rending = false;
+
     },
 
     _scheduleLoadTileQueue:function() {
@@ -155,6 +156,8 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
      * @param  {Image} tileImage 瓦片图片对象
      */
     _drawTileAndRequest:function(point, tileImage) {
+        this._tileToLoadCounter--;
+
         if (!this._rending) {
             this._drawTile(point, tileImage);
 
@@ -163,6 +166,10 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
             if (viewExtent.isIntersect(new Z.Extent(point, point.add(new Z.Point(tileSize['width'], tileSize['height']))))) {
                 this._requestMapToRend();
             }
+        }
+        if (this._tileToLoadCounter === 0) {
+
+             this._fireLoadedEvent();
         }
     },
 
@@ -180,18 +187,11 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         if (!this.getMap()._isBusy) {
             this._mapRender.rend();
         }
-
-        // if (this._askMapToRendTimeout) {
-        //     clearTimeout(this._askMapToRendTimeout);
-        // }
-        // var me = this;
-        // this._askMapToRendTimeout=setTimeout(function() {
-
-        // },50);
-
     },
 
-
+    _fireLoadedEvent:function() {
+        this.layer.fire('layerloaded');
+    },
 
     clearExecutors:function() {
         //nothing to do
