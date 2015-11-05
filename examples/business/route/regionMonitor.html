@@ -7,7 +7,7 @@
     <style type="text/css">
         html,body{ margin:0px; height:100%; };
     </style>
-    <title>MapTalks 示例: 区域监控与闯入预警</title>
+    <title>MapTalks 示例: 车辆路径播放与监控</title>
 </head>
 <body scroll="no" onload="initMap();" style="width:99%;height:99%;">
 <div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
@@ -37,7 +37,7 @@
         var toolbar = new maptalks.Toolbar({
             position : { //工具条放置位置
                 top: '10',
-                right: '10'
+                left: '10'
             },
             vertical : false,
             //工具项
@@ -84,6 +84,9 @@
         }];
         routePlayer = new maptalks.HistoryRoutePlayer(mapObj,config,route);
         routePlayer.start();
+        //设置默认监控区域
+        var param = {coordinate:new maptalks.Coordinate(121.48997791534421,31.25895859182188)};
+        markerMonitorMarker(param);
     }
 
     function markerMonitorMarker(param) {
