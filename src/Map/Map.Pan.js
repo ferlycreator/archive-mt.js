@@ -6,6 +6,7 @@ Z.Map.include({
      * @expose
      */
     panTo:function(coordinate) {
+        //TODO 动画
         var projection = this._getProjection();
         var p = projection.project(coordinate);
         var span = this._getPixelDistance(p);
@@ -20,6 +21,7 @@ Z.Map.include({
      * @expose
      */
     panBy:function(offset) {
+        //TODO 动画
         if (offset.left || offset.top) {
             this._fireEvent('movestart');
             this.offsetPlatform(new Z.Point(offset['left'],offset['top']));

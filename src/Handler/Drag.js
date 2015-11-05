@@ -80,14 +80,15 @@ Z.Handler.Drag = Z.Handler.extend({
              * @event dragging
              * @return {Object} mousePos: {'left': 0px, 'top': 0px}
              */
-            try {
-                this.fire('dragging',{
+            this.fire('dragging',{
                     'mousePos': new Z.Point(event.clientX, event.clientY)
                 });
+            /*try {
+
             } catch (error) {
                 Z.DomUtil.off(document,'mousemove',this.onMouseMove);
                 Z.DomUtil.off(document,'mouseup',this.onMouseUp);
-            }
+            }*/
 
         }
         // this.moving = true;

@@ -191,23 +191,29 @@ Z['Map']=Z.Map=Z.Class.extend({
             this._center = center;
             return this;
         }
-        var projection = this._getProjection();
-        var _pcenter = projection.project(center);
-        var offset = this._getPixelDistance(_pcenter);
-        // FIXME: call panBy() ?
-        if (offset.left || offset.top) {
+        if (this._loaded) {
             /**
              * 触发map的movestart事件
              * @member maptalks.Map
              * @event movestart
              */
             this._fireEvent('movestart');
-            this._setPrjCenter(_pcenter);
-            this.offsetPlatform(offset);
         }
+        var projection = this._getProjection();
+        var _pcenter = projection.project(center);
+        this._setPrjCenterAndMove(_pcenter);
         // XXX: fire 'moveend' or not?
         this._onMoveEnd();
         return this;
+    },
+
+    _setPrjCenterAndMove:function(pcenter) {
+        var offset = this._getPixelDistance(pcenter);
+        // FIXME: call panBy() ?
+        if (offset.left || offset.top) {
+            this._setPrjCenter(pcenter);
+            this.offsetPlatform(offset);
+        }
     },
 
     _onMoving:function(param) {
@@ -678,10 +684,22 @@ Z['Map']=Z.Map=Z.Class.extend({
 //------------------------------坐标转化函数-----------------------------
     /**
      * 将地理坐标转化为容器偏转坐标
-     * @param {Coordinate} 地理坐标
+     * @param {Coordinate} coordinate 地理坐标
      * @return {Point} 容器偏转坐标
      */
     coordinateToViewPoint: function(coordinate) {
+        var projection = this._getProjection();
+        if (!coordinate || !projection) {return null;}
+        var pCoordinate = projection.project(coordinate);
+        return this._transformToViewPoint(pCoordinate);
+    },
+
+    /**
+     * 将容器偏转坐标转化为地理坐标
+     * @param {Point} viewPoint 容器坐标
+     * @return {Coordinate} 地理坐标
+     */
+    viewPointToCoordinate: function(viewPoint) {
         var projection = this._getProjection();
         if (!coordinate || !projection) {return null;}
         var pCoordinate = projection.project(coordinate);
@@ -943,11 +961,24 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     offsetPlatform:function(offset) {
+        if (!this._mapViewPoint) {
+            this._mapViewPoint = this._getRender().offsetPlatform();
+        }
         if (!offset) {
-            return this._getRender().offsetPlatform(offset);
+            return this._mapViewPoint;
+
         } else {
+            this._mapViewPoint = this._mapViewPoint.add(offset);
             this._getRender().offsetPlatform(offset);
             return this;
+        }
+    },
+
+    _resetMapViewPoint:function() {
+        if (!this._mapViewPoint) {
+            this._mapViewPoint = new Z.Point(0,0);
+        } else {
+            this._mapViewPoint = new Z.Point(0,0);
         }
     },
 
@@ -1127,6 +1158,9 @@ Z['Map']=Z.Map=Z.Class.extend({
     _initContainerWatcher:function() {
         var map = this;
         map._watcher = setInterval(function() {
+            if (map._isBusy) {
+                return;
+            }
             var watched = map._getContainerDomSize();
             if (map.width !== watched.width || map.height !== watched.height) {
                 var oldHeight = map.height;
@@ -1134,7 +1168,7 @@ Z['Map']=Z.Map=Z.Class.extend({
                 map._updateMapSize(watched);
                 map._onResize(new Z.Point((watched.width-oldWidth) / 2,(watched.height-oldHeight) / 2));
             }
-        },800);
+        },1000);
     }
 });
 
