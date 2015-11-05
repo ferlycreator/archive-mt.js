@@ -7,7 +7,7 @@ Z.render.Canvas=Z.Class.extend({
         }
         var size = this._canvasFullExtent.getSize();
         var point = this._canvasFullExtent.getMin();
-        return {'canvas':this._canvas,'point':this.getMap()._viewPointToContainerPoint(point),'size':size};
+        return {'image':this._canvas,'point':this.getMap()._viewPointToContainerPoint(point),'size':size};
     },
 
     _createCanvas:function() {
@@ -17,9 +17,9 @@ Z.render.Canvas=Z.Class.extend({
         this._canvas = Z.DomUtil.createEl('canvas');
         this._resizeCanvas();
         this._context = this._canvas.getContext('2d');
-        if (Z.Browser.retina) {
+        /*if (Z.Browser.retina) {
             this._context.scale(2, 2);
-        }
+        }*/
     },
 
     _resizeCanvas:function(canvasSize) {
@@ -33,10 +33,12 @@ Z.render.Canvas=Z.Class.extend({
         } else {
             size = canvasSize;
         }
-
+        if (this._context) {
+            Z.Canvas.resetContextState(this._context);
+        }
         var canvas = this._canvas;
         //retina屏支持
-        var r = Z.Browser.retina ? 2:1;
+        var r = 1;
         canvas.height = r * size['height'];
         canvas.width = r * size['width'];
         canvas.style.width = size['width']+'px';

@@ -26,38 +26,47 @@ Z.render.map.Render = Z.Class.extend({
             var render = layers[i]._getRender();
             if (render) {
                 var layerImage = render.getCanvasImage();
-                if (layerImage && layerImage['canvas']) {
-                    // Z.Canvas.image(this._context, layerImage['point'], layerImage['canvas']);
-                    var sx, sy, w, h, dx, dy;
-                    var point = layerImage['point'];
-                    var size = layerImage['size'];
-                    if (point['left'] <= 0) {
-                        sx = -point['left'];
-                        dx = 0;
-                        w = Math.min(size['width']-sx,mwidth);
-                    } else {
-                        sx = 0;
-                        dx = point['left'];
-                        w = mwidth-point['left'];
-                    }
-                    if (point['top'] <= 0) {
-                        sy = -point['top'];
-                        dy = 0;
-                        h = Math.min(size['height']-sy,mheight);
-                    } else {
-                        sy = 0;
-                        dy = point['top'];
-                        h = mheight-point['top'];
-                    }
-
-                    this._context.drawImage(layerImage['canvas'], sx, sy, w, h, dx, dy, w, h);
+                if (layerImage && layerImage['image']) {
+                    this._drawLayerCanvasImage(layerImage, mwidth, mheight);
                 }
             }
         }
     },
 
-    _addCanvasAnimation:function(animation, options) {
-        animation.call(this)
+    _drawLayerCanvasImage:function(layerImage, mwidth, mheight, origin) {
+        // Z.Canvas.image(this._context, layerImage['point'], layerImage['image']);
+        var sx, sy, w, h, dx, dy;
+        var point = layerImage['point'];
+        var size = layerImage['size'];
+        if (point['left'] <= 0) {
+            sx = -point['left'];
+            dx = 0;
+            w = Math.min(size['width']-sx,mwidth);
+        } else {
+            sx = 0;
+            dx = point['left'];
+            w = mwidth-point['left'];
+        }
+        if (point['top'] <= 0) {
+            sy = -point['top'];
+            dy = 0;
+            h = Math.min(size['height']-sy,mheight);
+        } else {
+            sy = 0;
+            dy = point['top'];
+            h = mheight-point['top'];
+        }
+
+        if (origin) {
+            dx -= origin['left'];
+            dx -= origin['top'];
+        }
+        Z.Canvas.disableImageSmoothing(this._context);
+        this._context.drawImage(layerImage['image'], sx, sy, w, h, dx, dy, w, h);
+    },
+
+    _askBaseTileLayerToRend:function() {
+        this.map.getBaseTileLayer()._getRender().rend();
     },
 
     _getAllLayerToCanvas:function() {
@@ -120,6 +129,9 @@ Z.render.map.Render = Z.Class.extend({
         canvas.width = r * mapSize['width'];
         canvas.style.width = mapSize['width']+'px';
         canvas.style.height = mapSize['height']+'px';
+        if (this._context) {
+            Z.Canvas.resetContextState(this._context);
+        }
         return true;
     },
 

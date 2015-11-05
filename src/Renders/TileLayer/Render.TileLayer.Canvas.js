@@ -46,7 +46,6 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
 
     rend:function(options) {
         this._rending = true;
-        // console.log('tile rended');
         var tileGrid = this.layer._getTiles(this.getMap().getSize().multi(2.2));
         var tiles = tileGrid['tiles'];
         var fullTileExtent = tileGrid['fullExtent'];
@@ -113,7 +112,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         }
 
         var me = this;
-        this._loadQueueTimeout = setTimeout(function(){me._loadTileQueue();},500);
+        this._loadQueueTimeout = setTimeout(function(){me._loadTileQueue();},10);
     },
 
     _loadTileQueue:function() {
