@@ -1,29 +1,29 @@
-/**
- * <pre>
- * 轨迹播放类
- * 播放设置参数说明:
- * { 		
- * 		timeSpan: 400, //播放时间片，单位毫秒，即隔多少秒播放一次，默认为400
- * 		unitTime: 5,   //单位时间，即每个timeSpan下流逝的实际时间，以毫秒为单位，历史播放模式下默认为5秒
- * 		enableDrawRoute: true|false	//是否绘制轨迹
- * }
- * 轨迹对象说明:
- * {
- * 		getIds: functin(){},
- * 		start: function(id) {},
- * 		getMarkerSymbol:function(id) {},
- * 		getRouteSymbol:function(id) {},
- * 		next:function(id, time){}
- * }
- * </pre>
- * @param map {Z.Map} 地图对象
- * @param config {Object} 播放设置
- * @param routes {Object} 轨迹对象
- * @constructor
- */
 Z.RoutePlayer = Z.Class.extend({
     includes: [Z.Eventable],
-
+    /**
+     * <pre>
+     * 轨迹播放类
+     * 播放设置参数说明:
+     * {
+     * 		timeSpan: 400, //播放时间片，单位毫秒，即隔多少秒播放一次，默认为400
+     * 		unitTime: 5,   //单位时间，即每个timeSpan下流逝的实际时间，以毫秒为单位，历史播放模式下默认为5秒
+     * 		enableDrawRoute: true|false	//是否绘制轨迹
+     * }
+     * 轨迹对象说明:
+     * {
+     * 		getIds: functin(){},
+     * 		start: function(id) {},
+     * 		getMarkerSymbol:function(id) {},
+     * 		getRouteSymbol:function(id) {},
+     * 		next:function(id, time){}
+     * }
+     * </pre>
+     * @constructor
+     * @param map {Z.Map} 地图对象
+     * @param config {Object} 播放设置
+     * @param routes {Object} 轨迹对象
+     * @constructor
+     */
     initialize: function(map, config, routes) {
         Z.Util.extend(this, config);
         this.guid=Z.Util.GUID();
@@ -88,8 +88,8 @@ Z.RoutePlayer = Z.Class.extend({
 		this.currentTime = currentTime;
 		this.startTime = currentTime;
 		//准备绘图图层
-		var markLayerId = '__mt__internal__routeplay__marker_' + this.guid;
-		var routeLayerId = '__mt__internal__routeplay__routes_' + this.guid;
+		var markLayerId = Z.internalLayerPrefix+'__routeplay__marker_' + this.guid;
+		var routeLayerId = Z.internalLayerPrefix+'__routeplay__routes_' + this.guid;
 		var markerLayer = this.map.getLayer(markLayerId);
 		if (!markerLayer) {
 			this.markerLayer = new Z.VectorLayer(markLayerId);
@@ -108,7 +108,6 @@ Z.RoutePlayer = Z.Class.extend({
             me._onFocus();
 		}
 	},
-
 	/**
 	 * 开始播放轨迹
 	 * @expose
@@ -126,7 +125,6 @@ Z.RoutePlayer = Z.Class.extend({
 		    me._loop();
 		},this.timeSpan);
 	},
-
 	/**
 	 * 暂停播放轨迹
 	 * @expose
@@ -139,7 +137,6 @@ Z.RoutePlayer = Z.Class.extend({
          */
 		this.fire('playpaused', {'target':this});
 	},
-
 	/**
 	 * 清除looper
 	 */
@@ -149,7 +146,6 @@ Z.RoutePlayer = Z.Class.extend({
 		}
 		this.looper = null;
 	},
-
 	/**
 	 * 恢复播放
 	 * @expose
@@ -166,7 +162,6 @@ Z.RoutePlayer = Z.Class.extend({
 			me._loop();
 		},this.timeSpan);
 	},
-
 	/**
 	 * 停止播放轨迹
 	 * @expose
@@ -181,7 +176,6 @@ Z.RoutePlayer = Z.Class.extend({
          */
 		this.fire('playstopped', {'target':this});
 	},
-
 	/**
      * 清除所有图层
      * @expose
@@ -194,7 +188,6 @@ Z.RoutePlayer = Z.Class.extend({
 			this.routeLayer.clear();
 		}
 	},
-
 	/**
 	 * 循环取数据
 	 */
@@ -367,7 +360,6 @@ Z.RoutePlayer = Z.Class.extend({
 			this.routeLayer.addGeometry(routeGeos);
 		}
 	},
-
 	/**
 	 * 根据next与pre相对于横轴的角度
 	 * @param pre
@@ -384,7 +376,6 @@ Z.RoutePlayer = Z.Class.extend({
 		var degree = Math.atan(Math.abs(spanY/spanX))*180/Math.PI;
 		return degree;
 	},
-
 	/**
 	 * 设定新的时间
 	 * @param time
@@ -405,7 +396,6 @@ Z.RoutePlayer = Z.Class.extend({
 		},this.timeSpan);
 	},
 	/**
-
 	 * 聚焦
 	 * @param identifier {String} 聚焦的播放物id
 	 * @param mode {Number} 聚焦模式
@@ -414,11 +404,9 @@ Z.RoutePlayer = Z.Class.extend({
 		this.focusId = identifier;
 		this.focusMode=mode;
 	},
-
 	unfocus:function() {
 		this.focusId = null;
 	},
-
 	_onFocus:function() {
 		if (this.focusId) {
 			var routePlay = this.routeCache[this.focusId];
@@ -454,7 +442,6 @@ Z.RoutePlayer = Z.Class.extend({
 			}
 		}
 	},
-
 	hide:function(identifier) {
 		var marker = this.markerLayer.getGeometryById(identifier);
 		if (marker) {
@@ -467,12 +454,10 @@ Z.RoutePlayer = Z.Class.extend({
 			}
 		}
 	},
-
 	setTimeSpan:function(timeSpan) {
 		if (!timeSpan) return;
 		this.timeSpan = timeSpan;
 	},
-
 	setUnitTime:function(unitTime) {
 		if (!unitTime) return;
 		this.unitTime = unitTime;

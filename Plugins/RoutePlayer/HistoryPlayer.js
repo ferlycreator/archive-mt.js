@@ -175,11 +175,11 @@ Z.HistoryRoutePlayer = Z.Class.extend({
             this.identifiers = [];
             var routes = this.routes;
             for(var i = 0, len = routes.length;i < len;i++) {
-              if (routes[i]["identifier"] && routes[i]["route"]) {
-                  this.identifiers.push(routes[i]["identifier"]);
-                  this.routes[i].counter = 0;
-                  this.routeObjs[routes[i]["identifier"]] = this.routes[i];
-              }
+                if (routes[i]["identifier"] && routes[i]["route"]) {
+                    this.identifiers.push(routes[i]["identifier"]);
+                    this.routes[i].counter = 0;
+                    this.routeObjs[routes[i]["identifier"]] = this.routes[i];
+                }
             }
         }
     },
@@ -414,5 +414,4 @@ Z.HistoryRoutePlayer = Z.Class.extend({
         if (!this.player) return null;
         return this.player.unitTime;
     }
-}
-);
+});

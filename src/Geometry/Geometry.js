@@ -306,7 +306,6 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     /**
      * 闪烁Geometry
-     *
      * @param interval {Number} 闪烁间隔时间，以毫秒为单位
      * @param count {Number} 闪烁次数
      */

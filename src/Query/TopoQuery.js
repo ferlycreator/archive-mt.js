@@ -126,8 +126,8 @@ Z.TopoQuery.prototype={
      * @member maptalks.Map
      * @param {maptalks.Geometry} [geometry] [被relate的Geometry]
      * @param {maptalks.Geometry[]} geometries 输入Geometry数组
-     * @param {Number} relation  空间关系，参考seegoo.maps.constant内的常量定义
-     * @param {Function} callback 回调函数，参数为布尔类型数组，数组长度与geometries参数数组相同，每一位代表相应的判断结果
+     * @param {Number} relation  空间关系，参考z.constant内的常量定义
+     * @param {Function} success 回调函数，参数为布尔类型数组，数组长度与geometries参数数组相同，每一位代表相应的判断结果
      * @expose
      */
     relate:function(opts) {

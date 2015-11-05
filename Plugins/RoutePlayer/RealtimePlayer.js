@@ -19,14 +19,12 @@ Z.RealtimeRoutePlayer = Z.Class.extend({
      * 				identifier:1,
      * 				symbol: [marker的symbol],
      * 				routeSymbol: [轨迹的symbol]
-     * 			 },
-     * 			 ...
-     * 			]
+     * 			 }]
      * 		},
      * 		//实时轨迹数据查询回调函数
      * 		//参数说明： identifier是轨迹的identifier;time是播放器当前时间，一般为客户端的系统时间
      * 		queryDataCallback: function (identifier,time) {
-     * 			//....
+     * 		    //....
      * 			//返回数据数组
      * 			//return [points];
      * 		}
@@ -172,7 +170,7 @@ Z.RealtimeRoutePlayer = Z.Class.extend({
          */
         player.addEventListener("playstarted", function(param) {
             param.target = _this;
-            _this.executeListeners( "playstarted", param);
+            _this.fire( "playstarted", param);
         });
 
         /**
@@ -182,7 +180,7 @@ Z.RealtimeRoutePlayer = Z.Class.extend({
          */
         player.addEventListener("playpaused", function(param) {
             param.target = _this;
-            _this.executeListeners( "playpaused", param);
+            _this.fire( "playpaused", param);
         });
 
         /**
@@ -192,7 +190,7 @@ Z.RealtimeRoutePlayer = Z.Class.extend({
          */
         player.addEventListener("playresumed", function(param) {
             param.target = _this;
-            _this.executeListeners( "playresumed", param);
+            _this.fire( "playresumed", param);
         });
 
         /**
@@ -202,7 +200,7 @@ Z.RealtimeRoutePlayer = Z.Class.extend({
          */
         player.addEventListener("playing", function(param) {
             param.target = _this;
-            _this.executeListeners( "playing", param);
+            _this.fire( "playing", param);
         });
 
         /**
@@ -211,7 +209,7 @@ Z.RealtimeRoutePlayer = Z.Class.extend({
          * @param target {Z.RealtimeRoutePlayer} 播放器对象
          */
         player.addEventListener("playended", function(param) {
-            _this.executeListeners( "playended", param);
+            _this.fire( "playended", param);
         });
 
         /**
@@ -221,7 +219,7 @@ Z.RealtimeRoutePlayer = Z.Class.extend({
          * @param t {Number} 播放器时间
          */
         player.addEventListener("routestarted", function(param) {
-            _this.executeListeners( "routestarted", param);
+            _this.fire( "routestarted", param);
         });
 
         /**
@@ -231,7 +229,7 @@ Z.RealtimeRoutePlayer = Z.Class.extend({
          * @param t {Number} 播放器时间
          */
         player.addEventListener("routeplaying", function(param) {
-            _this.executeListeners( "routeplaying", param);
+            _this.fire( "routeplaying", param);
         });
 
         /**
@@ -241,7 +239,7 @@ Z.RealtimeRoutePlayer = Z.Class.extend({
          * @param t {Number} 播放器时间
          */
         player.addEventListener("routeended", function(param) {
-            _this.executeListeners( "routeended", param);
+            _this.fire( "routeended", param);
         });
     },
 
