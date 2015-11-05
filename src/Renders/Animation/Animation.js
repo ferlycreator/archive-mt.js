@@ -6,13 +6,28 @@ Z.animation = {
         return Date.now();
     },
 
-    animate : function(animation, framer) {
-        var frame = animation(Z.animation.now());
-        if (frame.playing) {
+    animate : function(animation, framer, listener, context) {
+        var now = Z.animation.now();
+        var frame = animation(now);
+        if (listener) {
+            if (context) {
+                listener.call(context,frame);
+            } else {
+                listener(frame);
+            }
+        }
+        if (frame.state['playing']) {
             Z.Util.requestAnimFrame(function() {
                 framer._rendAnimationFrame(frame);
-                Z.animation.animate(animation, framer);
+                Z.animation.animate(animation, framer, listener, context);
             });
+        } else {
+            if (!frame.state['end']) {
+                 //延迟到开始时间再开始
+                setTimeout(function() {
+                    Z.animation.animate(animation, framer, listener, context);
+                },frame.state['startTime']-now);
+            }
         }
     }
 };
@@ -83,19 +98,19 @@ Z.animation.Easing = {
  * Animation的一帧
  * @param {Boolean} playing 是否处于播放状态
  * @param {Point | Coordinate} point  位置
- * @param {Number} res     分辨率, 用来确定放大比例
+ * @param {Number} scale     放大比例
  */
-Z.animation.Frame = function(playing, point, res) {
-    this.playing = playing;
+Z.animation.Frame = function(state, point, scale) {
+    this.state = state;
     this.point = point;
-    this.res = res;
+    this.scale = scale;
 };
 
 /**
  * 地图滑动动画
  * @param {[type]} options [description]
  */
-Z.animation.Pan = function(options) {
+Z.animation.pan = function(options) {
     var source = options['source'],
         destination = options['destination'],
         duration = options['duration']?options['duration']:1000,
@@ -104,13 +119,45 @@ Z.animation.Pan = function(options) {
     var easing = Z.animation.Easing.inAndOut;
     return function(time) {
         if (time < start) {
-          return new Z.animation.Frame(false, start, null);
-        } else if (time <= start + duration) {
+          return new Z.animation.Frame({'playing':false,'startTime':start, 'end':false}, source, null);
+        } else if (time < start + duration) {
           var delta = easing((time - start) / duration);
-          var p = source.add(distance.multi(delta));
-          return new Z.animation.Frame(true, p, null);
+          var d = distance.multi(delta);
+
+          var p = source.add(d);
+          // console.log(p);
+          return new Z.animation.Frame({'playing':true,'startTime':start, 'end':false}, p, null);
         } else {
-          return new Z.animation.Frame(false, destination, null);;
+          return new Z.animation.Frame({'playing':false,'startTime':start, 'end':true}, destination, null);
         }
     };
+};
+
+
+/**
+ * Generate an animated transition while updating the view resolution.
+ * @param {olx.animation.ZoomOptions} options Zoom options.
+ * @return {ol.PreRenderFunction} Pre-render function.
+ * @api
+ */
+Z.animation.zoom = function(options) {
+  var scale1 = options['scale1'],
+        scale2 = options['scale2'],
+        duration = options['duration']?options['duration']:1000,
+        start = options['start'] ? options['start'] : Date.now();
+  var easing = options['easing'] ?
+      options['easing'] : Z.animation.Easing.inAndOut;
+  return (
+      function(time) {
+        if (time < start) {
+          return new Z.animation.Frame({'playing':false,'startTime':start, 'end':false}, null, 1);
+        } else if (time < start + duration) {
+          var delta = easing((time - start) / duration);
+          var s = scale1+(scale2-scale1)*delta;
+          // console.log(p);
+          return new Z.animation.Frame({'playing':true,'startTime':start, 'end':false}, null, s);
+        } else {
+          return new Z.animation.Frame({'playing':false,'startTime':start, 'end':true}, null, scale2);
+        }
+      });
 };
