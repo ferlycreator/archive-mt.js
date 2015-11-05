@@ -130,60 +130,82 @@ Z.render.map.Dom = Z.render.map.Render.extend({
 
     onZoomStart:function(scale, focusPos) {
         if (Z.Browser.ielt9) {return;}
-        //根据放大比例和中心点, 设置css3 transform放大或缩小底图
-        var domOffset = this.map.offsetPlatform();
-        var offsetTop = domOffset['top'];
-        var offsetLeft = domOffset['left'];
-        var mapContainer = this._panels.mapContainer;
-        var size = this.map.getSize();
-        this._panels.mapContainer.className ='maptalks-map-zoom_animated';
-        var origin = Z.DomUtil.getDomTransformOrigin(mapContainer);
-        var originX = Math.round(size['width']/2-offsetLeft),
-            originY = Math.round(size['height']/2-offsetTop);
-        if ((origin===null || ''===origin) && focusPos) {
-            var mouseOffset = new Z.Point(
-                    focusPos.left-size['width']/2,
-                    focusPos.top-size['height']/2
-                );
-            originX += mouseOffset['left'];
-            originY += mouseOffset['top'];
-            Z.DomUtil.setDomTransformOrigin(mapContainer, originX+'px '+ originY+'px');
-        } else if (!focusPos) {
-            Z.DomUtil.setDomTransformOrigin(mapContainer, originX+'px '+ originY+'px');
-        }
+        var map = this.map;
+        // this._askBaseTileLayerToRend();
+        var baseLayerImage = map.getBaseTileLayer()._getRender().getCanvasImage();
+        this._clearCanvas();
+        var width = this._canvas.width, height = this._canvas.height;
 
-        Z.DomUtil.setDomTransform(mapContainer," scale("+scale+","+scale+")");
+        this._drawLayerCanvasImage(baseLayerImage, width, height);
+        this._context.save();
+        Z.animation.animate(new Z.animation.zoom({
+            'scale1' : 1,
+            'scale2': scale,
+            'duration' : 400
+        }), map, function(frame) {
+            // this._context.restore();
+            // this._context.save();
+            // console.log(frame.scale);
+            // this._context.translate(focusPos['left'],focusPos['top']);
+            // this._clearCanvas();
+            // this._drawLayerCanvasImage(baseLayerImage, width, height, focusPos);
+            this._context.save();
+            this._clearCanvas();
+            this._context.translate(focusPos['left'],focusPos['top']);
+            this._context.scale(frame.scale, frame.scale);
+            this._context.translate(-focusPos['left'],-focusPos['top']);
+            this._drawLayerCanvasImage(baseLayerImage, width, height);
+            this._context.restore();
+            // this._context.restore();
+
+            if (frame.state['end']) {
+                this._context.restore();
+            }
+        }, this);
     },
 
 
     onZoomEnd:function() {
-        this.insertBackground();
+        // this.insertBackground();
         this._zoomAnimationEnd();
         this.resetContainer();
     },
 
     _zoomAnimationEnd:function() {
         if (Z.Browser.ielt9) {return;}
+
         //恢复底图的css3 transform
         var mapContainer = this._panels.mapContainer;
-        mapContainer.className="MAP_CONTAINER";
-        Z.DomUtil.setDomTransformOrigin(mapContainer,"");
-        Z.DomUtil.setDomTransform(mapContainer,"");
+        // mapContainer.className="MAP_CONTAINER";
+        // Z.DomUtil.setDomTransformOrigin(mapContainer,"");
+        // Z.DomUtil.setDomTransform(mapContainer,"");
         mapContainer.style.top=0+"px";
         mapContainer.style.left=0+"px";
+    },
+
+    zoomAnimation:function(destResolution) {
+
     },
 
     panAnimation:function(moveOffset) {
         var map = this.map;
         var pcenter = map._getPrjCenter();
-        var destContainerPoint = map._transform(pcenter).add(moveOffset.multi(-1));
+        var destContainerPoint = map._transform(pcenter).add(moveOffset.multi(-0.5));
         var dest = map._untransform(destContainerPoint);
-        Z.animation.animate(new Z.animation.Pan({
+        Z.animation.animate(new Z.animation.pan({
             'source': pcenter,
             'destination' : dest ,
-            'duration' : 1000
-        }), map);
-        this.rend();
+            'duration' : 800
+        }), map, function(frame) {
+            /*if (!baseRended && (Z.animation.now() - frame.state['startTime'] >= 300)) {
+                this._askBaseTileLayerToRend();
+            }*/
+            if (frame.state['end']) {
+                map._setPrjCenterAndMove(dest);
+                map._onMoveEnd();
+            }
+        }, this);
+
     },
 
 

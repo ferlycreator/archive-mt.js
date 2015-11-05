@@ -209,11 +209,9 @@ Z['Map']=Z.Map=Z.Class.extend({
 
     _setPrjCenterAndMove:function(pcenter) {
         var offset = this._getPixelDistance(pcenter);
-        // FIXME: call panBy() ?
-        if (offset.left || offset.top) {
-            this._setPrjCenter(pcenter);
-            this.offsetPlatform(offset);
-        }
+        this._setPrjCenter(pcenter);
+        this.offsetPlatform(offset);
+
     },
 
     _onMoving:function(param) {
@@ -952,6 +950,7 @@ Z['Map']=Z.Map=Z.Class.extend({
             posY = this.height/2+pixel['top'];
         var pCenter = this._untransform(new Z.Point(posX, posY));
         this._setPrjCenter(pCenter);
+        return pCenter;
     },
 
     /**
@@ -1023,8 +1022,8 @@ Z['Map']=Z.Map=Z.Class.extend({
 
         var point = transformation.transform(pCoordinate,res);
         return new Z.Point(
-            Math.round(this.width / 2 + point['left'] - centerPoint['left']),
-            Math.round(this.height / 2 + point['top'] - centerPoint['top'])
+            this.width / 2 + point['left'] - centerPoint['left'],
+            this.height / 2 + point['top'] - centerPoint['top']
             );
     },
 
