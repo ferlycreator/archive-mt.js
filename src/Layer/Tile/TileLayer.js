@@ -54,8 +54,9 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
     },
 
     _initRender:function() {
-        //不支持自行指定render
-        if (this.isCanvasRender()) {
+        var size = this.getMap().getSize();
+        //支持Canvas且地图容器大小没有超过canvas最大大小
+        if (this.isCanvasRender() && Z.DomUtil.testCanvasSize(size)) {
             this._render = new Z.render.tilelayer.Canvas(this);
         } else {
             this._render = new Z.render.tilelayer.Dom(this);
@@ -124,13 +125,13 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         var tileSize = this._getTileSize(),
             zoomLevel = map.getZoomLevel(),
             mapDomOffset = map.offsetPlatform();
+        // console.log(mapDomOffset);
         var holderLeft=mapDomOffset["left"],
             holderTop = mapDomOffset["top"],
             mapWidth = map.width,
             mapHeight = map.height;
             //中心瓦片信息,包括瓦片编号,和中心点在瓦片上相对左上角的位置
         var centerTileIndex =  tileConfig.getCenterTileIndex(map._getPrjCenter(), zoomLevel);
-
         //计算中心瓦片的top和left偏移值
         var centerTileViewPoint=new Z.Point(Math.round(parseFloat(mapWidth/2-centerTileIndex["offsetLeft"])),
                                                 Math.round(parseFloat(mapHeight/2-centerTileIndex["offsetTop"])));
@@ -193,7 +194,24 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
                 domain = subdomains[s];
             }
         }
-        return urlTemplate.replace(/{x}/g,x+'').replace(/{y}/g,y+'').replace(/{z}/g,z+'').replace(/{s}/g,domain+'');
+        var data = {
+            'x' : x,
+            'y' : y,
+            'z' : z,
+            's' : domain
+        };
+        return urlTemplate.replace(/\{ *([\w_]+) *\}/g,function (str, key) {
+            var value = data[key];
+
+            if (value === undefined) {
+                throw new Error('No value provided for variable ' + str);
+
+            } else if (typeof value === 'function') {
+                value = value(data);
+            }
+            return value;
+        });
+        //return urlTemplate.replace(/{x}/g,x+'').replace(/{y}/g,y+'').replace(/{z}/g,z+'').replace(/{s}/g,domain+'');
     },
 
     /**

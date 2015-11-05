@@ -471,7 +471,60 @@ Z.DomUtil = {
             return parseInt(str);
         }
         return 0;
-    }
+    },
+
+    /**
+     * 测试Canvas大小是否合法
+     * @param  {size}   canvas大小
+     * @return {[type]}   [description]
+     */
+    testCanvasSize: (function() {
+
+          /**
+           * @type {CanvasRenderingContext2D}
+           */
+          var context = null;
+
+          /**
+           * @type {ImageData}
+           */
+          var imageData = null;
+
+          return function(size) {
+            if (!context) {
+              var _canvas = Z.DomUtil.createEl('canvas');
+              _canvas.width = 1;
+              _canvas.height = 1;
+              context = _canvas.getContext('2d');
+              imageData = context.createImageData(1, 1);
+              var data = imageData.data;
+              data[0] = 42;
+              data[1] = 84;
+              data[2] = 126;
+              data[3] = 255;
+            }
+            var canvas = context.canvas;
+            var good = size['width'] <= canvas.width && size['height'] <= canvas.height;
+            if (!good) {
+              canvas.width = size['width'];
+              canvas.height = size['height'];
+              var x = size['width'] - 1;
+              var y = size['height'] - 1;
+              context.putImageData(imageData, x, y);
+              var result = context.getImageData(x, y, 1, 1);
+              var arrEqual = true;
+              for (var i = result.data.length - 1; i >= 0; i--) {
+                  if (result.data[i] != imageData.data[i]) {
+                    arrEqual = false;
+                    break;
+                  }
+              };
+              good = arrEqual;
+            }
+            return good;
+          };
+        })()
+
 };
 
 /**

@@ -1,6 +1,15 @@
 Z.render={};
 
 Z.render.Canvas=Z.Class.extend({
+    getCanvasImage:function() {
+        if (!this._canvasFullExtent) {
+            return null;
+        }
+        var size = this._canvasFullExtent.getSize();
+        var point = this._canvasFullExtent.getMin();
+        return {'canvas':this._canvas,'point':this.getMap()._viewPointToContainerPoint(point),'size':size};
+    },
+
     _createCanvas:function() {
         if (this._canvas) {
             return;
@@ -13,16 +22,16 @@ Z.render.Canvas=Z.Class.extend({
         }
     },
 
-    _resizeCanvas:function(width, height) {
+    _resizeCanvas:function(canvasSize) {
         if (!this._canvas) {
             return;
         }
         var size;
-        if (!width || !height) {
+        if (!canvasSize) {
             var map = this.getMap();
             size = map.getSize();
         } else {
-            size = new Z.Size(width,height);
+            size = canvasSize;
         }
 
         var canvas = this._canvas;

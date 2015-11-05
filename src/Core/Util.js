@@ -584,7 +584,7 @@ Z.Util = {
 };
 
 
-//动画
+//动画, inspired by Leaflet
 (function () {
     // inspired by http://paulirish.com/2011/requestanimationframe-for-smart-animating/
 

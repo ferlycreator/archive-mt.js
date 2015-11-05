@@ -100,7 +100,7 @@ Z.Eventable = {
 
     _executeListeners:function(eventType, param) {
         if (!this._eventMap) {return;}
-        if (!this.hasListeners(eventType)) {return;}
+        //if (!this.hasListeners(eventType)) {return;}
         var handlerChain = this._eventMap[eventType.toLowerCase()];
         if (!handlerChain) {return;}
         if (!param) {
