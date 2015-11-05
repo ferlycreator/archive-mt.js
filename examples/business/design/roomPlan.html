@@ -131,7 +131,8 @@
                 click : function(){
                     mapObj.on('click', markerLabel);
                 }
-            }, {
+            }
+            /**, {
                 type : 'button',
                 // icon: 'images/text.png',
                 content: '打印',
@@ -142,7 +143,7 @@
                         console.log(geo.toJson());
                     }
                 }
-            }]
+            }*/]
         });
         mapObj.addControl(toolbar);
 
@@ -150,7 +151,7 @@
         //构造工具栏
         var iconToolbar = new maptalks.Toolbar({
             position : { //工具条放置位置
-                left: '390',
+                left: '410',
                 bottom: '20'
             },
             vertical : false,

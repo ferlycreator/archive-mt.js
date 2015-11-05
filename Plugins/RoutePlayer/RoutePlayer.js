@@ -49,7 +49,7 @@ Z.RoutePlayer = Z.Class.extend({
         this.routeLayer=null;
         return this;
     },
-
+    /**
 	 * 初始化
 	 */
 	_initialize:function() {
@@ -88,8 +88,8 @@ Z.RoutePlayer = Z.Class.extend({
 		this.currentTime = currentTime;
 		this.startTime = currentTime;
 		//准备绘图图层
-		var markLayerId = '__mt__internal__marker_' + this.guid;
-		var routeLayerId = '__mt__internal__marker_' + this.guid;
+		var markLayerId = '__mt__internal__routeplay__marker_' + this.guid;
+		var routeLayerId = '__mt__internal__routeplay__routes_' + this.guid;
 		var markerLayer = this.map.getLayer(markLayerId);
 		if (!markerLayer) {
 			this.markerLayer = new Z.VectorLayer(markLayerId);
@@ -268,7 +268,7 @@ Z.RoutePlayer = Z.Class.extend({
 			if (!hisRoutes || hisRoutes.length<2 || !point) return false;
 			var len=hisRoutes.length;
 			var triangle = new Z.Polygon([[point,hisRoutes[len-1],hisRoutes[len-2]]],{'id':'tmp'});
-			triangle.setMap(_this.map);
+//			triangle.setMap(this.map);
 			var area = triangle.getArea();
 			if (area != null && area <= Z.Polygon.SIMPLFY_POLYGON) {
 				return true;
@@ -295,7 +295,7 @@ Z.RoutePlayer = Z.Class.extend({
 				if (hisRoutes.length>0) {
 					var center = hisRoutes[hisRoutes.length-1];										
 					if (!marker) {						
-						marker = new Z.Marker(routeId,center);
+						marker = new Z.Marker(center,{id:routeId});
 						var symbol = null;
 						if (routeObjs['getMarkerSymbol']) {
 							symbol = routeObjs['getMarkerSymbol'](routeId);
@@ -305,7 +305,7 @@ Z.RoutePlayer = Z.Class.extend({
 						markers.push(marker);
 						this.fire('routestarted', {'target':routeId, 't':this.getCurrentTime()});
 					} else {
-						marker.setCenter(center);
+						marker.setCoordinates(center);
 					}
 				}
 				//旋转marker角度
@@ -316,33 +316,33 @@ Z.RoutePlayer = Z.Class.extend({
 						preDegree = this.computeMarkerDegree(hisRoutes[hisRoutes.length-3],hisRoutes[hisRoutes.length-2]);
 						preDegree = Math.round(preDegree);
 					}
-					degree = Math.round(degree);
-					if (degree != preDegree) {
-						var markerDom = marker._getPainter().getSvgDom();
-						var originCss = markerDom.originCss;
-						if (Z.Browser.ielt9)){
-							var ieMatrix = {
-									"45":"progid:DXImageTransform.Microsoft.Matrix(M11=0.7071067811865482, M12=0.7071067811865466, M21=-0.7071067811865466, M22=0.7071067811865482, SizingMethod='auto expand')",
-									"90":"progid:DXImageTransform.Microsoft.BasicImage(rotation=-1)",
-									"135":"progid:DXImageTransform.Microsoft.Matrix(M11=-0.7071067811865479, M12=0.7071067811865471, M21=-0.7071067811865471, M22=-0.7071067811865479, SizingMethod='auto expand')",
-									"180":"progid:DXImageTransform.Microsoft.BasicImage(rotation=-2)",
-									"225":"progid:DXImageTransform.Microsoft.Matrix(M11=-0.7071067811865471, M12=-0.7071067811865479, M21=0.7071067811865479, M22=-0.7071067811865471, SizingMethod='auto expand')",
-									"270":"progid:DXImageTransform.Microsoft.BasicImage(rotation=-3)",
-									"315":"progid:DXImageTransform.Microsoft.Matrix(M11=0.7071067811865478, M12=-0.7071067811865471, M21=0.7071067811865471, M22=0.7071067811865478, SizingMethod='auto expand')",
-									"360":"progid:DXImageTransform.Microsoft.BasicImage(rotation=-4)"
-							};
-							var d = Math.abs(Math.floor(degree/45));
-							var filter = ieMatrix[d*45];
-						} else {
-							markerDom.style.cssText = originCss+";-o-transform: rotate(-"+degree+"deg); -webkit-transform: rotate(-"+degree+"deg);-moz-transform: rotate(-"+degree+"deg);transform: rotate(-"+degree+"deg);";
-						}
-						
-					}
+//					degree = Math.round(degree);
+//					if (degree != preDegree) {
+//						var markerDom = marker._getPainter().getSvgDom();
+//						var originCss = markerDom.originCss;
+//						if (Z.Browser.ielt9){
+//							var ieMatrix = {
+//									"45":"progid:DXImageTransform.Microsoft.Matrix(M11=0.7071067811865482, M12=0.7071067811865466, M21=-0.7071067811865466, M22=0.7071067811865482, SizingMethod='auto expand')",
+//									"90":"progid:DXImageTransform.Microsoft.BasicImage(rotation=-1)",
+//									"135":"progid:DXImageTransform.Microsoft.Matrix(M11=-0.7071067811865479, M12=0.7071067811865471, M21=-0.7071067811865471, M22=-0.7071067811865479, SizingMethod='auto expand')",
+//									"180":"progid:DXImageTransform.Microsoft.BasicImage(rotation=-2)",
+//									"225":"progid:DXImageTransform.Microsoft.Matrix(M11=-0.7071067811865471, M12=-0.7071067811865479, M21=0.7071067811865479, M22=-0.7071067811865471, SizingMethod='auto expand')",
+//									"270":"progid:DXImageTransform.Microsoft.BasicImage(rotation=-3)",
+//									"315":"progid:DXImageTransform.Microsoft.Matrix(M11=0.7071067811865478, M12=-0.7071067811865471, M21=0.7071067811865471, M22=0.7071067811865478, SizingMethod='auto expand')",
+//									"360":"progid:DXImageTransform.Microsoft.BasicImage(rotation=-4)"
+//							};
+//							var d = Math.abs(Math.floor(degree/45));
+//							var filter = ieMatrix[d*45];
+//						} else {
+//							markerDom.style.cssText = originCss+";-o-transform: rotate(-"+degree+"deg); -webkit-transform: rotate(-"+degree+"deg);-moz-transform: rotate(-"+degree+"deg);transform: rotate(-"+degree+"deg);";
+//						}
+//
+//					}
 				}
 			}
 			if (this.enableDrawRoute && this.routeLayer) {	
 				var route = this.routeLayer.getGeometryById(routeId);
-				if (hisRoutes && hisRoutes.length>1) {
+				if (hisRoutes && hisRoutes.length>0) {
 					if (!route) {
 						route = new Z.Polyline(hisRoutes,{'id':routeId});
 						var symbol = null;
@@ -350,20 +350,22 @@ Z.RoutePlayer = Z.Class.extend({
 							symbol = routeObjs['getRouteSymbol'](routeId);
 						}	
 						if (symbol)
-							route.setSymbol(symbol);
-						routeGeos.push(route);
+						    route.setSymbol(symbol);
+                        routeGeos.push(route);
 					} else {
-						route.setRings(hisRoutes);
-					}					
+						route.setCoordinates(hisRoutes);
+					}
 				}
 			}
 			this.fire('routeplaying', {'target':routeId, 't':this.getCurrentTime()});
 		};
 		this.fire('playing', {'target':this, 't':this.getCurrentTime()});
-		if (this.markerLayer)
+		if (this.markerLayer) {
 			this.markerLayer.addGeometry(markers);
-		if (this.routeLayer)
+		}
+		if (this.routeLayer){
 			this.routeLayer.addGeometry(routeGeos);
+		}
 	},
 
 	/**
@@ -380,13 +382,6 @@ Z.RoutePlayer = Z.Class.extend({
 		var spanX = pNext.x-pPre.x;
 		var spanY = pNext.y-pPre.y;
 		var degree = Math.atan(Math.abs(spanY/spanX))*180/Math.PI;
-		var incre = this.map.incre;
-		if (pNext.x*incre.x < pPre.x*incre.x) {
-			degree = 180-degree;
-		}
-		if (pNext.y*incre.y < pPre.y*incre.y) {
-			degree = 360-degree;
-		}
 		return degree;
 	},
 
