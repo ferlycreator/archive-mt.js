@@ -12,7 +12,12 @@ Z.render.map.Render = Z.Class.extend({
             this._createCanvas();
         }
         //更新画布的长宽, 顺便清空画布
-        this._updateCanvasSize();
+        if (!this._updateCanvasSize()) {
+            this._clearCanvas();
+        }
+        var mwidth = this._canvas.width,
+            mheight = this._canvas.height;
+
         var layers = this._getAllLayerToCanvas();
         for (var i = 0, len=layers.length; i < len; i++) {
             if (!layers[i].isVisible()) {
@@ -22,12 +27,38 @@ Z.render.map.Render = Z.Class.extend({
             if (render) {
                 var layerImage = render.getCanvasImage();
                 if (layerImage && layerImage['canvas']) {
-                    Z.Canvas.image(this._context, layerImage['point'], layerImage['canvas']);
+                    // Z.Canvas.image(this._context, layerImage['point'], layerImage['canvas']);
+                    var sx, sy, w, h, dx, dy;
+                    var point = layerImage['point'];
+                    var size = layerImage['size'];
+                    if (point['left'] <= 0) {
+                        sx = -point['left'];
+                        dx = 0;
+                        w = Math.min(size['width']-sx,mwidth);
+                    } else {
+                        sx = 0;
+                        dx = point['left'];
+                        w = mwidth-point['left'];
+                    }
+                    if (point['top'] <= 0) {
+                        sy = -point['top'];
+                        dy = 0;
+                        h = Math.min(size['height']-sy,mheight);
+                    } else {
+                        sy = 0;
+                        dy = point['top'];
+                        h = mheight-point['top'];
+                    }
+
+                    this._context.drawImage(layerImage['canvas'], sx, sy, w, h, dx, dy, w, h);
                 }
             }
         }
     },
 
+    _addCanvasAnimation:function(animation, options) {
+        animation.call(this)
+    },
 
     _getAllLayerToCanvas:function() {
         var layers = this.map._getAllLayers(function(layer) {
@@ -36,7 +67,6 @@ Z.render.map.Render = Z.Class.extend({
             }
             return false;
         });
-
         return layers;
     },
 
@@ -80,13 +110,17 @@ Z.render.map.Render = Z.Class.extend({
         var map = this.map;
         var mapSize = map.getSize();
         var canvas = this._canvas;
-        //retina屏支持
         var r = Z.Browser.retina ? 2:1;
+        if (mapSize['width']*r === canvas.width && mapSize['height']*r === canvas.height) {
+            return false;
+        }
+        //retina屏支持
+
         canvas.height = r * mapSize['height'];
         canvas.width = r * mapSize['width'];
         canvas.style.width = mapSize['width']+'px';
         canvas.style.height = mapSize['height']+'px';
-
+        return true;
     },
 
     updateMapSize:function(mSize) {

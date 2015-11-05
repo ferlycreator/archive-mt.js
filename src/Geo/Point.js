@@ -14,6 +14,10 @@ Z['Point']=Z.Point=function(left,top) {
 };
 
 Z.Point.prototype={
+    equals:function(p) {
+        return this['left'] === p['left'] && this['top'] === p['top'];
+    },
+
     distanceTo: function(point) {
         var x = point.left - this.left,
             y = point.top - this.top;

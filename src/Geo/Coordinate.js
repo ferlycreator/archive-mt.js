@@ -25,6 +25,12 @@ Z.Coordinate.prototype={
     add:function(d) {
         return new Z.Coordinate(this.x+d.x, this.y+d.y);
     },
+    substract:function(d) {
+        return new Z.Coordinate(this.x-d.x, this.y-d.y);
+    },
+    multi: function(ratio) {
+        return new Z.Coordinate(this.x*ratio, this.y*ratio);
+    },
     /**
      * 比较两个坐标是否相等
      * @param {maptalks.Coordinate} c1

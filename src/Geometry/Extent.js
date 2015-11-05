@@ -57,6 +57,9 @@ Z['Extent']= Z.Extent =
 };
 
 Z.Extent.prototype={
+    getSize:function() {
+        return new Z.Size(this.getWidth(), this.getHeight());
+    },
     getWidth:function() {
         return this['xmax'] - this['xmin'];
     },
