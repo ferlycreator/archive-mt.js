@@ -61,7 +61,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
      * @return {[Promise]} promise数组
      */
     _promise:function() {
-        if (!this.getMap()) {
+        if (!this.getMap()  || this._layer.isEmpty()) {
             return;
         }
         var me = this;
@@ -129,7 +129,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
 
     _draw:function() {
         var map = this.getMap();
-        if (!map) {
+        if (!map || this._layer.isEmpty()) {
             return;
         }
         console.log('vector drawed');
@@ -137,6 +137,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         if (!this._canvas) {
             this._createCanvas();
         }
+
         var fullExtent = map._getViewExtent()/*.expand(size)*/;
         this._clearCanvas();
         this._layer._eachGeometry(function(geo) {
@@ -167,7 +168,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         }
         var size = this._canvasFullExtent.getSize();
         var point = this._canvasFullExtent.getMin();
-        return {'canvas':this._canvas,'point':this.getMap()._viewPointToContainerPoint(point),'size':size};
+        return {'image':this._canvas,'point':this.getMap()._viewPointToContainerPoint(point),'size':size};
     },
 
     /**

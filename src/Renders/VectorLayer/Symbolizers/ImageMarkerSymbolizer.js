@@ -40,7 +40,6 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
         for (var i = 0, len=cookedPoints.length;i<len;i++) {
             //图片定位到中心底部
             var pt = cookedPoints[i].add(new Z.Point(-width/2,-height));
-            console.log('geo paint')
             Z.Canvas.image(ctx, pt, img, width, height);
         }
     },
