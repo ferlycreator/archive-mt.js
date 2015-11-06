@@ -53,7 +53,7 @@ if (Z.Browser.canvas) {
             return {
                 "fn" : Z.Canvas.path,
                 //TODO dasharray可能不从本身的symbol来
-                "context" : [points,this.getSymbol()['line-dasharray']]
+                "context" : [points,this.getSymbol()['lineDasharray']]
             };
         }
     });
@@ -65,7 +65,7 @@ if (Z.Browser.canvas) {
             var map = this.getMap();
             return {
                 "fn" : Z.Canvas.polygon,
-                "context" : [points,this.getSymbol()['line-dasharray']]
+                "context" : [points,this.getSymbol()['lineDasharray']]
             };
         }
     });
