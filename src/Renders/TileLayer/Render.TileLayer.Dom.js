@@ -163,7 +163,7 @@ Z.render.tilelayer.Dom.prototype = {
 
     _removeOutsideTiles:function() {
         //var _mapContainer = this.map.mapContainer;
-        if (this._layer.getMap()._isBusy) {
+        if (this._layer.getMap().isBusy()) {
             //console.log("blocked");
             return;
         }

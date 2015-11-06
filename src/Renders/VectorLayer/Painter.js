@@ -146,6 +146,10 @@ Z.Painter = Z.Class.extend({
     },
 
     _rendCanvas:function(needPromise, realtime) {
+        if (this.geometry.getMap().isBusy()) {
+            // console.log('is busy do not refresh painter');
+            return;
+        }
         var layer = this.geometry.getLayer();
         if (layer.isCanvasRender()) {
             var isRealTime = realtime || (this.geometry.isEditing && this.geometry.isEditing())
@@ -163,12 +167,12 @@ Z.Painter = Z.Class.extend({
      * symbol发生变化后, 刷新symbol
      */
     refreshSymbol:function() {
-        if (!this._painted) {
-            return;
-        }
         this._removeCache();
         this._removeSymbolizers();
         this.symbolizers = this._createSymbolizers();
+        if (!this._painted) {
+            return;
+        }
         var layer = this.geometry.getLayer();
         if (layer.isCanvasRender()) {
             this._rendCanvas(true);

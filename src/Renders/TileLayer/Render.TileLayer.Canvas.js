@@ -45,6 +45,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
     },
 
     rend:function(options) {
+        var map = this.getMap();
         this._rending = true;
         var tileGrid = this._layer._getTiles(this.getMap().getSize().multi(2.2));
         var tiles = tileGrid['tiles'];
@@ -185,7 +186,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
     },
 
     _requestMapToRend:function() {
-        if (!this.getMap()._isBusy) {
+        if (!this.getMap().isBusy()) {
             this._mapRender.rend();
         }
     },

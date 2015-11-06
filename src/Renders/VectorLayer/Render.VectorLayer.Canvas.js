@@ -11,6 +11,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
     },
 
     _onMapEvent:function(param) {
+        this._clearTimeout();
         if (param['type'] === '_zoomend') {
             this._layer._eachGeometry(function(geo) {
                 geo._onZoomEnd();
@@ -43,12 +44,10 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
     },
 
     rend:function(ignoreResourceCheck) {
-        if (!this.getMap()) {
+        if (!this.getMap() || this.getMap().isBusy()) {
             return;
         }
-        if (this._rendTimeout) {
-            clearTimeout(this._rendTimeout);
-        }
+        this._clearTimeout();
         var me = this;
         this._rendTimeout = setTimeout(function() {
             if (true===ignoreResourceCheck) {
@@ -59,12 +58,18 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         },50);
     },
 
+    _clearTimeout:function() {
+        if (this._rendTimeout) {
+            clearTimeout(this._rendTimeout);
+        }
+    },
+
     /**
      * 读取并载入绘制所需的外部资源, 例如markerFile, shieldFile等
      * @return {[Promise]} promise数组
      */
     _promise:function() {
-        if (!this.getMap()  || this._layer.isEmpty()) {
+        if (!this.getMap() || this.getMap().isBusy() || this._layer.isEmpty()) {
             return;
         }
         var me = this;
@@ -126,12 +131,11 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
     },
 
     _draw:function() {
-
+        this._clearTimeout();
         var map = this.getMap();
-        if (!map || map._isBusy || this._layer.isEmpty()) {
+        if (!map || map.isBusy() || this._layer.isEmpty()) {
             return;
         }
-        console.log('vector drawed');
         //载入资源后再进行绘制
         if (!this._canvas) {
             this._createCanvas();
@@ -168,6 +172,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         }
         var size = this._canvasFullExtent.getSize();
         var point = this._canvasFullExtent.getMin();
+        console.log(this._layer.getId(), this._canvasFullExtent);
         return {'image':this._canvas,'layer':this._layer,'point':this.getMap()._viewPointToContainerPoint(point),'size':size};
     },
 
@@ -196,7 +201,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
     },
 
     _requestMapToRend:function() {
-        if (!this.getMap()._isBusy) {
+        if (!this.getMap().isBusy()) {
             this._mapRender.rend();
         }
 

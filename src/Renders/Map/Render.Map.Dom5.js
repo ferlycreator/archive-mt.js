@@ -111,7 +111,12 @@ Z.render.map.Dom = Z.render.map.Render.extend({
     },
 
     onZoomStart:function(scale, focusPos, fn, context, args) {
-        if (Z.Browser.ielt9) {return;}
+        if (Z.Browser.ielt9) {
+            setTimeout(function() {
+                fn.apply(context, args);
+            },800);
+            return;
+        }
         var map = this.map;
         // this._askBaseTileLayerToRend();
         var baseLayerImage = map.getBaseTileLayer()._getRender().getCanvasImage();
