@@ -155,6 +155,9 @@ Z.Painter = Z.Class.extend({
             var isRealTime = (this.geometry.isEditing && this.geometry.isEditing())
                                 || (this.geometry.isDragging && this.geometry.isDragging());
             var render = this.geometry.getLayer()._getRender();
+            if (!render) {
+                return;
+            }
             if (isRealTime) {
                 render.rendRealTime();
             } else {
