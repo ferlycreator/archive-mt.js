@@ -107,7 +107,7 @@ Z.Map.include({
      */
     disableDrag: function() {
         this.options['draggable'] = false;
-        // this.removeHandler('draggable');
+        this.removeHandler('draggable');
         return this;
     },
 

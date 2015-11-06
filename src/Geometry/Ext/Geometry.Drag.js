@@ -12,18 +12,16 @@ Z.Geometry.include({
      * @param {Boolean} enableMapEvent 是否阻止地图拖动事件 true,阻止
      * @member maptalks.Geometry
      */
-    startDrag: function(enableMapEvent) {
+    startDrag: function() {
         var map = this.getMap();
         if (!map) {
             return;
         }
-        Z.DomUtil.setStyle(map._containerDOM, 'cursor: move');
-        this._enableMapEvent = enableMapEvent;
-        if(this._enableMapEvent) {
-            map.disableDrag();
-            this.on('mouseup', this.endDrag, this);
-        }
-        map.on('_mousemove', this._dragging, this);
+        Z.DomUtil.addStyle(map._containerDOM,'cursor', 'move');
+        map.disableDrag();
+        map.on('mousemove', this._dragging, this);
+        map.on('mouseup', this.endDrag, this);
+
         /**
          * 触发geometry的dragstart事件
          * @member maptalks.Geometry
@@ -111,10 +109,11 @@ Z.Geometry.include({
     endDrag: function(param) {
         var map = this.getMap();
         this._isDragging = false;
-        if(this._enableMapEvent) {
-            map.enableDrag();
-        }
-        map.off('_mousemove', this._dragging, this);
+
+        map.enableDrag();
+
+        map.off('mousemove', this._dragging, this);
+        map.off('mouseup', this.endDrag, this);
         /**
          * 触发geometry的dragend事件
          * @member maptalks.Geometry
@@ -122,7 +121,7 @@ Z.Geometry.include({
          * @return {Object} params: {'target':this}
          */
         this._fireEvent('dragend', param);
-        Z.DomUtil.setStyle(map._containerDOM, 'cursor: default');
+        Z.DomUtil.addStyle(map._containerDOM,'cursor', 'default');
     },
 
     /**
@@ -143,7 +142,7 @@ Z.Geometry.addInitHook(function () {
 	if (this.options['draggable']) {
 	    var me = this;
 	    this.on('mousedown', function(){
-            me.startDrag(true);
+            me.startDrag();
 	    }, this);
 	}
 });
