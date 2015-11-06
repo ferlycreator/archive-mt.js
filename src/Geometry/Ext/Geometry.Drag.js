@@ -21,7 +21,8 @@ Z.Geometry.include({
         map.disableDrag();
         map.on('mousemove', this._dragging, this);
         map.on('mouseup', this.endDrag, this);
-
+        delete this._dragStartPosition;
+        delete this._dragEndPosition;
         /**
          * 触发geometry的dragstart事件
          * @member maptalks.Geometry
@@ -34,13 +35,13 @@ Z.Geometry.include({
     _dragging: function(param) {
         var map = this.getMap();
         this._isDragging = true;
-        this.endPosition = param['containerPoint'];
-        if(!this.startPosition) {
-            this.startPosition = this.endPosition;
+        this._dragEndPosition = param['containerPoint'];
+        if(!this._dragStartPosition) {
+            this._dragStartPosition = this._dragEndPosition;
         }
         var dragOffset = new Z.Point(
-            this.endPosition['left'] - this.startPosition['left'],
-            this.endPosition['top'] - this.startPosition['top']
+            this._dragEndPosition['left'] - this._dragStartPosition['left'],
+            this._dragEndPosition['top'] - this._dragStartPosition['top']
         );
         var center = this.getCenter();
         if(!center||!center.x||!center.y) {return;}
@@ -50,7 +51,7 @@ Z.Geometry.include({
             geometryPixel['left'] + dragOffset['left'] - mapOffset['left'],
             geometryPixel['top'] + dragOffset['top'] - mapOffset['top']
         );
-        this.startPosition = newPosition;
+        this._dragStartPosition = newPosition;
         if (this instanceof Z.Marker
             || this instanceof Z.Circle
             || this instanceof Z.Ellipse
@@ -69,14 +70,14 @@ Z.Geometry.include({
             this._setPNw(pCoordinate);
         } else if (this instanceof Z.Polyline) {
             var lonlats = this.getCoordinates();
+            var prjLonLats = [];
             for (var i=0,len=lonlats.length;i<len;i++) {
-                var plonlat = map.coordinateToViewPoint(lonlats[i]);
-                var coordinate = map._untransformFromViewPoint(new Z.Point(plonlat['left']+dragOffset['left'] - mapOffset['left'],
-                        plonlat['top']+dragOffset['top'] - mapOffset['top']));
-                lonlats[i].x = coordinate.x;
-                lonlats[i].y = coordinate.y;
+                var viewPoint = map.coordinateToViewPoint(lonlats[i]);
+                var coordinate = map._untransformFromViewPoint(new Z.Point(viewPoint['left']+dragOffset['left'] - mapOffset['left'],
+                        viewPoint['top']+dragOffset['top'] - mapOffset['top']));
+                prjLonLats.push(coordinate);
             }
-            this._setPrjPoints(lonlats);
+            this._setPrjPoints(prjLonLats);
         } else if (this instanceof Z.Polygon) {
            var newLonlats = [];
            var lonlats = this.getCoordinates();

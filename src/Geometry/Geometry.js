@@ -459,24 +459,30 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
     },
 
+    _isEditingOrDragging:function() {
+        return ((this.isEditing && this.isEditing()) || (this.isDragging && this.isDragging()));
+    },
+
     _onShapeChanged:function() {
+        this._extent = null;
         var painter = this._getPainter();
         if (painter) {
             painter.repaint();
         }
-        this._extent = null;
-        if (!this.isEditing || !this.isEditing()) {
+
+        if (!this._isEditingOrDragging()) {
             this._fireEvent('shapechanged');
         }
     },
 
     _onPositionChanged:function() {
+        this._extent = null;
         var painter = this._getPainter();
         if (painter) {
             painter.repaint();
         }
-        this._extent = null;
-        if (!this.isEditing || !this.isEditing()) {
+
+        if (!this._isEditingOrDragging()) {
             this._fireEvent('positionchanged');
         }
     },
