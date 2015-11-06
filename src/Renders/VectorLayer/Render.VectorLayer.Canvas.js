@@ -73,15 +73,12 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
             return [new Z.Promise(function(resolve, reject) {resolve(me._resources);})];
         }*/
         //20150530 loadResource不加载canvasLayer中的geometry icon资源，故每次绘制canvas都去重新检查并下载资源
-        var map = this.getMap();
-        var mapExtent = map.getExtent();
         var promises = [];
         this._resources = new Z.render.vectorlayer.Canvas.Resources();
         this._layer._eachGeometry(function(geo) {
             if (!geo || !geo.isVisible()) {
                 return;
             }
-            var ext = geo.getExtent();
             /*if (!ext || !ext.isIntersect(mapExtent)) {
                 return;
             }*/
@@ -126,8 +123,6 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
             this._draw();
         }
     },
-
-
 
     _draw:function() {
         var map = this.getMap();

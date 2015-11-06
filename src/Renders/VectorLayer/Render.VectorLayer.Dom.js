@@ -92,7 +92,7 @@ Z.render.vectorlayer.Dom.prototype= {
     getPaintContext:function() {
 
         if (this._contexts) {
-            return this._contexts.concat([this._zIndex]);
+            return this._contexts.concat([this._zIndex]).concat([this._layerContainer,this._vectorPaper]);
         } else {
             return [this._layerContainer,this._vectorPaper, this._zIndex];
         }
