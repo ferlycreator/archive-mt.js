@@ -316,21 +316,24 @@ Z.RoutePlayer = Z.Class.extend({
 						var originCss = markerDom[0].style.cssText;
 						if (Z.Browser.ielt9){
 							var ieMatrix = {
-									"45":"progid:DXImageTransform.Microsoft.Matrix(M11=0.7071067811865482, M12=0.7071067811865466, M21=-0.7071067811865466, M22=0.7071067811865482, SizingMethod='auto expand')",
-									"90":"progid:DXImageTransform.Microsoft.BasicImage(rotation=-1)",
-									"135":"progid:DXImageTransform.Microsoft.Matrix(M11=-0.7071067811865479, M12=0.7071067811865471, M21=-0.7071067811865471, M22=-0.7071067811865479, SizingMethod='auto expand')",
-									"180":"progid:DXImageTransform.Microsoft.BasicImage(rotation=-2)",
-									"225":"progid:DXImageTransform.Microsoft.Matrix(M11=-0.7071067811865471, M12=-0.7071067811865479, M21=0.7071067811865479, M22=-0.7071067811865471, SizingMethod='auto expand')",
-									"270":"progid:DXImageTransform.Microsoft.BasicImage(rotation=-3)",
-									"315":"progid:DXImageTransform.Microsoft.Matrix(M11=0.7071067811865478, M12=-0.7071067811865471, M21=0.7071067811865471, M22=0.7071067811865478, SizingMethod='auto expand')",
-									"360":"progid:DXImageTransform.Microsoft.BasicImage(rotation=-4)"
+                                "45":"progid:DXImageTransform.Microsoft.Matrix(M11=0.7071067811865482, M12=0.7071067811865466, M21=-0.7071067811865466, M22=0.7071067811865482, SizingMethod='auto expand')",
+                                "90":"progid:DXImageTransform.Microsoft.BasicImage(rotation=-1)",
+                                "135":"progid:DXImageTransform.Microsoft.Matrix(M11=-0.7071067811865479, M12=0.7071067811865471, M21=-0.7071067811865471, M22=-0.7071067811865479, SizingMethod='auto expand')",
+                                "180":"progid:DXImageTransform.Microsoft.BasicImage(rotation=-2)",
+                                "225":"progid:DXImageTransform.Microsoft.Matrix(M11=-0.7071067811865471, M12=-0.7071067811865479, M21=0.7071067811865479, M22=-0.7071067811865471, SizingMethod='auto expand')",
+                                "270":"progid:DXImageTransform.Microsoft.BasicImage(rotation=-3)",
+                                "315":"progid:DXImageTransform.Microsoft.Matrix(M11=0.7071067811865478, M12=-0.7071067811865471, M21=0.7071067811865471, M22=0.7071067811865478, SizingMethod='auto expand')",
+                                "360":"progid:DXImageTransform.Microsoft.BasicImage(rotation=-4)"
 							};
 							var d = Math.abs(Math.floor(degree/45));
 							var filter = ieMatrix[d*45];
 						} else {
-							markerDom[0].style.cssText = originCss+";-o-transform: rotate(-"+degree+"deg); -webkit-transform: rotate(-"+degree+"deg);-moz-transform: rotate(-"+degree+"deg);transform: rotate(-"+degree+"deg);";
+							markerDom[0].style.cssText = originCss+
+                                ';-o-transform: rotate('+degree+'deg);'+
+                                ' -webkit-transform: rotate('+degree+'deg);'+
+                                '-moz-transform: rotate('+degree+'deg);'+
+                                'transform: rotate('+degree+'deg);';
 						}
-
 					}
 				}
 			}
@@ -370,11 +373,38 @@ Z.RoutePlayer = Z.Class.extend({
 	computeMarkerDegree:function(pre, next) {
 		if (!pre || !next) return null;
 		var projection = this.map._getProjection();
-		var pPre = projection.locate(pre,0,0);
-		var pNext = projection.locate(next,0,0);
-		var spanX = pNext.x-pPre.x;
-		var spanY = pNext.y-pPre.y;
-		var degree = Math.atan(Math.abs(spanY/spanX))*180/Math.PI;
+//		var pPre = projection.locate(pre,0,0);
+//		var pNext = projection.locate(next,0,0);
+		var spanX = next.x-pre.x;
+		var spanY = next.y-pre.y;
+		var degree = 0;
+		console.log(spanX);
+		console.log(spanY);
+		if(spanX<0) {
+		    if(spanY<0) {
+		        degree = -Math.atan(Math.abs(spanY/spanX))*180/Math.PI;
+		    } else if(spanY>0){
+		        degree = Math.tan(Math.abs(spanY/spanX))*180/Math.PI;
+		    } else {
+		        degree = 180;
+		    }
+		} else if(spanX>0) {
+		    if(spanY<0) {
+                degree = Math.tan(Math.abs(spanY/spanX))*180/Math.PI;
+            } else if(spanY>0){
+                degree = 360-Math.tan(Math.abs(spanY/spanX))*180/Math.PI;
+            } else {
+                degree = 0;
+            }
+
+		} else if(spanX==0) {
+            if(spanY<0) {
+                degree = 90;
+            } else if(spanY>0){
+                degree = -90;
+            }
+        }
+        console.log(degree);
 		return degree;
 	},
 	/**
