@@ -31,7 +31,7 @@
         //将图层添加到地图对象
         mapObj.addLayer(layer);
         //初始化空间查询
-        topoQuery = new maptalks.TopoQuery({host:'localhost',port:8090});
+        topoQuery = new maptalks.TopoQuery({host:'42.121.108.110',port:18090});
         //绘制监控路段
         drawMonitorRegion();
         //构造轨迹播放
@@ -110,13 +110,12 @@
                                 success: function(data) {
                                     for(j=0,dataLen=data.length;j<dataLen;j++){
                                         var status = data[j];
-                                        console.log(status);
                                         var hitGeo = movingGeos[j];
                                         //车辆在路径上就不用提醒
                                         if(status===1){
                                             // hitGeo.flash(0,0);
                                         } else {
-                                            hitGeo.flash(100,3);
+                                            hitGeo.flash(200,3);
                                         }
 
                                     }

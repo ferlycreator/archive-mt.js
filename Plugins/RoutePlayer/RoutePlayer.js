@@ -309,28 +309,29 @@ Z.RoutePlayer = Z.Class.extend({
 						preDegree = this.computeMarkerDegree(hisRoutes[hisRoutes.length-3],hisRoutes[hisRoutes.length-2]);
 						preDegree = Math.round(preDegree);
 					}
-//					degree = Math.round(degree);
-//					if (degree != preDegree) {
-//						var markerDom = marker._getPainter().getSvgDom();
-//						var originCss = markerDom.originCss;
-//						if (Z.Browser.ielt9){
-//							var ieMatrix = {
-//									"45":"progid:DXImageTransform.Microsoft.Matrix(M11=0.7071067811865482, M12=0.7071067811865466, M21=-0.7071067811865466, M22=0.7071067811865482, SizingMethod='auto expand')",
-//									"90":"progid:DXImageTransform.Microsoft.BasicImage(rotation=-1)",
-//									"135":"progid:DXImageTransform.Microsoft.Matrix(M11=-0.7071067811865479, M12=0.7071067811865471, M21=-0.7071067811865471, M22=-0.7071067811865479, SizingMethod='auto expand')",
-//									"180":"progid:DXImageTransform.Microsoft.BasicImage(rotation=-2)",
-//									"225":"progid:DXImageTransform.Microsoft.Matrix(M11=-0.7071067811865471, M12=-0.7071067811865479, M21=0.7071067811865479, M22=-0.7071067811865471, SizingMethod='auto expand')",
-//									"270":"progid:DXImageTransform.Microsoft.BasicImage(rotation=-3)",
-//									"315":"progid:DXImageTransform.Microsoft.Matrix(M11=0.7071067811865478, M12=-0.7071067811865471, M21=0.7071067811865471, M22=0.7071067811865478, SizingMethod='auto expand')",
-//									"360":"progid:DXImageTransform.Microsoft.BasicImage(rotation=-4)"
-//							};
-//							var d = Math.abs(Math.floor(degree/45));
-//							var filter = ieMatrix[d*45];
-//						} else {
-//							markerDom.style.cssText = originCss+";-o-transform: rotate(-"+degree+"deg); -webkit-transform: rotate(-"+degree+"deg);-moz-transform: rotate(-"+degree+"deg);transform: rotate(-"+degree+"deg);";
-//						}
-//
-//					}
+					degree = Math.round(degree);
+					if (degree != preDegree) {
+						var markerDom = marker._painter.getSvgDom();
+						//TODO 查看源代码发现markerDom是一个dom的数组
+						var originCss = markerDom[0].style.cssText;
+						if (Z.Browser.ielt9){
+							var ieMatrix = {
+									"45":"progid:DXImageTransform.Microsoft.Matrix(M11=0.7071067811865482, M12=0.7071067811865466, M21=-0.7071067811865466, M22=0.7071067811865482, SizingMethod='auto expand')",
+									"90":"progid:DXImageTransform.Microsoft.BasicImage(rotation=-1)",
+									"135":"progid:DXImageTransform.Microsoft.Matrix(M11=-0.7071067811865479, M12=0.7071067811865471, M21=-0.7071067811865471, M22=-0.7071067811865479, SizingMethod='auto expand')",
+									"180":"progid:DXImageTransform.Microsoft.BasicImage(rotation=-2)",
+									"225":"progid:DXImageTransform.Microsoft.Matrix(M11=-0.7071067811865471, M12=-0.7071067811865479, M21=0.7071067811865479, M22=-0.7071067811865471, SizingMethod='auto expand')",
+									"270":"progid:DXImageTransform.Microsoft.BasicImage(rotation=-3)",
+									"315":"progid:DXImageTransform.Microsoft.Matrix(M11=0.7071067811865478, M12=-0.7071067811865471, M21=0.7071067811865471, M22=0.7071067811865478, SizingMethod='auto expand')",
+									"360":"progid:DXImageTransform.Microsoft.BasicImage(rotation=-4)"
+							};
+							var d = Math.abs(Math.floor(degree/45));
+							var filter = ieMatrix[d*45];
+						} else {
+							markerDom[0].style.cssText = originCss+";-o-transform: rotate(-"+degree+"deg); -webkit-transform: rotate(-"+degree+"deg);-moz-transform: rotate(-"+degree+"deg);transform: rotate(-"+degree+"deg);";
+						}
+
+					}
 				}
 			}
 			if (this.enableDrawRoute && this.routeLayer) {	
