@@ -61,7 +61,7 @@ Z.Map.include({
     },
 
     _zoom:function(nextZoomLevel, focusPos) {
-        if (!this.options['enableZoom'] || this.isBusy()) {return;}
+        if (!this.options['enableZoom']) {return;}
         this._allowSlideMap=false;
         nextZoomLevel = this._checkZoomLevel(nextZoomLevel);
         if (this._originZoomLevel === nextZoomLevel) {
