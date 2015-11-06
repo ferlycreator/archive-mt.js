@@ -79,6 +79,12 @@ Z.Map.include({
         if (type === 'contextmenu') {
             Z.DomUtil.preventDefault(e);
         }
+        if (type === 'mousedown' || type === 'click') {
+            var button = e.button;
+            if (button === 2) {
+                type = 'contextmenu';
+            }
+        }
         this._fireEvent(type, data);
         // target.fire(type, data);
     },
@@ -101,7 +107,7 @@ Z.Map.include({
      */
     disableDrag: function() {
         this.options['draggable'] = false;
-        this.removeHandler('draggable');
+        // this.removeHandler('draggable');
         return this;
     },
 

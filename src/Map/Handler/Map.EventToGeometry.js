@@ -28,7 +28,7 @@ Z.Map.EventToGeometry = Z.Handler.extend({
     },
 
     _queryGeometries: function(event) {
-        if (this.map._isBusy || !this.map._canvasLayers || this.map._canvasLayers.length === 0) {
+        if (this.map.isBusy() || !this.map._canvasLayers || this.map._canvasLayers.length === 0) {
             return;
         }
         // console.log('_queryGeometries');
