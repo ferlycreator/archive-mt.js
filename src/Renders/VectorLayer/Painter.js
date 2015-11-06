@@ -119,14 +119,14 @@ Z.Painter = Z.Class.extend({
                 symbolizer.show();
             });
         }
-        this._rendCanvas();
+        this._rendCanvas(false);
     },
 
     hide:function(){
         this._eachSymbolizer(function(symbolizer) {
             symbolizer.hide();
         });
-        this._rendCanvas();
+        this._rendCanvas(false);
     },
 
     refresh:function(){
@@ -134,10 +134,10 @@ Z.Painter = Z.Class.extend({
         this._eachSymbolizer(function(symbolizer) {
             symbolizer.refresh();
         });
-        this._rendCanvas();
+        this._rendCanvas(false);
     },
 
-    _rendCanvas:function(realtime) {
+    _rendCanvas:function(needPromise, realtime) {
         var layer = this.geometry.getLayer();
         if (layer.isCanvasRender()) {
             var isRealTime = realtime || (this.geometry.isEditing && this.geometry.isEditing())
@@ -146,7 +146,7 @@ Z.Painter = Z.Class.extend({
             if (isRealTime) {
                 render.rendRealTime();
             } else {
-                render.rend();
+                render.rend(needPromise);
             }
         }
     },
@@ -163,7 +163,7 @@ Z.Painter = Z.Class.extend({
         this.symbolizers = this._createSymbolizers();
         var layer = this.geometry.getLayer();
         if (layer.isCanvasRender()) {
-            this._rendCanvas();
+            this._rendCanvas(true);
         } else {
             this.paint();
         }
@@ -172,7 +172,7 @@ Z.Painter = Z.Class.extend({
     remove:function() {
         this._removeCache();
         this._removeSymbolizers();
-        this._rendCanvas(true);
+        this._rendCanvas(false,true);
     },
 
     _removeSymbolizers:function() {
