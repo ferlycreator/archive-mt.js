@@ -2,7 +2,6 @@ Z.Map.include({
     _onZoomStart:function(scale,focusPos,nextZoomLevel) {
         var me = this;
         this._hideOverlayLayers();
-        this._getRender().onZoomStart(scale,focusPos, this._onZoomEnd, this, [nextZoomLevel]);
         /**
          * 触发map的zoomstart事件
          * @member maptalks.Map
@@ -10,6 +9,7 @@ Z.Map.include({
          * @return {Object} params: {'target':this}
          */
         me._fireEvent('zoomstart');
+        this._getRender().onZoomStart(scale,focusPos, this._onZoomEnd, this, [nextZoomLevel]);
     },
 
     _onZoomEnd:function(nextZoomLevel) {
@@ -61,7 +61,7 @@ Z.Map.include({
     },
 
     _zoom:function(nextZoomLevel, focusPos) {
-        if (!this.options['enableZoom'] || this._isBusy) {return;}
+        if (!this.options['enableZoom'] || this.isBusy()) {return;}
         this._allowSlideMap=false;
         nextZoomLevel = this._checkZoomLevel(nextZoomLevel);
         if (this._originZoomLevel === nextZoomLevel) {
