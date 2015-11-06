@@ -265,6 +265,10 @@ Z['Map']=Z.Map=Z.Class.extend({
         return span;
     },
 
+    isBusy:function() {
+        return this._isBusy || this._zooming;
+    },
+
     /**
      * 获取地图的缩放级别
      * @return {Number} 地图缩放级别
@@ -1158,7 +1162,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     _initContainerWatcher:function() {
         var map = this;
         map._watcher = setInterval(function() {
-            if (map._isBusy) {
+            if (map.isBusy()) {
                 return;
             }
             var watched = map._getContainerDomSize();
