@@ -35,8 +35,11 @@ Z.render.map.Render = Z.Class.extend({
         }
     },
 
-    _drawLayerCanvasImage:function(layerImage, mwidth, mheight, origin) {
+    _drawLayerCanvasImage:function(layerImage, mwidth, mheight) {
         // Z.Canvas.image(this._context, layerImage['point'], layerImage['image']);
+        if (mwidth === 0 || mheight === 0){
+            return;
+        }
         var sx, sy, w, h, dx, dy;
         var point = layerImage['point'];
         var size = layerImage['size'];
@@ -58,12 +61,11 @@ Z.render.map.Render = Z.Class.extend({
             dy = point['top'];
             h = mheight-point['top'];
         }
-
-        if (origin) {
-            dx -= origin['left'];
-            dx -= origin['top'];
+        if (dx < 0 || dy < 0 || w <=0 || h <= 0) {
+            return;
         }
         Z.Canvas.disableImageSmoothing(this._context);
+        // console.log(layerImage['image'], sx, sy, w, h, dx, dy, w, h, mwidth,mheight);
         this._context.drawImage(layerImage['image'], sx, sy, w, h, dx, dy, w, h);
     },
 
