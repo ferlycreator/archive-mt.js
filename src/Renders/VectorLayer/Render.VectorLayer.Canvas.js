@@ -82,9 +82,9 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
                 return;
             }
             var ext = geo.getExtent();
-            if (!ext || !ext.isIntersect(mapExtent)) {
+            /*if (!ext || !ext.isIntersect(mapExtent)) {
                 return;
-            }
+            }*/
             var resourceUrls = geo._getExternalResource();
             if (Z.Util.isArrayHasData(resourceUrls)) {
                 //重复
