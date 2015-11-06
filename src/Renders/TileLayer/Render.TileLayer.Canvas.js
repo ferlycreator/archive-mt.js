@@ -1,7 +1,7 @@
 Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
 
     initialize:function(layer) {
-        this.layer = layer;
+        this._layer = layer;
         this._mapRender = layer.getMap()._getRender();
         this._tileMap={};
         this._tileCache = new Z.TileLayer.TileCache();
@@ -23,7 +23,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
     },
 
     getMap: function() {
-        return this.layer.getMap();
+        return this._layer.getMap();
     },
 
     show:function() {
@@ -46,11 +46,12 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
 
     rend:function(options) {
         this._rending = true;
-        var tileGrid = this.layer._getTiles(this.getMap().getSize().multi(2.2));
+        var tileGrid = this._layer._getTiles(this.getMap().getSize().multi(2.2));
         var tiles = tileGrid['tiles'];
         var fullTileExtent = tileGrid['fullExtent'];
         if (!this._canvas) {
             this._createCanvas();
+            Z.Canvas.enableImageSmoothing(this._context);
         }
         //canvas大小不做缩小, 只根据需要增大, 直到超过系统允许: testCanvas 结果为false
         var preZ = this._z;
@@ -73,7 +74,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
 
         var tileCache = this._tileCache;
         var mapViewExtent = this.getMap()._getViewExtent();
-        var tileSize = this.layer._getTileSize();
+        var tileSize = this._layer._getTileSize();
         //遍历瓦片
         this._tileToLoadCounter = 0;
         for (var i = tiles.length - 1; i >= 0; i--) {
@@ -146,7 +147,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
 
 
     _drawTile:function(point, tileImage) {
-        var tileSize = this.layer._getTileSize();
+        var tileSize = this._layer._getTileSize();
         Z.Canvas.image(this._context, point.substract(this._canvasFullExtent.getMin()), tileImage, tileSize['width'],tileSize['height']);
     },
 
@@ -161,7 +162,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         if (!this._rending) {
             this._drawTile(point, tileImage);
 
-             var tileSize = this.layer._getTileSize();
+             var tileSize = this._layer._getTileSize();
               var viewExtent = this.getMap()._getViewExtent();
             if (viewExtent.isIntersect(new Z.Extent(point, point.add(new Z.Point(tileSize['width'], tileSize['height']))))) {
                 this._requestMapToRend();
@@ -178,7 +179,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
      * @param  {Point} point        瓦片左上角坐标
      */
     _clearTileRectAndRequest:function(point,tileImage) {
-        /*var tileSize = this.layer._getTileSize();
+        /*var tileSize = this._layer._getTileSize();
         Z.Canvas.clearRect(this._context, point['left'], point['top'], tileSize['width'],tileSize['height']);
         this._requestMapToRend();*/
     },
@@ -190,7 +191,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
     },
 
     _fireLoadedEvent:function() {
-        this.layer.fire('layerloaded');
+        this._layer.fire('layerloaded');
     },
 
     clearExecutors:function() {

@@ -64,7 +64,13 @@ Z.render.map.Render = Z.Class.extend({
         if (dx < 0 || dy < 0 || w <=0 || h <= 0) {
             return;
         }
-        Z.Canvas.disableImageSmoothing(this._context);
+        var layer = layerImage['layer'];
+        var enableImageSmoothing = (!(layer instanceof Z.DynamicLayer) && (layer instanceof Z.TileLayer));
+        if (enableImageSmoothing) {
+            Z.Canvas.enableImageSmoothing(this._context);
+        } else {
+            Z.Canvas.disableImageSmoothing(this._context);
+        }
         // console.log(layerImage['image'], sx, sy, w, h, dx, dy, w, h, mwidth,mheight);
         this._context.drawImage(layerImage['image'], sx, sy, w, h, dx, dy, w, h);
     },

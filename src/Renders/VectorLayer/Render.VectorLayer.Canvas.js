@@ -132,6 +132,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         //载入资源后再进行绘制
         if (!this._canvas) {
             this._createCanvas();
+            Z.Canvas.disableImageSmoothing(this._context);
         }
 
         var fullExtent = map._getViewExtent()/*.expand(size)*/;
@@ -164,7 +165,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         }
         var size = this._canvasFullExtent.getSize();
         var point = this._canvasFullExtent.getMin();
-        return {'image':this._canvas,'point':this.getMap()._viewPointToContainerPoint(point),'size':size};
+        return {'image':this._canvas,'layer':this._layer,'point':this.getMap()._viewPointToContainerPoint(point),'size':size};
     },
 
     /**
