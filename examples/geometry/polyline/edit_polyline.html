@@ -72,6 +72,12 @@
                 click : function(){
                     polyline.endEdit();
                 }
+            }, {
+                type : 'button',
+                content: '删除',
+                click : function(){
+                    polyline.remove();
+                }
             }]
         });
         mapObj.addControl(toolbar);

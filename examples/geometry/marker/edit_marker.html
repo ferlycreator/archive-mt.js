@@ -47,6 +47,12 @@
                 click : function(){
                     marker.endEdit();
                 }
+            }, {
+                type : 'button',
+                content: '删除',
+                click : function(){
+                    marker.remove();
+                }
             }]
         });
         mapObj.addControl(toolbar);
