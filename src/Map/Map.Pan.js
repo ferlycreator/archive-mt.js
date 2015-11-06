@@ -8,7 +8,7 @@ Z.Map.include({
     panTo:function(coordinate) {
         //TODO 动画
         var projection = this._getProjection();
-        var p = projection.project(coordinate);
+        var p = projection.project(new Z.Coordinate(coordinate));
         var span = this._getPixelDistance(p);
         this.panBy(span);
         return this;
@@ -22,7 +22,7 @@ Z.Map.include({
      */
     panBy:function(offset) {
         //TODO 动画
-        if (offset.left || offset.top) {
+        if (Z.Util.isNumber(offset.left) && Z.Util.isNumber(offset.top) && (offset.left !==0 || offset.top !== 0)) {
             this._fireEvent('movestart');
             this.offsetPlatform(new Z.Point(offset['left'],offset['top']));
             this._offsetCenterByPixel(new Z.Point(-offset['left'],-offset['top']));
