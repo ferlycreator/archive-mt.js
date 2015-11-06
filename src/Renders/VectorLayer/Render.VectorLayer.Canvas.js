@@ -11,7 +11,6 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
     },
 
     _onMapEvent:function(param) {
-        this._clearTimeout();
         if (param['type'] === '_zoomend') {
             this._layer._eachGeometry(function(geo) {
                 geo._onZoomEnd();
@@ -136,7 +135,6 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
     },
 
     _draw:function() {
-        this._clearTimeout();
         var map = this.getMap();
         if (!map || map.isBusy()) {
             return;
