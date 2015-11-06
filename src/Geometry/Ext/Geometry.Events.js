@@ -18,13 +18,13 @@ Z.Geometry.include({
             Z.DomUtil.stopPropagation(originalEvent);
         }*/
         //事件改名
-        if ('click' === eventFired) {
+        if ('click' === eventFired || 'mousedown' === eventFired) {
             var button = originalEvent.button;
             if (button === 2) {
                 eventFired = 'contextmenu';
             }
         }
-        if ('contextmenu' === eventFired) {
+        if ('contextmenu' === eventFired && this.hasListeners('contextmenu')) {
             Z.DomUtil.stopPropagation(originalEvent);
             Z.DomUtil.preventDefault(originalEvent);
         }
