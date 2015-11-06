@@ -137,10 +137,10 @@ Z.Painter = Z.Class.extend({
         this._rendCanvas();
     },
 
-    _rendCanvas:function() {
+    _rendCanvas:function(realtime) {
         var layer = this.geometry.getLayer();
         if (layer.isCanvasRender()) {
-            var isRealTime = (this.geometry.isEditing && this.geometry.isEditing())
+            var isRealTime = realtime || (this.geometry.isEditing && this.geometry.isEditing())
                                 || (this.geometry.isDragging && this.geometry.isDragging());
             var render = this.geometry.getLayer()._getRender();
             if (isRealTime) {
@@ -172,6 +172,7 @@ Z.Painter = Z.Class.extend({
     remove:function() {
         this._removeCache();
         this._removeSymbolizers();
+        this._rendCanvas(true);
     },
 
     _removeSymbolizers:function() {
