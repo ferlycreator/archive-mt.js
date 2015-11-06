@@ -172,7 +172,6 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         }
         var size = this._canvasFullExtent.getSize();
         var point = this._canvasFullExtent.getMin();
-        console.log(this._layer.getId(), this._canvasFullExtent);
         return {'image':this._canvas,'layer':this._layer,'point':this.getMap()._viewPointToContainerPoint(point),'size':size};
     },
 
