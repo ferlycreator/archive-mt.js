@@ -14,10 +14,8 @@ Z.Map.include({
 
     _onZoomEnd:function(nextZoomLevel) {
 
-
-        this._getRender().onZoomEnd();
-
         this._originZoomLevel=nextZoomLevel;
+        this._getRender().onZoomEnd();
         this._showOverlayLayers();
         this._zooming = false;
         /**

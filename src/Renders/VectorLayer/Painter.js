@@ -129,12 +129,20 @@ Z.Painter = Z.Class.extend({
         this._rendCanvas(false);
     },
 
-    refresh:function(){
+    onZoomEnd:function() {
+        this._refreshSymbolizers();
+    },
+
+    repaint:function(){
+        this._refreshSymbolizers();
+        this._rendCanvas(false);
+    },
+
+    _refreshSymbolizers:function() {
         this._removeCache();
         this._eachSymbolizer(function(symbolizer) {
             symbolizer.refresh();
         });
-        this._rendCanvas(false);
     },
 
     _rendCanvas:function(needPromise, realtime) {

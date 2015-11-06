@@ -455,14 +455,14 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     _onZoomEnd:function() {
         if (this._painter) {
-            this._painter.refresh();
+            this._painter.onZoomEnd();
         }
     },
 
     _onShapeChanged:function() {
         var painter = this._getPainter();
         if (painter) {
-            painter.refresh();
+            painter.repaint();
         }
         this._extent = null;
         if (!this.isEditing || !this.isEditing()) {
@@ -473,7 +473,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     _onPositionChanged:function() {
         var painter = this._getPainter();
         if (painter) {
-            painter.refresh();
+            painter.repaint();
         }
         this._extent = null;
         if (!this.isEditing || !this.isEditing()) {

@@ -15,6 +15,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
             this._layer._eachGeometry(function(geo) {
                 geo._onZoomEnd();
             });
+            this._draw();
         } else if (param['type'] === '_zoomstart') {
             this._clearCanvas();
         } else if (param['type'] === '_moveend') {
@@ -125,10 +126,12 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
     },
 
     _draw:function() {
+
         var map = this.getMap();
-        if (!map || this._layer.isEmpty()) {
+        if (!map || map._isBusy || this._layer.isEmpty()) {
             return;
         }
+        console.log('vector drawed');
         //载入资源后再进行绘制
         if (!this._canvas) {
             this._createCanvas();
