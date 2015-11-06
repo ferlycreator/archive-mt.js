@@ -80,12 +80,12 @@ Z.render.map.Dom = Z.render.map.Render.extend({
 
     showOverlayLayers:function() {
         this._panels.svgContainer.style.display="";
-        this._panels.canvasLayerContainer.style.display="";
+        // this._panels.canvasLayerContainer.style.display="";
     },
 
     hideOverlayLayers:function() {
         this._panels.svgContainer.style.display="none";
-        this._panels.canvasLayerContainer.style.display="none";
+        // this._panels.canvasLayerContainer.style.display="none";
         // this._panels.tipContainer.style.display="none";
     },
 
@@ -163,6 +163,7 @@ Z.render.map.Dom = Z.render.map.Render.extend({
         var pcenter = map._getPrjCenter();
         var destContainerPoint = map._transform(pcenter).add(moveOffset.multi(-0.5));
         var dest = map._untransform(destContainerPoint);
+        map._isBusy = true;
         Z.animation.animate(new Z.animation.pan({
             'source': pcenter,
             'destination' : dest ,
@@ -173,6 +174,7 @@ Z.render.map.Dom = Z.render.map.Render.extend({
             }*/
             if (frame.state['end']) {
                 map._setPrjCenterAndMove(dest);
+                map._isBusy = false;
                 map._onMoveEnd();
             }
         }, this);

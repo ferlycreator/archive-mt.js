@@ -214,7 +214,6 @@ Z['Map']=Z.Map=Z.Class.extend({
         var offset = this._getPixelDistance(pcenter);
         this._setPrjCenter(pcenter);
         this.offsetPlatform(offset);
-
     },
 
     _onMoving:function(param) {
@@ -970,7 +969,7 @@ Z['Map']=Z.Map=Z.Class.extend({
 
         } else {
             this._mapViewPoint = this._mapViewPoint.add(offset);
-            this._getRender().offsetPlatform(offset);
+            this._getRender().offsetPlatform(offset.round());
             return this;
         }
     },
