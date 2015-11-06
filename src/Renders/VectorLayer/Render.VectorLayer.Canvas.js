@@ -134,7 +134,6 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         if (!map || this._layer.isEmpty()) {
             return;
         }
-        console.log('vector drawed');
         //载入资源后再进行绘制
         if (!this._canvas) {
             this._createCanvas();
