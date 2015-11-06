@@ -78,7 +78,7 @@ Z.Painter = Z.Class.extend({
 
 
     _eachSymbolizer:function(fn,context) {
-        if (!this._painted) {
+        if (!this.symbolizers) {
             return;
         }
         if (!context) {
@@ -145,14 +145,14 @@ Z.Painter = Z.Class.extend({
         });
     },
 
-    _rendCanvas:function(needPromise, realtime) {
+    _rendCanvas:function(needPromise) {
         if (this.geometry.getMap().isBusy()) {
             // console.log('is busy do not refresh painter');
             return;
         }
         var layer = this.geometry.getLayer();
         if (layer.isCanvasRender()) {
-            var isRealTime = realtime || (this.geometry.isEditing && this.geometry.isEditing())
+            var isRealTime = (this.geometry.isEditing && this.geometry.isEditing())
                                 || (this.geometry.isDragging && this.geometry.isDragging());
             var render = this.geometry.getLayer()._getRender();
             if (isRealTime) {
@@ -173,6 +173,7 @@ Z.Painter = Z.Class.extend({
         if (!this._painted) {
             return;
         }
+        // console.log('painter refreshSymbol');
         var layer = this.geometry.getLayer();
         if (layer.isCanvasRender()) {
             this._rendCanvas(true);

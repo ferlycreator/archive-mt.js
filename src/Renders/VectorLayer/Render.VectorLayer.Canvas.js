@@ -19,6 +19,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
             this._draw();
         } else if (param['type'] === '_zoomstart') {
             this._clearCanvas();
+
         } else if (param['type'] === '_moveend') {
             this._draw();
         } else if (param['type'] === '_resize') {
@@ -44,10 +45,10 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
     },
 
     rend:function(ignoreResourceCheck) {
+        this._clearTimeout();
         if (!this.getMap() || this.getMap().isBusy()) {
             return;
         }
-        this._clearTimeout();
         var me = this;
         this._rendTimeout = setTimeout(function() {
             if (true===ignoreResourceCheck) {
@@ -70,12 +71,11 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
      */
     _promise:function() {
         if (!this.getMap() || this.getMap().isBusy()) {
-
             return;
         }
         if (this._layer.isEmpty()) {
             this._requestMapToRend();
-            return
+            return;
         }
         var me = this;
         var preResources = this._resources;
@@ -139,10 +139,11 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         this._clearTimeout();
         var map = this.getMap();
         if (!map || map.isBusy()) {
+            return;
         }
         if (this._layer.isEmpty()) {
             this._requestMapToRend();
-            return
+            return;
         }
         //载入资源后再进行绘制
         if (!this._canvas) {
