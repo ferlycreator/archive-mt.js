@@ -1,29 +1,38 @@
-Z.render.vectorlayer.Canvas = function(layer, options) {
-    this._layer = layer;
-    this._mapRender = layer.getMap()._getRender();
-    this._registerEvents();
-};
+Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
 
-//load,_onMoving, _onMoveEnd, _onResize, _onZoomStart, _onZoomEnd
-Z.render.vectorlayer.Canvas.prototype = {
+    initialize:function(layer) {
+        this._layer = layer;
+        this._mapRender = layer.getMap()._getRender();
+        this._registerEvents();
+    },
 
     _registerEvents:function() {
-        this.getMap().on('_zoomend',function() {
+        this.getMap().on('_zoomstart _zoomend _moveend _resize',this._onMapEvent,this);
+    },
+
+    _onMapEvent:function(param) {
+        if (param['type'] === '_zoomend') {
             this._layer._eachGeometry(function(geo) {
                 geo._onZoomEnd();
             });
-        },this);
+            this._draw();
+        } else if (param['type'] === '_zoomstart') {
+            this._clearCanvas();
+
+        } else if (param['type'] === '_moveend') {
+            this._draw();
+        } else if (param['type'] === '_resize') {
+            this._resizeCanvas();
+            this._draw();
+        }
     },
 
     getMap: function() {
         return this._layer.getMap();
     },
 
-    /**
-     * 绘制geometry
-     * @param  {[Geometry]} geometries 要绘制的图形
-     */
-    rend: function(geometries) {
+    remove:function() {
+        this.getMap().off('_zoomend _moveend _resize',this._onMapEvent,this);
         this._requestMapToRend();
     },
 
@@ -31,10 +40,42 @@ Z.render.vectorlayer.Canvas.prototype = {
      * 实时绘制
      */
     rendRealTime:function() {
-        this._requestMapToRend(true);
+        this._draw();
     },
 
-    promise:function() {
+    rend:function(ignoreResourceCheck) {
+        this._clearTimeout();
+        if (!this.getMap() || this.getMap().isBusy()) {
+            return;
+        }
+        var me = this;
+        this._rendTimeout = setTimeout(function() {
+            if (true===ignoreResourceCheck) {
+                me._draw();
+            } else {
+                me._promise();
+            }
+        },50);
+    },
+
+    _clearTimeout:function() {
+        if (this._rendTimeout) {
+            clearTimeout(this._rendTimeout);
+        }
+    },
+
+    /**
+     * 读取并载入绘制所需的外部资源, 例如markerFile, shieldFile等
+     * @return {[Promise]} promise数组
+     */
+    _promise:function() {
+        if (!this.getMap() || this.getMap().isBusy()) {
+            return;
+        }
+        if (this._layer.isEmpty()) {
+            this._requestMapToRend();
+            return;
+        }
         var me = this;
         var preResources = this._resources;
         //如果resource已经存在, 则不再重复载入资源
@@ -42,18 +83,15 @@ Z.render.vectorlayer.Canvas.prototype = {
             return [new Z.Promise(function(resolve, reject) {resolve(me._resources);})];
         }*/
         //20150530 loadResource不加载canvasLayer中的geometry icon资源，故每次绘制canvas都去重新检查并下载资源
-        var map = this.getMap();
-        var mapExtent = map.getExtent();
         var promises = [];
         this._resources = new Z.render.vectorlayer.Canvas.Resources();
         this._layer._eachGeometry(function(geo) {
             if (!geo || !geo.isVisible()) {
                 return;
             }
-            var ext = geo.getExtent();
-            if (!ext || !ext.isIntersect(mapExtent)) {
+            /*if (!ext || !ext.isIntersect(mapExtent)) {
                 return;
-            }
+            }*/
             var resourceUrls = geo._getExternalResource();
             if (Z.Util.isArrayHasData(resourceUrls)) {
                 //重复
@@ -63,60 +101,69 @@ Z.render.vectorlayer.Canvas.prototype = {
                     if (cache[url]) {
                         continue;
                     }
-                    var promise = null;
                     cache[url] = 1;
-                    if (preResources && preResources.getImage(url)) {
-                        promise = new Z.Promise(function(resolve, reject) {
-                            var image = preResources.getImage(url);
-                            me._resources.addResource(url,image);
-                            resolve({'url':url,'image':image});
-                        });
-                    } else {
-                        promise = new Z.Promise(function(resolve, reject) {
+                    if (!preResources || !preResources.getImage(url)) {
+                        var promise = new Z.Promise(function(resolve, reject) {
                             var img = new Image();
                             img.onload = function(){
                                 me._resources.addResource(this.src,this);
-                                resolve({'url':this.src,'image':img});
+                                resolve({/*'url':this.src,'image':img*/});
                             };
                             img.onabort = function(){
                                 me._resources.addResource(this.src,this);
-                                resolve({'url':this.src,'image':img});
+                                resolve({/*'url':this.src,'image':img*/});
                             };
                             img.onerror = function(){
-                                resolve({'url':this.src,'image':img});
+                                resolve({/*'url':this.src,'image':img*/});
                             };
                             img.src = resourceUrls[i];
                         });
+                        promises.push(promise);
+                    } else {
+                        me._resources.addResource(url,preResources.getImage(url));
                     }
-
-                    promises.push(promise);
                 }
             }
         });
-        return promises;
+        if (promises.length > 0) {
+            Z.Promise.all(promises).then(function(reources) {
+                me._draw();
+            });
+        } else {
+            this._draw();
+        }
     },
 
-
-    draw:function(_context) {
-        //载入资源后再进行绘制
-        this._context = _context;
+    _draw:function() {
         var map = this.getMap();
-        var extent = map.getExtent();
-        var pxExtent =  new Z.Extent(
-            map.coordinateToViewPoint(new Z.Coordinate(extent['xmin'],extent['ymin'])),
-            map.coordinateToViewPoint(new Z.Coordinate(extent['xmax'],extent['ymax']))
-            );
+        if (!map || map.isBusy()) {
+            return;
+        }
+        if (this._layer.isEmpty()) {
+            this._requestMapToRend();
+            return;
+        }
+        //载入资源后再进行绘制
+        if (!this._canvas) {
+            this._createCanvas();
+            Z.Canvas.disableImageSmoothing(this._context);
+        }
+
+        var fullExtent = map._getViewExtent()/*.expand(size)*/;
+        this._clearCanvas();
         this._layer._eachGeometry(function(geo) {
             //geo的map可能为null,因为绘制为延时方法
-            if (!_context || !geo || !geo.isVisible() || !geo.getMap() || !geo.getLayer() || (!geo.getLayer().isCanvasRender())) {
+            if (!geo || !geo.isVisible() || !geo.getMap() || !geo.getLayer() || (!geo.getLayer().isCanvasRender())) {
                 return;
             }
             var ext = geo._getPainter().getPixelExtent();
-            if (!ext || !ext.isIntersect(pxExtent)) {
+            if (!ext || !ext.isIntersect(fullExtent)) {
                 return;
             }
             geo._getPainter().paint();
         });
+        this._canvasFullExtent = fullExtent;
+        this._requestMapToRend();
     },
 
     getPaintContext:function() {
@@ -126,12 +173,20 @@ Z.render.vectorlayer.Canvas.prototype = {
         return [this._context, this._resources];
     },
 
+    getCanvasImage:function() {
+        if (!this._canvasFullExtent || this._layer.isEmpty()) {
+            return null;
+        }
+        var size = this._canvasFullExtent.getSize();
+        var point = this._canvasFullExtent.getMin();
+        return {'image':this._canvas,'layer':this._layer,'point':this.getMap()._viewPointToContainerPoint(point),'size':size};
+    },
+
     /**
      * 显示图层
      * @expose
      */
     show: function() {
-        //this._requestMapToRend();
         this._layer._eachGeometry(function(geo) {
             geo.show();
         });
@@ -142,7 +197,6 @@ Z.render.vectorlayer.Canvas.prototype = {
      * @expose
      */
     hide: function() {
-        //this._requestMapToRend();
         this._layer._eachGeometry(function(geo) {
             geo.hide();
         });
@@ -152,11 +206,14 @@ Z.render.vectorlayer.Canvas.prototype = {
         this._requestMapToRend();
     },
 
-    _requestMapToRend:function(isRealTime) {
-        this._mapRender.rend(isRealTime);
-    }
+    _requestMapToRend:function() {
+        if (!this.getMap().isBusy()) {
+            this._mapRender.rend();
+        }
 
-};
+    }
+});
+
 
 Z.render.vectorlayer.Canvas.Resources=function() {
     this._resources = {};

@@ -159,6 +159,18 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     /**
+     * 获得地图可视范围的viewPoint范围
+     * @return {Extent} 可视范围的ViewPoint范围
+     */
+    _getViewExtent:function() {
+        var size = this.getSize();
+        var offset = this.offsetPlatform();
+        var min = new Z.Point(0,0);
+        var max = new Z.Point(size['width'],size['height']);
+        return new Z.Extent(min.substract(offset), max.substract(offset));
+    },
+
+    /**
      * 获取地图的中心点
      * @return {Coordinate} 坐标
      * @expose
@@ -175,27 +187,33 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     setCenter:function(center) {
+        if (!center) {
+            return this;
+        }
         if (!this._tileConfig || !this._loaded) {
             this._center = center;
             return this;
         }
-        var projection = this._getProjection();
-        var _pcenter = projection.project(center);
-        var offset = this._getPixelDistance(_pcenter);
-        // FIXME: call panBy() ?
-        if (offset.left || offset.top) {
+        if (this._loaded && !this._center.equals(center)) {
             /**
              * 触发map的movestart事件
              * @member maptalks.Map
              * @event movestart
              */
             this._fireEvent('movestart');
-            this._setPrjCenter(_pcenter);
-            this.offsetPlatform(offset);
         }
+        var projection = this._getProjection();
+        var _pcenter = projection.project(center);
+        this._setPrjCenterAndMove(_pcenter);
         // XXX: fire 'moveend' or not?
         this._onMoveEnd();
         return this;
+    },
+
+    _setPrjCenterAndMove:function(pcenter) {
+        var offset = this._getPixelDistance(pcenter);
+        this._setPrjCenter(pcenter);
+        this.offsetPlatform(offset);
     },
 
     _onMoving:function(param) {
@@ -245,6 +263,10 @@ Z['Map']=Z.Map=Z.Class.extend({
         var pcenter_px = this._transform(pcenter);
         var span = new Z.Point((-pcenter_px['left']+curr_px['left']),(curr_px['top']-pcenter_px['top']));
         return span;
+    },
+
+    isBusy:function() {
+        return this._isBusy || this._zooming;
     },
 
     /**
@@ -553,6 +575,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         if (!map || map != this) {
             return this;
         }
+        layer.remove();
         if (layer instanceof Z.VectorLayer) {
             if (layer.isCanvasRender()) {
                 this._removeLayer(layer, this._canvasLayers);
@@ -665,14 +688,25 @@ Z['Map']=Z.Map=Z.Class.extend({
 //------------------------------坐标转化函数-----------------------------
     /**
      * 将地理坐标转化为容器偏转坐标
-     * @param {Coordinate} 地理坐标
+     * @param {Coordinate} coordinate 地理坐标
      * @return {Point} 容器偏转坐标
      */
     coordinateToViewPoint: function(coordinate) {
         var projection = this._getProjection();
         if (!coordinate || !projection) {return null;}
         var pCoordinate = projection.project(coordinate);
-        return this._transformToViewPoint(pCoordinate);
+        return this._transformToViewPoint(pCoordinate).round();
+    },
+
+    /**
+     * 将容器偏转坐标转化为地理坐标
+     * @param {Point} viewPoint 容器坐标
+     * @return {Coordinate} 地理坐标
+     */
+    viewPointToCoordinate: function(viewPoint) {
+        var projection = this._getProjection();
+        if (!viewPoint || !projection) {return null;}
+        return this._untransformFromViewPoint(viewPoint);
     },
 
     /**
@@ -685,7 +719,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         if (!coordinate || !projection) {return null;}
         var pCoordinate = projection.project(coordinate);
         var offset = this._transform(pCoordinate);
-        return offset;
+        return offset.round();
     },
 
     /**
@@ -921,6 +955,7 @@ Z['Map']=Z.Map=Z.Class.extend({
             posY = this.height/2+pixel['top'];
         var pCenter = this._untransform(new Z.Point(posX, posY));
         this._setPrjCenter(pCenter);
+        return pCenter;
     },
 
     /**
@@ -930,11 +965,24 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     offsetPlatform:function(offset) {
+        if (!this._mapViewPoint) {
+            this._mapViewPoint = this._getRender().offsetPlatform();
+        }
         if (!offset) {
-            return this._getRender().offsetPlatform(offset);
+            return this._mapViewPoint;
+
         } else {
-            this._getRender().offsetPlatform(offset);
+            this._mapViewPoint = this._mapViewPoint.add(offset);
+            this._getRender().offsetPlatform(offset.round());
             return this;
+        }
+    },
+
+    _resetMapViewPoint:function() {
+        if (!this._mapViewPoint) {
+            this._mapViewPoint = new Z.Point(0,0);
+        } else {
+            this._mapViewPoint = new Z.Point(0,0);
         }
     },
 
@@ -979,8 +1027,8 @@ Z['Map']=Z.Map=Z.Class.extend({
 
         var point = transformation.transform(pCoordinate,res);
         return new Z.Point(
-            Math.round(this.width / 2 + point['left'] - centerPoint['left']),
-            Math.round(this.height / 2 + point['top'] - centerPoint['top'])
+            this.width / 2 + point['left'] - centerPoint['left'],
+            this.height / 2 + point['top'] - centerPoint['top']
             );
     },
 
@@ -1114,6 +1162,9 @@ Z['Map']=Z.Map=Z.Class.extend({
     _initContainerWatcher:function() {
         var map = this;
         map._watcher = setInterval(function() {
+            if (map.isBusy()) {
+                return;
+            }
             var watched = map._getContainerDomSize();
             if (map.width !== watched.width || map.height !== watched.height) {
                 var oldHeight = map.height;
@@ -1121,7 +1172,7 @@ Z['Map']=Z.Map=Z.Class.extend({
                 map._updateMapSize(watched);
                 map._onResize(new Z.Point((watched.width-oldWidth) / 2,(watched.height-oldHeight) / 2));
             }
-        },800);
+        },1000);
     }
 });
 

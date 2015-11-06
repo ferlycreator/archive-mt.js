@@ -29,9 +29,9 @@ Z.CollectionPainter=Z.Class.extend({
     },
 
     getPixelExtent:function() {
-        var extent = new Z.Extent();
+        var  extent = new Z.Extent();
         this._eachPainter(function(painter) {
-            extent = Z.Extent.combine(extent,painter.getPixelExtent());
+            extent = extent.combine(painter.getPixelExtent());
         });
         return extent;
     },
@@ -64,11 +64,19 @@ Z.CollectionPainter=Z.Class.extend({
         });
     },
 
-    refresh:function(){
+    onZoomEnd:function() {
         var args = arguments;
         this._eachPainter(function(painter) {
             // painter.setSymbol(this.geometry.getSymbol());
-            painter.refresh.apply(painter,args);
+            painter.onZoomEnd.apply(painter,args);
+        });
+    },
+
+    repaint:function(){
+        var args = arguments;
+        this._eachPainter(function(painter) {
+            // painter.setSymbol(this.geometry.getSymbol());
+            painter.repaint.apply(painter,args);
         });
     },
 

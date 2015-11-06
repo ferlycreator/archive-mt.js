@@ -48,6 +48,21 @@ Z.OverlayLayer=Z.Layer.extend({
     },
 
     /**
+     * VectorLayer是否为空
+     * @return {Boolean} 是
+     */
+    isEmpty:function() {
+        var empty = true;
+        for (var prop in this._geoCache){
+            if (this._geoCache.hasOwnProperty(prop)) {
+                empty = false;
+                break;
+            }
+        }
+        return empty;
+    },
+
+    /**
      * 向图层中添加geometry
      * @param {Geometry|[Geometry]} geometries 添加的geometry
      * @param {[type]} fitView    添加后是否聚焦到geometry上
@@ -88,7 +103,7 @@ Z.OverlayLayer=Z.Layer.extend({
                 if (geoCenter && geoExtent) {
                     centerSum.x += geoCenter.x;
                     centerSum.y += geoCenter.y;
-                    extent = Z.Extent.combine(extent,geoExtent);
+                    extent = geoExtent.combine(extent);
                     fitCounter++;
                 }
             }

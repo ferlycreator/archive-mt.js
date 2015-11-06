@@ -22,12 +22,12 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
      * @type {Object}
      */
     defaultStrokeSymbol: {
-        'line-color':'#474cf8',
-        'line-width':2,
-        'line-opacity':1,
-        'line-dasharray': '',
-        'polygon-fill' : '#ffffff',
-        'polygon-opacity' : 1
+        'lineColor':'#474cf8',
+        'lineWidth':2,
+        'lineOpacity':1,
+        'lineDasharray': '',
+        'polygonFill' : '#ffffff',
+        'polygonOpacity' : 1
     },
 
     /**

@@ -76,8 +76,8 @@ function commonSetupMap(center) {
     var map = new Z.Map(container, option);
     var tile = new Z.TileLayer('tile', {
         tileInfo: 'web-mercator',
-        urlTemplate: 'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',
-        subdomains: [0, 1, 2, 3]
+        urlTemplate:"http://t{s}.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}",
+        subdomains: [1, 2, 3]
     });
     map.setBaseTileLayer(tile);
     return {
@@ -242,7 +242,7 @@ GeoEventsTester.prototype = {
         vector.on(this.eventsToTest, this._eventCallBack );
         layer.addGeometry(vector);
         var point = map.coordinateToContainerPoint(testPoint);
-        var dom = map._panels.canvasLayerContainer;
+        var dom = map._panels.mapPlatform;
         var domPosition = Z.DomUtil.getPageCoordinate(dom);
         point._add(domPosition);
         this._verifyGeometryEvents(dom,

@@ -1,6 +1,6 @@
 Z.render.tilelayer.Dom = function(layer) {
-    this.layer = layer;
-    this.mapRender = layer.getMap()._getRender();
+    this._layer = layer;
+    this._mapRender = layer.getMap()._getRender();
     this._tileMap={};
     this._registerEvents();
 };
@@ -11,22 +11,24 @@ Z.render.tilelayer.Dom.prototype = {
     baseZIndex:15,
 
     _registerEvents:function() {
-        var map = this.layer.getMap();
-        map.on('_moveend _resize',function() {
+        var map = this._layer.getMap();
+        map.on('_moving _moveend _resize _zoomend _zoomstart',this._onMapEvent,this);
+    },
+
+    _onMapEvent:function(param) {
+        if (param['type'] === '_moving' || param['type'] === '_moveend' || param['type'] === '_resize') {
             this.rend();
-        },this);
-        map.on('_moving',Z.Util.throttle(this.rend, 200, this),this);
-        map.on('_zoomend',function() {
+        } else if (param['type'] === '_zoomend') {
             this.clear();
             this.rend(true);
-        },this);
-        map.on('_zoomstart',function() {
+        } else if (param['type'] === '_zoomstart') {
             this.clearExecutors();
-            //this.clear();
-        },this);
+        }
     },
 
     remove:function() {
+        var map = this._layer.getMap();
+        map.off('_moving _moveend _resize _zoomend _zoomstart',this._onMapEvent,this);
         if (this._tileContainer) {
             Z.DomUtil.removeDomNode(this._tileContainer);
         }
@@ -62,7 +64,7 @@ Z.render.tilelayer.Dom.prototype = {
      * @return {[type]}               [description]
      */
     rend:function(rendWhenReady) {
-        var tiles = this.layer._getTiles();
+        var tiles = this._layer._getTiles();
         var tileContainer = this._tileContainer;
         var me = this;
         var tileImages = [];
@@ -86,7 +88,7 @@ Z.render.tilelayer.Dom.prototype = {
                 me._completeExecutor=setTimeout(function() {
                     tileContainer.appendChild(dSegment);
                     me._fireEventExecutor=setTimeout(function() {
-                        me.layer.fire('layerloaded');
+                        me._layer.fire('layerloaded');
                     },500);
                 },10);
             }
@@ -96,8 +98,8 @@ Z.render.tilelayer.Dom.prototype = {
 
         for (var i = tiles.length - 1; i >= 0; i--) {
             var tileId=tiles[i]['id'],
-                tileLeft = tiles[i]['left'],
-                tileTop = tiles[i]['top'],
+                tileLeft = tiles[i]['viewPoint']['left'],
+                tileTop = tiles[i]['viewPoint']['top'],
                 tileUrl = tiles[i]['url'];
             if (!currentTiles[tileId]) {
                 var tileImage = this._createTileImage(tileLeft,tileTop, tileUrl,(rendWhenReady?checkAndLoad:null));
@@ -136,12 +138,12 @@ Z.render.tilelayer.Dom.prototype = {
     },
 
     initContainer:function() {
-        var mapContainer = this.mapRender.getLayerRenderContainer(this.layer);
+        var mapContainer = this._mapRender.getLayerRenderContainer(this._layer);
         if (!mapContainer) {return;}
         //生成地图瓦片装载div
         var tileContainer = Z.DomUtil.createEl('div');
         tileContainer.className = 'MAP_TILE_CONTAINER';
-        tileContainer.style.cssText = 'position:absolute;top:0px;left:0px;z-index:'+(this.baseZIndex+this.layer.getZIndex());
+        tileContainer.style.cssText = 'position:absolute;top:0px;left:0px;z-index:'+(this.baseZIndex+this._layer.getZIndex());
         var currentTileContainers = mapContainer.childNodes;
         if (currentTileContainers && currentTileContainers.length > 0) {
             var firstChild = currentTileContainers[0];
@@ -161,17 +163,17 @@ Z.render.tilelayer.Dom.prototype = {
 
     _removeOutsideTiles:function() {
         //var _mapContainer = this.map.mapContainer;
-        if (this.layer.getMap()._isBusy) {
+        if (this._layer.getMap().isBusy()) {
             //console.log("blocked");
             return;
         }
         var tileContainer = this._tileContainer;
         if (!tileContainer) {return;}
-        var map = this.layer.getMap();
+        var map = this._layer.getMap();
         var mapHeight = map.height,
             mapWidth = map.width,
             mapDomOffset = map.offsetPlatform(),
-            tileConfig = this.layer._getTileConfig();
+            tileConfig = this._layer._getTileConfig();
         var _holderLeft = mapDomOffset["left"],
             _holderTop = mapDomOffset["top"],
             _tileSize = tileConfig["tileSize"];
@@ -214,7 +216,7 @@ Z.render.tilelayer.Dom.prototype = {
      */
     _createTileImage:function(_tileLeft, _tileTop, url,  onloadFn) {
         var tileImage = new Image(),
-            tileSize = this.layer._getTileSize();
+            tileSize = this._layer._getTileSize();
         // var padding = this.getPadding();
 
 

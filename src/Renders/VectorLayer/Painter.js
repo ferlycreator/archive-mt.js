@@ -78,7 +78,7 @@ Z.Painter = Z.Class.extend({
 
 
     _eachSymbolizer:function(fn,context) {
-        if (!this._painted) {
+        if (!this.symbolizers) {
             return;
         }
         if (!context) {
@@ -95,7 +95,7 @@ Z.Painter = Z.Class.extend({
             if (this.symbolizers) {
                 this.pxExtent = new Z.Extent();
                 for (var i = this.symbolizers.length - 1; i >= 0; i--) {
-                    this.pxExtent = Z.Extent.combine(this.symbolizers[i].getPixelExtent(),this.pxExtent);
+                    this.pxExtent = this.pxExtent.combine(this.symbolizers[i].getPixelExtent());
                 }
             }
         }
@@ -119,34 +119,49 @@ Z.Painter = Z.Class.extend({
                 symbolizer.show();
             });
         }
-        this._rendCanvas();
+        this._rendCanvas(false);
     },
 
     hide:function(){
         this._eachSymbolizer(function(symbolizer) {
             symbolizer.hide();
         });
-        this._rendCanvas();
+        this._rendCanvas(false);
     },
 
-    refresh:function(){
+    onZoomEnd:function() {
+        this._refreshSymbolizers();
+    },
+
+    repaint:function(){
+        this._refreshSymbolizers();
+        this._rendCanvas(false);
+    },
+
+    _refreshSymbolizers:function() {
         this._removeCache();
         this._eachSymbolizer(function(symbolizer) {
             symbolizer.refresh();
         });
-        this._rendCanvas();
     },
 
-    _rendCanvas:function() {
+    _rendCanvas:function(needPromise) {
+        if (this.geometry.getMap().isBusy()) {
+            // console.log('is busy do not refresh painter');
+            return;
+        }
         var layer = this.geometry.getLayer();
         if (layer.isCanvasRender()) {
             var isRealTime = (this.geometry.isEditing && this.geometry.isEditing())
                                 || (this.geometry.isDragging && this.geometry.isDragging());
             var render = this.geometry.getLayer()._getRender();
+            if (!render) {
+                return;
+            }
             if (isRealTime) {
                 render.rendRealTime();
             } else {
-                render.rend();
+                render.rend(needPromise);
             }
         }
     },
@@ -155,15 +170,16 @@ Z.Painter = Z.Class.extend({
      * symbol发生变化后, 刷新symbol
      */
     refreshSymbol:function() {
-        if (!this._painted) {
-            return;
-        }
         this._removeCache();
         this._removeSymbolizers();
         this.symbolizers = this._createSymbolizers();
+        if (!this._painted) {
+            return;
+        }
+        // console.log('painter refreshSymbol');
         var layer = this.geometry.getLayer();
         if (layer.isCanvasRender()) {
-            this._rendCanvas();
+            this._rendCanvas(true);
         } else {
             this.paint();
         }
@@ -172,6 +188,7 @@ Z.Painter = Z.Class.extend({
     remove:function() {
         this._removeCache();
         this._removeSymbolizers();
+        this._rendCanvas(false);
     },
 
     _removeSymbolizers:function() {

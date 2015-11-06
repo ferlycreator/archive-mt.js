@@ -111,24 +111,24 @@ describe('ExtentSpec', function() {
             var ext1 = new Z.Extent(1,1,2,2);
             var ext2 = new Z.Extent(2, 2, 4, 4);
 
-            var combined = Z.Extent.combine(ext1, ext2);
+            var combined = ext1.combine(ext2);
 
             expect(combined.equals(new Z.Extent(1,1,4,4))).to.be.ok();
 
-            var combined2 = Z.Extent.combine(ext1, new Z.Extent());
+            var combined2 = ext1.combine(new Z.Extent());
             expect(combined2.equals(ext1)).to.be.ok();
         });
 
         it('expand',function() {
             var ext = new Z.Extent(1,2,3,4);
-            var expanded = Z.Extent.expand(ext, 10);
+            var expanded = ext.expand(10);
             expect(expanded.equals(new Z.Extent(-9,-8,13,14))).to.be.ok();
 
-            expanded = Z.Extent.expand(ext, 0);
+            expanded = ext.expand(0);
             expect(expanded.equals(ext)).to.be.ok();
 
             var empty = new Z.Extent();
-            expanded = Z.Extent.expand(empty, 1);
+            expanded = empty.expand(1);
             expect(expanded.equals(new Z.Extent(-1,-1,1,1))).to.be.ok();
         });
     });

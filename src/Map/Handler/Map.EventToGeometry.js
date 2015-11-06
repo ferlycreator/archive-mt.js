@@ -9,7 +9,7 @@ Z.Map.mergeOptions({
 Z.Map.EventToGeometry = Z.Handler.extend({
     addHooks: function() {
         // return;
-        var canvasContainer = this.map._panels.canvasLayerContainer;
+        var canvasContainer = this.map._panels.mapPlatform;
         if(canvasContainer) {
             Z.DomUtil.on(canvasContainer,'mousedown mouseup mousemove click dblclick contextmenu', this._queryGeometries, this);
         }
@@ -20,7 +20,7 @@ Z.Map.EventToGeometry = Z.Handler.extend({
     removeHooks: function() {
         /**
         this.map.off('mousedown mouseup mousemove click dblclick contextmenu', this._queryGeometries, this);*/
-        var canvasContainer = this.map._panels.canvasLayerContainer;
+        var canvasContainer = this.map._panels.mapPlatform;
         if(canvasContainer) {
             Z.DomUtil.off(canvasContainer,'mousedown mouseup mousemove click dblclick contextmenu', this._queryGeometries, this);
         }
@@ -28,7 +28,7 @@ Z.Map.EventToGeometry = Z.Handler.extend({
     },
 
     _queryGeometries: function(event) {
-        if (this.map._isBusy || !this.map._canvasLayers || this.map._canvasLayers.length === 0) {
+        if (this.map.isBusy() || !this.map._canvasLayers || this.map._canvasLayers.length === 0) {
             return;
         }
         // console.log('_queryGeometries');
