@@ -69,8 +69,13 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
      * @return {[Promise]} promise数组
      */
     _promise:function() {
-        if (!this.getMap() || this.getMap().isBusy() || this._layer.isEmpty()) {
+        if (!this.getMap() || this.getMap().isBusy()) {
+
             return;
+        }
+        if (this._layer.isEmpty()) {
+            this._requestMapToRend();
+            return
         }
         var me = this;
         var preResources = this._resources;
@@ -133,8 +138,11 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
     _draw:function() {
         this._clearTimeout();
         var map = this.getMap();
-        if (!map || map.isBusy() || this._layer.isEmpty()) {
-            return;
+        if (!map || map.isBusy()) {
+        }
+        if (this._layer.isEmpty()) {
+            this._requestMapToRend();
+            return
         }
         //载入资源后再进行绘制
         if (!this._canvas) {

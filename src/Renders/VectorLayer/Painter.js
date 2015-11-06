@@ -184,7 +184,7 @@ Z.Painter = Z.Class.extend({
     remove:function() {
         this._removeCache();
         this._removeSymbolizers();
-        this._rendCanvas(false,true);
+        this._rendCanvas(false);
     },
 
     _removeSymbolizers:function() {
