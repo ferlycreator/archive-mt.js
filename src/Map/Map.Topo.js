@@ -63,7 +63,7 @@ Z.Map.include({
                 layers.push(reqLayers[i]);
             }
         }
-        var point = this.coordinateToViewPoint(opts['coordinate']);
+        var point = this.coordinateToViewPoint(opts['coordinate']).round();
         var fn = opts['success'];
         var hits = [];
         // var pointExtent = new Z.Extent(point, point);

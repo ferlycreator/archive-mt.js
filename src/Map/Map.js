@@ -187,11 +187,14 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     setCenter:function(center) {
+        if (!center) {
+            return this;
+        }
         if (!this._tileConfig || !this._loaded) {
             this._center = center;
             return this;
         }
-        if (this._loaded) {
+        if (this._loaded && !this._center.equals(center)) {
             /**
              * 触发map的movestart事件
              * @member maptalks.Map
@@ -689,7 +692,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         var projection = this._getProjection();
         if (!coordinate || !projection) {return null;}
         var pCoordinate = projection.project(coordinate);
-        return this._transformToViewPoint(pCoordinate);
+        return this._transformToViewPoint(pCoordinate).round();
     },
 
     /**
@@ -699,9 +702,8 @@ Z['Map']=Z.Map=Z.Class.extend({
      */
     viewPointToCoordinate: function(viewPoint) {
         var projection = this._getProjection();
-        if (!coordinate || !projection) {return null;}
-        var pCoordinate = projection.project(coordinate);
-        return this._transformToViewPoint(pCoordinate);
+        if (!viewPoint || !projection) {return null;}
+        return this._untransformFromViewPoint(viewPoint);
     },
 
     /**
@@ -714,7 +716,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         if (!coordinate || !projection) {return null;}
         var pCoordinate = projection.project(coordinate);
         var offset = this._transform(pCoordinate);
-        return offset;
+        return offset.round();
     },
 
     /**
