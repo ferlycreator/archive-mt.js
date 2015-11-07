@@ -6,7 +6,8 @@
  */
 Z.MultiPoly = Z.GeometryCollection.extend({
 
-    initialize:function(data, opts) {
+
+    _initData:function(data) {
         if (Z.Util.isArrayHasData(data)) {
             if (data[0] instanceof this.GeometryType) {
                 this.setGeometries(data);
@@ -14,7 +15,6 @@ Z.MultiPoly = Z.GeometryCollection.extend({
                 this.setCoordinates(data);
             }
         }
-        this._initOptions(opts);
     },
 
     _checkGeometries:function(geometries) {

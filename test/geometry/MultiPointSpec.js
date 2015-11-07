@@ -41,11 +41,18 @@ describe('MultiPointSpec', function() {
             new GeoEventsTester().testSVGEvents(vector, map);
         });
 
-        it('canvas events', function() {
+
+    });
+
+    describe('geometry fires canvas events', function() {
+         it('canvas events', function() {
             var vector = new Z.MultiPoint([center]);
             new GeoEventsTester().testCanvasEvents(vector, map, vector.getCenter());
         });
+
+
     });
+
 
     it('can have various symbols',function() {
         var vector = new Z.MultiPoint([center]);
