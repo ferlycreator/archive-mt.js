@@ -47,6 +47,9 @@ Z.Geometry.include({
      * @expose
      */
     openInfoWindow:function(coordinate) {
+        if (!this.getMap()) {
+            throw new Error(this.exceptions['NOT_ADD_TO_LAYER']);
+        }
         if (!this._infoWindow) {
             if (this._infoWinOptions && this.getMap()) {
                 this._bindInfoWindow(this._infoWinOptions);
