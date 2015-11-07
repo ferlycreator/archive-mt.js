@@ -160,7 +160,7 @@ Z.Label = Z.Class.extend({
         this._geometry.getLayer().addGeometry(this._label);
 
         if(this.options['draggable']) {
-            this._label.startDrag();
+            // this._label.startDrag();
             var linkerOptions = {
                 linkSource:this._label,
                 linkTarget:this._geometry,
