@@ -42,5 +42,8 @@ Z.Coordinate.prototype={
             return false;
         }
         return this.x === c2.x && this.y === c2.y;
+    },
+    isNaN:function() {
+        return isNaN(this.x) || isNaN(this.y);
     }
 };

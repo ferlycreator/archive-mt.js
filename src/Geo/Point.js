@@ -54,5 +54,8 @@ Z.Point.prototype={
     },
     multi: function(ratio) {
         return new Z.Point(this['left']*ratio, this['top']*ratio);
+    },
+    isNaN:function() {
+        return isNaN(this['left']) || isNaN(this['top']);
     }
 };
