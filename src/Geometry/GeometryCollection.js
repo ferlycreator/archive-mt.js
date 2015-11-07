@@ -111,6 +111,21 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         return this;
     },
 
+    setSymbol:function(symbol) {
+        if (!symbol) {
+           this.options['symbol'] = null;
+        } else {
+           var camelSymbol = this._prepareSymbol(symbol);
+           this.options['symbol'] = camelSymbol;
+        }
+        var geometries = this.getGeometries();
+        for (var i=0,len=geometries.length;i<len;i++) {
+            this._geometries[i].setSymbol(symbol);
+        }
+        this._onSymbolChanged();
+        return this;
+    },
+
     /**
      * _prepare this geometry collection
      * @param  {Z.Layer} layer [description]

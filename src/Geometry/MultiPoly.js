@@ -54,7 +54,7 @@ Z.MultiPoly = Z.GeometryCollection.extend({
         if (Z.Util.isArrayHasData(coordinates)) {
             var geometries = [];
             for (var i=0, len=coordinates.length;i<len;i++) {
-                var p = new this.GeometryType(coordinates[i]);
+                var p = new this.GeometryType(coordinates[i], this.options);
                 geometries.push(p);
             }
             this.setGeometries(geometries);

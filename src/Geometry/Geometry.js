@@ -138,17 +138,21 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      */
     setSymbol:function(symbol) {
         if (!symbol) {
-            this.options['symbol'] = null;
+           this.options['symbol'] = null;
         } else {
-            //属性的变量名转化为驼峰风格
-           var camelSymbol = Z.Util.convertFieldNameStyle(symbol,'camel');
-           this._convertResourceUrl(camelSymbol);
+           var camelSymbol = this._prepareSymbol(symbol);
            this.options['symbol'] = camelSymbol;
         }
         this._onSymbolChanged();
         return this;
     },
 
+    _prepareSymbol:function(symbol) {
+              //属性的变量名转化为驼峰风格
+       var camelSymbol = Z.Util.convertFieldNameStyle(symbol,'camel');
+       this._convertResourceUrl(camelSymbol);
+       return camelSymbol;
+    },
 
 
     /**
