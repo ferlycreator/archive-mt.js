@@ -157,7 +157,7 @@ Z.Label = Z.Class.extend({
         } else {
             this.show();
         }
-        this._geometry.getLayer().addGeometry(this._label.getGeometries());
+        this._geometry.getLayer().addGeometry(this._label);
 
         if(this.options['draggable']) {
             this._label.startDrag();
@@ -209,7 +209,7 @@ Z.Label = Z.Class.extend({
         if (vAlign === 'top') {
             dy += -height/2;
         } else if (vAlign === 'middle') {
-            dy += 0;;
+            dy += 0;
         } else {
             dy += height/2;
         }
@@ -218,7 +218,7 @@ Z.Label = Z.Class.extend({
         this.strokeAndFill['markerWidth'] = width;
         this.strokeAndFill['markerHeight'] = height;
         box.setSymbol(this.strokeAndFill);
-        return new Z.GeometryCollection([box,textMarker]);
+        return new Z.GeometryCollection([box,textMarker],{'draggable':true});
     },
 
     _getLabelSize: function() {

@@ -18,8 +18,8 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
     },
 
     initialize:function(geometries, opts) {
-        this.setGeometries(geometries);
         this._initOptions(opts);
+        this.setGeometries(geometries);
     },
 
     /**
@@ -33,6 +33,7 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         //设置parent用来处理事件, setGeometries是所有Collection类型的Geometry都会调用的方法
         if (Z.Util.isArray(geometries)) {
             for (var i = geometries.length - 1; i >= 0; i--) {
+                geometries[i].setOptions(this.options);
                 geometries[i]._setParent(this);
             }
         }
@@ -56,6 +57,24 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         return this._geometries;
     },
 
+    /**
+     * 图形按给定的坐标偏移量平移
+     * @param  {Coordinate} offsetPrjCoord 偏转投影坐标
+     */
+    translate:function(offset) {
+        if (!offset) {
+            return this;
+        }
+        if (this.isEmpty()) {
+            return this;
+        }
+        for (var i=0, len=this._geometries.length;i<len;i++) {
+            if (this._geometries[i] && this._geometries[i].translate) {
+                this._geometries[i].translate(offset);
+            }
+        }
+        return this;
+    },
 
     /**
      * 集合是否为空
@@ -260,7 +279,7 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
             return;
         }
         if (opts['symbol']) {
-            this.originalSymbol = this.getSymbol();
+            this._originalSymbol = this.getSymbol();
             this.setSymbol(opts['symbol']);
         }
         var geometries = this.getGeometries();
@@ -283,9 +302,9 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         for (var i=0,len=geometries.length;i<len;i++) {
             geometries[i].endEdit();
         }
-        if (this.originalSymbol) {
-            this.setSymbol(this.originalSymbol);
-            delete this.originalSymbol;
+        if (this._originalSymbol) {
+            this.setSymbol(this._originalSymbol);
+            delete this._originalSymbol;
         }
         this._editing = false;
         return this;
@@ -305,27 +324,27 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
      * @expose
      */
     startDrag: function() {
+        if (!this.options['draggable']) {
+            return;
+        }
+        return this._forceStartDrag();
+    },
+
+    _forceStartDrag:function() {
+        var map = this.getMap();
+        if (!map) {
+            return;
+        }
         if (this.isEmpty()) {
             return;
         }
-        var _map = this._getMap();
         var me = this;
-        this.on('mousedown', function(){
-            this._getMap().disableDrag();
-            var geometries = me.getGeometries();
-            for (var i=0,len=geometries.length;i<len;i++) {
-                geometries[i].startDrag(false);
-            }
-        });
-        this.on('mouseup', function(){
-            this._getMap().enableDrag();
-            var geometries = me.getGeometries();
-            for (var i=0,len=geometries.length;i<len;i++) {
-                geometries[i].endDrag();
-            }
-        });
-
-        this.dragging = true;
+        var geometries = me.getGeometries();
+        for (var i=0,len=geometries.length;i<len;i++) {
+            geometries[i]._forceStartDrag();
+        }
+        map.on('mouseup', this.endDrag,this);
+        this._isDragging = true;
         return this;
     },
 
@@ -337,7 +356,13 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         if (this.isEmpty()) {
             return;
         }
-        this.dragging = false;
+        this.getMap().off('mouseup', this.endDrag,this);
+        this._isDragging = false;
+        // this.getMap().enableDrag();
+        var geometries = this.getGeometries();
+        for (var i=0,len=geometries.length;i<len;i++) {
+            geometries[i].endDrag();
+        }
         return this;
     },
 
@@ -347,7 +372,7 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
      * @expose
      */
     isDragging:function() {
-        return this.dragging;
+        return this._isDragging;
     },
 
 
@@ -364,15 +389,5 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
             new Z.Coordinate(extent.xmax,extent.ymax)
         ];
         return anchors;
-    },
-
-    _getMap: function() {
-        var map;
-        var geometries = this.getGeometries();
-        for (var i=0,len=geometries.length;i<len;i++) {
-            var map = geometries[i].getMap();
-            if(!map) break;
-        }
-        return map;
     }
 });
