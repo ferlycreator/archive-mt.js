@@ -13,11 +13,13 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     exceptionDefs:{
         'en-US':{
             'DUPLICATE_LAYER':'Geometry cannot be added to two or more layers at the same time.',
-            'INVALID_GEOMETRY_IN_COLLECTION':'Geometry is not valid for collection,index:'
+            'INVALID_GEOMETRY_IN_COLLECTION':'Geometry is not valid for collection,index:',
+            'NOT_ADD_TO_LAYER':'This operation needs geometry to be on a layer.'
         },
         'zh-CN':{
             'DUPLICATE_LAYER':'Geometry不能被重复添加到多个图层上.',
-            'INVALID_GEOMETRY_IN_COLLECTION':'添加到集合中的Geometry是不合法的, index:'
+            'INVALID_GEOMETRY_IN_COLLECTION':'添加到集合中的Geometry是不合法的, index:',
+            'NOT_ADD_TO_LAYER':'Geometry必须添加到某个图层上才能作此操作.'
         }
     },
 
@@ -285,15 +287,19 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @param  {Coordinate} offset 坐标偏移量
      */
      translate:function(offset) {
-        if (!offset) {
+        if (!offset || (offset.x === 0 && offset.y === 0)) {
             return this;
         }
         var coordinates = this.getCoordinates();
         if (coordinates) {
-            var offseted = Z.Util.eachInArray(coordinates,this,function(coord) {
-                return coord.add(offset);
-            });
-            this.setCoordinates(offseted);
+            if (Z.Util.isArray(coordinates)) {
+                var offseted = Z.Util.eachInArray(coordinates,this,function(coord) {
+                    return coord.add(offset);
+                });
+                this.setCoordinates(offseted);
+            } else {
+                this.setCoordinates(coordinates.add(offset));
+            }
         }
         return this;
     },
@@ -524,7 +530,8 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         this._unbindMenu();
         //infowindow
         this._unbindInfoWindow();
-
+        delete this._internalId;
+        delete this._extent;
         this._removePainter();
         layer._onGeometryRemove(this);
         delete this._layer;
