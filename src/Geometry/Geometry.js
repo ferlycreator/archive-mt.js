@@ -42,11 +42,11 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         'editable':true
     },
 
-    //初始化传入的option参数
-    _initOptions:function(opts) {
-        if (!opts) {
-            opts = {};
-        }
+    /**
+     * 设置options
+     * @param {[type]} opts [description]
+     */
+    setOptions:function(opts) {
         var symbol = opts['symbol'];
         delete opts['symbol'];
         var id = opts['id'];
@@ -58,25 +58,6 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (!Z.Util.isNil(id)) {
             this.setId(id);
         }
-    },
-
-    //调用prepare时,layer已经注册到map上
-    _prepare:function(layer) {
-        this._rootPrepare(layer);
-    },
-
-    _rootPrepare:function(layer) {
-        //Geometry不允许被重复添加到多个图层上
-        if (this.getLayer()) {
-            throw new Error(this.exceptions['DUPLICATE_LAYER']);
-        }
-        //更新缓存
-        this._updateCache();
-        this._layer = layer;
-        //如果投影发生改变,则清除掉所有的投影坐标属性
-        this._clearProjection();
-        this.callInitHooks();
-
     },
 
     /**
@@ -168,55 +149,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         return this;
     },
 
-    /**
-     * 资源url从相对路径转为绝对路径
-     * @param  {[type]} symbol [description]
-     * @return {[type]}        [description]
-     */
-    _convertResourceUrl:function(symbol) {
-        function isRel(url) {
-            if (url.indexOf('http://') >= 0 || url.indexOf('https://') >= 0 ) {
-                return false;
-            }
-            return true;
-        }
-        function absolute(base, relative) {
-            var stack = base.split("/"),
-                parts = relative.split("/");
-            if (relative.indexOf('/') === 0) {
-                return stack.slice(0,3).join('/')+relative;
-            } else {
-                stack.pop(); // remove current file name (or empty string)
-                             // (omit if "base" is the current folder without trailing slash)
-                for (var i=0; i<parts.length; i++) {
-                    if (parts[i] == ".")
-                        continue;
-                    if (parts[i] == "..")
-                        stack.pop();
-                    else
-                        stack.push(parts[i]);
-                }
-                return stack.join("/");
-            }
 
-        }
-
-        var icon = symbol['markerFile'];
-        if (icon && isRel(icon)) {
-            symbol['markerFile'] = absolute(location.href,icon);
-        }
-        icon = symbol['shieldFile'];
-        if (icon && isRel(icon)) {
-            symbol['shieldFile'] = absolute(location.href,icon);
-        }
-        var fill = symbol['polygonPatternFile'];
-        if (fill) {
-            icon = Z.Util.extractCssUrl(fill);
-            if (isRel(icon)) {
-                symbol['polygonPatternFile'] = 'url("'+absolute(location.href,icon)+'")';
-            }
-        }
-    },
 
     /**
      * 计算Geometry的外接矩形范围
@@ -242,16 +175,6 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
         var pxExtent = this._getPainter().getPixelExtent();
         return new Z.Size(Math.round(Math.abs(pxExtent['xmax']-pxExtent['xmin'])), Math.round(Math.abs(pxExtent['ymax'] - pxExtent['ymin'])));
-    },
-
-    _getPrjExtent:function() {
-        var ext = this.getExtent();
-        var p = this._getProjection();
-        if (ext) {
-            return new Z.Extent(p.project({x:ext['xmin'],y:ext['ymin']}), p.project({x:ext['xmax'],y:ext['ymax']}));
-        } else {
-            return null;
-        }
     },
 
     /**
@@ -354,6 +277,24 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     },
 
     /**
+     * 图形按给定的坐标偏移量平移
+     * @param  {Coordinate} offset 坐标偏移量
+     */
+     translate:function(offset) {
+        if (!offset) {
+            return this;
+        }
+        var coordinates = this.getCoordinates();
+        if (coordinates) {
+            var offseted = Z.Util.eachInArray(coordinates,this,function(coord) {
+                return coord.add(offset);
+            });
+            this.setCoordinates(offseted);
+        }
+        return this;
+    },
+
+    /**
      * 克隆一个不在任何图层上的属性相同的Geometry,但不包含事件注册
      * @returns {Geometry} 克隆的Geometry
      * @expose
@@ -372,6 +313,201 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      */
     remove:function() {
         this._rootRemove(true);
+    },
+
+    toGeometryJson:function(opts) {
+        var gJson = this._exportGeoJson();
+        if (!opts || opts['crs']) {
+            var crs = this.getCRS();
+            if (crs) {
+                gJson['crs'] = crs;
+            }
+        }
+        return gJson;
+    },
+
+    /**
+     * 按照GeoJson规范生成GeoJson对象
+     * @param  {[Object} opts 输出配置
+     * @returns {Object}      GeoJson对象
+     * @expose
+     */
+    toJson:function(opts) {
+        if (!opts) {
+            opts = {};
+        }
+        var feature = {
+            'type':'Feature',
+            'geometry':null
+        };
+        if (opts['geometry'] === undefined || opts['geometry']) {
+            var geoJson = this._exportGeoJson(opts);
+            feature['geometry']=geoJson;
+        }
+        var id = this.getId();
+        if (!Z.Util.isNil(id)) {
+            feature['id'] = id;
+        }
+        var properties = {};
+        //opts没有设定symbol或者设定的symbol值为true,则导出symbol
+        if (opts['symbol'] === undefined || opts['symbol']) {
+            var symbol = this.getSymbol();
+            if (symbol) {
+                feature['symbol'] = symbol;
+            }
+        }
+        var crs = this.getCRS();
+        if (crs) {
+            feature['crs'] = crs;
+        }
+        //opts没有设定properties或者设定的properties值为true,则导出properties
+        if (opts['properties'] === undefined || opts['properties']) {
+            var geoProperties = this.getProperties();
+            if (geoProperties) {
+                for (var p in geoProperties) {
+                    if (geoProperties.hasOwnProperty(p)) {
+                        properties[p] = geoProperties[p];
+                    }
+                }
+            }
+        }
+        feature['properties'] = properties;
+        return feature;
+    },
+
+    /**
+     * 计算Geometry的地理长度,单位为米或像素(依据坐标类型)
+     * @returns {Number} 地理长度
+     * @expose
+     */
+    getLength:function() {
+        return this._computeGeodesicLength(this._getProjection());
+    },
+
+    /**
+     * 计算Geometry的地理面积, 单位为平方米或平方像素(依据坐标类型)
+     * @returns {Number} 地理面积
+     * @expose
+     */
+    getArea:function() {
+        return this._computeGeodesicArea(this._getProjection());
+    },
+
+    /**
+     * 获取图形顶点坐标数组
+     */
+    getLinkAnchors: function() {
+        return [this.getCenter()];
+    },
+
+    /**
+     * 返回Geometry的CRS
+     * @return {CRS} CRS
+     */
+    getCRS:function() {
+        //如果有map,则map的坐标类型优先级更高
+        var map = this.getMap();
+        if (map) {
+            return map.getCRS();
+        }
+        return this.options['crs'];
+    },
+
+    /**
+     * 设置Geometry的CRS
+     * @param {CRS} crs CRS
+     */
+    setCRS:function(crs) {
+        this.options['crs'] = crs;
+        return this;
+    },
+
+    //初始化传入的option参数
+    _initOptions:function(opts) {
+        if (!opts) {
+            opts = {};
+        }
+        this.setOptions(opts);
+    },
+
+    //调用prepare时,layer已经注册到map上
+    _prepare:function(layer) {
+        this._rootPrepare(layer);
+    },
+
+    _rootPrepare:function(layer) {
+        //Geometry不允许被重复添加到多个图层上
+        if (this.getLayer()) {
+            throw new Error(this.exceptions['DUPLICATE_LAYER']);
+        }
+        //更新缓存
+        this._updateCache();
+        this._layer = layer;
+        //如果投影发生改变,则清除掉所有的投影坐标属性
+        this._clearProjection();
+        this.callInitHooks();
+
+    },
+
+
+    /**
+     * 资源url从相对路径转为绝对路径
+     * @param  {[type]} symbol [description]
+     * @return {[type]}        [description]
+     */
+    _convertResourceUrl:function(symbol) {
+        function isRel(url) {
+            if (url.indexOf('http://') >= 0 || url.indexOf('https://') >= 0 ) {
+                return false;
+            }
+            return true;
+        }
+        function absolute(base, relative) {
+            var stack = base.split("/"),
+                parts = relative.split("/");
+            if (relative.indexOf('/') === 0) {
+                return stack.slice(0,3).join('/')+relative;
+            } else {
+                stack.pop(); // remove current file name (or empty string)
+                             // (omit if "base" is the current folder without trailing slash)
+                for (var i=0; i<parts.length; i++) {
+                    if (parts[i] == ".")
+                        continue;
+                    if (parts[i] == "..")
+                        stack.pop();
+                    else
+                        stack.push(parts[i]);
+                }
+                return stack.join("/");
+            }
+
+        }
+
+        var icon = symbol['markerFile'];
+        if (icon && isRel(icon)) {
+            symbol['markerFile'] = absolute(location.href,icon);
+        }
+        icon = symbol['shieldFile'];
+        if (icon && isRel(icon)) {
+            symbol['shieldFile'] = absolute(location.href,icon);
+        }
+        var fill = symbol['polygonPatternFile'];
+        if (fill) {
+            icon = Z.Util.extractCssUrl(fill);
+            if (isRel(icon)) {
+                symbol['polygonPatternFile'] = 'url("'+absolute(location.href,icon)+'")';
+            }
+        }
+    },
+
+    _getPrjExtent:function() {
+        var ext = this.getExtent();
+        var p = this._getProjection();
+        if (ext) {
+            return new Z.Extent(p.project({x:ext['xmin'],y:ext['ymin']}), p.project({x:ext['xmax'],y:ext['ymax']}));
+        } else {
+            return null;
+        }
     },
 
     _rootRemove:function(isFireEvent) {
@@ -469,10 +605,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (painter) {
             painter.repaint();
         }
-
-        if (!this._isEditingOrDragging()) {
-            this._fireEvent('shapechanged');
-        }
+        this._fireEvent('shapechanged');
     },
 
     _onPositionChanged:function() {
@@ -481,10 +614,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (painter) {
             painter.repaint();
         }
-
-        if (!this._isEditingOrDragging()) {
-            this._fireEvent('positionchanged');
-        }
+        this._fireEvent('positionchanged');
     },
 
     _onSymbolChanged:function() {
@@ -518,17 +648,6 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
     },
 
-    toGeometryJson:function(opts) {
-        var gJson = this._exportGeoJson();
-        if (!opts || opts['crs']) {
-            var crs = this.getCRS();
-            if (crs) {
-                gJson['crs'] = crs;
-            }
-        }
-        return gJson;
-    },
-
     _exportGeoJson:function() {
         var points = this.getCoordinates();
         var coordinates = Z.GeoJson.toGeoJsonCoordinates(points);
@@ -536,102 +655,6 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
             'type':this.getType(),
             'coordinates': coordinates
         };
-    },
-
-    /**
-     * 按照GeoJson规范生成GeoJson对象
-     * @param  {[Object} opts 输出配置
-     * @returns {Object}      GeoJson对象
-     * @expose
-     */
-    toJson:function(opts) {
-        if (!opts) {
-            opts = {};
-        }
-        var feature = {
-            'type':'Feature',
-            'geometry':null
-        };
-        if (opts['geometry'] === undefined || opts['geometry']) {
-            var geoJson = this._exportGeoJson(opts);
-            feature['geometry']=geoJson;
-        }
-        var id = this.getId();
-        if (!Z.Util.isNil(id)) {
-            feature['id'] = id;
-        }
-        var properties = {};
-        //opts没有设定symbol或者设定的symbol值为true,则导出symbol
-        if (opts['symbol'] === undefined || opts['symbol']) {
-            var symbol = this.getSymbol();
-            if (symbol) {
-                feature['symbol'] = symbol;
-            }
-        }
-        var crs = this.getCRS();
-        if (crs) {
-            feature['crs'] = crs;
-        }
-        //opts没有设定properties或者设定的properties值为true,则导出properties
-        if (opts['properties'] === undefined || opts['properties']) {
-            var geoProperties = this.getProperties();
-            if (geoProperties) {
-                for (var p in geoProperties) {
-                    if (geoProperties.hasOwnProperty(p)) {
-                        properties[p] = geoProperties[p];
-                    }
-                }
-            }
-        }
-        feature['properties'] = properties;
-        return feature;
-    },
-
-    /**
-     * 计算Geometry的地理长度,单位为米或像素(依据坐标类型)
-     * @returns {Number} 地理长度
-     * @expose
-     */
-    getLength:function() {
-        return this._computeGeodesicLength(this._getProjection());
-    },
-
-    /**
-     * 计算Geometry的地理面积, 单位为平方米或平方像素(依据坐标类型)
-     * @returns {Number} 地理面积
-     * @expose
-     */
-    getArea:function() {
-        return this._computeGeodesicArea(this._getProjection());
-    },
-
-    /**
-     * 获取图形顶点坐标数组
-     */
-    getLinkAnchors: function() {
-        return [this.getCenter()];
-    },
-
-    /**
-     * 返回Geometry的CRS
-     * @return {CRS} CRS
-     */
-    getCRS:function() {
-        //如果有map,则map的坐标类型优先级更高
-        var map = this.getMap();
-        if (map) {
-            return map.getCRS();
-        }
-        return this.options['crs'];
-    },
-
-    /**
-     * 设置Geometry的CRS
-     * @param {CRS} crs CRS
-     */
-    setCRS:function(crs) {
-        this.options['crs'] = crs;
-        return this;
     }
 
 });
