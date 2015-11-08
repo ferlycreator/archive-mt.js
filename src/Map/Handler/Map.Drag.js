@@ -75,7 +75,7 @@ Z.Map.Drag = Z.Handler.extend({
         var xSpan =  domOffset['left'] - this.startLeft;
         var ySpan =  domOffset['top'] - this.startTop;
         if (t<280 && Math.abs(ySpan) > 5 && Math.abs(xSpan) > 5) {
-            map._animatePan(new Z.Point(xSpan*Math.ceil(500/t),ySpan*Math.ceil(500/t)));
+            map._animatePan(new Z.Point(xSpan*Math.ceil(500/t),ySpan*Math.ceil(500/t)),t);
         } else {
             map._onMoveEnd({'target':map});
         }
