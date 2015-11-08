@@ -128,7 +128,7 @@ Z.render.map.Dom = Z.render.map.Render.extend({
         Z.animation.animate(new Z.animation.zoom({
             'scale1' : 1,
             'scale2': scale,
-            'duration' : 400
+            'duration' : 200
         }), map, function(frame) {
             this._context.save();
             this._clearCanvas();
