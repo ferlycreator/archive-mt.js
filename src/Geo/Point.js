@@ -4,12 +4,15 @@
  * @author Maptalks Team
  */
 Z['Point']=Z.Point=function(left,top) {
-     if (Z.Util.isArrayHasData(left)) {
+    if (Z.Util.isArrayHasData(left)) {
         this['left'] = left[0];
         this['top'] = left[1];
      } else {
         this['top'] = top;
         this['left'] = left;
+     }
+     if (this.isNaN()) {
+        throw new Error('point is NaN');
      }
 };
 

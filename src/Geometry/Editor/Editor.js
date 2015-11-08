@@ -175,7 +175,7 @@ Z.Editor=Z.Class.extend({
         },this);
         //拖动移图
         this.appendHandler(handle,opts);
-
+        // handle.onRefresh = opts['onRefresh'];
         return handle;
     },
 
@@ -203,7 +203,8 @@ Z.Editor=Z.Class.extend({
                 if (opts.onMove) {
                     opts.onMove.call(this);
                 }
-                centerHandle.onRefresh();
+                // centerHandle.onRefresh();
+                this._refreshHandlePosition(centerHandle);
                 this.fireEditEvent('positionchanging');
             },
             onUp:function() {
@@ -222,7 +223,55 @@ Z.Editor=Z.Class.extend({
      * 标注和自定义标注编辑器
      */
     createMarkerEditor:function() {
-        this.createCenterEditor();
+        var marker = this.geometry,
+            symbol = marker.getSymbol();
+        var radiusHandle;
+        var fnGetVectorSizePos;
+        if (marker.isVectorSymbol()) {
+            //创建编辑矢量类型marker大小的handle
+            var dxdy = new Z.Point(0,0);
+            if (symbol['markerDx'] && symbol['markerDy']) {
+                dxdy = new Z.Point(symbol['markerDx'], symbol['markerDy']);
+            }
+            fnGetVectorSizePos = function() {
+                var width = symbol['markerWidth'], height = symbol['markerHeight'];
+                var viewCenter = marker._getCenterViewPoint();
+                return viewCenter.add(new Z.Point(width/2, height/2)).add(dxdy);
+            };
+            radiusHandle = this.createHandle(fnGetVectorSizePos(),{
+                tip:"拖动以调整矢量标注大小",
+                onMove:function(handleDomOffset) {
+                    var viewCenter = marker._getCenterViewPoint().add(dxdy);
+                    var wh = handleDomOffset.substract(viewCenter);
+                    var width = Math.abs(wh['left'])*2,
+                    height = Math.abs(wh['top'])*2;
+                    symbol['markerWidth'] = width;
+                    symbol['markerHeight'] = height;
+                    marker.setSymbol(symbol);
+                },
+                onUp:function() {
+
+                },
+                onRefresh:function() {
+                    return fnGetVectorSizePos();
+                }
+            });
+        }
+        this.createCenterEditor({
+            onDown:function() {
+                if (radiusHandle) {
+                    radiusHandle.style.display='none';
+                }
+            },
+            onUp:function() {
+                if (radiusHandle) {
+                    var pos = fnGetVectorSizePos();
+                    radiusHandle.style.top=(pos['top'])+"px";
+                    radiusHandle.style.left=(pos['left'])+"px";
+                    radiusHandle.style.display="";
+                }
+            }
+        });
     },
 
     /**
@@ -371,7 +420,8 @@ Z.Editor=Z.Class.extend({
                 geometry._forceStartDrag();
             },
             onMove:function(handleDomOffset) {
-                nwHandle.onRefresh();
+                // nwHandle.onRefresh();
+                this._refreshHandlePosition(nwHandle);
                 this.fireEditEvent('positionchanging');
             },
             onUp:function() {
@@ -512,7 +562,6 @@ Z.Editor=Z.Class.extend({
                     geometry._forceStartDrag();
                 },
                 onMove:function(handleDomOffset) {
-                    centerHandle.onRefresh();
                     this.fireEditEvent('positionchanging');
                 },
                 onUp:function() {
@@ -615,12 +664,16 @@ Z.Editor=Z.Class.extend({
         }
         for (var i=0,len=handles.length;i<len;i++) {
             if (handles[i] && handles[i].onRefresh) {
-                var offset = handles[i].onRefresh();
-                if (offset) {
-                    handles[i].style.left = (offset['left']-5)+'px';
-                    handles[i].style.top = (offset['top']-5)+'px';
-                }
+                this._refreshHandlePosition(handles[i]);
             }
+        }
+    },
+
+    _refreshHandlePosition:function(handle) {
+        var offset = handle.onRefresh();
+        if (offset) {
+            handle.style.left = (offset['left']-5)+'px';
+            handle.style.top = (offset['top']-5)+'px';
         }
     },
 
