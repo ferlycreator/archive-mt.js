@@ -92,7 +92,7 @@ Z.SVG.SVG = {
                 //TODO stringLength是个比较昂贵的操作, 需降低其运行频率
                 var tWidth = Z.Util.stringLength(t,font,fontSize).width;
                 if(tWidth>wrapWidth) {
-                    var contents = Z.Util.splitContent(t, tWidth, fontSize, lineSpacing);
+                    var contents = Z.Util.splitContent(t, tWidth, fontSize, wrapWidth);
                     textRows = textRows.concat(contents);
                 } else {
                     textRows.push(t);
