@@ -258,20 +258,20 @@ Z.Label = Z.Class.extend({
         var symbol = this.options.symbol;
         var result = {
             'textName': this.options['content'],
-            'textFaceName': Z.Util.setDefaultValue(symbol['textFaceName'],'arial'),
-            'textSize': Z.Util.setDefaultValue(symbol['textSize'],12),
-            'textFill': Z.Util.setDefaultValue(symbol['textFill'],'#ebf2f9'),
-            'textOpacity': Z.Util.setDefaultValue(symbol['textOpacity'],1),
-            'textSpacing': Z.Util.setDefaultValue(symbol['textSpacing'],0),
+            'textFaceName': Z.Util.getValueOrDefault(symbol['textFaceName'],'arial'),
+            'textSize': Z.Util.getValueOrDefault(symbol['textSize'],12),
+            'textFill': Z.Util.getValueOrDefault(symbol['textFill'],'#ebf2f9'),
+            'textOpacity': Z.Util.getValueOrDefault(symbol['textOpacity'],1),
+            'textSpacing': Z.Util.getValueOrDefault(symbol['textSpacing'],0),
             'textWrapWidth': symbol['textWrapWidth'],
-            'textWrapBefore': Z.Util.setDefaultValue(symbol['textWrapBefore'],false),
+            'textWrapBefore': Z.Util.getValueOrDefault(symbol['textWrapBefore'],false),
             'textWrapCharacter': symbol['textWrapCharacter'],
-            'textLineSpacing': Z.Util.setDefaultValue(symbol['textLineSpacing'],0),
-            'textHorizontalAlignment' : Z.Util.setDefaultValue(this.options['horizontalAlignment'],'middle'),
-            'textVerticalAlignment'   : Z.Util.setDefaultValue(this.options['verticalAlignment'],'middle'),
-            'textAlign'               : Z.Util.setDefaultValue(symbol['textAlign'],'center'),
-            'textDx': Z.Util.setDefaultValue(this.options['dx'],0),
-            'textDy': Z.Util.setDefaultValue(this.options['dy'],0)
+            'textLineSpacing': Z.Util.getValueOrDefault(symbol['textLineSpacing'],0),
+            'textHorizontalAlignment' : Z.Util.getValueOrDefault(this.options['horizontalAlignment'],'middle'),
+            'textVerticalAlignment'   : Z.Util.getValueOrDefault(this.options['verticalAlignment'],'middle'),
+            'textAlign'               : Z.Util.getValueOrDefault(symbol['textAlign'],'center'),
+            'textDx': Z.Util.getValueOrDefault(this.options['dx'],0),
+            'textDy': Z.Util.getValueOrDefault(this.options['dy'],0)
         };
         return result;
     },
@@ -280,12 +280,12 @@ Z.Label = Z.Class.extend({
         var symbol = this.options.symbol;
         var result = {
             'markerType': 'square',
-            'markerLineColor': Z.Util.setDefaultValue(symbol['lineColor'],'#ffffff'),
-            'markerLineWidth': Z.Util.setDefaultValue(symbol['lineWidth'],1),
-            'markerLineOpacity': Z.Util.setDefaultValue(symbol['lineOpacity'],0.9),
+            'markerLineColor': Z.Util.getValueOrDefault(symbol['lineColor'],'#ffffff'),
+            'markerLineWidth': Z.Util.getValueOrDefault(symbol['lineWidth'],1),
+            'markerLineOpacity': Z.Util.getValueOrDefault(symbol['lineOpacity'],0.9),
             'markerLineDasharray': symbol['lineDasharray'],
-            'markerFill':  Z.Util.setDefaultValue(symbol['fill'],'#4e98dd'),
-            'markerFillOpacity':  Z.Util.setDefaultValue(symbol['fillOpacity'],0.9)
+            'markerFill':  Z.Util.getValueOrDefault(symbol['fill'],'#4e98dd'),
+            'markerFillOpacity':  Z.Util.getValueOrDefault(symbol['fillOpacity'],0.9)
         };
         return result;
      }

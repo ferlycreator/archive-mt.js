@@ -137,9 +137,9 @@ Z.Canvas = {
 
     text:function(ctx, text, pt, style, size) {
         var font = style['textFaceName'];
-        var fontSize = Z.Util.setDefaultValue(style['textSize'],12);
+        var fontSize = Z.Util.getValueOrDefault(style['textSize'],12);
 
-        var lineSpacing = Z.Util.setDefaultValue(style['textLineSpacing'],0);
+        var lineSpacing = Z.Util.getValueOrDefault(style['textLineSpacing'],0);
         var wrapChar = style['textWrapCharacter'];
         var textWidth = Z.Util.stringLength(text,font,fontSize).width;
         var wrapWidth = style['textWrapWidth'];

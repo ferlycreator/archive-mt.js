@@ -99,7 +99,7 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
         var result = {};
         for (var p in d) {
             if (d.hasOwnProperty(p)) {
-                result[p] = Z.Util.setDefaultValue(s[p],d[p]);
+                result[p] = Z.Util.getValueOrDefault(s[p],d[p]);
             }
         }
         result['textName'] = s['textName'];

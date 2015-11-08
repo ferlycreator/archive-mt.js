@@ -113,17 +113,17 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
 
         var result = {
             "markerType"       : s["markerType"],
-            "markerWidth"      : Z.Util.setDefaultValue(s["markerWidth"], d["markerWidth"]),
-            "markerHeight"     : Z.Util.setDefaultValue(s["markerHeight"], d["markerHeight"]),
-            "markerDx"         : Z.Util.setDefaultValue(s["markerDx"], d["markerDx"]),
-            "markerDy"         : Z.Util.setDefaultValue(s["markerDy"], d["markerDy"]),
+            "markerWidth"      : Z.Util.getValueOrDefault(s["markerWidth"], d["markerWidth"]),
+            "markerHeight"     : Z.Util.getValueOrDefault(s["markerHeight"], d["markerHeight"]),
+            "markerDx"         : Z.Util.getValueOrDefault(s["markerDx"], d["markerDx"]),
+            "markerDy"         : Z.Util.getValueOrDefault(s["markerDy"], d["markerDy"]),
 
-            "markerFill"       : Z.Util.setDefaultValue(s["markerFill"], d["markerFill"]),
-            "markerFillOpacity": Z.Util.setDefaultValue(s["markerFillOpacity"], d["markerFillOpacity"]),
-            "markerLineColor" : Z.Util.setDefaultValue(s["markerLineColor"], d["markerLineColor"]),
-            "markerLineWidth" : Z.Util.setDefaultValue(s["markerLineWidth"], d["markerLineWidth"]),
-            "markerLineDasharray": Z.Util.setDefaultValue(s["markerLineDasharray"], d["markerLineDasharray"]),
-            "markerLineOpacity": Z.Util.setDefaultValue(s["markerLineOpacity"], d["markerLineOpacity"])
+            "markerFill"       : Z.Util.getValueOrDefault(s["markerFill"], d["markerFill"]),
+            "markerFillOpacity": Z.Util.getValueOrDefault(s["markerFillOpacity"], d["markerFillOpacity"]),
+            "markerLineColor" : Z.Util.getValueOrDefault(s["markerLineColor"], d["markerLineColor"]),
+            "markerLineWidth" : Z.Util.getValueOrDefault(s["markerLineWidth"], d["markerLineWidth"]),
+            "markerLineDasharray": Z.Util.getValueOrDefault(s["markerLineDasharray"], d["markerLineDasharray"]),
+            "markerLineOpacity": Z.Util.getValueOrDefault(s["markerLineOpacity"], d["markerLineOpacity"])
         };
         //marker-opacity覆盖fill-opacity和line-opacity
         if (Z.Util.isNumber(s["markerOpacity"])) {

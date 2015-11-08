@@ -68,11 +68,11 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
         var s = this.symbol;
         return {
             "markerFile" : s["markerFile"],
-            "markerWidth" : Z.Util.setDefaultValue(s["markerWidth"], 0),
-            "markerHeight" : Z.Util.setDefaultValue(s["markerHeight"], 0),
-            "markerOpacity" : Z.Util.setDefaultValue(s["markerOpacity"], null),
-            "markerDx" : Z.Util.setDefaultValue(s["markerDx"], 0),
-            "markerDy" : Z.Util.setDefaultValue(s["markerDy"], 0)
+            "markerWidth" : Z.Util.getValueOrDefault(s["markerWidth"], 0),
+            "markerHeight" : Z.Util.getValueOrDefault(s["markerHeight"], 0),
+            "markerOpacity" : Z.Util.getValueOrDefault(s["markerOpacity"], null),
+            "markerDx" : Z.Util.getValueOrDefault(s["markerDx"], 0),
+            "markerDy" : Z.Util.getValueOrDefault(s["markerDy"], 0)
         };
     },
 

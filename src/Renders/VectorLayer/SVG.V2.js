@@ -359,7 +359,7 @@ Z.SVG.VML= {
         var fontSize = style['textSize'];
 
         var dx = style['textDx'],dy = style['textDy'];
-        var lineSpacing = Z.Util.setDefaultValue(style['textLineSpacing'],0);
+        var lineSpacing = Z.Util.getValueOrDefault(style['textLineSpacing'],0);
         var wrapChar = style['textWrapCharacter'];
         var textWidth = Z.Util.stringLength(text,font,fontSize).width;
         var wrapWidth = style['textWrapWidth'];

@@ -23,6 +23,14 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
         this._initOptions(opts);
     },
 
+    /**
+     * 是否是矢量渲染
+     * @return {Boolean}
+     */
+    isVectorSymbol:function() {
+        return Z.VectorMarkerSymbolizer.test(this, this.getSymbol());
+    },
+
     _containsPoint: function(point) {
         var pxExtent = this._getPainter().getPixelExtent();
         return pxExtent.contains(point);
