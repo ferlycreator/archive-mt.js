@@ -373,7 +373,6 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         }
         this.getMap().off('mouseup', this.endDrag,this);
         this._isDragging = false;
-        // this.getMap().enableDrag();
         var geometries = this.getGeometries();
         for (var i=0,len=geometries.length;i<len;i++) {
             geometries[i].endDrag();

@@ -28,7 +28,7 @@ Z.Geometry.include({
             return this;
         }
         Z.DomUtil.addStyle(map._containerDOM,'cursor', 'move');
-        map.disableDrag();
+        map.options['draggable']=false;
         map.on('mousemove', this._dragging, this);
         map.on('mouseup', this.endDrag, this);
         delete this._preCoordDragged;
@@ -67,10 +67,9 @@ Z.Geometry.include({
         var map = this.getMap();
         this._isDragging = false;
 
-        map.enableDrag();
-
         map.off('mousemove', this._dragging, this);
         map.off('mouseup', this.endDrag, this);
+        map.options['draggable']=true;
         delete this._preCoordDragged;
         /**
          * 触发geometry的dragend事件
