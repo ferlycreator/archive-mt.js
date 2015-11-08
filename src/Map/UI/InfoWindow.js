@@ -320,8 +320,8 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
             if (coordinate['containerPoint']) {
                 coordinate = coordinate['containerPoint'];
             }
-            if(coordinate instanceof Z.Coordinate) {
-                position = this._map.coordinateToViewPoint(coordinate);
+            if(Z.Util.isCoordinate(coordinate)) {
+                position = this._map.coordinateToViewPoint(new Z.Coordinate(coordinate));
             } else {
                 //是point类型坐标
                 position = this._map._containerPointToViewPoint(new Z.Point(coordinate['left'],coordinate['top']));
