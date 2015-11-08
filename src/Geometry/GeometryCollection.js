@@ -192,7 +192,7 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         var result = null;
         for (var i=0, len=geometries.length;i<len;i++) {
             var geo = geometries[i];
-            result = Z.Extent.combine(geo._computeExtent(projection),result);
+            result = geo._computeExtent(projection).combine(result);
         }
         return result;
     },

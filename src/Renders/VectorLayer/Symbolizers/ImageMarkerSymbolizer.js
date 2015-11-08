@@ -27,6 +27,7 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
         var url = style['markerFile'];
         var img = resources.getImage(url);
         if (!img) {
+            console.error('img missed');
             return;
         }
 
@@ -36,6 +37,7 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
             width = img.width;
             height = img.height;
         }
+        Z.Canvas.disableImageSmoothing(ctx);
         for (var i = 0, len=cookedPoints.length;i<len;i++) {
             //图片定位到中心底部
             var pt = cookedPoints[i].add(new Z.Point(-width/2,-height));

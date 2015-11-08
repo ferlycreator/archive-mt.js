@@ -372,39 +372,14 @@ Z.RoutePlayer = Z.Class.extend({
 	 */
 	computeMarkerDegree:function(pre, next) {
 		if (!pre || !next) return null;
-		var projection = this.map._getProjection();
-//		var pPre = projection.locate(pre,0,0);
-//		var pNext = projection.locate(next,0,0);
 		var spanX = next.x-pre.x;
-		var spanY = next.y-pre.y;
+		var spanY =next.y-pre.y;
 		var degree = 0;
-		console.log(spanX);
-		console.log(spanY);
 		if(spanX<0) {
-		    if(spanY<0) {
-		        degree = -Math.atan(Math.abs(spanY/spanX))*180/Math.PI;
-		    } else if(spanY>0){
-		        degree = Math.tan(Math.abs(spanY/spanX))*180/Math.PI;
-		    } else {
-		        degree = 180;
-		    }
+		    degree = -Math.atan(spanY/spanX)*180/Math.PI;
 		} else if(spanX>0) {
-		    if(spanY<0) {
-                degree = Math.tan(Math.abs(spanY/spanX))*180/Math.PI;
-            } else if(spanY>0){
-                degree = 360-Math.tan(Math.abs(spanY/spanX))*180/Math.PI;
-            } else {
-                degree = 0;
-            }
-
-		} else if(spanX==0) {
-            if(spanY<0) {
-                degree = 90;
-            } else if(spanY>0){
-                degree = -90;
-            }
-        }
-        console.log(degree);
+		    degree = 180-Math.atan(spanY/spanX)*180/Math.PI
+		}
 		return degree;
 	},
 	/**

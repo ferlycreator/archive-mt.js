@@ -108,7 +108,7 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
             textDxDy.add(new Z.Point(alignW, alignH)),
             textDxDy.add(new Z.Point(alignW-size['width'],alignH-size['height']))
         );
-        return Z.Extent.combine(fileExtent, textExtent);
+        return fileExtent.combine(textExtent);
     },
 
     translate:function() {

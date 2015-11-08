@@ -61,7 +61,6 @@ Z.Editor=Z.Class.extend({
         var geometry = this.geometry;
         if (geometry instanceof Z.Marker) {
             this.createMarkerEditor();
-            return;
         } else if (geometry instanceof Z.Circle) {
             this.createCircleEditor();
         } else if (geometry instanceof Z.Rectangle) {

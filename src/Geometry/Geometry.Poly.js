@@ -156,12 +156,12 @@ Z.Geometry.Poly={
         for ( var i = 0, len = points.length; i < len; i++) {
             if (Z.Util.isArray(points[i])) {
                 for ( var j = 0, jlen = points[i].length; j < jlen; j++) {
-                    ext = new Z.Extent(points[i][j]);
-                    result = Z.Extent.combine(result, ext);
+                    ext = new Z.Extent(points[i][j],points[i][j]);
+                    result = ext.combine(result);
                 }
             } else {
                 ext = new Z.Extent(points[i],points[i]);
-                result = Z.Extent.combine(result, ext);
+                result = ext.combine(result);
             }
         }
         return result;

@@ -107,6 +107,25 @@ Z.Canvas = {
         return "rgba("+r+","+g+","+b+","+op+")";
     },
 
+    resetContextState:function(ctx) {
+        ctx['maptalks-img-smoothing-disabled'] = false;
+    },
+
+    disableImageSmoothing:function(ctx) {
+
+        ctx.mozImageSmoothingEnabled = false;
+        ctx.webkitImageSmoothingEnabled = false;
+        ctx.msImageSmoothingEnabled = false;
+        ctx.imageSmoothingEnabled = false;
+    },
+
+    enableImageSmoothing:function(ctx) {
+        ctx.mozImageSmoothingEnabled = true;
+        ctx.webkitImageSmoothingEnabled = true;
+        ctx.msImageSmoothingEnabled = true;
+        ctx.imageSmoothingEnabled = true;
+    },
+
     image:function(ctx, pt, img, width, height) {
         var left=pt['left'],top=pt['top'];
         if (Z.Util.isNumber(width) && Z.Util.isNumber(height)) {

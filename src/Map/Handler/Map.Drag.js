@@ -42,6 +42,7 @@ Z.Map.Drag = Z.Handler.extend({
         me.preY = param['mousePos']['top'];
         me.startX = me.preX;
         me.startY = me.preY;
+        me._isBusy = true;
         map._fireEvent('movestart');
     },
 
@@ -60,6 +61,7 @@ Z.Map.Drag = Z.Handler.extend({
 
     _onDragEnd:function(param) {
         var me = this;
+        me._isBusy = false;
         me.map._allowSlideMap=true;
         var map = me.map;
         var t = new Date().getTime()-me.startDragTime;

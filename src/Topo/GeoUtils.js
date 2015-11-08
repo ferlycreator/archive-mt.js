@@ -71,7 +71,7 @@ Z.GeoUtils={
             }
             //首先判断点是否在线的外包矩形内，如果在，则进一步判断，否则返回false
             var extent = geo._getPrjExtent();
-            extent = Z.Extent.expand(extent,tolerance);
+            extent = extent.expand(tolerance);
             if(!this.isPointInRect(point, extent)){
                 return -1;
             }

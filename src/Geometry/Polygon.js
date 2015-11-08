@@ -232,7 +232,7 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
 
     _containsPoint: function(point) {
         var t = this._hitTestTolerance(),
-            pxExtent = Z.Extent.expand(this._getPainter().getPixelExtent(),t);
+            pxExtent = this._getPainter().getPixelExtent().expand(t);
 
         point = new Z.Point(point.left, point.top);
 

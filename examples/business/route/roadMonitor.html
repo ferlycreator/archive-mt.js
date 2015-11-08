@@ -42,7 +42,7 @@
         };
         //启动汽车运行
         var car1 = setCarRoute(1,carRoute1,'images/redCar.png','#6699cc');
-        var car2 = setCarRoute(2,carRoute2,'images/truck.png','#cc0066');
+        var car2 = setCarRoute(2,carRoute2,'images/truck.png','#ab3c27');
         var route = [car1,car2];
         routePlayer = new maptalks.HistoryRoutePlayer(mapObj,config,route);
         routePlayer.start();
@@ -57,9 +57,9 @@
         var carSymbol={
             'markerFile': carIcon,//'images/taxi.png',
             'markerWidth': 32,
-            'markerHeight': 12,
+            'markerHeight': 16,
             'markerDx': 0,
-            'markerDy': 6
+            'markerDy': 8
         };
         var polylineSymbol={
             'lineColor': routeColor,//'#6699cc',
@@ -82,11 +82,11 @@
         var polyline = new maptalks.Polyline(roadLine);
         //添加默认缓冲区
         var bufferSymbol = {
-            'lineColor' : '#66ff66',
+            'lineColor' : '#0093c4',
             'lineWidth' : 3,
             'lineOpacity' : 1,
             'lineDasharray' :[],
-            'polygonFill': '#66ff66',
+            'polygonFill': '#0095a2',
             'polygonOpacity': 0.2
         };
         //绘制目标监控缓冲区

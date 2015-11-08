@@ -6,10 +6,7 @@ Z.PointSymbolizer=Z.Symbolizer.extend({
             max = markerExtent.getMax();
         for (var i = this.renderPoints.length - 1; i >= 0; i--) {
             var point = this.renderPoints[i];
-            extent = Z.Extent.combine(
-                extent,
-                new Z.Extent(point.add(min), point.add(max))
-                );
+            extent = extent.combine(new Z.Extent(point.add(min), point.add(max)));
         }
         return extent;
     },

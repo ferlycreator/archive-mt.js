@@ -59,6 +59,7 @@
 ../src/Geometry/GeoJson.js
 ../src/Geometry/Editor/Editor.js
 ../src/Map/Map.js
+../src/Map/Map.Animation.js
 ../src/Map/Map.Pan.js
 ../src/Map/Map.Zoom.js
 ../src/Map/Map.Topo.js
@@ -71,9 +72,11 @@
 ../src/Map/Handler/Map.ScrollWheelZoom.js
 ../src/Map/Handler/Map.EventToGeometry.js
 ../src/Renders/render.js
+../src/Renders/Animation/Animation.js
 ../src/Renders/Map/Render.Map.js
-../src/Renders/Map/Render.Map.Dom.js
+../src/Renders/Map/Render.Map.Dom5.js
 ../src/Renders/Map/Render.Map.Canvas.js
+../src/Renders/TileLayer/TileCache.js
 ../src/Renders/TileLayer/Render.TileLayer.js
 ../src/Renders/TileLayer/Render.TileLayer.Dom.js
 ../src/Renders/TileLayer/Render.TileLayer.Canvas.js
