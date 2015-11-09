@@ -86,7 +86,7 @@ Z.SVG.SVG = {
         var rowHeight = fontSize + lineSpacing;
         if(wrapChar){
             var texts = text.split(wrapChar);
-            wrapWidth = wrapWidth/texts.length;
+            wrapWidth = textWidth/texts.length;
             var textRows = [];
             for(var i=0,len=texts.length;i<len;i++) {
                 var t = texts[i];
@@ -369,7 +369,7 @@ Z.SVG.VML= {
         if(wrapChar){
             var texts = text.split(wrapChar);
             var textRows = [];
-             wrapWidth = wrapWidth/texts.length;
+             wrapWidth = textWidth/texts.length;
             for(var i=0,len=texts.length;i<len;i++) {
                 var t = texts[i];
                 var tWidth = Z.Util.stringLength(t,font,fontSize).width;
