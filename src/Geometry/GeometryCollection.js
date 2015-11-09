@@ -374,7 +374,6 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
 
     _forceStartDrag:function() {
         var map = this.getMap();
-        map.options['draggable']=false;
         if (!map) {
             return;
         }
