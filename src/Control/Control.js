@@ -122,14 +122,7 @@ Z['Control'] = Z.Control = Z.Class.extend({
      * @expose
      */
     setPosition: function (position) {
-        var map = this._map;
-        if (map) {
-            map.removeControl(this);
-        }
         this.options['position'] = position;
-        if (map) {
-            map.addControl(this);
-        }
         this._updateContainerPosition();
         return this;
     },
@@ -141,6 +134,20 @@ Z['Control'] = Z.Control = Z.Class.extend({
      */
     getContainer: function () {
         return this._container;
+    },
+
+    /**
+     *显示label属性面板
+     */
+    show: function() {
+        this._container.style.display="";
+    },
+
+    /**
+     *隐藏label属性面板
+     */
+    hide: function() {
+        this._container.style.display="none";
     },
 
     /**

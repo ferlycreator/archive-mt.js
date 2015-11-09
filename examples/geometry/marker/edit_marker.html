@@ -53,6 +53,26 @@
                 click : function(){
                     marker.remove();
                 }
+            }, {
+                type : 'button',
+                content: '变更样式',
+                click : function(){
+                    var icon = {
+                        'markerType': 'pin',
+                        'markerOpacity': 0.5,
+                        'markerFillOpacity': 1,
+                        'markerLineColor': '#0000ff',
+                        'markerLineWidth': 5,
+                        'markerLineOpacity': 1,
+                        'markerPlacement': 'point',
+                        'markerWidth': 30,
+                        'markerHeight': 30,
+                        'markerFill': '#ff0000',
+                        'markerDx': 0,
+                        'markerDy': 0
+                    };
+                    marker.setSymbol(icon);
+                }
             }]
         });
         mapObj.addControl(toolbar);
@@ -63,14 +83,21 @@
         //创建点的坐标对象
         var markerCoordinate = new maptalks.Coordinate(121.489935,31.24432);
         //创建点对象
-        marker = new maptalks.Marker(markerCoordinate,{'id':'marker_id'});
+        marker = new maptalks.Marker(markerCoordinate,{'id':'marker_id','draggable':true});
         //设置图片
         var icon = {
-            'markerFile': '../../../images/marker.png',
-            'markerWidth': 22,
-            'markerHeight': 30,
-            'markerDx': 0,
-            'markerDy' :0
+            'markerType': 'ellipse',
+                        'markerOpacity': 0.5,
+                        'markerFillOpacity': 1,
+                        'markerLineColor': '#0000ff',
+                        'markerLineWidth': 5,
+                        'markerLineOpacity': 1,
+                        'markerPlacement': 'point',
+                        'markerWidth': 30,
+                        'markerHeight': 30,
+                        'markerFill': '#ff0000',
+                        'markerDx': 0,
+                        'markerDy': 0
         };
         marker.setSymbol(icon);
         //将点添加到Layer
@@ -78,7 +105,7 @@
     }
 </script>
 <!-- 引擎javascript开发包-->
-<script type="text/javascript" src="../../../maptalks.min.js"></script>
+<script type="text/javascript" src="../../../maptalks.js"></script>
 <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
 <!--[if lt IE 9]>
   <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.min.js"></script>

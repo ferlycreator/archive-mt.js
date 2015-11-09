@@ -13,10 +13,12 @@ Z.Label = Z.Class.extend({
      */
     'exceptionDefs':{
         'en-US':{
-            'NEED_GEOMETRY':'You must set target to Label.'
+            'NEED_TARGET':'You must set target to Label.',
+            'INVALID_TARGET': 'Target must be geometry or coordinate.'
         },
         'zh-CN':{
-            'NEED_GEOMETRY':'你必须设置Label绑定的Geometry目标。'
+            'NEED_TARGET':'你必须设置Label绑定的目标。',
+            'INVALID_TARGET':'绑定目标只能是geometry或coordinate。'
         }
     },
 
@@ -123,22 +125,57 @@ Z.Label = Z.Class.extend({
 
     /**
      * 将Label添加到对象上
-     * @param {maptalks.Geometry} geometry
+     * @param {maptalks.Layer} layer
      */
-    addTo: function (geometry) {
-        if(!geometry || !this.options || !this.options['symbol']) {return;}
-        this._map = geometry.getMap();
-        this._geometry = geometry;
-        if(!this._geometry) {throw new Error(this.exceptions['NEED_GEOMETRY']);}
-        this._registerEvent();
+    addTo: function (layer) {
+        if(!layer) {return;}
+        this._layer = layer;
+        this._map = this._layer.getMap();
+        this._layer.addGeometry(this._label.getGeometries());
+        return this;
+    },
+
+    _initLabel: function(targetObj) {
+        if(!targetObj || !this.options || !this.options['symbol']) {return;}
+        if(targetObj instanceof Z.Coordinate) {
+            this._center = targetObj;
+            this._label = this._createLabel(this._center);
+            if(this.options['draggable']) {
+                this._label.startDrag();
+            }
+        } else {
+            this._geometry = targetObj;
+            if(!this._geometry) {throw new Error(this.exceptions['NEED_GEOMETRY']);}
+            this._map = this._geometry.getMap();
+            this._center = this._geometry.getCenter();
+            this._label = this._createLabel(this._center);
+            this._registerEvent();
+        }
+        if(this._label) {
+            var me = this;
+            this._label.on('mousedown mouseover mouseout click dblclick contextmenu dragstart dragend positionchanged', function(param){
+                me.fire(param.type, param);
+            });
+
+            this._label.on('positionchanged', function(param){
+                me._changeLabelCenter();
+            });
+        }
+    },
+
+    _changeLabelCenter: function() {
+        var geometries = this._label.getGeometries();
+        for(var i=0,len=geometries.length;i<len;i++) {
+            var geometry = geometries[i];
+            this._center = geometry.getCenter();
+            break;
+        }
     },
 
     _registerEvent: function() {
-        this._label = this._createLabel();
         this.hide();
         this._geometry.on('shapechanged positionchanged symbolchanged', Z.Util.bind(this._changeLabelPosition, this), this)
-                      .on('remove', this.removeLabel, this);
-
+                      .on('remove', this.remove, this);
         var trigger = this.options['trigger'];
         var me = this;
         if(trigger === 'hover') {
@@ -157,14 +194,13 @@ Z.Label = Z.Class.extend({
         } else {
             this.show();
         }
-        this._geometry.getLayer().addGeometry(this._label);
-
+//        this._geometry.getLayer().addGeometry(this._label);
         if(this.options['draggable']) {
             // this._label.startDrag();
             var linkerOptions = {
                 linkSource:this._label,
                 linkTarget:this._geometry,
-                trigger: 'click',
+//                trigger: 'click',
                 symbol:{
                     'lineColor' : '#ff0000',
                     'lineWidth' : 1,
@@ -172,8 +208,8 @@ Z.Label = Z.Class.extend({
                     'lineOpacity' : 1
                 }
             };
-            var linker = new Z.Linker(linkerOptions);
-            linker.addTo(this._map);
+            this._linker = new Z.Linker(linkerOptions);
+            this._linker.addTo(this._map);
         }
         return this;
     },
@@ -186,13 +222,15 @@ Z.Label = Z.Class.extend({
         }
     },
 
-    _createLabel: function() {
-        var center = this._geometry.getCenter();
-        var textMarker = new Z.Marker(center);
-        var box = new Z.Marker(center);
+    _createLabel: function(center) {
+        this._textMarker = new Z.Marker(center);
+        this._box = new Z.Marker(center);
+        this._setLabelSymbol();
+        return new Z.MultiPoint([this._box,this._textMarker]);
+    },
 
+    _setLabelSymbol: function() {
         var dx=this.options['dx'],dy=this.options['dy'];
-        textMarker.setSymbol(this.textStyle);
 
         var width = this.labelSize['width'];
         var height = this.labelSize['height'];
@@ -233,6 +271,7 @@ Z.Label = Z.Class.extend({
         var rowNum = 1;
         if(wrapChar) {
             var texts = this.textContent.split(wrapChar);
+            wrapWidth = wrapWidth/texts.length;
             var textRows = [];
             for(var i=0,len=texts.length;i<len;i++) {
                 var t = texts[i];

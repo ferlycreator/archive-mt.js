@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+        html,body{margin: 0px; height:100%;};
+    </style>
+    <title>MapTalks 示例: 智能家居</title>
+</head>
+<body scroll="no" onload="initMap();">
+<div id="banner" style="width:100%;height:8%;margin-top:0px;background-color:#000000;">
+    <span style="margin-left:30px;">
+        <img src="images/logo.png" width="33" height="25" style="margin-top:10px;"/>
+        <font style="margin-top:10px;color:#ffffff;font-size:16px;font-weight:bolder;">智能家居</font>
+    </span>
+</div>
+<div id="mapObj" style="width:100%;height:92%;float:right;margin-top:0px;"></div>
+<script type="text/javascript" >
+    var mapObj,drawTool,layer,markerFile;
+    function initMap(){
+        //构造地图类,第一个参数为加载地图的容器，例如div的id
+        mapObj = new maptalks.Map("mapObj",{
+            center:     [0,0],
+            zoomLevel:  0,
+            enablePopTip:   true,
+            enableMoveSilde:true,
+            navControl:true,
+            navControlOptions: {
+                position: {
+                    top: '20',
+                    right: '10'
+                }
+            },
+            doubleClickZoom:false
+        });
+
+        mapObj.setBaseTileLayer(new maptalks.TileLayer('tile',{
+            tileInfo:{
+                //像素投影
+                'projection':'pixel',
+                //瓦片系统, [x轴瓦片顺序, y轴瓦片顺序, x轴起始坐标, y轴起始坐标]
+                'tileSystem' : [1,1,0,0],
+                'maxZoomLevel':0, //最大缩放级别
+                'minZoomLevel':0, //最小缩放级别
+                'resolutions':[1],//分辨率, 原图为1, 缩小一倍则为2
+                'fullExtent': { //像素坐标范围, 一般以原图大小设置bottom和right值
+                    'top':0,
+                    'left':0,
+                    'bottom':-512,
+                    'right':512
+                },
+                'tileSize':{ //瓦片大小, 如果没有切底图, 以单张图片作为底图, 则设为原图大小即可
+                    'width':512,
+                    'height':512
+                }
+            },
+            urlTemplate:'images/blank.png',//瓦片url
+            repeatWorld:true //超出范围的底图瓦片是否继续循环显示, 默认为true
+        }));
+
+        //创建图层
+        layer = new maptalks.VectorLayer('layer');
+        //将图层添加到地图对象
+        mapObj.addLayer(layer);
+
+        //构造绘制面工具
+        drawTool = new maptalks.DrawTool({
+            /**
+            *设置drawTool绘制的图形类型
+            *TYPE_POLYGON： 多边形；TYPE_RECT：矩形；TYPE_ELLIPSE：圆形
+            */
+            mode: maptalks.Geometry.TYPE_POLYGON,
+            //绘制面的样式
+            symbol: {
+                'lineColor':'#000000',
+                'lineWidth':1,
+                'lineOpacity':0.8,
+                'lineDasharray': [],
+                'polygonFill': '#ffffff',
+                'polygonOpacity': 0.6
+            }
+        });
+        //将线绘制工具绑定到地图对象
+        drawTool.addTo(mapObj);
+        //监听绘制工具完成事件，获取绘制的面坐标数组等信息
+        drawTool.on('drawend', onAfterDrawPolygon);
+        //
+        drawTool.disable();
+
+        //构造工具栏
+        var toolbar = new maptalks.Toolbar({
+            position : { //工具条放置位置
+                top: '20',
+                left: '10'
+            },
+            vertical : true,
+            //工具项
+            items: [{
+                type : 'button',
+                icon: 'images/polyline.png',
+                click : function(){
+                    drawTool.setMode(maptalks.Geometry.TYPE_LINESTRING);
+                    drawTool.enable();
+                }
+            }, {
+                type : 'button',
+                icon: 'images/polygon.png',
+                click : function(){
+                    drawTool.setMode(maptalks.Geometry.TYPE_POLYGON);
+                    drawTool.enable();
+                }
+            }, {
+                type : 'button',
+                icon: 'images/rectangle.png',
+                click : function(){
+                    drawTool.setMode(maptalks.Geometry.TYPE_RECT);
+                    drawTool.enable();
+                }
+            }, {
+                type : 'button',
+                icon: 'images/ellipse.png',
+                click : function(){
+                    drawTool.setMode(maptalks.Geometry.TYPE_ELLIPSE);
+                    drawTool.enable();
+                }
+            }, {
+                type : 'button',
+                icon: 'images/text.png',
+                click : function(){
+                    mapObj.on('click', markerLabel);
+                }
+            }
+            /**, {
+                type : 'button',
+                // icon: 'images/text.png',
+                content: '打印',
+                click : function(){
+                    var geometries = layer.getAllGeometries();
+                    for(var i=0,len=geometries.length;i<len;i++) {
+                        var geo = geometries[i];
+                        console.log(geo.toJson());
+                    }
+                }
+            }*/]
+        });
+        mapObj.addControl(toolbar);
+
+        //家具图标工具
+        //构造工具栏
+        var iconToolbar = new maptalks.Toolbar({
+            position : { //工具条放置位置
+                left: '410',
+                bottom: '20'
+            },
+            vertical : false,
+            //工具项
+            items: [{
+                type : 'button',
+                icon: 'images/icons/table.png',
+                click : function(param){
+                    addEventToMap(param);
+                }
+            }, {
+                type : 'button',
+                icon: 'images/icons/tv.png',
+                click : function(param){
+                    addEventToMap(param);
+                }
+            }, {
+                type : 'button',
+                icon: 'images/icons/wardrobe.png',
+                click : function(param){
+                    addEventToMap(param);
+                }
+            }, {
+                type : 'button',
+                icon: 'images/icons/gas.png',
+                click : function(param){
+                    addEventToMap(param);
+                }
+            }, {
+                type : 'button',
+                icon: 'images/icons/bed.png',
+                click : function(param){
+                    addEventToMap(param);
+                }
+            }, {
+                type : 'button',
+                icon: 'images/icons/shower.png',
+                click : function(param){
+                    addEventToMap(param);
+                }
+            }, {
+                type : 'button',
+                icon: 'images/icons/basin.png',
+                click : function(param){
+                    addEventToMap(param);
+                }
+            }, {
+                type : 'button',
+                icon: 'images/icons/toilet.png',
+                click : function(param){
+                    addEventToMap(param);
+                }
+            }, {
+                type : 'button',
+                icon: 'images/icons/washing.png',
+                click : function(param){
+                    addEventToMap(param);
+                }
+            }]
+        });
+        mapObj.addControl(iconToolbar);
+        layer.addGeometry(roomData);
+    }
+
+    //绘制完面操作
+    function onAfterDrawPolygon(param) {
+        drawTool.disable();
+        //绘制的图形
+        var polygon = param.geometry;
+        //将线添加到Layer
+        layer.addGeometry(polygon);
+        //多边形属性面板
+        var polygonPropertyPanel = new PolygonPropertyPanel();
+        //绑定激活多边形属性面板事件
+        polygon.on('click', function(){
+            polygonPropertyPanel.addTo(polygon);
+        });
+	    polygon.on('mousedown', function(){
+            polygon.startDrag(true);
+	    });
+    }
+
+    //标注文本信息
+    function markerLabel(param) {
+        mapObj.off('click', markerLabel);
+        var coordinate = param.coordinate;
+        //设置label属性
+        var options = {
+            'symbol': {
+                'lineColor': '#ff0000',
+                'lineWidth': 1,
+                'lineOpacity': 0.9,
+                'lineDasharray': null,
+                'fill': '#4e98dd',
+                'fillOpacity': 0.9,
+
+                'textFaceName': 'arial',
+                'textSize': 12,
+                'textFill': '#ff0000',
+                'textOpacity': 1,
+                'textSpacing': 30,
+                'textWrapWidth': null,//auto
+                'textWrapBefore': false,
+                'textWrapCharacter': '\n',
+                'textLineSpacing': 8
+            },
+            'draggable': true,
+            'horizontalAlignment': 'right',//left middle right
+            'verticalAlignment': 'top',//top middle bottom
+            'dx': 0,
+            'dy': 0,
+            'content': '文本标签',
+            'target':coordinate
+        };
+        //创建label
+        var label = new maptalks.Label(options).addTo(layer);
+        //label属性面板
+        var labelPropertyPanel = new LabelPropertyPanel();
+        label.on('click', function(){
+            labelPropertyPanel.addTo(label);
+        });
+    }
+
+    //添加标注图片时间到map上
+    function addEventToMap(param) {
+        markerFile = param.target.src;
+        mapObj.on('click', markerPicLabel);
+    }
+
+    //标注图片
+    function markerPicLabel(param) {
+        mapObj.off('click', markerPicLabel);
+        var coordinate = param.coordinate;
+        //设置图片
+        var markerWidth=32,markerHeight=32;
+        if(markerFile.indexOf('basin.png')>0) {
+            markerWidth=30;
+            markerHeight=81;
+        }else if(markerFile.indexOf('bed.png')>0) {
+            markerWidth=89;
+            markerHeight=68;
+        }else if(markerFile.indexOf('gas.png')>0) {
+            markerWidth=30;
+            markerHeight=81;
+        }else if(markerFile.indexOf('shower.png')>0) {
+            markerWidth=15;
+            markerHeight=23;
+        }else if(markerFile.indexOf('table.png')>0) {
+            markerWidth=23;
+            markerHeight=54;
+        }else if(markerFile.indexOf('toilet.png')>0) {
+            markerWidth=30;
+            markerHeight=48;
+        }else if(markerFile.indexOf('tv.png')>0) {
+            markerWidth=20;
+            markerHeight=69;
+        }else if(markerFile.indexOf('wardrobe.png')>0) {
+            markerWidth=102;
+            markerHeight=23;
+        }else if(markerFile.indexOf('washing.png')>0) {
+            markerWidth=39;
+            markerHeight=62;
+        }
+        var icon = {
+            'markerFile': markerFile,
+            'markerWidth': markerWidth,
+            'markerHeight': markerHeight,
+            'markerDx': 0,
+            'markerDy': markerHeight/2
+        };
+        //创建点对象
+        var marker = new maptalks.Marker(coordinate,{'draggable':true});
+        //设置点样式
+        marker.setSymbol(icon);
+        //将点添加到Layer
+        layer.addGeometry(marker);
+        //picture属性面板
+        var picturePropertyPanel = new PicturePropertyPanel();
+        marker.on('click', function(){
+            picturePropertyPanel.addTo(marker);
+        });
+    }
+</script>
+<script type="text/javascript" src="../../../maptalks.js"></script>
+<script type="text/javascript" src="../../toolbox/label/label_property.js"></script>
+<script type="text/javascript" src="../../toolbox/picture/picture_property.js"></script>
+<script type="text/javascript" src="../../toolbox/polygon/polygon_property.js"></script>
+<script type="text/javascript" src="../../business/design/roomData.js"></script>
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+  <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.min.js"></script>
+<![endif]-->
+</body>
+</html>

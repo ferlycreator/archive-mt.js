@@ -59,6 +59,11 @@ gulp.task('libs', function () {
     .pipe(gulp.dest('dist/lib'));
 });
 
+gulp.task('plugins', function () {
+  return gulp.src('Plugins/**/*.*')
+    .pipe(gulp.dest('dist/Plugins'));
+});
+
 gulp.task('examples', function () {
   return gulp.src(['examples/**/*.*','!examples/replace.json'])
     .pipe(gulp.dest('dist/examples'));
@@ -130,7 +135,7 @@ gulp.task('clean', del.bind(null, ['dist/*', '!dist'], {dot: true}));
 gulp.task('build', ['clean'], function (done) {
   runSequence(
     'styles',
-    ['scripts', 'images', 'libs'],
+    ['scripts', 'images', 'libs', 'plugins'],
     'examples',
     done);
 });

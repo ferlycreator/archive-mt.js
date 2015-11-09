@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+        html,body{ margin:0px; height:100%; };
+    </style>
+    <title>MapTalks 示例: 道路监控与电子围栏</title>
+</head>
+<body scroll="no" onload="initMap();" style="width:99%;height:99%;">
+<div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
+<script type="text/javascript" >
+    var mapObj,drawTool,layer,topoQuery,routePlayer;
+    function initMap(){
+        //创建地图对象
+        mapObj = new maptalks.Map("mapObj",{
+            center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
+            zoomLevel:   14 //初始缩放级别
+        });
+        //设置底图图层
+        mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
+        {
+            tileInfo: 'web-mercator',
+            urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
+            subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
+        }));
+        //创建图层
+        layer = new maptalks.VectorLayer('layer');
+        //将图层添加到地图对象
+        mapObj.addLayer(layer);
+        //初始化空间查询
+        topoQuery = new maptalks.TopoQuery({host:'42.121.108.110',port:18090});
+        //绘制监控路段
+        drawMonitorRegion();
+        //构造轨迹播放
+        var config = {
+            timeSpan: 400,//播放时间片，单位毫秒，即隔多少秒播放一次，默认为400
+            unitTime: 30,//单位时间，即每个timeSpan下流逝的实际时间，以毫秒为单位，历史播放模式下默认为5秒
+            enableDrawRoute: false //true|false//是否绘制轨迹
+        };
+        //启动汽车运行
+        var car1 = setCarRoute(1,carRoute1,'images/redCar.png','#6699cc');
+        var car2 = setCarRoute(2,carRoute2,'images/truck.png','#ab3c27');
+        var route = [car1,car2];
+        routePlayer = new maptalks.HistoryRoutePlayer(mapObj,config,route);
+        routePlayer.start();
+    }
+
+    function setCarRoute(id,carRouteData,carIcon,routeColor) {
+        var routeDataArray=[];
+        var center = mapObj.getCenter();
+        for (var i=0,len=carRouteData.length;i<len;i+=3) {
+            routeDataArray.push({x:carRouteData[i],y:carRouteData[i+1],t:carRouteData[i+2]});
+        }
+        var carSymbol={
+            'markerFile': carIcon,//'images/taxi.png',
+            'markerWidth': 32,
+            'markerHeight': 16,
+            'markerDx': 0,
+            'markerDy': 8
+        };
+        var polylineSymbol={
+            'lineColor': routeColor,//'#6699cc',
+            'lineWidth': 6,
+            'lineOpacity':0.8,
+            'lineDasharray': [],
+            'polygonFill': '#ffffff',
+            'polygonOpacity': 0.6
+        };
+        var route = {
+                identifier:id,
+                route:routeDataArray,
+                symbol: carSymbol,
+                routeSymbol:polylineSymbol
+        };
+        return route;
+    }
+
+    function drawMonitorRegion() {
+        var polyline = new maptalks.Polyline(roadLine);
+        //添加默认缓冲区
+        var bufferSymbol = {
+            'lineColor' : '#0093c4',
+            'lineWidth' : 3,
+            'lineOpacity' : 1,
+            'lineDasharray' :[],
+            'polygonFill': '#0095a2',
+            'polygonOpacity': 0.2
+        };
+        //绘制目标监控缓冲区
+        topoQuery.buffer({
+            geometries:[polyline],
+            distance: 100,//半径100米以内
+            success: function(geometries){
+                for(var i=0,len=geometries.length;i<len;i++) {
+                    var geo = geometries[i];
+                    geo.setSymbol(bufferSymbol);
+                    //设置定时检测事件
+                    var hitGeos = [];
+                    window.setInterval(function(){
+                        var layer = routePlayer.player.markerLayer;
+                        if(layer) {
+                            var movingGeos = layer.getAllGeometries();
+                            topoQuery.relate({
+                                source:geo,
+                                targets:movingGeos,
+                                relation: 1,//包含
+                                success: function(data) {
+                                    for(j=0,dataLen=data.length;j<dataLen;j++){
+                                        var status = data[j];
+                                        var hitGeo = movingGeos[j];
+                                        //车辆在路径上就不用提醒
+                                        if(status===1){
+                                            // hitGeo.flash(0,0);
+                                        } else {
+                                            hitGeo.flash(200,3);
+                                        }
+
+                                    }
+                                }
+                            });
+                        }
+                    },3000);
+                }
+                layer.addGeometry(geometries);
+            }
+        });
+    }
+
+</script>
+<!-- 引擎javascript开发包-->
+<script type="text/javascript" src="../../../maptalks.js"></script>
+<script type="text/javascript" src="monitor_property.js"></script>
+<script type="text/javascript" src="../../toolbox/polygon/polygon_property.js"></script>
+<script type="text/javascript" src="../../../Plugins/RoutePlayer/RoutePlayer.js"></script>
+<script type="text/javascript" src="../../../Plugins/RoutePlayer/HistoryPlayer.js"></script>
+<script type="text/javascript" src="roadData.js"></script>
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+  <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.min.js"></script>
+<![endif]-->
+</body>
+</html>

@@ -10,6 +10,7 @@ Z['Button'] = Z.Button = Z.Class.extend({
      * @cfg {Object} options 按钮属性
      */
     options:{
+        'hidden': false,
         'icon' : '',
         'text' : '左',
         'click' : null,
@@ -44,8 +45,8 @@ Z['Button'] = Z.Button = Z.Class.extend({
      _createButtonDom : function(options) {
         var _buttonDom = Z.DomUtil.createEl('button');
         Z.DomUtil.on(_buttonDom, 'click dblclick contextmenu', Z.DomUtil.stopPropagation);
-        Z.DomUtil.addClass(_buttonDom, 'control-button');
-        _buttonDom.innerHTML = this._createIconDom(options);
+        Z.DomUtil.addClass(_buttonDom, 'maptalks-control-button');
+        _buttonDom.appendChild(this._createIconDom(options));
         if(options['click']) {
             Z.DomUtil.on(_buttonDom, 'click', options['click'], this);
         }
@@ -53,59 +54,25 @@ Z['Button'] = Z.Button = Z.Class.extend({
             Z.DomUtil.on(_buttonDom, 'mouseover', options['mouseover'], this);
         } else {
             Z.DomUtil.on(_buttonDom, 'mouseover', function() {
-                Z.DomUtil.removeClass(_buttonDom, 'control-button');
-                Z.DomUtil.addClass(_buttonDom, 'control-button-hover');
+                Z.DomUtil.removeClass(_buttonDom, 'maptalks-control-button');
+                Z.DomUtil.addClass(_buttonDom, 'maptalks-control-button-hover');
             }, this);
         }
         if(options['mouseout']) {
             Z.DomUtil.on(_buttonDom, 'mouseout', options['mouseout'], this);
         } else {
             Z.DomUtil.on(_buttonDom, 'mouseout', function() {
-                Z.DomUtil.removeClass(_buttonDom, 'control-button-hover');
-                Z.DomUtil.addClass(_buttonDom, 'control-button');
+                Z.DomUtil.removeClass(_buttonDom, 'maptalks-control-button-hover');
+                Z.DomUtil.addClass(_buttonDom, 'maptalks-control-button');
             }, this);
         }
+        _buttonDom = this._createDropMenu(_buttonDom, options, 'li');
         return _buttonDom;
     },
 
-    _createHtmlDom : function(options) {
-        var _htmlDom = Z.DomUtil.createEl('span');
-        Z.DomUtil.on(_htmlDom, 'click dblclick contextmenu', Z.DomUtil.stopPropagation);
-        _htmlDom.innerHTML = options['content'];
-        return _htmlDom;
-    },
-
-    _createMenuDom : function(options, tag) {
-        var _menuDom = Z.DomUtil.createEl('span');
-        if(tag) {
-            _menuDom = Z.DomUtil.createEl(tag);
-        }
-        Z.DomUtil.on(_menuDom, 'click dblclick contextmenu', Z.DomUtil.stopPropagation);
-        Z.DomUtil.addClass(_menuDom, 'control-button');
-        _menuDom.innerHTML = this._createIconDom(options);
-        if(options['click']) {
-            Z.DomUtil.on(_menuDom, 'click', options['click'], this);
-        }
-        if(options['mouseover']) {
-            Z.DomUtil.on(_menuDom, 'mouseover', options['mouseover'], this);
-        } else {
-            Z.DomUtil.on(_menuDom, 'mouseover', function() {
-                Z.DomUtil.removeClass(_menuDom, 'control-button');
-                Z.DomUtil.addClass(_menuDom, 'control-button-hover');
-            }, this);
-        }
-        if(options['mouseout']) {
-            Z.DomUtil.on(_menuDom, 'mouseout', options['mouseout'], this);
-        } else {
-            Z.DomUtil.on(_menuDom, 'mouseout', function() {
-                Z.DomUtil.removeClass(_menuDom, 'control-button-hover');
-                Z.DomUtil.addClass(_menuDom, 'control-button');
-            }, this);
-        }
-        ///////处理下拉菜单
+    _createDropMenu: function(_parentDom, options, tag) {
         if(options['children'] && options['children'].length>0) {
             var dropdownMenu = Z.DomUtil.createElOn('ul', 'display: none;');
-
             var menuClass = this._getMenuClass(options, tag);
             Z.DomUtil.addClass(dropdownMenu, menuClass);
 
@@ -113,25 +80,25 @@ Z['Button'] = Z.Button = Z.Class.extend({
             addMenuDropEvent(trigger, tag);
             function addMenuDropEvent(trigger, tag) {
                 if(trigger === 'click') {
-                    Z.DomUtil.on(_menuDom, 'click', function() {
+                    Z.DomUtil.on(_parentDom, 'click', function() {
                         Z.DomUtil.setStyle(dropdownMenu, 'display: inline-block');
                     }, this);
                     Z.DomUtil.on(dropdownMenu, 'mouseover', function() {
                         Z.DomUtil.setStyle(dropdownMenu, 'display: inline-block');
                     }, this);
                 } else {
-                    Z.DomUtil.on(_menuDom, 'mouseover', function() {
+                    Z.DomUtil.on(_parentDom, 'mouseover', function() {
                         Z.DomUtil.setStyle(dropdownMenu, 'display: inline-block');
                     }, this);
                 }
                 Z.DomUtil.on(dropdownMenu, 'mouseout', function() {
                     Z.DomUtil.setStyle(dropdownMenu, 'display: none');
                 }, this);
-                if(tag) {
-                    Z.DomUtil.on(_menuDom, 'mouseout', function() {
-                        Z.DomUtil.setStyle(dropdownMenu, 'display: none');
-                    }, this);
-                }
+//                if(tag) {
+//                    Z.DomUtil.on(_parentDom, 'mouseout', function() {
+//                        Z.DomUtil.setStyle(dropdownMenu, 'display: none');
+//                    }, this);
+//                }
             }
             //构造下拉菜单
             var items = options['children'];
@@ -143,28 +110,81 @@ Z['Button'] = Z.Button = Z.Class.extend({
                     dropdownMenu.appendChild(this._createMenuDom(item, 'li'));
                 }
             }
-            _menuDom.appendChild(dropdownMenu);
+            _parentDom.appendChild(dropdownMenu);
         }
-        //////////////
+        return _parentDom;
+    },
+
+    _createHtmlDom : function(options) {
+        var _htmlDom = Z.DomUtil.createEl('span');
+        Z.DomUtil.on(_htmlDom, 'click dblclick contextmenu', Z.DomUtil.stopPropagation);
+        _htmlDom.appendChild(options['content']);
+        return _htmlDom;
+    },
+
+    _createMenuDom : function(options, tag) {
+        var _menuDom = Z.DomUtil.createEl('span');
+        if(tag) {
+            _menuDom = Z.DomUtil.createEl(tag);
+        }
+        Z.DomUtil.on(_menuDom, 'click dblclick contextmenu', Z.DomUtil.stopPropagation);
+        Z.DomUtil.addClass(_menuDom, 'maptalks-control-button');
+        _menuDom.appendChild(this._createIconDom(options));
+        if(options['click']) {
+            Z.DomUtil.on(_menuDom, 'click', options['click'], this);
+        }
+        if(options['mouseover']) {
+            Z.DomUtil.on(_menuDom, 'mouseover', options['mouseover'], this);
+        } else {
+            Z.DomUtil.on(_menuDom, 'mouseover', function() {
+                Z.DomUtil.removeClass(_menuDom, 'maptalks-control-button');
+                Z.DomUtil.addClass(_menuDom, 'maptalks-control-button-hover');
+            }, this);
+        }
+        if(options['mouseout']) {
+            Z.DomUtil.on(_menuDom, 'mouseout', options['mouseout'], this);
+        } else {
+            Z.DomUtil.on(_menuDom, 'mouseout', function() {
+                Z.DomUtil.removeClass(_menuDom, 'maptalks-control-button-hover');
+                Z.DomUtil.addClass(_menuDom, 'maptalks-control-button');
+            }, this);
+        }
+        _menuDom = this._createDropMenu(_menuDom, options, tag);
         return _menuDom;
     },
 
     _createIconDom : function(options) {
+        var _spanDom = Z.DomUtil.createEl('span');
         var icon = options['icon'];
         var content = options['content'];
         var html = options['html'];
         if(icon) {
-            var imgDom = '<img src='+icon+' border=0 />';
-            if(text) {
+            var _imgDom = Z.DomUtil.createEl('img');
+            _imgDom.src=icon;
+            _imgDom.border=0;
+            _imgDom.width=16;
+            _imgDom.height=16;
+            _spanDom.appendChild(_imgDom);
+            if(content) {
                 if(html) {
-                    imgDom = '<img src='+icon+' border=0 />&nbsp;'+content;
+                    if(typeof content === 'string') {
+                        _spanDom.innerText = content;
+                    } else {
+                        _spanDom.appendChild(content);
+                    }
                 } else {
-                    imgDom = '<img src='+icon+' border=0 alt='+content+' />&nbsp;'+content;
+                    _spanDom.innerText = content;
                 }
             }
-            return  imgDom;
+            return _spanDom;
         } else {
-           return content;
+            var _contentSpanDom = Z.DomUtil.createEl('span');
+            if(typeof content === 'string') {
+                _spanDom.innerText = content;
+            } else {
+                _spanDom.appendChild(content);
+            }
+           return _spanDom;
         }
     },
 
@@ -176,9 +196,9 @@ Z['Button'] = Z.Button = Z.Class.extend({
             className = this._getClassName(position);
             if(position['bottom']) {
                 if(position['right']) {
-                    className = 'control-menu-right-up';
+                    className = 'maptalks-control-menu-right-up';
                 } else if (position['left']){
-                    className = 'control-menu-left-up';
+                    className = 'maptalks-control-menu-left-up';
                 }
             }
         } else {
@@ -186,19 +206,19 @@ Z['Button'] = Z.Button = Z.Class.extend({
                 if(tag) {
                     className = this._getClassName(position);
                     if(position['right']) {
-                        className = 'control-menu-right-up';
+                        className = 'maptalks-control-menu-right-up';
                     } else if(position['left']) {
-                        className = 'control-menu-left-up';
+                        className = 'maptalks-control-menu-left-up';
                     }
                 } else {
-                    className = 'control-menu-up';
+                    className = 'maptalks-control-menu-up';
                 }
             } else {
-                if(tag) {
-                    className = this._getClassName(position);
-                } else {
-                    className = 'control-menu-down';
-                }
+//                if(tag) {
+//                    className = this._getClassName(position);
+//                } else {
+                    className = 'maptalks-control-menu-down';
+//                }
             }
         }
         return className;
@@ -206,11 +226,11 @@ Z['Button'] = Z.Button = Z.Class.extend({
 
     _getClassName : function(position) {
         if (position['left']) {
-            return 'control-menu-right';
+            return 'maptalks-control-menu-right';
         } else if (position['right']) {
-            return 'control-menu-left';
+            return 'maptalks-control-menu-left';
         } else {
-            return 'control-menu-right';
+            return 'maptalks-control-menu-right';
         }
     },
 

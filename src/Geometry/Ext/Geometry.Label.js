@@ -16,13 +16,15 @@ Z.Geometry.include({
     },
 
     _addLabel: function(options) {
+        var layer = this.getLayer();
         var label;
         if(options instanceof Z.Label) {
             label = options;
-            label.addTo(this);
+            label.addTo(layer);
         } else {
+            options['target'] = this;
             label = new Z.Label(options);
-            label.addTo(this);
+            label.addTo(layer);
         }
         return this;
     },

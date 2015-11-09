@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+        html,body{ margin:0px; height:100%; };
+    </style>
+    <title>MapTalks 示例: 路径播放</title>
+</head>
+<body scroll="no" onload="initMap();">
+<div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
+<script type="text/javascript" >
+    var mapObj;
+    function initMap(){
+        //创建地图对象
+        mapObj = new maptalks.Map('mapObj', //放置mapObj的div id
+        {
+            center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
+            zoomLevel:   14 //初始缩放级别
+        });
+        //设置底图图层
+        mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
+        {
+            tileInfo: 'web-mercator',
+            urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
+            subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
+        }));
+        var config = {
+            timeSpan: 400,//播放时间片，单位毫秒，即隔多少秒播放一次，默认为400
+            unitTime: 30,//单位时间，即每个timeSpan下流逝的实际时间，以毫秒为单位，历史播放模式下默认为5秒
+            enableDrawRoute: true //true|false//是否绘制轨迹
+        };
+        var routeDataArray=[];
+        var center = mapObj.getCenter();
+        for (var i=0,len=routeData.length;i<len;i+=3) {
+            routeDataArray.push({x:routeData[i],y:routeData[i+1],t:routeData[i+2]});
+        }
+        var carSymbol={
+            'markerFile': 'images/taxi.png',
+            'markerWidth': 32,
+            'markerHeight': 32,
+            'markerDx': 0,
+            'markerDy': 16
+        };
+        var polylineSymbol={
+            'lineColor':'#6699cc',
+            'lineWidth': 6,
+            'lineOpacity':0.8,
+            'lineDasharray': [],
+            'polygonFill': '#ffffff',
+            'polygonOpacity': 0.6
+        };
+        var route = [{
+                identifier:1,
+                route:routeDataArray,
+                symbol: carSymbol,
+                routeSymbol:polylineSymbol
+        }];
+        var routePlayer = new maptalks.HistoryRoutePlayer(mapObj,config,route);
+        routePlayer.start();
+
+    }
+</script>
+<!-- 引擎javascript开发包-->
+<script type="text/javascript" src="../../maptalks.js"></script>
+<script type="text/javascript" src="../../Plugins/RoutePlayer/RoutePlayer.js"></script>
+<script type="text/javascript" src="../../Plugins/RoutePlayer/HistoryPlayer.js"></script>
+<script type="text/javascript" src="routes.js"></script>
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+  <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.min.js"></script>
+<![endif]-->
+</body>
+</html>

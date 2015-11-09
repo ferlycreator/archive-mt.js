@@ -37,7 +37,7 @@
         //将点添加到Layer
         layer.addGeometry(marker);
         //设置label属性
-        var options = {
+        var labelOptions = {
             'symbol': {
                 'lineColor': '#ffffff',
                 'lineWidth': 1,
@@ -63,10 +63,8 @@
             'dy': 0,
             'content': '上海大厦'
         };
-        //创建label
-        var label = new maptalks.Label(options);
-        //将label添加到marker上
-        marker.addLabel(label);
+        //将label添加到指定的图层上
+        marker.addLabel(labelOptions);
     }
 </script>
 <!-- 引擎javascript开发包-->

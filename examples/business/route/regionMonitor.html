@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+        html,body{ margin:0px; height:100%; };
+    </style>
+    <title>MapTalks 示例: 区域监控与闯入预警</title>
+</head>
+<body scroll="no" onload="initMap();" style="width:99%;height:99%;">
+<div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
+<script type="text/javascript" >
+    var mapObj,layer,topoQuery,routePlayer;
+    function initMap(){
+        //创建地图对象
+        mapObj = new maptalks.Map("mapObj",{
+            center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
+            zoomLevel:   14 //初始缩放级别
+        });
+        //设置底图图层
+        mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
+        {
+            tileInfo: 'web-mercator',
+            urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
+            subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
+        }));
+        //创建图层
+        layer = new maptalks.VectorLayer('layer');
+        //将图层添加到地图对象
+        mapObj.addLayer(layer);
+        //初始化空间查询
+        topoQuery = new maptalks.TopoQuery({host:'42.121.108.110',port:18090});
+
+        //工具
+        var toolbar = new maptalks.Toolbar({
+            position : { //工具条放置位置
+                top: '30',
+                left: '30'
+            },
+            vertical : false,
+            //工具项
+            items: [{
+                type : 'button',
+                icon: 'images/signal.png',
+                click : function(param){
+                    mapObj.on('click', markerMonitorMarker);
+                }
+            }]
+        });
+        mapObj.addControl(toolbar);
+        //构造轨迹播放
+        var config = {
+            timeSpan: 400,//播放时间片，单位毫秒，即隔多少秒播放一次，默认为400
+            unitTime: 30,//单位时间，即每个timeSpan下流逝的实际时间，以毫秒为单位，历史播放模式下默认为5秒
+            enableDrawRoute: false //true|false//是否绘制轨迹
+        };
+        var routeDataArray=[];
+        var center = mapObj.getCenter();
+        for (var i=0,len=routeData.length;i<len;i+=3) {
+            routeDataArray.push({x:routeData[i],y:routeData[i+1],t:routeData[i+2]});
+        }
+        var carSymbol={
+            'markerFile': 'images/taxi.png',
+            'markerWidth': 32,
+            'markerHeight': 16,
+            'markerDx': 0,
+            'markerDy': 8
+        };
+        var polylineSymbol={
+            'lineColor':'#00568a',
+            'lineWidth': 6,
+            'lineOpacity':0.8,
+            'lineDasharray': [],
+            'polygonFill': '#ffffff',
+            'polygonOpacity': 0.6
+        };
+        var route = [{
+                identifier:1,
+                route:routeDataArray,
+                symbol: carSymbol,
+                routeSymbol:polylineSymbol
+        }];
+        routePlayer = new maptalks.HistoryRoutePlayer(mapObj,config,route);
+        routePlayer.start();
+        //设置默认监控区域
+        var param = {coordinate:new maptalks.Coordinate(121.48997791534421,31.25895859182188)};
+        markerMonitorMarker(param);
+    }
+
+    function markerMonitorMarker(param) {
+        mapObj.off('click', markerMonitorMarker);
+        var coordinate = param.coordinate;
+        //设置图片
+        var icon = {
+            'markerFile': 'images/signal.png',
+            'markerWidth': 32,
+            'markerHeight': 32,
+            'markerDx': 0,
+            'markerDy': 16
+        };
+        //创建点对象
+        var marker = new maptalks.Marker(coordinate);
+        //设置点样式
+        marker.setSymbol(icon);
+        //将点添加到Layer
+        layer.addGeometry(marker);
+        //添加默认缓冲区
+        var bufferSymbol = {
+            'lineColor' : '#66ff66',
+            'lineWidth' : 3,
+            'lineOpacity' : 1,
+            'lineDasharray' :[],
+            'polygonFill': '#66ff66',
+            'polygonOpacity': 0.2
+        };
+
+        var hitBufferSymbol = {
+            'lineColor' : '#ab2d00',
+            'lineWidth' : 3,
+            'lineOpacity' : 1,
+            'lineDasharray' :[],
+            'polygonFill': '#ff000d',
+            'polygonOpacity': 0.2
+        };
+        //绘制目标监控缓冲区
+        topoQuery.buffer({
+            geometries:[marker],
+            distance:800,
+            success: function(geometries){
+                for(var i=0,len=geometries.length;i<len;i++) {
+                    var geo = geometries[i];
+                    geo.setSymbol(bufferSymbol);
+                    //设置定时检测事件
+                    var hitGeos = [];
+                    window.setInterval(function(){
+                        var layer = routePlayer.player.markerLayer;
+                        if(layer&&layer.getGeometryById(1)) {//identifier
+                            var movingGeo = layer.getGeometryById(1);
+                            var targets = [movingGeo];
+                            topoQuery.relate({
+                                source:geo,
+                                targets:targets,
+                                relation: 1,//包含
+                                success: function(data) {
+                                    var result = data[0];
+                                    if(result>0){
+                                        var hitGeo = targets[result-1];
+                                        hitGeo.flash(100,2);
+                                        geo.setSymbol(hitBufferSymbol);
+                                        hitGeos.push(hitGeo);
+                                    } else {
+                                        for(var i=0,len=hitGeos.length;i<len;i++){
+                                            hitGeos[i].flash(0,0);
+                                        }
+                                        geo.setSymbol(bufferSymbol);
+                                        hitGeos = [];
+                                    }
+                                }
+                            });
+                        }
+                    },3000);
+
+                    //多边形属性面板
+                    var polygonPropertyPanel = new PolygonPropertyPanel();
+                    //绑定激活多边形属性面板事件
+                    geo.on('click', function(){
+                        polygonPropertyPanel.addTo(geo);
+                    });
+                }
+                layer.addGeometry(geometries);
+            }
+        });
+
+        //monitor属性面板
+        var monitorPropertyPanel = new MonitorPropertyPanel();
+
+        marker.on('click', function(){
+            monitorPropertyPanel.addTo(marker);
+        });
+    }
+
+</script>
+<!-- 引擎javascript开发包-->
+<script type="text/javascript" src="../../../maptalks.js"></script>
+<script type="text/javascript" src="monitor_property.js"></script>
+<script type="text/javascript" src="../../toolbox/polygon/polygon_property.js"></script>
+<script type="text/javascript" src="../../../Plugins/RoutePlayer/RoutePlayer.js"></script>
+<script type="text/javascript" src="../../../Plugins/RoutePlayer/HistoryPlayer.js"></script>
+<script type="text/javascript" src="routeData.js"></script>
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+  <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.min.js"></script>
+<![endif]-->
+</body>
+</html>
