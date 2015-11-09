@@ -16,11 +16,6 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
     type:Z.Geometry['TYPE_POLYGON'],
 
     /**
-     *SIMPLFY 多边形的阈值
-     */
-    SIMPLFY_POLYGON : 20,
-
-    /**
      * 异常信息
      * @static
      */

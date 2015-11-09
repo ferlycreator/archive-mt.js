@@ -195,9 +195,14 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
                 continue;
             }
             var center = geometries[i]._computeCenter(projection);
-            sumX += center.x;
-            sumY += center.y;
-            counter++;
+            if (center) {
+                sumX += center.x;
+                sumY += center.y;
+                counter++;
+            }
+        }
+        if (counter === 0) {
+            return null;
         }
         return new Z.Coordinate(sumX/counter, sumY/counter);
     },
@@ -226,7 +231,13 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         var result = null;
         for (var i=0, len=geometries.length;i<len;i++) {
             var geo = geometries[i];
-            result = geo._computeExtent(projection).combine(result);
+            if (!geo) {
+                continue;
+            }
+            var geoExtent = geo._computeExtent(projection);
+            if (geoExtent) {
+                result = geoExtent.combine(result);
+            }
         }
         return result;
     },
@@ -240,7 +251,11 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         var geometries = this.getGeometries();
         var result = 0;
         for (var i=0, len=geometries.length;i<len;i++) {
-            result += geometries[i]._computeGeodesicLength(projection);
+            var geo = geometries[i];
+            if (!geo) {
+                continue;
+            }
+            result += geo._computeGeodesicLength(projection);
         }
         return result;
     },
@@ -252,7 +267,11 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         var geometries = this.getGeometries();
         var result = 0;
         for (var i=0, len=geometries.length;i<len;i++) {
-            result += geometries[i]._computeGeodesicArea(projection);
+            var geo = geometries[i];
+            if (!geo) {
+                continue;
+            }
+            result += geo._computeGeodesicArea(projection);
         }
         return result;
     },
@@ -263,7 +282,11 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         if (!this.isEmpty()) {
             var geometries = this.getGeometries();
             for (var i=0,len=geometries.length;i<len;i++) {
-                geoJsons.push(geometries[i]._exportGeoJson());
+                var geo = geometries[i];
+                if (!geo) {
+                    continue;
+                }
+                geoJsons.push(geo._exportGeoJson());
             }
         }
         return {
@@ -278,7 +301,11 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         }
         var geometries = this.getGeometries();
         for (var i=0,len=geometries.length;i<len;i++) {
-            this._geometries[i]._clearProjection();
+            var geo = geometries[i];
+            if (!geo) {
+                continue;
+            }
+            geo._clearProjection();
         }
 
     },

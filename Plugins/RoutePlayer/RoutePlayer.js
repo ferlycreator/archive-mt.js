@@ -61,7 +61,7 @@ Z.RoutePlayer = Z.Class.extend({
 		if (!this.map || !this.routes) return;
 		this.projection=this.map.getProjection;
 		this.routeCache={};
-		var routes = this.routes;			
+		var routes = this.routes;
 		var currentTime=0;
 		var identifiers = routes['getIds']();
 		this.identifiers = [];
@@ -74,7 +74,7 @@ Z.RoutePlayer = Z.Class.extend({
 			if (rstart != null && !Z.Util.isNil(rstart['t'])) {
 				var time = rstart['t'];
 				if (currentTime === 0) {
-					currentTime=time;					
+					currentTime=time;
 				} else {
 					if (time<currentTime) {
 						currentTime=time;
@@ -104,7 +104,7 @@ Z.RoutePlayer = Z.Class.extend({
 		this.routeLayer.clear();
 		this.on('playing', focusListener);
 		var me = this;
-		function focusListener(param) {			
+		function focusListener(param) {
             me._onFocus();
 		}
 	},
@@ -112,7 +112,7 @@ Z.RoutePlayer = Z.Class.extend({
 	 * 开始播放轨迹
 	 * @expose
 	 */
-	start:function() {		
+	start:function() {
 		if (!this.map || !this.routes) return;
 		this._initialize();
          /**
@@ -193,7 +193,7 @@ Z.RoutePlayer = Z.Class.extend({
 	 */
 	_loop:function(donotDraw) {
 		var me = this;
-		var unitTime = this.unitTime;		
+		var unitTime = this.unitTime;
 		var routeCache = this.routeCache;
 		var routes = this.routes;
 		var identifiers = this.identifiers;
@@ -235,8 +235,8 @@ Z.RoutePlayer = Z.Class.extend({
 					}
 					hisRoutes.push(new Z.Coordinate(point['x'],point['y']));
 					prePoint = point;
-				} 
-			}			
+				}
+			}
 		}
 		if (endRoutesCnt === identifiers.length) {
 			this._clearLooper();
@@ -263,7 +263,9 @@ Z.RoutePlayer = Z.Class.extend({
 			var triangle = new Z.Polygon([[point,hisRoutes[len-1],hisRoutes[len-2]]],{'id':'tmp'});
 //			triangle.setMap(this.map);
 			var area = triangle.getArea();
-			if (area != null && area <= Z.Polygon.SIMPLFY_POLYGON) {
+            //FIXME 三点形成面积小于20时, 近似为直线, 但这里有bug: 不同的坐标系需要不同的值
+            var AREA_THRESHOLD_TO_SIMPLIFY= 20;
+			if (area != null && area <= AREA_THRESHOLD_TO_SIMPLIFY) {
 				return true;
 			}
 			return false;
@@ -286,8 +288,8 @@ Z.RoutePlayer = Z.Class.extend({
 			if (this.markerLayer) {
 				var marker = this.markerLayer.getGeometryById(routeId);
 				if (hisRoutes.length>0) {
-					var center = hisRoutes[hisRoutes.length-1];										
-					if (!marker) {						
+					var center = hisRoutes[hisRoutes.length-1];
+					if (!marker) {
 						marker = new Z.Marker(center,{id:routeId});
 						var symbol = null;
 						if (routeObjs['getMarkerSymbol']) {
@@ -337,7 +339,7 @@ Z.RoutePlayer = Z.Class.extend({
 					}
 				}
 			}
-			if (this.enableDrawRoute && this.routeLayer) {	
+			if (this.enableDrawRoute && this.routeLayer) {
 				var route = this.routeLayer.getGeometryById(routeId);
 				if (hisRoutes && hisRoutes.length>0) {
 					if (!route) {
@@ -345,7 +347,7 @@ Z.RoutePlayer = Z.Class.extend({
 						var symbol = null;
 						if (routeObjs['getRouteSymbol']) {
 							symbol = routeObjs['getRouteSymbol'](routeId);
-						}	
+						}
 						if (symbol)
 						    route.setSymbol(symbol);
                         routeGeos.push(route);
@@ -426,12 +428,12 @@ Z.RoutePlayer = Z.Class.extend({
 			} else if (this.focusMode === 2) {
 				//超出地图范围后再setCenter
 			}
-			
+
 		}
 	},
 	/**
 	 * 获得当前播放时间
-	 * 
+	 *
 	 */
 	getCurrentTime:function() {
 		return this.currentTime;
@@ -441,7 +443,7 @@ Z.RoutePlayer = Z.Class.extend({
 		if (marker) {
 			marker.show();
 		}
-		if (this.enableDrawRoute && this.routeLayer) {	
+		if (this.enableDrawRoute && this.routeLayer) {
 			var route = this.routeLayer.getGeometryById(identifier);
 			if (route) {
 				route.show();
@@ -453,7 +455,7 @@ Z.RoutePlayer = Z.Class.extend({
 		if (marker) {
 			marker.hide();
 		}
-		if (this.enableDrawRoute && this.routeLayer) {	
+		if (this.enableDrawRoute && this.routeLayer) {
 			var route = this.routeLayer.getGeometryById(identifier);
 			if (route) {
 				route.hide();
@@ -467,6 +469,6 @@ Z.RoutePlayer = Z.Class.extend({
 	setUnitTime:function(unitTime) {
 		if (!unitTime) return;
 		this.unitTime = unitTime;
-		
+
 	}
 });

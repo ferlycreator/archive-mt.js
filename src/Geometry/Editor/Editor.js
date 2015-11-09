@@ -227,7 +227,7 @@ Z.Editor=Z.Class.extend({
             symbol = marker.getSymbol();
         var radiusHandle;
         var fnGetVectorSizePos;
-        if (marker.isVectorSymbol()) {
+        if (marker._canEdit()) {
             //创建编辑矢量类型marker大小的handle
             var dxdy = new Z.Point(0,0);
             if (symbol['markerDx'] && symbol['markerDy']) {

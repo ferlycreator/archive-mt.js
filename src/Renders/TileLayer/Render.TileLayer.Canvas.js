@@ -45,7 +45,6 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
     },
 
     rend:function(options) {
-        var map = this.getMap();
         this._rending = true;
         var tileGrid = this._layer._getTiles(this.getMap().getSize().multi(2.2));
         var tiles = tileGrid['tiles'];
@@ -87,10 +86,9 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
             //如果缓存中已存有瓦片, 则从不再请求而从缓存中读取.
             var cached = tileCache.get(tileId);
             if (cached) {
-                if (cached['complete']) {
+                    console.log('draw cached tile');
                     //画瓦片
                     this._drawTile(tile['viewPoint'], cached);
-                }
             } else {
                 if (mapViewExtent.isIntersect(new Z.Extent(tile['viewPoint'], tile['viewPoint'].add(new Z.Point(tileSize['width'], tileSize['height']))))) {
                     this._tileToLoadCounter++;
@@ -120,24 +118,28 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
 
     _loadTileQueue:function() {
         var me = this;
+        var propertyOfPointOnTile = '--maptalks-tile-point',
+            propertyOfTileId = '--maptalks-tile-id';
         function onTileLoad() {
+            me._tileCache.add(this[propertyOfTileId], this);
             me._drawTileAndRequest(this[propertyOfPointOnTile], this);
 
         }
         function onTileError() {
+            me._tileCache.remove(tileImage[propertyOfTileId], this);
             me._clearTileRectAndRequest(this[propertyOfPointOnTile],this);
         }
-        var propertyOfPointOnTile = '--maptalks-tile-point';
+
         for (var p in this._tileQueue) {
             if (this._tileQueue.hasOwnProperty(p) && !this._tileCache[p]) {
                 var tile = this._tileQueue[p];
                 delete this._tileQueue[p];
                 var tileImage = new Image();
+                tileImage[propertyOfTileId]=p;
                 tileImage[propertyOfPointOnTile] = tile['viewPoint'];
                 tileImage.onload = onTileLoad;
                 tileImage.onabort = onTileError;
                 tileImage.onerror = onTileError;
-                this._tileCache.add(p, tileImage);
                 //
                 tileImage.src = tile['url'];
             }
@@ -160,15 +162,15 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
     _drawTileAndRequest:function(point, tileImage) {
         this._tileToLoadCounter--;
 
-        if (!this._rending) {
-            this._drawTile(point, tileImage);
 
-             var tileSize = this._layer._getTileSize();
-              var viewExtent = this.getMap()._getViewExtent();
-            if (viewExtent.isIntersect(new Z.Extent(point, point.add(new Z.Point(tileSize['width'], tileSize['height']))))) {
-                this._requestMapToRend();
-            }
+        this._drawTile(point, tileImage);
+
+        var tileSize = this._layer._getTileSize();
+        var viewExtent = this.getMap()._getViewExtent();
+        if (viewExtent.isIntersect(new Z.Extent(point, point.add(new Z.Point(tileSize['width'], tileSize['height']))))) {
+            this._requestMapToRend();
         }
+
         if (this._tileToLoadCounter === 0) {
 
              this._fireLoadedEvent();

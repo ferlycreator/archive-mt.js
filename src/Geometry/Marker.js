@@ -27,8 +27,8 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
      * 是否是矢量渲染
      * @return {Boolean}
      */
-    isVectorSymbol:function() {
-        return Z.VectorMarkerSymbolizer.test(this, this.getSymbol());
+    _canEdit:function() {
+        return Z.VectorMarkerSymbolizer.test(this, this.getSymbol()) || Z.ImageMarkerSymbolizer.test(this, this.getSymbol());
     },
 
     _containsPoint: function(point) {
