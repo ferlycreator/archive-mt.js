@@ -9,10 +9,16 @@ Z.Map.mergeOptions({
 Z.Map.EventToGeometry = Z.Handler.extend({
     addHooks: function() {
         // return;
-        var canvasContainer = this.map._panels.canvasLayerContainer;
+        var canvasContainer;
+        if (Z.Browser.ie11) {
+            canvasContainer = this.map._panels.canvasLayerContainer;
+        } else {
+            canvasContainer = this.map._panels.mapPlatform;
+        }
         if(canvasContainer) {
             Z.DomUtil.on(canvasContainer,'mousedown mouseup mousemove click dblclick contextmenu', this._queryGeometries, this);
         }
+        //之所以取消在map上的监听, 是因为map事件在geometry事件之前发生, 会导致一些互动上的问题
         // this.map.on('_mousedown _mouseup _mousemove _click _dblclick _contextmenu', this._queryGeometries, this);
 
     },
@@ -20,7 +26,12 @@ Z.Map.EventToGeometry = Z.Handler.extend({
     removeHooks: function() {
         /**
         this.map.off('mousedown mouseup mousemove click dblclick contextmenu', this._queryGeometries, this);*/
-        var canvasContainer = this.map._panels.canvasLayerContainer;
+        var canvasContainer;
+        if (Z.Browser.ie11) {
+            canvasContainer = this.map._panels.canvasLayerContainer;
+        } else {
+            canvasContainer = this.map._panels.mapPlatform;
+        }
         if(canvasContainer) {
             Z.DomUtil.off(canvasContainer,'mousedown mouseup mousemove click dblclick contextmenu', this._queryGeometries, this);
         }

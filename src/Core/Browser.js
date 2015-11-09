@@ -133,7 +133,7 @@
          */
 		language:language,
 		translateDom:(any3d && !ie),
-
+        ie11: (ie && document.documentMode === 9),
         /**
          * @property {Boolean} 是否支持canvas
          * @static
