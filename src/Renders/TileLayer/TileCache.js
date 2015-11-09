@@ -18,6 +18,10 @@ Z.TileLayer.TileCache.prototype = {
         return this._cache[key];
     },
 
+    remove:function(key) {
+        delete this._cache[key];
+    },
+
     _expireCache:function() {
         if (this._expTimeout) {
             clearTimeout(this._expTimeout);
