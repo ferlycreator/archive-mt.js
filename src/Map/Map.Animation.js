@@ -3,8 +3,11 @@ Z.Map.include({
         if (!frame.state['playing']) {
             return;
         }
-        if (frame.point) {
-            this._setPrjCenterAndMove(frame.point);
+        if (frame.distance) {
+            var offset =frame.distance;
+            offset = offset.round();
+            this.offsetPlatform(offset);
+            this._offsetCenterByPixel(offset.multi(-1));
             this._fireEvent('moving');
         }
     }

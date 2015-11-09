@@ -58,8 +58,8 @@ Z.Map.Drag = Z.Handler.extend({
         var nextLeft = (this.startLeft + mx - this.startX);
         var nextTop = (this.startTop + my - this.startY);
         var currentDomOffset = this.map.offsetPlatform();
-        this.map.offsetPlatform(new Z.Point(nextLeft-currentDomOffset['left'],nextTop-currentDomOffset['top']));
-        map._offsetCenterByPixel(new Z.Point(-(nextLeft-currentDomOffset['left']),-(nextTop-currentDomOffset['top'])));
+        this.map.offsetPlatform(new Z.Point(nextLeft,nextTop).substract(currentDomOffset));
+        map._offsetCenterByPixel(new Z.Point(-nextLeft,-nextTop).add(currentDomOffset));
         this.map._onMoving({'target':map});
     },
 

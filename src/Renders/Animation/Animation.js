@@ -97,12 +97,12 @@ Z.animation.Easing = {
 /**
  * Animation的一帧
  * @param {Boolean} playing 是否处于播放状态
- * @param {Point | Coordinate} point  位置
+ * @param {Point} distance  移动距离
  * @param {Number} scale     放大比例
  */
-Z.animation.Frame = function(state, point, scale) {
+Z.animation.Frame = function(state, distance, scale) {
     this.state = state;
-    this.point = point;
+    this.distance = distance;
     this.scale = scale;
 };
 
@@ -111,24 +111,26 @@ Z.animation.Frame = function(state, point, scale) {
  * @param {[type]} options [description]
  */
 Z.animation.pan = function(options) {
-    var source = options['source'],
-        destination = options['destination'],
+    var distance = options['distance'],
         duration = options['duration']?options['duration']:1000,
         start = options['start'] ? options['start'] : Date.now();
-    var distance = destination.substract(source);
     var easing = Z.animation.Easing.inAndOut;
+    var preDistance = null;
     return function(time) {
         if (time < start) {
-          return new Z.animation.Frame({'playing':false,'startTime':start, 'end':false}, source, null);
+          return new Z.animation.Frame({'playing':false,'startTime':start, 'end':false}, null, null);
         } else if (time < start + duration) {
+          if (!preDistance) {
+            preDistance = new Z.Point(0,0);
+          }
           var delta = easing((time - start) / duration);
           var d = distance.multi(delta);
-
-          var p = source.add(d);
+          var frameDistance = d.substract(preDistance);
+          preDistance = d;
           // console.log(p);
-          return new Z.animation.Frame({'playing':true,'startTime':start, 'end':false}, p, null);
+          return new Z.animation.Frame({'playing':true,'startTime':start, 'end':false}, frameDistance, null);
         } else {
-          return new Z.animation.Frame({'playing':false,'startTime':start, 'end':true}, destination, null);
+          return new Z.animation.Frame({'playing':false,'startTime':start, 'end':true}, distance, null);
         }
     };
 };

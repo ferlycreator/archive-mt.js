@@ -168,20 +168,13 @@ Z.render.map.Dom = Z.render.map.Render.extend({
          if (map._isBusy) {
             return;
         }
-        var pcenter = map._getPrjCenter();
-        var destContainerPoint = map._transform(pcenter).add(moveOffset.multi(-0.5));
-        var dest = map._untransform(destContainerPoint);
+        var panMoveOffset = moveOffset.multi(0.5);
         map._isBusy = true;
         Z.animation.animate(new Z.animation.pan({
-            'source': pcenter,
-            'destination' : dest ,
+            'distance': panMoveOffset,
             'duration' : (t*4+100)
         }), map, function(frame) {
-            /*if (!baseRended && (Z.animation.now() - frame.state['startTime'] >= 300)) {
-                this._askBaseTileLayerToRend();
-            }*/
             if (frame.state['end']) {
-                map._setPrjCenterAndMove(dest);
                 map._isBusy = false;
                 map._onMoveEnd();
             }
