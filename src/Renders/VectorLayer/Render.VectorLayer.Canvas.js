@@ -15,15 +15,27 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
             this._layer._eachGeometry(function(geo) {
                 geo._onZoomEnd();
             });
-            this._draw();
+            if (!this._resources) {
+                this.rend();
+            } else {
+                this._draw();
+            }
         } else if (param['type'] === '_zoomstart') {
             this._clearCanvas();
 
         } else if (param['type'] === '_moveend') {
-            this._draw();
+            if (!this._resources) {
+                this.rend();
+            } else {
+                this._draw();
+            }
         } else if (param['type'] === '_resize') {
             this._resizeCanvas();
-            this._draw();
+            if (!this._resources) {
+                this.rend();
+            } else {
+                this._draw();
+            }
         }
     },
 
