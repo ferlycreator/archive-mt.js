@@ -374,13 +374,14 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
 
     _forceStartDrag:function() {
         var map = this.getMap();
-        map.options['draggable']=false;
+
         if (!map) {
-            return;
+            return this;
         }
         if (this.isEmpty()) {
-            return;
+            return this;
         }
+        map.options['draggable']=false;
         var me = this;
         var geometries = me.getGeometries();
         for (var i=0,len=geometries.length;i<len;i++) {
@@ -397,7 +398,7 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
      */
     endDrag:function() {
         if (this.isEmpty()) {
-            return;
+            return this;
         }
         this.getMap().off('mouseup', this.endDrag,this);
         this._isDragging = false;
