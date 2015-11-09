@@ -10,7 +10,7 @@ Z.Map.EventToGeometry = Z.Handler.extend({
     addHooks: function() {
         // return;
         var canvasContainer;
-        if (Z.Browser.ie11) {
+        if (Z.Browser.ie9) {
             canvasContainer = this.map._panels.canvasLayerContainer;
         } else {
             canvasContainer = this.map._panels.mapPlatform;
@@ -27,7 +27,7 @@ Z.Map.EventToGeometry = Z.Handler.extend({
         /**
         this.map.off('mousedown mouseup mousemove click dblclick contextmenu', this._queryGeometries, this);*/
         var canvasContainer;
-        if (Z.Browser.ie11) {
+        if (Z.Browser.ie9) {
             canvasContainer = this.map._panels.canvasLayerContainer;
         } else {
             canvasContainer = this.map._panels.mapPlatform;
