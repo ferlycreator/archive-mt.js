@@ -86,7 +86,6 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
             //如果缓存中已存有瓦片, 则从不再请求而从缓存中读取.
             var cached = tileCache.get(tileId);
             if (cached) {
-                    console.log('draw cached tile');
                     //画瓦片
                     this._drawTile(tile['viewPoint'], cached);
             } else {

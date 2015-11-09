@@ -167,6 +167,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
                     fullExtent = fullExtent.combine(new Z.Extent(tileDesc['viewPoint'], tileDesc['viewPoint'].add(new Z.Point(tileSize['width'],tileSize['height']))));
             }
         }
+        //瓦片排序, 地图中心的瓦片排在末尾, 末尾的瓦片先载入
         tiles.sort(function (a, b) {
             return b['viewPoint'].distanceTo(centerTileViewPoint)-a['viewPoint'].distanceTo(centerTileViewPoint);
         });

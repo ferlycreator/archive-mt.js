@@ -165,6 +165,9 @@ Z.render.map.Dom = Z.render.map.Render.extend({
 
     panAnimation:function(moveOffset, t) {
         var map = this.map;
+         if (map._isBusy) {
+            return;
+        }
         var pcenter = map._getPrjCenter();
         var destContainerPoint = map._transform(pcenter).add(moveOffset.multi(-0.5));
         var dest = map._untransform(destContainerPoint);
