@@ -17,7 +17,7 @@ Z.Linker = Z.Class.extend({
      * @returns {maptalks.Linker}
      */
     initialize: function (options) {
-        if(!options) return;
+        if(!options) {return;}
         this.setOptions(options);
         this._linkSource = options['linkSource'];
         this._linkTarget = options['linkTarget'];
@@ -91,17 +91,17 @@ Z.Linker = Z.Class.extend({
         if(this._linker) {
             this._linker.remove();
         }
-        this._map.off('zoomend resize moving', this._changeLinkPath, this);
+        this._linkSource.off('dragging', this._changeLinkPath, this);
         this._linkSource.off('positionchanged', this._changeLinkPath, this)
                         .off('remove', this.remove, this);
         this._linkTarget.off('positionchanged', this._changeLinkPath, this)
                         .off('remove', this.remove, this);
-        delete this;
+        // delete this;
     },
 
     _registEvents: function() {
         var me = this;
-        this._map.on('zoomend resize moving', this._changeLinkPath, this);
+        this._linkSource.on('dragging', this._changeLinkPath, this);
         this._linkSource.on('positionchanged', this._changeLinkPath, this)
                         .on('remove', this.remove, this);
         this._linkTarget.on('positionchanged', this._changeLinkPath, this)

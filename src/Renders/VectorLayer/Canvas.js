@@ -137,13 +137,13 @@ Z.Canvas = {
 
     text:function(ctx, text, pt, style, size) {
         var font = style['textFaceName'];
-        var fontSize = Z.Util.setDefaultValue(style['textSize'],12);
+        var fontSize = Z.Util.getValueOrDefault(style['textSize'],12);
 
-        var lineSpacing = Z.Util.setDefaultValue(style['textLineSpacing'],0);
+        var lineSpacing = Z.Util.getValueOrDefault(style['textLineSpacing'],0);
         var wrapChar = style['textWrapCharacter'];
         var textWidth = Z.Util.stringLength(text,font,fontSize).width;
         var wrapWidth = style['textWrapWidth'];
-        if(!wrapWidth) wrapWidth = textWidth;
+        if(!wrapWidth) {wrapWidth = textWidth;}
         var dx=pt['left']+style['textDx'],dy=pt['top']+style['textDy'];
         var rowNum = 1;
         if(wrapChar){
@@ -151,9 +151,9 @@ Z.Canvas = {
             var textRows = [];
             for(var i=0,len=texts.length;i<len;i++) {
                 var t = texts[i];
-                var textWidth = Z.Util.stringLength(t,font,fontSize).width;
-                if(textWidth>wrapWidth) {
-                    var contents = Z.Util.splitContent(t, textWidth, fontSize, wrapWidth);
+                var wrapTextWidth = Z.Util.stringLength(t,font,fontSize).width;
+                if(wrapTextWidth>wrapWidth) {
+                    var contents = Z.Util.splitContent(t, wrapTextWidth, fontSize, wrapWidth);
                     textRows = textRows.concat(contents);
                 } else {
                     textRows.push(t);

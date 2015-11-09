@@ -400,7 +400,7 @@ Z.Util = {
      * @param {Object} value 赋值
      * @param {Object} defaultValue 默认值
      */
-    setDefaultValue: function(value, defaultValue) {
+    getValueOrDefault: function(value, defaultValue) {
         return (Z.Util.isNil(value))?defaultValue:value;
     },
 

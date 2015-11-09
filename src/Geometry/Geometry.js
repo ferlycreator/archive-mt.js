@@ -13,11 +13,13 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     exceptionDefs:{
         'en-US':{
             'DUPLICATE_LAYER':'Geometry cannot be added to two or more layers at the same time.',
-            'INVALID_GEOMETRY_IN_COLLECTION':'Geometry is not valid for collection,index:'
+            'INVALID_GEOMETRY_IN_COLLECTION':'Geometry is not valid for collection,index:',
+            'NOT_ADD_TO_LAYER':'This operation needs geometry to be on a layer.'
         },
         'zh-CN':{
             'DUPLICATE_LAYER':'Geometry不能被重复添加到多个图层上.',
-            'INVALID_GEOMETRY_IN_COLLECTION':'添加到集合中的Geometry是不合法的, index:'
+            'INVALID_GEOMETRY_IN_COLLECTION':'添加到集合中的Geometry是不合法的, index:',
+            'NOT_ADD_TO_LAYER':'Geometry必须添加到某个图层上才能作此操作.'
         }
     },
 
@@ -42,11 +44,11 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         'editable':true
     },
 
-    //初始化传入的option参数
-    _initOptions:function(opts) {
-        if (!opts) {
-            opts = {};
-        }
+    /**
+     * 设置options
+     * @param {[type]} opts [description]
+     */
+    setOptions:function(opts) {
         var symbol = opts['symbol'];
         delete opts['symbol'];
         var id = opts['id'];
@@ -58,25 +60,6 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (!Z.Util.isNil(id)) {
             this.setId(id);
         }
-    },
-
-    //调用prepare时,layer已经注册到map上
-    _prepare:function(layer) {
-        this._rootPrepare(layer);
-    },
-
-    _rootPrepare:function(layer) {
-        //Geometry不允许被重复添加到多个图层上
-        if (this.getLayer()) {
-            throw new Error(this.exceptions['DUPLICATE_LAYER']);
-        }
-        //更新缓存
-        this._updateCache();
-        this._layer = layer;
-        //如果投影发生改变,则清除掉所有的投影坐标属性
-        this._clearProjection();
-        this.callInitHooks();
-
     },
 
     /**
@@ -157,66 +140,22 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      */
     setSymbol:function(symbol) {
         if (!symbol) {
-            this.options['symbol'] = null;
+           this.options['symbol'] = null;
         } else {
-            //属性的变量名转化为驼峰风格
-           var camelSymbol = Z.Util.convertFieldNameStyle(symbol,'camel');
-           this._convertResourceUrl(camelSymbol);
+           var camelSymbol = this._prepareSymbol(symbol);
            this.options['symbol'] = camelSymbol;
         }
         this._onSymbolChanged();
         return this;
     },
 
-    /**
-     * 资源url从相对路径转为绝对路径
-     * @param  {[type]} symbol [description]
-     * @return {[type]}        [description]
-     */
-    _convertResourceUrl:function(symbol) {
-        function isRel(url) {
-            if (url.indexOf('http://') >= 0 || url.indexOf('https://') >= 0 || url.indexOf('blob:') >= 0) {
-                return false;
-            }
-            return true;
-        }
-        function absolute(base, relative) {
-            var stack = base.split("/"),
-                parts = relative.split("/");
-            if (relative.indexOf('/') === 0) {
-                return stack.slice(0,3).join('/')+relative;
-            } else {
-                stack.pop(); // remove current file name (or empty string)
-                             // (omit if "base" is the current folder without trailing slash)
-                for (var i=0; i<parts.length; i++) {
-                    if (parts[i] == ".")
-                        continue;
-                    if (parts[i] == "..")
-                        stack.pop();
-                    else
-                        stack.push(parts[i]);
-                }
-                return stack.join("/");
-            }
-
-        }
-
-        var icon = symbol['markerFile'];
-        if (icon && isRel(icon)) {
-            symbol['markerFile'] = absolute(location.href,icon);
-        }
-        icon = symbol['shieldFile'];
-        if (icon && isRel(icon)) {
-            symbol['shieldFile'] = absolute(location.href,icon);
-        }
-        var fill = symbol['polygonPatternFile'];
-        if (fill) {
-            icon = Z.Util.extractCssUrl(fill);
-            if (isRel(icon)) {
-                symbol['polygonPatternFile'] = 'url("'+absolute(location.href,icon)+'")';
-            }
-        }
+    _prepareSymbol:function(symbol) {
+              //属性的变量名转化为驼峰风格
+       var camelSymbol = Z.Util.convertFieldNameStyle(symbol,'camel');
+       this._convertResourceUrl(camelSymbol);
+       return camelSymbol;
     },
+
 
     /**
      * 计算Geometry的外接矩形范围
@@ -242,16 +181,6 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
         var pxExtent = this._getPainter().getPixelExtent();
         return new Z.Size(Math.round(Math.abs(pxExtent['xmax']-pxExtent['xmin'])), Math.round(Math.abs(pxExtent['ymax'] - pxExtent['ymin'])));
-    },
-
-    _getPrjExtent:function() {
-        var ext = this.getExtent();
-        var p = this._getProjection();
-        if (ext) {
-            return new Z.Extent(p.project({x:ext['xmin'],y:ext['ymin']}), p.project({x:ext['xmax'],y:ext['ymax']}));
-        } else {
-            return null;
-        }
     },
 
     /**
@@ -310,6 +239,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     /**
      * 闪烁Geometry
+     *
      * @param interval {Number} 闪烁间隔时间，以毫秒为单位
      * @param count {Number} 闪烁次数
      */
@@ -348,7 +278,30 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     isVisible:function() {
+
         return this.options['visible'];
+    },
+
+    /**
+     * 图形按给定的坐标偏移量平移
+     * @param  {Coordinate} offset 坐标偏移量
+     */
+     translate:function(offset) {
+        if (!offset || (offset.x === 0 && offset.y === 0)) {
+            return this;
+        }
+        var coordinates = this.getCoordinates();
+        if (coordinates) {
+            if (Z.Util.isArray(coordinates)) {
+                var offseted = Z.Util.eachInArray(coordinates,this,function(coord) {
+                    return coord.add(offset);
+                });
+                this.setCoordinates(offseted);
+            } else {
+                this.setCoordinates(coordinates.add(offset));
+            }
+        }
+        return this;
     },
 
     /**
@@ -372,144 +325,6 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         this._rootRemove(true);
     },
 
-    _rootRemove:function(isFireEvent) {
-        var layer = this.getLayer();
-        if (!layer) {
-            return;
-        }
-        //label
-        //contextmenu
-        this._unbindMenu();
-        //infowindow
-        this._unbindInfoWindow();
-
-        this._removePainter();
-        layer._onGeometryRemove(this);
-        delete this._layer;
-        if (isFireEvent) {
-            this._fireEvent('remove');
-        }
-    },
-
-    _getInternalId:function() {
-        return this._internalId;
-    },
-
-    //只能被图层调用
-    _setInternalId:function(id) {
-        this._internalId = id;
-    },
-
-
-    _getProjection:function() {
-        var map = this.getMap();
-        if (map) {
-            return map._getProjection();
-        }
-        return Z.Projection.getDefault();
-        // return null;
-    },
-
-    //获取geometry样式中依赖的外部图片资源
-    _getExternalResource:function() {
-        var geometry = this;
-        var symbol = geometry.getSymbol();
-        if (!symbol) {
-            return null;
-        }
-        var resources = [];
-        var icon = symbol['markerFile'];
-        if (icon) {
-            resources.push(icon);
-        }
-        icon = symbol['shieldFile'];
-        if (icon) {
-            resources.push(icon);
-        }
-        var fill = symbol['polygonPatternFile'];
-        if (fill) {
-            resources.push(Z.Util.extractCssUrl(fill));
-        }
-        return resources;
-    },
-
-    _getPainter:function() {
-        if (this.getMap() && !this._painter) {
-            if (this instanceof Z.GeometryCollection) {
-                this._painter = new Z.CollectionPainter(this);
-            } else {
-                this._painter = new Z.Painter(this);
-            }
-        }
-        return this._painter;
-    },
-
-    _removePainter:function() {
-        if (this._painter) {
-            this._painter.remove();
-        }
-        delete this._painter;
-    },
-
-    _onZoomEnd:function() {
-        if (this._painter) {
-            this._painter.onZoomEnd();
-        }
-    },
-
-    _onShapeChanged:function() {
-        var painter = this._getPainter();
-        if (painter) {
-            painter.repaint();
-        }
-        this._extent = null;
-        if (!this.isEditing || !this.isEditing()) {
-            this._fireEvent('shapechanged');
-        }
-    },
-
-    _onPositionChanged:function() {
-        var painter = this._getPainter();
-        if (painter) {
-            painter.repaint();
-        }
-        this._extent = null;
-        if (!this.isEditing || !this.isEditing()) {
-            this._fireEvent('positionchanged');
-        }
-    },
-
-    _onSymbolChanged:function() {
-        var painter = this._getPainter();
-        if (painter) {
-            painter.refreshSymbol();
-        }
-        this._fireEvent('symbolchanged');
-    },
-    /**
-     * 设置Geometry的父Geometry, 父Geometry为包含该geometry的Collection类型Geometry
-     * @param {GeometryCollection} geometry 父Geometry
-     */
-    _setParent:function(geometry) {
-        if (geometry) {
-            this._parent = geometry;
-        }
-    },
-
-    _getParent:function() {
-        return this._parent;
-    },
-
-    _fireEvent:function(eventName, param) {
-        this.fire(eventName,param);
-        if (this._getParent()) {
-            if (param) {
-                param['target'] = this._getParent();
-            }
-            this._getParent().fire(eventName,param);
-        }
-    },
-
     toGeometryJson:function(opts) {
         var gJson = this._exportGeoJson();
         if (!opts || opts['crs']) {
@@ -519,15 +334,6 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
             }
         }
         return gJson;
-    },
-
-    _exportGeoJson:function() {
-        var points = this.getCoordinates();
-        var coordinates = Z.GeoJson.toGeoJsonCoordinates(points);
-        return {
-            'type':this.getType(),
-            'coordinates': coordinates
-        };
     },
 
     /**
@@ -624,6 +430,244 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     setCRS:function(crs) {
         this.options['crs'] = crs;
         return this;
+    },
+
+    //初始化传入的option参数
+    _initOptions:function(opts) {
+        if (!opts) {
+            opts = {};
+        }
+        this.setOptions(opts);
+    },
+
+    //调用prepare时,layer已经注册到map上
+    _prepare:function(layer) {
+        this._rootPrepare(layer);
+    },
+
+    _rootPrepare:function(layer) {
+        //Geometry不允许被重复添加到多个图层上
+        if (this.getLayer()) {
+            throw new Error(this.exceptions['DUPLICATE_LAYER']);
+        }
+        //更新缓存
+        this._updateCache();
+        this._layer = layer;
+        //如果投影发生改变,则清除掉所有的投影坐标属性
+        this._clearProjection();
+        this.callInitHooks();
+
+    },
+
+
+    /**
+     * 资源url从相对路径转为绝对路径
+     * @param  {[type]} symbol [description]
+     * @return {[type]}        [description]
+     */
+    _convertResourceUrl:function(symbol) {
+        function isRel(url) {
+            if (url.indexOf('http://') >= 0 || url.indexOf('https://') >= 0 ) {
+                return false;
+            }
+            return true;
+        }
+        function absolute(base, relative) {
+            var stack = base.split("/"),
+                parts = relative.split("/");
+            if (relative.indexOf('/') === 0) {
+                return stack.slice(0,3).join('/')+relative;
+            } else {
+                stack.pop(); // remove current file name (or empty string)
+                             // (omit if "base" is the current folder without trailing slash)
+                for (var i=0; i<parts.length; i++) {
+                    if (parts[i] == ".")
+                        continue;
+                    if (parts[i] == "..")
+                        stack.pop();
+                    else
+                        stack.push(parts[i]);
+                }
+                return stack.join("/");
+            }
+
+        }
+
+        var icon = symbol['markerFile'];
+        if (icon && isRel(icon)) {
+            symbol['markerFile'] = absolute(location.href,icon);
+        }
+        icon = symbol['shieldFile'];
+        if (icon && isRel(icon)) {
+            symbol['shieldFile'] = absolute(location.href,icon);
+        }
+        var fill = symbol['polygonPatternFile'];
+        if (fill) {
+            icon = Z.Util.extractCssUrl(fill);
+            if (isRel(icon)) {
+                symbol['polygonPatternFile'] = 'url("'+absolute(location.href,icon)+'")';
+            }
+        }
+    },
+
+    _getPrjExtent:function() {
+        var ext = this.getExtent();
+        var p = this._getProjection();
+        if (ext) {
+            return new Z.Extent(p.project({x:ext['xmin'],y:ext['ymin']}), p.project({x:ext['xmax'],y:ext['ymax']}));
+        } else {
+            return null;
+        }
+    },
+
+    _rootRemove:function(isFireEvent) {
+        var layer = this.getLayer();
+        if (!layer) {
+            return;
+        }
+        //label
+        //contextmenu
+        this._unbindMenu();
+        //infowindow
+        this._unbindInfoWindow();
+
+
+        this._removePainter();
+        layer._onGeometryRemove(this);
+        delete this._layer;
+        delete this._internalId;
+        delete this._extent;
+        if (isFireEvent) {
+            this._fireEvent('remove');
+        }
+    },
+
+    _getInternalId:function() {
+        return this._internalId;
+    },
+
+    //只能被图层调用
+    _setInternalId:function(id) {
+        this._internalId = id;
+    },
+
+
+    _getProjection:function() {
+        var map = this.getMap();
+        if (map) {
+            return map._getProjection();
+        }
+        return Z.Projection.getDefault();
+        // return null;
+    },
+
+    //获取geometry样式中依赖的外部图片资源
+    _getExternalResource:function() {
+        var geometry = this;
+        var symbol = geometry.getSymbol();
+        if (!symbol) {
+            return null;
+        }
+        var resources = [];
+        var icon = symbol['markerFile'];
+        if (icon) {
+            resources.push(icon);
+        }
+        icon = symbol['shieldFile'];
+        if (icon) {
+            resources.push(icon);
+        }
+        var fill = symbol['polygonPatternFile'];
+        if (fill) {
+            resources.push(Z.Util.extractCssUrl(fill));
+        }
+        return resources;
+    },
+
+    _getPainter:function() {
+        if (this.getMap() && !this._painter) {
+            if (this instanceof Z.GeometryCollection) {
+                this._painter = new Z.CollectionPainter(this);
+            } else {
+                this._painter = new Z.Painter(this);
+            }
+        }
+        return this._painter;
+    },
+
+    _removePainter:function() {
+        if (this._painter) {
+            this._painter.remove();
+        }
+        delete this._painter;
+    },
+
+    _onZoomEnd:function() {
+        if (this._painter) {
+            this._painter.onZoomEnd();
+        }
+    },
+
+    _isEditingOrDragging:function() {
+        return ((this.isEditing && this.isEditing()) || (this.isDragging && this.isDragging()));
+    },
+
+    _onShapeChanged:function() {
+        this._extent = null;
+        var painter = this._getPainter();
+        if (painter) {
+            painter.repaint();
+        }
+        this._fireEvent('shapechanged');
+    },
+
+    _onPositionChanged:function() {
+        this._extent = null;
+        var painter = this._getPainter();
+        if (painter) {
+            painter.repaint();
+        }
+        this._fireEvent('positionchanged');
+    },
+
+    _onSymbolChanged:function() {
+        var painter = this._getPainter();
+        if (painter) {
+            painter.refreshSymbol();
+        }
+        this._fireEvent('symbolchanged');
+    },
+    /**
+     * 设置Geometry的父Geometry, 父Geometry为包含该geometry的Collection类型Geometry
+     * @param {GeometryCollection} geometry 父Geometry
+     */
+    _setParent:function(geometry) {
+        if (geometry) {
+            this._parent = geometry;
+        }
+    },
+
+    _getParent:function() {
+        return this._parent;
+    },
+
+    _fireEvent:function(eventName, param) {
+        this.fire(eventName,param);
+        if (this._getParent()) {
+            if (param) {
+                param['target'] = this._getParent();
+            }
+            this._getParent().fire(eventName,param);
+        }
+    },
+
+    _exportGeoJson:function() {
+        var points = this.getCoordinates();
+        var coordinates = Z.GeoJson.toGeoJsonCoordinates(points);
+        return {
+            'type':this.getType(),
+            'coordinates': coordinates
+        };
     }
 
 });

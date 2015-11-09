@@ -3,7 +3,7 @@ Z.Geometry.mergeOptions({
      * @cfg {Boolean} [draggable="false"] geometry能否拖动
      * @member maptalks.Geometry
      */
-	'draggable': false
+    'draggable': false
 });
 
 Z.Geometry.include({
@@ -12,18 +12,26 @@ Z.Geometry.include({
      * @param {Boolean} enableMapEvent 是否阻止地图拖动事件 true,阻止
      * @member maptalks.Geometry
      */
-    startDrag: function(enableMapEvent) {
+    startDrag: function() {
+        if (!this.options['draggable']) {
+            return this;
+        }
+        return this._forceStartDrag();
+    },
+
+    /**
+     * 内部使用的强制开始拖动函数
+     */
+    _forceStartDrag:function() {
         var map = this.getMap();
         if (!map) {
-            return;
+            return this;
         }
-        Z.DomUtil.setStyle(map._containerDOM, 'cursor: move');
-        this._enableMapEvent = enableMapEvent;
-        if(this._enableMapEvent) {
-            map.disableDrag();
-            this.on('mouseup', this.endDrag, this);
-        }
-        map.on('_mousemove', this._dragging, this);
+        Z.DomUtil.addStyle(map._containerDOM,'cursor', 'move');
+        map.options['draggable']=false;
+        map.on('mousemove', this._dragging, this);
+        map.on('mouseup', this.endDrag, this);
+        delete this._preCoordDragged;
         /**
          * 触发geometry的dragstart事件
          * @member maptalks.Geometry
@@ -31,71 +39,18 @@ Z.Geometry.include({
          * @return {Object} params: {'target':this}
          */
         this._fireEvent('dragstart');
+        return this;
     },
 
     _dragging: function(param) {
-        var map = this.getMap();
         this._isDragging = true;
-        this.endPosition = param['containerPoint'];
-        if(!this.startPosition) {
-            this.startPosition = this.endPosition;
+        var currentCoord = param['coordinate'];
+        if(!this._preCoordDragged) {
+            this._preCoordDragged = currentCoord;
         }
-        var dragOffset = new Z.Point(
-            this.endPosition['left'] - this.startPosition['left'],
-            this.endPosition['top'] - this.startPosition['top']
-        );
-        var center = this.getCenter();
-        if(!center||!center.x||!center.y) {return;}
-        var geometryPixel = map.coordinateToViewPoint(center);
-        var mapOffset = map.offsetPlatform();
-        var newPosition = new Z.Point(
-            geometryPixel['left'] + dragOffset['left'] - mapOffset['left'],
-            geometryPixel['top'] + dragOffset['top'] - mapOffset['top']
-        );
-        this.startPosition = newPosition;
-        if (this instanceof Z.Marker
-            || this instanceof Z.Circle
-            || this instanceof Z.Ellipse
-            || this instanceof Z.Sector) {
-            var pcenter = map._untransformFromViewPoint(newPosition);
-            this._setPCenter(pcenter);
-        } else if (this instanceof Z.Rectangle) {
-            var coordinate = this.getCoordinates();
-            if(!coordinate||!coordinate.x||!coordinate.y) {return;}
-            var geometryPixel = map.coordinateToViewPoint(coordinate);
-            var newPosition = new Z.Point(
-                geometryPixel['left'] + dragOffset['left'] - mapOffset['left'],
-                geometryPixel['top'] + dragOffset['top'] - mapOffset['top']
-            );
-            var pCoordinate = map._untransformFromViewPoint(newPosition);
-            this._setPNw(pCoordinate);
-        } else if (this instanceof Z.Polyline) {
-            var lonlats = this.getCoordinates();
-            for (var i=0,len=lonlats.length;i<len;i++) {
-                var plonlat = map.coordinateToViewPoint(lonlats[i]);
-                var coordinate = map._untransformFromViewPoint(new Z.Point(plonlat['left']+dragOffset['left'] - mapOffset['left'],
-                        plonlat['top']+dragOffset['top'] - mapOffset['top']));
-                lonlats[i].x = coordinate.x;
-                lonlats[i].y = coordinate.y;
-            }
-            this._setPrjPoints(lonlats);
-        } else if (this instanceof Z.Polygon) {
-           var newLonlats = [];
-           var lonlats = this.getCoordinates();
-           for (var i=0,len=lonlats.length;i<len;i++) {
-                var coordinates = lonlats[i];
-                for (var j=0,clen=coordinates.length;j<clen;j++) {
-                    var plonlat = map.coordinateToViewPoint(coordinates[j]);
-                    var coordinate = map._untransformFromViewPoint(new Z.Point(
-                        plonlat['left']+dragOffset['left'] - mapOffset['left'],
-                        plonlat['top']+dragOffset['top'] - mapOffset['top']
-                    ));
-                    newLonlats.push(coordinate);
-                }
-           }
-           this._setPrjPoints(newLonlats);
-        }
-        this._updateCache();
+        var dragOffset = currentCoord.substract(this._preCoordDragged);
+        this._preCoordDragged = currentCoord;
+        this.translate(dragOffset);
         /**
          * 触发geometry的dragging事件
          * @member maptalks.Geometry
@@ -111,10 +66,11 @@ Z.Geometry.include({
     endDrag: function(param) {
         var map = this.getMap();
         this._isDragging = false;
-        if(this._enableMapEvent) {
-            map.enableDrag();
-        }
-        map.off('_mousemove', this._dragging, this);
+
+        map.off('mousemove', this._dragging, this);
+        map.off('mouseup', this.endDrag, this);
+        map.options['draggable']=true;
+        delete this._preCoordDragged;
         /**
          * 触发geometry的dragend事件
          * @member maptalks.Geometry
@@ -122,7 +78,7 @@ Z.Geometry.include({
          * @return {Object} params: {'target':this}
          */
         this._fireEvent('dragend', param);
-        Z.DomUtil.setStyle(map._containerDOM, 'cursor: default');
+        Z.DomUtil.addStyle(map._containerDOM,'cursor', 'default');
     },
 
     /**
@@ -140,10 +96,7 @@ Z.Geometry.include({
 });
 
 Z.Geometry.addInitHook(function () {
-	if (this.options['draggable']) {
-	    var me = this;
-	    this.on('mousedown', function(){
-            me.startDrag(true);
-	    }, this);
-	}
+        this.on('mousedown', function(){
+            this.startDrag();
+        }, this);
 });

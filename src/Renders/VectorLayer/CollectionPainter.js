@@ -25,7 +25,6 @@ Z.CollectionPainter=Z.Class.extend({
         this._eachPainter(function(painter) {
             painter.paint.apply(painter,args);
         });
-        // this._registerEvents();
     },
 
     getPixelExtent:function() {
@@ -67,7 +66,6 @@ Z.CollectionPainter=Z.Class.extend({
     onZoomEnd:function() {
         var args = arguments;
         this._eachPainter(function(painter) {
-            // painter.setSymbol(this.geometry.getSymbol());
             painter.onZoomEnd.apply(painter,args);
         });
     },
@@ -75,7 +73,6 @@ Z.CollectionPainter=Z.Class.extend({
     repaint:function(){
         var args = arguments;
         this._eachPainter(function(painter) {
-            // painter.setSymbol(this.geometry.getSymbol());
             painter.repaint.apply(painter,args);
         });
     },
@@ -83,7 +80,6 @@ Z.CollectionPainter=Z.Class.extend({
     refreshSymbol:function(){
         var args = arguments;
         this._eachPainter(function(painter) {
-            // painter.setSymbol(this.geometry.getSymbol());
             painter.refreshSymbol.apply(painter,args);
         });
     },
@@ -97,22 +93,5 @@ Z.CollectionPainter=Z.Class.extend({
             result = result.concat(painter.getSvgDom());
         });
         return result;
-    }/*,
-
-    _registerEvents:function() {
-        var layer = this.geometry.getLayer();
-        if (layer.isCanvasRender()) {
-            return;
-        }
-        //svg类型
-        var geometry = this.geometry;
-        var doms = this.getSvgDom();
-        if (Z.Util.isArrayHasData(doms)) {
-            for (var j = doms.length - 1; j >= 0; j--) {
-                Z.DomUtil.on(doms[j], 'mousedown mouseup click dblclick contextmenu', geometry._onEvent, geometry);
-                Z.DomUtil.on(doms[j], 'mouseover', geometry._onMouseOver, geometry);
-                Z.DomUtil.on(doms[j], 'mouseout', geometry._onMouseOut, geometry);
-            }
-        }
-    }*/
+    }
 });

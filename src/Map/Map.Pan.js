@@ -32,8 +32,8 @@ Z.Map.include({
         return this;
     },
 
-    _animatePan:function(moveOffset) {
-        this._getRender().panAnimation(moveOffset);
+    _animatePan:function(moveOffset, t) {
+        this._getRender().panAnimation(moveOffset, t);
     }
 
 });

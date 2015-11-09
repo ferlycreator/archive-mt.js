@@ -6,7 +6,8 @@
  */
 Z.MultiPoly = Z.GeometryCollection.extend({
 
-    initialize:function(data, opts) {
+
+    _initData:function(data) {
         if (Z.Util.isArrayHasData(data)) {
             if (data[0] instanceof this.GeometryType) {
                 this.setGeometries(data);
@@ -14,7 +15,6 @@ Z.MultiPoly = Z.GeometryCollection.extend({
                 this.setCoordinates(data);
             }
         }
-        this._initOptions(opts);
     },
 
     _checkGeometries:function(geometries) {
@@ -54,7 +54,7 @@ Z.MultiPoly = Z.GeometryCollection.extend({
         if (Z.Util.isArrayHasData(coordinates)) {
             var geometries = [];
             for (var i=0, len=coordinates.length;i<len;i++) {
-                var p = new this.GeometryType(coordinates[i]);
+                var p = new this.GeometryType(coordinates[i], this.options);
                 geometries.push(p);
             }
             this.setGeometries(geometries);

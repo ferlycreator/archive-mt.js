@@ -13,6 +13,6 @@ Z.Vector = Z.Geometry.extend({
     _hitTestTolerance: function() {
         var symbol = this.getSymbol();
         var w = symbol['lineWidth'];
-        return w ? w / 2 : 0;
+        return w ? w / 2 : 3;
     }
 });

@@ -69,7 +69,7 @@ Z.Map.include({
 
     _fireDOMEvent: function (target, e, type) {
         var containerPoint = Z.DomUtil.getEventContainerPoint(e, this._containerDOM);
-        var data = {
+        var eventParam = {
             'coordinate': this.containerPointToCoordinate(containerPoint),
             'containerPoint':containerPoint,
             /*'viewPoint':this._containerPointToViewPoint(containerPoint),*/
@@ -85,51 +85,6 @@ Z.Map.include({
                 type = 'contextmenu';
             }
         }
-        this._fireEvent(type, data);
-        // target.fire(type, data);
-    },
-
-    /**
-     * 启用地图拖动功能
-     * @method
-     * @member maptalks.Map
-     */
-    enableDrag: function() {
-        this.options['draggable'] = true;
-        this.addHandler('draggable',Z.Map.Drag);
-        return this;
-    },
-
-    /**
-     * 阻止地图拖动功能
-     * @method
-     * @member maptalks.Map
-     */
-    disableDrag: function() {
-        this.options['draggable'] = false;
-        // this.removeHandler('draggable');
-        return this;
-    },
-
-    /**
-     * 启用双击放大地图功能
-     * @method
-     * @member maptalks.Map
-     */
-    enableDoubleClickZoom: function() {
-        this.options['doubleClickZoom'] = true;
-        this.addHandler('doubleClickZoom',Z.Map.DoubleClickZoom);
-        return this;
-    },
-
-    /**
-     * 阻止双击放大地图功能
-     * @method
-     * @member maptalks.Map
-     */
-    disableDoubleClickZoom: function() {
-        this.options['doubleClickZoom'] = false;
-        this.removeHandler('doubleClickZoom');
-        return this;
+        this._fireEvent(type, eventParam);
     }
 });

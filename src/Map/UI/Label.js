@@ -44,7 +44,6 @@ Z.Label = Z.Class.extend({
             'textWrapCharacter': '',
             'textLineSpacing': 8
         },
-        'target': null,//Geometry or Coordinate
         'draggable': true,
         'content': '',
         'trigger': '',//click|hover
@@ -63,63 +62,14 @@ Z.Label = Z.Class.extend({
      */
     initialize: function (options) {
         this.setOptions(options);
-        var target = this.options['target'];
-        if(!target)  {throw new Error(this.exceptions['NEED_TARGET']);}
-        if(!(target instanceof Z.Geometry) && !(target instanceof Z.Coordinate)) {
-            throw new Error(this.exceptions['INVALID_TARGET']);
-        }
-        this._target = target;
-        this._refreshLabel();
-        return this;
-    },
-
-    _refreshLabel: function() {
-        this._setProp();
-        this._initLabel(this._target);
-        return this;
-    },
-
-    /**
-     * 获取label样式
-     */
-    getSymbol: function() {
-        return this.options.symbol;
-    },
-
-    /**
-     * 设置label样式
-     */
-    setSymbol: function(symbol) {
-        this.options.symbol = symbol;
-        this._setProp();
-        this._setLabelSymbol();
-    },
-
-    /**
-     * 获取label内容
-     */
-    getContent: function() {
-        return this.options['content'];
-    },
-
-    /**
-     * 设置label内容
-     */
-    setContent: function(content) {
-        this.options['content'] = content;
-        this._setProp();
-        this._setLabelSymbol();
-    },
-
-    _setProp: function() {
         this.textStyle = this._translateTextStyle();
         this.strokeAndFill = this._translateStrokeAndFill();
         this.textContent = this.options['content'];
-        this.labelSize = this._getLabelSize();
         var style = this.options.symbol;
         this.textSize = Z.Util.stringLength(this.textContent, style['textFaceName'],style['textSize']);
+        this.labelSize = this._getLabelSize();
+        return this;
     },
-
 
     /**
      * 设置属性
@@ -165,9 +115,6 @@ Z.Label = Z.Class.extend({
     */
     remove: function() {
         this._label.remove();
-        if(this._linker) {
-            this._linker.remove();
-        }
         /**
          * 触发label的remove事件
          * @event remove
@@ -247,8 +194,9 @@ Z.Label = Z.Class.extend({
         } else {
             this.show();
         }
+//        this._geometry.getLayer().addGeometry(this._label);
         if(this.options['draggable']) {
-            this._label.startDrag();
+            // this._label.startDrag();
             var linkerOptions = {
                 linkSource:this._label,
                 linkTarget:this._geometry,
@@ -299,7 +247,7 @@ Z.Label = Z.Class.extend({
         if (vAlign === 'top') {
             dy += -height/2;
         } else if (vAlign === 'middle') {
-            dy += 0;;
+            dy += 0;
         } else {
             dy += height/2;
         }
@@ -307,8 +255,8 @@ Z.Label = Z.Class.extend({
         this.strokeAndFill['markerDy'] = dy;
         this.strokeAndFill['markerWidth'] = width;
         this.strokeAndFill['markerHeight'] = height;
-        this._box.setSymbol(this.strokeAndFill);
-        this._textMarker.setSymbol(this.textStyle);
+        box.setSymbol(this.strokeAndFill);
+        return new Z.GeometryCollection([box,textMarker],{'draggable':true});
     },
 
     _getLabelSize: function() {
@@ -349,20 +297,20 @@ Z.Label = Z.Class.extend({
         var symbol = this.options.symbol;
         var result = {
             'textName': this.options['content'],
-            'textFaceName': Z.Util.setDefaultValue(symbol['textFaceName'],'arial'),
-            'textSize': Z.Util.setDefaultValue(symbol['textSize'],12),
-            'textFill': Z.Util.setDefaultValue(symbol['textFill'],'#ebf2f9'),
-            'textOpacity': Z.Util.setDefaultValue(symbol['textOpacity'],1),
-            'textSpacing': Z.Util.setDefaultValue(symbol['textSpacing'],0),
+            'textFaceName': Z.Util.getValueOrDefault(symbol['textFaceName'],'arial'),
+            'textSize': Z.Util.getValueOrDefault(symbol['textSize'],12),
+            'textFill': Z.Util.getValueOrDefault(symbol['textFill'],'#ebf2f9'),
+            'textOpacity': Z.Util.getValueOrDefault(symbol['textOpacity'],1),
+            'textSpacing': Z.Util.getValueOrDefault(symbol['textSpacing'],0),
             'textWrapWidth': symbol['textWrapWidth'],
-            'textWrapBefore': Z.Util.setDefaultValue(symbol['textWrapBefore'],false),
+            'textWrapBefore': Z.Util.getValueOrDefault(symbol['textWrapBefore'],false),
             'textWrapCharacter': symbol['textWrapCharacter'],
-            'textLineSpacing': Z.Util.setDefaultValue(symbol['textLineSpacing'],0),
-            'textHorizontalAlignment' : Z.Util.setDefaultValue(this.options['horizontalAlignment'],'middle'),
-            'textVerticalAlignment'   : Z.Util.setDefaultValue(this.options['verticalAlignment'],'middle'),
-            'textAlign'               : Z.Util.setDefaultValue(symbol['textAlign'],'center'),
-            'textDx': Z.Util.setDefaultValue(this.options['dx'],0),
-            'textDy': Z.Util.setDefaultValue(this.options['dy'],0)
+            'textLineSpacing': Z.Util.getValueOrDefault(symbol['textLineSpacing'],0),
+            'textHorizontalAlignment' : Z.Util.getValueOrDefault(this.options['horizontalAlignment'],'middle'),
+            'textVerticalAlignment'   : Z.Util.getValueOrDefault(this.options['verticalAlignment'],'middle'),
+            'textAlign'               : Z.Util.getValueOrDefault(symbol['textAlign'],'center'),
+            'textDx': Z.Util.getValueOrDefault(this.options['dx'],0),
+            'textDy': Z.Util.getValueOrDefault(this.options['dy'],0)
         };
         return result;
     },
@@ -371,12 +319,12 @@ Z.Label = Z.Class.extend({
         var symbol = this.options.symbol;
         var result = {
             'markerType': 'square',
-            'markerLineColor': Z.Util.setDefaultValue(symbol['lineColor'],'#ffffff'),
-            'markerLineWidth': Z.Util.setDefaultValue(symbol['lineWidth'],1),
-            'markerLineOpacity': Z.Util.setDefaultValue(symbol['lineOpacity'],0.9),
+            'markerLineColor': Z.Util.getValueOrDefault(symbol['lineColor'],'#ffffff'),
+            'markerLineWidth': Z.Util.getValueOrDefault(symbol['lineWidth'],1),
+            'markerLineOpacity': Z.Util.getValueOrDefault(symbol['lineOpacity'],0.9),
             'markerLineDasharray': symbol['lineDasharray'],
-            'markerFill':  Z.Util.setDefaultValue(symbol['fill'],'#4e98dd'),
-            'markerFillOpacity':  Z.Util.setDefaultValue(symbol['fillOpacity'],0.9)
+            'markerFill':  Z.Util.getValueOrDefault(symbol['fill'],'#4e98dd'),
+            'markerFillOpacity':  Z.Util.getValueOrDefault(symbol['fillOpacity'],0.9)
         };
         return result;
      }

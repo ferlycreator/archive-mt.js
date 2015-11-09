@@ -35,6 +35,19 @@ Z['Layer']=Z.Layer=Z.Class.extend({
         return this;
     },
 
+    /**
+     * 设置图层z-index叠加顺序
+     * @param {Number} zIndex 叠加顺序
+     */
+    setZIndex:function(zIndex) {
+        this._setZIndex(zIndex);
+        var layerList = this._getLayerList();
+        layerList.sort(function(a,b) {
+            return a.getZIndex()-b.getZIndex();
+        });
+        return this;
+    },
+
     getZIndex:function() {
         return this._zIndex;
     },

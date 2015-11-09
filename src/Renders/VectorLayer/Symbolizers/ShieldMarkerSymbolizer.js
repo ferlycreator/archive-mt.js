@@ -117,26 +117,26 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
         var result =  {
             "shieldName"       : s['shieldName'],
 
-            "shieldFile"       : Z.Util.setDefaultValue(s['shieldFile'],d['shieldFile']),
-            "shieldOpacity"    :  Z.Util.setDefaultValue(s['shieldOpacity'],d['shieldOpacity']),
+            "shieldFile"       : Z.Util.getValueOrDefault(s['shieldFile'],d['shieldFile']),
+            "shieldOpacity"    :  Z.Util.getValueOrDefault(s['shieldOpacity'],d['shieldOpacity']),
 
-            "shieldDx"         :  Z.Util.setDefaultValue(s['shieldDx'],d['shieldDx']),
-            "shieldDy"         :  Z.Util.setDefaultValue(s['shieldDy'],d['shieldDy']),
+            "shieldDx"         :  Z.Util.getValueOrDefault(s['shieldDx'],d['shieldDx']),
+            "shieldDy"         :  Z.Util.getValueOrDefault(s['shieldDy'],d['shieldDy']),
 
-            "textFaceName"  : Z.Util.setDefaultValue(s['shieldFaceName'],d['shieldFaceName']),
-            "textSize"       : Z.Util.setDefaultValue(s['shieldSize'],d['shieldSize']),
-            "textFill"       : Z.Util.setDefaultValue(s['shieldFill'],d['shieldFill']),
-            "textOpacity"    : Z.Util.setDefaultValue(s['shieldTextOpacity'],d['shieldTextOpacity']),
-            "textHaloFill"  : Z.Util.setDefaultValue(s['shieldHaloFill'],d['shieldHaloFill']),
-            "textHaloRadius": Z.Util.setDefaultValue(s['shieldHaloRadius'],d['shieldHaloRadius']),
+            "textFaceName"  : Z.Util.getValueOrDefault(s['shieldFaceName'],d['shieldFaceName']),
+            "textSize"       : Z.Util.getValueOrDefault(s['shieldSize'],d['shieldSize']),
+            "textFill"       : Z.Util.getValueOrDefault(s['shieldFill'],d['shieldFill']),
+            "textOpacity"    : Z.Util.getValueOrDefault(s['shieldTextOpacity'],d['shieldTextOpacity']),
+            "textHaloFill"  : Z.Util.getValueOrDefault(s['shieldHaloFill'],d['shieldHaloFill']),
+            "textHaloRadius": Z.Util.getValueOrDefault(s['shieldHaloRadius'],d['shieldHaloRadius']),
             "textLineSpacing": 0,
 
-            "textDx"    :  Z.Util.setDefaultValue(s['shieldTextDx'],d['shieldTextDx']),
-            "textDy"    :  Z.Util.setDefaultValue(s['shieldTextDy'],d['shieldTextDy']),
+            "textDx"    :  Z.Util.getValueOrDefault(s['shieldTextDx'],d['shieldTextDx']),
+            "textDy"    :  Z.Util.getValueOrDefault(s['shieldTextDy'],d['shieldTextDy']),
 
-            "textHorizontalAlignment"   : Z.Util.setDefaultValue(s['shieldHorizontalAlignment'],d['shieldHorizontalAlignment']),
-            "textVerticalAlignment"     : Z.Util.setDefaultValue(s['shieldVerticalAlignment'],d['shieldVerticalAlignment']),
-            "textAlign"                  : Z.Util.setDefaultValue(s['shieldJustifyAlignment'],d['shieldJustifyAlignment'])
+            "textHorizontalAlignment"   : Z.Util.getValueOrDefault(s['shieldHorizontalAlignment'],d['shieldHorizontalAlignment']),
+            "textVerticalAlignment"     : Z.Util.getValueOrDefault(s['shieldVerticalAlignment'],d['shieldVerticalAlignment']),
+            "textAlign"                  : Z.Util.getValueOrDefault(s['shieldJustifyAlignment'],d['shieldJustifyAlignment'])
         };
         return result;
     },

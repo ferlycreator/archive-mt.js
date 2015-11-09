@@ -128,7 +128,7 @@ Z.render.map.Dom = Z.render.map.Render.extend({
         Z.animation.animate(new Z.animation.zoom({
             'scale1' : 1,
             'scale2': scale,
-            'duration' : 400
+            'duration' : 200
         }), map, function(frame) {
             this._context.save();
             this._clearCanvas();
@@ -163,7 +163,7 @@ Z.render.map.Dom = Z.render.map.Render.extend({
         mapContainer.style.left=0+"px";
     },
 
-    panAnimation:function(moveOffset) {
+    panAnimation:function(moveOffset, t) {
         var map = this.map;
         var pcenter = map._getPrjCenter();
         var destContainerPoint = map._transform(pcenter).add(moveOffset.multi(-0.5));
@@ -172,7 +172,7 @@ Z.render.map.Dom = Z.render.map.Render.extend({
         Z.animation.animate(new Z.animation.pan({
             'source': pcenter,
             'destination' : dest ,
-            'duration' : 800
+            'duration' : (t*4+100)
         }), map, function(frame) {
             /*if (!baseRended && (Z.animation.now() - frame.state['startTime'] >= 300)) {
                 this._askBaseTileLayerToRend();

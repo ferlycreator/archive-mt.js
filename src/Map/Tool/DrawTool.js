@@ -48,7 +48,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
      */
     enable:function() {
         if (!this.map) {return;}
-        this.map.disableDrag();
+        this.map.options['draggable']=false;
         this.drawToolLayer = this._getDrawLayer();
         this._clearEvents();
         this._registerEvents();
@@ -61,7 +61,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
      */
     disable:function() {
         if (!this.map) {return;}
-        this.map.enableDrag();
+        this.map.options['draggable']=true;
         this._endDraw();
         this.map.removeLayer(this._getDrawLayer());
         this._clearEvents();
@@ -119,7 +119,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
 
     //注册鼠标响应事件
     _registerEvents: function() {
-        this._preventEvents();
+        this.map.options['doubleClickZoom'] = false;
         var mode = this.mode;
         if (Z.Util.isNil(mode)) {
             mode = Z.Geometry['TYPE_CIRCLE'];
@@ -135,19 +135,13 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         }
     },
 
-    _preventEvents: function() {
-        // this.map.options['doubleClickZoom'] = false;
-        this.map.disableDoubleClickZoom();
-    },
-
     _clearEvents: function() {
         this.map.off('click',this._clickForPath, this);
         this.map.off('click',this._clickForPoint, this);
         this.map.off('mousemove',this._mousemoveForPath,this);
         this.map.off('dblclick',this._dblclickForPath,this);
         this.map.off('mousedown',this._mousedownToDraw,this);
-        // this.map.options['doubleClickZoom'] = true;
-        this.map.enableDoubleClickZoom();
+        this.map.options['doubleClickZoom'] = true;
     },
 
     _clickForPoint: function(param) {

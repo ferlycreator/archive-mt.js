@@ -199,7 +199,7 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
 
     _onMouseDown: function(event) {
         Z.DomUtil.setStyle(this._panelContainer,'cursor: move');
-        this._map.disableDrag();
+        this._map.options['draggable']=false;
         Z.DomUtil.on(this._panelContainer,'mousemove',this._onMouseMove, this);
         this._startOffset = new Z.Point(parseInt(event.offsetX,0),parseInt(event.offsetY,0));
         /**
@@ -263,7 +263,7 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
 
     _disableMoveAndEnableDrag: function() {
         this._disableMove();
-        this._map.enableDrag();
+        this._map.options['draggable']=true;
     },
 
     _disableMove: function() {

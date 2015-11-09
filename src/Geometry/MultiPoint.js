@@ -5,7 +5,20 @@
  * @author Maptalks Team
  */
 Z['MultiPoint'] = Z.MultiPoint = Z.MultiPoly.extend({
-    GeometryType:Z.Marker,    
+    GeometryType:Z.Marker,
 
-    type:Z.Geometry['TYPE_MULTIPOINT']
+    type:Z.Geometry['TYPE_MULTIPOINT'],
+
+    options:{
+        'symbol':{
+            'markerFile' : Z.prefix+'images/marker.png',
+            'markerHeight' : 30,
+            'markerWidth' : 22
+        }
+    },
+
+    initialize:function(data, opts) {
+        this._initOptions(opts);
+        this._initData(data);
+    }
 });

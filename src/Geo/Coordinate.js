@@ -4,9 +4,6 @@
  * @author Maptalks Team
  */
 Z['Coordinate'] = Z.Coordinate = function(x, y) {
-    if (Z.Util.isNil(x)) {
-        return;
-    }
     if (Z.Util.isArray(x)) {
         //数组
         this.x = parseFloat(x[0]);
@@ -18,6 +15,9 @@ Z['Coordinate'] = Z.Coordinate = function(x, y) {
     } else {
         this.x = parseFloat(x);
         this.y = parseFloat(y);
+    }
+    if (this.isNaN()) {
+        throw new Error('coordinate is NaN');
     }
 };
 
@@ -42,5 +42,8 @@ Z.Coordinate.prototype={
             return false;
         }
         return this.x === c2.x && this.y === c2.y;
+    },
+    isNaN:function() {
+        return isNaN(this.x) || isNaN(this.y);
     }
 };
