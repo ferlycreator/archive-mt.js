@@ -44,6 +44,7 @@ Z.Label = Z.Class.extend({
             'textWrapCharacter': '',
             'textLineSpacing': 8
         },
+        'target': null,//Geometry or Coordinate
         'draggable': true,
         'content': '',
         'trigger': '',//click|hover
@@ -62,14 +63,63 @@ Z.Label = Z.Class.extend({
      */
     initialize: function (options) {
         this.setOptions(options);
-        this.textStyle = this._translateTextStyle();
-        this.strokeAndFill = this._translateStrokeAndFill();
-        this.textContent = this.options['content'];
-        var style = this.options.symbol;
-        this.textSize = Z.Util.stringLength(this.textContent, style['textFaceName'],style['textSize']);
-        this.labelSize = this._getLabelSize();
+        var target = this.options['target'];
+        if(!target)  {throw new Error(this.exceptions['NEED_TARGET']);}
+        if(!(target instanceof Z.Geometry) && !(target instanceof Z.Coordinate)) {
+            throw new Error(this.exceptions['INVALID_TARGET']);
+        }
+        this._target = target;
+        this._refreshLabel();
         return this;
     },
+
+    _refreshLabel: function() {
+        this._setProperty();
+        this._initLabel(this._target);
+        return this;
+    },
+
+    /**
+     * 获取label样式
+     */
+    getSymbol: function() {
+        return this.options.symbol;
+    },
+
+    /**
+     * 设置label样式
+     */
+    setSymbol: function(symbol) {
+        this.options.symbol = symbol;
+        this._setProperty();
+        this._setLabelSymbol();
+    },
+
+    /**
+     * 获取label内容
+     */
+    getContent: function() {
+        return this.options['content'];
+    },
+
+    /**
+     * 设置label内容
+     */
+    setContent: function(content) {
+        this.options['content'] = content;
+        this._setProperty();
+        this._setLabelSymbol();
+    },
+
+    _setProperty: function() {
+        this._textStyle = this._translateTextSymbol();
+        this._strokeAndFill = this._translateMarkerSymbol();
+        this._textContent = this.options['content'];
+        this._labelSize = this._getLabelSize();
+        var style = this.options.symbol;
+        this._textSize = Z.Util.stringLength(this._textContent, style['textFaceName'],style['textSize']);
+    },
+
 
     /**
      * 设置属性
@@ -115,6 +165,9 @@ Z.Label = Z.Class.extend({
     */
     remove: function() {
         this._label.remove();
+        if(this._linker) {
+            this._linker.remove();
+        }
         /**
          * 触发label的remove事件
          * @event remove
@@ -131,7 +184,7 @@ Z.Label = Z.Class.extend({
         if(!layer) {return;}
         this._layer = layer;
         this._map = this._layer.getMap();
-        this._layer.addGeometry(this._label.getGeometries());
+        this._layer.addGeometry(this._label);
         return this;
     },
 
@@ -141,7 +194,11 @@ Z.Label = Z.Class.extend({
             this._center = targetObj;
             this._label = this._createLabel(this._center);
             if(this.options['draggable']) {
-                this._label.startDrag();
+                var me = this;
+                this._label.on('mousedown', function(){
+                    me._label.options['draggable'] = true;
+                    me._label.startDrag();
+                });
             }
         } else {
             this._geometry = targetObj;
@@ -194,13 +251,16 @@ Z.Label = Z.Class.extend({
         } else {
             this.show();
         }
-//        this._geometry.getLayer().addGeometry(this._label);
         if(this.options['draggable']) {
-            // this._label.startDrag();
+            var me = this;
+            this._label.on('mousedown', function(){
+                me._label.options['draggable'] = true;
+                me._label.startDrag();
+            });
             var linkerOptions = {
                 linkSource:this._label,
                 linkTarget:this._geometry,
-//                trigger: 'click',
+                trigger: 'click',
                 symbol:{
                     'lineColor' : '#ff0000',
                     'lineWidth' : 1,
@@ -226,14 +286,13 @@ Z.Label = Z.Class.extend({
         this._textMarker = new Z.Marker(center);
         this._box = new Z.Marker(center);
         this._setLabelSymbol();
-        return new Z.MultiPoint([this._box,this._textMarker]);
+        return new Z.GeometryCollection([this._box,this._textMarker]);
     },
 
     _setLabelSymbol: function() {
         var dx=this.options['dx'],dy=this.options['dy'];
-
-        var width = this.labelSize['width'];
-        var height = this.labelSize['height'];
+        var width = this._labelSize['width'];
+        var height = this._labelSize['height'];
         var hAlign = this.options['horizontalAlignment'];
         if (hAlign === 'right') {
             dx += width/2;
@@ -247,30 +306,30 @@ Z.Label = Z.Class.extend({
         if (vAlign === 'top') {
             dy += -height/2;
         } else if (vAlign === 'middle') {
-            dy += 0;
+            dy += 0;;
         } else {
             dy += height/2;
         }
-        this.strokeAndFill['markerDx'] = dx;
-        this.strokeAndFill['markerDy'] = dy;
-        this.strokeAndFill['markerWidth'] = width;
-        this.strokeAndFill['markerHeight'] = height;
-        box.setSymbol(this.strokeAndFill);
-        return new Z.GeometryCollection([box,textMarker],{'draggable':true});
+        this._strokeAndFill['markerDx'] = dx;
+        this._strokeAndFill['markerDy'] = dy;
+        this._strokeAndFill['markerWidth'] = width;
+        this._strokeAndFill['markerHeight'] = height;
+        this._box.setSymbol(this._strokeAndFill);
+        this._textMarker.setSymbol(this._textStyle);
     },
 
     _getLabelSize: function() {
         var style = this.options.symbol;
         var font = style['textFaceName'];
         var fontSize = style['textSize'];
-        var textWidth = Z.Util.stringLength(this.textContent,font,fontSize).width;
+        var textWidth = Z.Util.stringLength(this._textContent,font,fontSize).width;
         var wrapWidth = style['textWrapWidth'];
         var wrapChar = style['textWrapCharacter'];
         var lineSpacing = style['textLineSpacing'];
         if(!wrapWidth) wrapWidth = textWidth;
         var rowNum = 1;
         if(wrapChar) {
-            var texts = this.textContent.split(wrapChar);
+            var texts = this._textContent.split(wrapChar);
             wrapWidth = wrapWidth/texts.length;
             var textRows = [];
             for(var i=0,len=texts.length;i<len;i++) {
@@ -293,7 +352,7 @@ Z.Label = Z.Class.extend({
         return new Z.Size(wrapWidth, height);
     },
 
-    _translateTextStyle: function() {
+    _translateTextSymbol: function() {
         var symbol = this.options.symbol;
         var result = {
             'textName': this.options['content'],
@@ -315,7 +374,7 @@ Z.Label = Z.Class.extend({
         return result;
     },
 
-    _translateStrokeAndFill:function() {
+    _translateMarkerSymbol:function() {
         var symbol = this.options.symbol;
         var result = {
             'markerType': 'square',
