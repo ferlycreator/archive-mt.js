@@ -320,12 +320,12 @@ Z.Label = Z.Class.extend({
 
     _getLabelSize: function() {
         var style = this.options.symbol;
-        var font = style['textFaceName'];
-        var fontSize = style['textSize'];
+        var font = this._textStyle['textFaceName'];
+        var fontSize = this._textStyle['textSize'];
         var textWidth = Z.Util.stringLength(this._textContent,font,fontSize).width;
-        var wrapWidth = style['textWrapWidth'];
-        var wrapChar = style['textWrapCharacter'];
-        var lineSpacing = style['textLineSpacing'];
+        var wrapWidth = this._textStyle['textWrapWidth'];
+        var wrapChar = this._textStyle['textWrapCharacter'];
+        var lineSpacing = this._textStyle['textLineSpacing'];
         if(!wrapWidth) wrapWidth = textWidth;
         var rowNum = 1;
         if(wrapChar) {
@@ -364,7 +364,7 @@ Z.Label = Z.Class.extend({
             'textWrapWidth': symbol['textWrapWidth'],
             'textWrapBefore': Z.Util.getValueOrDefault(symbol['textWrapBefore'],false),
             'textWrapCharacter': symbol['textWrapCharacter'],
-            'textLineSpacing': Z.Util.getValueOrDefault(symbol['textLineSpacing'],0),
+            'textLineSpacing': Z.Util.getValueOrDefault(symbol['textLineSpacing'],8),
             'textHorizontalAlignment' : Z.Util.getValueOrDefault(this.options['horizontalAlignment'],'middle'),
             'textVerticalAlignment'   : Z.Util.getValueOrDefault(this.options['verticalAlignment'],'middle'),
             'textAlign'               : Z.Util.getValueOrDefault(symbol['textAlign'],'center'),
@@ -381,9 +381,11 @@ Z.Label = Z.Class.extend({
             'markerLineColor': Z.Util.getValueOrDefault(symbol['lineColor'],'#ffffff'),
             'markerLineWidth': Z.Util.getValueOrDefault(symbol['lineWidth'],1),
             'markerLineOpacity': Z.Util.getValueOrDefault(symbol['lineOpacity'],0.9),
-            'markerLineDasharray': symbol['lineDasharray'],
+            'markerLineDasharray': Z.Util.getValueOrDefault(symbol['lineDasharray'],null),
             'markerFill':  Z.Util.getValueOrDefault(symbol['fill'],'#4e98dd'),
-            'markerFillOpacity':  Z.Util.getValueOrDefault(symbol['fillOpacity'],0.9)
+            'markerFillOpacity':  Z.Util.getValueOrDefault(symbol['fillOpacity'],0.9),
+            'markerDx': Z.Util.getValueOrDefault(this.options['dx'],0),
+            'markerDy': Z.Util.getValueOrDefault(this.options['dy'],0)
         };
         return result;
      }

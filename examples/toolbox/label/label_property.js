@@ -233,17 +233,17 @@ LabelPropertyPanel.prototype = {
     },
 
     _createBgDom: function() {
-        var fillColor = this._label.strokeAndFill['markerFill'];
+        var fillColor = this._label._strokeAndFill['markerFill'];
         return this._createColorDom(fillColor);
     },
 
     _createBorderDom: function() {
-        var borderColor = this._label.strokeAndFill['markerLineColor'];
+        var borderColor = this._label._strokeAndFill['markerLineColor'];
         return this._createColorDom(borderColor);
     },
 
     _createTextColorDom: function() {
-        var textColor = this._label.textStyle['textFill'];
+        var textColor = this._label._textStyle['textFill'];
         return this._createColorDom(textColor);
     },
 
@@ -252,7 +252,7 @@ LabelPropertyPanel.prototype = {
         textSizeDom.style.cssText = 'border:1px solid #333;font-weight:bold;font-size:16px;width:20px;height:18px;color:#333';
         textSizeDom.type='text';
         textSizeDom.maxLength = 2;
-        var textSize = this._label.textStyle['textSize'];
+        var textSize = this._label._textStyle['textSize'];
         textSizeDom.value = textSize;
         var me = this;
         maptalks.DomUtil.on(textSizeDom, 'blur', function(param){

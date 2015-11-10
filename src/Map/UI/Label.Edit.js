@@ -21,18 +21,18 @@ Z.Label.include({
     },
 
     _computeViewPoint: function() {
-        var width = this.strokeAndFill['markerWidth'];
-        var height = this.strokeAndFill['markerHeight'];
-        var left = this.textStyle['textDx'],top = this.textStyle['textDy'];
-        var hAlign = this.textStyle['textHorizontalAlignment'];
+        var width = this._strokeAndFill['markerWidth'];
+        var height = this._strokeAndFill['markerHeight'];
+        var left = this._textStyle['textDx'],top = this._textStyle['textDy'];
+        var hAlign = this._textStyle['textHorizontalAlignment'];
         if (hAlign === 'left') {
             left -= width;
         } else if (hAlign === 'middle') {
             left -= width/2;
         }
 
-        var rowHeight = this.textStyle['textLineSpacing'];
-        var vAlign = this.textStyle['textVerticalAlignment'];
+        var rowHeight = this._textStyle['textLineSpacing'];
+        var vAlign = this._textStyle['textVerticalAlignment'];
         if (vAlign === 'top') {
             top = -height - rowHeight;
         } else if (vAlign === 'middle') {
@@ -45,12 +45,12 @@ Z.Label.include({
     },
 
     _createInputDom: function() {
-        var width = this.strokeAndFill['markerWidth'];
-        var height = this.strokeAndFill['markerHeight'];
-        var textColor = this.textStyle['textFill'];
-        var textSize = this.textStyle['textSize'];
-        var fill = this.strokeAndFill['markerFill'];
-        var lineColor = this.strokeAndFill['markerLineColor'];
+        var width = this._strokeAndFill['markerWidth'];
+        var height = this._strokeAndFill['markerHeight'];
+        var textColor = this._textStyle['textFill'];
+        var textSize = this._textStyle['textSize'];
+        var fill = this._strokeAndFill['markerFill'];
+        var lineColor = this._strokeAndFill['markerLineColor'];
         var inputDom = Z.DomUtil.createEl('textarea');
         inputDom.style.cssText ='background:'+fill+';'+
             'border:1px solid '+lineColor+';'+

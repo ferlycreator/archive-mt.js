@@ -45,93 +45,15 @@
                 'lineDasharray': null,
                 'fill': '#4e98dd',
                 'fillOpacity': 0.9,
-
                 'textFaceName': 'arial',
                 'textSize': 12,
                 'textFill': '#ff0000',
-                'textOpacity': 1,
-                'textSpacing': 30,
-                'textWrapWidth': 50,
-                'textWrapBefore': false,
-                'textWrapCharacter': '_',
-                'textLineSpacing': 8
             },
             'draggable': true,
-            'horizontalAlignment': 'left',//left middle right
-            'verticalAlignment': 'top',//top middle bottom
-            'dx': 0,
-            'dy': 0,
             'content': '上海大厦'
         };
         //将label添加到指定的图层上
         marker.addLabel(labelOptions);
-
-        //设置label属性2
-        var labelOptions2 = {
-            'symbol': {
-                'lineColor': '#ffffff',
-                'lineWidth': 1,
-                'lineOpacity': 0.9,
-                'lineDasharray': null,
-                'fill': '#4e98dd',
-                'fillOpacity': 0.9,
-
-                'textFaceName': 'arial',
-                'textSize': 12,
-                'textFill': '#ff0000',
-                'textOpacity': 1,
-                'textSpacing': 30,
-                'textWrapWidth': 50,
-                'textWrapBefore': false,
-                'textWrapCharacter': '_',
-                'textLineSpacing': 8
-            },
-            'draggable': true,
-            'horizontalAlignment': 'middle',//left middle right
-            'verticalAlignment': 'bottom',//top middle bottom
-            'dx': 0,
-            'dy': 0,
-            'content': '上海大厦辅楼'
-        };
-        //将label添加到指定的图层上
-        marker.addLabel(labelOptions2);
-
-       var toolbar = new maptalks.Toolbar({
-            id: 'toolbar',//toolbar id
-            position : { //工具条放置位置
-                top: '2',
-                left: '2'
-            },
-            vertical : false,
-            //工具项
-            items: [{
-                type : 'button',
-                content: '获取label',
-                click : function(){
-                    var labels = marker.getAllLabel();
-                     console.log(labels);
-                }
-            }, {
-                type : 'button',
-                content: '隐藏',
-                click : function(){
-                    marker.hideLabel();
-                }
-            }, {
-                type : 'button',
-                content: '显示',
-                click : function(){
-                    marker.showLabel();
-                }
-            }, {
-                type : 'button',
-                content: '删除',
-                click : function(){
-                    marker.removeLabel();
-                }
-            }]
-        });
-        mapObj.addControl(toolbar);
     }
 </script>
 <!-- 引擎javascript开发包-->

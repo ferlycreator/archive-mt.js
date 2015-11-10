@@ -95,19 +95,19 @@ PicturePropertyPanel.prototype = {
 
                 }
             },
-            /**{
+            {
                 type : 'button',
                 icon: '../../toolbox/picture/images/edit.png',
                 click : function(){
-
+                    me._imageMarker.startEdit();
                 }
             }, {
                 type : 'button',
                 icon: '../../toolbox/picture/images/stop_edit.png',
                 click : function(){
-
+                    me._imageMarker.endEdit();
                 }
-            },*/
+            },
              {
                 type : 'button',
                 icon: '../../toolbox/picture/images/close.png',
