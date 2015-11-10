@@ -262,9 +262,9 @@ Z.Label = Z.Class.extend({
                 linkTarget:this._geometry,
                 trigger: 'click',
                 symbol:{
-                    'lineColor' : '#ff0000',
-                    'lineWidth' : 1,
-                    'lineDasharray' : [20,5,2,5],
+                    'lineColor' : '#646566',
+                    'lineWidth' : 2,
+                    'lineDasharray' : [10, 4],
                     'lineOpacity' : 1
                 }
             };
