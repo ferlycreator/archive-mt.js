@@ -136,49 +136,17 @@ Z.Canvas = {
     },
 
     text:function(ctx, text, pt, style, size) {
-        var font = style['textFaceName'];
-        var fontSize = Z.Util.getValueOrDefault(style['textSize'],12);
-
-        var lineSpacing = Z.Util.getValueOrDefault(style['textLineSpacing'],0);
-        var wrapChar = style['textWrapCharacter'];
-        var textWidth = Z.Util.stringLength(text,font,fontSize).width;
-        var wrapWidth = style['textWrapWidth'];
-        if(!wrapWidth) {wrapWidth = textWidth;}
-        var dx=pt['left']+style['textDx'],dy=pt['top']+style['textDy'];
-        var rowNum = 1;
-        if(wrapChar){
-            var texts = text.split(wrapChar);
-            var textRows = [];
-            for(var i=0,len=texts.length;i<len;i++) {
-                var t = texts[i];
-                var wrapTextWidth = Z.Util.stringLength(t,font,fontSize).width;
-                if(wrapTextWidth>wrapWidth) {
-                    var contents = Z.Util.splitContent(t, wrapTextWidth, fontSize, wrapWidth);
-                    textRows = textRows.concat(contents);
-                } else {
-                    textRows.push(t);
-                }
-            }
-            rowNum = textRows.length;
-            var textSize = new Z.Size(wrapWidth, (fontSize+lineSpacing)*rowNum);
-            this._textOnMultiRow(ctx, textRows, style, dx, dy, textSize);
-        } else {
-            if(textWidth>wrapWidth) {
-                var texts = Z.Util.splitContent(text, textWidth, fontSize, wrapWidth);
-                rowNum = texts.length;
-                var textSize = new Z.Size(wrapWidth, (fontSize+lineSpacing)*rowNum);
-                this._textOnMultiRow(ctx, texts, style, dx, dy, textSize);
-            } else {
-                var newPoint = new Z.Point(dx,dy);
-                this._textOnLine(ctx, text, newPoint, style, size);
-            }
-        }
-
+        var rowObj = Z.StringUtil.splitTextToRow(text, style);
+        var textSize = rowObj.size;
+        var textRows = rowObj.rows;
+        var dx = pt['left']+Z.Util.getValueOrDefault(style['textDx'],0);
+        var dy = pt['top']+Z.Util.getValueOrDefault(style['textDy'],0);
+        this._textOnMultiRow(ctx, textRows, style, dx, dy, textSize);
     },
 
     _textOnMultiRow: function(ctx, texts, style, dx, dy, textSize) {
-        var fontSize = style['textSize'];
-        var lineSpacing = style['textLineSpacing'];
+        var fontSize = Z.Util.getValueOrDefault(style['textSize'],12);
+        var lineSpacing = Z.Util.getValueOrDefault(style['textLineSpacing'],8);
         for(var i=0,len=texts.length;i<len;i++) {
             var text = texts[i];
             if (style['textHaloRadius']) {

@@ -117,7 +117,7 @@ Z.Label = Z.Class.extend({
         this._textContent = this.options['content'];
         this._labelSize = this._getLabelSize();
         var style = this.options.symbol;
-        this._textSize = Z.Util.stringLength(this._textContent, style['textFaceName'],style['textSize']);
+        this._textSize = Z.StringUtil.stringLength(this._textContent, style['textFaceName'],style['textSize']);
     },
 
 
@@ -319,37 +319,8 @@ Z.Label = Z.Class.extend({
     },
 
     _getLabelSize: function() {
-        var style = this.options.symbol;
-        var font = this._textStyle['textFaceName'];
-        var fontSize = this._textStyle['textSize'];
-        var textWidth = Z.Util.stringLength(this._textContent,font,fontSize).width;
-        var wrapWidth = this._textStyle['textWrapWidth'];
-        var wrapChar = this._textStyle['textWrapCharacter'];
-        var lineSpacing = this._textStyle['textLineSpacing'];
-        if(!wrapWidth) wrapWidth = textWidth;
-        var rowNum = 1;
-        if(wrapChar) {
-            var texts = this._textContent.split(wrapChar);
-            wrapWidth = wrapWidth/texts.length;
-            var textRows = [];
-            for(var i=0,len=texts.length;i<len;i++) {
-                var t = texts[i];
-                var textWidth = Z.Util.stringLength(t,font,fontSize).width;
-                if(textWidth>wrapWidth) {
-                    var contents = Z.Util.splitContent(t, textWidth, fontSize, wrapWidth);
-                    textRows = textRows.concat(contents);
-                } else {
-                    textRows.push(t);
-                }
-            }
-            rowNum = textRows.length;
-        } else {
-            if(textWidth>=wrapWidth){
-                rowNum = Math.ceil(textWidth/wrapWidth);
-            }
-        }
-        var height = rowNum*(fontSize+lineSpacing);
-        return new Z.Size(wrapWidth, height);
+        var textRow = Z.StringUtil.splitTextToRow(this._textContent, this._textStyle);
+        return textRow.size;
     },
 
     _translateTextSymbol: function() {

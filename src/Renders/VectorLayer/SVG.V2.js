@@ -28,57 +28,22 @@ Z.SVG = {
         }
     })(),
 
-    createMultiRowText: function(svgObj, text, style, createTextPathFun) {
-        var dx = style['textDx'],dy = style['textDy'];
-        var font = style['textFaceName'];
-        var fontSize = style['textSize'];
-        var lineSpacing = style['textLineSpacing'];
-        var wrapChar = style['textWrapCharacter'];
-        var textWidth = Z.Util.stringLength(text,font,fontSize).width;
-        var wrapWidth = style['textWrapWidth'];
-        if(!wrapWidth) {wrapWidth = textWidth;}
-        var rowHeight = fontSize + lineSpacing;
-        dy += rowHeight;
-        if(wrapChar){
-            var texts = text.split(wrapChar);
-            wrapWidth = textWidth/texts.length;
-            var textRows = [];
-            for(var i=0,len=texts.length;i<len;i++) {
-                var t = texts[i];
-                //TODO stringLength是个比较昂贵的操作, 需降低其运行频率
-                var tWidth = Z.Util.stringLength(t,font,fontSize).width;
-                if(tWidth>wrapWidth) {
-                    var contents = Z.Util.splitContent(t, tWidth, fontSize, wrapWidth);
-                    textRows = textRows.concat(contents);
-                } else {
-                    textRows.push(t);
-                }
-            }
-            var rowNum = textRows.length;
-            var textSize = new Z.Size(wrapWidth, rowHeight*rowNum);
-            svgObj = this._createTextRow(svgObj, textRows, style, textSize, dx, dy, createTextPathFun);
-        } else {
-            if(textWidth>wrapWidth) {
-                var contents = Z.Util.splitContent(text, textWidth, fontSize, wrapWidth);
-                var rowNum = contents.length;
-                var textSize = new Z.Size(wrapWidth, rowHeight*rowNum);
-                svgObj = this._createTextRow(svgObj, contents, style, textSize, dx, dy, createTextPathFun);
-            } else {
-               svgObj = createTextPathFun(svgObj, text, style, new Z.Size(textWidth, rowHeight), dx, dy);
-            }
-        }
-        return svgObj;
-    },
+    createMultiRowText: function(svgText, text, style, createTextPathFun) {
+        var rowObj = Z.StringUtil.splitTextToRow(text, style);
+        var textSize = rowObj.size;
+        var textRows = rowObj.rows;
 
-    _createTextRow: function(svgText, contents, style, textSize, dx, dy, createTextPathFun) {
-        var fontSize = style['textSize'];
-        var lineSpacing = style['textLineSpacing'];
-        for(var i=0,len=contents.length;i<len;i++){
-            var content = contents[i];
+        var dx = Z.Util.getValueOrDefault(style['textDx'],0);
+        var dy = Z.Util.getValueOrDefault(style['textDy'],0);
+        var fontSize = Z.Util.getValueOrDefault(style['textSize'],12);
+        var lineSpacing = Z.Util.getValueOrDefault(style['textLineSpacing'],8);
+        var rowHeight = fontSize + lineSpacing;
+        for(var i=0,len=textRows.length;i<len;i++) {
+            var content = textRows[i];
             if(i===0) {
-                dy = fontSize;
+                dy =fontSize;
             } else {
-                dy +=fontSize+lineSpacing;
+                dy +=rowHeight
             }
             svgText = createTextPathFun(svgText, content, style, textSize, dx, dy);
         }

@@ -43,36 +43,6 @@ Z.Util = {
         return obj.options;
     },
 
-    /**
-     * 全局替换字符
-     * @param {String} str 字符串
-     * @param {String} replaceStr 被替换的字符串
-     * @param {String} newStr 替换的字符串
-     * @return {String} 处理后的字符串
-     */
-    replaceAll: function (str, replaceStr, newStr) {
-        var reg = new RegExp(replaceStr, 'g');
-        return str.replace(reg, newStr);
-    },
-
-    /**
-     * 去除字符串某位空格
-     * @param {String} str 字符串
-     * @return {String} 处理后的字符串
-     */
-    trim: function (str) {
-        return str.trim ? str.trim() : str.replace(/^\s+|\s+$/g, '');
-    },
-
-    /**
-     * 分割字符串
-     * @param {String} str 字符串
-     * @return {String} 处理后的字符串
-     */
-    splitWords: function (str) {
-        return Z.Util.trim(str).split(/\s+/);
-    },
-
     fixPNG:function(img) {
 
     },
@@ -325,76 +295,6 @@ Z.Util = {
         return typeof obj === 'object' && !!obj;
     },
 
-    _strRuler:null,
-
-    _getStrRuler:function(){
-        if (!Z.Util._strRuler) {
-            var span = document.createElement("span");
-            span.style.cssText="position:absolute;left:-10000px;top:-10000px;";
-            document.body.appendChild(span);
-            Z.Util._strRuler = span;
-        }
-
-        return Z.Util._strRuler;
-    },
-
-    /**
-     * 获取文本像素尺寸
-     * @param {String} text 文本
-     * @param {String} font 字体
-     * @param {String} fontSize 字体大小
-     * @return {maptalks.Size} size对象
-     */
-    stringLength:function(text, font, fontSize) {
-        //TODO 该函数在非浏览器环境下无法执行
-        var ruler = Z.Util._getStrRuler();
-        ruler.style.fontFamily = font;
-        ruler.style.fontSize = fontSize+'px';
-        ruler.style.fontWeight = 'bold';
-        ruler.innerHTML = text;
-        return new Z.Size(ruler.clientWidth, ruler.clientHeight);
-    },
-
-    /**
-     * 获取字符串长度
-     * @param {String} str 字符串
-     * @return {Number} 长度
-     */
-    /*getLength : function(str) {
-        var len = 0;
-        for (var i = 0; i < str.length; i++) {
-            var a = str.charAt(i);
-            if (a.match(/[^\x00-\xff]/ig) != null) {
-                len += 2;
-            } else {
-                len += 1;
-            }
-        }
-        return len;
-    },*/
-
-    /**
-     * 根据长度分割文本
-     * @param {String} content 文本
-     * @param {Number} textLength 文本长度
-     * @param {Number} size 字符大小
-     * @param {Number} wrapWidth 限定宽度
-     * @return {String[]} 分割后的字符串数组
-     */
-    splitContent: function(content, textLength, size, wrapWidth) {
-        var rowNum = Math.ceil(textLength/wrapWidth);
-        var fontSize = parseInt(wrapWidth/size);
-        var result = [];
-        for(var i=0;i<rowNum;i++) {
-            if(i < rowNum -1 ) {
-                result.push(content.substring(i*fontSize, (i+1)*fontSize));
-            } else {
-                result.push(content.substring(i*fontSize));
-            }
-        }
-        return result;
-    },
-
     /**
      * 设置默认值
      * @param {Object} value 赋值
@@ -537,21 +437,6 @@ Z.Util = {
             // return as is if not an css url
             return str;
         }
-    },
-
-    contentExpRe: /\[([\w_]+)\]/g,
-
-    content: function (str, props) {
-        if (!Z.Util.isObject(props)) {
-            return str;
-        }
-        return str.replace(Z.Util.contentExpRe, function (str, key) {
-            var value = props[key];
-            if (value === undefined) {
-                return str;
-            }
-            return value;
-        });
     },
 
     /**
