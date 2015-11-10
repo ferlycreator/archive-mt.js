@@ -29,6 +29,8 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
         var props = this.geometry.getProperties();
         this.textContent = Z.Util.content(this.style['shieldName'], props);
         this.textSize = Z.Util.stringLength(this.textContent,this.style['textFaceName'],this.style['textSize']);
+        this.shieldFileWidth = 0;
+        this.shieldFileHeight = 0;
     },
 
     svg:function(container, vectorcontainer, zIndex, _container, _vectorcontainer) {
@@ -65,6 +67,11 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
             return map._viewPointToContainerPoint(point);
         });
         var img = resources.getImage(style['shieldFile']);
+        if (!img) {
+            throw new Error(style['shieldFile']+' is invalid');
+        }
+        this.shieldFileWidth = img.width;
+        this.shieldFileHeight = img.height;
         for (var i = 0, len=cookedPoints.length;i<len;i++) {
             var pt = cookedPoints[i];
             Z.Canvas.shield(ctx, pt, img, this.textContent, this.textSize, style);
@@ -86,8 +93,8 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
         var dxdy = this.getDxDy(),
             style = this.style,
             size = this.textSize;
-        var fileExtent = new Z.Extent(dxdy.add(-this.shieldFileWidth/2, - this.shieldFileHeight/2),
-                    dxdy.add(this.shieldFileWidth/2, this.shieldFileHeight/2));
+        var fileExtent = new Z.Extent(dxdy.add(new Z.Point(-this.shieldFileWidth/2, - this.shieldFileHeight/2)),
+                    dxdy.add(new Z.Point(this.shieldFileWidth/2, this.shieldFileHeight/2)));
         var textDxDy = new Z.Point(this.style['textDx'], this.style['textDy']);
         var alignW, alignH;
         if (style['textHorizontalAlignment'] === 'left') {
