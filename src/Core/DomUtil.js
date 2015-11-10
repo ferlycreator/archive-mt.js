@@ -415,7 +415,7 @@ Z.DomUtil = {
      */
     addClass: function (el, name) {
         if (el.classList !== undefined) {
-            var classes = Z.Util.splitWords(name);
+            var classes = Z.StringUtil.splitWords(name);
             for (var i = 0, len = classes.length; i < len; i++) {
                 el.classList.add(classes[i]);
             }
@@ -434,7 +434,7 @@ Z.DomUtil = {
         if (el.classList !== undefined) {
             el.classList.remove(name);
         } else {
-            Z.DomUtil.setClass(el, Z.Util.trim((' ' + Z.DomUtil.getClass(el) + ' ').replace(' ' + name + ' ', ' ')));
+            Z.DomUtil.setClass(el, Z.StringUtil.trim((' ' + Z.DomUtil.getClass(el) + ' ').replace(' ' + name + ' ', ' ')));
         }
     },
 

@@ -25,8 +25,8 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
         this.style = this.translate();
         this.strokeAndFill = this.translateStrokeAndFill(this.style);
         var props = this.geometry.getProperties();
-        this.textContent = Z.Util.content(this.style['textName'], props);
-        this.textSize = Z.Util.stringLength(this.textContent,this.style['textFaceName'],this.style['textSize']);
+        this.textContent = Z.StringUtil.content(this.style['textName'], props);
+        this.textSize = Z.StringUtil.stringLength(this.textContent,this.style['textFaceName'],this.style['textSize']);
     },
 
     svg:function(container, vectorcontainer, zIndex) {

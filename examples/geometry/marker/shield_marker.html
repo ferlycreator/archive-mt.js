@@ -31,15 +31,12 @@
         //将图层添加到地图对象
         mapObj.addLayer(layer);
         //创建点的坐标对象
-        var coordinate = new maptalks.Coordinate(121.489315,31.24402);
+        var coordinate = new maptalks.Coordinate(121.4924670053099,31.246851648109903);
         //设置盾标配置
         var icon = {
-            // polygon styles {{{
+
             "polygonFill": "#ff0000",
             "polygonOpacity": 0.5,
-            // }}} polygon styles
-
-            // shield styles {{{
             "shieldPlacement"  : "vertex",
 
             "shieldFile"      :  "/images/marker.png",
@@ -52,8 +49,6 @@
             "shieldSize"       :  10,
             "shieldFill"       : "#ff0000",
             "shieldTextOpacity": 1,
-            //"shield-halo-fill"  : "#ffffff",
-            //"shield-halo-radius": 1,
 
             "shieldTextDx"    :  0,
             "shieldTextDy"    :  0,
@@ -61,15 +56,23 @@
             "shieldHorizontalAlignment"   : "middle", //left | middle | right | auto
             "shieldVerticalAlignment"     : "middle",   // top | middle | bottom | auto
             "shieldJustifyAlignment"      : "left"
-            // }}} shield style end
         };
-
-        var polygon = new maptalks.Polygon([[
-                                            [121.489935,31.24432], [121.488935,31.24432], [121.488935,31.24332],[121.489935,31.24432]
-                                                ]], {'symbol':icon,'draggable':true});
-        polygon.setProperties({
+        //创建点对象
+        var marker = new maptalks.Marker(coordinate,{'draggable':true});
+        marker.setProperties({
             'name':'上海大厦',
             'addr': '北苏州路20号'
+        });
+        //设置点样式
+        marker.setSymbol(icon);
+        var polygon = new maptalks.Polygon([[
+                                            [121.49250992065416,31.2438063239855],
+                                            [121.49435528045635,31.244650218819675],
+                                            [121.49693020111052,31.24586101127991]
+                                                ]], {'symbol':icon,'draggable':true});
+        polygon.setProperties({
+            'name':'黄浦江',
+            'addr': '码头'
         });
         //创建点对象
         var marker = new maptalks.Marker(coordinate,{'id':'marker_id','draggable':true});
