@@ -147,22 +147,25 @@ Z.Canvas = {
         for(var i=0,len=texts.length;i<len;i++) {
             var text = texts[i]['text'];
             var rowAlign = Z.StringUtil.getAlignPoint(texts[i]['size'],style['textHorizontalAlignment'],style['textVerticalAlignment']);
-            this._textOnLine(ctx, text, basePoint.add(new Z.Point(rowAlign['left'], i*lineHeight)), style['textHaloRadius']);
+            Z.Canvas._textOnLine(ctx, text, basePoint.add(new Z.Point(rowAlign['left'], i*lineHeight)), style['textHaloRadius'], style['textHaloFill']);
         }
     },
 
-    _textOnLine: function(ctx, text, pt, textHaloRadius) {
+    _textOnLine: function(ctx, text, pt, textHaloRadius, textHaloFill) {
         //http://stackoverflow.com/questions/14126298/create-text-outline-on-canvas-in-javascript
         //根据text-horizontal-alignment和text-vertical-alignment计算绘制起始点偏移量
         pt = pt.add(new Z.Point(0,3));
         if (textHaloRadius) {
             ctx.miterLimit = 2;
             ctx.lineJoin = 'circle';
-            ctx.lineWidth = (textHaloRadius*2-1);
+            var lineWidth=(textHaloRadius*2-1);
+            ctx.lineWidth = lineWidth;
+            ctx.strokeStyle =Z.Canvas.getRgba(textHaloFill, 1);
             ctx.strokeText(text, pt['left'], pt['top']);
             ctx.lineWidth = 1;
             ctx.miterLimit = 10; //default
         }
+
         ctx.fillText(text, pt['left'], pt['top']);
     },
 
