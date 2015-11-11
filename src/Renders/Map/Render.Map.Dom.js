@@ -250,9 +250,9 @@ Z.render.map.Dom = Z.render.map.Render.extend({
             if (!Z.Util.isArrayHasData(spanArr)) {
                 return;
             }
-            if (!_map._allowSlideMap) {
+            if (!_map._enablePanAnimation) {
                 // XXX: why set '_allowSlideMap' to 'true'?
-                _map._allowSlideMap = true;
+                _map._enablePanAnimation = true;
                 _map._onMoveEnd({'target':_map});
                 return;
             }
