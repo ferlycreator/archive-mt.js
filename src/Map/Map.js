@@ -86,7 +86,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         this._center = new Z.Coordinate(options['center']);
         delete options['center'];
 
-        this._allowSlideMap = true;
+        this._enablePanAnimation = true;
 
         //坐标类型
         options = Z.Util.setOptions(this,options);
@@ -244,6 +244,8 @@ Z['Map']=Z.Map=Z.Class.extend({
         // if (this._baseTileLayer) {this._baseTileLayer._onMoveEnd();}
         /*this._refreshSVGPaper();*/
         // this._eachLayer(endMoveLayer,this._tileLayers,this._canvasLayers,this._dynLayers);
+        this._enablePanAnimation=true;
+        this._isBusy = false;
         /**
          * 触发map的moveend事件
          * @member maptalks.Map
