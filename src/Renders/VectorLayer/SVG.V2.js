@@ -28,26 +28,30 @@ Z.SVG = {
         }
     })(),
 
-    createMultiRowText: function(svgText, text, style, createTextPathFun) {
-        var rowObj = Z.StringUtil.splitTextToRow(text, style);
-        var textSize = rowObj.size;
-        var textRows = rowObj.rows;
+    createMultiRowText: function(text, style, fnCreateTextDom) {
+        var textDesc = Z.StringUtil.splitTextToRow(text, style);
+        var textSize = textDesc['size'];
+        var textRows = textDesc['rows'];
+
+        var point = Z.StringUtil.getAlignPoint(textSize,style['textHorizontalAlignment'],style['textVerticalAlignment']);
 
         var dx = Z.Util.getValueOrDefault(style['textDx'],0);
         var dy = Z.Util.getValueOrDefault(style['textDy'],0);
-        var fontSize = Z.Util.getValueOrDefault(style['textSize'],12);
-        var lineSpacing = Z.Util.getValueOrDefault(style['textLineSpacing'],8);
-        var rowHeight = fontSize + lineSpacing;
+
+        var basePoint = new Z.Point(0+dx, point['top']+dy);
+        var lineHeight = textDesc['rawSize']['height'] + style['textLineSpacing'];
+
+        var textDoms = [];
         for(var i=0,len=textRows.length;i<len;i++) {
-            var content = textRows[i];
-            if(i===0) {
-                dy =fontSize;
-            } else {
-                dy +=rowHeight
-            }
-            svgText = createTextPathFun(svgText, content, style, textSize, dx, dy);
+            // var content = textRows[i]['text'];
+            var rowAlignPoint = Z.StringUtil.getAlignPoint(textRows[i]['size'],style['textHorizontalAlignment'],style['textVerticalAlignment']);
+            var x = basePoint['left']+rowAlignPoint['left'],
+                //因为svg中dom的anchor从左下角算起, 所以要加上textRows[i]['size']['height']即文字高度, -3是个调试值
+                y = basePoint['top']+i*lineHeight+textRows[i]['size']['height']-3;
+            var svgDom = fnCreateTextDom(textRows[i], style, x, y);
+            textDoms.push(svgDom);
         }
-        return svgText;
+        return textDoms;
     }
 
 };
@@ -100,32 +104,21 @@ Z.SVG.SVG = {
                         'opacity:' + style['textOpacity'] + ';' +
                         'text-align:' + style['textAlign'] + ';';
         svgText.setAttribute('style', textStyle);
-        svgText = Z.SVG.createMultiRowText(svgText, text, style, this._createTextPath);
+        var svgPaths = Z.SVG.createMultiRowText(text, style, this._createTextPath);
+        for (var i = 0, len=svgPaths.length; i < len; i++) {
+            svgText.appendChild(svgPaths[i]);
+        }
         return svgText;
     },
 
-    _createTextPath: function(svgText, content, style, textSize, dx, dy) {
+    _createTextPath: function(textRow, style, dx, dy) {
+        var content = textRow['text'];
         var tspan = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        var hAlign = style['textHorizontalAlignment'];
-        if (hAlign === 'left') {
-            dx -= textSize['width'];
-        } else if (hAlign === 'middle') {
-            dx -= textSize['width']/2;
-        }
-
-        var vAlign = style['textVerticalAlignment'];
-        if (vAlign === 'top') {
-            dy -= textSize['height'];
-        } else if (vAlign === 'middle') {
-            dy -= textSize['height']/2;
-        }
-
         tspan.setAttribute('dx', dx);
         tspan.setAttribute('dy', dy);
         var textNode = document.createTextNode(content);
         tspan.appendChild(textNode);
-        svgText.appendChild(tspan);
-        return svgText;
+        return tspan;
     },
 
     updateTextStyle:function(svgText, style, size) {
@@ -327,32 +320,20 @@ Z.SVG.VML= {
         vmlShape.style.height = '1px';
         vmlShape['coordsize'] = '1 1';
         vmlShape['coordorigin'] = '0 0';
-        vmlShape = Z.SVG.createMultiRowText(vmlShape, text, style, this._createTextPath);
+        var textDoms = Z.SVG.createMultiRowText(text, style, this._createTextPath);
+        for (var i = 0, len=textDoms.length; i < len; i++) {
+            vmlShape.appendChild(textDoms[i]);
+        }
         return vmlShape;
     },
 
-    _createTextPath: function(vmlShape, text, style, textSize, x, y) {
+    _createTextPath: function(textRow, style, x, y) {
+        var text = textRow['text'];
         var vmlLine = Z.SVG.create('polyline');
         vmlLine.strokecolor = style['textFill'];
-        var left = style['textDx'],top = style['textDy'];
-        var hAlign = style['textHorizontalAlignment'];
-        if (hAlign === 'left') {
-            left -= textSize['width']/2+x;
-        } else if (hAlign === 'middle') {
-            left -= textSize['width']/4+x;
-        }
-
-        var vAlign = style['textVerticalAlignment'];
-        if (vAlign === 'top') {
-            top = -textSize['height'] + y;
-        } else if (vAlign === 'middle') {
-            top =  -textSize['height']/2 + y;
-        } else {
-            top = y;
-        }
-
-        vmlLine.points = Math.round(left)+','+Math.round(top)
-                         +' '+Math.round(left+textSize['width'])+','+Math.round(top+1);
+        var width = textRow['size']['width'];
+        vmlLine.points = Math.round(x)+','+Math.round(y)
+                         +' '+Math.round(x+width)+','+Math.round(y+1);
         var vmlPath = Z.SVG.create('path');
         vmlPath.textpathok=true;
 
@@ -362,8 +343,7 @@ Z.SVG.VML= {
         vmlText.string=text;
         vmlLine.appendChild(vmlPath);
         vmlLine.appendChild(vmlText);
-        vmlShape.appendChild(vmlLine);
-        return vmlShape;
+        return vmlLine;
     },
 
     updateTextStyle:function(vmlShape, style, size) {

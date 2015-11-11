@@ -135,68 +135,35 @@ Z.Canvas = {
         }
     },
 
-    text:function(ctx, text, pt, style, size) {
-        var rowObj = Z.StringUtil.splitTextToRow(text, style);
-        var textSize = rowObj.size;
-        var textRows = rowObj.rows;
-        var dx = pt['left']+Z.Util.getValueOrDefault(style['textDx'],0);
-        var dy = pt['top']+Z.Util.getValueOrDefault(style['textDy'],0);
-        this._textOnMultiRow(ctx, textRows, style, dx, dy, textSize);
+    text:function(ctx, text, pt, style, textDesc) {
+        pt = pt.add(new Z.Point(style['textDx'], style['textDy']));
+        this._textOnMultiRow(ctx, textDesc['rows'], style, pt, textDesc['size'], textDesc['rawSize']);
     },
 
-    _textOnMultiRow: function(ctx, texts, style, dx, dy, textSize) {
-        var fontSize = Z.Util.getValueOrDefault(style['textSize'],12);
-        var lineSpacing = Z.Util.getValueOrDefault(style['textLineSpacing'],8);
+    _textOnMultiRow: function(ctx, texts, style, point, splitTextSize, textSize) {
+        var ptAlign = Z.StringUtil.getAlignPoint(splitTextSize,style['textHorizontalAlignment'],style['textVerticalAlignment']);
+        var lineHeight = textSize['height']+style['textLineSpacing'];
+        var basePoint = point.add(new Z.Point(0, ptAlign['top']));
         for(var i=0,len=texts.length;i<len;i++) {
-            var text = texts[i];
-            if (style['textHaloRadius']) {
-                ctx.miterLimit = 2;
-                ctx.lineJoin = 'circle';
-                ctx.lineWidth = (style['textHaloRadius']*2-1);
-                ctx.strokeText(text, dx, dy);
-                ctx.lineWidth = 1;
-                ctx.miterLimit = 10; //default
-            }
-            var pt = new Z.Point(dx, dy);
-            this._textOnLine(ctx, text, pt, style, textSize);
-            dy += fontSize+lineSpacing;
+            var text = texts[i]['text'];
+            var rowAlign = Z.StringUtil.getAlignPoint(texts[i]['size'],style['textHorizontalAlignment'],style['textVerticalAlignment']);
+            this._textOnLine(ctx, text, basePoint.add(new Z.Point(rowAlign['left'], i*lineHeight)), style['textHaloRadius']);
         }
     },
 
-    _textOnLine: function(ctx, text, pt, style, size) {
+    _textOnLine: function(ctx, text, pt, textHaloRadius) {
         //http://stackoverflow.com/questions/14126298/create-text-outline-on-canvas-in-javascript
         //根据text-horizontal-alignment和text-vertical-alignment计算绘制起始点偏移量
-        var alignX, alignY;
-        var hAlign = style['textHorizontalAlignment'];
-        if (hAlign === 'right') {
-            alignX = 0;
-        } else if (hAlign === 'middle') {
-            alignX = -size['width']/2;
-        } else {
-            alignX = -size['width'];
-        }
-        var vAlign = style['textVerticalAlignment'];
-        if (vAlign === 'top') {
-            alignY = -size['height'];
-        } else if (vAlign === 'middle') {
-            alignY = -size['height']/2;;
-        } else {
-            alignY = 0;
-        }
-
-        var ptAlign = new Z.Point(alignX, alignY);
-        pt = pt.add(ptAlign);
-
-        if (style['textHaloRadius']) {
+        pt = pt.add(new Z.Point(0,3));
+        if (textHaloRadius) {
             ctx.miterLimit = 2;
             ctx.lineJoin = 'circle';
-            ctx.lineWidth = (style['textHaloRadius']*2-1);
+            ctx.lineWidth = (textHaloRadius*2-1);
             ctx.strokeText(text, pt['left'], pt['top']);
             ctx.lineWidth = 1;
             ctx.miterLimit = 10; //default
         }
-        //TODO magic number: “4”是个实验数据，但是只有设置这个svg与canvas上的文本位置才能完全匹配
-        ctx.fillText(text, pt['left'], pt['top']+4);
+        ctx.fillText(text, pt['left'], pt['top']);
     },
 
 

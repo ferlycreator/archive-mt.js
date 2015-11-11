@@ -134,37 +134,71 @@ Z.StringUtil = {
     splitTextToRow: function(text, style) {
         var font = Z.Util.getValueOrDefault(style['textFaceName'],'arial');
         var fontSize = Z.Util.getValueOrDefault(style['textSize'],12);
-        var lineSpacing = Z.Util.getValueOrDefault(style['textLineSpacing'],8);
-        var textWidth = Z.StringUtil.stringLength(text,font,fontSize).width;
+        var lineSpacing = Z.Util.getValueOrDefault(style['textLineSpacing'],0);
+        var rawTextSize = Z.StringUtil.stringLength(text,font,fontSize);
+        var textWidth = rawTextSize['width'];
+        var textHeight = rawTextSize['height'];
         var wrapChar = Z.Util.getValueOrDefault(style['textWrapCharacter'],null);
         var wrapWidth = style['textWrapWidth'];
-        if(!wrapWidth) {wrapWidth = textWidth;}
+        if(!wrapWidth || wrapWidth > textWidth) {wrapWidth = textWidth;}
         var textRows = [];
 
         if(wrapChar&&text.indexOf(wrapChar)>=0){
             var texts = text.split(wrapChar);
-            wrapWidth = textWidth/texts.length;
+            //wrapWidth = textWidth/texts.length;
             for(var i=0,len=texts.length;i<len;i++) {
                 var t = texts[i];
                 //TODO stringLength是个比较昂贵的操作, 需降低其运行频率
-                var tWidth = Z.StringUtil.stringLength(t,font,fontSize).width;
+                var tSize = Z.StringUtil.stringLength(t,font,fontSize);
+                var tWidth = tSize['width'];
                 if(tWidth>wrapWidth) {
                     var contents = Z.StringUtil.splitContent(t, tWidth, fontSize, wrapWidth);
-                    textRows = textRows.concat(contents);
+                    for (var ii = 0; ii < contents.length; ii++) {
+                        textRows.push({'text':contents[ii],'size':Z.StringUtil.stringLength(contents[ii],font,fontSize)});
+                    }
                 } else {
-                    textRows.push(t);
+                    textRows.push({'text':t,'size':tSize});
                 }
             }
         } else {
             if(textWidth>wrapWidth) {
-                textRows = Z.StringUtil.splitContent(text, textWidth, fontSize, wrapWidth);
+                var splitted = Z.StringUtil.splitContent(text, textWidth, fontSize, wrapWidth);
+                for (var iii = 0; iii < splitted.length; iii++) {
+                    textRows.push({'text':splitted[iii],'size':Z.StringUtil.stringLength(splitted[iii],font,fontSize)});
+                }
             } else {
-                textRows.push(text);
+                textRows.push({'text':text,'size':rawTextSize});
             }
         }
         var rowNum = textRows.length;
-        var rowHeight = fontSize+lineSpacing;
-        var textSize = new Z.Size(wrapWidth, rowHeight*rowNum);
-        return {total: rowNum, size: textSize, rows: textRows};
+        var textSize = new Z.Size(wrapWidth, textHeight*rowNum+lineSpacing*(rowNum-1));
+        return {'total': rowNum, 'size': textSize, 'rows': textRows, 'rawSize':rawTextSize};
+    },
+
+    /**
+     * 根据对齐方式和给定的size值, 计算偏移量
+     * @param  {Size} size                [description]
+     * @param  {String} horizontalAlignment [description]
+     * @param  {String} verticalAlignment   [description]
+     * @return {[type]}                     [description]
+     */
+    getAlignPoint:function(size, horizontalAlignment, verticalAlignment) {
+        var width = size['width'], height = size['height'];
+        var alignW, alignH;
+        if (horizontalAlignment === 'left') {
+            alignW = -width;
+        } else if (horizontalAlignment === 'middle') {
+            alignW = -width/2;
+        } else if (horizontalAlignment === 'right') {
+            alignW = 0;
+        }
+        if (verticalAlignment === 'top') {
+            alignH = -height;
+        } else if (verticalAlignment === 'middle') {
+            alignH = -height/2;
+        } else if (verticalAlignment === 'bottom') {
+            alignH = 0;
+        }
+        return new Z.Point(alignW, alignH);
     }
 };
