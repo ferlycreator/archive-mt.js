@@ -9,6 +9,9 @@ Z.Size=function(width,height) {
 };
 
 Z.Size.prototype={
+    add:function(size) {
+        return new Z.Size(this['width']+size['width'], this['height']+size['height']);
+    },
     equals:function(size) {
         return this['width'] === size['width'] && this['height'] === size['height'];
     },

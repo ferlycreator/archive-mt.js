@@ -5,22 +5,18 @@ Z.Geometry.include({
     * @member maptalks.Geometry
     * @expose
     */
-    addLabel: function (options) {
+    addLabel: function (label) {
         if(this.getMap()) {
-            this._addLabel(options);
+            this._addLabel(label);
         } else {
-            var me = this;
             this.on('addend', function() {
-                me._addLabel(options);
+                this._addLabel(label);
             },this);
         }
     },
 
-    _addLabel: function(options) {
-        var layer = this.getLayer();
-        options['target'] = this;
-        var label = new Z.Label(options);
-        label.addTo(layer);
+    _addLabel: function(label) {
+        label.addTo(this);
         if(!this._labels) {
             this._labels = [];
         }
