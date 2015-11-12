@@ -164,6 +164,31 @@ maptalks.Grid = maptalks.Class.extend({
         this._rowNum -=1;
     },
 
+    /**
+     * 删除列
+     * @param {Number} colNum 列号
+     */
+    removeCol: function(colNum) {
+        for(var i=0,len=this._grid.length;i<len;i++) {
+            var row = this._grid[i];
+            for(var j=colNum,rowLength=row.length;j<rowLength;j++) {
+                var cell = row[j];
+                if(j>colNum) {
+                    var position = cell.getPosition();
+                    position = this._map.locate(position, -this._cellWidth, 0);
+                    cell._col -= 1;
+                    cell.setPosition(position);
+                } else {
+                    cell.remove();
+                }
+            }
+            //删除列数据
+            this._grid[i].splice(colNum, 1);
+        }
+        //移除列数据
+        this._colNum -=1;
+    },
+
     _addToLayer: function(grid) {
         var me = this;
         for(var i=0,len=grid.length;i<len;i++) {
@@ -185,7 +210,7 @@ maptalks.Grid = maptalks.Class.extend({
         var colNum = cell._col;
         var data = [1,2];
 //        this.addCol(colNum, data, true);
-        this.removeRow(rowNum);
+        this.removeCol(colNum);
     },
 
     /**
