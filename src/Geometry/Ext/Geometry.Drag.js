@@ -51,6 +51,7 @@ Z.Geometry.include({
         var dragOffset = currentCoord.substract(this._preCoordDragged);
         this._preCoordDragged = currentCoord;
         this.translate(dragOffset);
+        param['dragOffset'] = dragOffset;
         /**
          * 触发geometry的dragging事件
          * @member maptalks.Geometry

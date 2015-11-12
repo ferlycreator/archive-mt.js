@@ -198,19 +198,61 @@ maptalks.Grid = maptalks.Class.extend({
                 cell._row = i;
                 cell._col = j;
                 cell.addTo(this._layer);
-                cell.on('click',this._addEventToCell,this);
+                cell.on('click',this._addEventToCell,this)
+                    .on('dblclick',this._addEditEventToCell,this);
+                //添加拖动焦点
+                if(i==0&&j==0) {
+                    this._addDragHandler(cell);
+                }
+            }
+        }
+    },
+
+    _addDragHandler: function(cell) {
+        var position = cell.getPosition();
+        var height = this._cellHeight-8;
+        var icon = {
+            'markerType': 'ellipse',
+            'markerFillOpacity': 0.6,
+            'markerLineColor': '#4e98dd',
+            'markerLineWidth': 1,
+            'markerLineOpacity': 1,
+            'markerWidth': height,
+            'markerHeight': height,
+            'markerFill': '#ffffff',
+        };
+        var center = this._map.locate(position, -this._cellHeight/2, -this._cellHeight/2);
+        var marker = new maptalks.Marker(center,{draggable:true});
+        marker.setSymbol(icon);
+        this._layer.addGeometry(marker);
+        marker.on('dragging',this._dragGrid,this);
+    },
+
+    _dragGrid: function(event) {
+        console.log(event);
+        var dragOffset = event['dragOffset'];
+        for(var i=0,len=this._grid.length;i<len;i++) {
+            var row = this._grid[i];
+            for(var j=0,rowLength=row.length;j<rowLength;j++) {
+                var cell = row[j];
+                cell._box.translate(dragOffset);
+                cell._textMarker.translate(dragOffset);
             }
         }
     },
 
     _addEventToCell: function(event) {
-        console.log(event);
         var cell = event.target;
         var rowNum = cell._row;
         var colNum = cell._col;
         var data = [1,2];
 //        this.addCol(colNum, data, true);
-        this.removeCol(colNum);
+//        this.removeCol(colNum);
+    },
+
+    _addEditEventToCell: function(event) {
+        var cell = event.target;
+        cell.startEdit();
     },
 
     /**

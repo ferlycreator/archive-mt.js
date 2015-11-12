@@ -60,6 +60,10 @@ Z.Label.include({
             'height:'+height+'px;';
         var content = this.getContent();
         inputDom.value = content;
+        var me = this;
+        Z.DomUtil.on(inputDom, 'blur', function(param){
+             me.endEdit();
+        });
         return inputDom;
 
     },
