@@ -76,29 +76,6 @@ maptalks.Grid = maptalks.Class.extend({
         return this;
     },
 
-    _addToLayer: function(grid) {
-        var me = this;
-        for(var i=0,len=grid.length;i<len;i++) {
-            var row = grid[i];
-            for(var j=0,rowNum=row.length;j<rowNum;j++) {
-                var cell = row[j];
-                cell._row = i;
-                cell._col = j;
-                cell.addTo(this._layer);
-                cell.on('click',this._addEventToCell,this);
-            }
-        }
-    },
-
-    _addEventToCell: function(event) {
-        console.log(event);
-        var cell = event.target;
-        var rowNum = cell._row;
-        var colNum = cell._col;
-        var data = [];
-        this.addCol(colNum, data, true);
-    },
-
     /**
      * 设置属性
      * @param {Object} options
@@ -148,6 +125,70 @@ maptalks.Grid = maptalks.Class.extend({
     },
 
     /**
+     * 添加一列
+     * @param {Number} colNum 添加新列的位置
+     * @param {Object} data 添加的列数据
+     * @param {Boolean} right :true,右侧;false,左侧
+     */
+    addCol: function(colNum, data, right) {
+        var insertColNum = colNum+1;
+        if(!right) {
+            insertColNum = colNum;
+        }
+        this._createCol(insertColNum, data);
+        return this;
+    },
+
+    /**
+     * 删除行
+     * @param {Number} rowNum 行号
+     */
+    removeRow: function(rowNum) {
+        for(var i=rowNum,len=this._grid.length;i<len;i++) {
+            var row = this._grid[i];
+            for(var j=0,rowLength=row.length;j<rowLength;j++) {
+                var cell = row[j];
+                if(i>rowNum) {
+                    var position = cell.getPosition();
+                    position = this._map.locate(position, 0, this._cellHeight);
+                    cell._row -= 1;
+                    cell.setPosition(position);
+                } else {
+                    cell.remove();
+                }
+            }
+        }
+        //移除行数据
+        this._grid = this._grid.splice(rowNum, 1);
+        //总行数减少
+        this._rowNum -=1;
+    },
+
+    _addToLayer: function(grid) {
+        var me = this;
+        for(var i=0,len=grid.length;i<len;i++) {
+            var row = grid[i];
+            for(var j=0,rowNum=row.length;j<rowNum;j++) {
+                var cell = row[j];
+                cell._row = i;
+                cell._col = j;
+                cell.addTo(this._layer);
+                cell.on('click',this._addEventToCell,this);
+            }
+        }
+    },
+
+    _addEventToCell: function(event) {
+        console.log(event);
+        var cell = event.target;
+        var rowNum = cell._row;
+        var colNum = cell._col;
+        var data = [1,2];
+        this.addCol(colNum, data, true);
+//        this.removeRow(rowNum);
+    },
+
+    /**
      * 调整插入行之后的cell位置
      * @param {Number} insertRowLength 插入行的数量
      * @param {Array} lastDataset 插入行之后的cell数组
@@ -165,42 +206,25 @@ maptalks.Grid = maptalks.Class.extend({
         return this;
     },
 
-    /**
-     * 添加一列
-     * @param {Number} colNum 添加新列的位置
-     * @param {Object} data 添加的列数据
-     * @param {Boolean} right :true,右侧;false,左侧
-     */
-    addCol: function(colNum, data, right) {
-        var insertColNum = colNum+1;
-        if(!right) {
-            insertColNum = colNum;
-        }
-        if(!data||data.length==0) {//添加空行
-           data = '';
-        }
-        this._createCol(insertColNum, data);
-        return this;
-    },
-
     _createCol: function(insertColNum, data) {
-        if(!data||data.length>0) data = '';
+        var startCol = insertColNum;//调整起始列
+        if(!data||data.length==0) data = '';
         //将列插入grid
         var position = this.options['position'];
         var cells = new Array();
-        var insertRowLength = 1;
+        var insertColLength = 1;
         for(var i=0;i<this._rowNum;i++) {
             if(maptalks.Util.isArray(data)){
-                insertRowLength = data.length;
+                insertColLength = data.length;
                 var colCell = new Array();
                 for(var j=0,len=data.length;j<len;j++) {
                     var item = data[j];
-                    var cellPosition = this._getCellPosition(position,i,insertColNum);
+                    var cellPosition = this._getCellPosition(position,i,insertColNum+j);
                     var cell  = this._createCell(cellPosition, item);
                     cell._row = i;
-                    cell._col = insertColNum++;
+                    cell._col = insertColNum+j;
+                    cell.addTo(this._layer);
                     colCell.push(cell);
-                    colCell.addTo(this._layer);
                 }
                 cells.push(colCell);
             } else {
@@ -213,20 +237,21 @@ maptalks.Grid = maptalks.Class.extend({
             }
         }
         //将新增的列加入grid
-        var startCol = insertColNum;//调整起始列
         for(var i=0,len=this._grid.length;i<len;i++) {
-            this._adjustDatasetForCol(this._grid[i],startCol,insertRowLength);
-            this._grid[i].splice(insertColNum, 0, cells[i]);
+            this._adjustDatasetForCol(this._grid[i],startCol,insertColLength);
+            for(var j=0,dataLen=data.length;j<dataLen;j++) {
+                this._grid[i].splice(insertColNum+j, 0, cells[j]);
+            }
         }
-        this._colNum+=insertRowLength;
+        this._colNum+=insertColLength;
     },
 
-    _adjustDatasetForCol: function(rowData, start, insertRowLength) {
+    _adjustDatasetForCol: function(rowData, start, insertColLength) {
         for(var i=start,len=rowData.length;i<len;i++) {
             var cell = rowData[i];
             var position = cell.getPosition();
-            position = this._map.locate(position,this._cellWidth*insertRowLength,0);
-            cell._col += insertRowLength;
+            position = this._map.locate(position,this._cellWidth*insertColLength,0);
+            cell._col += insertColLength;
             cell.setPosition(position);
         }
     },
