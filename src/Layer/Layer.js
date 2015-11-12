@@ -41,10 +41,10 @@ Z['Layer']=Z.Layer=Z.Class.extend({
      */
     setZIndex:function(zIndex) {
         this._zIndex = zIndex;
-        var layerList = this._getLayerList();
-        layerList.sort(function(a,b) {
-            return a.getZIndex()-b.getZIndex();
-        });
+        if (this.map) {
+            var layerList = this._getLayerList();
+            this.map._sortLayersZ(layerList);
+        }
         if (this._render) {
             this._render.setZIndex(zIndex);
         }
@@ -102,14 +102,16 @@ Z['Layer']=Z.Layer=Z.Class.extend({
      */
     bringToFront:function() {
         var layers = this._getLayerList();
-        var max = layers[0].getZIndex();
-        for (var i=1, len=layers.length;i<len;i++) {
-            var z = layers[i].getZIndex();
-            if (z > max) {
-                max = z;
-            }
+        if (!layers) {
+            return this;
         }
+        var topLayer = layers[layers.length-1];
+        if (layers.length === 1 || topLayer === this) {
+            return this;
+        }
+        var max = topLayer.getZIndex();
         this.setZIndex(max+1);
+        return this;
     },
 
     /**
@@ -118,13 +120,14 @@ Z['Layer']=Z.Layer=Z.Class.extend({
      */
     bringToBack:function(){
         var layers = this._getLayerList();
-        var min = layers[0].getZIndex();
-        for (var i=1, len=layers.length;i<len;i++) {
-            var z = layers[i].getZIndex();
-            if (z < min) {
-                min = z;
-            }
+        if (!layers) {
+            return this;
         }
+        var bottomLayer = layers[0];
+        if (layers.length === 1 || bottomLayer === this) {
+            return this;
+        }
+        var min = bottomLayer.getZIndex();
         this.setZIndex(min-1);
     },
 

@@ -559,6 +559,12 @@ Z['Map']=Z.Map=Z.Class.extend({
         return this;
     },
 
+    _sortLayersZ:function(layerList) {
+        layerList.sort(function(a,b) {
+            return a.getZIndex()-b.getZIndex();
+        });
+    },
+
     /**
      * 图层排序
      * @param  {String | layers} layerIds 图层id或者图层
@@ -580,18 +586,14 @@ Z['Map']=Z.Map=Z.Class.extend({
         }
 
         function getMaxZ(_layerList) {
-            var max = _layerList[0].getZIndex();
-            for (var i=1, len=_layerList.length;i<len;i++) {
-                var z = _layerList[i].getZIndex();
-                if (z > max) {
-                    max = z;
-                }
-            }
-            return max;
+            return _layerList[_layerList.length-1].getZIndex();
         }
 
         for (var ii = 0; ii < layersToOrder.length; ii++) {
             var list = layersToOrder[ii]._getLayerList();
+            if (list.length === 1 || list[list.length-1] === layersToOrder[i]) {
+                continue;
+            }
             var max = getMaxZ(list);
             layersToOrder[ii].setZIndex(max+1);
         }
