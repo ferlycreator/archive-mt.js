@@ -61,7 +61,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
      * @expose
      */
     getId:function() {
-        return this._identifier;
+        return this._id;
     },
 
     /**
@@ -70,7 +70,8 @@ Z['Layer']=Z.Layer=Z.Class.extend({
      * @expose
      */
     setId:function(id) {
-        this._identifier = id;
+        //TODO 设置id可能造成map无法找到layer
+        this._id = id;
     },
 
     /**
@@ -172,22 +173,6 @@ Z['Layer']=Z.Layer=Z.Class.extend({
         return this._render;
     },
 
-    /**
-     * 获取图层在图层列表中的index
-     * @param layers
-     * @returns {Number}
-     */
-    _getLayerIndexOfList:function(layers) {
-        if (!layers) {return -1;}
-        var hit = -1;
-        for (var i =0, len=layers.length;i<len;i++) {
-            if (layers[i] == this) {
-                hit = i;
-                break;
-            }
-        }
-        return hit;
-    },
 
     /**
      * 获取该图层所属的list
@@ -204,7 +189,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
             return this.map._dynLayers;
         } else if (this instanceof Z.TileLayer) {
             return this.map._tileLayers;
-        } else if (this instanceof Z.HeatLayer) {
+        } else if (this instanceof Z.HeatmapLayer) {
             return this.map._heatLayers;
         }
         return null;

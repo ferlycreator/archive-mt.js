@@ -559,6 +559,45 @@ Z['Map']=Z.Map=Z.Class.extend({
         return this;
     },
 
+    /**
+     * 图层排序
+     * @param  {String | layers} layerIds 图层id或者图层
+     */
+    orderLayers:function(layers) {
+        if (!layers || !Z.Util.isArray(layers)) {
+            return this;
+        }
+        var layersToOrder = [];
+        for (var i = 0; i < layers.length; i++) {
+            var layer = layers[i];
+            if (Z.Util.isString(layers[i])) {
+                layer = this.getLayer(layer);
+            }
+            if (!(layer instanceof Z.Layer)) {
+                throw new Error('It must be a layer to order.');
+            }
+            layersToOrder.push(layer);
+        }
+
+        function getMaxZ(_layerList) {
+            var max = _layerList[0].getZIndex();
+            for (var i=1, len=_layerList.length;i<len;i++) {
+                var z = _layerList[i].getZIndex();
+                if (z > max) {
+                    max = z;
+                }
+            }
+            return max;
+        }
+
+        for (var ii = 0; ii < layersToOrder.length; ii++) {
+            var list = layersToOrder[ii]._getLayerList();
+            var max = getMaxZ(list);
+            layersToOrder[ii].setZIndex(max+1);
+        }
+
+        return this;
+    },
 
 
     /**
@@ -606,8 +645,8 @@ Z['Map']=Z.Map=Z.Class.extend({
                 layer._onRemove();
             }
             for (var j=0, jlen=layerList.length;j<jlen;j++) {
-                if (layerList[j]._setZIndex) {
-                    layerList[j]._setZIndex(j);
+                if (layerList[j].setZIndex) {
+                    layerList[j].setZIndex(j);
                 }
             }
         }

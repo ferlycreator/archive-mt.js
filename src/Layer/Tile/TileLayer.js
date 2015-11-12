@@ -192,7 +192,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
             if (Z.Util.isArrayHasData(subdomains)) {
                 var length = subdomains.length;
                 var s = (x+y) % length;
-                if (s<=0) {
+                if (s<0) {
                     s=0;
                 }
                 domain = subdomains[s];
