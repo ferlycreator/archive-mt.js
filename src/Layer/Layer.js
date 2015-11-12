@@ -23,7 +23,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
     _prepare:function(map,zIndex) {
         if (!map) {return;}
         this.map = map;
-        this._setZIndex(zIndex);
+        this.setZIndex(zIndex);
     },
 
     /**
@@ -40,11 +40,14 @@ Z['Layer']=Z.Layer=Z.Class.extend({
      * @param {Number} zIndex 叠加顺序
      */
     setZIndex:function(zIndex) {
-        this._setZIndex(zIndex);
+        this._zIndex = zIndex;
         var layerList = this._getLayerList();
         layerList.sort(function(a,b) {
             return a.getZIndex()-b.getZIndex();
         });
+        if (this._render) {
+            this._render.setZIndex(zIndex);
+        }
         return this;
     },
 
@@ -98,15 +101,14 @@ Z['Layer']=Z.Layer=Z.Class.extend({
      */
     bringToFront:function() {
         var layers = this._getLayerList();
-        var hit=this._getLayerIndexOfList(layers);
-        if (hit === layers.length-1) {return;}
-        if (hit >= 0) {
-            layers.splice(hit,1);
-            layers.push(this);
+        var max = layers[0].getZIndex();
+        for (var i=1, len=layers.length;i<len;i++) {
+            var z = layers[i].getZIndex();
+            if (z > max) {
+                max = z;
+            }
         }
-        for (var i=0, len=layers.length;i<len;i++) {
-            layers[i]._setZIndex(i);
-        }
+        this.setZIndex(max+1);
     },
 
     /**
@@ -115,17 +117,14 @@ Z['Layer']=Z.Layer=Z.Class.extend({
      */
     bringToBack:function(){
         var layers = this._getLayerList();
-        var hit=this._getLayerIndexOfList(layers);
-        if (hit === 0) {
-            return;
+        var min = layers[0].getZIndex();
+        for (var i=1, len=layers.length;i<len;i++) {
+            var z = layers[i].getZIndex();
+            if (z < min) {
+                min = z;
+            }
         }
-        if (hit > 0) {
-            layers.splice(hit,1);
-            layers.push(this);
-        }
-        for (var i=0, len=layers.length;i<len;i++) {
-            layers[i]._setZIndex(i);
-        }
+        this.setZIndex(min-1);
     },
 
     /**
@@ -201,8 +200,6 @@ Z['Layer']=Z.Layer=Z.Class.extend({
             } else {
                 return this.map._svgLayers;
             }
-        } else if (this instanceof Z.Render.Canvas.Base) {
-            return this.map._canvasLayers;
         } else if (this instanceof Z.DynamicLayer) {
             return this.map._dynLayers;
         } else if (this instanceof Z.TileLayer) {

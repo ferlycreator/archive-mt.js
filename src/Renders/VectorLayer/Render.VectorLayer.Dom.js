@@ -90,19 +90,20 @@ Z.render.vectorlayer.Dom.prototype= {
     },
 
     getPaintContext:function() {
-
+        var zIndex = this._zIndex;
         if (this._contexts) {
-            return this._contexts.concat([this._zIndex]).concat([this._layerContainer,this._vectorPaper]);
+            return this._contexts.concat([zIndex]).concat([this._layerContainer,this._vectorPaper]);
         } else {
-            return [this._layerContainer,this._vectorPaper, this._zIndex];
+            return [this._layerContainer,this._vectorPaper, zIndex];
         }
     },
 
     setZIndex:function(zIndex) {
+        var me = this;
         this._zIndex=zIndex+this.baseZIndex;
         this._layer._eachGeometry(function(geo) {
             if (geo._getPainter()) {
-                geo._getPainter().setZIndex(zIndex);
+                geo._getPainter().setZIndex(me._zIndex);
             }
         });
     }
