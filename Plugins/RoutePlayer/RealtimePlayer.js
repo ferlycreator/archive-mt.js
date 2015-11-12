@@ -1,5 +1,5 @@
-Z.RealtimeRoutePlayer = Z.Class.extend({
-    includes: [Z.Eventable],
+maptalks.RealtimeRoutePlayer = maptalks.Class.extend({
+    includes: [maptalks.Eventable],
     /**
      * <pre>
      * 实时轨迹播放器,用于对实时轨迹数据进行轨迹播放。
@@ -30,11 +30,11 @@ Z.RealtimeRoutePlayer = Z.Class.extend({
      * 		}
      * </pre>
      * @constructor
-     * @param map {Z.Map} 地图对象
+     * @param map {maptalks.Map} 地图对象
      * @param config {Object} 播放设置
      * @param routes {[Object]} 轨迹数组
      * @param queryDataCallback {function} 实时轨迹数据查询回调函数
-     * @returns {Z.RealtimeRoutePlayer}
+     * @returns {maptalks.RealtimeRoutePlayer}
      */
     initialize: function(map, config, routes, queryDataCallback) {
         this.player = null;
@@ -118,7 +118,7 @@ Z.RealtimeRoutePlayer = Z.Class.extend({
       if(this.map) {
         var _this = this;
         if (!this.player) {
-            this.player = new Z.RoutePlayer(
+            this.player = new maptalks.RoutePlayer(
                 this.map, {"timeSpan":this.timeSpan, "unitTime":this.unitTime, "enableDrawRoute":this.enableDrawRoute},
             {
                 "getIds":function() {
@@ -135,7 +135,7 @@ Z.RealtimeRoutePlayer = Z.Class.extend({
                 },
                 "next":function(identifier,time) {
                     var ret =  _this.queryDataCallback(identifier,time);
-                    if (!ret || !(Z.Util.isArray(ret))) {
+                    if (!ret || !(maptalks.Util.isArray(ret))) {
                         return;
                     }
                     return ret;
@@ -166,7 +166,7 @@ Z.RealtimeRoutePlayer = Z.Class.extend({
         /**
          * 播放开始事件
          * @event playstarted
-         * @param target {Z.RealtimeRoutePlayer} 播放器对象
+         * @param target {maptalks.RealtimeRoutePlayer} 播放器对象
          */
         player.addEventListener("playstarted", function(param) {
             param.target = _this;
@@ -176,7 +176,7 @@ Z.RealtimeRoutePlayer = Z.Class.extend({
         /**
          * 播放暂停事件
          * @event playpaused
-         * @param target {Z.RealtimeRoutePlayer} 播放器对象
+         * @param target {maptalks.RealtimeRoutePlayer} 播放器对象
          */
         player.addEventListener("playpaused", function(param) {
             param.target = _this;
@@ -186,7 +186,7 @@ Z.RealtimeRoutePlayer = Z.Class.extend({
         /**
          * 播放恢复事件
          * @event playresumed
-         * @param target {Z.RealtimeRoutePlayer} 播放器对象
+         * @param target {maptalks.RealtimeRoutePlayer} 播放器对象
          */
         player.addEventListener("playresumed", function(param) {
             param.target = _this;
@@ -196,7 +196,7 @@ Z.RealtimeRoutePlayer = Z.Class.extend({
         /**
          * 播放进行事件
          * @event playing
-         * @param target {Z.RealtimeRoutePlayer} 播放器对象
+         * @param target {maptalks.RealtimeRoutePlayer} 播放器对象
          */
         player.addEventListener("playing", function(param) {
             param.target = _this;
@@ -206,7 +206,7 @@ Z.RealtimeRoutePlayer = Z.Class.extend({
         /**
          * 播放停止事件
          * @event playended
-         * @param target {Z.RealtimeRoutePlayer} 播放器对象
+         * @param target {maptalks.RealtimeRoutePlayer} 播放器对象
          */
         player.addEventListener("playended", function(param) {
             _this.fire( "playended", param);

@@ -1,5 +1,5 @@
-Z.HistoryRoutePlayer = Z.Class.extend({
-    includes: [Z.Eventable],
+maptalks.HistoryRoutePlayer = maptalks.Class.extend({
+    includes: [maptalks.Eventable],
     /**
      * <pre>
      * 历史轨迹播放器,用于对历史轨迹数据进行轨迹播放。
@@ -32,10 +32,10 @@ Z.HistoryRoutePlayer = Z.Class.extend({
      *
      * </pre>
      * @constructor
-     * @param map {Z.Map} 地图对象
+     * @param map {maptalks.Map} 地图对象
      * @param config {Object} 播放设置
      * @param routes {[Object]} 轨迹数组
-     * @returns {Z.HistoryRoutePlayer}
+     * @returns {maptalks.HistoryRoutePlayer}
      */
     initialize: function(map, config, routes) {
         this.player = null;
@@ -140,7 +140,7 @@ Z.HistoryRoutePlayer = Z.Class.extend({
       if(this.map) {
         if(!this.player) {
           var me = this;
-          this.player = new Z.RoutePlayer(this.map,
+          this.player = new maptalks.RoutePlayer(this.map,
               {
                 "timeSpan":this.timeSpan,
                 "unitTime":this.unitTime,
@@ -192,7 +192,7 @@ Z.HistoryRoutePlayer = Z.Class.extend({
         /**
         * 播放开始事件
         * @event playstarted
-        * @param target {Z.HistoryRoutePlayer} 播放器对象
+        * @param target {maptalks.HistoryRoutePlayer} 播放器对象
         */
         player.addEventListener("playstarted", function(param) {
             param["target"] = me;
@@ -201,7 +201,7 @@ Z.HistoryRoutePlayer = Z.Class.extend({
         /**
         * 播放暂停事件
         * @event playpaused
-        * @param target {Z.HistoryRoutePlayer} 播放器对象
+        * @param target {maptalks.HistoryRoutePlayer} 播放器对象
         */
         player.addEventListener("playpaused", function(param) {
             param["target"] = me;
@@ -210,7 +210,7 @@ Z.HistoryRoutePlayer = Z.Class.extend({
         /**
         * 播放恢复事件
         * @event playresumed
-        * @param target {Z.HistoryRoutePlayer} 播放器对象
+        * @param target {maptalks.HistoryRoutePlayer} 播放器对象
         */
         player.addEventListener("playresumed", function(param) {
             param["target"] = me;
@@ -219,7 +219,7 @@ Z.HistoryRoutePlayer = Z.Class.extend({
         /**
         * 播放进行事件
         * @event playing
-        * @param target {Z.HistoryRoutePlayer} 播放器对象
+        * @param target {maptalks.HistoryRoutePlayer} 播放器对象
         */
         player.addEventListener("playing", function(param) {
             param["target"] = me;
@@ -228,7 +228,7 @@ Z.HistoryRoutePlayer = Z.Class.extend({
         /**
         * 播放停止事件
         * @event playended
-        * @param target {Z.HistoryRoutePlayer} 播放器对象
+        * @param target {maptalks.HistoryRoutePlayer} 播放器对象
         */
         player.addEventListener("playended", function(param) {
             me.fire( "playended", param);

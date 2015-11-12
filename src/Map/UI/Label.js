@@ -132,6 +132,25 @@ Z.Label = Z.Class.extend({
     },
 
     /**
+    * 获取label位置
+    */
+    getPosition: function() {
+        return this._center;
+    },
+
+    /**
+    * 设置labe位置
+    * @param {maptalks.Coordinate} position 新位置
+    */
+    setPosition: function(position) {
+        this._center = position;
+        var geometries = this._label.getGeometries();
+        for(var i=0,len=geometries.length;i<len;i++) {
+            geometries[i].setCoordinates(position);
+        }
+    },
+
+    /**
     * 隐藏label
     * @expose
     */
