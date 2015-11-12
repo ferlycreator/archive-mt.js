@@ -159,7 +159,7 @@ maptalks.Grid = maptalks.Class.extend({
             }
         }
         //移除行数据
-        this._grid = this._grid.splice(rowNum, 1);
+        this._grid.splice(rowNum, 1);
         //总行数减少
         this._rowNum -=1;
     },
@@ -184,8 +184,8 @@ maptalks.Grid = maptalks.Class.extend({
         var rowNum = cell._row;
         var colNum = cell._col;
         var data = [1,2];
-        this.addCol(colNum, data, true);
-//        this.removeRow(rowNum);
+//        this.addCol(colNum, data, true);
+        this.removeRow(rowNum);
     },
 
     /**
