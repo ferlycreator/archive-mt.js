@@ -1,6 +1,7 @@
 .maptalks-menu {
     position: absolute;
     cursor: pointer;
+    opacity: 0.9;
 }
 
 .maptalks-menu-item {
@@ -39,4 +40,19 @@
 .maptalks-menu-item-over-color-black {
     border: solid 1px #c9daf8;
     color: #a2c4c9;
+}
+
+.maptalks-menu-color-grey {
+    background-color: #666666;
+    border: solid 1px #ffffff;
+}
+
+.maptalks-menu-item-color-grey {
+    border: solid 1px #ffffff;
+    color: #333333;
+}
+
+.maptalks-menu-item-over-color-grey {
+    border: solid 1px #c9daf8;
+    color: #663300;
 }

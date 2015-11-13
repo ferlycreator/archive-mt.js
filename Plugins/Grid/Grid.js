@@ -72,7 +72,7 @@ maptalks.Grid = maptalks.Class.extend({
         this._layer = layer;
         this._map = this._layer.getMap();
         this._grid = this._createGrid();
-        this._addToLayer(this._grid);
+        this._addToLayer(this._grid,true);
         return this;
     },
 
@@ -136,6 +136,7 @@ maptalks.Grid = maptalks.Class.extend({
             insertColNum = colNum;
         }
         this._createCol(insertColNum, data);
+        console.log(this._grid);
         return this;
     },
 
@@ -189,23 +190,71 @@ maptalks.Grid = maptalks.Class.extend({
         this._colNum -=1;
     },
 
-    _addToLayer: function(grid) {
+    _addToLayer: function(grid,init) {
         var me = this;
         for(var i=0,len=grid.length;i<len;i++) {
             var row = grid[i];
             for(var j=0,rowNum=row.length;j<rowNum;j++) {
                 var cell = row[j];
-                cell._row = i;
-                cell._col = j;
+                if(init) {
+                    cell._row = i;
+                    cell._col = j;
+                }
                 cell.addTo(this._layer);
-                cell.on('click',this._addEventToCell,this)
-                    .on('dblclick',this._addEditEventToCell,this);
+                cell.on('mouseover',this._addMouseoverEventToCell,this)
+                    .on('mouseout',this._addMouseoutEventToCell,this)
+                    .on('click',this._addEditEventToCell,this)
+                    .on('contextmenu',this._addContextmenuToCell,this);
                 //添加拖动焦点
-                if(i==0&&j==0) {
+                if(i==0&&j==0&&init) {
                     this._addDragHandler(cell);
                 }
             }
         }
+    },
+
+    _addContextmenuToCell: function(event) {
+        var cell = event.target;
+        var colNum = cell._col;
+        var rowNum = cell._row;
+        var menuOptions = {};
+        var me = this;
+        if((rowNum==0&&colNum==0)||rowNum==0) {
+            //设置菜单
+            menuOptions = {
+                'width': 100,
+                'style': 'grey',
+                'items' : [
+                    {'item': '在前面添加列', 'callback': function() {
+                        me.addCol(colNum, '', false);
+                    }},
+                    {'item': '在后面添加列', 'callback': function() {
+                        me.addCol(colNum, '', true);
+                    }},
+                    {'item': '删除列', 'callback': function() {
+                        me.removeCol(colNum);
+                    }}
+                ]
+            };
+        } else if(colNum==0) {
+            menuOptions = {
+                'width': 100,
+                'style': 'grey',
+                'items' : [
+                    {'item': '在上面添加行', 'callback': function() {
+                        me.addRow(rowNum, '', false);
+                    }},
+                    {'item': '在下面添加行', 'callback': function() {
+                        me.addRow(rowNum, '', true);
+                    }},
+                    {'item': '删除行', 'callback': function() {
+                        me.removeRow(rowNum);
+                    }}
+                ]
+            };
+        }
+        cell._label.setMenu(menuOptions);
+        cell._label.openMenu();
     },
 
     _addDragHandler: function(cell) {
@@ -229,7 +278,6 @@ maptalks.Grid = maptalks.Class.extend({
     },
 
     _dragGrid: function(event) {
-        console.log(event);
         var dragOffset = event['dragOffset'];
         for(var i=0,len=this._grid.length;i<len;i++) {
             var row = this._grid[i];
@@ -237,22 +285,29 @@ maptalks.Grid = maptalks.Class.extend({
                 var cell = row[j];
                 cell._box.translate(dragOffset);
                 cell._textMarker.translate(dragOffset);
+                if(i==0&&j==0) {//第一个cell
+                    this.options['position'] = cell.getPosition();
+                }
             }
         }
     },
 
-    _addEventToCell: function(event) {
-        var cell = event.target;
-        var rowNum = cell._row;
-        var colNum = cell._col;
-        var data = [1,2];
-//        this.addCol(colNum, data, true);
-//        this.removeCol(colNum);
+    _addMouseoverEventToCell: function(event) {
+        this.fire('mouseover', event);
+    },
+
+    _addMouseoutEventToCell: function(event) {
+        this.fire('mouseout', event);
     },
 
     _addEditEventToCell: function(event) {
         var cell = event.target;
         cell.startEdit();
+        var textEditor = cell._textEditor;
+        textEditor.focus();
+        var value = textEditor.value;
+        textEditor.value = '';
+        textEditor.value = value;
     },
 
     /**
@@ -290,6 +345,8 @@ maptalks.Grid = maptalks.Class.extend({
                     var cell  = this._createCell(cellPosition, item);
                     cell._row = i;
                     cell._col = insertColNum+j;
+                    cell.on('click',this._addEditEventToCell,this)
+                        .on('contextmenu',this._addContextmenuToCell,this)
                     cell.addTo(this._layer);
                     colCell.push(cell);
                 }
@@ -297,29 +354,47 @@ maptalks.Grid = maptalks.Class.extend({
             } else {
                 var cellPosition = this._getCellPosition(position,i,insertColNum);
                 var cell  = this._createCell(cellPosition, data);
+                if(i==0) {
+                    cell['header'] = 'new';
+                    cell['dataIndex'] = 'new';
+                    cell['type'] = 'string';
+                    this._columns.splice(insertColNum+j, 0, cell);
+                }
                 cell._row = i;
                 cell._col = insertColNum;
+                cell.on('click',this._addEditEventToCell,this)
+                    .on('contextmenu',this._addContextmenuToCell,this);
                 cell.addTo(this._layer);
                 cells.push(cell);
             }
         }
+        //调整之前的列
+        this._adjustDatasetForCol(startCol,insertColLength);
         //将新增的列加入grid
+        var newColumns = new Array();
         for(var i=0,len=this._grid.length;i<len;i++) {
-            this._adjustDatasetForCol(this._grid[i],startCol,insertColLength);
-            for(var j=0,dataLen=data.length;j<dataLen;j++) {
-                this._grid[i].splice(insertColNum+j, 0, cells[j]);
+            var dataLength = data.length;
+            if(dataLength>0) {
+                for(var j=0;j<dataLength;j++){
+                    this._grid[i].splice(insertColNum+j, 0, cells[j]);
+                }
+            } else {
+                this._grid[i].splice(insertColNum, 0, cells[i]);
             }
         }
         this._colNum+=insertColLength;
     },
 
-    _adjustDatasetForCol: function(rowData, start, insertColLength) {
-        for(var i=start,len=rowData.length;i<len;i++) {
-            var cell = rowData[i];
-            var position = cell.getPosition();
-            position = this._map.locate(position,this._cellWidth*insertColLength,0);
-            cell._col += insertColLength;
-            cell.setPosition(position);
+    _adjustDatasetForCol: function(start, insertColLength) {
+        for(var i=0,len=this._grid.length;i<len;i++) {
+            var rowData = this._grid[i];
+            for(var j=start,rowLength=rowData.length;j<rowLength;j++) {
+                var cell = rowData[j];
+                var position = cell.getPosition();
+                position = this._map.locate(position,this._cellWidth*insertColLength,0);
+                cell._col += insertColLength;
+                cell.setPosition(position);
+            }
         }
     },
 
