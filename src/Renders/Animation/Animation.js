@@ -10,10 +10,14 @@ Z.animation = {
         var now = Z.animation.now();
         var frame = animation(now);
         if (listener) {
+            var pause;
             if (context) {
-                listener.call(context,frame);
+                pause = listener.call(context,frame);
             } else {
-                listener(frame);
+                pause = listener(frame);
+            }
+            if (pause) {
+                return;
             }
         }
         if (frame.state['playing']) {
@@ -127,7 +131,6 @@ Z.animation.pan = function(options) {
           var d = distance.multi(delta);
           var frameDistance = d.substract(preDistance);
           preDistance = d;
-          // console.log(p);
           return new Z.animation.Frame({'playing':true,'startTime':start, 'end':false}, frameDistance, null);
         } else {
           return new Z.animation.Frame({'playing':false,'startTime':start, 'end':true}, distance, null);

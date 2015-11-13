@@ -18,6 +18,8 @@ Z.Map.Drag = Z.Handler.extend({
 //            else {
 //                this['draggable'] = new Z.Handler.Touch(this.dom);
 //            }
+        map.on("mousedown", this._onMouseDown,this);
+
         this._dragHandler.on("dragstart", this._onDragStart, this);
         this._dragHandler.on("dragging", this._onDragging, this);
         this._dragHandler.on("dragend", this._onDragEnd, this);
@@ -30,12 +32,16 @@ Z.Map.Drag = Z.Handler.extend({
         delete this._dragHandler;
     },
 
+    _onMouseDown:function(param) {
+        this.map._enablePanAnimation=false;
+    },
+
     _onDragStart:function(param) {
         var map = this.map;
         if (!map.options['draggable']) {
             return;
         }
-        this.map._allowSlideMap=false;
+
         this.startDragTime = new Date().getTime();
         var domOffset = this.map.offsetPlatform();
         this.startLeft = domOffset['left'];
@@ -44,7 +50,7 @@ Z.Map.Drag = Z.Handler.extend({
         this.preY = param['mousePos']['top'];
         this.startX = this.preX;
         this.startY = this.preY;
-        this._isBusy = true;
+        map._isBusy = true;
         map._fireEvent('movestart');
     },
 
@@ -68,16 +74,15 @@ Z.Map.Drag = Z.Handler.extend({
         if (!map.options['draggable']) {
             return;
         }
-        this._isBusy = false;
-        this.map._allowSlideMap=true;
         var t = new Date().getTime()-this.startDragTime;
         var domOffset = this.map.offsetPlatform();
         var xSpan =  domOffset['left'] - this.startLeft;
         var ySpan =  domOffset['top'] - this.startTop;
         if (t<280 && Math.abs(ySpan) > 5 && Math.abs(xSpan) > 5) {
+            map._enablePanAnimation=true;
             map._animatePan(new Z.Point(xSpan*Math.ceil(500/t),ySpan*Math.ceil(500/t)),t);
         } else {
-            map._onMoveEnd({'target':map});
+            map._onMoveEnd();
         }
     }
 });

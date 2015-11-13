@@ -165,18 +165,18 @@ Z.render.map.Dom = Z.render.map.Render.extend({
 
     panAnimation:function(moveOffset, t) {
         var map = this.map;
-         if (map._isBusy) {
-            return;
-        }
         var panMoveOffset = moveOffset.multi(0.5);
-        map._isBusy = true;
         Z.animation.animate(new Z.animation.pan({
             'distance': panMoveOffset,
             'duration' : (t*4+100)
         }), map, function(frame) {
-            if (frame.state['end']) {
-                map._isBusy = false;
+            if (!map._enablePanAnimation) {
                 map._onMoveEnd();
+                return true;
+            }
+            if (frame.state['end']) {
+                map._onMoveEnd();
+                return true;
             }
         }, this);
 
