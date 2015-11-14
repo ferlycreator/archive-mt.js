@@ -389,6 +389,6 @@ Z.Canvas = {
             ctx.restore();
             ctx.stroke();
         }
-        sector(ctx,pt['left'],pt['top'],size['width'],startAngle,endAngle);
+        sector(ctx,pt['left'],pt['top'],size,startAngle,endAngle);
     }
 };

@@ -52,7 +52,7 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
 
         for (var i = cookedPoints.length - 1; i >= 0; i--) {
             var point = cookedPoints[i];
-            point._add(dxdy);
+            point = point.add(dxdy);
             if (markerType === 'cross' || markerType === 'x'){
                 for (j = vectorArray.length - 1; j >= 0; j--) {
                     vectorArray[j]._add(point);
@@ -72,6 +72,10 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
                     vectorArray[j]._add(point);
                 }
                 Z.Canvas.bezierCurve(ctx,vectorArray,null);
+                Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']);
+            } else if (markerType === 'pie') {
+                var angle = Math.atan(width/2/height)*180/Math.PI;
+                Z.Canvas.sector(ctx, point, height, 90-angle, 90+angle);
                 Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']);
             } else {
                 //ellipse default
@@ -99,7 +103,7 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
         var markerType = style['markerType'].toLowerCase();
         var width = style['markerWidth'],
             height = style['markerHeight'];
-        if (markerType  === 'bar') {
+        if (markerType  === 'bar' || markerType  === 'pie') {
             return new Z.Extent(dxdy.add(new Z.Point(-width/2,-height)), dxdy.add(new Z.Point(width/2,0)));
         } else {
             return new Z.Extent(dxdy.add(new Z.Point(-width/2,-height/2)), dxdy.add(new Z.Point(width/2,height/2)));
@@ -127,7 +131,8 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
         };
         //marker-opacity覆盖fill-opacity和line-opacity
         if (Z.Util.isNumber(s["markerOpacity"])) {
-            result["markerFillOpacity"] = result["markerLineOpacity"] = s["markerOpacity"];
+            result["markerFillOpacity"] *= s["markerOpacity"];
+            result["markerLineOpacity"] *= s["markerOpacity"];
         }
         return result;
     },

@@ -569,7 +569,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * 图层排序
      * @param  {String | layers} layerIds 图层id或者图层
      */
-    orderLayers:function(layers) {
+    sortLayers:function(layers) {
         if (!layers || !Z.Util.isArray(layers)) {
             return this;
         }
@@ -1216,7 +1216,7 @@ Z['Map']=Z.Map=Z.Class.extend({
                 map._updateMapSize(watched);
                 map._onResize(new Z.Point((watched.width-oldWidth) / 2,(watched.height-oldHeight) / 2));
             }
-        },1000);
+        },800);
     }
 });
 
