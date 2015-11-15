@@ -467,7 +467,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      */
     _convertResourceUrl:function(symbol) {
         function isRel(url) {
-            if (url.indexOf('http://') >= 0 || url.indexOf('https://') >= 0 ) {
+            if (url.indexOf('http://') >= 0 || url.indexOf('https://') >= 0 || url.indexOf('blob:') >= 0) {
                 return false;
             }
             return true;
