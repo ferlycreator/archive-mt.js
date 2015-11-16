@@ -96,24 +96,10 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
         var fileExtent = new Z.Extent(dxdy.add(new Z.Point(-this.shieldFileWidth/2, - this.shieldFileHeight/2)),
                     dxdy.add(new Z.Point(this.shieldFileWidth/2, this.shieldFileHeight/2)));
         var textDxDy = new Z.Point(this.style['textDx'], this.style['textDy']);
-        var alignW, alignH;
-        if (style['textHorizontalAlignment'] === 'left') {
-            alignW = this.textSize['width'];
-        } else if (style['textHorizontalAlignment'] === 'middle') {
-            alignW = this.textSize['width']/2;
-        } else if (style['textHorizontalAlignment'] === 'right') {
-            alignW = 0;
-        }
-        if (style['textVerticalAlignment'] === 'top') {
-            alignH = this.textSize['height'];
-        } else if (style['textVerticalAlignment'] === 'middle') {
-            alignH = this.textSize['height']/2;
-        } else if (style['textVerticalAlignment'] === 'bottom') {
-            alignH = 0;
-        }
+        var ptAlign = Z.StringUtil.getAlignPoint(size,style['textHorizontalAlignment'],style['textVerticalAlignment']);
         var textExtent = new Z.Extent(
-            textDxDy.add(new Z.Point(alignW, alignH)),
-            textDxDy.add(new Z.Point(alignW-size['width'],alignH-size['height']))
+            textDxDy.add(ptAlign),
+            textDxDy.add(new Z.Point(ptAlign['left']-size['width'],ptAlign['top']-size['height']))
         );
         return fileExtent.combine(textExtent);
     },

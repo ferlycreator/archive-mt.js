@@ -306,6 +306,9 @@ Z.DomUtil = {
      * @return {Boolean} true，支持；false，不支持
      */
     testCssProp: function (props) {
+        if (typeof(document) === 'undefined') {
+            return true;
+        }
         var style = document.documentElement.style;
         for (var i = 0; i < props.length; i++) {
             if (props[i] in style) {

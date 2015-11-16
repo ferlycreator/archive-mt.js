@@ -26,7 +26,8 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
         this.strokeAndFill = this.translateStrokeAndFill(this.style);
         var props = this.geometry.getProperties();
         this.textContent = Z.StringUtil.content(this.style['textName'], props);
-        this.textSize = Z.StringUtil.stringLength(this.textContent,this.style['textFaceName'],this.style['textSize']);
+        // this.textSize = Z.StringUtil.stringLength(this.textContent,this.style['textFaceName'],this.style['textSize']);
+        this.textDesc = Z.StringUtil.splitTextToRow(this.textContent, this.style);
     },
 
     svg:function(container, vectorcontainer, zIndex) {
@@ -46,14 +47,13 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
 
         var style = this.style,
             textContent = this.textContent,
-            size = this.textSize,
             strokeAndFill = this.strokeAndFill;
 
         Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'], strokeAndFill['fill'], resources);
         Z.Canvas.prepareCanvasFont(ctx,style);
 
         for (var i = 0, len=cookedPoints.length;i<len;i++) {
-            Z.Canvas.text(ctx, textContent, cookedPoints[i], style,size);
+            Z.Canvas.text(ctx, textContent, cookedPoints[i], style, this.textDesc);
         }
     },
 
@@ -71,25 +71,12 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
     getMarkerExtent:function() {
         var dxdy = this.getDxDy(),
             style = this.style,
-            size = this.textSize;
-        var alignW, alignH;
-        if (style['textHorizontalAlignment'] === 'left') {
-            alignW = this.textSize['width'];
-        } else if (style['textHorizontalAlignment'] === 'middle') {
-            alignW = this.textSize['width']/2;
-        } else if (style['textHorizontalAlignment'] === 'right') {
-            alignW = 0;
-        }
-        if (style['textVerticalAlignment'] === 'top') {
-            alignH = this.textSize['height'];
-        } else if (style['textVerticalAlignment'] === 'middle') {
-            alignH = this.textSize['height']/2;
-        } else if (style['textVerticalAlignment'] === 'bottom') {
-            alignH = 0;
-        }
+            size = this.textDesc['size'];
+        var alignPoint = Z.StringUtil.getAlignPoint(size, style['textHorizontalAlignment'], style['textVerticalAlignment']);
+        var alignW = alignPoint['left'], alignH = alignPoint['top'];
         return new Z.Extent(
             dxdy.add(new Z.Point(alignW, alignH)),
-            dxdy.add(new Z.Point(alignW-size['width'],alignH-size['height']))
+            dxdy.add(new Z.Point(alignW+size['width'],alignH+size['height']))
         );
     },
 

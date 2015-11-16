@@ -38,7 +38,7 @@ if (Z.Browser.canvas) {
             var size = this._getRenderSize();
             return {
                 "fn" : Z.Canvas.sector,
-                "context" : [pt, size, this.getStartAngle(), this.getEndAngle()]
+                "context" : [pt, size['width'], this.getStartAngle(), this.getEndAngle()]
             };
         }
 

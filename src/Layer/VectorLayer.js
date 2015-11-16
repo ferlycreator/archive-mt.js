@@ -46,7 +46,7 @@ Z.VectorLayer=Z.OverlayLayer.extend({
     load:function() {
         if (!this._render) {
             this._initRender();
-            this._render.setZIndex(this._zIndex);
+            this._render.setZIndex(this.getZIndex());
         }
         this._render.rend();
         return this;
@@ -85,13 +85,5 @@ Z.VectorLayer=Z.OverlayLayer.extend({
         if (this.isCanvasRender() && this._render) {
             this._render.rend();
         }
-    },
-
-    _setZIndex:function(zIndex) {
-        if (this._render) {
-            this._render.setZIndex(zIndex);
-        }
-        this._zIndex = zIndex;
-        return this;
     }
 });

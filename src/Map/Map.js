@@ -559,6 +559,47 @@ Z['Map']=Z.Map=Z.Class.extend({
         return this;
     },
 
+    _sortLayersZ:function(layerList) {
+        layerList.sort(function(a,b) {
+            return a.getZIndex()-b.getZIndex();
+        });
+    },
+
+    /**
+     * 图层排序
+     * @param  {String | layers} layerIds 图层id或者图层
+     */
+    sortLayers:function(layers) {
+        if (!layers || !Z.Util.isArray(layers)) {
+            return this;
+        }
+        var layersToOrder = [];
+        for (var i = 0; i < layers.length; i++) {
+            var layer = layers[i];
+            if (Z.Util.isString(layers[i])) {
+                layer = this.getLayer(layer);
+            }
+            if (!(layer instanceof Z.Layer)) {
+                throw new Error('It must be a layer to order.');
+            }
+            layersToOrder.push(layer);
+        }
+
+        function getMaxZ(_layerList) {
+            return _layerList[_layerList.length-1].getZIndex();
+        }
+
+        for (var ii = 0; ii < layersToOrder.length; ii++) {
+            var list = layersToOrder[ii]._getLayerList();
+            if (list.length === 1 || list[list.length-1] === layersToOrder[i]) {
+                continue;
+            }
+            var max = getMaxZ(list);
+            layersToOrder[ii].setZIndex(max+1);
+        }
+
+        return this;
+    },
 
 
     /**
@@ -606,8 +647,8 @@ Z['Map']=Z.Map=Z.Class.extend({
                 layer._onRemove();
             }
             for (var j=0, jlen=layerList.length;j<jlen;j++) {
-                if (layerList[j]._setZIndex) {
-                    layerList[j]._setZIndex(j);
+                if (layerList[j].setZIndex) {
+                    layerList[j].setZIndex(j);
                 }
             }
         }
@@ -1175,7 +1216,7 @@ Z['Map']=Z.Map=Z.Class.extend({
                 map._updateMapSize(watched);
                 map._onResize(new Z.Point((watched.width-oldWidth) / 2,(watched.height-oldHeight) / 2));
             }
-        },1000);
+        },800);
     }
 });
 

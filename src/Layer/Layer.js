@@ -23,7 +23,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
     _prepare:function(map,zIndex) {
         if (!map) {return;}
         this.map = map;
-        this._setZIndex(zIndex);
+        this.setZIndex(zIndex);
     },
 
     /**
@@ -40,11 +40,14 @@ Z['Layer']=Z.Layer=Z.Class.extend({
      * @param {Number} zIndex 叠加顺序
      */
     setZIndex:function(zIndex) {
-        this._setZIndex(zIndex);
-        var layerList = this._getLayerList();
-        layerList.sort(function(a,b) {
-            return a.getZIndex()-b.getZIndex();
-        });
+        this._zIndex = zIndex;
+        if (this.map) {
+            var layerList = this._getLayerList();
+            this.map._sortLayersZ(layerList);
+        }
+        if (this._render) {
+            this._render.setZIndex(zIndex);
+        }
         return this;
     },
 
@@ -58,7 +61,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
      * @expose
      */
     getId:function() {
-        return this._identifier;
+        return this._id;
     },
 
     /**
@@ -67,7 +70,8 @@ Z['Layer']=Z.Layer=Z.Class.extend({
      * @expose
      */
     setId:function(id) {
-        this._identifier = id;
+        //TODO 设置id可能造成map无法找到layer
+        this._id = id;
     },
 
     /**
@@ -98,15 +102,16 @@ Z['Layer']=Z.Layer=Z.Class.extend({
      */
     bringToFront:function() {
         var layers = this._getLayerList();
-        var hit=this._getLayerIndexOfList(layers);
-        if (hit === layers.length-1) {return;}
-        if (hit >= 0) {
-            layers.splice(hit,1);
-            layers.push(this);
+        if (!layers) {
+            return this;
         }
-        for (var i=0, len=layers.length;i<len;i++) {
-            layers[i]._setZIndex(i);
+        var topLayer = layers[layers.length-1];
+        if (layers.length === 1 || topLayer === this) {
+            return this;
         }
+        var max = topLayer.getZIndex();
+        this.setZIndex(max+1);
+        return this;
     },
 
     /**
@@ -115,17 +120,15 @@ Z['Layer']=Z.Layer=Z.Class.extend({
      */
     bringToBack:function(){
         var layers = this._getLayerList();
-        var hit=this._getLayerIndexOfList(layers);
-        if (hit === 0) {
-            return;
+        if (!layers) {
+            return this;
         }
-        if (hit > 0) {
-            layers.splice(hit,1);
-            layers.push(this);
+        var bottomLayer = layers[0];
+        if (layers.length === 1 || bottomLayer === this) {
+            return this;
         }
-        for (var i=0, len=layers.length;i<len;i++) {
-            layers[i]._setZIndex(i);
-        }
+        var min = bottomLayer.getZIndex();
+        this.setZIndex(min-1);
     },
 
     /**
@@ -173,22 +176,6 @@ Z['Layer']=Z.Layer=Z.Class.extend({
         return this._render;
     },
 
-    /**
-     * 获取图层在图层列表中的index
-     * @param layers
-     * @returns {Number}
-     */
-    _getLayerIndexOfList:function(layers) {
-        if (!layers) {return -1;}
-        var hit = -1;
-        for (var i =0, len=layers.length;i<len;i++) {
-            if (layers[i] == this) {
-                hit = i;
-                break;
-            }
-        }
-        return hit;
-    },
 
     /**
      * 获取该图层所属的list
@@ -201,13 +188,11 @@ Z['Layer']=Z.Layer=Z.Class.extend({
             } else {
                 return this.map._svgLayers;
             }
-        } else if (this instanceof Z.Render.Canvas.Base) {
-            return this.map._canvasLayers;
         } else if (this instanceof Z.DynamicLayer) {
             return this.map._dynLayers;
         } else if (this instanceof Z.TileLayer) {
             return this.map._tileLayers;
-        } else if (this instanceof Z.HeatLayer) {
+        } else if (this instanceof Z.HeatmapLayer) {
             return this.map._heatLayers;
         }
         return null;

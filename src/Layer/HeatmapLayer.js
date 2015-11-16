@@ -1,27 +1,5 @@
 Z['HeatmapLayer'] = Z.HeatmapLayer = Z.Layer.extend({
 
-      statics:{
-          CSS_TRANSFORM: (function() {
-               var div = Z.DomUtil.createEl('div');
-               var props = [
-               'transform',
-               'WebkitTransform',
-               'MozTransform',
-               'OTransform',
-               'msTransform'
-               ];
-
-               for (var i = 0; i < props.length; i++) {
-                 var prop = props[i];
-                 if (div.style[prop] !== undefined) {
-                   return prop;
-                 }
-               }
-               return props[0];
-             })()
-
-      },
-
       initialize: function (config) {
         this.cfg = config;
         this._el = Z.DomUtil.createEl('div');
@@ -74,7 +52,7 @@ Z['HeatmapLayer'] = Z.HeatmapLayer = Z.Layer.extend({
         var point = this._map.coordinateToViewPoint(this._origin);
 
         // reposition the layer
-        this._el.style[Z.HeatmapLayer.CSS_TRANSFORM] = 'translate(' +
+        this._el.style[Z.DomUtil.TRANSFORM] = 'translate(' +
           -Math.round(point.left) + 'px,' +
           -Math.round(point.top) + 'px)';
 
