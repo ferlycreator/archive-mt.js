@@ -1,0 +1,88 @@
+{
+    //地图options
+    "options":{
+        "center" : [121, 19],
+        "zoomLevel" : 15,
+        "crs":{
+            "type": "cnCoordinateType",
+            "properties":{
+                "name":"gcj02"
+            }
+        }
+    },
+    //地图底图
+    "baseTileLayer":{
+        //图层类别
+        "type" : "tile",
+        //图层id
+        "id":"base",
+        //初始化时的options参数
+        "options":{
+            "opacity":0.4,
+            "urlTemplate":"http://foo.com/{z}/{x}/{y}.png",
+            "subdomains":["1","2","3"],
+            //是否检查
+            "showOnTileLoadComplete":true,
+            "tileInfo":"web-mercator"
+        }
+    },
+    //图层
+    "layers":[
+        //另一个tileLayer
+        {
+            //图层类别
+            "type" : "tile",
+            //图层id
+            "id":"tile",
+            //初始化时的options参数
+            "options":{
+                "opacity":0.4,
+                "urlTemplate":"http://foo.com/{z}/{x}/{y}.png",
+                "subdomains":["1","2","3"],
+                "tileInfo":"web-mercator"
+            }
+        },
+        //VectorLayer的Profile
+        {
+            //类型
+            "type":"vector",
+            //图层id
+            "id" : "vector-layer",
+            //初始化参数
+            "options":{
+                "render" : "canvas"
+            },
+            //矢量图层中的图形被组织为graphic集合, 一个graphic包含了feature, 构造options, symbol, infowindow等信息
+            "graphics" : [
+                //一个Graphic的profile
+                {
+                    //graphic包含的feature
+                    "feature": {
+                          "type": "Feature",
+                          "id" : "point1",
+                          "geometry": {"type": "Point", "coordinates": [102.0, 0.5]},
+                          "properties": {"prop0": "value0"}
+                    },
+                    //构造参数
+                    "options":{
+                        "draggable" : true
+                    },
+                    //symbol
+                    "symbol":{
+                        "markerFile" : "http://foo.com/icon.png"
+                    },
+                    //infowindow设置
+                    "infowindow" : {
+                        "options" : {
+                            "style" : "black"
+                        },
+                        "title" : "this is a infowindow title",
+                        "content" : "this is a infowindow content"
+                    }
+                    //因为响应函数无法被序列化, 所以menu, 事件listener等无法被包含在graphic中
+                }
+
+            ]
+        }
+    ]
+}
