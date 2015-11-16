@@ -28,7 +28,7 @@ Z.Label = Z.Class.extend({
         "textFill": "#000000",
         "textOpacity": 1,
         "textSpacing": 30,
-        "textWrapWidth": 100,
+        "textWrapWidth": null,
         "textWrapBefore": false,
         "textWrapCharacter": "",
         "textLineSpacing": 8,
@@ -49,10 +49,8 @@ Z.Label = Z.Class.extend({
      * @cfg {Object} options label属性
      */
     options: {
-        'symbol': {
-
-        },
-        'draggable': true
+        'draggable': true,
+        'autosizeBackground':true
     },
 
     /**
@@ -87,6 +85,9 @@ Z.Label = Z.Class.extend({
      * 设置label样式
      */
     setSymbol: function(symbol) {
+        if (!symbol) {
+            symbol = {};
+        }
         var s = symbol;
         var d = this.defaultSymbol;
         var result = {};
@@ -197,19 +198,21 @@ Z.Label = Z.Class.extend({
         }
         var center = this._target.getCenter();
         this._label.setCoordinates(center);
-        var symbol = this.options['symbol'];
-        symbol['markerType'] = 'square';
-        symbol['textName'] = this._content;
-        var size = Z.StringUtil.splitTextToRow(this._content, symbol)['size'];
-        //背景和文字之间的间隔距离
-        var padding = new Z.Size(12,8);
-        var boxAlignPoint = Z.StringUtil.getAlignPoint(size, symbol['textHorizontalAlignment'], symbol['textVerticalAlignment']);
-        boxAlignPoint = boxAlignPoint.add(new Z.Point(Z.Util.getValueOrDefault(symbol['textDx'],0),Z.Util.getValueOrDefault(symbol['textDy'],0)));
-        symbol['markerWidth'] = size['width']+padding['width'];
-        symbol['markerHeight'] = size['height']+padding['height'];
-        symbol['markerDx'] = boxAlignPoint['left']+size['width']/2;
-        symbol['markerDy'] = boxAlignPoint['top']+size['height']/2;
-        this._label.setSymbol(symbol);
+        if (this.options['autosizeBackground']) {
+            var symbol = this.options['symbol'];
+            symbol['markerType'] = 'square';
+            symbol['textName'] = this._content;
+            var size = Z.StringUtil.splitTextToRow(this._content, symbol)['size'];
+            //背景和文字之间的间隔距离
+            var padding = new Z.Size(12,8);
+            var boxAlignPoint = Z.StringUtil.getAlignPoint(size, symbol['textHorizontalAlignment'], symbol['textVerticalAlignment']);
+            boxAlignPoint = boxAlignPoint.add(new Z.Point(Z.Util.getValueOrDefault(symbol['textDx'],0),Z.Util.getValueOrDefault(symbol['textDy'],0)));
+            symbol['markerWidth'] = size['width']+padding['width'];
+            symbol['markerHeight'] = size['height']+padding['height'];
+            symbol['markerDx'] = boxAlignPoint['left']+size['width']/2;
+            symbol['markerDy'] = boxAlignPoint['top']+size['height']/2;
+            this._label.setSymbol(symbol);
+        }
     },
 
     _initLabel: function() {
