@@ -91,6 +91,9 @@ Z.StringUtil = {
      * @return {String[]} 分割后的字符串数组
      */
     splitContent: function(content, textLength, size, wrapWidth) {
+        if(!Z.Util.isString(content)) {
+            content = String(content);
+        }
         var rowNum = Math.ceil(textLength/wrapWidth);
         var fontSize = parseInt(wrapWidth/size);
         var result = [];
@@ -103,7 +106,6 @@ Z.StringUtil = {
         }
         return result;
     },
-
     /**
      * 获取属性值替换后的文本内容
      * @param {String} str 包含替换符的文本

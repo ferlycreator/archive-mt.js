@@ -1,5 +1,5 @@
-Z.RoutePlayer = Z.Class.extend({
-    includes: [Z.Eventable],
+maptalks.RoutePlayer = maptalks.Class.extend({
+    includes: [maptalks.Eventable],
     /**
      * <pre>
      * 轨迹播放类
@@ -19,19 +19,19 @@ Z.RoutePlayer = Z.Class.extend({
      * }
      * </pre>
      * @constructor
-     * @param map {Z.Map} 地图对象
+     * @param map {maptalks.Map} 地图对象
      * @param config {Object} 播放设置
      * @param routes {Object} 轨迹对象
      * @constructor
      */
     initialize: function(map, config, routes) {
-        Z.Util.extend(this, config);
-        this.guid=Z.Util.GUID();
+        maptalks.Util.extend(this, config);
+        this.guid=maptalks.Util.GUID();
         this.map=map;
         this.routes = routes;
 
         this.graphicMode="canvas";
-        if (!Z.Browser.canvas) {
+        if (!maptalks.Browser.canvas) {
             this.graphicMode="graphic";
         }
         if (!this.timeSpan) {
@@ -71,7 +71,7 @@ Z.RoutePlayer = Z.Class.extend({
 			this.routeCache[identifiers[i]]={'updated':false, 'route':[]};
 			//rstart为一个对象:t为播放时间
 			var rstart = routes['start'](identifiers[i]);
-			if (rstart != null && !Z.Util.isNil(rstart['t'])) {
+			if (rstart != null && !maptalks.Util.isNil(rstart['t'])) {
 				var time = rstart['t'];
 				if (currentTime === 0) {
 					currentTime=time;
@@ -88,16 +88,16 @@ Z.RoutePlayer = Z.Class.extend({
 		this.currentTime = currentTime;
 		this.startTime = currentTime;
 		//准备绘图图层
-		var markLayerId = Z.internalLayerPrefix+'__routeplay__marker_' + this.guid;
-		var routeLayerId = Z.internalLayerPrefix+'__routeplay__routes_' + this.guid;
+		var markLayerId = maptalks.internalLayerPrefix+'__routeplay__marker_' + this.guid;
+		var routeLayerId = maptalks.internalLayerPrefix+'__routeplay__routes_' + this.guid;
 		var markerLayer = this.map.getLayer(markLayerId);
 		if (!markerLayer) {
-			this.markerLayer = new Z.VectorLayer(markLayerId);
+			this.markerLayer = new maptalks.VectorLayer(markLayerId);
 			this.map.addLayer(this.markerLayer);
 		}
         var routeLayer = this.map.getLayer(routeLayerId);
         if (!routeLayer) {
-            this.routeLayer = new Z.VectorLayer(routeLayerId);
+            this.routeLayer = new maptalks.VectorLayer(routeLayerId);
             this.map.addLayer(this.routeLayer);
         }
 		this.markerLayer.clear();
@@ -233,7 +233,7 @@ Z.RoutePlayer = Z.Class.extend({
 					if (hisRoutes.length>1 && isLast3InLine(hisRoutes,point)) {
 						hisRoutes.splice(hisRoutes.length-1,1);
 					}
-					hisRoutes.push(new Z.Coordinate(point['x'],point['y']));
+					hisRoutes.push(new maptalks.Coordinate(point['x'],point['y']));
 					prePoint = point;
 				}
 			}
@@ -260,7 +260,7 @@ Z.RoutePlayer = Z.Class.extend({
 		function isLast3InLine(hisRoutes,point) {
 			if (!hisRoutes || hisRoutes.length<2 || !point) return false;
 			var len=hisRoutes.length;
-			var triangle = new Z.Polygon([[point,hisRoutes[len-1],hisRoutes[len-2]]],{'id':'tmp'});
+			var triangle = new maptalks.Polygon([[point,hisRoutes[len-1],hisRoutes[len-2]]],{'id':'tmp'});
 //			triangle.setMap(this.map);
 			var area = triangle.getArea();
             //FIXME 三点形成面积小于20时, 近似为直线, 但这里有bug: 不同的坐标系需要不同的值
@@ -290,7 +290,7 @@ Z.RoutePlayer = Z.Class.extend({
 				if (hisRoutes.length>0) {
 					var center = hisRoutes[hisRoutes.length-1];
 					if (!marker) {
-						marker = new Z.Marker(center,{id:routeId});
+						marker = new maptalks.Marker(center,{id:routeId});
 						var symbol = null;
 						if (routeObjs['getMarkerSymbol']) {
 							symbol = routeObjs['getMarkerSymbol'](routeId);
@@ -316,7 +316,7 @@ Z.RoutePlayer = Z.Class.extend({
 						var markerDom = marker._painter.getSvgDom();
 						//TODO 查看源代码发现markerDom是一个dom的数组
 						var originCss = markerDom[0].style.cssText;
-						if (Z.Browser.ielt9){
+						if (maptalks.Browser.ielt9){
 							var ieMatrix = {
                                 "45":"progid:DXImageTransform.Microsoft.Matrix(M11=0.7071067811865482, M12=0.7071067811865466, M21=-0.7071067811865466, M22=0.7071067811865482, SizingMethod='auto expand')",
                                 "90":"progid:DXImageTransform.Microsoft.BasicImage(rotation=-1)",
@@ -343,7 +343,7 @@ Z.RoutePlayer = Z.Class.extend({
 				var route = this.routeLayer.getGeometryById(routeId);
 				if (hisRoutes && hisRoutes.length>0) {
 					if (!route) {
-						route = new Z.Polyline(hisRoutes,{'id':routeId});
+						route = new maptalks.Polyline(hisRoutes,{'id':routeId});
 						var symbol = null;
 						if (routeObjs['getRouteSymbol']) {
 							symbol = routeObjs['getRouteSymbol'](routeId);
