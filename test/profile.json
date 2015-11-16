@@ -1,6 +1,8 @@
 {
     //description描述字段, 用户可以在此说明该profile的用途
     "description" : "this is a profile schema of maptalks profiles",
+    //作者
+    "author" : "anonymouse@foo.com",
     //profile功能的版本
     "version":"1.0.0",
     //地图options
