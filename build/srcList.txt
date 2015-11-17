@@ -19,6 +19,7 @@
 ../src/Geo/Projection/Projection.Baidu.js
 ../src/Geo/Projection/Projection.Pixel.js
 ../src/Handler/Handler.js
+../src/Handler/HandlerBus.js
 ../src/Handler/Drag.js
 ../src/Map/Tool/DrawTool.js
 ../src/Map/Tool/DistanceTool.js

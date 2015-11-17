@@ -94,9 +94,9 @@ Z.GeoJson={
                     return null;
                 }
                 geometry.setId(geoJsonObj['id']);
-                if (geoJsonObj['symbol']) {
+                /*if (geoJsonObj['symbol']) {
                     geometry.setSymbol(geoJsonObj['symbol']);
-                }
+                }*/
                 geometry.setProperties(geoJsonObj['properties']);
                 geometry.setCRS(crs);
                 return geometry;

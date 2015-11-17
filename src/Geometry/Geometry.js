@@ -8,7 +8,7 @@ Z.Painter={};
  * @author Maptalks Team
  */
 Z['Geometry']=Z.Geometry=Z.Class.extend({
-    includes: [Z.Eventable],
+    includes: [Z.Eventable, Z.HandlerBus],
 
     exceptionDefs:{
         'en-US':{
@@ -360,12 +360,12 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
         var properties = {};
         //opts没有设定symbol或者设定的symbol值为true,则导出symbol
-        if (opts['symbol'] === undefined || opts['symbol']) {
+        /*if (opts['symbol'] === undefined || opts['symbol']) {
             var symbol = this.getSymbol();
             if (symbol) {
                 feature['symbol'] = symbol;
             }
-        }
+        }*/
         var crs = this.getCRS();
         if (crs) {
             feature['crs'] = crs;

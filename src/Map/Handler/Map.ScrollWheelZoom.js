@@ -8,19 +8,19 @@ Z.Map.mergeOptions({
 
 Z.Map.ScrollWheelZoom = Z.Handler.extend({
     addHooks: function () {
-        var map = this.map;
+        var map = this.target;
         var _containerDOM = map._containerDOM;
         Z.DomUtil.addDomEvent(_containerDOM, 'mousewheel', this._onWheelScroll, this);
     },
 
     removeHooks: function () {
-        var map = this.map;
+        var map = this.target;
         var _containerDOM = map._containerDOM;
         Z.DomUtil.removeDomEvent(_containerDOM, 'mousewheel', this._onWheelScroll);
     },
 
     _onWheelScroll: function (evt) {
-        var map = this.map;
+        var map = this.target;
         var _containerDOM = map._containerDOM;
         if (map._zooming) {return;}
         Z.DomUtil.preventDefault(evt);

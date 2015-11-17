@@ -8,20 +8,18 @@ Z.Map.mergeOptions({
 
 Z.Map.DoubleClickZoom = Z.Handler.extend({
     addHooks: function () {
-        this.map.on('_dblclick', this._onDoubleClick, this);
+        this.target.on('_dblclick', this._onDoubleClick, this);
     },
 
     removeHooks: function () {
-        this.map.off('_dblclick', this._onDoubleClick, this);
+        this.target.off('_dblclick', this._onDoubleClick, this);
     },
 
     _onDoubleClick: function (param) {
-        if (!this.map.options['doubleClickZoom']) {
-            return;
-        }
-        var oldZoom = this.map.getZoomLevel(),
+        var map = this.target;
+        var oldZoom = map.getZoomLevel(),
             zoom = param['domEvent']['shiftKey'] ? Math.ceil(oldZoom) - 1 : Math.floor(oldZoom) + 1;
-        this.map._zoom(zoom, param['containerPoint']);
+        map._zoom(zoom, param['containerPoint']);
 
     }
 });

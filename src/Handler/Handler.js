@@ -13,20 +13,24 @@ Z.Handler = Z.Class.extend({
      * @param {maptalks.Map} map
      */
 	initialize: function (map) {
-		this.map = map;
-	},
+        this.target = map;
+    },
 
-	/**
-	 * 激活Handler
-	 */
-	enable:function(){
-		this.addHooks();
-	},
+    enable: function () {
+        if (this._enabled) { return; }
 
-	/**
-	 * 取消激活Handler
-	 */
-	disable:function(){
-		this.removeHooks();
-	}
+        this._enabled = true;
+        this.addHooks();
+    },
+
+    disable: function () {
+        if (!this._enabled) { return; }
+
+        this._enabled = false;
+        this.removeHooks();
+    },
+
+    enabled: function () {
+        return !!this._enabled;
+    }
 });

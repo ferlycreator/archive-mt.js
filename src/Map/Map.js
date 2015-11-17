@@ -7,7 +7,7 @@
  */
 Z['Map']=Z.Map=Z.Class.extend({
 
-    includes: [Z.Eventable],
+    includes: [Z.Eventable,Z.HandlerBus],
 
     options:{
         'enableMapSliding':true,
@@ -651,52 +651,6 @@ Z['Map']=Z.Map=Z.Class.extend({
                     layerList[j].setZIndex(j);
                 }
             }
-        }
-    },
-
-
-    /**
-     * [addHandler description]
-     * @param {[type]} name         [description]
-     * @param {[type]} HandlerClass [description]
-     * @expose
-     */
-    addHandler: function (name, HandlerClass) {
-        if (!HandlerClass) { return this; }
-        //handler已经存在
-        if (this['_'+name]) {
-            this['_'+name].enable();
-            return;
-        }
-
-        var handler = this['_'+name] = new HandlerClass(this);
-
-        this._handlers.push(handler);
-
-        if (this.options[name]) {
-            handler.enable();
-        }
-        return this;
-    },
-
-    removeHandler: function(name) {
-        if (!name) {return this;}
-        //handler已经存在
-        var handler = this['_'+name];
-        if (handler) {
-            var hit = Z.Util.searchInArray(handler,this._handlers);
-            if (hit >= 0) {
-                this._handlers.splice(hit,1);
-            }
-            this['_'+name].disable();
-            delete this['_'+name];
-        }
-        return this;
-    },
-
-    _clearHandlers: function () {
-        for (var i = 0, len = this._handlers.length; i < len; i++) {
-            this._handlers[i].disable();
         }
     },
 
