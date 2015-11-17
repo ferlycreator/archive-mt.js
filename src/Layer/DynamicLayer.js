@@ -1,4 +1,6 @@
 Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
+    type:'dynamic',
+
     //瓦片图层的基础ZIndex
     baseZIndex:50,
 

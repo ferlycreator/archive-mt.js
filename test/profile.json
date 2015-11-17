@@ -1,4 +1,5 @@
 {
+    "title":"title of the profile",
     //description描述字段, 用户可以在此说明该profile的用途
     "description" : "this is a profile schema of maptalks profiles",
     //作者

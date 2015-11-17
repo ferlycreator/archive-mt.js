@@ -1,5 +1,7 @@
 //TODO render的程序结构不是很好, 需要重构
 Z.VectorLayer=Z.OverlayLayer.extend({
+    type : 'vector',
+
     options:{
         'render':'dom', // possible values: dom - svg or vml, canvas
         'enableSimplify':true

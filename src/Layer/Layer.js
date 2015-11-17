@@ -20,11 +20,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
     },
 
 
-    _prepare:function(map,zIndex) {
-        if (!map) {return;}
-        this.map = map;
-        this.setZIndex(zIndex);
-    },
+
 
     /**
      * 将图层加到地图上
@@ -170,6 +166,12 @@ Z['Layer']=Z.Layer=Z.Class.extend({
             this._getRender().remove();
         }
         delete this._render;
+    },
+
+     _prepare:function(map,zIndex) {
+        if (!map) {return;}
+        this.map = map;
+        this.setZIndex(zIndex);
     },
 
     _getRender:function() {

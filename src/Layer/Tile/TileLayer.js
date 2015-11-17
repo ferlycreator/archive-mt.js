@@ -5,6 +5,7 @@
  * @author Maptalks Team
  */
 Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
+    type: 'tile',
 
     options: {
         'opacity':1,
