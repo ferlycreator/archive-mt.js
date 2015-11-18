@@ -159,7 +159,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
             top = (mapHeight-absolute['top']-parseInt(tipDom.clientHeight))-30;
         }
         if (top!==0 || left!==0) {
-            /*this._tipSlidingExecutor = */this._map._animatePan(new Z.Point(left,top));
+            /*this._tipSlidingExecutor = */this._map._panAnimation(new Z.Point(left,top));
         }
         this._target.fire('openinfowindow');
         return this;

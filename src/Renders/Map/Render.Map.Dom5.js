@@ -118,30 +118,34 @@ Z.render.map.Dom = Z.render.map.Render.extend({
             return;
         }
         var map = this.map;
-        // this._askBaseTileLayerToRend();
-        var baseLayerImage = map.getBaseTileLayer()._getRender().getCanvasImage();
         this._clearCanvas();
-        var width = this._canvas.width, height = this._canvas.height;
+        if (map.options['zoomAnimation']) {
+            var baseLayerImage = map.getBaseTileLayer()._getRender().getCanvasImage();
+            var width = this._canvas.width, height = this._canvas.height;
 
-        this._drawLayerCanvasImage(baseLayerImage, width, height);
-        this._context.save();
-        Z.animation.animate(new Z.animation.zoom({
-            'scale1' : 1,
-            'scale2': scale,
-            'duration' : 200
-        }), map, function(frame) {
-            this._context.save();
-            this._clearCanvas();
-            this._context.translate(focusPos['left'],focusPos['top']);
-            this._context.scale(frame.scale, frame.scale);
-            this._context.translate(-focusPos['left'],-focusPos['top']);
             this._drawLayerCanvasImage(baseLayerImage, width, height);
-            this._context.restore();
-            if (frame.state['end']) {
-                this._canvasBackgroundImage = Z.DomUtil.copyCanvas(this._canvas);
-                fn.apply(context, args);
-            }
-        }, this);
+            this._context.save();
+            Z.animation.animate(new Z.animation.zoom({
+                'scale1' : 1,
+                'scale2': scale,
+                'duration' : map.options['zoomAnimationDuration']
+            }), map, function(frame) {
+                this._context.save();
+                this._clearCanvas();
+                this._context.translate(focusPos['left'],focusPos['top']);
+                this._context.scale(frame.scale, frame.scale);
+                this._context.translate(-focusPos['left'],-focusPos['top']);
+                this._drawLayerCanvasImage(baseLayerImage, width, height);
+                this._context.restore();
+                if (frame.state['end']) {
+                    this._canvasBackgroundImage = Z.DomUtil.copyCanvas(this._canvas);
+                    fn.apply(context, args);
+                }
+            }, this);
+        } else {
+            fn.apply(context, args);
+        }
+
     },
 
 
@@ -164,21 +168,35 @@ Z.render.map.Dom = Z.render.map.Render.extend({
     },
 
     panAnimation:function(moveOffset, t) {
+        moveOffset = new Z.Point(moveOffset);
         var map = this.map;
-        var panMoveOffset = moveOffset.multi(0.5);
-        Z.animation.animate(new Z.animation.pan({
-            'distance': panMoveOffset,
-            'duration' : (t*4)
-        }), map, function(frame) {
-            if (!map._enablePanAnimation) {
-                map._onMoveEnd();
-                return true;
+        if (map.options['panAnimation']) {
+            var duration;
+            if (!t) {
+                duration = map.options['panAnimationDuration'];
+            } else {
+                duration = t*2;
             }
-            if (frame.state['end']) {
-                map._onMoveEnd();
-                return true;
-            }
-        }, this);
+            var panMoveOffset = moveOffset.multi(0.5);
+            Z.animation.animate(new Z.animation.pan({
+                'distance': panMoveOffset,
+                'duration' : duration
+            }), map, function(frame) {
+                if (!map._enablePanAnimation) {
+                    map._onMoveEnd();
+                    return true;
+                }
+                if (frame.state['end']) {
+                    map._onMoveEnd();
+                    return true;
+                }
+            }, this);
+        } else {
+            this.offsetPlatform(new Z.Point(moveOffset['left'],moveOffset['top']));
+            this._offsetCenterByPixel(new Z.Point(-moveOffset['left'],-moveOffset['top']));
+            map._onMoveEnd();
+        }
+
 
     },
 

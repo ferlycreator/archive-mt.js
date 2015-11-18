@@ -5,12 +5,12 @@ Z.Map.include({
      * @member maptalks.Map
      * @expose
      */
-    panTo:function(coordinate) {
+    panTo:function(coordinate, options) {
         //TODO 动画
         var projection = this._getProjection();
         var p = projection.project(new Z.Coordinate(coordinate));
         var span = this._getPixelDistance(p);
-        this.panBy(span);
+        this.panBy(span, options);
         return this;
     },
 
@@ -20,19 +20,24 @@ Z.Map.include({
      * @member maptalks.Map
      * @expose
      */
-    panBy:function(offset) {
+    panBy:function(offset, options) {
         //TODO 动画
-        if (Z.Util.isNumber(offset.left) && Z.Util.isNumber(offset.top) && (offset.left !==0 || offset.top !== 0)) {
-            this._fireEvent('movestart');
+        this._fireEvent('movestart');
+        if (!options) {
+            options = {};
+        }
+        if (typeof(options['animation']) === 'undefined' || options['animation']) {
+            this._panAnimation(offset, options['duration']);
+        } else {
             this.offsetPlatform(new Z.Point(offset['left'],offset['top']));
             this._offsetCenterByPixel(new Z.Point(-offset['left'],-offset['top']));
             this._fireEvent('moving');
+            this._onMoveEnd();
         }
-        this._onMoveEnd({'target':this});
         return this;
     },
 
-    _animatePan:function(moveOffset, t) {
+    _panAnimation:function(moveOffset, t) {
         this._getRender().panAnimation(moveOffset, t);
     }
 

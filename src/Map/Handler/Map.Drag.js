@@ -70,7 +70,7 @@ Z.Map.Drag = Z.Handler.extend({
         var ySpan =  domOffset['top'] - this.startTop;
         if (t<280 && Math.abs(ySpan) > 5 && Math.abs(xSpan) > 5) {
             map._enablePanAnimation=true;
-            map._animatePan(new Z.Point(xSpan*Math.ceil(500/t),ySpan*Math.ceil(500/t)),t);
+            map._panAnimation(new Z.Point(xSpan*Math.ceil(500/t),ySpan*Math.ceil(500/t)),t);
         } else {
             map._onMoveEnd();
         }

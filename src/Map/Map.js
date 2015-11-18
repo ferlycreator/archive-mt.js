@@ -10,7 +10,13 @@ Z['Map']=Z.Map=Z.Class.extend({
     includes: [Z.Eventable,Z.HandlerBus],
 
     options:{
-        'enableMapSliding':true,
+        "zoomAnimation" : true,
+        "zoomAnimationDuration" : 200,
+
+        "panAnimation":true,
+        //每秒滑动的像素距离
+        "panAnimationDuration" : 600,
+
         'enableZoom':true,
         'enableInfoWindow':true,
         'crs':Z.CRS.GCJ02
@@ -66,6 +72,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         //Layer of Details, always derived from baseTileLayer
         this._tileConfig=null;
         this._panels={};
+
         //Layers
         this._baseTileLayer=null;
         this._tileLayers=[];
@@ -74,19 +81,24 @@ Z['Map']=Z.Map=Z.Class.extend({
         this._canvasLayers=[];
         this._dynLayers=[];
 
-        this._zoomLevel = options['zoom'];
-        delete options['zoom'];
-        this._maxZoom = options['maxZoom'];
-        delete options['maxZoom'];
-        this._minZoom = options['minZoom'];
-        delete options['minZoom'];
-        this._center = new Z.Coordinate(options['center']);
-        delete options['center'];
+        //shallow copy options
+        var opts = Z.Util.extend({}, options);
 
+        this._zoomLevel = opts['zoom'];
+        delete opts['zoom'];
+        this._maxZoom = opts['maxZoom'];
+        delete opts['maxZoom'];
+        this._minZoom = opts['minZoom'];
+        delete opts['minZoom'];
+        this._center = new Z.Coordinate(opts['center']);
+        delete opts['center'];
+
+        //内部变量, 控制当前地图是否允许panAnimation
         this._enablePanAnimation = true;
 
         //坐标类型
-        options = Z.Util.setOptions(this,options);
+        Z.Util.setOptions(this,opts);
+
         this._initRender();
         this._getRender().initContainer();
         this._updateMapSize(this._getContainerDomSize());
