@@ -44,9 +44,9 @@ describe('#Map', function () {
             expect(map.getCenter()).to.nearCoord(center);
         });
 
-        it('getCenter返回结果与初始化时指定center相等(setZoomLevel之后)', function() {
+        it('getCenter返回结果与初始化时指定center相等(setZoom之后)', function() {
             map.setBaseTileLayer(tile);
-            map.setZoomLevel(13);
+            map.setZoom(13);
 
             expect(map.getCenter()).to.nearCoord(center);
         });
@@ -116,7 +116,7 @@ describe('#Map', function () {
         it('get (min/max/current)zoom level', function() {
             map.setBaseTileLayer(tile);
 
-            expect(map.getZoomLevel()).to.eql(17);
+            expect(map.getZoom()).to.eql(17);
             expect(map.getMinZoomLevel()).to.be.a('number');
             expect(map.getMaxZoomLevel()).to.be.a('number');
         });
@@ -127,9 +127,9 @@ describe('#Map', function () {
             var min = 3, max = 14, cur = max + 1;
             map.setMinZoomLevel(min);
             map.setMaxZoomLevel(max);
-            map.setZoomLevel(cur);
+            map.setZoom(cur);
 
-            expect(map.getZoomLevel()).to.equal(max);
+            expect(map.getZoom()).to.equal(max);
             expect(map.getMinZoomLevel()).to.equal(min);
             expect(map.getMaxZoomLevel()).to.equal(max);
         });
@@ -138,10 +138,10 @@ describe('#Map', function () {
             map.setBaseTileLayer(tile);
 
             var max = 14, cur = max + 1;
-            map.setZoomLevel(cur);
+            map.setZoom(cur);
             map.setMaxZoomLevel(max);
 
-            expect(map.getZoomLevel()).to.equal(max);
+            expect(map.getZoom()).to.equal(max);
             expect(map.getMaxZoomLevel()).to.equal(max);
         });
 
@@ -151,10 +151,10 @@ describe('#Map', function () {
             var min = 3, max = 14, cur = 8;
             map.setMinZoomLevel(min);
             map.setMaxZoomLevel(max);
-            map.setZoomLevel(cur);
+            map.setZoom(cur);
 
-            expect(map.zoomIn().getZoomLevel()).to.equal(cur + 1);
-            expect(map.zoomOut().getZoomLevel()).to.equal(cur);
+            expect(map.zoomIn().getZoom()).to.equal(cur + 1);
+            expect(map.zoomOut().getZoom()).to.equal(cur);
         });
     });
 

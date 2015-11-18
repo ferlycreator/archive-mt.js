@@ -49,32 +49,32 @@ describe("Control.Zoom", function() {
         it("when zoom in button clicked, change zoom correctly", function() {
             var control = new Z.Control.Zoom();
             map.addControl(control);
-            var zoom = map.getZoomLevel();
+            var zoom = map.getZoom();
 
             happen.click(control._zoomInButton);
-            expect(map.getZoomLevel()).to.be(zoom + 1);
+            expect(map.getZoom()).to.be(zoom + 1);
         });
 
         it("when zoom out button clicked, change zoom correctly", function() {
             var control = new Z.Control.Zoom();
             map.addControl(control);
-            var zoom = map.getZoomLevel();
+            var zoom = map.getZoom();
 
             happen.click(control._zoomOutButton);
-            expect(map.getZoomLevel()).to.be(zoom - 1);
+            expect(map.getZoom()).to.be(zoom - 1);
         });
 
         it("when disabled, don't update zoom of map", function() {
             var control = new Z.Control.Zoom();
             map.addControl(control);
-            var zoom = map.getZoomLevel();
+            var zoom = map.getZoom();
             control.disable();
 
             happen.click(control._zoomInButton);
-            expect(map.getZoomLevel()).to.be(zoom);
+            expect(map.getZoom()).to.be(zoom);
 
             happen.click(control._zoomOutButton);
-            expect(map.getZoomLevel()).to.be(zoom);
+            expect(map.getZoom()).to.be(zoom);
         });
 
     });

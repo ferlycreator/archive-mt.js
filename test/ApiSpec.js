@@ -70,17 +70,17 @@ describe('API', function () {
             }).to.not.throwException();
         });
 
-        it('getZoomLevel', function () {
-            var zoom = map.getZoomLevel();
+        it('getZoom', function () {
+            var zoom = map.getZoom();
 
             expect(zoom).to.be.above(0);
         });
 
-        it('setZoomLevel', function () {
-            var zoom = map.getZoomLevel();
+        it('setZoom', function () {
+            var zoom = map.getZoom();
             zoom = Math.ceil(zoom / 2);
             expect(function () {
-                map.setZoomLevel(zoom);
+                map.setZoom(zoom);
             }).to.not.throwException();
         });
 
@@ -125,7 +125,7 @@ describe('API', function () {
         });
 
         it('setCenterAndZoom', function () {
-            var zoom = map.getZoomLevel();
+            var zoom = map.getZoom();
             zoom = Math.ceil(zoom / 2);
 
             expect(function () {
@@ -135,7 +135,7 @@ describe('API', function () {
 
         it('getFitZoomLevel', function () {
             var extent = map.getExtent();
-            var zoom = map.getZoomLevel();
+            var zoom = map.getZoom();
             var fitZoom = map.getFitZoomLevel(extent);
 
             expect(fitZoom).to.eql(zoom);
