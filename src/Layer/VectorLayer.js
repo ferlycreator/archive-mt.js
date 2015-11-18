@@ -36,11 +36,11 @@ Z.VectorLayer=Z.OverlayLayer.extend({
     _initRender:function() {
         if (this.isCanvasRender()) {
             this._render = new Z.render.vectorlayer.Canvas(this,{
-                'visible':this.options['visible']
+                'visible':this.isVisible()
             });
         } else {
             this._render = new Z.render.vectorlayer.Dom(this,{
-                'visible':this.options['visible']
+                'visible':this.isVisible()
             });
         }
     },

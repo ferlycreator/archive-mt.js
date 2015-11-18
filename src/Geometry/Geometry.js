@@ -45,24 +45,6 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     },
 
     /**
-     * 设置options
-     * @param {[type]} opts [description]
-     */
-    setOptions:function(opts) {
-        var symbol = opts['symbol'];
-        delete opts['symbol'];
-        var id = opts['id'];
-        delete opts['id'];
-        Z.Util.setOptions(this,opts);
-        if (symbol) {
-            this.setSymbol(symbol);
-        }
-        if (!Z.Util.isNil(id)) {
-            this.setId(id);
-        }
-    },
-
-    /**
      * 将Geometry加到图层上
      * @param {Layer} layer   图层
      * @param {Boolean} fitview 是否将地图自动聚焦到该Geometry上
@@ -130,7 +112,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     getSymbol:function() {
-        return this.options['symbol'];
+        return this._symbol;
     },
 
     /**
@@ -140,10 +122,10 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      */
     setSymbol:function(symbol) {
         if (!symbol) {
-           this.options['symbol'] = null;
+           this._symbol = null;
         } else {
            var camelSymbol = this._prepareSymbol(symbol);
-           this.options['symbol'] = camelSymbol;
+           this._symbol = camelSymbol;
         }
         this._onSymbolChanged();
         return this;
@@ -437,7 +419,17 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (!opts) {
             opts = {};
         }
-        this.setOptions(opts);
+        var symbol = opts['symbol'];
+        delete opts['symbol'];
+        var id = opts['id'];
+        delete opts['id'];
+        Z.Util.setOptions(this,opts);
+        if (symbol) {
+            this.setSymbol(symbol);
+        }
+        if (!Z.Util.isNil(id)) {
+            this.setId(id);
+        }
     },
 
     //调用prepare时,layer已经注册到map上
