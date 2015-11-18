@@ -74,12 +74,12 @@ Z['Map']=Z.Map=Z.Class.extend({
         this._canvasLayers=[];
         this._dynLayers=[];
 
-        this._zoomLevel = options['zoomLevel'];
-        delete options['zoomLevel'];
-        this._maxZoomLevel = options['maxZoomLevel'];
-        delete options['maxZoomLevel'];
-        this._minZoomLevel = options['minZoomLevel'];
-        delete options['minZoomLevel'];
+        this._zoomLevel = options['zoom'];
+        delete options['zoom'];
+        this._maxZoom = options['maxZoom'];
+        delete options['maxZoom'];
+        this._minZoom = options['minZoom'];
+        delete options['minZoom'];
         this._center = new Z.Coordinate(options['center']);
         delete options['center'];
 
@@ -292,8 +292,8 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {Number} 最大放大级别
      * @expose
      */
-    getMaxZoomLevel:function() {
-        return this._maxZoomLevel;
+    getMaxZoom:function() {
+        return this._maxZoom;
     },
 
     /**
@@ -301,15 +301,15 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @param {Number} zoomLevel 最大放大级别
      * @expose
      */
-    setMaxZoomLevel:function(zoomLevel) {
+    setMaxZoom:function(zoomLevel) {
         var tileConfig = this._getTileConfig();
-        if (zoomLevel > tileConfig['maxZoomLevel']) {
-            zoomLevel = tileConfig['maxZoomLevel'];
+        if (zoomLevel > tileConfig['maxZoom']) {
+            zoomLevel = tileConfig['maxZoom'];
         }
         if (zoomLevel < this._zoomLevel) {
             this.setZoom(zoomLevel);
         }
-        this._maxZoomLevel = zoomLevel;
+        this._maxZoom = zoomLevel;
         return this;
     },
 
@@ -318,8 +318,8 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {Number} 最小放大级别
      * @expose
      */
-    getMinZoomLevel:function() {
-        return this._minZoomLevel;
+    getMinZoom:function() {
+        return this._minZoom;
     },
 
     /**
@@ -327,12 +327,12 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @param {Number} zoomLevel 最小放大级别
      * @expose
      */
-    setMinZoomLevel:function(zoomLevel) {
+    setMinZoom:function(zoomLevel) {
         var tileConfig = this._getTileConfig();
-        if (zoomLevel < tileConfig['minZoomLevel']) {
-            zoomLevel = tileConfig['minZoomLevel'];
+        if (zoomLevel < tileConfig['minZoom']) {
+            zoomLevel = tileConfig['minZoom'];
         }
-        this._minZoomLevel=zoomLevel;
+        this._minZoom=zoomLevel;
         return this;
     },
 
@@ -383,13 +383,13 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @returns
      * @expose
      */
-    getFitZoomLevel: function(extent) {
+    getFitZoom: function(extent) {
         if (!extent || !(extent instanceof Z.Extent)) {
             return this._zoomLevel;
         }
         //点类型
         if (extent['xmin'] == extent['xmax'] && extent['ymin'] == extent['ymax']) {
-            return this._maxZoomLevel;
+            return this._maxZoom;
         }
         try {
             var projection = this._getProjection();
@@ -399,7 +399,7 @@ Z['Map']=Z.Map=Z.Class.extend({
             var resolutions = this._getTileConfig()['resolutions'];
             var xz = -1;
             var yz = -1;
-            for ( var i = this._minZoomLevel, len = this._maxZoomLevel; i < len; i++) {
+            for ( var i = this._minZoom, len = this._maxZoom; i < len; i++) {
                 if (projectedExtent.x / resolutions[i] >= this.width) {
                     if (xz == -1) {
                         xz = i;
@@ -419,7 +419,7 @@ Z['Map']=Z.Map=Z.Class.extend({
                 ret = xz < yz ? yz : xz;
             }
             if (ret === -1) {
-                return this._maxZoomLevel;
+                return this._maxZoom;
             }
             // return ret - 2;
             return ret;
@@ -884,20 +884,20 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {[type]} [description]
      */
     _checkMapStatus:function(){
-        if (!this._maxZoomLevel || this._maxZoomLevel > this._tileConfig['maxZoomLevel']) {
-            this._maxZoomLevel = this._tileConfig['maxZoomLevel'];
+        if (!this._maxZoom || this._maxZoom > this._tileConfig['maxZoom']) {
+            this._maxZoom = this._tileConfig['maxZoom'];
         }
-        if (!this._minZoomLevel || this._minZoomLevel < this._tileConfig['minZoomLevel']) {
-            this._minZoomLevel = this._tileConfig['minZoomLevel'];
+        if (!this._minZoom || this._minZoom < this._tileConfig['minZoom']) {
+            this._minZoom = this._tileConfig['minZoom'];
         }
-        if (this._maxZoomLevel < this._minZoomLevel) {
-            this._maxZoomLevel = this._minZoomLevel;
+        if (this._maxZoom < this._minZoom) {
+            this._maxZoom = this._minZoom;
         }
-        if (!this._zoomLevel || this._zoomLevel > this._maxZoomLevel) {
-            this._zoomLevel = this._maxZoomLevel;
+        if (!this._zoomLevel || this._zoomLevel > this._maxZoom) {
+            this._zoomLevel = this._maxZoom;
         }
-        if (this._zoomLevel < this._minZoomLevel) {
-            this._zoomLevel = this._minZoomLevel;
+        if (this._zoomLevel < this._minZoom) {
+            this._zoomLevel = this._minZoom;
         }
         this._center = this.getCenter();
         var projection = this._tileConfig.getProjectionInstance();

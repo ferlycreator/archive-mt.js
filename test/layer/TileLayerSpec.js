@@ -10,7 +10,7 @@ describe('#TileLayer', function() {
         container.style.height = '600px';
         document.body.appendChild(container);
         var option = {
-            zoomLevel: 17,
+            zoom: 17,
             center: center
         };
         map = new Z.Map(container, option);

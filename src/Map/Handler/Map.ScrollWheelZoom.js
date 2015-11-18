@@ -35,7 +35,7 @@ Z.Map.ScrollWheelZoom = Z.Handler.extend({
             clearTimeout(this.wheelExecutor);
         }
         this.wheelExecutor = setTimeout(function () {
-            map._zoom(map._zoomLevel + _levelValue, mouseOffset);
+            map._zoom(map.getZoom() + _levelValue, mouseOffset);
         },40);
 
         return false;

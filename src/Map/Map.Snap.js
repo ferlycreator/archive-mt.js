@@ -9,7 +9,7 @@ Z.Map.include({
         var callback = config['success'];
         var onErrorFn = config['error'];
         var extent = config['extent'];
-        var zoomLevel = config['zoomLevel'];
+        var zoomLevel = config['zoom'];
         var geometries = config['geometries'];
         var resultType = config['resultType'];
         var ignoreBase = config['ignoreBase'];
@@ -24,10 +24,10 @@ Z.Map.include({
         if (Z.Util.isNil(zoomLevel)) {
             zoomLevel = this.getZoom();
         }
-        if (zoomLevel < tileConfig['minZoomLevel']) {
-            zoomLevel = tileConfig['minZoomLevel'];
-        } else if (zoomLevel > tileConfig['maxZoomLevel']) {
-            zoomLevel = tileConfig['maxZoomLevel'];
+        if (zoomLevel < tileConfig['minZoom']) {
+            zoomLevel = tileConfig['minZoom'];
+        } else if (zoomLevel > tileConfig['maxZoom']) {
+            zoomLevel = tileConfig['maxZoom'];
         }
         var snapSettings = {
             'projection':tileConfig['projection'],
@@ -196,7 +196,7 @@ Z.Map.include({
                     'height':tileConfig["padding"]["height"],
                     'width':tileConfig["padding"]["width"]
                 },
-                'zoomLevel':zoomLevel,
+                'zoom':zoomLevel,
                 'url':layer._getTileUrl("%s","%s","%s"),
                 'nw':{
                     'x':nwTileIndex['x'],

@@ -70,7 +70,7 @@ function commonSetupMap(center) {
     document.body.appendChild(container);
     var option = {
         enableCartoCSS: false,
-        zoomLevel: 17,
+        zoom: 17,
         center: center
     };
     var map = new Z.Map(container, option);

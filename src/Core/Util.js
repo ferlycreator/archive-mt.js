@@ -52,7 +52,7 @@ Z.Util = {
      * @return {String} 全局id
      */
     GUID: function() {
-        return '___GLOBAL_'+(Z.Util.globalCounter++);
+        return '___MAPTALKS_GLOBAL_'+(Z.Util.globalCounter++);
     },
 
     lastId: 0,

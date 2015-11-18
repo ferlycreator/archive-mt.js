@@ -9,7 +9,7 @@
     //地图options
     "options":{
         "center" : [121, 19],
-        "zoomLevel" : 15,
+        "zoom" : 15,
         "crs":{
             "type": "cnCoordinateType",
             "properties":{

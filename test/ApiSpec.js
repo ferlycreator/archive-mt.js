@@ -13,7 +13,7 @@ describe('API', function () {
         container.style.height = '600px';
         document.body.appendChild(container);
         var option = {
-            zoomLevel: 17,
+            zoom: 17,
             center: center
         };
         map = new Z.Map(container, option);
@@ -84,31 +84,31 @@ describe('API', function () {
             }).to.not.throwException();
         });
 
-        it('getMaxZoomLevel', function () {
-            var zoom = map.getMaxZoomLevel();
+        it('getMaxZoom', function () {
+            var zoom = map.getMaxZoom();
 
             expect(zoom).to.be.above(0);
         });
 
-        it('setMaxZoomLevel', function () {
-            var zoom = map.getMaxZoomLevel();
+        it('setMaxZoom', function () {
+            var zoom = map.getMaxZoom();
             zoom = Math.ceil(zoom / 2);
             expect(function () {
-                map.setMaxZoomLevel(zoom);
+                map.setMaxZoom(zoom);
             }).to.not.throwException();
         });
 
-        it('getMinZoomLevel', function () {
-            var zoom = map.getMinZoomLevel();
+        it('getMinZoom', function () {
+            var zoom = map.getMinZoom();
 
             expect(zoom).to.be.above(0);
         });
 
-        it('setMinZoomLevel', function () {
-            var zoom = map.getMinZoomLevel();
+        it('setMinZoom', function () {
+            var zoom = map.getMinZoom();
             zoom = Math.ceil(zoom / 2);
             expect(function () {
-                map.setMinZoomLevel(zoom);
+                map.setMinZoom(zoom);
             }).to.not.throwException();
         });
 
@@ -133,10 +133,10 @@ describe('API', function () {
             }).to.not.throwException();
         });
 
-        it('getFitZoomLevel', function () {
+        it('getFitZoom', function () {
             var extent = map.getExtent();
             var zoom = map.getZoom();
-            var fitZoom = map.getFitZoomLevel(extent);
+            var fitZoom = map.getFitZoom(extent);
 
             expect(fitZoom).to.eql(zoom);
         });
@@ -2231,7 +2231,7 @@ describe('API', function () {
             }).to.not.throwException();
         });
 
-        it('drag', function() {
+        /*it('drag', function() {
             var geometries = genAllTypeGeometries();
             layer.addGeometry(geometries);
 
@@ -2241,7 +2241,7 @@ describe('API', function () {
                     geometry.startDrag();
                 }
             }).to.not.throwException();
-        });
+        });*/
 
     });
 

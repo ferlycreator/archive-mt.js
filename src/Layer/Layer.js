@@ -13,8 +13,8 @@ Z['Layer']=Z.Layer=Z.Class.extend({
 
     options:{
         //最大最小可视范围, -1表示不受限制
-        'minZoomLevel':-1,
-        'maxZoomLevel':-1,
+        'minZoom':-1,
+        'maxZoom':-1,
         //图层是否可见
         'visible':true
     },

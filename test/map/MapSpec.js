@@ -17,7 +17,7 @@ describe('#Map', function () {
         container.style.height = '600px';
         document.body.appendChild(container);
         var option = {
-            zoomLevel: 17,
+            zoom: 17,
             center: center
         };
         map = new Z.Map(container, option);
@@ -117,21 +117,21 @@ describe('#Map', function () {
             map.setBaseTileLayer(tile);
 
             expect(map.getZoom()).to.eql(17);
-            expect(map.getMinZoomLevel()).to.be.a('number');
-            expect(map.getMaxZoomLevel()).to.be.a('number');
+            expect(map.getMinZoom()).to.be.a('number');
+            expect(map.getMaxZoom()).to.be.a('number');
         });
 
         it('set (min/max/current)zoom level', function() {
             map.setBaseTileLayer(tile);
 
             var min = 3, max = 14, cur = max + 1;
-            map.setMinZoomLevel(min);
-            map.setMaxZoomLevel(max);
+            map.setMinZoom(min);
+            map.setMaxZoom(max);
             map.setZoom(cur);
 
             expect(map.getZoom()).to.equal(max);
-            expect(map.getMinZoomLevel()).to.equal(min);
-            expect(map.getMaxZoomLevel()).to.equal(max);
+            expect(map.getMinZoom()).to.equal(min);
+            expect(map.getMaxZoom()).to.equal(max);
         });
 
         it('set max zoom level to less than current zoom level', function() {
@@ -139,18 +139,18 @@ describe('#Map', function () {
 
             var max = 14, cur = max + 1;
             map.setZoom(cur);
-            map.setMaxZoomLevel(max);
+            map.setMaxZoom(max);
 
             expect(map.getZoom()).to.equal(max);
-            expect(map.getMaxZoomLevel()).to.equal(max);
+            expect(map.getMaxZoom()).to.equal(max);
         });
 
         it('zoom in/out', function() {
             map.setBaseTileLayer(tile);
 
             var min = 3, max = 14, cur = 8;
-            map.setMinZoomLevel(min);
-            map.setMaxZoomLevel(max);
+            map.setMinZoom(min);
+            map.setMaxZoom(max);
             map.setZoom(cur);
 
             expect(map.zoomIn().getZoom()).to.equal(cur + 1);
