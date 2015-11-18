@@ -117,7 +117,7 @@ Z['Control']['Zoom'] = Z.Control.Zoom = Z.Control.extend({
 		var level = this._map._maxZoomLevel - Math.round(offsetY/7.2);
 		var top = (this._map._maxZoomLevel-level)*7.2;
         Z.DomUtil.setStyle(this._zoomBarSlider, 'top: ' + top+'px');
-        this._map.setZoomLevel(level);
+        this._map.setZoom(level);
 	},
 
 	_showSlider: function() {

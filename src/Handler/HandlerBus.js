@@ -11,6 +11,9 @@ Z.HandlerBus = {
      */
     addHandler: function (name, HandlerClass) {
         if (!HandlerClass) { return this; }
+        if (!this._handlers) {
+            this._handlers = [];
+        }
         //handler已经存在
         if (this[name]) {
             this[name].enable();

@@ -63,7 +63,7 @@ Z['HeatmapLayer'] = Z.HeatmapLayer = Z.Layer.extend({
         var bounds, zoom, scale;
 
         bounds = this._map.getExtent();
-        zoom = this._map.getZoomLevel();
+        zoom = this._map.getZoom();
         scale = Math.pow(2, zoom);
 
         if (this._data.length == 0) {

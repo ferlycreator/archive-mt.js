@@ -125,7 +125,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         if (!tileConfig) {return null;}
 
         var tileSize = this._getTileSize(),
-            zoomLevel = map.getZoomLevel(),
+            zoomLevel = map.getZoom(),
             mapDomOffset = map.offsetPlatform();
         // console.log(mapDomOffset);
         var holderLeft=mapDomOffset["left"],

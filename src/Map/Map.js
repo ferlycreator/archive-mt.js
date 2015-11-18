@@ -13,7 +13,6 @@ Z['Map']=Z.Map=Z.Class.extend({
         'enableMapSliding':true,
         'enableZoom':true,
         'enableInfoWindow':true,
-        'zoomMode':'pointer',
         'crs':Z.CRS.GCJ02
     },
 
@@ -74,8 +73,6 @@ Z['Map']=Z.Map=Z.Class.extend({
 
         this._canvasLayers=[];
         this._dynLayers=[];
-        //handler
-        this._handlers = [];
 
         this._zoomLevel = options['zoomLevel'];
         delete options['zoomLevel'];
@@ -276,7 +273,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {Number} 地图缩放级别
      * @expose
      */
-    getZoomLevel:function() {
+    getZoom:function() {
         return this._zoomLevel;
     },
 
@@ -285,7 +282,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @param {Number} z 新的缩放级别
      * @expose
      */
-    setZoomLevel:function(z) {
+    setZoom:function(z) {
         this._zoom(z);
         return this;
     },
@@ -310,7 +307,7 @@ Z['Map']=Z.Map=Z.Class.extend({
             zoomLevel = tileConfig['maxZoomLevel'];
         }
         if (zoomLevel < this._zoomLevel) {
-            this.setZoomLevel(zoomLevel);
+            this.setZoom(zoomLevel);
         }
         this._maxZoomLevel = zoomLevel;
         return this;
@@ -344,7 +341,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     zoomIn: function() {
-        this._zoom(this.getZoomLevel() + 1);
+        this._zoom(this.getZoom() + 1);
         return this;
     },
 
@@ -353,7 +350,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     zoomOut: function() {
-        this._zoom(this.getZoomLevel() - 1);
+        this._zoom(this.getZoom() - 1);
         return this;
     },
 
@@ -427,7 +424,7 @@ Z['Map']=Z.Map=Z.Class.extend({
             // return ret - 2;
             return ret;
         } catch (exception) {
-            return this.getZoomLevel();
+            return this.getZoom();
         }
     },
 
@@ -874,7 +871,7 @@ Z['Map']=Z.Map=Z.Class.extend({
             throw new Error(this.exceptions['INVALID_TILECONFIG']);
         }
         //tileConfig相同,无需改变
-        if (this._tileConfig && this._tileConfig.equals(tileConfig, this.getZoomLevel())) {
+        if (this._tileConfig && this._tileConfig.equals(tileConfig, this.getZoom())) {
             return false;
         }
         this._tileConfig = tileConfig;
@@ -992,7 +989,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      */
     _untransform:function(domPos) {
         var transformation =  this._getTileConfig().getTransformationInstance();
-        var res = this._tileConfig.getResolution(this.getZoomLevel());//['resolutions'][this._zoomLevel];
+        var res = this._tileConfig.getResolution(this.getZoom());//['resolutions'][this._zoomLevel];
 
         var pcenter = this._getPrjCenter();
         var centerPoint = transformation.transform(pcenter, res);
@@ -1018,7 +1015,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      */
     _transform:function(pCoordinate) {
         var transformation =  this._getTileConfig().getTransformationInstance();
-        var res = this._tileConfig.getResolution(this.getZoomLevel());//['resolutions'][this._zoomLevel];
+        var res = this._tileConfig.getResolution(this.getZoom());//['resolutions'][this._zoomLevel];
 
         var pcenter = this._getPrjCenter();
         var centerPoint = transformation.transform(pcenter, res);
@@ -1077,7 +1074,7 @@ Z['Map']=Z.Map=Z.Class.extend({
             return null;
         }
         var projection = tileConfig.getProjectionInstance();
-        var res = tileConfig['resolutions'][this.getZoomLevel()];
+        var res = tileConfig['resolutions'][this.getZoom()];
         var nw = projection.unproject({x: plonlat.x - pnw["left"]*res, y: plonlat.y + pnw["top"]*res});
         var se = projection.unproject({x: plonlat.x + pse["left"]*res, y: plonlat.y - pse["top"]*res});
         return new Z.Extent(nw,se);
@@ -1102,7 +1099,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         //计算前刷新scales
         var center = this.getCenter(),
             target = projection.locate(center,x,y),
-            z = this.getZoomLevel(),
+            z = this.getZoom(),
             resolutions = tileConfig['resolutions'];
         var width = !x?0:(projection.project({x:target.x,y:center.y}).x-projection.project(center).x)/resolutions[z];
         var height = !y?0:(projection.project({x:target.x,y:center.y}).y-projection.project(target).y)/resolutions[z];
@@ -1128,7 +1125,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         //计算前刷新scales
         var center = this.getCenter(),
             pcenter = this._getPrjCenter(),
-            res = tileConfig['resolutions'][this.getZoomLevel()];
+            res = tileConfig['resolutions'][this.getZoom()];
         var pTarget = new Z.Coordinate(pcenter.x+width*res, pcenter.y+height*res);
         var target = projection.unproject(pTarget);
         return projection.getGeodesicLength(target,center);

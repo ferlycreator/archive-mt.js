@@ -22,7 +22,7 @@ Z.Map.include({
             extent = this.getExtent();
         }
         if (Z.Util.isNil(zoomLevel)) {
-            zoomLevel = this.getZoomLevel();
+            zoomLevel = this.getZoom();
         }
         if (zoomLevel < tileConfig['minZoomLevel']) {
             zoomLevel = tileConfig['minZoomLevel'];

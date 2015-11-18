@@ -41,7 +41,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
      */
     _prepareLoad:function() {
         var map = this.getMap();
-        var zoomLevel=map.getZoomLevel();
+        var zoomLevel=map.getZoom();
         var min = this.getMinZoomLevel();
         var max = this.getMaxZoomLevel();
         if (!Z.Util.isNil(min) && min>=0 && zoomLevel<min) {
@@ -127,7 +127,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
             'mapdb':this.options['mapdb'],
             'padding':padding["width"]+","+padding["height"],
             'len':tileConfig["tileSize"]["width"],
-            'res':tileConfig['resolutions'][map.getZoomLevel()],
+            'res':tileConfig['resolutions'][map.getZoom()],
             'layers':this.options['layers'],
             'condition':condition,
             'spatialFilter':(Z.Util.isNil(spatialFilter)?null:encodeURIComponent(spatialFilter)),
@@ -154,7 +154,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
         }
 
         if (map) {
-            ret+="&r="+tileConfig['resolutions'][map.getZoomLevel()];
+            ret+="&r="+tileConfig['resolutions'][map.getZoom()];
             var nt = (map._getProjection().srs != 'EPSG:4326');
             ret+="&nt="+nt;
         }

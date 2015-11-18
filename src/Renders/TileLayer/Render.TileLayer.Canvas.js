@@ -55,7 +55,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         }
         //canvas大小不做缩小, 只根据需要增大, 直到超过系统允许: testCanvas 结果为false
         var preZ = this._z;
-        this._z = this.getMap().getZoomLevel();
+        this._z = this.getMap().getZoom();
         if (this._z !== preZ) {
             this._canvasFullExtent = fullTileExtent;
             this._resizeCanvas(fullTileExtent.getSize());
