@@ -18,14 +18,15 @@
         mapObj = new maptalks.Map('mapObj', //放置mapObj的div id
         {
             center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
-            zoomLevel:   15 //初始缩放级别
+            zoom:   15 //初始缩放级别
         });
         //设置底图图层
         mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
         {
             tileInfo: 'web-mercator',
-            urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
-            subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
+            //urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
+            urlTemplate:'https://{s}.tiles.mapbox.com/v4/mapbox.dark/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6IlhHVkZmaW8ifQ.hAMX5hSW-QnTeRCMAy9A8Q',
+            subdomains:['a','b']//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
         }));
         //创建图层
         var layer = new maptalks.VectorLayer('layer',{render:'canvas'});
@@ -35,16 +36,16 @@
         var coordinate = new maptalks.Coordinate(121.489935,31.24432);
         //设置矢量配置
         var icon = {
-            'markerType': 'pin',
-            'markerOpacity': 0.5,
-            'markerFillOpacity': 1,
-            'markerLineColor': '#0000ff',
-            'markerLineWidth': 5,
-            'markerLineOpacity': 1,
+            'markerType': 'pie',
+            'markerOpacity': 1,
+            'markerFillOpacity': 0.7,
+            'markerLineColor': '#ffffff',
+            'markerLineWidth': 2,
+            'markerLineOpacity': 0.7,
             'markerPlacement': 'point',
             'markerWidth': 30,
             'markerHeight': 30,
-            'markerFill': '#ff0000',
+            'markerFill': '#000000',
             'markerDx': 0,
             'markerDy': 0
         };
@@ -53,11 +54,21 @@
         * ellipse ：圆形；triangle ：三角形； cross ：十字； diamond ：菱形； square ：正方形；x/X：X形；bar：柱状图
         */
         //创建点对象
-        var marker = new maptalks.Marker(coordinate, {symbol:icon});
+        var marker = new maptalks.Marker(coordinate, {symbol:icon, draggable:true});
+        icon['markerType'] = 'bar';
         //设置点样式
         // marker.setSymbol(icon);
         //将点添加到Layer
         layer.addGeometry(marker);
+
+        var center = mapObj.getCenter();
+        for (var i=0;i<300;i++) {
+            var xRandomFactor = (Math.random()*2-1)*0.1;
+            var yRandomFactor = (Math.random()*2-1)*0.1;
+            var marker = new maptalks.Marker(center.add(new maptalks.Coordinate(xRandomFactor, yRandomFactor)), {symbol:icon});
+            // marker.setSymbol(markerOption3);
+            layer.addGeometry(marker);
+        }
     }
 </script>
 <!-- 引擎javascript开发包-->

@@ -11,13 +11,13 @@
 <body scroll="no" onload="initMap();">
 <div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
 <script type="text/javascript" >
-    var mapObj;
+    var mapObj, polygon;
     function initMap(){
         //创建地图对象
         mapObj = new maptalks.Map('mapObj', //放置mapObj的div id
         {
             center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
-            zoomLevel:   11 //初始缩放级别
+            zoom:   11 //初始缩放级别
         });
         //设置底图图层
         mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
@@ -32,7 +32,7 @@
         mapObj.addLayer(layer);
 
         //创建面对象
-        var polygon = new maptalks.Polygon(
+        polygon = new maptalks.Polygon(
             //面端点坐标数组
             [[new maptalks.Coordinate(121.508617,31.241279),
             new maptalks.Coordinate(121.519432,31.241572),
