@@ -419,7 +419,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (!opts) {
             opts = {};
         }
-        var symbol = opts['symbol'];
+        var symbol = opts['symbol'] || this.options['symbol'];
         delete opts['symbol'];
         var id = opts['id'];
         delete opts['id'];

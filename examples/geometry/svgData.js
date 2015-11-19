@@ -1,7 +1,7 @@
 SvgData = {
     addTo: function(layer) {
         this.layer = layer;
-        this._addLabel()
+        this/*._addLabel()*/
             ._addPictureMarker()
             ._addVectorMarker()
             ._addShieldMarker()
@@ -133,12 +133,12 @@ SvgData = {
     },
     _addPolyline: function() {
         //创建线对象
-        var polyline = new Z.Polyline(
+        var polyline = new maptalks.Polyline(
             //线端点坐标数组
-            [new Z.Coordinate(121.46646030670178,31.23918311413328),
-            new Z.Coordinate(121.47075184112549,31.240210513656688),
-            new Z.Coordinate(121.47431381469713,31.23665126046662),
-            new Z.Coordinate(121.47723205810522,31.239403272114743)],{draggable: true});
+            [new maptalks.Coordinate(121.46646030670178,31.23918311413328),
+            new maptalks.Coordinate(121.47075184112549,31.240210513656688),
+            new maptalks.Coordinate(121.47431381469713,31.23665126046662),
+            new maptalks.Coordinate(121.47723205810522,31.239403272114743)],{draggable: true});
         //设置线样式
         var polylineSymbol = {
             'lineColor' : '#ff00ff',
@@ -210,14 +210,14 @@ SvgData = {
     },
     _addMultiPolyline: function() {
         var polyline1 = new maptalks.Polyline([
-                        new Z.Coordinate(121.47693165069629,31.24758544646915),
-                        new Z.Coordinate(121.47658832794238,31.244503455042373)]);
+                        new maptalks.Coordinate(121.47693165069629,31.24758544646915),
+                        new maptalks.Coordinate(121.47658832794238,31.244503455042373)]);
         var polyline2 = new maptalks.Polyline([
-                        new Z.Coordinate(121.47890575653115,31.247475377078782),
-                        new Z.Coordinate(121.47903450256388,31.24417323570951)]);
+                        new maptalks.Coordinate(121.47890575653115,31.247475377078782),
+                        new maptalks.Coordinate(121.47903450256388,31.24417323570951)]);
         var polyline3 = new maptalks.Polyline([
-                        new Z.Coordinate(121.48045070892368,31.247475377078782),
-                        new Z.Coordinate(121.48040779357945,31.244723600622805)]);
+                        new maptalks.Coordinate(121.48045070892368,31.247475377078782),
+                        new maptalks.Coordinate(121.48040779357945,31.244723600622805)]);
         var polylines = [polyline1,polyline2,polyline3];
          //设置线样式
         var polylineSymbol = {
@@ -231,17 +231,17 @@ SvgData = {
         return this;
     },
     _addMultiPolygon: function() {
-        var polygon1 = new maptalks.Polygon([[new Z.Coordinate(121.4813948464969,31.237898849014773),
-                        new Z.Coordinate(121.4813948464969,31.235036709652668),
-                        new Z.Coordinate(121.48414142852805,31.235036709652668),
-                        new Z.Coordinate(121.48414142852805,31.23723836301229),
-                        new Z.Coordinate(121.48251064544704,31.237275056800232)]]);
+        var polygon1 = new maptalks.Polygon([[new maptalks.Coordinate(121.4813948464969,31.237898849014773),
+                        new maptalks.Coordinate(121.4813948464969,31.235036709652668),
+                        new maptalks.Coordinate(121.48414142852805,31.235036709652668),
+                        new maptalks.Coordinate(121.48414142852805,31.23723836301229),
+                        new maptalks.Coordinate(121.48251064544704,31.237275056800232)]]);
 
         var polygon2 = new maptalks.Polygon([[
-                        new Z.Coordinate(121.48495682006853,31.236944812195546),
-                        new Z.Coordinate(121.48504265075704,31.23599076574145),
-                        new Z.Coordinate(121.48620136505141,31.236064154272295),
-                        new Z.Coordinate(121.48607261901867,31.236871424348852)]]);
+                        new maptalks.Coordinate(121.48495682006853,31.236944812195546),
+                        new maptalks.Coordinate(121.48504265075704,31.23599076574145),
+                        new maptalks.Coordinate(121.48620136505141,31.236064154272295),
+                        new maptalks.Coordinate(121.48607261901867,31.236871424348852)]]);
         var polygons = [polygon1,polygon2];
          //设置面样式
         var polygonSymbol = {

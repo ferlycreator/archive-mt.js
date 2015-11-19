@@ -194,9 +194,9 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
     _createTipDom: function(){
         var tipContainer = Z.DomUtil.createEl('div');
         tipContainer.style.display = 'none';
-        tipContainer.style.width = this._getTipWidth();+'px';
+        tipContainer.style.width = this._getTipWidth()+'px';
         var suffix = this.options['style'];
-        Z.DomUtil.setClass(tipContainer, 'maptalks-infowindow');
+        Z.DomUtil.setClass(tipContainer, 'maptalks-infowindow'+suffix);
 
         var tipBoxDom = this._createTipBoxDom();
 

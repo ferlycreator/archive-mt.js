@@ -18,7 +18,7 @@ Z.Linker = Z.Class.extend({
      */
     initialize: function (options) {
         if(!options) {return;}
-        this.setOptions(options);
+        Z.Util.setOptions(this, options);
         this._linkSource = options['linkSource'];
         this._linkTarget = options['linkTarget'];
         return this;
@@ -43,25 +43,6 @@ Z.Linker = Z.Class.extend({
         this._internalLayer.addGeometry(this._linker);
         this._registEvents();
         return this;
-    },
-
-    /**
-     * 设置连接器配置项
-     * @param {Object} options
-     * @expose
-     */
-    setOptions: function(options) {
-        Z.Util.setOptions(this, options);
-        return this;
-    },
-
-    /**
-     * 获取连接器配置项
-     * @return {Object} options
-     * @expose
-     */
-    getOptions: function() {
-        return this.options;
     },
 
     /**

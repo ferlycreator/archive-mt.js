@@ -33,7 +33,7 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         //设置parent用来处理事件, setGeometries是所有Collection类型的Geometry都会调用的方法
         if (Z.Util.isArray(geometries)) {
             for (var i = geometries.length - 1; i >= 0; i--) {
-                geometries[i].setOptions(this.options);
+                geometries[i]._initOptions(this.options);
                 geometries[i]._setParent(this);
             }
         }
