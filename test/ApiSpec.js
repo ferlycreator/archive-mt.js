@@ -652,7 +652,7 @@ describe('API', function () {
             }).to.not.throwException();
         });
 
-        it('getAllGeometries', function() {
+        it('getGeometries', function() {
             var layer = new Z.OverlayLayer();
             layer.paintGeometries = paint;
             layer.setId('id');
@@ -668,7 +668,7 @@ describe('API', function () {
                 ]);
                 layer.addGeometry(geometry);
             }
-            var geometries = layer.getAllGeometries();
+            var geometries = layer.getGeometries();
 
             expect(geometries).to.have.length(count);
         });
@@ -748,7 +748,7 @@ describe('API', function () {
 
             layer.clear();
 
-            var geometries = layer.getAllGeometries();
+            var geometries = layer.getGeometries();
             expect(geometries).to.be.empty();
         });
 

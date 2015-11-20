@@ -106,7 +106,7 @@ describe('#OverlayLayer', function() {
             var geo1 = new Z.Marker(center, {id: gid});
             layer.addGeometry(geo1);
 
-            expect(layer.clear().getAllGeometries()).to.be.empty();
+            expect(layer.clear().getGeometries()).to.be.empty();
         });
     });
 
