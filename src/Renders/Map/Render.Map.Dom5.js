@@ -175,7 +175,7 @@ Z.render.map.Dom = Z.render.map.Render.extend({
             if (!t) {
                 duration = map.options['panAnimationDuration'];
             } else {
-                duration = t*2;
+                duration = t;
             }
             var panMoveOffset = moveOffset.multi(0.5);
             Z.animation.animate(new Z.animation.pan({
