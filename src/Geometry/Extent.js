@@ -80,7 +80,7 @@ Z.Extent.prototype={
      * 将extent对象转化为json对象
      * @return {Object} jsonObject
      */
-    toJson:function() {
+    toJSON:function() {
         return {
             'xmin':this['xmin'],
             'ymin':this['ymin'],
