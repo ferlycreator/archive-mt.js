@@ -193,7 +193,6 @@ var GeoSymbolTester = {
         }
         geometry.setSymbol(this.lineAndFill);
         geometry.remove();
-        Z.TESTMODE=true;
         layer = new maptalks.VectorLayer("symboltest_layer_canvas",{"render":"canvas"});
         map.addLayer(layer);
         layer.addGeometry(geometry);
