@@ -56,7 +56,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
         var param_spatialFilter= null;
         var spatialFilter = this.getSpatialFilter();
         if (spatialFilter) {
-            param_spatialFilter = JSON.stringify(spatialFilter.toJson());
+            param_spatialFilter = JSON.stringify(spatialFilter.toJSON());
         }
         var queryString=this._formQueryString( this.getCondition(), param_spatialFilter);
         var ajax = new Z.Util.Ajax(url,0,queryString,function(responseText){

@@ -64,10 +64,10 @@ Z.MultiPoly = Z.GeometryCollection.extend({
         return this;
     },
 
-    //override _exportGeoJson in GeometryCollection
-    _exportGeoJson:function() {
+    //override _exportGeoJSONGeometry in GeometryCollection
+    _exportGeoJSONGeometry:function() {
         var points = this.getCoordinates();
-        var coordinates = Z.GeoJson.toGeoJsonCoordinates(points);
+        var coordinates = Z.GeoJSON.toGeoJSONCoordinates(points);
         return {
             'type':this.getType(),
             'coordinates': coordinates

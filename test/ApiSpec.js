@@ -926,7 +926,7 @@ describe('API', function () {
             // TODO
         });
 
-        it('fromGeoJson', function() {
+        it('fromGeoJSON', function() {
             // TODO
         });
 
@@ -1047,7 +1047,7 @@ describe('API', function () {
 
         it('copy');
 
-        it('toJson', function() {
+        it('toJSON', function() {
         });
 
     });
@@ -1121,7 +1121,7 @@ describe('API', function () {
 
         it('copy');
 
-        it('toJson', function() {
+        it('toJSON', function() {
         });
 
         it('setRadius/getRadius', function() {
@@ -1212,7 +1212,7 @@ describe('API', function () {
 
         it('copy');
 
-        it('toJson', function() {
+        it('toJSON', function() {
         });
 
         it('getWidth/getHeight]', function() {
@@ -1313,7 +1313,7 @@ describe('API', function () {
 
         it('copy');
 
-        it('toJson', function() {
+        it('toJSON', function() {
         });
 
         it('getRadius/getStartAngle/getEndAngle', function() {
@@ -1408,7 +1408,7 @@ describe('API', function () {
 
         it('copy');
 
-        it('toJson', function() {
+        it('toJSON', function() {
         });
 
         it('getNw/getWidth/getHeight', function() {
@@ -1525,7 +1525,7 @@ describe('API', function () {
 
         it('copy');
 
-        it('toJson', function() {
+        it('toJSON', function() {
         });
 
         it('getCoordinates', function() {
@@ -1657,7 +1657,7 @@ describe('API', function () {
 
         it('copy');
 
-        it('toJson', function() {
+        it('toJSON', function() {
         });
 
         it('getCoordinates', function() {
@@ -1784,7 +1784,7 @@ describe('API', function () {
 
         it('copy');
 
-        it('toJson', function() {
+        it('toJSON', function() {
         });
 
         it('getGeometries/setGeometries', function() {
@@ -1841,7 +1841,7 @@ describe('API', function () {
 
         it('copy');
 
-        it('toJson', function() {
+        it('toJSON', function() {
         });
 
     });
@@ -1961,7 +1961,7 @@ describe('API', function () {
 
         it('copy');
 
-        it('toJson', function() {
+        it('toJSON', function() {
         });
 
         it('getCoordinates/setCoordinates', function() {
@@ -2122,7 +2122,7 @@ describe('API', function () {
 
         it('copy');
 
-        it('toJson', function() {
+        it('toJSON', function() {
         });
 
         it('getCoordinates/setCoordinates', function() {

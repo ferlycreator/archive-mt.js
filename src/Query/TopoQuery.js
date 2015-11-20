@@ -60,8 +60,8 @@ Z.TopoQuery.prototype={
         for (i = 0, len=geometries.length; i < len; i++) {
             var geometry = geometries[i];
             if (!(geometry instanceof Z.Marker) && !(geometry instanceof Z.Circle)) {
-                var geoJson = geometry.toGeometryJson();
-                targets.push(geoJson);
+                var geoJSON = geometry.toGeoJSONGeometry();
+                targets.push(geoJSON);
             }
         }
         function formQueryString() {
@@ -101,7 +101,7 @@ Z.TopoQuery.prototype={
                     }
                     return;
                 }
-                var svrBuffered = Z.GeoJson.fromGeoJson(result["data"]);
+                var svrBuffered = Z.GeoJSON.fromGeoJSON(result["data"]);
                 var tmpIndex = 0;
                 for (i = 0, len=geometries.length; i < len; i++) {
                     var g;
@@ -142,14 +142,14 @@ Z.TopoQuery.prototype={
         }
 
         function formQueryString() {
-            var srcGeoJson = source.toGeometryJson();
-            var targetGeoJsons = [];
+            var srcGeoJSON = source.toGeoJSONGeometry();
+            var targetGeoJSONs = [];
             for (var i=0, len=targets.length;i<len;i++) {
-                var t = targets[i].toGeometryJson();
-                targetGeoJsons.push(t);
+                var t = targets[i].toGeoJSONGeometry();
+                targetGeoJSONs.push(t);
             }
-            var ret = "source=" + JSON.stringify(srcGeoJson);
-            ret += "&targets=" + JSON.stringify(targetGeoJsons);
+            var ret = "source=" + JSON.stringify(srcGeoJSON);
+            ret += "&targets=" + JSON.stringify(targetGeoJSONs);
             ret += "&relation=" + relation;
             return ret;
         }

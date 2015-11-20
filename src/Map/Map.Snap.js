@@ -32,7 +32,7 @@ Z.Map.include({
         var snapSettings = {
             'projection':tileConfig['projection'],
             'res':tileConfig['resolutions'][zoomLevel],
-            'extent': extent.toJson()
+            'extent': extent.toJSON()
         };
         var layerSettings = {};
         var baseTileLayer = this.getBaseTileLayer();
@@ -71,7 +71,7 @@ Z.Map.include({
             }
             layerSettings['dynlayers'] = dynLayerSettings;
         }
-        var geoJson = [];
+        var geoJSON = [];
         var markerJson = [];
         if (!geometries || geometries.length === 0) {
             if (this._canvasLayers.length>0) {
@@ -84,7 +84,7 @@ Z.Map.include({
             collectGeos(geometries);
         }
 
-        layerSettings['geos'] = geoJson.concat(markerJson);
+        layerSettings['geos'] = geoJSON.concat(markerJson);
         snapSettings['layers'] = layerSettings;
 
 
@@ -115,7 +115,7 @@ Z.Map.include({
         function collectLayers(layerList) {
             for (var i=0, len=layerList.length;i<len;i++) {
                 if (!layerList[i] || !layerList[i].isVisible()) {continue;}
-                var geos = layerList[i]["getAllGeometries"]();
+                var geos = layerList[i]["getGeometries"]();
                 collectGeos(geos);
             }
         }
@@ -131,11 +131,11 @@ Z.Map.include({
                 var layer = geos[j].getLayer();
                 if (layer instanceof Z.VectorLayer && !layer.isCanvasRender() &&
                     Z.Geometry["TYPE_POINT"] === geos[j].getType()) {
-                    var jStr =geos[j].toJson({'properties':false});
+                    var jStr =geos[j].toJSON({'properties':false});
                     markerJson.push(jStr);
                 } else {
-                    var jStr = geos[j].toJson({'properties':false});
-                    geoJson.push(jStr);
+                    var jStr = geos[j].toJSON({'properties':false});
+                    geoJSON.push(jStr);
                 }
             }
         }

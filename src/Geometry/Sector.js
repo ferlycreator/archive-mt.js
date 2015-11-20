@@ -163,7 +163,7 @@ Z['Sector']=Z.Sector=Z.Polygon.extend({
         return Math.PI*Math.pow(this._radius,2)*Math.abs(this.startAngle-this.endAngle)/360;
     },
 
-    _exportGeoJson:function() {
+    _exportGeoJSONGeometry:function() {
         var center  = this.getCenter();
         return {
             'type':         "Sector",

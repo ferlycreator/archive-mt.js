@@ -29,7 +29,7 @@ describe('MultiPolylineSpec', function() {
             var multiPolyline = new Z.MultiPolyline(points);
             var coordinates = multiPolyline.getCoordinates();
             expect(coordinates).to.have.length(points.length);
-            var geojsonCoordinates = Z.GeoJson.toGeoJsonCoordinates(coordinates);
+            var geojsonCoordinates = Z.GeoJSON.toGeoJSONCoordinates(coordinates);
             expect(geojsonCoordinates).to.eql(points);
         });
 

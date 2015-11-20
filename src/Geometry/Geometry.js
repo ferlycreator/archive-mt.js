@@ -292,9 +292,9 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     copy:function() {
-        var json = this.toJson();
+        var json = this.toJSON();
         //FIXME symbol信息没有被拷贝过来
-        var ret = Z.GeoJson.fromGeoJson(json);
+        var ret = Z.GeoJSON.fromGeoJSON(json);
         return ret;
     },
 
@@ -307,8 +307,13 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         this._rootRemove(true);
     },
 
-    toGeometryJson:function(opts) {
-        var gJson = this._exportGeoJson();
+    /**
+     * 按照GeoJSON规范生成GeoJSON Geometry 类型对象
+     * @param  {Object} opts 输出配置
+     * @return {Object}      GeoJSON Geometry
+     */
+    toGeoJSONGeometry:function(opts) {
+        var gJson = this._exportGeoJSONGeometry();
         if (!opts || opts['crs']) {
             var crs = this.getCRS();
             if (crs) {
@@ -319,12 +324,12 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     },
 
     /**
-     * 按照GeoJson规范生成GeoJson对象
+     * 按照GeoJSON规范生成GeoJSON Feature 类型对象
      * @param  {[Object} opts 输出配置
-     * @returns {Object}      GeoJson对象
+     * @returns {Object}      GeoJSON Feature
      * @expose
      */
-    toJson:function(opts) {
+    toGeoJSON:function(opts) {
         if (!opts) {
             opts = {};
         }
@@ -333,21 +338,14 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
             'geometry':null
         };
         if (opts['geometry'] === undefined || opts['geometry']) {
-            var geoJson = this._exportGeoJson(opts);
-            feature['geometry']=geoJson;
+            var geoJSON = this._exportGeoJSONGeometry(opts);
+            feature['geometry']=geoJSON;
         }
         var id = this.getId();
         if (!Z.Util.isNil(id)) {
             feature['id'] = id;
         }
         var properties = {};
-        //opts没有设定symbol或者设定的symbol值为true,则导出symbol
-        /*if (opts['symbol'] === undefined || opts['symbol']) {
-            var symbol = this.getSymbol();
-            if (symbol) {
-                feature['symbol'] = symbol;
-            }
-        }*/
         var crs = this.getCRS();
         if (crs) {
             feature['crs'] = crs;
@@ -653,9 +651,9 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
     },
 
-    _exportGeoJson:function() {
+    _exportGeoJSONGeometry:function() {
         var points = this.getCoordinates();
-        var coordinates = Z.GeoJson.toGeoJsonCoordinates(points);
+        var coordinates = Z.GeoJSON.toGeoJSONCoordinates(points);
         return {
             'type':this.getType(),
             'coordinates': coordinates

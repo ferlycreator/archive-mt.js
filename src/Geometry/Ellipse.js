@@ -154,7 +154,7 @@ Z.Ellipse = Z.Polygon.extend({
     },
 
 
-    _exportGeoJson:function() {
+    _exportGeoJSONGeometry:function() {
         var center = this.getCenter();
         return {
             'type':'Ellipse',

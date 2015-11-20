@@ -277,8 +277,8 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
     },
 
 
-   _exportGeoJson:function() {
-        var geoJsons = [];
+   _exportGeoJSONGeometry:function() {
+        var geoJSONs = [];
         if (!this.isEmpty()) {
             var geometries = this.getGeometries();
             for (var i=0,len=geometries.length;i<len;i++) {
@@ -286,12 +286,12 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
                 if (!geo) {
                     continue;
                 }
-                geoJsons.push(geo._exportGeoJson());
+                geoJSONs.push(geo._exportGeoJSONGeometry());
             }
         }
         return {
             'type':         'GeometryCollection',
-            'geometries':   geoJsons
+            'geometries':   geoJSONs
         };
     },
 

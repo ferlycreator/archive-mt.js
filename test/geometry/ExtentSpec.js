@@ -76,9 +76,9 @@ describe('ExtentSpec', function() {
             expect(ext1.equals(new Z.Extent())).to.be.ok();
         });
 
-        it('toJson',function() {
+        it('toJSON',function() {
             var ext1 = new Z.Extent(1,2,3,4);
-            var json = ext1.toJson();
+            var json = ext1.toJSON();
             expect(json).to.eql({
                 'xmin':1,
                 'ymin':2,

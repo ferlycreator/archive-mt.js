@@ -57,7 +57,7 @@
 ../src/Geometry/MultiPoint.js
 ../src/Geometry/MultiPolyline.js
 ../src/Geometry/MultiPolygon.js
-../src/Geometry/GeoJson.js
+../src/Geometry/GeoJSON.js
 ../src/Geometry/Editor/Editor.js
 ../src/Map/Map.js
 ../src/Map/Map.Animation.js
