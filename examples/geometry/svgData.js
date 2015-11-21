@@ -187,7 +187,7 @@ SvgData = {
         var marker2 = new maptalks.Marker(coordinate2);
         //创建点的坐标对象
         var coordinate3 = new maptalks.Coordinate(121.47804744964641,31.2473653075601);
-        var marker3 = new maptalks.Marker(coordinate2);
+        var marker3 = new maptalks.Marker(coordinate3);
         var markers = [marker1,marker2,marker3];
         //设置矢量配置
         var icon = {
