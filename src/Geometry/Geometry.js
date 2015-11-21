@@ -60,7 +60,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     getId:function() {
-        return this.id;
+        return this._id;
     },
 
     /**
@@ -70,7 +70,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      */
     setId:function(id) {
         var oldId = this.getId();
-        this.id = id;
+        this._id = id;
         //FIXME _idchanged没有被图层监听, layer.getGeometryById会出现bug
         this._fireEvent('_idchanged',{'oldId':oldId,'newId':id});
         return this;
@@ -294,7 +294,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     copy:function() {
         var json = this.toJSON();
         //FIXME symbol信息没有被拷贝过来
-        var ret = Z.GeoJSON.fromGeoJSON(json);
+        var ret = Z.Geometry.fromJSON(json);
         return ret;
     },
 
@@ -324,8 +324,8 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     },
 
     /**
-     * 按照GeoJSON规范生成GeoJSON Feature 类型对象
-     * @param  {[Object} opts 输出配置
+     * 按照GeoJSON规范生成GeoJSON Feature 类型对象, GeoJSON Feature中不包含symbol, options等完整的图形属性. 完整属性输出请调用toProfile方法
+     * @param  {Object} opts 输出配置
      * @returns {Object}      GeoJSON Feature
      * @expose
      */
@@ -337,7 +337,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
             'type':'Feature',
             'geometry':null
         };
-        if (opts['geometry'] === undefined || opts['geometry']) {
+        if (Z.Util.isNil(opts['geometry']) || opts['geometry']) {
             var geoJSON = this._exportGeoJSONGeometry(opts);
             feature['geometry']=geoJSON;
         }
@@ -351,7 +351,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
             feature['crs'] = crs;
         }
         //opts没有设定properties或者设定的properties值为true,则导出properties
-        if (opts['properties'] === undefined || opts['properties']) {
+        if (Z.Util.isNil(opts['properties']) || opts['properties']) {
             var geoProperties = this.getProperties();
             if (geoProperties) {
                 for (var p in geoProperties) {
@@ -363,6 +363,63 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
         feature['properties'] = properties;
         return feature;
+    },
+
+    /**
+     * 获得Geometry的Profile
+     * @return {[type]} [description]
+     */
+    toJSON:function(options) {
+        //一个Graphic的profile
+        /*{
+            //graphic包含的feature
+            "feature": {
+                  "type": "Feature",
+                  "id" : "point1",
+                  "geometry": {"type": "Point", "coordinates": [102.0, 0.5]},
+                  "properties": {"prop0": "value0"}
+            },
+            //构造参数
+            "options":{
+                "draggable" : true
+            },
+            //symbol
+            "symbol":{
+                "markerFile" : "http://foo.com/icon.png"
+            },
+            //infowindow设置
+            "infowindow" : {
+                "options" : {
+                    "style" : "black"
+                },
+                "title" : "this is a infowindow title",
+                "content" : "this is a infowindow content"
+            }
+            //因为响应函数无法被序列化, 所以menu, 事件listener等无法被包含在graphic中
+        }*/
+        if (!options) {
+            options = {};
+        }
+        var json = {
+            "feature" : this.toGeoJSON(options)
+        };
+        if (Z.Util.isNil(options['options']) || options['options']) {
+            json['options'] = this.config();
+        }
+        if (Z.Util.isNil(options['symbol']) || options['symbol']) {
+            if (this.getSymbol()) {
+                json['symbol'] = this.getSymbol();
+            }
+        }
+        if (Z.Util.isNil(options['infoWindow']) || options['infoWindow']) {
+            if (this.getInfoWindow) {
+                var infowindow = this.getInfoWindow();
+                if (infowindow) {
+                    json['infoWindow'] = infowindow.getOptions();
+                }
+            }
+        }
+        return json;
     },
 
     /**
@@ -661,3 +718,18 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     }
 
 });
+
+Z.Geometry.fromJSON = function(json) {
+    var feature = json['feature'];
+    var geometry = Z.GeoJSON.fromGeoJSON(feature);
+    if (json['options']) {
+        geometry.config(json['options']);
+    }
+    if (json['symbol']) {
+        geometry.setSymbol(json['symbol']);
+    }
+    if (json['infoWindow']) {
+        geometry.setInfoWindow(json['infoWindow']);
+    }
+    return geometry;
+};

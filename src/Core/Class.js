@@ -93,13 +93,15 @@ Z.Class.extend = function (props) {
             return this.options;
         } else {
             for (var i in conf) {
-                this.options[i] = conf[i];
-                //handler
-                if (this[i] && (this[i] instanceof Z.Handler)) {
-                    if (conf[i]) {
-                        this[i].enable();
-                    } else {
-                        this[i].disable();
+                if (conf.hasOwnProperty(i)) {
+                     this.options[i] = conf[i];
+                    //handler
+                    if (this[i] && (this[i] instanceof Z.Handler)) {
+                        if (conf[i]) {
+                            this[i].enable();
+                        } else {
+                            this[i].disable();
+                        }
                     }
                 }
             }

@@ -68,6 +68,7 @@
 ../src/Map/Map.Snap.js
 ../src/Map/Map.CartoCSS.js
 ../src/Map/Map.FullScreen.js
+../src/Map/Map.Profile.js
 ../src/Map/Handler/Map.Drag.js
 ../src/Map/Handler/Map.DoubleClickZoom.js
 ../src/Map/Handler/Map.ScrollWheelZoom.js
