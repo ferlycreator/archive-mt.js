@@ -197,7 +197,7 @@ Z.Editor=Z.Class.extend({
                 if (opts.onDown) {
                     opts.onDown.call(this);
                 }
-                geometry._forceStartDrag();
+                geometry['draggable']._startDrag();
             },
             onMove:function(handleDomOffset) {
                 if (opts.onMove) {
@@ -417,7 +417,7 @@ Z.Editor=Z.Class.extend({
             tip:"拖动以移动图形",
             onDown:function() {
                 rHandle.style.display='none';
-                geometry._forceStartDrag();
+                geometry['draggable']._startDrag();
             },
             onMove:function(handleDomOffset) {
                 // nwHandle.onRefresh();
@@ -559,7 +559,7 @@ Z.Editor=Z.Class.extend({
                     for (var i=0,len=vertexHandles.length;i<len;i++) {
                         vertexHandles[i].style.display = "none";
                     }
-                    geometry._forceStartDrag();
+                    geometry['draggable']._startDrag();
                 },
                 onMove:function(handleDomOffset) {
                     this.fireEditEvent('positionchanging');
