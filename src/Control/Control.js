@@ -32,7 +32,7 @@ Z['Control'] = Z.Control = Z.Class.extend({
      * @cfg {Object} options 组件配置
      */
     options:{
-        'position' : this['top_left']
+        'position' : {'top': '40','left': '60'}
     },
 
     /**
