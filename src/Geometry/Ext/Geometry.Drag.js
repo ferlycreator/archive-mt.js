@@ -23,6 +23,10 @@ Z.Geometry.Drag = Z.Handler.extend({
         if (!map) {
             return this;
         }
+        var parent = this.target._getParent();
+        if (parent) {
+            return this;
+        }
         Z.DomUtil.addStyle(map._containerDOM,'cursor', 'move');
         if (map['draggable']) {
             map['draggable'].disable();
