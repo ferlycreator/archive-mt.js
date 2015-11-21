@@ -1,4 +1,5 @@
 //package internally used
+"use strict";
 /**
  * @ignore
  */
