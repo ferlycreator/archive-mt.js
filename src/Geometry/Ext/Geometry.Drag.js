@@ -97,6 +97,9 @@ Z.Geometry.include({
      * @expose
      */
     isDragging: function() {
+        if (this._getParent()) {
+            return this._getParent().isDragging();
+        }
         if (this['draggable']) {
             return this['draggable'].isDragging();
         }
