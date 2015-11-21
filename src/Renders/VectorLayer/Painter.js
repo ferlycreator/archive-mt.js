@@ -42,9 +42,9 @@ Z.Painter = Z.Class.extend({
             return;
         }
         for (var i = this.symbolizers.length - 1; i >= 0; i--) {
-            this.symbolizers[i].symbolize.apply(this.symbolizers[i], contexts);
+            this.symbolizers[i].symbolize.apply(this.symbolizers[i], contexts.concat(this._registerEvents, this));
         }
-        this._registerEvents();
+        // this._registerEvents();
         this._painted = true;
     },
 

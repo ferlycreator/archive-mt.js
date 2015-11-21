@@ -22,6 +22,16 @@ Z.Symbolizer = Z.Class.extend({
         } else {
             this.svg.apply(this, arguments);
         }
+        //ugly codes.
+        //因为shieldMarker svg需要等待图片加载完成后才生成 svg dom
+        //所以需要把registerevents传递到ShieldMarkerSymbolizer中回调调用
+        if (layer.isCanvasRender() || !(this instanceof Z.ShieldMarkerSymbolizer )) {
+            //结束后的回调函数
+            if (Z.Util.isFunction(arguments[arguments.length-2])) {
+                var fn = arguments[arguments.length-2];
+                fn.call(arguments[arguments.length-1]);
+            }
+        }
     },
 
     getMap:function() {
