@@ -527,6 +527,10 @@ Z.Editor=Z.Class.extend({
                 lonlats.splice(hit,1);
                 vertexHandles.splice(hit,1);
 
+                for (var i = 0; i < vertexHandles.length; i++) {
+                    vertexHandles[i]['maptalks--editor-vertex-index'] = i;
+                }
+
                 Z.DomUtil.removeDomNode(ringhandle);
                 geometry._updateCache();
                 geometry._onShapeChanged();
