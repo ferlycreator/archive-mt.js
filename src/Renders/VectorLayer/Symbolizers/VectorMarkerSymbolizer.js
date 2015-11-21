@@ -103,7 +103,7 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
         var markerType = style['markerType'].toLowerCase();
         var width = style['markerWidth'],
             height = style['markerHeight'];
-        if (markerType  === 'bar' || markerType  === 'pie') {
+        if (markerType  === 'bar' || markerType  === 'pie' || markerType  === 'pin') {
             return new Z.Extent(dxdy.add(new Z.Point(-width/2,-height)), dxdy.add(new Z.Point(width/2,0)));
         } else {
             return new Z.Extent(dxdy.add(new Z.Point(-width/2,-height/2)), dxdy.add(new Z.Point(width/2,height/2)));
