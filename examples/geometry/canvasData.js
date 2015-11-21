@@ -184,10 +184,10 @@ CanvasData = {
         //创建点的坐标对象
         var coordinate2 = new maptalks.Coordinate(121.5101910424796,31.250850780020492);
         //创建点对象
-        var marker2 = new maptalks.Marker(coordinate1);
+        var marker2 = new maptalks.Marker(coordinate2);
         //创建点的坐标对象
         var coordinate3 = new maptalks.Coordinate(121.50731571441578,31.248172481050972);
-        var marker3 = new maptalks.Marker(coordinate1);
+        var marker3 = new maptalks.Marker(coordinate3);
         var markers = [marker1,marker2,marker3];
         //设置矢量配置
         var icon = {
