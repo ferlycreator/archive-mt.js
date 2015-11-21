@@ -338,7 +338,7 @@ Z.Util = {
      * @return {Boolean} true|false
      */
     isString:function(_str) {
-        if (_str === null || _str === undefined) {return false;}
+        if (Z.Util.isNil(_str)) {return false;}
         return typeof _str == 'string' || (_str.constructor!==null && _str.constructor == String);
     },
 

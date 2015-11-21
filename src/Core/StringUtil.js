@@ -118,7 +118,7 @@ Z.StringUtil = {
         }
         return str.replace(Z.StringUtil._contentExpRe, function (str, key) {
             var value = props[key];
-            if (value === undefined) {
+            if (Z.Util.isNil(value)) {
                 return str;
             }
             return value;

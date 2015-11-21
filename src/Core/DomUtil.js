@@ -447,7 +447,7 @@ Z.DomUtil = {
      * @param {String} name class名称
      */
     setClass: function (el, name) {
-        if (el.className.baseVal === undefined) {
+        if (Z.Util.isNil(el.className.baseVal)) {
             el.className = name;
         } else {
             el.className.baseVal = name;
@@ -460,7 +460,7 @@ Z.DomUtil = {
      * @retrun {String} class字符串
      */
     getClass: function (el) {
-        return el.className.baseVal === undefined ? el.className : el.className.baseVal;
+        return Z.Util.isNil(el.className.baseVal) ? el.className : el.className.baseVal;
     },
 
     /**
