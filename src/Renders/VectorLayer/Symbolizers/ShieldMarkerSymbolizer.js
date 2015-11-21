@@ -28,20 +28,25 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
         this.strokeAndFill = this.translateStrokeAndFill(this.style);
         var props = this.geometry.getProperties();
         this.textContent = Z.StringUtil.content(this.style['shieldName'], props);
-        this.textSize = Z.StringUtil.stringLength(this.textContent,this.style['textFaceName'],this.style['textSize']);
+        this.textDesc = Z.StringUtil.splitTextToRow(this.textContent, this.style);
+        // this.textSize = Z.StringUtil.stringLength(this.textContent,this.style['textFaceName'],this.style['textSize']);
         this.shieldFileWidth = 0;
         this.shieldFileHeight = 0;
     },
 
-    svg:function(container, vectorcontainer, zIndex, _container, _vectorcontainer) {
-        if (this.symbol['shieldFile']) {
+    svg:function(container, vectorcontainer, zIndex, _container, _vectorcontainer, callback, context) {
+        if (!this.shieldFile) {
             var me = this;
             var img = new Image();
             var svgContainer = _vectorcontainer || vectorcontainer;
             img.onload=function() {
                 me.shieldFileWidth = this.width;
                 me.shieldFileHeight = this.height;
+                me.shieldFile = this;
                 me._svgMarkers(svgContainer,zIndex);
+                if (callback) {
+                    callback.call(context);
+                }
             };
             img.src=this.symbol['shieldFile'];
         } else {
@@ -74,7 +79,7 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
         this.shieldFileHeight = img.height;
         for (var i = 0, len=cookedPoints.length;i<len;i++) {
             var pt = cookedPoints[i];
-            Z.Canvas.shield(ctx, pt, img, this.textContent, this.textSize, style);
+            Z.Canvas.shield(ctx, pt, img, this.textContent, this.textDesc, style);
         }
     },
 
@@ -92,7 +97,7 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
     getMarkerExtent:function() {
         var dxdy = this.getDxDy(),
             style = this.style,
-            size = this.textSize;
+            size = this.textDesc['size'];
         var fileExtent = new Z.Extent(dxdy.add(new Z.Point(-this.shieldFileWidth/2, - this.shieldFileHeight/2)),
                     dxdy.add(new Z.Point(this.shieldFileWidth/2, this.shieldFileHeight/2)));
         var textDxDy = new Z.Point(this.style['textDx'], this.style['textDy']);
@@ -147,8 +152,9 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
             svgGroup.appendChild(svgImage);
         }
         var textStyle = this.style;
-        var svgText = Z.SVG.text(this.textContent, textStyle, this.textSize);
-        Z.SVG.updateTextStyle(svgText, textStyle, this.textSize);
+        var textSize = this.textDesc['size'];
+        var svgText = Z.SVG.text(this.textContent, textStyle, textSize);
+        Z.SVG.updateTextStyle(svgText, textStyle, textSize);
         var strokeAndFill = this.translateStrokeAndFill(textStyle);
         Z.SVG.updateShapeStyle(svgText, strokeAndFill['stroke'], strokeAndFill['fill']);
         this._offsetMarker(svgText, new Z.Point(style['textDx'], style['textDy']));

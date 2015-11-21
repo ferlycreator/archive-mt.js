@@ -527,6 +527,7 @@ Z.Editor=Z.Class.extend({
                 lonlats.splice(hit,1);
                 vertexHandles.splice(hit,1);
 
+                //刷新handler上的多边形顶点序号
                 for (var i = 0; i < vertexHandles.length; i++) {
                     vertexHandles[i]['maptalks--editor-vertex-index'] = i;
                 }

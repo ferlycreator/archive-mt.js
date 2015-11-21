@@ -20,7 +20,7 @@ Z.PointSymbolizer=Z.Symbolizer.extend({
         this.renderPoints = this._getRenderPoints();
         var layer = this.geometry.getLayer();
         if (!layer.isCanvasRender()) {
-            this.symbolize();
+            this.symbolize.apply(this,layer._getRender().getPaintContext());
         }
     },
 

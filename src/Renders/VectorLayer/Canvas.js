@@ -170,12 +170,12 @@ Z.Canvas = {
     },
 
 
-    shield: function (ctx, point, img, text, textSize, style) {
+    shield: function (ctx, point, img, text, textDesc, style) {
         var width = img.width,
             height = img.height,
             imgPos = point.substract(new Z.Point(width/2, height/2));
         Z.Canvas.image(ctx, imgPos, img, width, height);
-        Z.Canvas.text(ctx, text, point, style, textSize);
+        Z.Canvas.text(ctx, text, point, style, textDesc);
     },
 
     _path:function(context, points, lineDashArray) {

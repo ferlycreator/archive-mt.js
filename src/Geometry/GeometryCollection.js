@@ -35,6 +35,7 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
             for (var i = geometries.length - 1; i >= 0; i--) {
                 geometries[i]._initOptions(this.options);
                 geometries[i]._setParent(this);
+                geometries[i].setSymbol(this.getSymbol());
             }
         }
         this._geometries = geometries;
