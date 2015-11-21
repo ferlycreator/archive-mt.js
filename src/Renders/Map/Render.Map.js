@@ -80,7 +80,7 @@ Z.render.map.Render = Z.Class.extend({
     },
 
     _getAllLayerToCanvas:function() {
-        var layers = this.map._getAllLayers(function(layer) {
+        var layers = this.map._getLayers(function(layer) {
             if (layer.isCanvasRender()) {
                 return true;
             }

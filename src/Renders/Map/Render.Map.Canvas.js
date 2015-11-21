@@ -29,7 +29,7 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
     render:function() {
         this.resetContainer();
         var map = this.map;
-        var layers = map._getAllLayers();
+        var layers = map._getLayers();
         for (var i = 0, len=layers.length; i < len; i++) {
             var render = layers[i]._getRender();
             render.rendLayer();

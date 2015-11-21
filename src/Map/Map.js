@@ -797,16 +797,17 @@ Z['Map']=Z.Map=Z.Class.extend({
             }
         }
         if (this._baseTileLayer) {this._baseTileLayer.load();}
-        this._eachLayer(loadLayer,this.getAllLayers());
+        this._eachLayer(loadLayer,this.getLayers());
     },
 
     /**
      * 获取所有图层
      * @return {[type]} [description]
      */
-    getAllLayers:function() {
-        return this._getAllLayers(function(layer) {
-            if (layer === this._baseTileLayer || layer.getId().indexOf(Z.internalLayerPrefix) === -1) {
+    getLayers:function() {
+        return this._getLayers(function(layer) {
+            //layer.getId().indexOf(Z.internalLayerPrefix)表示是内部图层
+            if (layer === this._baseTileLayer || layer.getId().indexOf(Z.internalLayerPrefix) >= 0) {
                 return false;
             }
             return true;
@@ -818,7 +819,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @param  {fn} filter 过滤函数
      * @return {[Layer]}        符合过滤条件的图层数组
      */
-    _getAllLayers:function(filter) {
+    _getLayers:function(filter) {
         //TODO 可视化图层
         var layers = [this._baseTileLayer].concat(this._tileLayers).concat(this._dynLayers)
         .concat(this._canvasLayers)
