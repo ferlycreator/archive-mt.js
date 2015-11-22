@@ -12,6 +12,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         'errorTileUrl':Z.prefix+'images/error.png',
         'urlTemplate':Z.prefix+'images/blank.png',
         'subdomains':[''],
+        'rendWhenPanning':false,
         //是否检查
         'showOnTileLoadComplete':true,
         'tileInfo':'web-mercator',
