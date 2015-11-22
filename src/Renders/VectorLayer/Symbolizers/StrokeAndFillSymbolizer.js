@@ -76,7 +76,7 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
     refresh:function() {
         var layer = this.geometry.getLayer();
         if (!layer.isCanvasRender()) {
-            this.symbolize();
+            this.symbolize.apply(this,layer._getRender().getPaintContext());
         }
     },
 

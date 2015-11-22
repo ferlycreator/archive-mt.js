@@ -7,6 +7,8 @@ Z.Geometry.mergeOptions({
 });
 
 Z.Geometry.Drag = Z.Handler.extend({
+    dragStageLayerId : Z.internalLayerPrefix+'_drag_stage',
+
     addHooks: function () {
         this.target.on('mousedown', this._startDrag, this);
     },
@@ -18,13 +20,17 @@ Z.Geometry.Drag = Z.Handler.extend({
      * @param {Boolean} enableMapEvent 是否阻止地图拖动事件 true,阻止
      * @member maptalks.Geometry
      */
-    _startDrag: function() {
+    _startDrag: function(param) {
+        console.log('_startDrag');
         var map = this.target.getMap();
         if (!map) {
             return this;
         }
         var parent = this.target._getParent();
         if (parent) {
+            return this;
+        }
+        if (this.isDragging()) {
             return this;
         }
         Z.DomUtil.addStyle(map._containerDOM,'cursor', 'move');
@@ -35,6 +41,17 @@ Z.Geometry.Drag = Z.Handler.extend({
         map.on('mouseup', this._endDrag, this);
         delete this._preCoordDragged;
         this._isDragging = true;
+
+        this._prepareDragStageLayer();
+        if (this._shadow) {
+            this._shadow.remove();
+        }
+        this._shadow = this.target.copy();
+        this._shadow.setId(null);
+        this.target.hide();
+        this._dragStageLayer.addGeometry(this._shadow);
+
+
         /**
          * 触发geometry的dragstart事件
          * @member maptalks.Geometry
@@ -45,6 +62,15 @@ Z.Geometry.Drag = Z.Handler.extend({
         return this;
     },
 
+     _prepareDragStageLayer:function() {
+        var map=this.target.getMap();
+        this._dragStageLayer = map.getLayer(this.dragStageLayerId);
+        if (!this._dragStageLayer) {
+            this._dragStageLayer = new Z.VectorLayer(this.dragStageLayerId);
+            map.addLayer(this._dragStageLayer);
+        }
+    },
+
     _dragging: function(param) {
         var currentCoord = param['coordinate'];
         if(!this._preCoordDragged) {
@@ -52,6 +78,7 @@ Z.Geometry.Drag = Z.Handler.extend({
         }
         var dragOffset = currentCoord.substract(this._preCoordDragged);
         this._preCoordDragged = currentCoord;
+        this._shadow.translate(dragOffset);
         this.target.translate(dragOffset);
         /**
          * 触发geometry的dragging事件
@@ -66,12 +93,16 @@ Z.Geometry.Drag = Z.Handler.extend({
      * 结束移动Geometry, 退出移动模式
      */
     _endDrag: function(param) {
+        console.log('_endDrag');
         var map = this.target.getMap();
         map.off('mousemove', this._dragging, this);
         map.off('mouseup', this._endDrag, this);
         if (map['draggable']) {
             map['draggable'].enable();
         }
+        this._shadow.remove();
+        delete this._shadow;
+        this.target.show();
         delete this._preCoordDragged;
         this._isDragging = false;
         /**
