@@ -112,6 +112,11 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     getSymbol:function() {
+        if (!this._symbol) {
+            if (this.options['symbol']) {
+                return Z.Util.extend({},this.options['symbol']);
+            }
+        }
         return this._symbol;
     },
 
