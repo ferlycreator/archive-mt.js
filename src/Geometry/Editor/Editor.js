@@ -157,7 +157,7 @@ Z.Editor=Z.Class.extend({
         if (!this.geometry) {
             return;
         }
-
+        this._update();
         this.geometryToEdit.fire(eventName);
     },
 

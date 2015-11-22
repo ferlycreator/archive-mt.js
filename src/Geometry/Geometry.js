@@ -670,7 +670,9 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (painter) {
             painter.repaint();
         }
-        this._fireEvent('shapechanged');
+        if (!this._isEditingOrDragging()) {
+            this._fireEvent('shapechanged');
+        }
     },
 
     _onPositionChanged:function() {
@@ -679,7 +681,9 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (painter) {
             painter.repaint();
         }
-        this._fireEvent('positionchanged');
+        if (!this._isEditingOrDragging()) {
+            this._fireEvent('positionchanged');
+        }
     },
 
     _onSymbolChanged:function() {
