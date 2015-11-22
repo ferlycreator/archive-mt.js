@@ -21,7 +21,6 @@ Z.Geometry.Drag = Z.Handler.extend({
      * @member maptalks.Geometry
      */
     _startDrag: function(param) {
-        console.log('_startDrag');
         var map = this.target.getMap();
         if (!map) {
             return this;
@@ -93,7 +92,6 @@ Z.Geometry.Drag = Z.Handler.extend({
      * 结束移动Geometry, 退出移动模式
      */
     _endDrag: function(param) {
-        console.log('_endDrag');
         var map = this.target.getMap();
         map.off('mousemove', this._dragging, this);
         map.off('mouseup', this._endDrag, this);
