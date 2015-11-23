@@ -71,35 +71,37 @@ Z['Button'] = Z.Button = Z.Class.extend({
     },
 
     _createDropMenu: function(_parentDom, options, tag) {
+        function addMenuDropEvent(dropdownMenu, trigger, tag) {
+            if(trigger === 'click') {
+                Z.DomUtil.on(_parentDom, 'click', function() {
+                    Z.DomUtil.setStyle(dropdownMenu, 'display: inline-block');
+                }, this);
+                Z.DomUtil.on(dropdownMenu, 'mouseover', function() {
+                    Z.DomUtil.setStyle(dropdownMenu, 'display: inline-block');
+                }, this);
+            } else {
+                Z.DomUtil.on(_parentDom, 'mouseover', function() {
+                    Z.DomUtil.setStyle(dropdownMenu, 'display: inline-block');
+                }, this);
+            }
+            Z.DomUtil.on(dropdownMenu, 'mouseout', function() {
+                Z.DomUtil.setStyle(dropdownMenu, 'display: none');
+            }, this);
+//                if(tag) {
+//                    Z.DomUtil.on(_parentDom, 'mouseout', function() {
+//                        Z.DomUtil.setStyle(dropdownMenu, 'display: none');
+//                    }, this);
+//                }
+        }
         if(options['children'] && options['children'].length>0) {
             var dropdownMenu = Z.DomUtil.createElOn('ul', 'display: none;');
             var menuClass = this._getMenuClass(options, tag);
             Z.DomUtil.addClass(dropdownMenu, menuClass);
 
             var trigger = options['trigger'];
-            addMenuDropEvent(trigger, tag);
-            function addMenuDropEvent(trigger, tag) {
-                if(trigger === 'click') {
-                    Z.DomUtil.on(_parentDom, 'click', function() {
-                        Z.DomUtil.setStyle(dropdownMenu, 'display: inline-block');
-                    }, this);
-                    Z.DomUtil.on(dropdownMenu, 'mouseover', function() {
-                        Z.DomUtil.setStyle(dropdownMenu, 'display: inline-block');
-                    }, this);
-                } else {
-                    Z.DomUtil.on(_parentDom, 'mouseover', function() {
-                        Z.DomUtil.setStyle(dropdownMenu, 'display: inline-block');
-                    }, this);
-                }
-                Z.DomUtil.on(dropdownMenu, 'mouseout', function() {
-                    Z.DomUtil.setStyle(dropdownMenu, 'display: none');
-                }, this);
-//                if(tag) {
-//                    Z.DomUtil.on(_parentDom, 'mouseout', function() {
-//                        Z.DomUtil.setStyle(dropdownMenu, 'display: none');
-//                    }, this);
-//                }
-            }
+
+            addMenuDropEvent(dropdownMenu,trigger, tag);
+
             //构造下拉菜单
             var items = options['children'];
             if(items&&items.length>0) {
