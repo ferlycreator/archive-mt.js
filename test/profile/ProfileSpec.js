@@ -144,6 +144,37 @@ describe('#Map Profile', function () {
             expect(profile.layers[2]).to.be.eql(vectorLayer2.toJSON());
         });
 
+        it('get map from various profile',function() {
+            map.setBaseTileLayer(tile);
+            var tile2 = new maptalks.TileLayer('road',{
+                urlTemplate:"http://t{s}.tianditu.com/DataServer?T=cva_w&x={x}&y={y}&l={z}",
+                subdomains:['1','2','3','4','5'],
+                opacity:0.6
+            });
+            map.addLayer(tile2);
+            var vectorLayer = new Z.VectorLayer("vector-canvas",{"render":"canvas"});
+            var geometries = genAllTypeGeometries();
+            vectorLayer.addGeometry(geometries);
+            var vectorLayer2 = new Z.VectorLayer("vector");
+            vectorLayer2.addGeometry(genAllTypeGeometries());
+            map.addLayer([vectorLayer, vectorLayer2]);
+
+            var profile = map.toJSON();
+            var container2 = document.createElement('div');
+            container2.style.width = '800px';
+            container2.style.height = '600px';
+            document.body.appendChild(container2);
+            var profileMap = Z.Map.fromJSON(container2, profile);
+
+            expect(profileMap).to.be.ok();
+            expect(profileMap.getBaseTileLayer()).to.be.ok();
+            var layers = profileMap.getLayers();
+            expect(layers).to.have.length(3);
+            expect(layers[0].toJSON()).to.be.eql(tile2.toJSON());
+            expect(layers[1].toJSON()).to.be.eql(vectorLayer.toJSON());
+            expect(layers[2].toJSON()).to.be.eql(vectorLayer2.toJSON());
+        });
+
 
     });
 });

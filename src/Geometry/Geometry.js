@@ -462,7 +462,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (map) {
             return map.getCRS();
         }
-        return this.options['crs'];
+        return this._crs;
     },
 
     /**
@@ -470,7 +470,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @param {CRS} crs CRS
      */
     setCRS:function(crs) {
-        this.options['crs'] = crs;
+        this._crs = crs;
         return this;
     },
 
@@ -483,12 +483,17 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         delete opts['symbol'];
         var id = opts['id'];
         delete opts['id'];
+        var crs = opts['crs'];
+        delete opts['crs'];
         Z.Util.setOptions(this,opts);
         if (symbol) {
             this.setSymbol(symbol);
         }
         if (!Z.Util.isNil(id)) {
             this.setId(id);
+        }
+        if (crs) {
+            this.setCRS(crs);
         }
     },
 
