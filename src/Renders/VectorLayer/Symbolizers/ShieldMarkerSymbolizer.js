@@ -38,7 +38,7 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
         if (!this.shieldFile) {
             var me = this;
             var img = new Image();
-            var svgContainer = (_vectorcontainer && _vectorcontainer.appendChild) || vectorcontainer;
+            var svgContainer = (_vectorcontainer && _vectorcontainer.appendChild)?_vectorcontainer:vectorcontainer;
             img.onload=function() {
                 me.shieldFileWidth = this.width;
                 me.shieldFileHeight = this.height;
