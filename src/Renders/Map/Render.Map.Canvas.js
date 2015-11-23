@@ -6,11 +6,16 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
     },
 
     _registerEvents:function() {
-        this.map.on('_moveend _zoomend _resize',function() {
-            this.render();
+        this.map.on('_movestart _baselayerchangestart _baselayerchangeend _baselayerload',function() {
+           delete this._canvasBackgroundImage;
+           this.rend();
         },this);
-        this.map.on('_baselayerload',function() {
-            this.render();
+        this.map.on('_moving', function() {
+            this.rend();
+        },this);
+        this.map.on('_zoomstart',function() {
+            delete this._canvasBackgroundImage;
+            this._clearCanvas();
         },this);
     },
 
@@ -26,14 +31,26 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
         return this._canvas;
     },
 
-    render:function() {
-        this.resetContainer();
+    getContainerDomSize:function() {
         var map = this.map;
-        var layers = map._getLayers();
-        for (var i = 0, len=layers.length; i < len; i++) {
-            var render = layers[i]._getRender();
-            render.rendLayer();
-        }
+        if (!map._containerDOM) {return null;}
+        var _containerDOM = map._containerDOM;
+        return {
+            width: _containerDOM.width,
+            height:_containerDOM.height
+        };
+    },
+
+    updateMapSize:function(mSize) {
+        return;
+    },
+
+    getPanel: function() {
+        return;
+    },
+
+    rend:function() {
+        this._rend();
     },
 
     /**
@@ -42,36 +59,39 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
      * @return {this | Point}
      */
     offsetPlatform:function(offset) {
-        if (!offset) {
-            return Z.DomUtil.offsetDom(this._panels.mapPlatform);
-        } else {
-            var domOffset = Z.DomUtil.offsetDom(this._panels.mapPlatform);
-            Z.DomUtil.offsetDom(this._panels.mapPlatform, domOffset.add(offset));
-            return this;
-        }
+        //there is nothing to do
+        return this;
     },
 
     resetContainer:function() {
-        var containerOffset = this.map.offsetPlatform();
-        this._canvas.style.left=(-containerOffset['left'])+"px";
-        this._canvas.style.top=(-containerOffset['top'])+"px";
-    },
-
-    insertBackground:function() {
-
-    },
-
-    /**
-     * 移除背景Dom对象
-     */
-    removeBackGroundDOM:function() {
+        return this;
     },
 
     showOverlayLayers:function() {
-        this.render();
+        return this;
     },
 
     hideOverlayLayers:function() {
-        this.render();
+        return this;
+    },
+
+    /**
+     * [createVectorPaper description]
+     * @return {[type]} [description]
+     */
+    getSvgPaper: function(){
+        return null;
+    },
+
+    initContainer:function() {
+        return this;
+    },
+
+    _createCanvas:function() {
+        this._canvas = this.map._containerDOM;
+        this._context = this._canvas.getContext('2d');
+        if (Z.Browser.retina) {
+            this._context.scale(2, 2);
+        }
     }
 });
