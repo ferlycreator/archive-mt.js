@@ -158,7 +158,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
      * @return {Boolean} true/false
      */
     isVisible:function() {
-        return this.options['visible'];
+        return this.options['visible'] || (Z.Util.isNumber(this.options['opacity']) && this.options['opacity']<=0);
     },
 
     remove:function() {

@@ -255,6 +255,10 @@ Z.render.tilelayer.Dom.prototype = {
                 onloadFn();
             }
         };
+        var opacity = this._layer.config()['opacity'];
+        if (!Z.Util.isNil(opacity) && opacity < 1) {
+            Z.DomUtil.setOpacity(tileImage, opacity);
+        }
         tileImage.src=url;
         return tileImage;
     },
