@@ -77,7 +77,8 @@ Z.Map.include({
             options = {};
         }
         var profile = {
-            "version":this["PROFILE_VERSION"]
+            "version":this["PROFILE_VERSION"],
+            "extent" : this.getExtent()
         };
         if (Z.Util.isNil(options['options']) || options['options']) {
             profile['options'] = this.config();
