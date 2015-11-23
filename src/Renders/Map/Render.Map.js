@@ -87,6 +87,9 @@ Z.render.map.Render = Z.Class.extend({
      * 基于Canvas的渲染方法, layers总定义了要渲染的图层
      */
     _rend:function() {
+        if (!Z.Browser.Canvas) {
+            return;
+        }
         if (!this._canvas) {
             this._createCanvas();
         }

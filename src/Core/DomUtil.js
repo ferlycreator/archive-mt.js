@@ -352,7 +352,7 @@ Z.DomUtil = {
      */
     setOpacity:function(dom, opacity) {
         if (Z.Browser.ielt9) {
-            dom.filters.alpha.opacity=opacity*100;
+            dom.style.filter="progid:DXImageTransform.Microsoft.Alpha(Opacity="+opacity*100+")";
         } else {
             dom.style.opacity = opacity;
         }
