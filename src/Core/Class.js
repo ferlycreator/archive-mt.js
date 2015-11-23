@@ -90,7 +90,13 @@ Z.Class.extend = function (props) {
     // config to set option and enable/disable handler
     proto.config = function(conf) {
         if (!conf) {
-            return this.options;
+            var config = {};
+            for (var p in this.options) {
+                if (this.options.hasOwnProperty(p)) {
+                    config[p] = this.options[p];
+                }
+            }
+            return config;
         } else {
             for (var i in conf) {
                 if (conf.hasOwnProperty(i)) {

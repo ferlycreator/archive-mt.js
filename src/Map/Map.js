@@ -823,7 +823,6 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {[Layer]}        符合过滤条件的图层数组
      */
     _getLayers:function(filter) {
-        //TODO 可视化图层
         var layers = [this._baseTileLayer].concat(this._tileLayers).concat(this._dynLayers)
         .concat(this._canvasLayers)
         .concat(this._svgLayers);

@@ -60,7 +60,7 @@
                 "render" : "canvas"
             },
             //矢量图层中的图形被组织为graphic集合, 一个graphic包含了feature, 构造options, symbol, infowindow等信息
-            "graphics" : [
+            "geometries" : [
                 //一个Graphic的profile
                 {
                     //graphic包含的feature

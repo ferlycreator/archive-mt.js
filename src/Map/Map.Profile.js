@@ -36,8 +36,37 @@ Z.Layer.include({
     }
 });
 
+Z.Layer.fromJSON=function(layerJSON) {
+    if (!layerJSON) {return null;}
+    var layerType;
+    if (layerJSON['type'] === 'vector') {
+        layerType = Z.VectorLayer;
+    } else if (layerJSON['type'] === 'dynamic') {
+        //DynamicLayer is also a TileLayer, so this should be before TileLayer
+        layerType = Z.DynamicLayer;
+    } else if (layerJSON['type'] === 'tile') {
+        layerType = Z.TileLayer;
+    }
+    if (!layerType) {
+        throw new Error("unsupported layer type:"+layerJSON['type']);
+    }
+    var layer = new layerType(layerJSON['id'], layerJSON['options']);
+    if (layer instanceof Z.VectorLayer) {
+        var geoJSONs = layerJSON['geometries'];
+        var geometries = [];
+        for (var i = 0; i < geoJSONs.length; i++) {
+            var geo = Z.Geometry.fromJSON(geoJSONs[i]);
+            if (geo) {
+                geometries.push(geo);
+            }
+        }
+        layer.addGeometry(geometries);
+    }
+    return layer;
+};
+
 Z.Map.include({
-    "PROFILE_VERSION" : "1.0.0",
+    "PROFILE_VERSION" : "1.0",
     /**
      * 返回地图的JSON
      * @param  {[type]} options [description]
@@ -50,6 +79,11 @@ Z.Map.include({
         var profile = {
             "version":this["PROFILE_VERSION"]
         };
+        if (Z.Util.isNil(options['options']) || options['options']) {
+            profile['options'] = this.config();
+            profile["options"]["center"] = this.getCenter();
+            profile["options"]["zoom"] = this.getZoom();
+        }
         var baseTileLayer = this.getBaseTileLayer();
         if (Z.Util.isNil(options['baseTileLayer']) || options['baseTileLayer']) {
             profile['baseTileLayer'] = baseTileLayer.toJSON(options['baseTileLayer']);
@@ -75,3 +109,20 @@ Z.Map.include({
         return profile;
     }
 });
+
+Z.Map.fromJSON=function(container, mapJSON) {
+    if (!container || !mapJSON) {
+        return null;
+    }
+    var map = new Z.Map(container, mapJSON["options"]);
+    var baseTileLayer = Z.Layer.fromJSON(mapJSON["baseTileLayer"]);
+    map.setBaseTileLayer(baseTileLayer);
+    var layers = [];
+    var layerJSONs = mapJSON["layers"];
+    for (var i = 0; i < layerJSONs.length; i++) {
+        var layer = Z.Layer.fromJSON(layerJSONs[i]);
+        layers.push(layer);
+    }
+    map.addLayer(layers);
+    return map;
+};
