@@ -29,11 +29,13 @@ Z.Map.include({
 
 
     _checkZoomLevel:function(nextZoomLevel) {
-        if (nextZoomLevel < this._minZoom){
-            nextZoomLevel = this._minZoom;
+        var maxZoom = this.getMaxZoom(),
+            minZoom = this.getMinZoom();
+        if (nextZoomLevel < minZoom){
+            nextZoomLevel = minZoom;
         }
-        if (nextZoomLevel > this._maxZoom) {
-            nextZoomLevel = this._maxZoom;
+        if (nextZoomLevel > maxZoom) {
+            nextZoomLevel = maxZoom;
         }
         return nextZoomLevel;
     },
