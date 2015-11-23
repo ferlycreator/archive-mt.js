@@ -12,17 +12,17 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
     _registerEvents:function() {
         var map = this.getMap();
         map.on('_moveend _resize _zoomend',this.rend,this);
-        this._onMovingRending = Z.Util.throttle(this.rend,200,this);
+        this._onMapMoving = Z.Util.throttle(this.rend,200,this);
         if (this._layer.options['rendWhenPanning']) {
-            map.on('_moving',this._onMovingRending,this);
+            map.on('_moving',this._onMapMoving,this);
         }
     },
 
     remove:function() {
         var map = this.getMap();
         map.off('_moveend _resize _zoomend',this.rend,this);
-        if (this._onMovingRending) {
-            map.off('_moving',this._onMovingRending,this);
+        if (this._onMapMoving) {
+            map.off('_moving',this._onMapMoving,this);
         }
         this._requestMapToRend();
     },

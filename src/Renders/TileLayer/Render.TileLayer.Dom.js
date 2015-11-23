@@ -12,7 +12,9 @@ Z.render.tilelayer.Dom.prototype = {
 
     _registerEvents:function() {
         var map = this._layer.getMap();
-        map.on('_moving _moveend _resize _zoomend _zoomstart',this._onMapEvent,this);
+        map.on('_moveend _resize _zoomend _zoomstart',this._onMapEvent,this);
+        this._onMapMoving = Z.Util.throttle(this._onMapEvent,200,this);
+        map.on('_moving', this._onMapMoving,this);
     },
 
     _onMapEvent:function(param) {
@@ -28,7 +30,10 @@ Z.render.tilelayer.Dom.prototype = {
 
     remove:function() {
         var map = this._layer.getMap();
-        map.off('_moving _moveend _resize _zoomend _zoomstart',this._onMapEvent,this);
+        map.off('_moveend _resize _zoomend _zoomstart',this._onMapEvent,this);
+        if (this._onMapMoving) {
+            map.off('_moving', this._onMapMoving,this);
+        }
         if (this._tileContainer) {
             Z.DomUtil.removeDomNode(this._tileContainer);
         }
