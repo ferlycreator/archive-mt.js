@@ -264,7 +264,8 @@ Z.render.tilelayer.Dom.prototype = {
         if (!Z.Util.isNil(opacity) && opacity < 1) {
             Z.DomUtil.setOpacity(tileImage, opacity);
         }
-        tileImage.src=url;
+        Z.Util.loadImage(tileImage, url);
+        // tileImage.src=url;
         return tileImage;
     },
 

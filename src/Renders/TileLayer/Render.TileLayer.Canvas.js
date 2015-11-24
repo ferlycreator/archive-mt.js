@@ -45,8 +45,16 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
 
     clear:function() {
         this._tileMap = {};
-        // this._clearContext();
         this._requestMapToRend();
+    },
+
+
+    clearExecutors:function() {
+        clearTimeout(this._loadQueueTimeout);
+    },
+
+    initContainer:function() {
+
     },
 
     rend:function(options) {
@@ -144,8 +152,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
                 tileImage.onload = onTileLoad;
                 tileImage.onabort = onTileError;
                 tileImage.onerror = onTileError;
-                //
-                tileImage.src = tile['url'];
+                Z.Util.loadImage(tileImage, tile['url']);
             }
         }
 
@@ -154,6 +161,10 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
 
 
     _drawTile:function(point, tileImage) {
+        console.log("tile point:",point);
+        if (!point) {
+            return;
+        }
         var tileSize = this._layer._getTileSize();
         var opacity = this._layer.config()['opacity'];
         var isFaded = !Z.Util.isNil(opacity) && opacity < 1;
@@ -175,7 +186,6 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
     _drawTileAndRequest:function(point, tileImage) {
         this._tileToLoadCounter--;
 
-
         this._drawTile(point, tileImage);
 
         var tileSize = this._layer._getTileSize();
@@ -183,9 +193,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         if (viewExtent.isIntersect(new Z.Extent(point, point.add(new Z.Point(tileSize['width'], tileSize['height']))))) {
             this._requestMapToRend();
         }
-
         if (this._tileToLoadCounter === 0) {
-
              this._fireLoadedEvent();
         }
     },
@@ -198,6 +206,10 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         /*var tileSize = this._layer._getTileSize();
         Z.Canvas.clearRect(this._context, point['left'], point['top'], tileSize['width'],tileSize['height']);
         this._requestMapToRend();*/
+        this._tileToLoadCounter--;
+        if (this._tileToLoadCounter === 0) {
+             this._fireLoadedEvent();
+        }
     },
 
     _requestMapToRend:function() {
@@ -208,14 +220,6 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
 
     _fireLoadedEvent:function() {
         this._layer.fire('layerloaded');
-    },
-
-    clearExecutors:function() {
-        //nothing to do
-    },
-
-    initContainer:function() {
-
     }
 
 });
