@@ -43,6 +43,36 @@ Z.Util = {
         return obj.options;
     },
 
+    loadImage:function(img, url) {
+        if (Z.runningInNode) {
+            if (!this._nodeHttp) {
+                this._nodeHttp = require('http');
+            }
+            this._nodeHttp.get(url,
+                function(res) {
+                    var data = new Buffer(parseInt(res.headers['content-length'],10));
+                    var pos = 0;
+                    res.on('data', function(chunk) {
+                      chunk.copy(data, pos);
+                      pos += chunk.length;
+                    });
+                    res.on('end', function () {
+                        var onloadFn = img.onload;
+                        if (onloadFn) {
+                            img.onload = function() {
+                                onloadFn.call(img);
+                            };
+                        }
+                        img.src = data;
+                    });
+                }
+            );
+        } else {
+            img.src=url;
+        }
+        return this;
+    },
+
     fixPNG:function(img) {
 
     },

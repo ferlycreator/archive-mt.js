@@ -491,7 +491,10 @@ Z.DomUtil = {
      * @return {[type]}   [description]
      */
     testCanvasSize: (function() {
-
+        //usually in node
+        if (typeof(document) === 'undefined') {
+            return function(){return true;};
+        }
           /**
            * @type {CanvasRenderingContext2D}
            */

@@ -107,6 +107,14 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     /**
+     * 地图是否采用Canvas渲染
+     * @return {Boolean}
+     */
+    isCanvasRender:function() {
+        return this._render && this._render instanceof Z.render.map.Canvas;
+    },
+
+    /**
      * 判断地图是否加载完毕
      * @return {Boolean} true：加载完毕
      */
@@ -767,14 +775,6 @@ Z['Map']=Z.Map=Z.Class.extend({
 
     _getRender:function() {
         return this._render;
-    },
-
-    /**
-     * 地图是否采用Canvas渲染
-     * @return {Boolean}
-     */
-    isCanvasRender:function() {
-        return this._render && this._render instanceof Z.render.map.Canvas;
     },
 
     _loadAllLayers:function() {

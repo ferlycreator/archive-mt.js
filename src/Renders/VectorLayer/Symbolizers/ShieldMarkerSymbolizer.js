@@ -48,7 +48,8 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
                     callback.call(context);
                 }
             };
-            img.src=this.symbol['shieldFile'];
+            Z.Util.loadImage(img, this.symbol['shieldFile']);
+            //img.src=this.symbol['shieldFile'];
         } else {
             this._svgMarkers(vectorcontainer,zIndex);
         }

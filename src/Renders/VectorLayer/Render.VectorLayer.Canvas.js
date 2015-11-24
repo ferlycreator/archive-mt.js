@@ -128,7 +128,8 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
                             img.onerror = function(){
                                 resolve({/*'url':this.src,'image':img*/});
                             };
-                            img.src = resourceUrls[i];
+                            Z.Util.loadImage(img,  resourceUrls[i]);
+                            // img.src = resourceUrls[i];
                         });
                         promises.push(promise);
                     } else {

@@ -181,6 +181,9 @@ Z.Map.include({
      * @expose
      */
     addControl: function (control) {
+        if (this.isCanvasRender()) {
+            return this;
+        }
         control.addTo(this);
         return this;
     },
@@ -192,6 +195,9 @@ Z.Map.include({
      * @expose
      */
     removeControl: function (control) {
+        if (this.isCanvasRender()) {
+            return this;
+        }
         control.remove();
         return this;
     }

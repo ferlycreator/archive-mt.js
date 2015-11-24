@@ -1,4 +1,4 @@
-if (typeof(window) != 'undefined') {
+if (!Z.runningInNode) {
     (function () {
 
         var ie = 'ActiveXObject' in window,
@@ -144,6 +144,9 @@ if (typeof(window) != 'undefined') {
 
     }());
 } else {
-    Z.Browser = {};
+    //usually in node
+    Z.Browser = {
+        canvas:true
+    };
 }
 

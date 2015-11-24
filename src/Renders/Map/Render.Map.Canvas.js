@@ -34,11 +34,8 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
     getContainerDomSize:function() {
         var map = this.map;
         if (!map._containerDOM) {return null;}
-        var _containerDOM = map._containerDOM;
-        return {
-            width: _containerDOM.width,
-            height:_containerDOM.height
-        };
+        var containerDOM = map._containerDOM;
+        return new Z.Size(containerDOM.width, containerDOM.height);
     },
 
     updateMapSize:function(mSize) {

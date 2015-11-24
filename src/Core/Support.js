@@ -1,4 +1,4 @@
-if (typeof(document) != 'undefined') {
+if (!Z.runningInNode) {
     (function(){
         //解析host地址，插入css和vml定义
         var head= document.getElementsByTagName('head')[0];

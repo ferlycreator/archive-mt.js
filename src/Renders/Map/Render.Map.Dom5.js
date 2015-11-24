@@ -97,10 +97,7 @@ Z.render.map.Dom = Z.render.map.Render.extend({
         var _containerDOM = map._containerDOM;
         var mapWidth = parseInt(_containerDOM.offsetWidth,0);
         var mapHeight = parseInt(_containerDOM.offsetHeight,0);
-        return {
-            width: mapWidth,
-            height:mapHeight
-        };
+        return new Z.Size(mapWidth, mapHeight);
     },
 
     showOverlayLayers:function() {
