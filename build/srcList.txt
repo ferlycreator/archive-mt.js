@@ -46,6 +46,7 @@
 ../src/Geometry/Geometry.Center.js
 ../src/Geometry/Geometry.Poly.js
 ../src/Geometry/Marker.js
+../src/Geometry/Label.js
 ../src/Geometry/Polygon.js
 ../src/Geometry/Polyline.js
 ../src/Geometry/Ellipse.js
