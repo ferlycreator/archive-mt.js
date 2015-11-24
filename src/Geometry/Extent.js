@@ -17,7 +17,7 @@ Z['Extent']= Z.Extent =
     this['xmax'] = null;
     this['ymin'] = null;
     this['ymax'] = null;
-    if (Z.Util.isNil(p1) || Z.Util.isNil(p2)) {
+    if (Z.Util.isNil(p1)) {
         return;
     }
     //构造方法一: 参数都是数字
@@ -31,7 +31,7 @@ Z['Extent']= Z.Extent =
         this['ymax'] = Math.max(p2,p4);
         return;
     } else {
-        //构造方法二: 参数是两个坐标
+         //构造方法二: 参数是两个坐标
         var fieldX = (Z.Util.isNumber(p1['left'])?'left':'x');
         var fieldY = (Z.Util.isNumber(p1['top'])?'top':'y');
         if (Z.Util.isNumber(p1[fieldX]) &&
@@ -52,6 +52,15 @@ Z['Extent']= Z.Extent =
                 this['ymin'] = p1[fieldY];
                 this['ymax'] = p2[fieldY];
             }
+            //构造方法三: 参数为一个对象,包含xmin, xmax, ymin, ymax四个属性
+        } else if (Z.Util.isNumber(p1['xmin']) &&
+                Z.Util.isNumber(p1['xmax']) &&
+                Z.Util.isNumber(p1['ymin']) &&
+                Z.Util.isNumber(p1['ymax']))   {
+                this['xmin'] = p1['xmin'];
+                this['ymin'] = p1['ymin'];
+                this['xmax'] = p1['xmax'];
+                this['ymax'] = p1['ymax'];
         }
     }
 };

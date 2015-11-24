@@ -78,7 +78,7 @@ Z.Map.include({
         }
         var profile = {
             "version":this["PROFILE_VERSION"],
-            "extent" : this.getExtent()
+            "extent" : this.getExtent().toJSON()
         };
         if (Z.Util.isNil(options['options']) || options['options']) {
             profile['options'] = this.config();
@@ -111,19 +111,25 @@ Z.Map.include({
     }
 });
 
-Z.Map.fromJSON=function(container, mapJSON) {
+Z.Map.fromJSON=function(container, mapJSON, options) {
     if (!container || !mapJSON) {
         return null;
+    }
+    if (!options) {
+        options = {};
     }
     var map = new Z.Map(container, mapJSON["options"]);
     var baseTileLayer = Z.Layer.fromJSON(mapJSON["baseTileLayer"]);
     map.setBaseTileLayer(baseTileLayer);
-    var layers = [];
-    var layerJSONs = mapJSON["layers"];
-    for (var i = 0; i < layerJSONs.length; i++) {
-        var layer = Z.Layer.fromJSON(layerJSONs[i]);
-        layers.push(layer);
+    if (Z.Util.isNil(options['layers']) || options['layers']) {
+        var layers = [];
+        var layerJSONs = mapJSON["layers"];
+        for (var i = 0; i < layerJSONs.length; i++) {
+            var layer = Z.Layer.fromJSON(layerJSONs[i]);
+            layers.push(layer);
+        }
+        map.addLayer(layers);
     }
-    map.addLayer(layers);
+
     return map;
 };

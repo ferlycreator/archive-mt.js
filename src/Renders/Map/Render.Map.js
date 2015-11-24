@@ -153,8 +153,15 @@ Z.render.map.Render = Z.Class.extend({
         } else {
             Z.Canvas.disableImageSmoothing(this._context);
         }
+        var canvasImage = layerImage['image'];
+        if (Z.runningInNode) {
+           canvasImage = new Image();
+           canvasImage.src = layerImage['image'].toBuffer();
+        }
         // console.log(layerImage['image'], sx, sy, w, h, dx, dy, w, h, mwidth,mheight);
-        this._context.drawImage(layerImage['image'], sx, sy, w, h, dx, dy, w, h);
+        this._context.drawImage(canvasImage, sx, sy, w, h, dx, dy, w, h);
+
+
     },
 
     _askBaseTileLayerToRend:function() {
@@ -193,8 +200,10 @@ Z.render.map.Render = Z.Class.extend({
 
         canvas.height = r * mapSize['height'];
         canvas.width = r * mapSize['width'];
-        canvas.style.width = mapSize['width']+'px';
-        canvas.style.height = mapSize['height']+'px';
+        if (canvas.style) {
+            canvas.style.width = mapSize['width']+'px';
+            canvas.style.height = mapSize['height']+'px';
+        }
         if (this._context) {
             Z.Canvas.resetContextState(this._context);
         }
