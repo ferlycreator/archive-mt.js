@@ -161,7 +161,6 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
 
 
     _drawTile:function(point, tileImage) {
-        console.log("tile point:",point);
         if (!point) {
             return;
         }
