@@ -66,21 +66,21 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
                 }
                 //面类型
                 Z.Canvas.polygon(ctx,vectorArray,null);
-                Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']);
+                Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']['fill'],strokeAndFill['fill']['fill-opacity']);
             } else if (markerType === 'pin') {
                 for (j = vectorArray.length - 1; j >= 0; j--) {
                     vectorArray[j]._add(point);
                 }
                 Z.Canvas.bezierCurve(ctx,vectorArray,null);
-                Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']);
+                Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']['fill'],strokeAndFill['fill']['fill-opacity']);
             } else if (markerType === 'pie') {
                 var angle = Math.atan(width/2/height)*180/Math.PI;
                 Z.Canvas.sector(ctx, point, height, 90-angle, 90+angle);
-                Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']);
+                Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']['fill'],strokeAndFill['fill']['fill-opacity']);
             } else {
                 //ellipse default
                 Z.Canvas.ellipse(ctx, point, new Z.Size(width/2,height/2));
-                Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']);
+                Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']['fill'],strokeAndFill['fill']['fill-opacity']);
             }
         }
 
