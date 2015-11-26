@@ -44,7 +44,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
     },
 
     remove:function() {
-        this.getMap().off('_zoomend _moveend _resize',this._onMapEvent,this);
+        this.getMap().off('_zoomstart _zoomend _moveend _resize',this._onMapEvent,this);
         this._requestMapToRend();
     },
 
@@ -118,11 +118,11 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
                         var promise = new Z.Promise(function(resolve, reject) {
                             var img = new Image();
                             img.onload = function(){
-                                me._resources.addResource(this.src,this);
+                                me._resources.addResource(url,this);
                                 resolve({/*'url':this.src,'image':img*/});
                             };
                             img.onabort = function(){
-                                me._resources.addResource(this.src,this);
+                                //me._resources.addResource(this.src,this);
                                 resolve({/*'url':this.src,'image':img*/});
                             };
                             img.onerror = function(){
@@ -223,7 +223,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         if (!this.getMap().isBusy()) {
             this._mapRender.rend();
         }
-
+        this._layer.fire('layerloaded');
     }
 });
 

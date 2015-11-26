@@ -73,6 +73,7 @@ Z.render.vectorlayer.Dom.prototype= {
         this._layerContainer.appendChild(this._contexts[0]);
         this._vectorPaper.appendChild(this._contexts[1]);
         delete this._contexts;
+        this._layer.fire('layerloaded');
     },
 
 
@@ -87,6 +88,7 @@ Z.render.vectorlayer.Dom.prototype= {
         this._layerContainer.appendChild(this._contexts[0]);
         this._vectorPaper.appendChild(this._contexts[1]);
         delete this._contexts;
+        this._layer.fire('layerloaded');
     },
 
     getPaintContext:function() {
