@@ -101,8 +101,8 @@ Z['ArcgisTileLayer'] = Z.ArcgisTileLayer = Z.TileLayer.extend({
         var lods = serviceInfo['tileInfo']['lods'];
         var size = lods.length;
 
-        var _minZoomLevel = lods[0]['level'];
-        var _maxZoomLevel = lods[size-1]['level'];
+        var _minZoom = lods[0]['level'];
+        var _maxZoom = lods[size-1]['level'];
 
         var _resolutions = [];
         for (var i=0;i<size;i++) {
@@ -130,8 +130,8 @@ Z['ArcgisTileLayer'] = Z.ArcgisTileLayer = Z.TileLayer.extend({
         var tileInfo = {
             'projection'    : _projection,
             'tileSystem'    : _tileSystem,
-            'minZoomLevel'  : _minZoomLevel,
-            'maxZoomLevel'  : _maxZoomLevel,
+            'minZoom'  : _minZoom,
+            'maxZoom'  : _maxZoom,
             'resolutions'   : _resolutions,
             'fullExtent'    : _fullExtent,
             'tileSize'      : _tileSize

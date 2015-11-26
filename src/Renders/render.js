@@ -14,12 +14,19 @@ Z.render.Canvas=Z.Class.extend({
         if (this._canvas) {
             return;
         }
-        this._canvas = Z.DomUtil.createEl('canvas');
-        this._resizeCanvas();
-        this._context = this._canvas.getContext('2d');
-        /*if (Z.Browser.retina) {
-            this._context.scale(2, 2);
-        }*/
+        if (Z.runningInNode) {
+            var size = this.getMap().getSize();
+            var Canvas = require(global.maptalks_node_canvas_path);
+            this._canvas = new Canvas(size['width'],size['height']);
+            this._context = this._canvas.getContext('2d');
+        } else {
+            this._canvas = Z.DomUtil.createEl('canvas');
+            this._context = this._canvas.getContext('2d');
+            /*if (Z.Browser.retina) {
+                this._context.scale(2, 2);
+            }*/
+            this._resizeCanvas();
+        }
     },
 
     _resizeCanvas:function(canvasSize) {
@@ -41,8 +48,10 @@ Z.render.Canvas=Z.Class.extend({
         var r = 1;
         canvas.height = r * size['height'];
         canvas.width = r * size['width'];
-        canvas.style.width = size['width']+'px';
-        canvas.style.height = size['height']+'px';
+        if (canvas.style) {
+            canvas.style.width = size['width']+'px';
+            canvas.style.height = size['height']+'px';
+        }
     },
 
     _clearCanvas:function() {

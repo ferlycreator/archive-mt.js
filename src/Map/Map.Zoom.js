@@ -29,35 +29,15 @@ Z.Map.include({
 
 
     _checkZoomLevel:function(nextZoomLevel) {
-        if (nextZoomLevel < this._minZoomLevel){
-            nextZoomLevel = this._minZoomLevel;
+        var maxZoom = this.getMaxZoom(),
+            minZoom = this.getMinZoom();
+        if (nextZoomLevel < minZoom){
+            nextZoomLevel = minZoom;
         }
-        if (nextZoomLevel > this._maxZoomLevel) {
-            nextZoomLevel = this._maxZoomLevel;
+        if (nextZoomLevel > maxZoom) {
+            nextZoomLevel = maxZoom;
         }
         return nextZoomLevel;
-    },
-
-    _zoomOnDblClick:function(param) {
-        var me = this;
-        if (!me.options['enableZoom'])  {return;}
-        function zoomLayer(layer) {
-            if (layer) {
-                layer._onZoomEnd();
-            }
-        }
-        var mousePos = param['pixel'];
-        var nextZoomLevel = me._checkZoomLevel(me._zoomLevel+1);
-        if (nextZoomLevel === me._zoomLevel) {
-            var move = new Z.Point((me.width/2-mousePos['left'])/2,(mousePos['top']-me.height/2)/2 );
-            me._offsetCenterByPixel(move);
-            me.offsetPlatform(move);
-
-            if (me._baseTileLayer) {me._baseTileLayer._onZoomEnd();}
-            me._eachLayer(zoomLayer,me.getAllLayers());
-            return;
-        }
-        me._zoom(nextZoomLevel, param['pixel']);
     },
 
     _zoom:function(nextZoomLevel, focusPos) {

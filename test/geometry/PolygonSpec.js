@@ -29,7 +29,7 @@ describe('PolygonSpec', function() {
             var polygon = new Z.Polygon(points);
             var coordinates = polygon.getCoordinates();
             expect(coordinates).to.have.length(points.length);
-            var geojsonCoordinates = Z.GeoJson.toGeoJsonCoordinates(coordinates);
+            var geojsonCoordinates = Z.GeoJSON.toGeoJSONCoordinates(coordinates);
             expect(geojsonCoordinates).to.eql(points);
         });
 

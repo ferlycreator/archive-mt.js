@@ -7,13 +7,18 @@
  */
 Z['Map']=Z.Map=Z.Class.extend({
 
-    includes: [Z.Eventable],
+    includes: [Z.Eventable,Z.HandlerBus],
 
     options:{
-        'enableMapSliding':true,
+        "zoomAnimation" : true,
+        "zoomAnimationDuration" : 200,
+
+        "panAnimation":true,
+        //每秒滑动的像素距离
+        "panAnimationDuration" : 600,
+
         'enableZoom':true,
         'enableInfoWindow':true,
-        'zoomMode':'pointer',
         'crs':Z.CRS.GCJ02
     },
 
@@ -67,6 +72,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         //Layer of Details, always derived from baseTileLayer
         this._tileConfig=null;
         this._panels={};
+
         //Layers
         this._baseTileLayer=null;
         this._tileLayers=[];
@@ -74,25 +80,38 @@ Z['Map']=Z.Map=Z.Class.extend({
 
         this._canvasLayers=[];
         this._dynLayers=[];
-        //handler
-        this._handlers = [];
 
-        this._zoomLevel = options['zoomLevel'];
-        delete options['zoomLevel'];
-        this._maxZoomLevel = options['maxZoomLevel'];
-        delete options['maxZoomLevel'];
-        this._minZoomLevel = options['minZoomLevel'];
-        delete options['minZoomLevel'];
-        this._center = new Z.Coordinate(options['center']);
-        delete options['center'];
+        //shallow copy options
+        var opts = Z.Util.extend({}, options);
 
+        this._zoomLevel = opts['zoom'];
+        delete opts['zoom'];
+        this._maxZoom = opts['maxZoom'];
+        delete opts['maxZoom'];
+        this._minZoom = opts['minZoom'];
+        delete opts['minZoom'];
+        this._center = new Z.Coordinate(opts['center']);
+        delete opts['center'];
+
+        //内部变量, 控制当前地图是否允许panAnimation
         this._enablePanAnimation = true;
 
         //坐标类型
-        options = Z.Util.setOptions(this,options);
+        Z.Util.setOptions(this,opts);
+
+        this._mapViewPoint=new Z.Point(0,0);
+
         this._initRender();
         this._getRender().initContainer();
         this._updateMapSize(this._getContainerDomSize());
+    },
+
+    /**
+     * 地图是否采用Canvas渲染
+     * @return {Boolean}
+     */
+    isCanvasRender:function() {
+        return this._render && this._render instanceof Z.render.map.Canvas;
     },
 
     /**
@@ -217,16 +236,6 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     _onMoving:function(param) {
-        /*function movingLayer(layer) {
-            if (layer) {
-                layer._onMoving(param);
-            }
-        }*/
-
-        /*//reduce refresh frequency
-        if (2*Math.random() > 1) {this._refreshSVGPaper();}*/
-        /*if (this._baseTileLayer) {this._baseTileLayer._onMoving();}
-        this._eachLayer(movingLayer, this._svgLayers, this._canvasLayers);*/
         /**
          * 触发map的moving事件
          * @member maptalks.Map
@@ -236,14 +245,6 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     _onMoveEnd:function(param) {
-        /*function endMoveLayer(layer) {
-            if (layer) {
-                layer._onMoveEnd(param);
-            }
-        }*/
-        // if (this._baseTileLayer) {this._baseTileLayer._onMoveEnd();}
-        /*this._refreshSVGPaper();*/
-        // this._eachLayer(endMoveLayer,this._tileLayers,this._canvasLayers,this._dynLayers);
         this._enablePanAnimation=true;
         this._isBusy = false;
         /**
@@ -276,7 +277,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {Number} 地图缩放级别
      * @expose
      */
-    getZoomLevel:function() {
+    getZoom:function() {
         return this._zoomLevel;
     },
 
@@ -285,7 +286,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @param {Number} z 新的缩放级别
      * @expose
      */
-    setZoomLevel:function(z) {
+    setZoom:function(z) {
         this._zoom(z);
         return this;
     },
@@ -295,8 +296,8 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {Number} 最大放大级别
      * @expose
      */
-    getMaxZoomLevel:function() {
-        return this._maxZoomLevel;
+    getMaxZoom:function() {
+        return this._maxZoom;
     },
 
     /**
@@ -304,15 +305,15 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @param {Number} zoomLevel 最大放大级别
      * @expose
      */
-    setMaxZoomLevel:function(zoomLevel) {
+    setMaxZoom:function(zoomLevel) {
         var tileConfig = this._getTileConfig();
-        if (zoomLevel > tileConfig['maxZoomLevel']) {
-            zoomLevel = tileConfig['maxZoomLevel'];
+        if (zoomLevel > tileConfig['maxZoom']) {
+            zoomLevel = tileConfig['maxZoom'];
         }
         if (zoomLevel < this._zoomLevel) {
-            this.setZoomLevel(zoomLevel);
+            this.setZoom(zoomLevel);
         }
-        this._maxZoomLevel = zoomLevel;
+        this._maxZoom = zoomLevel;
         return this;
     },
 
@@ -321,8 +322,8 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {Number} 最小放大级别
      * @expose
      */
-    getMinZoomLevel:function() {
-        return this._minZoomLevel;
+    getMinZoom:function() {
+        return this._minZoom;
     },
 
     /**
@@ -330,12 +331,12 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @param {Number} zoomLevel 最小放大级别
      * @expose
      */
-    setMinZoomLevel:function(zoomLevel) {
+    setMinZoom:function(zoomLevel) {
         var tileConfig = this._getTileConfig();
-        if (zoomLevel < tileConfig['minZoomLevel']) {
-            zoomLevel = tileConfig['minZoomLevel'];
+        if (zoomLevel < tileConfig['minZoom']) {
+            zoomLevel = tileConfig['minZoom'];
         }
-        this._minZoomLevel=zoomLevel;
+        this._minZoom=zoomLevel;
         return this;
     },
 
@@ -344,7 +345,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     zoomIn: function() {
-        this._zoom(this.getZoomLevel() + 1);
+        this._zoom(this.getZoom() + 1);
         return this;
     },
 
@@ -353,7 +354,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     zoomOut: function() {
-        this._zoom(this.getZoomLevel() - 1);
+        this._zoom(this.getZoom() - 1);
         return this;
     },
 
@@ -386,13 +387,13 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @returns
      * @expose
      */
-    getFitZoomLevel: function(extent) {
+    getFitZoom: function(extent) {
         if (!extent || !(extent instanceof Z.Extent)) {
             return this._zoomLevel;
         }
         //点类型
         if (extent['xmin'] == extent['xmax'] && extent['ymin'] == extent['ymax']) {
-            return this._maxZoomLevel;
+            return this.getMaxZoom();
         }
         try {
             var projection = this._getProjection();
@@ -402,7 +403,7 @@ Z['Map']=Z.Map=Z.Class.extend({
             var resolutions = this._getTileConfig()['resolutions'];
             var xz = -1;
             var yz = -1;
-            for ( var i = this._minZoomLevel, len = this._maxZoomLevel; i < len; i++) {
+            for ( var i = this.getMinZoom(), len = this.getMaxZoom(); i < len; i++) {
                 if (projectedExtent.x / resolutions[i] >= this.width) {
                     if (xz == -1) {
                         xz = i;
@@ -422,12 +423,12 @@ Z['Map']=Z.Map=Z.Class.extend({
                 ret = xz < yz ? yz : xz;
             }
             if (ret === -1) {
-                return this._maxZoomLevel;
+                return this.getMaxZoom();
             }
             // return ret - 2;
             return ret;
         } catch (exception) {
-            return this.getZoomLevel();
+            return this.getZoom();
         }
     },
 
@@ -452,6 +453,9 @@ Z['Map']=Z.Map=Z.Class.extend({
             this._fireEvent('baselayerchangestart');
             this._baseTileLayer._onRemove();
         }
+        baseTileLayer.config({
+            'rendWhenPanning':true
+        });
         baseTileLayer._prepare(this,-1);
         this._baseTileLayer = baseTileLayer;
         var me = this;
@@ -559,6 +563,47 @@ Z['Map']=Z.Map=Z.Class.extend({
         return this;
     },
 
+    _sortLayersZ:function(layerList) {
+        layerList.sort(function(a,b) {
+            return a.getZIndex()-b.getZIndex();
+        });
+    },
+
+    /**
+     * 图层排序
+     * @param  {String | layers} layerIds 图层id或者图层
+     */
+    sortLayers:function(layers) {
+        if (!layers || !Z.Util.isArray(layers)) {
+            return this;
+        }
+        var layersToOrder = [];
+        for (var i = 0; i < layers.length; i++) {
+            var layer = layers[i];
+            if (Z.Util.isString(layers[i])) {
+                layer = this.getLayer(layer);
+            }
+            if (!(layer instanceof Z.Layer)) {
+                throw new Error('It must be a layer to order.');
+            }
+            layersToOrder.push(layer);
+        }
+
+        function getMaxZ(_layerList) {
+            return _layerList[_layerList.length-1].getZIndex();
+        }
+
+        for (var ii = 0; ii < layersToOrder.length; ii++) {
+            var list = layersToOrder[ii]._getLayerList();
+            if (list.length === 1 || list[list.length-1] === layersToOrder[i]) {
+                continue;
+            }
+            var max = getMaxZ(list);
+            layersToOrder[ii].setZIndex(max+1);
+        }
+
+        return this;
+    },
 
 
     /**
@@ -606,56 +651,10 @@ Z['Map']=Z.Map=Z.Class.extend({
                 layer._onRemove();
             }
             for (var j=0, jlen=layerList.length;j<jlen;j++) {
-                if (layerList[j]._setZIndex) {
-                    layerList[j]._setZIndex(j);
+                if (layerList[j].setZIndex) {
+                    layerList[j].setZIndex(j);
                 }
             }
-        }
-    },
-
-
-    /**
-     * [addHandler description]
-     * @param {[type]} name         [description]
-     * @param {[type]} HandlerClass [description]
-     * @expose
-     */
-    addHandler: function (name, HandlerClass) {
-        if (!HandlerClass) { return this; }
-        //handler已经存在
-        if (this['_'+name]) {
-            this['_'+name].enable();
-            return;
-        }
-
-        var handler = this['_'+name] = new HandlerClass(this);
-
-        this._handlers.push(handler);
-
-        if (this.options[name]) {
-            handler.enable();
-        }
-        return this;
-    },
-
-    removeHandler: function(name) {
-        if (!name) {return this;}
-        //handler已经存在
-        var handler = this['_'+name];
-        if (handler) {
-            var hit = Z.Util.searchInArray(handler,this._handlers);
-            if (hit >= 0) {
-                this._handlers.splice(hit,1);
-            }
-            this['_'+name].disable();
-            delete this['_'+name];
-        }
-        return this;
-    },
-
-    _clearHandlers: function () {
-        for (var i = 0, len = this._handlers.length; i < len; i++) {
-            this._handlers[i].disable();
         }
     },
 
@@ -756,8 +755,10 @@ Z['Map']=Z.Map=Z.Class.extend({
 
     _Load:function() {
         this._originZoomLevel = this._zoomLevel;
+        if (!Z.runningInNode) {
+            this._initContainerWatcher();
+        }
 
-        this._initContainerWatcher();
         this._registerDomEvents();
         this._loadAllLayers();
         // this.callInitHooks();
@@ -778,14 +779,6 @@ Z['Map']=Z.Map=Z.Class.extend({
         return this._render;
     },
 
-    /**
-     * 地图是否采用Canvas渲染
-     * @return {Boolean}
-     */
-    isCanvasRender:function() {
-        return this._render && this._render instanceof Z.render.map.Canvas;
-    },
-
     _loadAllLayers:function() {
         function loadLayer(layer) {
             if (layer) {
@@ -793,16 +786,17 @@ Z['Map']=Z.Map=Z.Class.extend({
             }
         }
         if (this._baseTileLayer) {this._baseTileLayer.load();}
-        this._eachLayer(loadLayer,this.getAllLayers());
+        this._eachLayer(loadLayer,this.getLayers());
     },
 
     /**
      * 获取所有图层
      * @return {[type]} [description]
      */
-    getAllLayers:function() {
-        return this._getAllLayers(function(layer) {
-            if (layer === this._baseTileLayer || layer.getId().indexOf(Z.internalLayerPrefix) === -1) {
+    getLayers:function() {
+        return this._getLayers(function(layer) {
+            //layer.getId().indexOf(Z.internalLayerPrefix)表示是内部图层
+            if (layer === this._baseTileLayer || layer.getId().indexOf(Z.internalLayerPrefix) >= 0) {
                 return false;
             }
             return true;
@@ -814,8 +808,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @param  {fn} filter 过滤函数
      * @return {[Layer]}        符合过滤条件的图层数组
      */
-    _getAllLayers:function(filter) {
-        //TODO 可视化图层
+    _getLayers:function(filter) {
         var layers = [this._baseTileLayer].concat(this._tileLayers).concat(this._dynLayers)
         .concat(this._canvasLayers)
         .concat(this._svgLayers);
@@ -879,7 +872,7 @@ Z['Map']=Z.Map=Z.Class.extend({
             throw new Error(this.exceptions['INVALID_TILECONFIG']);
         }
         //tileConfig相同,无需改变
-        if (this._tileConfig && this._tileConfig.equals(tileConfig, this.getZoomLevel())) {
+        if (this._tileConfig && this._tileConfig.equals(tileConfig, this.getZoom())) {
             return false;
         }
         this._tileConfig = tileConfig;
@@ -892,20 +885,22 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {[type]} [description]
      */
     _checkMapStatus:function(){
-        if (!this._maxZoomLevel || this._maxZoomLevel > this._tileConfig['maxZoomLevel']) {
-            this._maxZoomLevel = this._tileConfig['maxZoomLevel'];
+        var maxZoom = this.getMaxZoom(),
+            minZoom = this.getMinZoom();
+        if (!maxZoom || maxZoom > this._tileConfig['maxZoom']) {
+            this.setMaxZoom(this._tileConfig['maxZoom']);
         }
-        if (!this._minZoomLevel || this._minZoomLevel < this._tileConfig['minZoomLevel']) {
-            this._minZoomLevel = this._tileConfig['minZoomLevel'];
+        if (!minZoom || minZoom < this._tileConfig['minZoom']) {
+            this.setMinZoom(this._tileConfig['minZoom']);
         }
-        if (this._maxZoomLevel < this._minZoomLevel) {
-            this._maxZoomLevel = this._minZoomLevel;
+        if (maxZoom < minZoom) {
+            this.setMaxZoom(minZoom);
         }
-        if (!this._zoomLevel || this._zoomLevel > this._maxZoomLevel) {
-            this._zoomLevel = this._maxZoomLevel;
+        if (!this._zoomLevel || this._zoomLevel > maxZoom) {
+            this._zoomLevel = maxZoom;
         }
-        if (this._zoomLevel < this._minZoomLevel) {
-            this._zoomLevel = this._minZoomLevel;
+        if (this._zoomLevel < minZoom) {
+            this._zoomLevel = minZoom;
         }
         this._center = this.getCenter();
         var projection = this._tileConfig.getProjectionInstance();
@@ -915,14 +910,7 @@ Z['Map']=Z.Map=Z.Class.extend({
 
 
     _getContainerDomSize:function(){
-        if (!this._containerDOM) {return null;}
-        var _containerDOM = this._containerDOM;
-        var mapWidth = parseInt(_containerDOM.offsetWidth,0);
-        var mapHeight = parseInt(_containerDOM.offsetHeight,0);
-        return {
-            width: mapWidth,
-            height:mapHeight
-        };
+        return this._getRender().getContainerDomSize();
     },
 
     _updateMapSize:function(mSize) {
@@ -967,9 +955,6 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     offsetPlatform:function(offset) {
-        if (!this._mapViewPoint) {
-            this._mapViewPoint = this._getRender().offsetPlatform();
-        }
         if (!offset) {
             return this._mapViewPoint;
 
@@ -982,11 +967,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     _resetMapViewPoint:function() {
-        if (!this._mapViewPoint) {
-            this._mapViewPoint = new Z.Point(0,0);
-        } else {
-            this._mapViewPoint = new Z.Point(0,0);
-        }
+        this._mapViewPoint = new Z.Point(0,0);
     },
 
     /**
@@ -997,7 +978,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      */
     _untransform:function(domPos) {
         var transformation =  this._getTileConfig().getTransformationInstance();
-        var res = this._tileConfig.getResolution(this.getZoomLevel());//['resolutions'][this._zoomLevel];
+        var res = this._tileConfig.getResolution(this.getZoom());//['resolutions'][this._zoomLevel];
 
         var pcenter = this._getPrjCenter();
         var centerPoint = transformation.transform(pcenter, res);
@@ -1023,7 +1004,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      */
     _transform:function(pCoordinate) {
         var transformation =  this._getTileConfig().getTransformationInstance();
-        var res = this._tileConfig.getResolution(this.getZoomLevel());//['resolutions'][this._zoomLevel];
+        var res = this._tileConfig.getResolution(this.getZoom());//['resolutions'][this._zoomLevel];
 
         var pcenter = this._getPrjCenter();
         var centerPoint = transformation.transform(pcenter, res);
@@ -1082,7 +1063,7 @@ Z['Map']=Z.Map=Z.Class.extend({
             return null;
         }
         var projection = tileConfig.getProjectionInstance();
-        var res = tileConfig['resolutions'][this.getZoomLevel()];
+        var res = tileConfig['resolutions'][this.getZoom()];
         var nw = projection.unproject({x: plonlat.x - pnw["left"]*res, y: plonlat.y + pnw["top"]*res});
         var se = projection.unproject({x: plonlat.x + pse["left"]*res, y: plonlat.y - pse["top"]*res});
         return new Z.Extent(nw,se);
@@ -1107,7 +1088,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         //计算前刷新scales
         var center = this.getCenter(),
             target = projection.locate(center,x,y),
-            z = this.getZoomLevel(),
+            z = this.getZoom(),
             resolutions = tileConfig['resolutions'];
         var width = !x?0:(projection.project({x:target.x,y:center.y}).x-projection.project(center).x)/resolutions[z];
         var height = !y?0:(projection.project({x:target.x,y:center.y}).y-projection.project(target).y)/resolutions[z];
@@ -1133,7 +1114,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         //计算前刷新scales
         var center = this.getCenter(),
             pcenter = this._getPrjCenter(),
-            res = tileConfig['resolutions'][this.getZoomLevel()];
+            res = tileConfig['resolutions'][this.getZoom()];
         var pTarget = new Z.Coordinate(pcenter.x+width*res, pcenter.y+height*res);
         var target = projection.unproject(pTarget);
         return projection.getGeodesicLength(target,center);
@@ -1175,7 +1156,7 @@ Z['Map']=Z.Map=Z.Class.extend({
                 map._updateMapSize(watched);
                 map._onResize(new Z.Point((watched.width-oldWidth) / 2,(watched.height-oldHeight) / 2));
             }
-        },1000);
+        },800);
     }
 });
 

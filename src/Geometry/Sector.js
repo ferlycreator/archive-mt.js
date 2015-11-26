@@ -15,7 +15,7 @@ Z['Sector']=Z.Sector=Z.Polygon.extend({
 
     initialize:function(coordinates,radius,startAngle,endAngle,opts) {
         this._coordinates = new Z.Coordinate(coordinates);
-        this.radius = radius;
+        this._radius = radius;
         this.startAngle = startAngle;
         this.endAngle = endAngle;
         this._initOptions(opts);
@@ -27,7 +27,7 @@ Z['Sector']=Z.Sector=Z.Polygon.extend({
      * @expose
      */
     getRadius:function() {
-        return this.radius;
+        return this._radius;
     },
 
     /**
@@ -36,7 +36,7 @@ Z['Sector']=Z.Sector=Z.Polygon.extend({
      * @expose
      */
     setRadius:function(radius) {
-        this.radius = radius;
+        this._radius = radius;
         this._onShapeChanged();
         return this;
     },
@@ -139,31 +139,31 @@ Z['Sector']=Z.Sector=Z.Polygon.extend({
     },
 
     _computeExtent:function(projection) {
-        if (!projection || !this._coordinates || Z.Util.isNil(this.radius)) {
+        if (!projection || !this._coordinates || Z.Util.isNil(this._radius)) {
             return null;
         }
 
-        var radius = this.radius;
+        var radius = this._radius;
         var p1 = projection.locate(this._coordinates,radius,radius);
         var p2 = projection.locate(this._coordinates,-radius,-radius);
         return new Z.Extent(p1,p2);
     },
 
     _computeGeodesicLength:function(projection) {
-        if (Z.Util.isNil(this.radius)) {
+        if (Z.Util.isNil(this._radius)) {
             return 0;
         }
-        return Math.PI*2*this.radius*Math.abs(this.startAngle-this.endAngle)/360+2*this.radius;
+        return Math.PI*2*this._radius*Math.abs(this.startAngle-this.endAngle)/360+2*this._radius;
     },
 
     _computeGeodesicArea:function(projection) {
-        if (Z.Util.isNil(this.radius)) {
+        if (Z.Util.isNil(this._radius)) {
             return 0;
         }
-        return Math.PI*Math.pow(this.radius,2)*Math.abs(this.startAngle-this.endAngle)/360;
+        return Math.PI*Math.pow(this._radius,2)*Math.abs(this.startAngle-this.endAngle)/360;
     },
 
-    _exportGeoJson:function() {
+    _exportGeoJSONGeometry:function() {
         var center  = this.getCenter();
         return {
             'type':         "Sector",

@@ -11,7 +11,7 @@ describe("Control.Nav", function() {
         container.style.height = '600px';
         document.body.appendChild(container);
         var option = {
-            zoomLevel: 17,
+            zoom: 17,
             center: center
         };
         map = new Z.Map(container, option);
@@ -54,8 +54,8 @@ describe("Control.Nav", function() {
     });
 
     describe("when buttons clicked", function() {
-
         var clock;
+        var duration = 15;
 
         beforeEach(function() {
             clock = sinon.useFakeTimers();
@@ -73,7 +73,7 @@ describe("Control.Nav", function() {
 
             happen.mousedown(control._panToLeftButton);
 
-            clock.tick(15);
+            clock.tick(duration);
             offset = map.offsetPlatform();
 
             expect(offset.left).to.eql(pos.left + 1);
@@ -88,7 +88,7 @@ describe("Control.Nav", function() {
 
             happen.mousedown(control._panToRightButton);
 
-            clock.tick(15);
+            clock.tick(duration);
             offset = map.offsetPlatform();
             expect(offset.left).to.eql(pos.left - 1);
             expect(offset.top).to.eql(pos.top);
@@ -102,7 +102,7 @@ describe("Control.Nav", function() {
 
             happen.mousedown(control._panToDownButton);
 
-            clock.tick(15);
+            clock.tick(duration);
             offset = map.offsetPlatform();
 
             expect(offset.left).to.eql(pos.left);
@@ -117,7 +117,7 @@ describe("Control.Nav", function() {
 
             happen.mousedown(control._panToUpButton);
 
-            clock.tick(15);
+            clock.tick(duration);
             offset = map.offsetPlatform();
 
             expect(offset.left).to.eql(pos.left);

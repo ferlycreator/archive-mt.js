@@ -54,7 +54,7 @@ Z.MultiPoly = Z.GeometryCollection.extend({
         if (Z.Util.isArrayHasData(coordinates)) {
             var geometries = [];
             for (var i=0, len=coordinates.length;i<len;i++) {
-                var p = new this.GeometryType(coordinates[i], this.options);
+                var p = new this.GeometryType(coordinates[i], this.config());
                 geometries.push(p);
             }
             this.setGeometries(geometries);
@@ -64,10 +64,10 @@ Z.MultiPoly = Z.GeometryCollection.extend({
         return this;
     },
 
-    //override _exportGeoJson in GeometryCollection
-    _exportGeoJson:function() {
+    //override _exportGeoJSONGeometry in GeometryCollection
+    _exportGeoJSONGeometry:function() {
         var points = this.getCoordinates();
-        var coordinates = Z.GeoJson.toGeoJsonCoordinates(points);
+        var coordinates = Z.GeoJSON.toGeoJSONCoordinates(points);
         return {
             'type':this.getType(),
             'coordinates': coordinates

@@ -27,7 +27,7 @@ Z.LineString = Z.Polyline = Z.Vector.extend({
             this._setPrjPoints(null);
             return;
         }
-        this.points = Z.GeoJson.fromGeoJsonCoordinates(coordinates);
+        this.points = Z.GeoJSON.fromGeoJSONCoordinates(coordinates);
         if (this.getMap()) {
             this._setPrjPoints(this._projectPoints(this.points));
         } else {

@@ -43,6 +43,72 @@ Z.Util = {
         return obj.options;
     },
 
+    loadImage:function(img, url) {
+
+        if (Z.runningInNode) {
+            try {
+                if (Z.Util.isURL(url)) {
+                    console.log('begin to load remote image:',url);
+                    if (!this._nodeHttp) {
+                        this._nodeHttp = require('http');
+                    }
+                    this._nodeHttp.get(url,
+                        function(res) {
+
+                            var data = new Buffer(parseInt(res.headers['content-length'],10));
+                            var pos = 0;
+                            res.on('data', function(chunk) {
+                              chunk.copy(data, pos);
+                              pos += chunk.length;
+                            });
+                            res.on('end', function () {
+                                console.log('end loading remote image:',url);
+                                var onloadFn = img.onload;
+                                if (onloadFn) {
+                                    img.onload = function() {
+                                        onloadFn.call(img);
+                                    };
+                                }
+                                img.src = data;
+                            });
+                        }
+                    );
+                } else {
+                    console.log('begin to load local image:',url);
+                    if (!this._nodeFS) {
+                        this._nodeFS = require('fs');
+                    }
+                    this._nodeFS.readFile(url,'binary',function(err,data) {
+                        if (err) {
+                            console.error('fail to read:',url,data.length);
+                            return;
+                        } else {
+                            console.log('end loading remote image:',url);
+                            console.log('load image complete',url);
+                            var onloadFn = img.onload;
+                            if (onloadFn) {
+                                img.onload = function() {
+                                    onloadFn.call(img);
+                                };
+                            }
+                            img.src = data;
+                        }
+                    });
+                }
+            } catch (err) {
+                var onerrorFn = img.onerror;
+                if (onerrorFn) {
+                    img.onerror = function() {
+                        onerrorFn.call(img);
+                    };
+                }
+            }
+        } else {
+            img.src=url;
+        }
+        return this;
+    },
+
     fixPNG:function(img) {
 
     },
@@ -52,7 +118,7 @@ Z.Util = {
      * @return {String} 全局id
      */
     GUID: function() {
-        return '___GLOBAL_'+(Z.Util.globalCounter++);
+        return '___MAPTALKS_GLOBAL_'+(Z.Util.globalCounter++);
     },
 
     lastId: 0,
@@ -274,7 +340,7 @@ Z.Util = {
      * @return {Boolean}     true|false
      */
     isNil:function(obj) {
-        return (obj === undefined || obj === null);
+        return (typeof(obj) === 'undefined' || obj === null);
     },
 
     /**
@@ -338,7 +404,7 @@ Z.Util = {
      * @return {Boolean} true|false
      */
     isString:function(_str) {
-        if (_str === null || _str === undefined) {return false;}
+        if (Z.Util.isNil(_str)) {return false;}
         return typeof _str == 'string' || (_str.constructor!==null && _str.constructor == String);
     },
 
@@ -352,6 +418,21 @@ Z.Util = {
             return false;
         }
         return typeof _func == 'function' || (_func.constructor!==null && _func.constructor == Function);
+    },
+
+    /**
+     * 判断是否是url
+     * @param  {[type]}  url [description]
+     * @return {Boolean}     [description]
+     */
+    isURL:function(url) {
+        if (!url) {
+            return false;
+        }
+        if (url.indexOf('http://') >= 0 || url.indexOf('https://') >= 0 || url.indexOf('blob:') >= 0) {
+            return true;
+        }
+        return false;
     },
 
     /**
@@ -468,41 +549,43 @@ Z.Util = {
 
 };
 
+if (typeof(window) != 'undefined') {
+    //动画, inspired by Leaflet
+    (function () {
+        // inspired by http://paulirish.com/2011/requestanimationframe-for-smart-animating/
 
-//动画, inspired by Leaflet
-(function () {
-    // inspired by http://paulirish.com/2011/requestanimationframe-for-smart-animating/
-
-    function getPrefixed(name) {
-        return window['webkit' + name] || window['moz' + name] || window['ms' + name];
-    }
-
-    var lastTime = 0;
-
-    // fallback for IE 7-8
-    function timeoutDefer(fn) {
-        var time = +new Date(),
-            timeToCall = Math.max(0, 16 - (time - lastTime));
-
-        lastTime = time + timeToCall;
-        return window.setTimeout(fn, timeToCall);
-    }
-
-    var requestFn = window['requestAnimationFrame'] || getPrefixed('RequestAnimationFrame') || timeoutDefer,
-        cancelFn = window['cancelAnimationFrame'] || getPrefixed('CancelAnimationFrame') ||
-                   getPrefixed('CancelRequestAnimationFrame') || function (id) { window.clearTimeout(id); };
-
-
-    Z.Util.requestAnimFrame = function (fn) {
-            return requestFn.call(window, fn);
-    };
-
-    Z.Util.cancelAnimFrame = function (id) {
-        if (id) {
-            cancelFn.call(window, id);
+        function getPrefixed(name) {
+            return window['webkit' + name] || window['moz' + name] || window['ms' + name];
         }
-    };
-})();
+
+        var lastTime = 0;
+
+        // fallback for IE 7-8
+        function timeoutDefer(fn) {
+            var time = +new Date(),
+                timeToCall = Math.max(0, 16 - (time - lastTime));
+
+            lastTime = time + timeToCall;
+            return window.setTimeout(fn, timeToCall);
+        }
+
+        var requestFn = window['requestAnimationFrame'] || getPrefixed('RequestAnimationFrame') || timeoutDefer,
+            cancelFn = window['cancelAnimationFrame'] || getPrefixed('CancelAnimationFrame') ||
+                       getPrefixed('CancelRequestAnimationFrame') || function (id) { window.clearTimeout(id); };
+
+
+        Z.Util.requestAnimFrame = function (fn) {
+                return requestFn.call(window, fn);
+        };
+
+        Z.Util.cancelAnimFrame = function (id) {
+            if (id) {
+                cancelFn.call(window, id);
+            }
+        };
+    })();
+
+}
 
 /**
  * Ajax

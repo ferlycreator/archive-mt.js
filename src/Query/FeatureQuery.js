@@ -151,7 +151,7 @@ Z.FeatureQuery.prototype={
                             for (i = 0, len=datas.length; i < len; i++) {
                                 collections.push({
                                     "layer" : datas[i]['layer'],
-                                    "features" : Z.GeoJson.fromGeoJson(datas[i]['features'])
+                                    "features" : Z.GeoJSON.fromGeoJSON(datas[i]['features'])
                                 });
                             }
                             //不返回Geometry,直接返回属性数据
@@ -189,11 +189,11 @@ Z.FeatureQuery.prototype={
             if (filterGeo) {
                 var paramFilter;
                 if (spatialFilter instanceof Z.SpatialFilter) {
-                    paramFilter = spatialFilter.toJson();
+                    paramFilter = spatialFilter.toJSON();
                 } else {
                     paramFilter = spatialFilter;
                     if (filterGeo instanceof Z.Geometry) {
-                        paramFilter['geometry'] = filterGeo.toGeometryJson();
+                        paramFilter['geometry'] = filterGeo.toGeoJSONGeometry();
                     }
                 }
                 ret += ('&spatialFilter='+encodeURIComponent(JSON.stringify(paramFilter)));

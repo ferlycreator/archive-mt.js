@@ -8,7 +8,7 @@ Z.Painter={};
  * @author Maptalks Team
  */
 Z['Geometry']=Z.Geometry=Z.Class.extend({
-    includes: [Z.Eventable],
+    includes: [Z.Eventable, Z.HandlerBus],
 
     exceptionDefs:{
         'en-US':{
@@ -45,24 +45,6 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     },
 
     /**
-     * 设置options
-     * @param {[type]} opts [description]
-     */
-    setOptions:function(opts) {
-        var symbol = opts['symbol'];
-        delete opts['symbol'];
-        var id = opts['id'];
-        delete opts['id'];
-        Z.Util.setOptions(this,opts);
-        if (symbol) {
-            this.setSymbol(symbol);
-        }
-        if (!Z.Util.isNil(id)) {
-            this.setId(id);
-        }
-    },
-
-    /**
      * 将Geometry加到图层上
      * @param {Layer} layer   图层
      * @param {Boolean} fitview 是否将地图自动聚焦到该Geometry上
@@ -78,7 +60,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     getId:function() {
-        return this.id;
+        return this._id;
     },
 
     /**
@@ -88,7 +70,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      */
     setId:function(id) {
         var oldId = this.getId();
-        this.id = id;
+        this._id = id;
         //FIXME _idchanged没有被图层监听, layer.getGeometryById会出现bug
         this._fireEvent('_idchanged',{'oldId':oldId,'newId':id});
         return this;
@@ -130,7 +112,12 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     getSymbol:function() {
-        return this.options['symbol'];
+        if (!this._symbol) {
+            if (this.options['symbol']) {
+                return Z.Util.extend({},this.options['symbol']);
+            }
+        }
+        return this._symbol;
     },
 
     /**
@@ -140,10 +127,10 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      */
     setSymbol:function(symbol) {
         if (!symbol) {
-           this.options['symbol'] = null;
+           this._symbol = null;
         } else {
            var camelSymbol = this._prepareSymbol(symbol);
-           this.options['symbol'] = camelSymbol;
+           this._symbol = camelSymbol;
         }
         this._onSymbolChanged();
         return this;
@@ -310,9 +297,9 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     copy:function() {
-        var json = this.toJson();
+        var json = this.toJSON();
         //FIXME symbol信息没有被拷贝过来
-        var ret = Z.GeoJson.fromGeoJson(json);
+        var ret = Z.Geometry.fromJSON(json);
         return ret;
     },
 
@@ -325,8 +312,13 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         this._rootRemove(true);
     },
 
-    toGeometryJson:function(opts) {
-        var gJson = this._exportGeoJson();
+    /**
+     * 按照GeoJSON规范生成GeoJSON Geometry 类型对象
+     * @param  {Object} opts 输出配置
+     * @return {Object}      GeoJSON Geometry
+     */
+    toGeoJSONGeometry:function(opts) {
+        var gJson = this._exportGeoJSONGeometry();
         if (!opts || opts['crs']) {
             var crs = this.getCRS();
             if (crs) {
@@ -337,12 +329,12 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     },
 
     /**
-     * 按照GeoJson规范生成GeoJson对象
-     * @param  {[Object} opts 输出配置
-     * @returns {Object}      GeoJson对象
+     * 按照GeoJSON规范生成GeoJSON Feature 类型对象, GeoJSON Feature中不包含symbol, options等完整的图形属性. 完整属性输出请调用toProfile方法
+     * @param  {Object} opts 输出配置
+     * @returns {Object}      GeoJSON Feature
      * @expose
      */
-    toJson:function(opts) {
+    toGeoJSON:function(opts) {
         if (!opts) {
             opts = {};
         }
@@ -350,28 +342,21 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
             'type':'Feature',
             'geometry':null
         };
-        if (opts['geometry'] === undefined || opts['geometry']) {
-            var geoJson = this._exportGeoJson(opts);
-            feature['geometry']=geoJson;
+        if (Z.Util.isNil(opts['geometry']) || opts['geometry']) {
+            var geoJSON = this._exportGeoJSONGeometry(opts);
+            feature['geometry']=geoJSON;
         }
         var id = this.getId();
         if (!Z.Util.isNil(id)) {
             feature['id'] = id;
         }
         var properties = {};
-        //opts没有设定symbol或者设定的symbol值为true,则导出symbol
-        if (opts['symbol'] === undefined || opts['symbol']) {
-            var symbol = this.getSymbol();
-            if (symbol) {
-                feature['symbol'] = symbol;
-            }
-        }
         var crs = this.getCRS();
         if (crs) {
             feature['crs'] = crs;
         }
         //opts没有设定properties或者设定的properties值为true,则导出properties
-        if (opts['properties'] === undefined || opts['properties']) {
+        if (Z.Util.isNil(opts['properties']) || opts['properties']) {
             var geoProperties = this.getProperties();
             if (geoProperties) {
                 for (var p in geoProperties) {
@@ -383,6 +368,63 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
         feature['properties'] = properties;
         return feature;
+    },
+
+    /**
+     * 获得Geometry的Profile
+     * @return {[type]} [description]
+     */
+    toJSON:function(options) {
+        //一个Graphic的profile
+        /*{
+            //graphic包含的feature
+            "feature": {
+                  "type": "Feature",
+                  "id" : "point1",
+                  "geometry": {"type": "Point", "coordinates": [102.0, 0.5]},
+                  "properties": {"prop0": "value0"}
+            },
+            //构造参数
+            "options":{
+                "draggable" : true
+            },
+            //symbol
+            "symbol":{
+                "markerFile" : "http://foo.com/icon.png"
+            },
+            //infowindow设置
+            "infowindow" : {
+                "options" : {
+                    "style" : "black"
+                },
+                "title" : "this is a infowindow title",
+                "content" : "this is a infowindow content"
+            }
+            //因为响应函数无法被序列化, 所以menu, 事件listener等无法被包含在graphic中
+        }*/
+        if (!options) {
+            options = {};
+        }
+        var json = {
+            "feature" : this.toGeoJSON(options)
+        };
+        if (Z.Util.isNil(options['options']) || options['options']) {
+            json['options'] = this.config();
+        }
+        if (Z.Util.isNil(options['symbol']) || options['symbol']) {
+            if (this.getSymbol()) {
+                json['symbol'] = this.getSymbol();
+            }
+        }
+        if (Z.Util.isNil(options['infoWindow']) || options['infoWindow']) {
+            if (this.getInfoWindow) {
+                var infowindow = this.getInfoWindow();
+                if (infowindow) {
+                    json['infoWindow'] = infowindow.getOptions();
+                }
+            }
+        }
+        return json;
     },
 
     /**
@@ -420,7 +462,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (map) {
             return map.getCRS();
         }
-        return this.options['crs'];
+        return this._crs;
     },
 
     /**
@@ -428,7 +470,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @param {CRS} crs CRS
      */
     setCRS:function(crs) {
-        this.options['crs'] = crs;
+        this._crs = crs;
         return this;
     },
 
@@ -437,7 +479,22 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (!opts) {
             opts = {};
         }
-        this.setOptions(opts);
+        var symbol = opts['symbol'] || this.options['symbol'];
+        delete opts['symbol'];
+        var id = opts['id'];
+        delete opts['id'];
+        var crs = opts['crs'];
+        delete opts['crs'];
+        Z.Util.setOptions(this,opts);
+        if (symbol) {
+            this.setSymbol(symbol);
+        }
+        if (!Z.Util.isNil(id)) {
+            this.setId(id);
+        }
+        if (crs) {
+            this.setCRS(crs);
+        }
     },
 
     //调用prepare时,layer已经注册到map上
@@ -466,11 +523,8 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @return {[type]}        [description]
      */
     _convertResourceUrl:function(symbol) {
-        function isRel(url) {
-            if (url.indexOf('http://') >= 0 || url.indexOf('https://') >= 0 ) {
-                return false;
-            }
-            return true;
+        if (Z.runningInNode) {
+            return;
         }
         function absolute(base, relative) {
             var stack = base.split("/"),
@@ -494,17 +548,17 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
 
         var icon = symbol['markerFile'];
-        if (icon && isRel(icon)) {
+        if (icon && !Z.Util.isURL(icon)) {
             symbol['markerFile'] = absolute(location.href,icon);
         }
         icon = symbol['shieldFile'];
-        if (icon && isRel(icon)) {
+        if (icon && !Z.Util.isURL(icon)) {
             symbol['shieldFile'] = absolute(location.href,icon);
         }
         var fill = symbol['polygonPatternFile'];
         if (fill) {
             icon = Z.Util.extractCssUrl(fill);
-            if (isRel(icon)) {
+            if (!Z.Util.isURL(icon)) {
                 symbol['polygonPatternFile'] = 'url("'+absolute(location.href,icon)+'")';
             }
         }
@@ -618,7 +672,9 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (painter) {
             painter.repaint();
         }
-        this._fireEvent('shapechanged');
+        if (!this._isEditingOrDragging()) {
+            this._fireEvent('shapechanged');
+        }
     },
 
     _onPositionChanged:function() {
@@ -627,7 +683,9 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (painter) {
             painter.repaint();
         }
-        this._fireEvent('positionchanged');
+        if (!this._isEditingOrDragging()) {
+            this._fireEvent('positionchanged');
+        }
     },
 
     _onSymbolChanged:function() {
@@ -661,9 +719,9 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
     },
 
-    _exportGeoJson:function() {
+    _exportGeoJSONGeometry:function() {
         var points = this.getCoordinates();
-        var coordinates = Z.GeoJson.toGeoJsonCoordinates(points);
+        var coordinates = Z.GeoJSON.toGeoJSONCoordinates(points);
         return {
             'type':this.getType(),
             'coordinates': coordinates
@@ -671,3 +729,18 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     }
 
 });
+
+Z.Geometry.fromJSON = function(json) {
+    var feature = json['feature'];
+    var geometry = Z.GeoJSON.fromGeoJSON(feature);
+    if (json['options']) {
+        geometry.config(json['options']);
+    }
+    if (json['symbol']) {
+        geometry.setSymbol(json['symbol']);
+    }
+    if (json['infoWindow']) {
+        geometry.setInfoWindow(json['infoWindow']);
+    }
+    return geometry;
+};

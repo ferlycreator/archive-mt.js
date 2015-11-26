@@ -3,22 +3,22 @@
  * @class maptalks.GeoJSON
  * @author Maptalks Team
  */
-Z.GeoJson={
+Z.GeoJSON={
 
         /**
-         * 将geoJson字符串或geoJson对象转化为Geometry对象
+         * 将geoJSON字符串或geoJSON对象转化为Geometry对象
          * @param  {String | Object | [Object]} json json对象
          * @return {Geometry | [Geometry]}      转化的Geometry对象或数组
          * @expose
          */
-        fromGeoJson:function(geoJson, crs) {
-            if (Z.Util.isString(geoJson)) {
-                geoJson = Z.Util.parseJson(geoJson);
+        fromGeoJSON:function(geoJSON, crs) {
+            if (Z.Util.isString(geoJSON)) {
+                geoJSON = Z.Util.parseJson(geoJSON);
             }
-            if (Z.Util.isArray(geoJson)) {
+            if (Z.Util.isArray(geoJSON)) {
                 var resultGeos = [];
-                for (var i=0,len=geoJson.length;i<len;i++) {
-                    var geo = this._fromGeoJsonInstance(geoJson[i]);
+                for (var i=0,len=geoJSON.length;i<len;i++) {
+                    var geo = this._fromGeoJSONInstance(geoJSON[i]);
                     if (crs) {
                         geo.setCRS(crs);
                     }
@@ -26,7 +26,7 @@ Z.GeoJson={
                 }
                 return resultGeos;
             } else {
-                var resultGeo = this._fromGeoJsonInstance(geoJson);
+                var resultGeo = this._fromGeoJSONInstance(geoJSON);
                 if (crs) {
                     resultGeo.setCRS(crs);
                 }
@@ -36,12 +36,12 @@ Z.GeoJson={
         },
 
         /**
-         * 将Coordinate数组转化为GeoJson坐标数组
+         * 将Coordinate数组转化为GeoJSON坐标数组
          * @param  {[Coordinate]} coordinates Coordinate数组
-         * @return {number[]..}               GeoJson数组
+         * @return {number[]..}               GeoJSON数组
          * @expose
          */
-        toGeoJsonCoordinates:function(coordinates) {
+        toGeoJSONCoordinates:function(coordinates) {
             if (!Z.Util.isArray(coordinates)) {
                 return [coordinates.x, coordinates.y];
             }
@@ -51,11 +51,11 @@ Z.GeoJson={
         },
 
         /**
-         * 将GeoJson坐标数组转化为Coordinate数组
+         * 将GeoJSON坐标数组转化为Coordinate数组
          * @param  {[type]} coordinates [description]
          * @return {[type]}             [description]
          */
-        fromGeoJsonCoordinates:function(coordinates) {
+        fromGeoJSONCoordinates:function(coordinates) {
             if (Z.Util.isNumber(coordinates[0]) && Z.Util.isNumber(coordinates[1])) {
                 return new Z.Coordinate(coordinates);
             }
@@ -66,7 +66,7 @@ Z.GeoJson={
                     if (Z.Util.isNumber(child[0])) {
                         result.push(new Z.Coordinate(child));
                     } else {
-                        result.push(this.fromGeoJsonCoordinates(child));
+                        result.push(this.fromGeoJSONCoordinates(child));
                     }
                 } else {
                     result.push(child);
@@ -76,69 +76,74 @@ Z.GeoJson={
         },
 
         /**
-         * 解析单个GeoJson对象,输出为Geometry
-         * @param  {[type]} geoJsonObj [description]
+         * 解析单个GeoJSON对象,输出为Geometry
+         * @param  {[type]} geoJSONObj [description]
          * @return {[type]}            [description]
          */
-        _fromGeoJsonInstance:function(geoJsonObj) {
-            if (!geoJsonObj || Z.Util.isNil(geoJsonObj['type'])) {
+        _fromGeoJSONInstance:function(geoJSONObj) {
+            if (!geoJSONObj || Z.Util.isNil(geoJSONObj['type'])) {
                 return null;
             }
-            var crs = geoJsonObj['crs'];
-
-            var type = geoJsonObj['type'];
+            var crs = geoJSONObj['crs'];
+            var options = {};
+            if (crs) {
+                options['crs'] = crs;
+            }
+            var type = geoJSONObj['type'];
             if ('Feature' === type) {
-                var geoJsonGeo = geoJsonObj['geometry'];
-                var geometry = this._fromGeoJsonInstance(geoJsonGeo);
+                var geoJSONGeo = geoJSONObj['geometry'];
+                var geometry = this._fromGeoJSONInstance(geoJSONGeo);
                 if (!geometry) {
                     return null;
                 }
-                geometry.setId(geoJsonObj['id']);
-                if (geoJsonObj['symbol']) {
-                    geometry.setSymbol(geoJsonObj['symbol']);
+                geometry.setId(geoJSONObj['id']);
+                /*if (geoJSONObj['symbol']) {
+                    geometry.setSymbol(geoJSONObj['symbol']);
+                }*/
+                geometry.setProperties(geoJSONObj['properties']);
+                if (crs) {
+                    geometry.setCRS(crs);
                 }
-                geometry.setProperties(geoJsonObj['properties']);
-                geometry.setCRS(crs);
                 return geometry;
             } else if ('FeatureCollection' === type) {
-                var features = geoJsonObj['features'];
+                var features = geoJSONObj['features'];
                 if (!features) {
                     return null;
                 }
                 //返回geometry数组
-                var result = this.fromGeoJson(features, crs);
+                var result = this.fromGeoJSON(features, crs);
                 return result;
             } else if ('Point' === type) {
-                return new Z.Marker(geoJsonObj['coordinates'],{'crs':crs});
+                return new Z.Marker(geoJSONObj['coordinates'],options);
             } else if ('LineString' === type) {
-                return new Z.Polyline(geoJsonObj['coordinates'],{'crs':crs});
+                return new Z.Polyline(geoJSONObj['coordinates'],options);
             } else if ('Polygon' === type) {
-                return new Z.Polygon(geoJsonObj['coordinates'],{'crs':crs});
+                return new Z.Polygon(geoJSONObj['coordinates'],options);
             } else if ('MultiPoint' === type) {
-                return new Z.MultiPoint(geoJsonObj['coordinates'],{'crs':crs});
+                return new Z.MultiPoint(geoJSONObj['coordinates'],options);
             } else if ('MultiLineString' === type) {
-                return new Z.MultiPolyline(geoJsonObj['coordinates'],{'crs':crs});
+                return new Z.MultiPolyline(geoJSONObj['coordinates'],options);
             } else if ('MultiPolygon' === type) {
-                return new Z.MultiPolygon(geoJsonObj['coordinates'],{'crs':crs});
+                return new Z.MultiPolygon(geoJSONObj['coordinates'],options);
             } else if ('GeometryCollection' === type) {
-                var geometries = geoJsonObj['geometries'];
+                var geometries = geoJSONObj['geometries'];
                 if (!Z.Util.isArrayHasData(geometries)) {
                     return new Z.GeometryCollection();
                 }
                 var mGeos = [];
                 var size = geometries.length;
                 for (var i = 0; i < size; i++) {
-                    mGeos.push(this._fromGeoJsonInstance(geometries[i]));
+                    mGeos.push(this._fromGeoJSONInstance(geometries[i]));
                 }
-                return new Z.GeometryCollection(mGeos,{'crs':crs});
+                return new Z.GeometryCollection(mGeos,options);
             } else if ('Circle' === type) {
-                return new Z.Circle(geoJsonObj['coordinates'], geoJsonObj['radius'],{'crs':crs});
+                return new Z.Circle(geoJSONObj['coordinates'], geoJSONObj['radius'],options);
             } else if ('Ellipse' === type) {
-                return new Z.Ellipse(geoJsonObj['coordinates'], geoJsonObj['width'], geoJsonObj['height'],{'crs':crs});
+                return new Z.Ellipse(geoJSONObj['coordinates'], geoJSONObj['width'], geoJSONObj['height'],options);
             } else if ('Rectangle' === type) {
-                return new Z.Rectangle(geoJsonObj['coordinates'], geoJsonObj['width'], geoJsonObj['height'],{'crs':crs});
+                return new Z.Rectangle(geoJSONObj['coordinates'], geoJSONObj['width'], geoJSONObj['height'],options);
             } else if ('Sector' === type) {
-                return new Z.Sector(geoJsonObj['coordinates'], geoJsonObj['radius'], geoJsonObj['startAngle'], geoJsonObj['endAngle'],{'crs':crs});
+                return new Z.Sector(geoJSONObj['coordinates'], geoJSONObj['radius'], geoJSONObj['startAngle'], geoJSONObj['endAngle'],options);
             }
             return null;
         }

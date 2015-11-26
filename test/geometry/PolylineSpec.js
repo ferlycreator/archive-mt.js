@@ -12,7 +12,7 @@ describe('PolylineSpec', function() {
         container.style.height = '600px';
         document.body.appendChild(container);
         var option = {
-            zoomLevel: 17,
+            zoom: 17,
             center: center
         };
         map = new Z.Map(container, option);
@@ -38,7 +38,7 @@ describe('PolylineSpec', function() {
             var polyline = new Z.Polyline(points);
             var coordinates = polyline.getCoordinates();
             expect(coordinates).to.have.length(points.length);
-            var geojsonCoordinates = Z.GeoJson.toGeoJsonCoordinates(coordinates);
+            var geojsonCoordinates = Z.GeoJSON.toGeoJSONCoordinates(coordinates);
             expect(geojsonCoordinates).to.eql(points);
         });
 

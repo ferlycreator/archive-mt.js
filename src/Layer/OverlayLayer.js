@@ -33,15 +33,29 @@ Z.OverlayLayer=Z.Layer.extend({
 
     /**
      * 返回图层上所有的Geometry
+     * @param {function} filter 过滤函数
+     * @param {Object} context 过滤函数的调用对象
      * @return {Array} [Geometry数组]
      * @expose
      */
-    getAllGeometries:function() {
+    getGeometries:function(filter, context) {
         var cache = this._geoCache;
         var result = [];
         for (var p in cache) {
             if (cache.hasOwnProperty(p)) {
-                result.push(cache[p]);
+                var geometry = cache[p];
+                if (filter) {
+                    var filtered;
+                    if (context) {
+                        filtered = filter.call(context, geometry);
+                    } else {
+                        filtered = filter(geometry);
+                    }
+                    if (!filtered) {
+                        continue;
+                    }
+                }
+                result.push(geometry);
             }
         }
         return result;
@@ -114,7 +128,7 @@ Z.OverlayLayer=Z.Layer.extend({
         if (map) {
             this._rend(geometries);
             if (fitView) {
-                var z = map.getFitZoomLevel(extent);
+                var z = map.getFitZoom(extent);
                 var center = {x:centerSum.x/fitCounter, y:centerSum.y/fitCounter};
                 map.setCenterAndZoom(center,z);
             }

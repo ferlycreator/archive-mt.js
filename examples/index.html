@@ -96,7 +96,7 @@
         mapObj = new maptalks.Map('mapObj', //放置mapObj的div id
         {
             center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
-            zoomLevel:   11, //初始缩放级别
+            zoom:   11, //初始缩放级别
             attributionControl:  false, //版权信息控件
             zoomControl :  false, //缩放控件
             navControl:  false, //导航控件
@@ -1064,7 +1064,7 @@ var rectangle = new maptalks.Rectangle(coordinate, 1000, 600, {
 */
 new maptalks.Map('mapObj',{
     center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
-    zoomLevel:   11, //初始缩放级别
+    zoom:   11, //初始缩放级别
     zoomControl :  true, //缩放控件
     zoomControlOptions : { //设置缩放控件的位置
         position : maptalks.Control['top_left']//top_left|top_right|bottom_left|bottom_right
@@ -1102,7 +1102,7 @@ mapObj.addControl(zoomControl2);
 */
 new maptalks.Map('mapObj',{
     center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
-    zoomLevel:   11, //初始缩放级别
+    zoom:   11, //初始缩放级别
     navControl: true,//nav控件
     navControlOptions : {//设置控件放置位置
         position : maptalks.Control['top_left']
@@ -1134,7 +1134,7 @@ mapObj.addControl(navControl);
 */
 new maptalks.Map('mapObj',{
     center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
-    zoomLevel:   11, //初始缩放级别
+    zoom:   11, //初始缩放级别
     scaleControl: true,//scale控件
     scaleControlOptions : {
         position : maptalks.Control['bottom_left'],
@@ -1159,7 +1159,7 @@ new maptalks.Map('mapObj',{
 */
 new maptalks.Map('mapObj',{
     center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
-    zoomLevel:   11, //初始缩放级别
+    zoom:   11, //初始缩放级别
     attributionControl: true,//attribution控件
     attributionControlOptions : {//设置控件放置位置
         position : {

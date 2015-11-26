@@ -373,11 +373,11 @@ function registerGeometryCommonTest(geometry,_context) {
 
     context(type+':copy',function() {
         it ('copy',function() {
-            var json = geometry.toJson();
+            var json = geometry.toJSON();
 
             var cloned = geometry.copy();
 
-            var clonedJson = cloned.toJson();
+            var clonedJson = cloned.toJSON();
 
             expect(clonedJson).to.eql(json);
         });
@@ -385,21 +385,21 @@ function registerGeometryCommonTest(geometry,_context) {
 
     context(type+':has crs',function() {
         it ('can read crs from json',function() {
-            var json = geometry.toJson();
+            var json = geometry.toGeoJSON();
             json.crs = {
                 "type" : "cnCoordinateType",
                 "properties" : {
                     "name" : "gcj02"
                 }
             };
-            var parsed = Z.GeoJson.fromGeoJson(json);
+            var parsed = Z.GeoJSON.fromGeoJSON(json);
 
             expect(parsed.getCRS()).to.eql(json.crs);
         });
 
         it ('has crs',function() {
             var coordinateType = Z.CRS.GCJ02;
-            var json = geometry.setCRS(coordinateType).toJson();
+            var json = geometry.setCRS(coordinateType).toGeoJSON();
             expect(json['crs']).to.be.ok();
             expect(json['crs']).to.eql({"type":"cnCoordinateType","properties":{"name":"gcj02"}});
         });

@@ -11,7 +11,13 @@ Z['MultiPoint'] = Z.MultiPoint = Z.MultiPoly.extend({
 
     options:{
         'symbol':{
-            'markerFile' : Z.prefix+'images/marker.png',
+            'markerFile' : (function(){
+                if (Z.runningInNode) {
+                    return 'images/marker.png';
+                } else {
+                    return Z.prefix+'images/marker.png';
+                }
+            })(),
             'markerHeight' : 30,
             'markerWidth' : 22
         }

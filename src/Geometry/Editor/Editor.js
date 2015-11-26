@@ -8,14 +8,16 @@
 Z.Editor=Z.Class.extend({
     includes: [Z.Eventable],
 
+    editStageLayerId : Z.internalLayerPrefix+'_edit_stage',
+
     /**
      * @constructor
      * @param {maptalks.Geometry} geometry 待编辑图形
      * @param {Object} opts 属性
      */
     initialize:function(geometry,opts) {
-        this.geometry = geometry;
-        if (!this.geometry) {return;}
+        this.geometryToEdit = geometry;
+        if (!this.geometryToEdit) {return;}
         //Z.Util.extend(this, opts);
         this.opts = opts;
         if (!this.opts) {
@@ -23,11 +25,15 @@ Z.Editor=Z.Class.extend({
         }
     },
 
+    getMap:function() {
+        return this.geometryToEdit.getMap();
+    },
+
     prepare:function() {
-        var map=this.geometry.getMap();
+        var map=this.getMap();
         if (!map) {return;}
-        this.map=map;
-        this.geoType = this.geometry.getType();
+
+        this.geoType = this.geometryToEdit.getType();
         if (!map._panels.editorContainer) {
             var editorContainer = Z.DomUtil.createEl("div");
             //editorContainer.id = "editorContainer";
@@ -43,22 +49,35 @@ Z.Editor=Z.Class.extend({
          */
         if (this.opts['symbol']) {
             this._originalSymbol=this.geometry.getSymbol();
-            this.geometry.setSymbol(this.opts['symbol']);
+            this.geometryToEdit.setSymbol(this.opts['symbol']);
         }
 
         this.editHandlers = [];
-
+        this._prepareEditStageLayer();
         map.on('_zoomend _moveend _resize',this.onRefreshEnd,this);
         map.on('_zoomstart',this.onRefreshStart,this);
+    },
+
+    _prepareEditStageLayer:function() {
+        var map=this.getMap();
+        this._editStageLayer = map.getLayer(this.editStageLayerId);
+        if (!this._editStageLayer) {
+            this._editStageLayer = new Z.VectorLayer(this.editStageLayerId);
+            map.addLayer(this._editStageLayer);
+        }
     },
 
     /**
      * 开始编辑
      */
     start:function() {
-        if (!this.geometry || !this.geometry.getMap() || this.geometry.editing) {return;}
+        if (!this.geometryToEdit || !this.geometryToEdit.getMap() || this.geometryToEdit.editing) {return;}
         this.prepare();
-        var geometry = this.geometry;
+        var geometry = this.geometryToEdit.copy();
+        this.geometry = geometry;
+        this.geometry.setId(null);
+        this.geometryToEdit.hide();
+        this._editStageLayer.addGeometry(geometry);
         if (geometry instanceof Z.Marker) {
             this.createMarkerEditor();
         } else if (geometry instanceof Z.Circle) {
@@ -82,10 +101,18 @@ Z.Editor=Z.Class.extend({
      */
     stop:function() {
         this.editing = false;
-        var map = this.map;
-        if (!map || !this.geometry) {
+        var map = this.getMap();
+        if (!map) {
             return;
         }
+        if (this.geometry) {
+            this._update();
+            this.geometry.remove();
+            delete this.geometry;
+        }
+
+        this.geometryToEdit.show();
+
         map.off('_zoomend', this.onRefreshEnd,this);
         map.off('_zoomstart', this.onRefreshStart,this);
         map.off('_resize', this.onRefreshEnd,this);
@@ -95,7 +122,7 @@ Z.Editor=Z.Class.extend({
         this.editHandlers=[];
 
         if (this.opts['symbol']) {
-            this.geometry.setSymbol(this._originalSymbol);
+            this.geometryToEdit.setSymbol(this._originalSymbol);
             delete this._originalSymbol;
         }
     },
@@ -107,11 +134,31 @@ Z.Editor=Z.Class.extend({
         return this.editing;
     },
 
+    _update:function() {
+        this.geometryToEdit.setCoordinates(this.geometry.getCoordinates());
+        if (this.geometryToEdit.getRadius) {
+            this.geometryToEdit.setRadius(this.geometry.getRadius());
+        }
+        if (this.geometryToEdit.getWidth) {
+            this.geometryToEdit.setWidth(this.geometry.getWidth());
+        }
+        if (this.geometryToEdit.getHeight) {
+            this.geometryToEdit.setHeight(this.geometry.getHeight());
+        }
+        if (this.geometryToEdit.getStartAngle) {
+            this.geometryToEdit.setStartAngle(this.geometry.getStartAngle());
+        }
+        if (this.geometryToEdit.getEndAngle) {
+            this.geometryToEdit.setEndAngle(this.geometry.getEndAngle());
+        }
+    },
+
     fireEditEvent:function(eventName) {
         if (!this.geometry) {
             return;
         }
-        this.geometry.fire(eventName,{'type':eventName,"target":this.geometry});
+        this._update();
+        this.geometryToEdit.fire(eventName);
     },
 
     createHandleDom:function(pixel,opts) {
@@ -133,14 +180,15 @@ Z.Editor=Z.Class.extend({
         if (!opts) {
             opts = {tip:''};
         }
+        var map = this.getMap();
         var handle = this.createHandleDom(pixel,opts);
-        var _containerDOM = this.map._containerDOM;
+        var _containerDOM = map._containerDOM;
         var editor = this;
         function onMouseMoveEvent(event) {
             var ev  = ev || window.event;
             editor.hideContext();
             var mousePos = Z.DomUtil.getEventContainerPoint(ev,_containerDOM);
-            var handleDomOffset = editor.map._containerPointToViewPoint(mousePos);
+            var handleDomOffset = map._containerPointToViewPoint(mousePos);
             handle.style['top']=(handleDomOffset.top-5)+"px";
             handle.style['left']=(handleDomOffset.left-5)+"px";
             Z.DomUtil.stopPropagation(ev);
@@ -188,7 +236,7 @@ Z.Editor=Z.Class.extend({
             opts = {};
         }
         var geometry = this.geometry;
-        var map = this.map;
+        var map = this.getMap();
         var pxCenter = map._transformToViewPoint(geometry._getPCenter());
         //------------------------拖动标注--------------------------
         var centerHandle = this.createHandle(pxCenter, {
@@ -197,7 +245,7 @@ Z.Editor=Z.Class.extend({
                 if (opts.onDown) {
                     opts.onDown.call(this);
                 }
-                geometry._forceStartDrag();
+                geometry['draggable']._startDrag();
             },
             onMove:function(handleDomOffset) {
                 if (opts.onMove) {
@@ -280,7 +328,7 @@ Z.Editor=Z.Class.extend({
      */
     createCircleEditor:function() {
         var geometry = this.geometry;
-        var map = this.map;
+        var map = this.getMap();
         function radiusHandleOffset() {
             var pxCenter = map._transformToViewPoint(geometry._getPCenter());
             var r = geometry.getRadius();
@@ -327,7 +375,7 @@ Z.Editor=Z.Class.extend({
      */
     createEllipseEditor:function() {
         var geometry = this.geometry;
-        var map = this.map;
+        var map = this.getMap();
         function radiusHandleOffset() {
             var pxCenter = map._transformToViewPoint(geometry._getPCenter());
             var rx = Math.round(geometry.getWidth()/2);
@@ -379,7 +427,7 @@ Z.Editor=Z.Class.extend({
      */
     createRectEditor:function() {
         var geometry = this.geometry;
-        var map = this.map;
+        var map = this.getMap();
         function radiusHandleOffset() {
             var pxNw = map._transformToViewPoint(geometry._getPNw());
             var rw = Math.round(geometry.getWidth());
@@ -417,7 +465,7 @@ Z.Editor=Z.Class.extend({
             tip:"拖动以移动图形",
             onDown:function() {
                 rHandle.style.display='none';
-                geometry._forceStartDrag();
+                geometry['draggable']._startDrag();
             },
             onMove:function(handleDomOffset) {
                 // nwHandle.onRefresh();
@@ -443,7 +491,7 @@ Z.Editor=Z.Class.extend({
      */
     createPolygonEditor:function() {
         var geometry = this.geometry;
-        var map = geometry.getMap();
+        var map = this.getMap();
         var vertexHandles = [];
         var closeHandle = null;
         var centerHandle = null;
@@ -527,6 +575,11 @@ Z.Editor=Z.Class.extend({
                 lonlats.splice(hit,1);
                 vertexHandles.splice(hit,1);
 
+                //刷新handler上的多边形顶点序号
+                for (var i = 0; i < vertexHandles.length; i++) {
+                    vertexHandles[i]['maptalks--editor-vertex-index'] = i;
+                }
+
                 Z.DomUtil.removeDomNode(ringhandle);
                 geometry._updateCache();
                 geometry._onShapeChanged();
@@ -559,7 +612,7 @@ Z.Editor=Z.Class.extend({
                     for (var i=0,len=vertexHandles.length;i<len;i++) {
                         vertexHandles[i].style.display = "none";
                     }
-                    geometry._forceStartDrag();
+                    geometry['draggable']._startDrag();
                 },
                 onMove:function(handleDomOffset) {
                     this.fireEditEvent('positionchanging');
@@ -602,7 +655,7 @@ Z.Editor=Z.Class.extend({
             var lonlats = getLonlats();
             //临时编辑按钮的点击
             var handleDomOffset = Z.DomUtil.offsetDom(tmpHandle);
-            var res = map._getTileConfig()['resolutions'][map.getZoomLevel()];
+            var res = map._getTileConfig()['resolutions'][map.getZoom()];
             var plonlat = map._untransformFromViewPoint(new Z.Point(handleDomOffset['left']+5,handleDomOffset['top']+5));
             var interIndex = Z.GeoUtils._isPointOnPath(plonlat, geometry, pxTolerance*res);
             if (interIndex >= 0) {
@@ -615,7 +668,7 @@ Z.Editor=Z.Class.extend({
         },this);
 
         Z.DomUtil.addDomEvent(map._containerDOM,'mousemove',function(event) {
-            var res = map._getTileConfig()['resolutions'][map.getZoomLevel()];
+            var res = map._getTileConfig()['resolutions'][map.getZoom()];
             var eventOffset = Z.DomUtil.getEventContainerPoint(event,map._containerDOM);
             var plonlat = map._untransform(eventOffset);
             var tolerance = pxTolerance*res;

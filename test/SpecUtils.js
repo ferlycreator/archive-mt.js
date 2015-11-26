@@ -70,7 +70,7 @@ function commonSetupMap(center) {
     document.body.appendChild(container);
     var option = {
         enableCartoCSS: false,
-        zoomLevel: 17,
+        zoom: 17,
         center: center
     };
     var map = new Z.Map(container, option);
@@ -193,7 +193,6 @@ var GeoSymbolTester = {
         }
         geometry.setSymbol(this.lineAndFill);
         geometry.remove();
-        Z.TESTMODE=true;
         layer = new maptalks.VectorLayer("symboltest_layer_canvas",{"render":"canvas"});
         map.addLayer(layer);
         layer.addGeometry(geometry);

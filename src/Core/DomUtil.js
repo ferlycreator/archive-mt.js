@@ -306,6 +306,9 @@ Z.DomUtil = {
      * @return {Boolean} true，支持；false，不支持
      */
     testCssProp: function (props) {
+        if (typeof(document) === 'undefined') {
+            return true;
+        }
         var style = document.documentElement.style;
         for (var i = 0; i < props.length; i++) {
             if (props[i] in style) {
@@ -349,7 +352,7 @@ Z.DomUtil = {
      */
     setOpacity:function(dom, opacity) {
         if (Z.Browser.ielt9) {
-            dom.filters.alpha.opacity=opacity*100;
+            dom.style.filter="progid:DXImageTransform.Microsoft.Alpha(Opacity="+opacity*100+")";
         } else {
             dom.style.opacity = opacity;
         }
@@ -444,7 +447,7 @@ Z.DomUtil = {
      * @param {String} name class名称
      */
     setClass: function (el, name) {
-        if (el.className.baseVal === undefined) {
+        if (Z.Util.isNil(el.className.baseVal)) {
             el.className = name;
         } else {
             el.className.baseVal = name;
@@ -457,7 +460,7 @@ Z.DomUtil = {
      * @retrun {String} class字符串
      */
     getClass: function (el) {
-        return el.className.baseVal === undefined ? el.className : el.className.baseVal;
+        return Z.Util.isNil(el.className.baseVal) ? el.className : el.className.baseVal;
     },
 
     /**
@@ -488,7 +491,10 @@ Z.DomUtil = {
      * @return {[type]}   [description]
      */
     testCanvasSize: (function() {
-
+        //usually in node
+        if (Z.runningInNode) {
+            return function(){return true;};
+        }
           /**
            * @type {CanvasRenderingContext2D}
            */

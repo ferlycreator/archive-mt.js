@@ -6,82 +6,123 @@ Z.Geometry.mergeOptions({
     'draggable': false
 });
 
-Z.Geometry.include({
+Z.Geometry.Drag = Z.Handler.extend({
+    dragStageLayerId : Z.internalLayerPrefix+'_drag_stage',
+
+    addHooks: function () {
+        this.target.on('mousedown', this._startDrag, this);
+    },
+    removeHooks: function () {
+        this.target.off('mousedown', this._startDrag, this);
+    },
     /**
      * 开始移动Geometry, 进入移动模式
      * @param {Boolean} enableMapEvent 是否阻止地图拖动事件 true,阻止
      * @member maptalks.Geometry
      */
-    startDrag: function() {
-        if (!this.options['draggable']) {
-            return this;
-        }
-        return this._forceStartDrag();
-    },
-
-    /**
-     * 内部使用的强制开始拖动函数
-     */
-    _forceStartDrag:function() {
-        var map = this.getMap();
+    _startDrag: function(param) {
+        var map = this.target.getMap();
         if (!map) {
             return this;
         }
+        var parent = this.target._getParent();
+        if (parent) {
+            return this;
+        }
+        if (this.isDragging()) {
+            return this;
+        }
         Z.DomUtil.addStyle(map._containerDOM,'cursor', 'move');
-        map.options['draggable']=false;
+        if (map['draggable']) {
+            map['draggable'].disable();
+        }
         map.on('mousemove', this._dragging, this);
-        map.on('mouseup', this.endDrag, this);
+        map.on('mouseup', this._endDrag, this);
         delete this._preCoordDragged;
+        this._isDragging = true;
+
+        this._prepareDragStageLayer();
+        if (this._shadow) {
+            this._shadow.remove();
+        }
+        this._shadow = this.target.copy();
+        this._shadow.setId(null);
+        this.target.hide();
+        this._dragStageLayer.addGeometry(this._shadow);
+
+
         /**
          * 触发geometry的dragstart事件
          * @member maptalks.Geometry
          * @event dragstart
          * @return {Object} params: {'target':this}
          */
-        this._fireEvent('dragstart');
+        this.target._fireEvent('dragstart');
         return this;
     },
 
+     _prepareDragStageLayer:function() {
+        var map=this.target.getMap();
+        this._dragStageLayer = map.getLayer(this.dragStageLayerId);
+        if (!this._dragStageLayer) {
+            this._dragStageLayer = new Z.VectorLayer(this.dragStageLayerId);
+            map.addLayer(this._dragStageLayer);
+        }
+    },
+
     _dragging: function(param) {
-        this._isDragging = true;
         var currentCoord = param['coordinate'];
         if(!this._preCoordDragged) {
             this._preCoordDragged = currentCoord;
         }
         var dragOffset = currentCoord.substract(this._preCoordDragged);
         this._preCoordDragged = currentCoord;
-        this.translate(dragOffset);
-        param['dragOffset'] = dragOffset;
+        this._shadow.translate(dragOffset);
+        this.target.translate(dragOffset);
         /**
          * 触发geometry的dragging事件
          * @member maptalks.Geometry
          * @event dragging
          * @return {Object} params: {'target':geometry, 'containerPoint':containerPoint, 'coordinate':coordinate,'domEvent':event};
          */
-        this._fireEvent('dragging', param);
+        this.target._fireEvent('dragging', param);
     },
 
     /**
      * 结束移动Geometry, 退出移动模式
      */
-    endDrag: function(param) {
-        var map = this.getMap();
-        this._isDragging = false;
-
+    _endDrag: function(param) {
+        var map = this.target.getMap();
         map.off('mousemove', this._dragging, this);
-        map.off('mouseup', this.endDrag, this);
-        map.options['draggable']=true;
+        map.off('mouseup', this._endDrag, this);
+        if (map['draggable']) {
+            map['draggable'].enable();
+        }
+        this._shadow.remove();
+        delete this._shadow;
+        this.target.show();
         delete this._preCoordDragged;
+        this._isDragging = false;
         /**
          * 触发geometry的dragend事件
          * @member maptalks.Geometry
          * @event dragend
          * @return {Object} params: {'target':this}
          */
-        this._fireEvent('dragend', param);
+        this.target._fireEvent('dragend', param);
         Z.DomUtil.addStyle(map._containerDOM,'cursor', 'default');
     },
 
+    isDragging:function() {
+        return this._isDragging;
+    }
+
+
+});
+
+Z.Geometry.addInitHook('addHandler', 'draggable', Z.Geometry.Drag);
+
+Z.Geometry.include({
     /**
      * Geometry是否处于移动模式中
      * @member maptalks.Geometry
@@ -89,15 +130,12 @@ Z.Geometry.include({
      * @expose
      */
     isDragging: function() {
-        if (this._isDragging) {
-            return this._isDragging;
+        if (this._getParent()) {
+            return this._getParent().isDragging();
+        }
+        if (this['draggable']) {
+            return this['draggable'].isDragging();
         }
         return false;
     }
-});
-
-Z.Geometry.addInitHook(function () {
-        this.on('mousedown', function(){
-            this.startDrag();
-        }, this);
 });

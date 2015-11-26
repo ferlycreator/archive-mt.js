@@ -87,6 +87,37 @@ Z.Class.extend = function (props) {
             proto._initHooks[i].call(this);
         }
     };
+    // config to set option and enable/disable handler
+    proto.config = function(conf) {
+        if (!conf) {
+            var config = {};
+            for (var p in this.options) {
+                if (this.options.hasOwnProperty(p)) {
+                    config[p] = this.options[p];
+                }
+            }
+            return config;
+        } else {
+            for (var i in conf) {
+                if (conf.hasOwnProperty(i)) {
+                     this.options[i] = conf[i];
+                    //handler
+                    if (this[i] && (this[i] instanceof Z.Handler)) {
+                        if (conf[i]) {
+                            this[i].enable();
+                        } else {
+                            this[i].disable();
+                        }
+                    }
+                }
+            }
+            //callback when set config
+            if (this.onConfig && (typeof this.onConfig == 'function' || (this.onConfig.constructor!==null && this.onConfig.constructor == Function))) {
+                this.onConfig(conf);
+            }
+        }
+        return this;
+    };
 
     return NewClass;
 };

@@ -27,6 +27,7 @@ Z.render.map.Dom = Z.render.map.Render.extend({
         },this);
     },
 
+
     /**
      * 获取图层渲染容器
      * @param  {Layer} layer 图层
@@ -53,6 +54,22 @@ Z.render.map.Dom = Z.render.map.Render.extend({
         this._rend();
     },
 
+    updateMapSize:function(mSize) {
+        if (!mSize) {return;}
+        var width = mSize['width'],
+            height = mSize['height'];
+        var panels = this._panels;
+        panels.mapWrapper.style.width = width + 'px';
+        panels.mapWrapper.style.height = height + 'px';
+        panels.mapViewPort.style.width = width + 'px';
+        panels.mapViewPort.style.height = height + 'px';
+        panels.controlWrapper.style.width = width + 'px';
+        panels.controlWrapper.style.height = height + 'px';
+    },
+
+    getPanel: function() {
+        return this._panels.mapViewPort;
+    },
 
     /**
      * 获取地图容器偏移量或更新地图容器偏移量
@@ -70,23 +87,25 @@ Z.render.map.Dom = Z.render.map.Render.extend({
     },
 
     resetContainer:function() {
-        var position = this.offsetPlatform();
         Z.DomUtil.offsetDom(this._panels.mapPlatform, new Z.Point(0,0)); //{'left':0,'top':0}
         this.map._resetMapViewPoint();
-
     },
 
-
+    getContainerDomSize:function() {
+        var map = this.map;
+        if (!map._containerDOM) {return null;}
+        var _containerDOM = map._containerDOM;
+        var mapWidth = parseInt(_containerDOM.offsetWidth,0);
+        var mapHeight = parseInt(_containerDOM.offsetHeight,0);
+        return new Z.Size(mapWidth, mapHeight);
+    },
 
     showOverlayLayers:function() {
         this._panels.svgContainer.style.display="";
-        // this._panels.canvasLayerContainer.style.display="";
     },
 
     hideOverlayLayers:function() {
         this._panels.svgContainer.style.display="none";
-        // this._panels.canvasLayerContainer.style.display="none";
-        // this._panels.tipContainer.style.display="none";
     },
 
     /**
@@ -110,78 +129,16 @@ Z.render.map.Dom = Z.render.map.Render.extend({
         Z.SVG.refreshContainer(this.map,this._vectorPaper);
     },
 
-    onZoomStart:function(scale, focusPos, fn, context, args) {
-        if (Z.Browser.ielt9) {
-            setTimeout(function() {
-                fn.apply(context, args);
-            },800);
-            return;
+    _createCanvas:function() {
+        this._canvas = Z.DomUtil.createEl('canvas');
+        this._canvas.style.cssText = 'position:absolute;top:0px;left:0px;';
+        this._updateCanvasSize();
+        this._context = this._canvas.getContext('2d');
+        if (Z.Browser.retina) {
+            this._context.scale(2, 2);
         }
-        var map = this.map;
-        // this._askBaseTileLayerToRend();
-        var baseLayerImage = map.getBaseTileLayer()._getRender().getCanvasImage();
-        this._clearCanvas();
-        var width = this._canvas.width, height = this._canvas.height;
-
-        this._drawLayerCanvasImage(baseLayerImage, width, height);
-        this._context.save();
-        Z.animation.animate(new Z.animation.zoom({
-            'scale1' : 1,
-            'scale2': scale,
-            'duration' : 200
-        }), map, function(frame) {
-            this._context.save();
-            this._clearCanvas();
-            this._context.translate(focusPos['left'],focusPos['top']);
-            this._context.scale(frame.scale, frame.scale);
-            this._context.translate(-focusPos['left'],-focusPos['top']);
-            this._drawLayerCanvasImage(baseLayerImage, width, height);
-            this._context.restore();
-            if (frame.state['end']) {
-                this._canvasBackgroundImage = Z.DomUtil.copyCanvas(this._canvas);
-                fn.apply(context, args);
-            }
-        }, this);
+        this._panels.canvasLayerContainer.appendChild(this._canvas);
     },
-
-
-    onZoomEnd:function() {
-        // this.insertBackground();
-        this._zoomAnimationEnd();
-        this.resetContainer();
-    },
-
-    _zoomAnimationEnd:function() {
-        if (Z.Browser.ielt9) {return;}
-
-        //恢复底图的css3 transform
-        var mapContainer = this._panels.mapContainer;
-        // mapContainer.className="MAP_CONTAINER";
-        // Z.DomUtil.setDomTransformOrigin(mapContainer,"");
-        // Z.DomUtil.setDomTransform(mapContainer,"");
-        mapContainer.style.top=0+"px";
-        mapContainer.style.left=0+"px";
-    },
-
-    panAnimation:function(moveOffset, t) {
-        var map = this.map;
-        var panMoveOffset = moveOffset.multi(0.5);
-        Z.animation.animate(new Z.animation.pan({
-            'distance': panMoveOffset,
-            'duration' : (t*4+100)
-        }), map, function(frame) {
-            if (!map._enablePanAnimation) {
-                map._onMoveEnd();
-                return true;
-            }
-            if (frame.state['end']) {
-                map._onMoveEnd();
-                return true;
-            }
-        }, this);
-
-    },
-
 
     /**
      * initialize container DOM of panels

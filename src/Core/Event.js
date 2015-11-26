@@ -57,20 +57,21 @@ Z.Eventable = {
             eventType = eventTypes[j].toLowerCase();
             var handlerChain =  this._eventMap[eventType];
             if (!handlerChain) {return this;}
-            var hits = [];
+            // var hits = [];
             for (var i=0, len= handlerChain.length;i<len;i++) {
                 if (handler == handlerChain[i].handler) {
                     if ((context && (handlerChain[i].context == context)) || Z.Util.isNil(context)) {
-                        hits.push(i);
+                        // hits.push(i);
+                        handlerChain[i].del = true;
                     }
                 }
             }
-            if (hits.length > 0) {
+            /*if (hits.length > 0) {
                 for (var len=hits.length, i=len-1;i>=0;i--) {
                     handlerChain.splice(hits[i],1);
                 }
                 // handlerChain.splice(start,1);
-            }
+            }*/
         }
         return this;
     },
@@ -106,8 +107,12 @@ Z.Eventable = {
         if (!param) {
             param = {};
         }
+        var delhits = [];
         for (var i=0, len = handlerChain.length;i<len; i++) {
             if (!handlerChain[i]) {continue;}
+            if (handlerChain[i].del) {
+                continue;
+            }
             var context = handlerChain[i].context;
             //增加type和target参数, 表示事件类型和事件源对象
             param['type'] = eventType;
@@ -116,6 +121,18 @@ Z.Eventable = {
                 handlerChain[i].handler.call(context,param);
             } else {
                 handlerChain[i].handler(param);
+            }
+        }
+        for (i=0, len = handlerChain.length;i<len; i++) {
+            if (!handlerChain[i]) {continue;}
+            if (handlerChain[i].del) {
+                delhits.push(i);
+                continue;
+            }
+        }
+        if (delhits.length > 0) {
+            for (len=delhits.length, i=len-1;i>=0;i--) {
+                handlerChain.splice(delhits[i],1);
             }
         }
     }

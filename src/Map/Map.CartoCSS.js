@@ -63,7 +63,7 @@ Z.Map.include({
             return null;
         }
         var layerShader = this._cartoCSSShader['findLayer']({'name':'#'+layerId});
-        var symbol = layerShader['getStyle'](geometry.getProperties(), { 'zoom': this.getZoomLevel() });
+        var symbol = layerShader['getStyle'](geometry.getProperties(), { 'zoom': this.getZoom() });
         return symbol;
     }
 });

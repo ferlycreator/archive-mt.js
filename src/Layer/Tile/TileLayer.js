@@ -5,12 +5,14 @@
  * @author Maptalks Team
  */
 Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
+    type: 'tile',
 
     options: {
         'opacity':1,
         'errorTileUrl':Z.prefix+'images/error.png',
         'urlTemplate':Z.prefix+'images/blank.png',
         'subdomains':[''],
+        'rendWhenPanning':false,
         //是否检查
         'showOnTileLoadComplete':true,
         'tileInfo':'web-mercator',
@@ -46,8 +48,9 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         if (!this._render) {
             this._initRender();
             this._render.initContainer();
-            if (!Z.Util.isNil(this.zIndex)) {
-                this._render.setZIndex(this.zIndex);
+            var zIndex = this.getZIndex();
+            if (!Z.Util.isNil(zIndex)) {
+                this._render.setZIndex(zIndex);
             }
         }
         this._load();
@@ -123,7 +126,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         if (!tileConfig) {return null;}
 
         var tileSize = this._getTileSize(),
-            zoomLevel = map.getZoomLevel(),
+            zoomLevel = map.getZoom(),
             mapDomOffset = map.offsetPlatform();
         // console.log(mapDomOffset);
         var holderLeft=mapDomOffset["left"],
@@ -191,7 +194,9 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
             if (Z.Util.isArrayHasData(subdomains)) {
                 var length = subdomains.length;
                 var s = (x+y) % length;
-                // var rand = Math.round(Math.random()*(subdomains.length-1));
+                if (s<0) {
+                    s=0;
+                }
                 domain = subdomains[s];
             }
         }
@@ -213,17 +218,6 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
             return value;
         });
         //return urlTemplate.replace(/{x}/g,x+'').replace(/{y}/g,y+'').replace(/{z}/g,z+'').replace(/{s}/g,domain+'');
-    },
-
-    /**
-     * 设置图层的层级
-     * @param zIndex
-     */
-    _setZIndex:function(zIndex) {
-        this.zIndex = zIndex;
-        if (this._render) {
-            this._render.setZIndex(zIndex);
-        }
     },
 
     /**

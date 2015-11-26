@@ -17,7 +17,7 @@
         //创建地图对象
         mapObj = new maptalks.Map("mapObj",{
             center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
-            zoomLevel:   11 //初始缩放级别
+            zoom:   11 //初始缩放级别
         });
         //设置底图图层
         mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
@@ -28,6 +28,7 @@
         }));
         //创建图层
         var layer = new maptalks.VectorLayer('layer',{render:'Canvas'});
+        var svgLayer = new maptalks.VectorLayer('svglayer');
         //将图层添加到地图对象
         mapObj.addLayer(layer);
         //创建点的坐标对象
@@ -39,62 +40,62 @@
         //设置label属性
         var labelOptions = {
             'symbol': {
-                'lineColor': '#ffffff',
-                'lineWidth': 1,
-                'lineOpacity': 0.9,
-                'lineDasharray': null,
-                'fill': '#4e98dd',
-                'fillOpacity': 0.9,
+                'markerLineColor': '#ff0000',
+                'markerLineWidth': 2,
+                'markerLineOpacity': 0.9,
+                'markerLineDasharray': null,
+                // 'markerFill': '#4e98dd',
+                'markerFillOpacity': 0.6,
 
                 'textFaceName': 'arial',
                 'textSize': 12,
-                'textFill': '#ff0000',
+                // 'textFill': '#ff0000',
                 'textOpacity': 1,
                 'textSpacing': 30,
-                'textWrapWidth': 50,
+                'textWrapWidth': null,//auto
                 'textWrapBefore': false,
-                'textWrapCharacter': '_',
-                'textLineSpacing': 8
+                'textWrapCharacter': '\n',
+                'textLineSpacing': 8,
+                'textHorizontalAlignment': 'middle',//left middle right
+                'textVerticalAlignment': 'bottom',//top middle bottom
             },
-            'draggable': true,
-            'horizontalAlignment': 'left',//left middle right
-            'verticalAlignment': 'top',//top middle bottom
-            'dx': 0,
-            'dy': 0,
-            'content': '上海大厦'
+            'draggable': true
         };
         //将label添加到指定的图层上
-        marker.addLabel(labelOptions);
+        marker.addLabel(new maptalks.Label('上海站精选\n二店', labelOptions));
+
+        mapObj.addLayer(svgLayer);
+        //测试svg和canvas是否重合
+        var marker2 = marker.copy();
+        marker2.addLabel(new maptalks.Label('上海站精选\n二店', labelOptions));
+        svgLayer.addGeometry(marker2);
 
         //设置label属性2
         var labelOptions2 = {
             'symbol': {
-                'lineColor': '#ffffff',
-                'lineWidth': 1,
-                'lineOpacity': 0.9,
-                'lineDasharray': null,
-                'fill': '#4e98dd',
-                'fillOpacity': 0.9,
+               'markerLineColor': '#ff0000',
+                'markerLineWidth': 1,
+                'markerLineOpacity': 0.9,
+                'markerLineDasharray': null,
+                'markerFill': '#4e98dd',
+                'markerFillOpacity': 0.9,
 
                 'textFaceName': 'arial',
                 'textSize': 12,
                 'textFill': '#ff0000',
                 'textOpacity': 1,
                 'textSpacing': 30,
-                'textWrapWidth': 50,
+                'textWrapWidth': null,//auto
                 'textWrapBefore': false,
                 'textWrapCharacter': '_',
-                'textLineSpacing': 8
+                'textLineSpacing': 8,
+                'textHorizontalAlignment': 'middle',//left middle right
+                'textVerticalAlignment': 'bottom',//top middle bottom
             },
-            'draggable': true,
-            'horizontalAlignment': 'middle',//left middle right
-            'verticalAlignment': 'bottom',//top middle bottom
-            'dx': 0,
-            'dy': 0,
-            'content': '上海大_厦辅楼'
+            'draggable': true
         };
         //将label添加到指定的图层上
-        marker.addLabel(labelOptions2);
+        marker.addLabel(new maptalks.Label('上海大_厦辅楼', labelOptions2));
 
        var toolbar = new maptalks.Toolbar({
             id: 'toolbar',//toolbar id

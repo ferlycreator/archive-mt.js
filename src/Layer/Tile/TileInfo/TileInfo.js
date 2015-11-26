@@ -2,8 +2,8 @@ Z['TileInfo']={
     'web-mercator':{
         'projection':'EPSG:3857', //4326 | 3857 | bd09
         'tileSystem' : 'web-mercator',
-        'maxZoomLevel':18,
-        'minZoomLevel':1,
+        'maxZoom':18,
+        'minZoom':1,
         'resolutions':[
             156543.0339,
             78271.51695,
@@ -40,8 +40,8 @@ Z['TileInfo']={
         'projection':'EPSG:3857', // 4326 | 3857 | bd09 | pixel
         'tileSystem':'TMS-GLOBAL-MERCATOR',
         // 'transformation' : [1, 0, 0, 1, -20037508.34, -20037508.34],
-        'maxZoomLevel':22,
-        'minZoomLevel':1,
+        'maxZoom':22,
+        'minZoom':1,
         'resolutions':[
             156543.0339,
             78271.51695,
@@ -77,8 +77,8 @@ Z['TileInfo']={
     'baidu':{
         'projection':'BAIDU',
         'tileSystem':[1,1,0,0],
-        'maxZoomLevel':19,
-        'minZoomLevel':1,
+        'maxZoom':19,
+        'minZoom':1,
         'resolutions':(function() {
             var res = Math.pow(2,18);
             var resolutions = [];

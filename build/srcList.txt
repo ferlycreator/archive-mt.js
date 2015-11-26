@@ -19,6 +19,7 @@
 ../src/Geo/Projection/Projection.Baidu.js
 ../src/Geo/Projection/Projection.Pixel.js
 ../src/Handler/Handler.js
+../src/Handler/HandlerBus.js
 ../src/Handler/Drag.js
 ../src/Map/Tool/DrawTool.js
 ../src/Map/Tool/DistanceTool.js
@@ -40,12 +41,12 @@
 ../src/Geometry/Ext/Geometry.InfoWindow.js
 ../src/Geometry/Ext/Geometry.Events.js
 ../src/Geometry/Ext/Geometry.Panel.js
-../src/Geometry/Ext/Geometry.Label.js
 ../src/Geometry/Extent.js
 ../src/Geometry/Vector.js
 ../src/Geometry/Geometry.Center.js
 ../src/Geometry/Geometry.Poly.js
 ../src/Geometry/Marker.js
+../src/Geometry/Label.js
 ../src/Geometry/Polygon.js
 ../src/Geometry/Polyline.js
 ../src/Geometry/Ellipse.js
@@ -57,7 +58,7 @@
 ../src/Geometry/MultiPoint.js
 ../src/Geometry/MultiPolyline.js
 ../src/Geometry/MultiPolygon.js
-../src/Geometry/GeoJson.js
+../src/Geometry/GeoJSON.js
 ../src/Geometry/Editor/Editor.js
 ../src/Map/Map.js
 ../src/Map/Map.Animation.js
@@ -68,6 +69,7 @@
 ../src/Map/Map.Snap.js
 ../src/Map/Map.CartoCSS.js
 ../src/Map/Map.FullScreen.js
+../src/Map/Map.Profile.js
 ../src/Map/Handler/Map.Drag.js
 ../src/Map/Handler/Map.DoubleClickZoom.js
 ../src/Map/Handler/Map.ScrollWheelZoom.js
@@ -109,8 +111,6 @@
 ../src/Map/UI/Button.js
 ../src/Map/UI/Toolbar.js
 ../src/Map/UI/Panel.js
-../src/Map/UI/Label.js
-../src/Map/UI/Label.Edit.js
 ../src/Linker/Linker.js
 ../src/Topo/GeoUtils.js
 ../src/Topo/SimplifyUtil.js

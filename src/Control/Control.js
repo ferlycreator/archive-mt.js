@@ -32,7 +32,7 @@ Z['Control'] = Z.Control = Z.Class.extend({
      * @cfg {Object} options 组件配置
      */
     options:{
-        'position' : this['top_left']
+        'position' : {'top': '40','left': '60'}
     },
 
     /**
@@ -181,6 +181,9 @@ Z.Map.include({
      * @expose
      */
     addControl: function (control) {
+        if (this.isCanvasRender()) {
+            return this;
+        }
         control.addTo(this);
         return this;
     },
@@ -192,6 +195,9 @@ Z.Map.include({
      * @expose
      */
     removeControl: function (control) {
+        if (this.isCanvasRender()) {
+            return this;
+        }
         control.remove();
         return this;
     }

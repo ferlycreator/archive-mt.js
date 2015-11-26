@@ -3,7 +3,6 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
     initialize:function(layer) {
         this._layer = layer;
         this._mapRender = layer.getMap()._getRender();
-        this._tileMap={};
         this._tileCache = new Z.TileLayer.TileCache();
         this._registerEvents();
         this._tileQueue = {};
@@ -12,13 +11,18 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
     _registerEvents:function() {
         var map = this.getMap();
         map.on('_moveend _resize _zoomend',this.rend,this);
-
-        // map.on('_moving',this.rend,this);
+        this._onMapMoving = Z.Util.throttle(this.rend,200,this);
+        if (this._layer.options['rendWhenPanning']) {
+            map.on('_moving',this._onMapMoving,this);
+        }
     },
 
     remove:function() {
         var map = this.getMap();
         map.off('_moveend _resize _zoomend',this.rend,this);
+        if (this._onMapMoving) {
+            map.off('_moving',this._onMapMoving,this);
+        }
         this._requestMapToRend();
     },
 
@@ -39,14 +43,24 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
     },
 
     clear:function() {
-        this._tileMap = {};
-        // this._clearContext();
+        this._clearCanvas();
         this._requestMapToRend();
     },
 
+    clearExecutors:function() {
+        clearTimeout(this._loadQueueTimeout);
+    },
+
+    initContainer:function() {
+
+    },
+
     rend:function(options) {
+        var tileGrid = this._layer._getTiles(/*this.getMap().getSize().multi(2.2)*/);
+        if (!tileGrid) {
+            return;
+        }
         this._rending = true;
-        var tileGrid = this._layer._getTiles(this.getMap().getSize().multi(2.2));
         var tiles = tileGrid['tiles'];
         var fullTileExtent = tileGrid['fullExtent'];
         if (!this._canvas) {
@@ -55,7 +69,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         }
         //canvas大小不做缩小, 只根据需要增大, 直到超过系统允许: testCanvas 结果为false
         var preZ = this._z;
-        this._z = this.getMap().getZoomLevel();
+        this._z = this.getMap().getZoom();
         if (this._z !== preZ) {
             this._canvasFullExtent = fullTileExtent;
             this._resizeCanvas(fullTileExtent.getSize());
@@ -139,8 +153,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
                 tileImage.onload = onTileLoad;
                 tileImage.onabort = onTileError;
                 tileImage.onerror = onTileError;
-                //
-                tileImage.src = tile['url'];
+                Z.Util.loadImage(tileImage, tile['url']);
             }
         }
 
@@ -149,8 +162,20 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
 
 
     _drawTile:function(point, tileImage) {
+        if (!point) {
+            return;
+        }
         var tileSize = this._layer._getTileSize();
+        var opacity = this._layer.config()['opacity'];
+        var isFaded = !Z.Util.isNil(opacity) && opacity < 1;
+        if (isFaded) {
+            this._context.save();
+            this._context.globalAlpha = opacity;
+        }
         Z.Canvas.image(this._context, point.substract(this._canvasFullExtent.getMin()), tileImage, tileSize['width'],tileSize['height']);
+        if (isFaded) {
+            this._context.restore();
+        }
     },
 
     /**
@@ -161,7 +186,6 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
     _drawTileAndRequest:function(point, tileImage) {
         this._tileToLoadCounter--;
 
-
         this._drawTile(point, tileImage);
 
         var tileSize = this._layer._getTileSize();
@@ -169,9 +193,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         if (viewExtent.isIntersect(new Z.Extent(point, point.add(new Z.Point(tileSize['width'], tileSize['height']))))) {
             this._requestMapToRend();
         }
-
         if (this._tileToLoadCounter === 0) {
-
              this._fireLoadedEvent();
         }
     },
@@ -184,6 +206,10 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         /*var tileSize = this._layer._getTileSize();
         Z.Canvas.clearRect(this._context, point['left'], point['top'], tileSize['width'],tileSize['height']);
         this._requestMapToRend();*/
+        this._tileToLoadCounter--;
+        if (this._tileToLoadCounter === 0) {
+             this._fireLoadedEvent();
+        }
     },
 
     _requestMapToRend:function() {
@@ -194,14 +220,6 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
 
     _fireLoadedEvent:function() {
         this._layer.fire('layerloaded');
-    },
-
-    clearExecutors:function() {
-        //nothing to do
-    },
-
-    initContainer:function() {
-
     }
 
 });

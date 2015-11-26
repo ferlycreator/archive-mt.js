@@ -11,7 +11,7 @@ describe('#OverlayLayer', function() {
         container.style.height = '600px';
         document.body.appendChild(container);
         var option = {
-            zoomLevel: 17,
+            zoom: 17,
             center: center
         };
         map = new Z.Map(container, option);
@@ -106,7 +106,7 @@ describe('#OverlayLayer', function() {
             var geo1 = new Z.Marker(center, {id: gid});
             layer.addGeometry(geo1);
 
-            expect(layer.clear().getAllGeometries()).to.be.empty();
+            expect(layer.clear().getGeometries()).to.be.empty();
         });
     });
 

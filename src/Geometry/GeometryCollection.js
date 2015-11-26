@@ -33,8 +33,9 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         //设置parent用来处理事件, setGeometries是所有Collection类型的Geometry都会调用的方法
         if (Z.Util.isArray(geometries)) {
             for (var i = geometries.length - 1; i >= 0; i--) {
-                geometries[i].setOptions(this.options);
+                geometries[i]._initOptions(this.config());
                 geometries[i]._setParent(this);
+                geometries[i].setSymbol(this.getSymbol());
             }
         }
         this._geometries = geometries;
@@ -113,10 +114,10 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
 
     setSymbol:function(symbol) {
         if (!symbol) {
-           this.options['symbol'] = null;
+           this._symbol = null;
         } else {
            var camelSymbol = this._prepareSymbol(symbol);
-           this.options['symbol'] = camelSymbol;
+           this._symbol = camelSymbol;
         }
         var geometries = this.getGeometries();
         for (var i=0,len=geometries.length;i<len;i++) {
@@ -277,8 +278,8 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
     },
 
 
-   _exportGeoJson:function() {
-        var geoJsons = [];
+   _exportGeoJSONGeometry:function() {
+        var geoJSONs = [];
         if (!this.isEmpty()) {
             var geometries = this.getGeometries();
             for (var i=0,len=geometries.length;i<len;i++) {
@@ -286,12 +287,12 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
                 if (!geo) {
                     continue;
                 }
-                geoJsons.push(geo._exportGeoJson());
+                geoJSONs.push(geo._exportGeoJSONGeometry());
             }
         }
         return {
             'type':         'GeometryCollection',
-            'geometries':   geoJsons
+            'geometries':   geoJSONs
         };
     },
 
@@ -359,62 +360,6 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
      */
     isEditing:function() {
         return this._editing;
-    },
-
-    /**
-     * 开始拖拽
-     * @expose
-     */
-    startDrag: function() {
-        if (!this.options['draggable']) {
-            return;
-        }
-        return this._forceStartDrag();
-    },
-
-    _forceStartDrag:function() {
-        var map = this.getMap();
-        if (!map) {
-            return this;
-        }
-        if (this.isEmpty()) {
-            return this;
-        }
-        map.options['draggable']=false;
-        var me = this;
-        var geometries = me.getGeometries();
-        for (var i=0,len=geometries.length;i<len;i++) {
-            geometries[i]._forceStartDrag();
-        }
-        map.on('mouseup', this.endDrag,this);
-        this._isDragging = true;
-        return this;
-    },
-
-    /**
-     * 停止拖拽
-     * @expose
-     */
-    endDrag:function() {
-        if (this.isEmpty()) {
-            return this;
-        }
-        this.getMap().off('mouseup', this.endDrag,this);
-        this._isDragging = false;
-        var geometries = this.getGeometries();
-        for (var i=0,len=geometries.length;i<len;i++) {
-            geometries[i].endDrag();
-        }
-        return this;
-    },
-
-    /**
-     * 是否处于拖拽状态
-     * @return {Boolean} [是否处于拖拽状态]
-     * @expose
-     */
-    isDragging:function() {
-        return this._isDragging;
     },
 
 

@@ -1,12 +1,12 @@
 Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
+    type:'dynamic',
+
     //瓦片图层的基础ZIndex
     baseZIndex:50,
 
     options:{
         'showOnTileLoadComplete':false,
         'padding' : 0,
-        'minZoomLevel' : -1, //-1 means no limit
-        'maxZoomLevel' : -1, //-1 means no limit
         'condition' : null,
         'spatialFilter' : null
 
@@ -39,9 +39,9 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
      */
     _prepareLoad:function() {
         var map = this.getMap();
-        var zoomLevel=map.getZoomLevel();
-        var min = this.getMinZoomLevel();
-        var max = this.getMaxZoomLevel();
+        var zoomLevel=map.getZoom();
+        var min = this.getMinZoom();
+        var max = this.getMaxZoom();
         if (!Z.Util.isNil(min) && min>=0 && zoomLevel<min) {
             return false;
         }
@@ -56,7 +56,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
         var param_spatialFilter= null;
         var spatialFilter = this.getSpatialFilter();
         if (spatialFilter) {
-            param_spatialFilter = JSON.stringify(spatialFilter.toJson());
+            param_spatialFilter = JSON.stringify(spatialFilter.toJSON());
         }
         var queryString=this._formQueryString( this.getCondition(), param_spatialFilter);
         var ajax = new Z.Util.Ajax(url,0,queryString,function(responseText){
@@ -108,7 +108,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
         var params="";
         params+="guid="+this.guid;
         params+="&nw="+tileNw.x+","+tileNw.y;
-        params+="&z="+map._zoomLevel;
+        params+="&z="+map.getZoom();
         params+="&c="+this.n;
         return params;
     },
@@ -125,7 +125,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
             'mapdb':this.options['mapdb'],
             'padding':padding["width"]+","+padding["height"],
             'len':tileConfig["tileSize"]["width"],
-            'res':tileConfig['resolutions'][map.getZoomLevel()],
+            'res':tileConfig['resolutions'][map.getZoom()],
             'layers':this.options['layers'],
             'condition':condition,
             'spatialFilter':(Z.Util.isNil(spatialFilter)?null:encodeURIComponent(spatialFilter)),
@@ -139,37 +139,6 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
             }
         }
         return params.join('&');
-        /*var ret = "projection="+tileConfig['projection']+"&guid="+this.guid;
-        ret+="&encoding=utf-8";
-        ret+="&mapdb="+this.options["mapdb"];
-        // ret+="&coordinateType="+map.getCoordinateType();
-
-        ret+="&padding="+padding["width"]+","+padding["height"];
-        ret+="&len="+tileConfig["tileSize"]["width"];
-        var opacity = this.getOpacity();
-        if (!Z.Util.isNil(opacity)) {
-            ret += "&opacity="+this.opacity;
-        }
-
-        if (map) {
-            ret+="&r="+tileConfig['resolutions'][map.getZoomLevel()];
-            var nt = (map._getProjection().srs != 'EPSG:4326');
-            ret+="&nt="+nt;
-        }
-
-        if (this.options['layers']) {
-            ret += ("&layer="+this.options['layers']);
-        }
-        if (!Z.Util.isNil(spatialFilter)) {
-            ret += ("&spatialFilter="+encodeURIComponent(spatialFilter));
-        }
-        if (!Z.Util.isNil(condition)) {
-            ret += ("&condition="+encodeURIComponent(condition));
-        }*/
-        /*if (!Z.Util.isNil(fieldFilter)) {
-            ret += ("&cond="+encodeURIComponent(fieldFilter));
-        }*/
-        // return ret;
     },
 
     /**
@@ -200,11 +169,11 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
      * @expose
      * @returns {Number}
      */
-    getMinZoomLevel:function(){
+    getMinZoom:function(){
         var map = this.getMap();
-        var ret =  this.options['minZoomLevel'];
+        var ret =  this.options['minZoom'];
         if (Z.Util.isNil(ret)) {
-            ret = map.getMinZoomLevel();
+            ret = map.getMinZoom();
         }
         return ret;
     },
@@ -213,11 +182,11 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
      * @expose
      * @returns {Number}
      */
-    getMaxZoomLevel:function(){
+    getMaxZoom:function(){
          var map = this.getMap();
-        var ret =  this.options['maxZoomLevel'];
+        var ret =  this.options['maxZoom'];
         if (Z.Util.isNil(ret)) {
-            ret = map.getMaxZoomLevel();
+            ret = map.getMaxZoom();
         }
         return ret;
     },
@@ -227,14 +196,14 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
      * @param zoomLevel {Number}
      *
      */
-    setMinZoomLevel:function(zoomLevel) {
+    setMinZoom:function(zoomLevel) {
         if (this.map) {
-            var mapmin = this.map.getMinZoomLevel();
+            var mapmin = this.map.getMinZoom();
             if (zoomLevel < mapmin) {
                 zoomLevel = mapmin;
             }
         }
-        this.options['minZoomLevel']=zoomLevel;
+        this.options['minZoom']=zoomLevel;
         return this;
     },
     /**
@@ -242,14 +211,14 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
      * @expose
      * @param zoomLevel {Number}
      */
-    setMaxZoomLevel:function(zoomLevel) {
+    setMaxZoom:function(zoomLevel) {
         if (this.map) {
-            var mapmax = this.map.getMaxZoomLevel();
+            var mapmax = this.map.getMaxZoom();
             if (zoomLevel > mapmax) {
                 zoomLevel = mapmax;
             }
         }
-        this.options['maxZoomLevel']=zoomLevel;
+        this.options['maxZoom']=zoomLevel;
         return this;
     },
 

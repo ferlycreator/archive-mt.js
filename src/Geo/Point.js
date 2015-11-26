@@ -7,7 +7,11 @@ Z['Point']=Z.Point=function(left,top) {
     if (Z.Util.isArrayHasData(left)) {
         this['left'] = left[0];
         this['top'] = left[1];
-     } else {
+     } else if (!Z.Util.isNil(left['left']) && !Z.Util.isNil(left['top'])) {
+        //对象
+        this['left'] = left['left'];
+        this['top'] = left['top'];
+    }else {
         this['top'] = top;
         this['left'] = left;
      }

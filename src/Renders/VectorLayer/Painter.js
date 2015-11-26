@@ -4,8 +4,9 @@ Z.Painter = Z.Class.extend({
         Z.StrokeAndFillSymbolizer,
         Z.ImageMarkerSymbolizer,
         Z.VectorMarkerSymbolizer,
-        Z.TextMarkerSymbolizer,
-        Z.ShieldMarkerSymbolizer
+        Z.ShieldMarkerSymbolizer,
+        Z.TextMarkerSymbolizer
+
     ],
 
     initialize:function(geometry) {
@@ -20,7 +21,7 @@ Z.Painter = Z.Class.extend({
     _createSymbolizers:function() {
         var symbol = this._getSymbol();
         var symbolizers = [];
-        for (var i=0, len=this.registerSymbolizers.length;i<len;i++) {
+        for (var i = this.registerSymbolizers.length - 1; i >= 0; i--) {
             if (this.registerSymbolizers[i].test(this.geometry, symbol)) {
                 symbolizers.push(new this.registerSymbolizers[i](symbol, this.geometry));
             }
@@ -36,15 +37,15 @@ Z.Painter = Z.Class.extend({
      * 绘制图形
      */
     paint:function() {
-        this._painted = true;
         var contexts = this.geometry.getLayer()._getRender().getPaintContext();
         if (!contexts) {
             return;
         }
         for (var i = this.symbolizers.length - 1; i >= 0; i--) {
-            this.symbolizers[i].symbolize.apply(this.symbolizers[i], contexts);
+            this.symbolizers[i].symbolize.apply(this.symbolizers[i], contexts.concat(this._registerEvents, this));
         }
-        this._registerEvents();
+        // this._registerEvents();
+        this._painted = true;
     },
 
     _registerEvents:function() {

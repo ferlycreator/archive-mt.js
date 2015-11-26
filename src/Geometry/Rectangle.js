@@ -197,7 +197,7 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
     },
 
 
-    _exportGeoJson:function() {
+    _exportGeoJSONGeometry:function() {
         var nw =this.getCoordinates();
         return {
             'type':"Rectangle",

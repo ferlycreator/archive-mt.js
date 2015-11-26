@@ -72,7 +72,7 @@ Z.Map.include({
             if(!layer || !layer.getMap() || layer.getId().indexOf(Z.internalLayerPrefix) >= 0) {
                 continue;
             }
-            var allGeos = layers[i].getAllGeometries();
+            var allGeos = layers[i].getGeometries();
             for (var j=0, length = allGeos.length; j<length; j++) {
                 var geo = allGeos[j];
                 if (!geo) {
