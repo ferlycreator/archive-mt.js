@@ -44,29 +44,65 @@ Z.Util = {
     },
 
     loadImage:function(img, url) {
+
         if (Z.runningInNode) {
-            if (!this._nodeHttp) {
-                this._nodeHttp = require('http');
-            }
-            this._nodeHttp.get(url,
-                function(res) {
-                    var data = new Buffer(parseInt(res.headers['content-length'],10));
-                    var pos = 0;
-                    res.on('data', function(chunk) {
-                      chunk.copy(data, pos);
-                      pos += chunk.length;
-                    });
-                    res.on('end', function () {
-                        var onloadFn = img.onload;
-                        if (onloadFn) {
-                            img.onload = function() {
-                                onloadFn.call(img);
-                            };
+            try {
+                if (Z.Util.isURL(url)) {
+                    console.log('begin to load remote image:',url);
+                    if (!this._nodeHttp) {
+                        this._nodeHttp = require('http');
+                    }
+                    this._nodeHttp.get(url,
+                        function(res) {
+
+                            var data = new Buffer(parseInt(res.headers['content-length'],10));
+                            var pos = 0;
+                            res.on('data', function(chunk) {
+                              chunk.copy(data, pos);
+                              pos += chunk.length;
+                            });
+                            res.on('end', function () {
+                                console.log('end loading remote image:',url);
+                                var onloadFn = img.onload;
+                                if (onloadFn) {
+                                    img.onload = function() {
+                                        onloadFn.call(img);
+                                    };
+                                }
+                                img.src = data;
+                            });
                         }
-                        img.src = data;
+                    );
+                } else {
+                    console.log('begin to load local image:',url);
+                    if (!this._nodeFS) {
+                        this._nodeFS = require('fs');
+                    }
+                    this._nodeFS.readFile(url,'binary',function(err,data) {
+                        if (err) {
+                            console.error('fail to read:',url,data.length);
+                            return;
+                        } else {
+                            console.log('end loading remote image:',url);
+                            console.log('load image complete',url);
+                            var onloadFn = img.onload;
+                            if (onloadFn) {
+                                img.onload = function() {
+                                    onloadFn.call(img);
+                                };
+                            }
+                            img.src = data;
+                        }
                     });
                 }
-            );
+            } catch (err) {
+                var onerrorFn = img.onerror;
+                if (onerrorFn) {
+                    img.onerror = function() {
+                        onerrorFn.call(img);
+                    };
+                }
+            }
         } else {
             img.src=url;
         }
@@ -382,6 +418,21 @@ Z.Util = {
             return false;
         }
         return typeof _func == 'function' || (_func.constructor!==null && _func.constructor == Function);
+    },
+
+    /**
+     * 判断是否是url
+     * @param  {[type]}  url [description]
+     * @return {Boolean}     [description]
+     */
+    isURL:function(url) {
+        if (!url) {
+            return false;
+        }
+        if (url.indexOf('http://') >= 0 || url.indexOf('https://') >= 0 || url.indexOf('blob:') >= 0) {
+            return true;
+        }
+        return false;
     },
 
     /**

@@ -523,11 +523,8 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @return {[type]}        [description]
      */
     _convertResourceUrl:function(symbol) {
-        function isRel(url) {
-            if (url.indexOf('http://') >= 0 || url.indexOf('https://') >= 0 || url.indexOf('blob:') >= 0) {
-                return false;
-            }
-            return true;
+        if (Z.runningInNode) {
+            return;
         }
         function absolute(base, relative) {
             var stack = base.split("/"),
@@ -551,17 +548,17 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
 
         var icon = symbol['markerFile'];
-        if (icon && isRel(icon)) {
+        if (icon && !Z.Util.isURL(icon)) {
             symbol['markerFile'] = absolute(location.href,icon);
         }
         icon = symbol['shieldFile'];
-        if (icon && isRel(icon)) {
+        if (icon && !Z.Util.isURL(icon)) {
             symbol['shieldFile'] = absolute(location.href,icon);
         }
         var fill = symbol['polygonPatternFile'];
         if (fill) {
             icon = Z.Util.extractCssUrl(fill);
-            if (isRel(icon)) {
+            if (!Z.Util.isURL(icon)) {
                 symbol['polygonPatternFile'] = 'url("'+absolute(location.href,icon)+'")';
             }
         }

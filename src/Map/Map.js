@@ -755,8 +755,10 @@ Z['Map']=Z.Map=Z.Class.extend({
 
     _Load:function() {
         this._originZoomLevel = this._zoomLevel;
+        if (!Z.runningInNode) {
+            this._initContainerWatcher();
+        }
 
-        this._initContainerWatcher();
         this._registerDomEvents();
         this._loadAllLayers();
         // this.callInitHooks();
