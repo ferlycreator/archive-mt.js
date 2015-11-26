@@ -33,21 +33,21 @@
             */
             subdomains:[0,1,2,3,4,5,6,7,8,9]
         }));
-        mapObj.setCoordinateType('bd09ll');
+        <!--mapObj.setCoordinateType('bd09ll');-->
         //创建图层
         var layer = new maptalks.VectorLayer('layer',{render:'canvas'});
         //将图层添加到地图对象
         mapObj.addLayer(layer);
         //构造查询对象
         var featureQuery = new maptalks.FeatureQuery({
-            'host': 'SGH1PDMIS01',//空间数据库地址
+            'host': 'localhost',//空间数据库地址
             'port': 8090,//端口
-            'mapdb': 'y-sde'//空间库名
+            'mapdb': 'mapdata'//空间库名
         });
         featureQuery.query({
             'page' : 0,
             'count': 200000,
-            'layer': 'yum_tradezone',
+                'layer': 'MALL_SH',
             'queryFilter': {
                 /**
                  * returnGeometry
@@ -63,14 +63,14 @@
                 //      'relation' : maptalks.SpatialFilter.RELATION_INTERSECT //与空间参考图形的关系
                 //},
                 //'coordinateType':'gcj02', //返回图形的坐标的坐标系
-                'coordinateType':'bd09ll',
-                'condition': "city='e24abb211a2847d59da507bd9a317c6a'", //查询条件 and name like '%浦南'
+                'coordinateType':'gcj02',
+                'condition': "year='2012'", //查询条件 and name like '%浦南'
                 'resultFields': [] //返回图形的属性，'*'表示返回全部
             },
             'success': function(geos) {
                 //将返回的图形添加到图层上
                 console.log(geos);
-                layer.addGeometry(geos,true);
+                layer.addGeometry(geos[0].features,true);
             },
             'error': function(error) {
                 console.error(error);
