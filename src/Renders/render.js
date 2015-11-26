@@ -14,19 +14,10 @@ Z.render.Canvas=Z.Class.extend({
         if (this._canvas) {
             return;
         }
-        if (Z.runningInNode) {
-            var size = this.getMap().getSize();
-            var Canvas = require(global.maptalks_node_canvas_path);
-            this._canvas = new Canvas(size['width'],size['height']);
-            this._context = this._canvas.getContext('2d');
-        } else {
-            this._canvas = Z.DomUtil.createEl('canvas');
-            this._context = this._canvas.getContext('2d');
-            /*if (Z.Browser.retina) {
-                this._context.scale(2, 2);
-            }*/
-            this._resizeCanvas();
-        }
+        var size = this.getMap().getSize();
+        this._canvas = Z.Canvas.createCanvas(size['width'],size['height']);
+        this._context = this._canvas.getContext('2d');
+        this._resizeCanvas();
     },
 
     _resizeCanvas:function(canvasSize) {

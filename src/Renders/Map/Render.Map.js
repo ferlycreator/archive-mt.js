@@ -122,30 +122,10 @@ Z.render.map.Render = Z.Class.extend({
         if (mwidth === 0 || mheight === 0){
             return;
         }
-        var sx, sy, w, h, dx, dy;
+
         var point = layerImage['point'];
         var size = layerImage['size'];
-        if (point['left'] <= 0) {
-            sx = -point['left'];
-            dx = 0;
-            w = Math.min(size['width']-sx,mwidth);
-        } else {
-            sx = 0;
-            dx = point['left'];
-            w = mwidth-point['left'];
-        }
-        if (point['top'] <= 0) {
-            sy = -point['top'];
-            dy = 0;
-            h = Math.min(size['height']-sy,mheight);
-        } else {
-            sy = 0;
-            dy = point['top'];
-            h = mheight-point['top'];
-        }
-        if (dx < 0 || dy < 0 || w <=0 || h <= 0) {
-            return;
-        }
+
         var layer = layerImage['layer'];
         var enableImageSmoothing = (!(layer instanceof Z.DynamicLayer) && (layer instanceof Z.TileLayer));
         if (enableImageSmoothing) {
@@ -155,13 +135,42 @@ Z.render.map.Render = Z.Class.extend({
         }
         var canvasImage = layerImage['image'];
         if (Z.runningInNode) {
-           canvasImage = new Image();
-           canvasImage.src = layerImage['image'].toBuffer();
+            if (canvasImage.toBuffer) {
+                //node-canvas
+                canvasImage = new Image();
+                canvasImage.src = layerImage['image'].toBuffer();
+            } else {
+                //canvas2svg
+                canvasImage = canvasImage.getContext('2d');
+            }
+            //CanvasMock并不一定实现了drawImage(img, sx, sy, w, h, dx, dy, w, h)
+            this._context.drawImage(canvasImage, point['left'], point['top']);
+        } else {
+            var sx, sy, w, h, dx, dy;
+            if (point['left'] <= 0) {
+                sx = -point['left'];
+                dx = 0;
+                w = Math.min(size['width']-sx,mwidth);
+            } else {
+                sx = 0;
+                dx = point['left'];
+                w = mwidth-point['left'];
+            }
+            if (point['top'] <= 0) {
+                sy = -point['top'];
+                dy = 0;
+                h = Math.min(size['height']-sy,mheight);
+            } else {
+                sy = 0;
+                dy = point['top'];
+                h = mheight-point['top'];
+            }
+            if (dx < 0 || dy < 0 || w <=0 || h <= 0) {
+                return;
+            }
+            // console.log(layerImage['image'], sx, sy, w, h, dx, dy, w, h, mwidth,mheight);
+            this._context.drawImage(canvasImage, sx, sy, w, h, dx, dy, w, h);
         }
-        // console.log(layerImage['image'], sx, sy, w, h, dx, dy, w, h, mwidth,mheight);
-        this._context.drawImage(canvasImage, sx, sy, w, h, dx, dy, w, h);
-
-
     },
 
     _askBaseTileLayerToRend:function() {

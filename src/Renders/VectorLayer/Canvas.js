@@ -193,34 +193,6 @@ Z.Canvas = {
     _path:function(context, points, lineDashArray) {
 
         function drawDashLine(startPoint, endPoint, dashArray) {
-            /**
-            * 出处：http://outofmemory.cn/code-snippet/10602/canvas-carry-arrow--IE8
-            * 但貌似有bug
-            */
-            /*var x = startPoint.left,y = startPoint.top,
-                x2 = endPoint.left,y2 = endPoint.top;
-            var dashCount = dashArray.length;
-            context.moveTo(Z.Util.canvasRound(x), Z.Util.canvasRound(y));
-            console.log('canvas:'+Z.Util.canvasRound(x)+','+ Z.Util.canvasRound(y));
-            var dx = Math.abs(x2 - x);
-            var dy = Math.abs(y2 - y);
-            var slope = dy / dx;
-            var distRemaining = Math.sqrt(dx * dx + dy * dy);
-            var dashIndex = 0, draw = true;
-            while (distRemaining >= 0.1 && dashIndex < 10000) {
-                var dashLength = dashArray[dashIndex++ % dashCount];
-                if (dashLength === 0) {dashLength = 0.001;} // Hack for Safari
-                if (dashLength > distRemaining) {dashLength = distRemaining;}
-                var xStep = Math.sqrt(dashLength * dashLength / (1 + slope * slope));
-                x += xStep;
-                y += slope * xStep;
-                context[draw ? 'lineTo' : 'moveTo'](Z.Util.canvasRound(x), Z.Util.canvasRound(y));
-                console.log('canvas:'+Z.Util.canvasRound(x)+','+ Z.Util.canvasRound(y));
-                distRemaining -= dashLength;
-                draw = !draw;
-            }
-            console.log('----------------------');*/
-
           //https://davidowens.wordpress.com/2010/09/07/html-5-canvas-and-dashed-lines/
           //
           // Our growth rate for our line can be one of the following:
