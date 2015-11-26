@@ -69,7 +69,11 @@ Z.render.tilelayer.Dom.prototype = {
      * @return {[type]}               [description]
      */
     rend:function(rendWhenReady) {
-        var tiles = this._layer._getTiles()['tiles'];
+        var tileGrid = this._layer._getTiles();
+        if (!tileGrid) {
+            return;
+        }
+        var tiles = tileGrid['tiles'];
         var tileContainer = this._tileContainer;
         var me = this;
         var tileImages = [];

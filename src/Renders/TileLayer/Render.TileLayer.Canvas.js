@@ -3,7 +3,6 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
     initialize:function(layer) {
         this._layer = layer;
         this._mapRender = layer.getMap()._getRender();
-        this._tileMap={};
         this._tileCache = new Z.TileLayer.TileCache();
         this._registerEvents();
         this._tileQueue = {};
@@ -44,10 +43,9 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
     },
 
     clear:function() {
-        this._tileMap = {};
+        this._clearCanvas();
         this._requestMapToRend();
     },
-
 
     clearExecutors:function() {
         clearTimeout(this._loadQueueTimeout);
@@ -58,8 +56,11 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
     },
 
     rend:function(options) {
-        this._rending = true;
         var tileGrid = this._layer._getTiles(/*this.getMap().getSize().multi(2.2)*/);
+        if (!tileGrid) {
+            return;
+        }
+        this._rending = true;
         var tiles = tileGrid['tiles'];
         var fullTileExtent = tileGrid['fullExtent'];
         if (!this._canvas) {
