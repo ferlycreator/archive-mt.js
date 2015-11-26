@@ -1,4 +1,16 @@
 Z.Canvas = {
+    createCanvas:function(width, height) {
+        var canvas;
+        if (!Z.runningInNode) {
+            canvas = Z.DomUtil.createEl('canvas');
+            canvas.width=width;
+            canvas.height = height;
+        } else {
+            //can be node-canvas or any other canvas mock
+            canvas = new Z.CanvasClass(width, height);
+        }
+        return canvas;
+    },
 
     setDefaultCanvasSetting:function(context) {
         context.lineWidth = 3;

@@ -44,11 +44,11 @@ Z.Util = {
     },
 
     loadImage:function(img, url) {
-
-        if (Z.runningInNode) {
+        if (Z.runningInNode && !img.setAttribute) {
+            //canvas-node的Image对象
             try {
                 if (Z.Util.isURL(url)) {
-                    console.log('begin to load remote image:',url);
+                    //读取远程图片
                     if (!this._nodeHttp) {
                         this._nodeHttp = require('http');
                     }
@@ -62,7 +62,6 @@ Z.Util = {
                               pos += chunk.length;
                             });
                             res.on('end', function () {
-                                console.log('end loading remote image:',url);
                                 var onloadFn = img.onload;
                                 if (onloadFn) {
                                     img.onload = function() {
@@ -74,7 +73,7 @@ Z.Util = {
                         }
                     );
                 } else {
-                    console.log('begin to load local image:',url);
+                    //读取本地图片
                     if (!this._nodeFS) {
                         this._nodeFS = require('fs');
                     }
@@ -83,8 +82,6 @@ Z.Util = {
                             console.error('fail to read:',url,data.length);
                             return;
                         } else {
-                            console.log('end loading remote image:',url);
-                            console.log('load image complete',url);
                             var onloadFn = img.onload;
                             if (onloadFn) {
                                 img.onload = function() {
