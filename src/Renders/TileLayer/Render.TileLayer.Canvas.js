@@ -109,7 +109,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
             } else {
                 if (mapViewExtent.isIntersect(new Z.Extent(tile['viewPoint'], tile['viewPoint'].add(new Z.Point(tileSize['width'], tileSize['height']))))) {
                     this._tileToLoadCounter++;
-                    this._tileQueue[tileId+"_"+tile['viewPoint'].toString()] = tile;
+                    this._tileQueue[tileId+"@"+tile['viewPoint'].toString()] = tile;
                 }
             }
         }
@@ -149,20 +149,20 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
 
         for (var p in this._tileQueue) {
             if (this._tileQueue.hasOwnProperty(p)) {
-                var tileId = p.split('_')[0];
+                var tileId = p.split('@')[0];
                 var tile = this._tileQueue[p];
                 delete this._tileQueue[p];
                 if (!this._tileCache[tileId]) {
                     var tileImage = new Image();
-                    tileImage[me.propertyOfTileId]=p;
-                    tileImage[me.propertyOfPointOnTile] = tile['viewPoint'];
-                    tileImage[me.propertyOfTileZoom] = tile['zoom'];
+                    tileImage[this.propertyOfTileId]=tileId;
+                    tileImage[this.propertyOfPointOnTile] = tile['viewPoint'];
+                    tileImage[this.propertyOfTileZoom] = tile['zoom'];
                     tileImage.onload = onTileLoad;
                     tileImage.onabort = onTileError;
                     tileImage.onerror = onTileError;
                     Z.Util.loadImage(tileImage, tile['url']);
                 } else {
-                    me._drawTileAndRequest(this._tileCache[tileId]);
+                    this._drawTileAndRequest(this._tileCache[tileId]);
                 }
 
             }
