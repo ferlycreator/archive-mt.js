@@ -164,7 +164,8 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
                     var tileDesc = {
                         'url' : tileUrl,
                         'viewPoint': new Z.Point(tileLeft, tileTop),
-                        'id'  : tileId
+                        'id'  : tileId,
+                        'zoom' : zoomLevel
                     };
                     tiles.push(tileDesc);
                     fullExtent = fullExtent.combine(new Z.Extent(tileDesc['viewPoint'], tileDesc['viewPoint'].add(new Z.Point(tileSize['width'],tileSize['height']))));
