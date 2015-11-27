@@ -35,10 +35,13 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
      * @param {maptalks.Map} map
      */
     addTo: function(map) {
-        //TODO options应该设置到this.options中
         this.map = map;
         if (!this.map) {return;}
+        if (map._drawTool && map._drawTool instanceof Z.DrawTool) {
+            map._drawTool.disable();
+        }
         this.enable();
+        map._drawTool = this;
         return this;
     },
 
