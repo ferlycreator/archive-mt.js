@@ -113,6 +113,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
                 }
             }
         }
+        this._requestMapToRend();
         this._rending = false;
         if (this._tileToLoadCounter === 0){
             this._requestMapToRend();
@@ -179,6 +180,9 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         var opacity = this._layer.config()['opacity'];
         var isFaded = !Z.Util.isNil(opacity) && opacity < 1;
         if (isFaded) {
+            if (opacity <= 0) {
+                return;
+            }
             this._context.save();
             this._context.globalAlpha = opacity;
         }
