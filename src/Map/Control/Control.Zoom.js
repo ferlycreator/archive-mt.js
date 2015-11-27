@@ -114,8 +114,8 @@ Z['Control']['Zoom'] = Z.Control.Zoom = Z.Control.extend({
     _slider: function(event) {
         var offsetY = event['offsetY'];
         if(offsetY<=7.2) offsetY = 0;
-        var level = this._map._maxZoom - Math.round(offsetY/7.2);
-        var top = (this._map._maxZoom-level)*7.2;
+        var level = this._map.getMaxZoom() - Math.round(offsetY/7.2);
+        var top = (this._map.getMaxZoom()-level)*7.2;
         Z.DomUtil.setStyle(this._zoomBarSlider, 'top: ' + top+'px');
         this._map.setZoom(level);
     },
@@ -141,7 +141,7 @@ Z['Control']['Zoom'] = Z.Control.Zoom = Z.Control.extend({
 
     _updateSliderPosition: function() {
         this._updateZoomLevel();
-        var sliderTop = (this._map._maxZoom - this._map._zoomLevel)*7.2;
+        var sliderTop = (this._map.getMaxZoom() - this._map._zoomLevel)*7.2;
         Z.DomUtil.setStyle(this._zoomBarSlider, 'top: ' + sliderTop+'px');
     }
 });
