@@ -28,7 +28,7 @@ Z.Eventable = {
             }
             for (var i=0, len=handlerChain.length;i<len;i++) {
                 if (handler == handlerChain[i].handler) {
-                    if ((context && handlerChain[i].context === context) || (Z.Util.isNil(context) && Z.Util.isNil(handlerChain[i].context))) {
+                    if (!handlerChain[i].del && ((context && handlerChain[i].context === context) || (Z.Util.isNil(context) && Z.Util.isNil(handlerChain[i].context)))) {
                         return this;
                     }
                 }
