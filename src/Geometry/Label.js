@@ -87,7 +87,9 @@ Z.Label = Z.Marker.extend({
     _refresh:function() {
         if (this.options['autosize']) {
             var symbol = this.getSymbol();
-            symbol['markerType'] = 'square';
+            if (!symbol['markerType']) {
+                symbol['markerType'] = 'square';
+            }
             symbol['textName'] = this._content;
             var size = Z.StringUtil.splitTextToRow(this._content, symbol)['size'];
             //背景和文字之间的间隔距离
