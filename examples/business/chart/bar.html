@@ -18,7 +18,7 @@
         mapObj = new maptalks.Map('mapObj', //放置mapObj的div id
         {
             center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
-            zoomLevel:   15 //初始缩放级别
+            zoom:   14 //初始缩放级别
         });
         //设置底图图层
         mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
@@ -26,12 +26,12 @@
             /*tileInfo: 'web-mercator',
             urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
             subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值*/
-            tileInfo : 'baidu',
-            urlTemplate:'http://online{s}.map.bdimg.com/tile/?qt=tile&x={x}&y={y}&z={z}&styles=pl',
+            tileInfo : 'web-mercator',
+            urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
             /**
             *urlTemplate中占位符{s}所有数值的数组
             */
-            subdomains:[0,1,2,3,4,5,6,7,8,9]
+            subdomains:[1,2,3]
         }));
         //创建图层
         layer = new maptalks.VectorLayer('layer',{render:'canvas'});
@@ -172,7 +172,7 @@
     }
 </script>
 <!-- 引擎javascript开发包-->
-<script type="text/javascript" src="../../../maptalks.min.js"></script>
+<script type="text/javascript" src="../../../maptalks.js"></script>
 <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
 <!--[if lt IE 9]>
   <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.min.js"></script>
