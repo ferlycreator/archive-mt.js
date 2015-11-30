@@ -22,9 +22,9 @@ Z.Map.ScrollWheelZoom = Z.Handler.extend({
     _onWheelScroll: function (evt) {
         var map = this.target;
         var _containerDOM = map._containerDOM;
-        if (map._zooming) {return;}
         Z.DomUtil.preventDefault(evt);
         Z.DomUtil.stopPropagation(evt);
+        if (map._zooming) {return;}
         var _levelValue = 0;
         _levelValue += (evt.wheelDelta?evt.wheelDelta:evt.detail) > 0 ? 1 : -1;
         if (evt.detail) {
