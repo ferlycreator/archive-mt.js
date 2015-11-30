@@ -62,40 +62,40 @@
             'draggable': true
         };
         //将label添加到指定的图层上
-        marker.addLabel(new maptalks.Label('上海站精选\n二店', labelOptions));
+        layer.addGeometry(new maptalks.Label('上海站精选\n二店', coordinate, {draggable:true}));
 
         mapObj.addLayer(svgLayer);
         //测试svg和canvas是否重合
-        var marker2 = marker.copy();
-        marker2.addLabel(new maptalks.Label('上海站精选\n二店', labelOptions));
-        svgLayer.addGeometry(marker2);
+        // var marker2 = marker.copy();
+        // marker2.addLabel(new maptalks.Label('上海站精选\n二店', labelOptions));
+        // svgLayer.addGeometry(marker2);
 
-        //设置label属性2
-        var labelOptions2 = {
-            'symbol': {
-               'markerLineColor': '#ff0000',
-                'markerLineWidth': 1,
-                'markerLineOpacity': 0.9,
-                'markerLineDasharray': null,
-                'markerFill': '#4e98dd',
-                'markerFillOpacity': 0.9,
+        // //设置label属性2
+        // var labelOptions2 = {
+        //     'symbol': {
+        //        'markerLineColor': '#ff0000',
+        //         'markerLineWidth': 1,
+        //         'markerLineOpacity': 0.9,
+        //         'markerLineDasharray': null,
+        //         'markerFill': '#4e98dd',
+        //         'markerFillOpacity': 0.9,
 
-                'textFaceName': 'arial',
-                'textSize': 12,
-                'textFill': '#ff0000',
-                'textOpacity': 1,
-                'textSpacing': 30,
-                'textWrapWidth': null,//auto
-                'textWrapBefore': false,
-                'textWrapCharacter': '_',
-                'textLineSpacing': 8,
-                'textHorizontalAlignment': 'middle',//left middle right
-                'textVerticalAlignment': 'bottom',//top middle bottom
-            },
-            'draggable': true
-        };
-        //将label添加到指定的图层上
-        marker.addLabel(new maptalks.Label('上海大_厦辅楼', labelOptions2));
+        //         'textFaceName': 'arial',
+        //         'textSize': 12,
+        //         'textFill': '#ff0000',
+        //         'textOpacity': 1,
+        //         'textSpacing': 30,
+        //         'textWrapWidth': null,//auto
+        //         'textWrapBefore': false,
+        //         'textWrapCharacter': '_',
+        //         'textLineSpacing': 8,
+        //         'textHorizontalAlignment': 'middle',//left middle right
+        //         'textVerticalAlignment': 'bottom',//top middle bottom
+        //     },
+        //     'draggable': true
+        // };
+        // //将label添加到指定的图层上
+        // marker.addLabel(new maptalks.Label('上海大_厦辅楼', labelOptions2));
 
        var toolbar = new maptalks.Toolbar({
             id: 'toolbar',//toolbar id
