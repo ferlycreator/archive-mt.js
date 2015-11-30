@@ -1,13 +1,13 @@
 Z.Canvas = {
-    createCanvas:function(width, height) {
+    createCanvas:function(width, height, canvasClass) {
         var canvas;
         if (!Z.runningInNode) {
             canvas = Z.DomUtil.createEl('canvas');
-            canvas.width=width;
+            canvas.width = width;
             canvas.height = height;
         } else {
             //can be node-canvas or any other canvas mock
-            canvas = new Z.CanvasClass(width, height);
+            canvas = new canvasClass(width, height);
         }
         return canvas;
     },

@@ -72,9 +72,9 @@ Z['Map']=Z.Map=Z.Class.extend({
             if (Z.runningInNode) {
                 //node环境中map的containerDOM即为模拟Canvas容器, 例如node-canvas
                 //获取模拟Canvas类的类型, 用以在各图层的渲染器中构造Canvas
-                Z.CanvasClass = function(){};
-                Z.CanvasClass.constructor = this._containerDOM.constructor;
-                Z.CanvasClass.prototype = Object.create(Object.getPrototypeOf(this._containerDOM));
+                this.CanvasClass = function(){};
+                this.CanvasClass.constructor = this._containerDOM.constructor;
+                this.CanvasClass.prototype = Object.create(Object.getPrototypeOf(this._containerDOM));
             }
         }
 

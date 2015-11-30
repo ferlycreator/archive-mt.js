@@ -14,8 +14,9 @@ Z.render.Canvas=Z.Class.extend({
         if (this._canvas) {
             return;
         }
-        var size = this.getMap().getSize();
-        this._canvas = Z.Canvas.createCanvas(size['width'],size['height']);
+        var map = this.getMap();
+        var size = map.getSize();
+        this._canvas = Z.Canvas.createCanvas(size['width'],size['height'],map.CanvasClass);
         this._context = this._canvas.getContext('2d');
         this._resizeCanvas();
     },
