@@ -147,7 +147,7 @@ Z.Painter = Z.Class.extend({
     },
 
     _rendCanvas:function(needPromise) {
-        if (this.geometry.getMap().isBusy()) {
+        if (!this.geometry.getMap() || this.geometry.getMap().isBusy()) {
             // console.log('is busy do not refresh painter');
             return;
         }
