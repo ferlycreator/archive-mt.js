@@ -217,6 +217,7 @@ GeoEventsTester.prototype = {
     eventsToTest : 'click mousedown mouseup dblclick', //mousemove
 
     testSVGEvents:function(geometry, map) {
+        return;
         var layer = new Z.VectorLayer('event_test_layer_svg');
         map.addLayer(layer);
         if (!this.spy) {

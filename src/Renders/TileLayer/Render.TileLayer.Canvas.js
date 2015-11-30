@@ -12,15 +12,6 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         this._tileQueue = {};
     },
 
-    _registerEvents:function() {
-        var map = this.getMap();
-        map.on('_moveend _resize _zoomend',this.rend,this);
-        this._onMapMoving = Z.Util.throttle(this.rend,200,this);
-        if (this._layer.options['rendWhenPanning']) {
-            map.on('_moving',this._onMapMoving,this);
-        }
-    },
-
     remove:function() {
         var map = this.getMap();
         map.off('_moveend _resize _zoomend',this.rend,this);
@@ -77,13 +68,11 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         if (this._z !== preZ) {
             this._canvasFullExtent = fullTileExtent;
             this._resizeCanvas(fullTileExtent.getSize());
-            // this._drawedTile = {};
         } else {
             var preSize = this._canvasFullExtent.getSize();
             this._canvasFullExtent = fullTileExtent;
             var extentSize = fullTileExtent.getSize();
             if (!preSize.equals(extentSize)) {
-                // this._drawedTile = {};
                 this._resizeCanvas(this._canvasFullExtent.getSize());
             } else {
                 this._clearCanvas();
@@ -91,21 +80,28 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         }
 
         var tileCache = this._tileCache;
+        if (!this._tileRended) {
+            this._tileRended = {};
+        }
+        var tileRended = this._tileRended;
+        this._tileRended = {};
+
         var mapViewExtent = this.getMap()._getViewExtent();
         var tileSize = this._layer._getTileSize();
         //遍历瓦片
         this._tileToLoadCounter = 0;
+
+        this._resizeCanvas(this._canvasFullExtent.getSize());
+
         for (var i = tiles.length - 1; i >= 0; i--) {
             var tile = tiles[i];
             var tileId = tiles[i]['id'];
-            /*if (this._drawedTile[tileId]) {
-                continue;
-            }*/
             //如果缓存中已存有瓦片, 则从不再请求而从缓存中读取.
-            var cached = tileCache.get(tileId);
+            var cached = tileRended[tileId] || tileCache.get(tileId);
             if (cached) {
                     //画瓦片
                     this._drawTile(tile['viewPoint'], cached);
+                    this._tileRended[tileId] = cached;
             } else {
                 if (mapViewExtent.isIntersect(new Z.Extent(tile['viewPoint'], tile['viewPoint'].add(new Z.Point(tileSize['width'], tileSize['height']))))) {
                     this._tileToLoadCounter++;
@@ -113,6 +109,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
                 }
             }
         }
+
         this._rending = false;
         if (this._tileToLoadCounter === 0){
             this._requestMapToRend();
@@ -138,6 +135,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
 
         function onTileLoad() {
             me._tileCache.add(this[me.propertyOfTileId], this);
+            me._tileRended[me.propertyOfTileId] = this;
             me._drawTileAndRequest(this);
 
         }
@@ -201,6 +199,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         if (zoomLevel !== tileImage[this.propertyOfTileZoom]) {
             return;
         }
+
         this._tileToLoadCounter--;
         var point = tileImage[this.propertyOfPointOnTile];
         this._drawTile(point, tileImage);
@@ -220,9 +219,6 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
      * @param  {Point} point        瓦片左上角坐标
      */
     _clearTileRectAndRequest:function(point,tileImage) {
-        /*var tileSize = this._layer._getTileSize();
-        Z.Canvas.clearRect(this._context, point['left'], point['top'], tileSize['width'],tileSize['height']);
-        this._requestMapToRend();*/
         this._tileToLoadCounter--;
         if (this._tileToLoadCounter === 0) {
              this._fireLoadedEvent();
@@ -233,6 +229,23 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         if (!this.getMap().isBusy()) {
             this._mapRender.rend();
         }
+    },
+
+    _registerEvents:function() {
+        var map = this.getMap();
+        map.on('_moveend _resize _zoomend',this.rend,this);
+        if (this._layer.options['rendWhenPanning']) {
+        var rendSpan = this._layer.options['rendSpanWhenPanning'];
+            if (Z.Util.isNumber(rendSpan) && rendSpan >= 0) {
+                if (rendSpan > 0) {
+                    this._onMapMoving = Z.Util.throttle(this.rend,1,this);
+                } else {
+                    this._onMapMoving = this.rend;
+                }
+                map.on('_moving',this._onMapMoving,this);
+            }
+        }
+
     },
 
     _fireLoadedEvent:function() {

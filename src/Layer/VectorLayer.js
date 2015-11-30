@@ -26,8 +26,7 @@ Z.VectorLayer=Z.OverlayLayer.extend({
         if (this.getMap() && this.getMap().isCanvasRender()) {
             return true;
         }
-        if (Z.Browser.canvas &&
-            ((!Z.Browser.svg && !Z.Browser.vml) || 'canvas' === this.options['render'].toLowerCase())) {
+        if (Z.Browser.canvas) {
             return true;
         }
         return false;

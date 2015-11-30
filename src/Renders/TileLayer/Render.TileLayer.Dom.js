@@ -62,6 +62,18 @@ Z.render.tilelayer.Dom.prototype = {
         }
     },
 
+    clearExecutors:function() {
+        if (this._fireEventExecutor) {
+            clearTimeout(this._fireEventExecutor);
+        }
+        if (this._completeExecutor) {
+            clearTimeout(this._completeExecutor);
+        }
+        if (this._removeout_timeout) {
+            clearTimeout(this._removeout_timeout);
+        }
+    },
+
     /**
      * 渲染瓦片
      * @param  {Object} tiles         {url:?, left:?, top:?}
@@ -143,7 +155,7 @@ Z.render.tilelayer.Dom.prototype = {
         }
         this._removeout_timeout = setTimeout(function() {
             me._removeOutsideTiles();
-        },500);
+        },5000);
     },
 
     initContainer:function() {
@@ -271,17 +283,5 @@ Z.render.tilelayer.Dom.prototype = {
         Z.Util.loadImage(tileImage, url);
         // tileImage.src=url;
         return tileImage;
-    },
-
-    clearExecutors:function() {
-        if (this._fireEventExecutor) {
-            clearTimeout(this._fireEventExecutor);
-        }
-        if (this._completeExecutor) {
-            clearTimeout(this._completeExecutor);
-        }
-        if (this._removeout_timeout) {
-            clearTimeout(this._removeout_timeout);
-        }
     }
 };

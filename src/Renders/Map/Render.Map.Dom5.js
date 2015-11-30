@@ -6,25 +6,46 @@ Z.render.map.Dom = Z.render.map.Render.extend({
     },
 
     _registerEvents:function() {
-        this.map.on('_movestart _baselayerchangestart _baselayerchangeend _baselayerload',function() {
+        var map = this.map;
+        map.on('_movestart _baselayerchangestart _baselayerchangeend _baselayerload',function() {
            delete this._canvasBackgroundImage;
            this.rend();
         },this);
-        this.map.on('_moveend _resize',function() {
+        map.on('_moveend _resize',function() {
             //this.rend();
             this._refreshSVGPaper();
         },this);
-        this.map.on('_moving', function() {
+        map.on('_moving', function() {
             this.rend();
         },this);
-        this.map.on('_zoomstart',function() {
+        map.on('_zoomstart',function() {
             delete this._canvasBackgroundImage;
             this._clearCanvas();
         },this);
-        this.map.on('_zoomend',function() {
+        map.on('_zoomend',function() {
             // this.rend();
             this._refreshSVGPaper();
         },this);
+        this._onMapMouseMove=function(param) {
+            var vp = map._containerPointToViewPoint(param['containerPoint']);
+            var layers = map.getLayers();
+            var hit = false;
+            for (var i = 0; i < layers.length; i++) {
+                var layer = layers[i];
+                if (layer instanceof Z.VectorLayer && layer.isCanvasRender()) {
+                    if (layer._getRender().hitDetect(vp)) {
+                        hit = true;
+                        break;
+                    }
+                }
+            }
+            if (hit) {
+                map._containerDOM.style.cursor="pointer";
+            } else {
+                map._containerDOM.style.cursor="default";
+            }
+        };
+        map.on('_mousemove',this._onMapMouseMove,this);
     },
 
 

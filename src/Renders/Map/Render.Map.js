@@ -15,10 +15,7 @@ Z.render.map.Render = Z.Class.extend({
         var map = this.map;
         this._clearCanvas();
         if (map.options['zoomAnimation']) {
-            var baseLayerImage = map.getBaseTileLayer()._getRender().getCanvasImage();
-            var width = this._canvas.width, height = this._canvas.height;
-
-            this._drawLayerCanvasImage(baseLayerImage, width, height);
+            this._rend();
             this._context.save();
             Z.animation.animate(new Z.animation.zoom({
                 'scale1' : 1,
@@ -30,7 +27,7 @@ Z.render.map.Render = Z.Class.extend({
                 this._context.translate(focusPos['left'],focusPos['top']);
                 this._context.scale(frame.scale, frame.scale);
                 this._context.translate(-focusPos['left'],-focusPos['top']);
-                this._drawLayerCanvasImage(baseLayerImage, width, height);
+                this._rend();
                 this._context.restore();
                 if (frame.state['end']) {
                     this._canvasBackgroundImage = Z.DomUtil.copyCanvas(this._canvas);
@@ -118,7 +115,6 @@ Z.render.map.Render = Z.Class.extend({
     },
 
     _drawLayerCanvasImage:function(layerImage, mwidth, mheight) {
-        // Z.Canvas.image(this._context, layerImage['point'], layerImage['image']);
         if (mwidth === 0 || mheight === 0){
             return;
         }
@@ -168,7 +164,6 @@ Z.render.map.Render = Z.Class.extend({
             if (dx < 0 || dy < 0 || w <=0 || h <= 0) {
                 return;
             }
-            // console.log(layerImage['image'], sx, sy, w, h, dx, dy, w, h, mwidth,mheight);
             this._context.drawImage(canvasImage, sx, sy, w, h, dx, dy, w, h);
         }
     },
@@ -225,9 +220,6 @@ Z.render.map.Render = Z.Class.extend({
         if (Z.Browser.ielt9 || !this._panels || !this._panels.mapContainer) {return;}
         //恢复底图的css3 transform
         var mapContainer = this._panels.mapContainer;
-        // mapContainer.className="MAP_CONTAINER";
-        // Z.DomUtil.setDomTransformOrigin(mapContainer,"");
-        // Z.DomUtil.setDomTransform(mapContainer,"");
         mapContainer.style.top=0+"px";
         mapContainer.style.left=0+"px";
     },
