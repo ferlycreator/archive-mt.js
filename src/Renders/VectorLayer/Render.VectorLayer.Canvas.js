@@ -7,7 +7,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
     },
 
     _registerEvents:function() {
-        this.getMap().on('_zoomstart _zoomend _moveend _resize',this._onMapEvent,this);
+        this.getMap().on('_zoomend _moveend _resize',this._onMapEvent,this);
     },
 
     _onMapEvent:function(param) {
@@ -20,9 +20,6 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
             } else {
                 this._draw();
             }
-        } else if (param['type'] === '_zoomstart') {
-            this._clearCanvas();
-
         } else if (param['type'] === '_moveend') {
             if (!this._resources) {
                 this.rend();
@@ -68,6 +65,75 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
                 me._promise();
             }
         },50);
+    },
+
+    getPaintContext:function() {
+        if (!this._context) {
+            return null;
+        }
+        return [this._context, this._resources];
+    },
+
+    getCanvasImage:function() {
+        if (!this._canvasFullExtent || this._layer.isEmpty()) {
+            return null;
+        }
+        var size = this._canvasFullExtent.getSize();
+        var point = this._canvasFullExtent.getMin();
+        return {'image':this._canvas,'layer':this._layer,'point':this.getMap()._viewPointToContainerPoint(point),'size':size};
+    },
+
+    /**
+     * 显示图层
+     * @expose
+     */
+    show: function() {
+        this._layer._eachGeometry(function(geo) {
+            geo.show();
+        });
+    },
+
+    /**
+     * 隐藏图层
+     * @expose
+     */
+    hide: function() {
+        this._layer._eachGeometry(function(geo) {
+            geo.hide();
+        });
+    },
+
+    setZIndex: function(zindex) {
+        this._requestMapToRend();
+    },
+
+    /**
+     * 测试point处是否存在Geometry
+     * @param  {ViewPoint} point ViewPoint
+     * @return {Boolean}       true|false
+     */
+    hitDetect:function(point) {
+        if (!this._context || !this._canvasFullExtent) {
+            return false;
+        }
+        var size = this._canvasFullExtent.getSize();
+        var canvasNW = this._canvasFullExtent.getMin();
+        var detectPoint = point.substract(canvasNW);
+        if (detectPoint['left'] < 0 || detectPoint['left'] > size['width'] || detectPoint['top'] < 0 || detectPoint['top'] > size['height']) {
+            return false;
+        }
+        try {
+            var imgData = this._context.getImageData(detectPoint['left'], detectPoint['top'], 1, 1).data;
+            if (imgData[3] > 0) {
+                return true;
+            }
+        } catch (error) {
+            //usually a CORS error will be thrown if the canvas uses resources from other domain.
+            //this may happen when a geometry is filled with pattern file.
+            return true;
+        }
+        return false;
+
     },
 
     _clearTimeout:function() {
@@ -179,45 +245,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         this._requestMapToRend();
     },
 
-    getPaintContext:function() {
-        if (!this._context) {
-            return null;
-        }
-        return [this._context, this._resources];
-    },
 
-    getCanvasImage:function() {
-        if (!this._canvasFullExtent || this._layer.isEmpty()) {
-            return null;
-        }
-        var size = this._canvasFullExtent.getSize();
-        var point = this._canvasFullExtent.getMin();
-        return {'image':this._canvas,'layer':this._layer,'point':this.getMap()._viewPointToContainerPoint(point),'size':size};
-    },
-
-    /**
-     * 显示图层
-     * @expose
-     */
-    show: function() {
-        this._layer._eachGeometry(function(geo) {
-            geo.show();
-        });
-    },
-
-    /**
-     * 隐藏图层
-     * @expose
-     */
-    hide: function() {
-        this._layer._eachGeometry(function(geo) {
-            geo.hide();
-        });
-    },
-
-    setZIndex: function(zindex) {
-        this._requestMapToRend();
-    },
 
     _requestMapToRend:function() {
         if (!this.getMap().isBusy()) {
