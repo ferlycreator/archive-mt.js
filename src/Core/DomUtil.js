@@ -477,10 +477,7 @@ Z.DomUtil = {
     },
 
     copyCanvas:function(src) {
-        var target = Z.DomUtil.createEl('canvas');
-        target.width = src.width;
-        target.height = src.height;
-
+        var target = Z.Canvas.createCanvas(src.width, src.height);
         target.getContext('2d').drawImage(src,0,0);
         return target;
     },

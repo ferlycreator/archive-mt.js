@@ -64,5 +64,8 @@ Z.Point.prototype={
     },
     isNaN:function() {
         return isNaN(this['left']) || isNaN(this['top']);
+    },
+    toString:function() {
+        return [this['left'],this['top']].join(',');
     }
 };

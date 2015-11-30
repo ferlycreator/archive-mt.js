@@ -2,7 +2,7 @@ Z.TileLayer.TileCache=function(capacity) {
     this._queue = [];
     this._cache = {};
     if (!capacity) {
-        capacity = 512;
+        capacity = 128;
     }
     this.capacity = capacity;
 };

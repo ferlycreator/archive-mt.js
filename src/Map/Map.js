@@ -19,7 +19,10 @@ Z['Map']=Z.Map=Z.Class.extend({
 
         'enableZoom':true,
         'enableInfoWindow':true,
-        'crs':Z.CRS.GCJ02
+        'crs':Z.CRS.GCJ02,
+
+        'maxZoom' : null,
+        'minZoom' : null
     },
 
     //根据不同的语言定义不同的错误信息
@@ -66,6 +69,13 @@ Z['Map']=Z.Map=Z.Class.extend({
             this._containerDOM = document.getElementById(this._container);
         } else {
             this._containerDOM = _container;
+            if (Z.runningInNode) {
+                //node环境中map的containerDOM即为模拟Canvas容器, 例如node-canvas
+                //获取模拟Canvas类的类型, 用以在各图层的渲染器中构造Canvas
+                Z.CanvasClass = function(){};
+                Z.CanvasClass.constructor = this._containerDOM.constructor;
+                Z.CanvasClass.prototype = Object.create(Object.getPrototypeOf(this._containerDOM));
+            }
         }
 
 
@@ -86,10 +96,6 @@ Z['Map']=Z.Map=Z.Class.extend({
 
         this._zoomLevel = opts['zoom'];
         delete opts['zoom'];
-        this._maxZoom = opts['maxZoom'];
-        delete opts['maxZoom'];
-        this._minZoom = opts['minZoom'];
-        delete opts['minZoom'];
         this._center = new Z.Coordinate(opts['center']);
         delete opts['center'];
 
@@ -297,7 +303,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     getMaxZoom:function() {
-        return this._maxZoom;
+        return this.options['maxZoom'];
     },
 
     /**
@@ -313,7 +319,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         if (zoomLevel < this._zoomLevel) {
             this.setZoom(zoomLevel);
         }
-        this._maxZoom = zoomLevel;
+        this.options['maxZoom'] = zoomLevel;
         return this;
     },
 
@@ -323,7 +329,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     getMinZoom:function() {
-        return this._minZoom;
+        return this.options['minZoom'];
     },
 
     /**
@@ -336,7 +342,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         if (zoomLevel < tileConfig['minZoom']) {
             zoomLevel = tileConfig['minZoom'];
         }
-        this._minZoom=zoomLevel;
+        this.options['minZoom']=zoomLevel;
         return this;
     },
 
@@ -896,6 +902,8 @@ Z['Map']=Z.Map=Z.Class.extend({
         if (maxZoom < minZoom) {
             this.setMaxZoom(minZoom);
         }
+        maxZoom = this.getMaxZoom(),
+        minZoom = this.getMinZoom();
         if (!this._zoomLevel || this._zoomLevel > maxZoom) {
             this._zoomLevel = maxZoom;
         }
