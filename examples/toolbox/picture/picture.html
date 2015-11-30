@@ -57,7 +57,7 @@
         var menuOptions = {
             'width': 100,
             'style': 'black', //black|white
-            'items' : [{'item': '添加标签', 'callback': function() {
+            'items' : [{'item': '添加图片', 'callback': function() {
                 var param = {coordinate:marker};
                 markerPicLabel(param);
             }}]
@@ -96,8 +96,8 @@
 
         //picture属性面板
         var picturePropertyPanel = new PicturePropertyPanel();
-
         marker.on('click', function(){
+            alert(123);
             picturePropertyPanel.addTo(marker);
         });
     }

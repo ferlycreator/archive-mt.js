@@ -184,9 +184,46 @@
                     'markerHeight': 10,
                     'markerFill': '#99ccff',
                 };
-                console.log(geometries);
+                var labelSymbol = {
+                    'markerType': 'square',
+                    'markerLineColor': '#99ccff',
+                    'markerLineWidth': 1,
+                    'markerLineOpacity': 0.9,
+                    'markerLineDasharray': null,
+                    'markerFillOpacity': 0.6,
+                    // 'markerDy': -20,
+                    'textFaceName': 'arial',
+                    'textSize': 12,
+                    'textFill': '#00ccff',
+                    'textOpacity': 1,
+                    'textSpacing': 30,
+                    'textWrapWidth': null,//auto
+                    'textWrapBefore': false,
+                    'textWrapCharacter': '\n',
+                    'textLineSpacing': 8,
+                    'textHorizontalAlignment': 'middle',//left middle right
+                    'textVerticalAlignment': 'bottom'//top middle bottom
+                };
                 for(var i=0,len=geometries.length;i<len;i++) {
                     geometries[i].setSymbol(symbol);
+                    geometries[i].setId(i);
+                    geometries[i].on('mouseover',function(){
+                        var labelId = 'label_'+this.getId();
+                        var label = layer.getGeometryById(labelId);
+                        if(label) {
+                            label.show();
+                        } else {
+                            var coordinate = this.getCoordinates();
+                            var props = this.getProperties();
+                            var label = new maptalks.Label(props['poi_name'], coordinate, {id:labelId,symbol:labelSymbol});
+                            layer.addGeometry(label);
+                        }
+                    });
+                    geometries[i].on('mouseout',function(){
+                        var labelId = 'label_'+this.getId();
+                        var label = layer.getGeometryById(labelId);
+                        label.hide();
+                    });
                 }
                 layer.addGeometry(geometries);
             },
