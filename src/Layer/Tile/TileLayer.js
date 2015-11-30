@@ -12,11 +12,14 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         'errorTileUrl':Z.prefix+'images/error.png',
         'urlTemplate':Z.prefix+'images/blank.png',
         'subdomains':[''],
-        'rendWhenPanning':false,
         //是否检查
         'showOnTileLoadComplete':true,
         'tileInfo':'web-mercator',
-        'repeatWorld' : true
+        'repeatWorld' : true,
+
+        'rendWhenPanning':false,
+        //移图时地图的更新间隔, 默认为0即实时更新, -1表示不更新.如果效率较慢则可改为适当的值
+        "rendSpanWhenPanning" : 0
     },
 
 
@@ -218,7 +221,6 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
             }
             return value;
         });
-        //return urlTemplate.replace(/{x}/g,x+'').replace(/{y}/g,y+'').replace(/{z}/g,z+'').replace(/{s}/g,domain+'');
     },
 
     /**

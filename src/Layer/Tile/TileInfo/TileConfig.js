@@ -134,11 +134,6 @@ Z.TileConfig=Z.Class.extend({
             var tileY = -Math.floor((point['top']-transOrigin['top'])/(tileSize['height']*res));
 
             return {'x':tileSystem['scale']['x']*tileX, 'y':tileSystem['scale']['y']*tileY};
-
-            // var resolution = this['resolutions'][zoomLevel];
-            // var tileY = Math.floor((tileSystem['origin']['y'] + tileSystem['scale']['y']*pLonlat.y) / ( resolution* tileSize['height']));
-            // var tileX = Math.floor((tileSystem['scale']['x']*pLonlat.x - tileSystem['origin']['x']) / (resolution * tileSize['width']));
-            // return {'y':tileY,'x':tileX};
         },
 
         /**
@@ -173,35 +168,8 @@ Z.TileConfig=Z.Class.extend({
             tileIndex = this.getNeighorTileIndex(tileIndex['y'], tileIndex['x'],0,0,true);
 
             return {'x':tileIndex['x'], 'y':tileIndex['y'], 'offsetLeft':offsetLeft, 'offsetTop':offsetTop};
-
-            /*var tileSystem = this.tileSystem;
-            var resolution = this['resolutions'][zoomLevel];
-            var tileSize = this['tileSize'];
-            var tileIndex = this.getTileIndex(pLonlat, zoomLevel);
-            var tileY = tileIndex.y;
-            var tileX = tileIndex.x;
-            //tileX和tileY为什么会+1, -1是因为根据tilesystem的scale不同, 瓦片顶端的编号会有1的差值
-            var tileLeft = tileSystem['scale']['x']*tileSize['width']*(tileX+(tileSystem['scale']['x']==1?0:1)) * resolution+tileSystem['origin']['x'];
-            var tileTop = tileSystem['origin']['y'] + tileSystem['scale']['y']*(tileY+(tileSystem['scale']['y']==1?1:0))* resolution * tileSize['height'];
-            var offsetLeft = Math.abs(Math.round((pLonlat.x-tileLeft)/resolution));
-            var offsetTop = Math.abs(Math.round((pLonlat.y-tileTop)/resolution));
-            return {'x':tileX, 'y':tileY, 'offsetLeft':offsetLeft, 'offsetTop':offsetTop};*/
         },
-        /**
-         * 根据投影坐标,计算瓦片编号
-         * @param  {[type]} pLonlat   [description]
-         * @param  {[type]} zoomLevel [description]
-         * @return {[type]}           [description]
-         */
-        /*getTileIndex:function(pLonlat, zoomLevel) {
-            var tileSystem = this.tileSystem;
-            var tileSize=this['tileSize'];
-            // var maxExtent=tileSystem['origin'];
-            var resolution = this['resolutions'][zoomLevel];
-            var tileY = Math.floor((tileSystem['origin']['y'] + tileSystem['scale']['y']*pLonlat.y) / ( resolution* tileSize['height']));
-            var tileX = Math.floor((tileSystem['scale']['x']*pLonlat.x - tileSystem['origin']['x']) / (resolution * tileSize['width']));
-            return {'y':tileY,'x':tileX};
-        },*/
+
         /**
          * 根据给定的瓦片编号,和坐标编号偏移量,计算指定的瓦片编号
          * @param  {[type]} tileY   [description]
