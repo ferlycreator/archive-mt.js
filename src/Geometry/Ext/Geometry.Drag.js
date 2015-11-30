@@ -47,8 +47,11 @@ Z.Geometry.Drag = Z.Handler.extend({
         }
         this._shadow = this.target.copy();
         this._shadow.setId(null);
-        this.target.hide();
+        this._shadow.isDragging=function() {
+            return true;
+        };
         this._dragStageLayer.addGeometry(this._shadow);
+        this.target.hide();
 
 
         /**

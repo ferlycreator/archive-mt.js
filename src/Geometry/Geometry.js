@@ -586,7 +586,9 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         this._unbindInfoWindow();
 
 
-        this._removePainter();
+        if (isFireEvent) {
+            this._removePainter();
+        }
         layer._onGeometryRemove(this);
         delete this._layer;
         delete this._internalId;
