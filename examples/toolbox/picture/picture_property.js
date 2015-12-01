@@ -135,7 +135,7 @@ PicturePropertyPanel.prototype = {
         inputDom.style.cssText = 'cursor:pointer;position:absolute;left:0;top:0;width:100%;height:100%;z-index:999;opacity:0;';
         aDom.appendChild(inputDom);
         var me = this;
-        Z.DomUtil.on(inputDom, 'change', function(param){
+        maptalks.DomUtil.on(inputDom, 'change', function(param){
             var target = param.target;
             var fileName = target.value;
             if(fileName) {
