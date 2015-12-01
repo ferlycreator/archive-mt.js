@@ -940,8 +940,6 @@ Z['Map']=Z.Map=Z.Class.extend({
         this._prjCenter=pcenter;
     },
 
-
-
     /**
      * 以像素距离移动地图中心点
      * @param  {Object} pixel 像素距离,偏移量的正负值关系如下:
@@ -979,6 +977,14 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     /**
+     * 获取当前缩放级别的投影坐标分辨率
+     * @return {Number} resolution
+     */
+    _getResolution:function() {
+        return this._tileConfig.getResolution(this.getZoom());
+    },
+
+    /**
      * transform dom position to geodesic projected coordinate
      * @param  {Object} domPos    dom screen xy, eg {left:10, top:10}
      * @param  {Number} zoomLevel current zoomLevel
@@ -986,7 +992,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      */
     _untransform:function(domPos) {
         var transformation =  this._getTileConfig().getTransformationInstance();
-        var res = this._tileConfig.getResolution(this.getZoom());//['resolutions'][this._zoomLevel];
+        var res = this._getResolution();
 
         var pcenter = this._getPrjCenter();
         var centerPoint = transformation.transform(pcenter, res);
@@ -1012,7 +1018,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      */
     _transform:function(pCoordinate) {
         var transformation =  this._getTileConfig().getTransformationInstance();
-        var res = this._tileConfig.getResolution(this.getZoom());//['resolutions'][this._zoomLevel];
+        var res = this._getResolution();//_tileConfig.getResolution(this.getZoom());//['resolutions'][this._zoomLevel];
 
         var pcenter = this._getPrjCenter();
         var centerPoint = transformation.transform(pcenter, res);
@@ -1071,7 +1077,7 @@ Z['Map']=Z.Map=Z.Class.extend({
             return null;
         }
         var projection = tileConfig.getProjectionInstance();
-        var res = tileConfig['resolutions'][this.getZoom()];
+        var res = this._getResolution();//tileConfig['resolutions'][this.getZoom()];
         var nw = projection.unproject({x: plonlat.x - pnw["left"]*res, y: plonlat.y + pnw["top"]*res});
         var se = projection.unproject({x: plonlat.x + pse["left"]*res, y: plonlat.y - pse["top"]*res});
         return new Z.Extent(nw,se);
@@ -1097,7 +1103,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         var center = this.getCenter(),
             target = projection.locate(center,x,y),
             z = this.getZoom(),
-            resolutions = tileConfig['resolutions'];
+            resolutions = this._getResolution();//tileConfig['resolutions'];
         var width = !x?0:(projection.project({x:target.x,y:center.y}).x-projection.project(center).x)/resolutions[z];
         var height = !y?0:(projection.project({x:target.x,y:center.y}).y-projection.project(target).y)/resolutions[z];
         return new Z.Size(Math.round(Math.abs(width)), Math.round(Math.abs(height)));
@@ -1122,7 +1128,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         //计算前刷新scales
         var center = this.getCenter(),
             pcenter = this._getPrjCenter(),
-            res = tileConfig['resolutions'][this.getZoom()];
+            res = this._getResolution();//tileConfig['resolutions'][this.getZoom()];
         var pTarget = new Z.Coordinate(pcenter.x+width*res, pcenter.y+height*res);
         var target = projection.unproject(pTarget);
         return projection.getGeodesicLength(target,center);

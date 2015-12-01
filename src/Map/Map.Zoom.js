@@ -72,14 +72,6 @@ Z.Map.include({
         }
         this._offsetCenterByPixel(pixelOffset);
         this._onZoomStart(scale,focusPos,nextZoomLevel);
-        /*var me = this;
-        if (this._zoom_timeout) {
-            clearTimeout(this._zoom_timeout);
-        }
-        this._zoom_timeout=setTimeout(function() {
-            me._zooming = false;
-            me._onZoomEnd(nextZoomLevel);
-        },this._getZoomMillisecs());*/
     },
 
     _getZoomMillisecs:function() {

@@ -4,8 +4,9 @@ Z.PointSymbolizer=Z.Symbolizer.extend({
         var markerExtent = this.getMarkerExtent();
         var min = markerExtent.getMin(),
             max = markerExtent.getMax();
-        for (var i = this.renderPoints.length - 1; i >= 0; i--) {
-            var point = this.renderPoints[i];
+        var renderPoints = this._getRenderPoints();
+        for (var i = renderPoints.length - 1; i >= 0; i--) {
+            var point = renderPoints[i];
             extent = extent.combine(new Z.Extent(point.add(min), point.add(max)));
         }
         return extent;
@@ -17,7 +18,7 @@ Z.PointSymbolizer=Z.Symbolizer.extend({
 
     //所有point symbolizer的共同的refresh方法
     refresh:function() {
-        this.renderPoints = this._getRenderPoints();
+        this.renderPoints = this.geometry._getRenderPoints(this.getPlacement());
         var layer = this.geometry.getLayer();
         if (!layer.isCanvasRender()) {
             this.symbolize.apply(this,layer._getRender().getPaintContext());
@@ -59,7 +60,7 @@ Z.PointSymbolizer=Z.Symbolizer.extend({
     },
 
     _svgMarkers:function(container,zIndex) {
-        var points = this.renderPoints;
+        var points = this._getRenderPoints();
         if (!Z.Util.isArrayHasData(points)) {
             return;
         }
@@ -107,7 +108,10 @@ Z.PointSymbolizer=Z.Symbolizer.extend({
     },
 
     _getRenderPoints:function() {
-        return this.geometry._getRenderPoints(this.getPlacement());
+        if (!this.renderPoints) {
+            this.renderPoints = this.geometry._getRenderPoints(this.getPlacement());
+        }
+        return this.renderPoints;
     },
 
 

@@ -19,7 +19,6 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
     initialize:function(symbol, geometry) {
         this.symbol = symbol;
         this.geometry = geometry;
-        this.renderPoints = this._getRenderPoints();
         this.style = this.translate();
         this.strokeAndFill = this.translateStrokeAndFill(this.style);
     },
@@ -30,7 +29,7 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
 
     canvas:function(ctx, resources) {
 
-        var points = this.renderPoints;
+        var points = this._getRenderPoints();
         if (!Z.Util.isArrayHasData(points)) {
             return;
         }

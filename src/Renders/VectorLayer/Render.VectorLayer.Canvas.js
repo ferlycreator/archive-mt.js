@@ -36,6 +36,14 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         }
     },
 
+    transform:function(matrix) {
+        this._transMatrix = matrix;
+    },
+
+    getTransMatrix:function() {
+        return this._transMatrix;
+    },
+
     getMap: function() {
         return this._layer.getMap();
     },
@@ -215,7 +223,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
 
     _draw:function() {
         var map = this.getMap();
-        if (!map || map.isBusy()) {
+        if (!map /*|| map.isBusy()*/) {
             return;
         }
         if (this._layer.isEmpty()) {

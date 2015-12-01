@@ -22,13 +22,14 @@ Z.render.map.Render = Z.Class.extend({
                 'scale2': scale,
                 'duration' : map.options['zoomAnimationDuration']
             }), map, function(frame) {
-                this._context.save();
+                /*this._context.save();
                 this._clearCanvas();
                 this._context.translate(focusPos['left'],focusPos['top']);
                 this._context.scale(frame.scale, frame.scale);
                 this._context.translate(-focusPos['left'],-focusPos['top']);
                 this._rend();
-                this._context.restore();
+                this._context.restore();*/
+                this._transform(new Z.Matrix().translate(focusPos['left'], focusPos['top']).scaleU(frame.scale));
                 if (frame.state['end']) {
                     this._canvasBackgroundImage = Z.DomUtil.copyCanvas(this._canvas);
                     fn.apply(context, args);
@@ -79,6 +80,35 @@ Z.render.map.Render = Z.Class.extend({
 
 
     },
+
+    _transform:function(matrix) {
+        var map = this.map;
+        var mwidth = this._canvas.width,
+            mheight = this._canvas.height;
+        var layers = this._getAllLayerToCanvas();
+        this._clearCanvas();
+        for (var i = 0, len=layers.length; i < len; i++) {
+            if (!layers[i].isVisible()) {
+                continue;
+            }
+            var render = layers[i]._getRender();
+            if (render) {
+                this._context.save();
+                if (layers[i] instanceof Z.TileLayer) {
+                    matrix.applyToContext(this._context);
+                } else {
+                    render.transform(matrix);
+                    render.rendRealTime();
+                }
+                var layerImage = render.getCanvasImage();
+                if (layerImage && layerImage['image']) {
+                    this._drawLayerCanvasImage(layerImage, mwidth, mheight);
+                }
+                this._context.restore();
+            }
+        }
+    },
+
 
     /**
      * 基于Canvas的渲染方法, layers总定义了要渲染的图层
