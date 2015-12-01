@@ -11,7 +11,7 @@ Z['Map']=Z.Map=Z.Class.extend({
 
     options:{
         "zoomAnimation" : true,
-        "zoomAnimationDuration" : 200,
+        "zoomAnimationDuration" : 300,
 
         "panAnimation":true,
         //每秒滑动的像素距离

@@ -5,7 +5,7 @@ Z.render.map={};
  */
 Z.render.map.Render = Z.Class.extend({
 
-    onZoomStart:function(scale, focusPos, fn, context, args) {
+    onZoomStart:function(scale, transOrigin, fn, context, args) {
         if (Z.Browser.ielt9) {
             setTimeout(function() {
                 fn.apply(context, args);
@@ -15,32 +15,86 @@ Z.render.map.Render = Z.Class.extend({
         var map = this.map;
         this._clearCanvas();
         if (map.options['zoomAnimation']) {
-            this._rend();
-            this._context.save();
-            Z.animation.animate(new Z.animation.zoom({
-                'scale1' : 1,
-                'scale2': scale,
-                'duration' : map.options['zoomAnimationDuration']
-            }), map, function(frame) {
-                /*this._context.save();
-                this._clearCanvas();
-                this._context.translate(focusPos.x,focusPos.y);
-                this._context.scale(frame.scale, frame.scale);
-                this._context.translate(-focusPos.x,-focusPos.y);
+            var duration = map.options['zoomAnimationDuration'];
+            if (map.options['zoomAnimationMode'] && 'performance' === map.options['zoomAnimationMode'].toLowerCase()) {
+                //zoom animation with better performance, only animate baseTileLayer, ignore other layers.
+                var baseLayerImage = map.getBaseTileLayer()._getRender().getCanvasImage();
+                var width = this._canvas.width, height = this._canvas.height;
+                this._drawLayerCanvasImage(baseLayerImage, width, height);
+                this._context.save();
+                Z.animation.animate(new Z.animation.zoom({
+                    'scale1' : 1,
+                    'scale2': scale,
+                    'duration' : map.options['zoomAnimationDuration']
+                }), map, function(frame) {
+                    this._context.save();
+                    this._clearCanvas();
+                    this._context.translate(transOrigin.x,transOrigin.y);
+                    this._context.scale(frame.scale, frame.scale);
+                    this._context.translate(-transOrigin.x,-transOrigin.y);
+                    this._drawLayerCanvasImage(baseLayerImage, width, height);
+                    this._context.restore();
+                    if (frame.state['end']) {
+                        this._canvasBackgroundImage = Z.DomUtil.copyCanvas(this._canvas);
+                        fn.apply(context, args);
+                    }
+                }, this);
+            } else {
+                //default zoom animation, animate all the layers, may encounter performance problem.
                 this._rend();
-                this._context.restore();*/
-                this._transform(new Z.Matrix().translate(focusPos.x, focusPos.y).scaleU(frame.scale));
-                if (frame.state['end']) {
-                    this._canvasBackgroundImage = Z.DomUtil.copyCanvas(this._canvas);
-                    fn.apply(context, args);
-                }
-            }, this);
+                this._context.save();
+                Z.animation.animate(new Z.animation.zoom({
+                    'scale1' : 1,
+                    'scale2': scale,
+                    'duration' : duration
+                }), map, function(frame) {
+                    var matrix = new Z.Matrix().translate(transOrigin.x, transOrigin.y)
+                        .scaleU(frame.scale);
+                    var overlayMatrix = new Z.Matrix().translate(-transOrigin.x, -transOrigin.y)
+                        .scaleU(frame.scale);
+                    this._transform(matrix, overlayMatrix, transOrigin);
+                    if (frame.state['end']) {
+                        this._canvasBackgroundImage = Z.DomUtil.copyCanvas(this._canvas);
+                        fn.apply(context, args);
+                    }
+                }, this);
+            }
+
         } else {
             fn.apply(context, args);
         }
 
     },
 
+    _transform:function(matrix,overlayMatrix,origin) {
+        var mwidth = this._canvas.width,
+            mheight = this._canvas.height;
+        var layers = this._getAllLayerToCanvas();
+        this._clearCanvas();
+        var transMatrix = matrix.clone().translate(-origin.x,-origin.y);
+        for (var i = 0, len=layers.length; i < len; i++) {
+            if (!layers[i].isVisible()) {
+                continue;
+            }
+            var render = layers[i]._getRender();
+            if (render) {
+                this._context.save();
+                if (layers[i] instanceof Z.TileLayer) {
+                    matrix.applyToContext(this._context);
+                    this._context.translate(-origin.x,-origin.y);
+                } else {
+                    render.transform(transMatrix);
+                    render.rendRealTime();
+                    render.removeTransform();
+                }
+                var layerImage = render.getCanvasImage();
+                if (layerImage && layerImage['image']) {
+                    this._drawLayerCanvasImage(layerImage, mwidth, mheight);
+                }
+                this._context.restore();
+            }
+        }
+    },
 
     onZoomEnd:function() {
         // this.insertBackground();
@@ -79,34 +133,6 @@ Z.render.map.Render = Z.Class.extend({
         }
 
 
-    },
-
-    _transform:function(matrix) {
-        var map = this.map;
-        var mwidth = this._canvas.width,
-            mheight = this._canvas.height;
-        var layers = this._getAllLayerToCanvas();
-        this._clearCanvas();
-        for (var i = 0, len=layers.length; i < len; i++) {
-            if (!layers[i].isVisible()) {
-                continue;
-            }
-            var render = layers[i]._getRender();
-            if (render) {
-                this._context.save();
-                if (layers[i] instanceof Z.TileLayer) {
-                    matrix.applyToContext(this._context);
-                } else {
-                    render.transform(matrix);
-                    render.rendRealTime();
-                }
-                var layerImage = render.getCanvasImage();
-                if (layerImage && layerImage['image']) {
-                    this._drawLayerCanvasImage(layerImage, mwidth, mheight);
-                }
-                this._context.restore();
-            }
-        }
     },
 
 

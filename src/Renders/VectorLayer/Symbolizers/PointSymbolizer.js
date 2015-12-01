@@ -114,7 +114,28 @@ Z.PointSymbolizer=Z.Symbolizer.extend({
         return this.renderPoints;
     },
 
-
+    /**
+     * Get container points to draw on Canvas
+     * @return {[type]} [description]
+     */
+    _getRenderContainerPoints:function() {
+        var points = this._getRenderPoints();
+        var map = this.getMap();
+        var dxdy = this.getDxDy();
+        var containerPoints = Z.Util.eachInArray(points,this,function(point) {
+            return map._viewPointToContainerPoint(point)._add(dxdy);
+        });
+        var layer = this.geometry.getLayer();
+        if (layer.isCanvasRender()) {
+            var layerRender = layer._getRender();
+            var matrix = layerRender.getTransMatrix();
+            if (matrix) {
+                var p = matrix.applyToArray(containerPoints);
+                return p;
+            }
+        }
+        return containerPoints;
+    },
 
     //设置dom/svg/vml类型marker页面位置的方法
     _offsetMarker: function(marker, pt) {

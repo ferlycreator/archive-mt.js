@@ -41,6 +41,8 @@ Z.Matrix = function(context) {
 	if (context) context.setTransform(1, 0, 0, 1, 0, 0);
 };
 
+var Matrix = Z.Matrix;
+
 Z.Matrix.prototype = {
 
 	/**
@@ -557,7 +559,7 @@ Z.Matrix.prototype = {
 		}
 		else {
 			for(; p = points[i]; i++) {
-				mxPoints.push(this.applyToPoint(p.x, p.y));
+				mxPoints.push(new Z.Point(this.applyToPoint(p.x, p.y)));
 			}
 		}
 

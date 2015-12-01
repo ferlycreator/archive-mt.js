@@ -34,14 +34,10 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
     },
 
     canvas:function(ctx, resources) {
-        var points = this._getRenderPoints();
-        if (!Z.Util.isArrayHasData(points)) {
+        var cookedPoints = this._getRenderContainerPoints();
+        if (!Z.Util.isArrayHasData(cookedPoints)) {
             return;
         }
-        var map = this.getMap();
-        var cookedPoints = Z.Util.eachInArray(points,this,function(point) {
-            return map._viewPointToContainerPoint(point);
-        });
         Z.Canvas.setDefaultCanvasSetting(ctx);
 
         var style = this.style,

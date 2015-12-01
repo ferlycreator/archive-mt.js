@@ -44,6 +44,10 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         return this._transMatrix;
     },
 
+    removeTransform:function() {
+        delete this._transMatrix;
+    },
+
     getMap: function() {
         return this._layer.getMap();
     },
