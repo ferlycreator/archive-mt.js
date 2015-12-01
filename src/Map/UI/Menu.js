@@ -170,8 +170,8 @@ Z.Menu = Z.Class.extend({
         this._target.fire('beforeopenmenu');
         var pxCoord = this._getShowPosition(coordinate);
         this._menuDom.innerHTML='';
-        this._menuDom.style.top = pxCoord.top+'px';
-        this._menuDom.style.left = pxCoord.left+'px';
+        this._menuDom.style.top = pxCoord.y+'px';
+        this._menuDom.style.left = pxCoord.x+'px';
         this._menuItemsDom = this._createMenuItemDom();
         this._menuDom.appendChild(this._menuItemsDom);
         var suffix = this.options['style'];

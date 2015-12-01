@@ -60,14 +60,14 @@ Z.Map.include({
         if (nextZoomLevel<this._originZoomLevel) {
             zScale = resolutions[nextZoomLevel+1]/resolutions[nextZoomLevel];
             pixelOffset = new Z.Point(
-                    -(focusPos['left']-this.width/2)*(1-zScale),
-                    -(focusPos['top']-this.height/2)*(1-zScale)
+                    -(focusPos.x-this.width/2)*(1-zScale),
+                    -(focusPos.y-this.height/2)*(1-zScale)
                 );
         } else {
             zScale = resolutions[nextZoomLevel-1]/resolutions[nextZoomLevel];
             pixelOffset = new Z.Point(
-                    (focusPos['left']-this.width/2)*(zScale-1),
-                    (focusPos['top']-this.height/2)*(zScale-1)
+                    (focusPos.x-this.width/2)*(zScale-1),
+                    (focusPos.y-this.height/2)*(zScale-1)
                 );
         }
         this._offsetCenterByPixel(pixelOffset);

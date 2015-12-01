@@ -200,8 +200,8 @@ Z.DomUtil = {
         if (!offset) {
             return new Z.Point(parseInt(dom.style.left,0),parseInt(dom.style.top,0));
         } else {
-            dom.style.left= offset.left+'px';
-            dom.style.top = offset.top +'px';
+            dom.style.left= offset.x+'px';
+            dom.style.top = offset.y +'px';
             return offset;
         }
     },
@@ -220,7 +220,7 @@ Z.DomUtil = {
         if (!offset) {
             return this.parseCssTranslate(dom);
         } else {
-            dom.style[this.TRANSFORM]='translate3d('+offset['left']+'px,'+offset['top']+'px,0px)';
+            dom.style[this.TRANSFORM]='translate3d('+offset.x+'px,'+offset.y+'px,0px)';
             return offset;
         }
     },
@@ -279,10 +279,10 @@ Z.DomUtil = {
             var clientLeft = dElement.clientLeft?dElement.clientLeft:dBody.clientLeft;
             var scrollTop = dElement.scrollTop?dElement.scrollTop:dBody.scrollTop;
             var clientTop = dElement.clientTop?dElement.clientTop:dBody.clientTop;
-            return {
-                x:ev.clientX + scrollLeft - clientLeft,
-                y:ev.clientY + scrollTop  - clientTop
-            };
+            return new Z.Point(
+                ev.clientX + scrollLeft - clientLeft,
+                ev.clientY + scrollTop  - clientTop
+            );
         }
     },
 
@@ -297,7 +297,7 @@ Z.DomUtil = {
         }
         var domScreenPos = Z.DomUtil.getPageCoordinate(dom);
         var mousePagePos = Z.DomUtil.getEventPagePoint(ev);
-        return new Z.Point(mousePagePos.x-domScreenPos['left'],mousePagePos.y-domScreenPos['top']);
+        return new Z.Point(mousePagePos.x-domScreenPos.x,mousePagePos.y-domScreenPos.y);
     },
 
     /**

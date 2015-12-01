@@ -73,8 +73,8 @@ Z.Circle=Z.Polygon.extend({
         var center = this._getCenterViewPoint(),
             size = this.getSize(),
             t = this._hitTestTolerance(),
-            pc = new Z.Point(center.left, center.top),
-            pp = new Z.Point(point.left, point.top);
+            pc = new Z.Point(center.x, center.y),
+            pp = new Z.Point(point.x, point.y);
 
         return pp.distanceTo(pc) <= size.width / 2 + t;
     },

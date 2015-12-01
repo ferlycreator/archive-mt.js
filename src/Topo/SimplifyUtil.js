@@ -8,8 +8,8 @@ Z.Simplify={
 	// square distance between 2 points
     getSqDist:function(p1, p2) {
 
-        var dx = p1['left'] - p2['left'],
-            dy = p1['top'] - p2['top'];
+        var dx = p1.x - p2.x,
+            dy = p1.y - p2.y;
 
         return dx * dx + dy * dy;
     },
@@ -17,26 +17,26 @@ Z.Simplify={
     // square distance from a point to a segment
     getSqSegDist:function(p, p1, p2) {
 
-        var x = p1['left'],
-            y = p1['top'],
-            dx = p2['left'] - x,
-            dy = p2['top'] - y;
+        var x = p1.x,
+            y = p1.y,
+            dx = p2.x - x,
+            dy = p2.y - y;
 
         if (dx !== 0 || dy !== 0) {
 
-            var t = ((p['left'] - x) * dx + (p['top'] - y) * dy) / (dx * dx + dy * dy);
+            var t = ((p.x - x) * dx + (p.y - y) * dy) / (dx * dx + dy * dy);
 
             if (t > 1) {
-                x = p2['left'];
-                y = p2['top'];
+                x = p2.x;
+                y = p2.y;
 
             } else if (t > 0) {
                 x += dx * t;
                 y += dy * t;
             }
         }
-        dx = p['left'] - x;
-        dy = p['top'] - y;
+        dx = p.x - x;
+        dy = p.y - y;
 
         return dx * dx + dy * dy;
     },

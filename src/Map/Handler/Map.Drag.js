@@ -43,10 +43,10 @@ Z.Map.Drag = Z.Handler.extend({
         var map = this.target;
         this.startDragTime = new Date().getTime();
         var domOffset = map.offsetPlatform();
-        this.startLeft = domOffset['left'];
-        this.startTop = domOffset['top'];
-        this.preX = param['mousePos']['left'];
-        this.preY = param['mousePos']['top'];
+        this.startLeft = domOffset.x;
+        this.startTop = domOffset.y;
+        this.preX = param['mousePos'].x;
+        this.preY = param['mousePos'].y;
         this.startX = this.preX;
         this.startY = this.preY;
         map._isBusy = true;
@@ -55,8 +55,8 @@ Z.Map.Drag = Z.Handler.extend({
 
     _onDragging:function(param) {
         var map = this.target;
-        var mx = param['mousePos']['left'],
-            my = param['mousePos']['top'];
+        var mx = param['mousePos'].x,
+            my = param['mousePos'].y;
         var nextLeft = (this.startLeft + mx - this.startX);
         var nextTop = (this.startTop + my - this.startY);
         var currentDomOffset = map.offsetPlatform();
@@ -69,8 +69,8 @@ Z.Map.Drag = Z.Handler.extend({
         var map = this.target;
         var t = new Date().getTime()-this.startDragTime;
         var domOffset = map.offsetPlatform();
-        var xSpan =  domOffset['left'] - this.startLeft;
-        var ySpan =  domOffset['top'] - this.startTop;
+        var xSpan =  domOffset.x - this.startLeft;
+        var ySpan =  domOffset.y - this.startTop;
         if (t<280 && Math.abs(ySpan) > 5 && Math.abs(xSpan) > 5) {
             map._enablePanAnimation=true;
             map._panAnimation(new Z.Point(xSpan*Math.ceil(500/t),ySpan*Math.ceil(500/t)),t*4);

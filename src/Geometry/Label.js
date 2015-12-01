@@ -98,8 +98,8 @@ Z.Label = Z.Marker.extend({
             boxAlignPoint = boxAlignPoint.add(new Z.Point(Z.Util.getValueOrDefault(symbol['textDx'],0),Z.Util.getValueOrDefault(symbol['textDy'],0)));
             symbol['markerWidth'] = size['width']+padding['width'];
             symbol['markerHeight'] = size['height']+padding['height'];
-            symbol['markerDx'] = boxAlignPoint['left']+size['width']/2;
-            symbol['markerDy'] = boxAlignPoint['top']+size['height']/2;
+            symbol['markerDx'] = boxAlignPoint.x+size['width']/2;
+            symbol['markerDy'] = boxAlignPoint.y+size['height']/2;
             this.setSymbol(symbol,true);
         }
     },

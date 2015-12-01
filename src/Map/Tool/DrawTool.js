@@ -411,9 +411,9 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         var mapSize = this.map.getSize();
         var w = mapSize['width'],
             h = mapSize['height'];
-        if (containerPoint['left'] < 0 || containerPoint['top'] < 0) {
+        if (containerPoint.x < 0 || containerPoint.y < 0) {
             return false;
-        } else if (containerPoint['left']> w || containerPoint['top'] > h){
+        } else if (containerPoint.x> w || containerPoint.y > h){
             return false;
         }
         return true;

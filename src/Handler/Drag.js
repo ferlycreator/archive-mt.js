@@ -58,7 +58,7 @@ Z.Handler.Drag = Z.Handler.extend({
         var dom = this.dom;
         var newPos = new Z.Point(event.clientX, event.clientY),
             offset = newPos.substract(this.startPos);
-        if (!offset.left && !offset.top) {
+        if (!offset.x && !offset.y) {
             return;
         }
         if (!this.moved) {
@@ -71,7 +71,7 @@ Z.Handler.Drag = Z.Handler.extend({
              * @return {Object} mousePos: {'left': 0px, 'top': 0px}
              */
             this.fire('dragstart',{
-                'mousePos':new Z.Point(this.startPos.left, this.startPos.top)
+                'mousePos':this.startPos.copy()
             });
             this.moved = true;
         } else {

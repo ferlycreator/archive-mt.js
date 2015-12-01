@@ -321,6 +321,9 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         if (this.isEmpty()) {
             return;
         }
+        if (!opts) {
+            opts = {};
+        }
         if (opts['symbol']) {
             this._originalSymbol = this.getSymbol();
             this.setSymbol(opts['symbol']);

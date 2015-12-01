@@ -247,10 +247,10 @@ GeoEventsTester.prototype = {
         point._add(domPosition);
         this._verifyGeometryEvents(dom,
             {
-            'screenX':point.left,
-            'screenY':point.top,
-            'clientX':point.left,
-            'clientY':point.top
+            'screenX':point.x,
+            'screenY':point.y,
+            'clientX':point.x,
+            'clientY':point.y
             });
     },
 

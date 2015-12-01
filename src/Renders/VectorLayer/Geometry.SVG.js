@@ -20,7 +20,7 @@ Symboling.Ellipse = {
     _getRenderPath:function() {
         var domCenter = this._getCenterViewPoint();
         var size = this._getRenderSize();
-        var start = (domCenter['left']-size['width'])+','+domCenter['top'];
+        var start = (domCenter.x-size['width'])+','+domCenter.y;
         var path;
         if (Z.Browser.vml) {
             path = 'AL ' + start + ' ' + size['width'] + ',' + size['height'] +
@@ -80,7 +80,7 @@ Z.Sector.include(Symboling.Center,{
         }
         var domCenter = this._getCenterViewPoint();
         var size = this._getRenderSize();
-        return sector_update(domCenter['left'],domCenter['top'],size['width'],this.getStartAngle(),this.getEndAngle());
+        return sector_update(domCenter.x,domCenter.y,size['width'],this.getStartAngle(),this.getEndAngle());
     },
 
     _getRenderSize:function() {
@@ -100,10 +100,10 @@ Z.Rectangle.include({
         var map = this.getMap();
         var viewPoint = map._transformToViewPoint(this._getPNw());
         var size = this._getRenderSize();
-        var start = viewPoint['left']+','+viewPoint['top'];
-        var path = 'M'+start+' L'+(viewPoint['left']+size['width'])+','+viewPoint['top']+
-            ' L'+(viewPoint['left']+size['width'])+','+(viewPoint['top']+size['height'])+
-            ' L'+viewPoint['left']+','+(viewPoint['top']+size['height'])+
+        var start = viewPoint.x+','+viewPoint.y;
+        var path = 'M'+start+' L'+(viewPoint.x+size['width'])+','+viewPoint.y+
+            ' L'+(viewPoint.x+size['width'])+','+(viewPoint.y+size['height'])+
+            ' L'+viewPoint.x+','+(viewPoint.y+size['height'])+
             ' '+Z.SVG.closeChar;
         if (Z.Browser.vml) {
             //vml图形需要在末尾加个e表示图形结束
@@ -127,7 +127,7 @@ Symboling.Poly={
         var coords = [];
 
         for ( var i = 0, len = viewPoints.length; i < len; i++) {
-            coords.push(viewPoints[i]['left']+seperator+viewPoints[i]['top']);
+            coords.push(viewPoints[i].x+seperator+viewPoints[i].y);
         }
         if (coords.length === 0) {
             return 'M0 0';

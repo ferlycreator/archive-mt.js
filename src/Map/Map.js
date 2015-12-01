@@ -270,7 +270,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         var current = this._getPrjCenter();
         var curr_px = this._transform(current);
         var pcenter_px = this._transform(pcenter);
-        var span = new Z.Point((-pcenter_px['left']+curr_px['left']),(curr_px['top']-pcenter_px['top']));
+        var span = new Z.Point((-pcenter_px.x+curr_px.x),(curr_px.y-pcenter_px.y));
         return span;
     },
 
@@ -947,8 +947,8 @@ Z['Map']=Z.Map=Z.Class.extend({
      *-1,-1|1,-1
      */
     _offsetCenterByPixel:function(pixel) {
-        var posX = this.width/2+pixel['left'],
-            posY = this.height/2+pixel['top'];
+        var posX = this.width/2+pixel.x,
+            posY = this.height/2+pixel.y;
         var pCenter = this._untransform(new Z.Point(posX, posY));
         this._setPrjCenter(pCenter);
         return pCenter;
@@ -997,7 +997,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         var pcenter = this._getPrjCenter();
         var centerPoint = transformation.transform(pcenter, res);
         //容器的像素坐标方向是固定方向的, 和html标准一致, 即从左到右增大, 从上到下增大
-        var point = new Z.Point(centerPoint['left']+ domPos['left'] - this.width / 2, centerPoint['top']+domPos['top'] - this.height / 2);
+        var point = new Z.Point(centerPoint.x+ domPos.x - this.width / 2, centerPoint.y+domPos.y - this.height / 2);
         var result = transformation.untransform(point, res);
         return result;
     },
@@ -1025,8 +1025,8 @@ Z['Map']=Z.Map=Z.Class.extend({
 
         var point = transformation.transform(pCoordinate,res);
         return new Z.Point(
-            this.width / 2 + point['left'] - centerPoint['left'],
-            this.height / 2 + point['top'] - centerPoint['top']
+            this.width / 2 + point.x - centerPoint.x,
+            this.height / 2 + point.y - centerPoint.y
             );
     },
 
@@ -1078,8 +1078,8 @@ Z['Map']=Z.Map=Z.Class.extend({
         }
         var projection = tileConfig.getProjectionInstance();
         var res = this._getResolution();//tileConfig['resolutions'][this.getZoom()];
-        var nw = projection.unproject({x: plonlat.x - pnw["left"]*res, y: plonlat.y + pnw["top"]*res});
-        var se = projection.unproject({x: plonlat.x + pse["left"]*res, y: plonlat.y - pse["top"]*res});
+        var nw = projection.unproject({x: plonlat.x - pnw.x*res, y: plonlat.y + pnw.x*res});
+        var se = projection.unproject({x: plonlat.x + pse.y*res, y: plonlat.y - pse.y*res});
         return new Z.Extent(nw,se);
     },
 
@@ -1102,10 +1102,9 @@ Z['Map']=Z.Map=Z.Class.extend({
         //计算前刷新scales
         var center = this.getCenter(),
             target = projection.locate(center,x,y),
-            z = this.getZoom(),
-            resolutions = this._getResolution();//tileConfig['resolutions'];
-        var width = !x?0:(projection.project({x:target.x,y:center.y}).x-projection.project(center).x)/resolutions[z];
-        var height = !y?0:(projection.project({x:target.x,y:center.y}).y-projection.project(target).y)/resolutions[z];
+            res = this._getResolution();//tileConfig['resolutions'];
+        var width = !x?0:(projection.project({x:target.x,y:center.y}).x-projection.project(center).x)/res;
+        var height = !y?0:(projection.project({x:target.x,y:center.y}).y-projection.project(target).y)/res;
         return new Z.Size(Math.round(Math.abs(width)), Math.round(Math.abs(height)));
     },
 

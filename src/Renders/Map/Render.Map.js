@@ -24,12 +24,12 @@ Z.render.map.Render = Z.Class.extend({
             }), map, function(frame) {
                 /*this._context.save();
                 this._clearCanvas();
-                this._context.translate(focusPos['left'],focusPos['top']);
+                this._context.translate(focusPos.x,focusPos.y);
                 this._context.scale(frame.scale, frame.scale);
-                this._context.translate(-focusPos['left'],-focusPos['top']);
+                this._context.translate(-focusPos.x,-focusPos.y);
                 this._rend();
                 this._context.restore();*/
-                this._transform(new Z.Matrix().translate(focusPos['left'], focusPos['top']).scaleU(frame.scale));
+                this._transform(new Z.Matrix().translate(focusPos.x, focusPos.y).scaleU(frame.scale));
                 if (frame.state['end']) {
                     this._canvasBackgroundImage = Z.DomUtil.copyCanvas(this._canvas);
                     fn.apply(context, args);
@@ -73,8 +73,8 @@ Z.render.map.Render = Z.Class.extend({
                 }
             }, this);
         } else {
-            this.offsetPlatform(new Z.Point(moveOffset['left'],moveOffset['top']));
-            this._offsetCenterByPixel(new Z.Point(-moveOffset['left'],-moveOffset['top']));
+            this.offsetPlatform(moveOffset);
+            this._offsetCenterByPixel(new Z.Point(-moveOffset.x,-moveOffset.y));
             map._onMoveEnd();
         }
 
@@ -170,26 +170,26 @@ Z.render.map.Render = Z.Class.extend({
                 canvasImage = canvasImage.getContext('2d');
             }
             //CanvasMock并不一定实现了drawImage(img, sx, sy, w, h, dx, dy, w, h)
-            this._context.drawImage(canvasImage, point['left'], point['top']);
+            this._context.drawImage(canvasImage, point.x, point.y);
         } else {
             var sx, sy, w, h, dx, dy;
-            if (point['left'] <= 0) {
-                sx = -point['left'];
+            if (point.x <= 0) {
+                sx = -point.x;
                 dx = 0;
                 w = Math.min(size['width']-sx,mwidth);
             } else {
                 sx = 0;
-                dx = point['left'];
-                w = mwidth-point['left'];
+                dx = point.x;
+                w = mwidth-point.x;
             }
-            if (point['top'] <= 0) {
-                sy = -point['top'];
+            if (point.y <= 0) {
+                sy = -point.y;
                 dy = 0;
                 h = Math.min(size['height']-sy,mheight);
             } else {
                 sy = 0;
-                dy = point['top'];
-                h = mheight-point['top'];
+                dy = point.y;
+                h = mheight-point.y;
             }
             if (dx < 0 || dy < 0 || w <=0 || h <= 0) {
                 return;

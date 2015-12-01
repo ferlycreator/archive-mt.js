@@ -122,22 +122,22 @@ Z.PointSymbolizer=Z.Symbolizer.extend({
         var point = pt.add(d);
         if (marker.tagName && marker.tagName === 'SPAN') {
             //dom
-            marker.style.left = point['left']+'px';
-            marker.style.top = point['top']+'px';
+            marker.style.left = point.x+'px';
+            marker.style.top = point.y+'px';
         } else {
             if (Z.Browser.vml) {
                 //vml
                 marker.style.position = 'absolute';
-                marker.style.left = point['left'];
-                marker.style.top = point['top'];
+                marker.style.left = point.x;
+                marker.style.top = point.y;
             } else {
                 if (marker.tagName === 'text') {
                     // svg text
-                    marker.setAttribute('x',point['left']);
-                    marker.setAttribute('y',point['top']);
+                    marker.setAttribute('x',point.x);
+                    marker.setAttribute('y',point.y);
                 } else {
                     //svg
-                    marker.setAttribute('transform', 'translate('+point['left']+' '+point['top']+')');
+                    marker.setAttribute('transform', 'translate('+point.x+' '+point.y+')');
                 }
 
             }

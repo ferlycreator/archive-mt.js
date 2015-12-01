@@ -139,11 +139,11 @@ Z.Canvas = {
     },
 
     image:function(ctx, pt, img, width, height) {
-        var left=pt['left'],top=pt['top'];
+        var x=pt.x,y=pt.y;
         if (Z.Util.isNumber(width) && Z.Util.isNumber(height)) {
-            ctx.drawImage(img,left,top,width,height);
+            ctx.drawImage(img,x,y,width,height);
         } else {
-            ctx.drawImage(img,pt['left'],pt['top']);
+            ctx.drawImage(img,pt.x,pt.y);
         }
     },
 
@@ -155,11 +155,11 @@ Z.Canvas = {
     _textOnMultiRow: function(ctx, texts, style, point, splitTextSize, textSize) {
         var ptAlign = Z.StringUtil.getAlignPoint(splitTextSize,style['textHorizontalAlignment'],style['textVerticalAlignment']);
         var lineHeight = textSize['height']+style['textLineSpacing'];
-        var basePoint = point.add(new Z.Point(0, ptAlign['top']));
+        var basePoint = point.add(new Z.Point(0, ptAlign.y));
         for(var i=0,len=texts.length;i<len;i++) {
             var text = texts[i]['text'];
             var rowAlign = Z.StringUtil.getAlignPoint(texts[i]['size'],style['textHorizontalAlignment'],style['textVerticalAlignment']);
-            Z.Canvas._textOnLine(ctx, text, basePoint.add(new Z.Point(rowAlign['left'], i*lineHeight)), style['textHaloRadius'], style['textHaloFill']);
+            Z.Canvas._textOnLine(ctx, text, basePoint.add(new Z.Point(rowAlign.x, i*lineHeight)), style['textHaloRadius'], style['textHaloFill']);
         }
     },
 
@@ -173,12 +173,12 @@ Z.Canvas = {
             var lineWidth=(textHaloRadius*2-1);
             ctx.lineWidth = lineWidth;
             ctx.strokeStyle =Z.Canvas.getRgba(textHaloFill, 1);
-            ctx.strokeText(text, pt['left'], pt['top']);
+            ctx.strokeText(text, pt.x, pt.y);
             ctx.lineWidth = 1;
             ctx.miterLimit = 10; //default
         }
 
-        ctx.fillText(text, pt['left'], pt['top']);
+        ctx.fillText(text, pt.x, pt.y);
     },
 
 
@@ -200,8 +200,8 @@ Z.Canvas = {
           // Because of this, our algorithm needs to understand if the x-coord and
           // y-coord should be getting smaller or larger and properly cap the values
           // based on (x,y).
-              var fromX = startPoint.left,fromY = startPoint.top,
-                toX = endPoint.left,toY = endPoint.top;
+              var fromX = startPoint.x,fromY = startPoint.y,
+                toX = endPoint.x,toY = endPoint.y;
               var pattern = dashArray;
               var lt = function (a, b) { return a <= b; };
               var gt = function (a, b) { return a >= b; };
@@ -243,14 +243,14 @@ Z.Canvas = {
         var isDashed = Z.Util.isArrayHasData(lineDashArray);
         for (var i=0, len=points.length; i<len;i++) {
             var point = new Z.Point(
-                Z.Util.canvasRound(points[i]['left']),
-                Z.Util.canvasRound(points[i]['top'])
+                Z.Util.canvasRound(points[i].x),
+                Z.Util.canvasRound(points[i].y)
             );
             if (!isDashed || context.setLineDash) {//ie9以上浏览器
                 if (i === 0) {
-                    context.moveTo(point['left'], point['top']);
+                    context.moveTo(point.x, point.y);
                 } else {
-                    context.lineTo(point['left'],point['top']);
+                    context.lineTo(point.x,point.y);
                 }
             } else {
                 if (isDashed) {
@@ -258,8 +258,8 @@ Z.Canvas = {
                         break;
                     }
                     var nextPoint = new Z.Point(
-                        Z.Util.canvasRound(points[i+1]['left']),
-                        Z.Util.canvasRound(points[i+1]['top'])
+                        Z.Util.canvasRound(points[i+1].x),
+                        Z.Util.canvasRound(points[i+1].y)
                     );
                     drawDashLine(point, nextPoint, lineDashArray);
 
@@ -287,9 +287,9 @@ Z.Canvas = {
             for (var j = points.length - 1; j >= 0; j--) {
                 var outline = points[j];
                 if (j === points.length - 1) {
-                    context.moveTo(Z.Util.canvasRound(outline['left']), Z.Util.canvasRound(outline['top']));
+                    context.moveTo(Z.Util.canvasRound(outline.x), Z.Util.canvasRound(outline.y));
                 } else {
-                    context.lineTo(Z.Util.canvasRound(outline['left']),Z.Util.canvasRound(outline['top']));
+                    context.lineTo(Z.Util.canvasRound(outline.x),Z.Util.canvasRound(outline.y));
                 }
             }
             context.closePath();
@@ -302,8 +302,8 @@ Z.Canvas = {
 
     bezierCurve:function(context, points, lineDashArray) {
         context.beginPath(points);
-        context.moveTo(points[0].left,points[0].top);
-        context.bezierCurveTo(points[1].left,points[1].top,points[2].left,points[2].top,points[3].left,points[3].top);
+        context.moveTo(points[0].x,points[0].y);
+        context.bezierCurveTo(points[1].x,points[1].y,points[2].x,points[2].y,points[3].x,points[3].y);
         context.stroke();
     },
 
@@ -328,17 +328,17 @@ Z.Canvas = {
         if (size['width'] === size['height']) {
             //如果高宽相同,则直接绘制圆形, 提高效率
             ctx.beginPath();
-            ctx.arc(pt['left'],pt['top'],size['width'],0,2*Math.PI);
+            ctx.arc(pt.x,pt.y,size['width'],0,2*Math.PI);
             ctx.stroke();
         } else {
-            bezierEllipse(pt['left'],pt['top'],size["width"],size["height"]);
+            bezierEllipse(pt.x,pt.y,size["width"],size["height"]);
         }
 
     },
 
     rectangle:function(ctx, pt, size) {
         ctx.beginPath();
-        ctx.rect(Z.Util.canvasRound(pt['left']), Z.Util.canvasRound(pt['top']),
+        ctx.rect(Z.Util.canvasRound(pt.x), Z.Util.canvasRound(pt.y),
             Z.Util.canvasRound(size['width']),Z.Util.canvasRound(size['height']));
         ctx.stroke();
     },
@@ -373,6 +373,6 @@ Z.Canvas = {
             ctx.restore();
             ctx.stroke();
         }
-        sector(ctx,pt['left'],pt['top'],size,startAngle,endAngle);
+        sector(ctx,pt.x,pt.y,size,startAngle,endAngle);
     }
 };

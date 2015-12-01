@@ -180,26 +180,26 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
         var points = this._getVectorArray(style);
         var path;
         if ('triangle' === markerType) {
-           path='M'+points[0]['left']+','+points[0]['top']+ ' ' +
-                'L'+points[1]['left']+','+points[1]['top']+ ' ' +
-                'L'+points[2]['left']+','+points[2]['top']+ ' ' +
+           path='M'+points[0].x+','+points[0].y+ ' ' +
+                'L'+points[1].x+','+points[1].y+ ' ' +
+                'L'+points[2].x+','+points[2].y+ ' ' +
                 Z.SVG.closeChar;
         }  else if ('cross' === markerType || 'x' === markerType) {
-           path='M'+points[0]['left']+','+points[0]['top']+ ' ' +
-                'L'+points[1]['left']+','+points[1]['top']+ ' ' +
-                'M'+points[2]['left']+','+points[2]['top']+ ' ' +
-                'L'+points[3]['left']+','+points[3]['top'];
+           path='M'+points[0].x+','+points[0].y+ ' ' +
+                'L'+points[1].x+','+points[1].y+ ' ' +
+                'M'+points[2].x+','+points[2].y+ ' ' +
+                'L'+points[3].x+','+points[3].y;
         } else if ('diamond' === markerType || 'square' === markerType || 'bar' === markerType) {
-           path='M'+points[0]['left']+','+points[0]['top']+ ' ' +
-                'L'+points[1]['left']+','+points[1]['top']+ ' ' +
-                'L'+points[2]['left']+','+points[2]['top']+ ' ' +
-                'L'+points[3]['left']+','+points[3]['top']+ ' ' +
+           path='M'+points[0].x+','+points[0].y+ ' ' +
+                'L'+points[1].x+','+points[1].y+ ' ' +
+                'L'+points[2].x+','+points[2].y+ ' ' +
+                'L'+points[3].x+','+points[3].y+ ' ' +
                 Z.SVG.closeChar;
         } else if ('pin' === markerType) {
-           path='M'+points[0]['left']+','+points[0]['top']+ ' ' +
-                'C'+points[1]['left']+','+points[1]['top']+ ' ' +
-                points[2]['left']+','+points[2]['top']+ ' ' +
-                points[3]['left']+','+points[3]['top']+ ' ' +
+           path='M'+points[0].x+','+points[0].y+ ' ' +
+                'C'+points[1].x+','+points[1].y+ ' ' +
+                points[2].x+','+points[2].y+ ' ' +
+                points[3].x+','+points[3].y+ ' ' +
                 Z.SVG.closeChar;
         } else {
             //ellipse

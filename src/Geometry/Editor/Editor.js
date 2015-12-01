@@ -171,7 +171,7 @@ Z.Editor=Z.Class.extend({
             cursorStyle = 'move';
         }
         handle.style.cssText="display:block;position: absolute; top:"+
-            (pixel.top-5)+"px;left:"+(pixel.left-5)+"px;cursor:"+cursorStyle+";";
+            (pixel.y-5)+"px;left:"+(pixel.x-5)+"px;cursor:"+cursorStyle+";";
         handle.innerHTML='<div title="'+opts.tip+'" style="display:block;width:11px;height:11px;background:url(' + Z.prefix + 'images/dd-via.png) 0px 0px no-repeat;"></div>';
         return handle;
     },
@@ -189,8 +189,8 @@ Z.Editor=Z.Class.extend({
             editor.hideContext();
             var mousePos = Z.DomUtil.getEventContainerPoint(ev,_containerDOM);
             var handleDomOffset = map._containerPointToViewPoint(mousePos);
-            handle.style['top']=(handleDomOffset.top-5)+"px";
-            handle.style['left']=(handleDomOffset.left-5)+"px";
+            handle.style['top']=(handleDomOffset.y-5)+"px";
+            handle.style['left']=(handleDomOffset.x-5)+"px";
             Z.DomUtil.stopPropagation(ev);
             if (opts.onMove) {
                 opts.onMove.call(editor,handleDomOffset);
@@ -291,8 +291,8 @@ Z.Editor=Z.Class.extend({
                 onMove:function(handleDomOffset) {
                     var viewCenter = marker._getCenterViewPoint().add(dxdy);
                     var wh = handleDomOffset.substract(viewCenter);
-                    var width = Math.abs(wh['left'])*2,
-                    height = Math.abs(wh['top'])*2;
+                    var width = Math.abs(wh.x)*2,
+                    height = Math.abs(wh.y)*2;
                     symbol['markerWidth'] = width;
                     symbol['markerHeight'] = height;
                     marker.setSymbol(symbol);
@@ -314,8 +314,8 @@ Z.Editor=Z.Class.extend({
             onUp:function() {
                 if (radiusHandle) {
                     var pos = fnGetVectorSizePos();
-                    radiusHandle.style.top=(pos['top'])+"px";
-                    radiusHandle.style.left=(pos['left'])+"px";
+                    radiusHandle.style.top=(pos.y)+"px";
+                    radiusHandle.style.left=(pos.x)+"px";
                     radiusHandle.style.display="";
                 }
             }
@@ -333,7 +333,7 @@ Z.Editor=Z.Class.extend({
             var pxCenter = map._transformToViewPoint(geometry._getPCenter());
             var r = geometry.getRadius();
             var p = map.distanceToPixel(r,0);
-            var rPx= new Z.Point(pxCenter['left']+p['width'],pxCenter['top']);// {'left':pxCenter['left']+p['width'],'top':pxCenter['top']};
+            var rPx= new Z.Point(pxCenter.x+p['width'],pxCenter.y);// {'left':pxCenter.x+p['width'],'top':pxCenter.y};
             return rPx;
         }
         var rPx = radiusHandleOffset();
@@ -341,8 +341,8 @@ Z.Editor=Z.Class.extend({
             tip:"拖动以调整圆形半径",
             onMove:function(handleDomOffset) {
                 var pxCenter = map._transformToViewPoint(geometry._getPCenter());
-                var rPx = handleDomOffset['left']-pxCenter['left'];
-                var rPy = handleDomOffset['top']-pxCenter['top'];
+                var rPx = handleDomOffset.x-pxCenter.x;
+                var rPy = handleDomOffset.y-pxCenter.y;
                 //if (rPx >= 0 && rPy >= 0) {
                 var r = map.pixelToDistance(Math.abs(rPx), Math.abs(rPy));
                 geometry.setRadius(r);
@@ -362,8 +362,8 @@ Z.Editor=Z.Class.extend({
             },
             onUp:function() {
                 var rPx = radiusHandleOffset();
-                radiusHandle.style.top=(rPx['top']-5)+"px";
-                radiusHandle.style.left=(rPx['left']-5)+"px";
+                radiusHandle.style.top=(rPx.y-5)+"px";
+                radiusHandle.style.left=(rPx.x-5)+"px";
                 radiusHandle.style.display="";
             }
         });
@@ -381,7 +381,7 @@ Z.Editor=Z.Class.extend({
             var rx = Math.round(geometry.getWidth()/2);
             var rh = Math.round(geometry.getHeight()/2);
             var p = map.distanceToPixel(rx,rh);
-            var rPx={'left':pxCenter['left']+p['width'],'top':pxCenter['top']+p['height']};
+            var rPx={'left':pxCenter.x+p['width'],'top':pxCenter.y+p['height']};
             return rPx;
         }
         //this.createCenterEditor();
@@ -390,8 +390,8 @@ Z.Editor=Z.Class.extend({
             tip:"拖动以调整椭圆大小",
             onMove:function(handleDomOffset) {
                 var pxCenter = map._transformToViewPoint(geometry._getPCenter());
-                var rxPx = handleDomOffset.left-pxCenter.left;
-                var ryPx = handleDomOffset.top-pxCenter.top;
+                var rxPx = handleDomOffset.x-pxCenter.x;
+                var ryPx = handleDomOffset.y-pxCenter.y;
                 if (rxPx >= 0 && ryPx>=0) {
                     var w = map.pixelToDistance(Math.abs(rxPx), 0);
                     var h = map.pixelToDistance(0,Math.abs(ryPx));
@@ -415,8 +415,8 @@ Z.Editor=Z.Class.extend({
             },
             onUp:function() {
                 var rPx = radiusHandleOffset();
-                rHandle.style.top=(rPx['top']-5)+"px";
-                rHandle.style.left=(rPx['left']-5)+"px";
+                rHandle.style.top=(rPx.y-5)+"px";
+                rHandle.style.left=(rPx.x-5)+"px";
                 rHandle.style.display="";
             }
         });
@@ -433,7 +433,7 @@ Z.Editor=Z.Class.extend({
             var rw = Math.round(geometry.getWidth());
             var rh = Math.round(geometry.getHeight());
             var p = map.distanceToPixel(rw,rh);
-            var rPx= new Z.Point(pxNw['left']+p['width'],pxNw['top']+p['height']);//{'left':pxNw['left']+p['width'],'top':pxNw['top']+p['height']};
+            var rPx= new Z.Point(pxNw.x+p['width'],pxNw.y+p['height']);//{'left':pxNw.x+p['width'],'top':pxNw.y+p['height']};
             return rPx;
         }
 
@@ -442,8 +442,8 @@ Z.Editor=Z.Class.extend({
             tip:"拖动以调整矩形大小",
             onMove:function(handleDomOffset) {
                 var pxNw = map._transformToViewPoint(geometry._getPNw());
-                var rxPx = handleDomOffset['left']-pxNw['left'];
-                var ryPx = handleDomOffset['top']-pxNw['top'];
+                var rxPx = handleDomOffset.x-pxNw.x;
+                var ryPx = handleDomOffset.y-pxNw.y;
                 if (rxPx >= 0 && ryPx>=0) {
                     var w = map.pixelToDistance(Math.abs(rxPx), 0);
                     var h = map.pixelToDistance(0,Math.abs(ryPx));
@@ -474,8 +474,8 @@ Z.Editor=Z.Class.extend({
             },
             onUp:function() {
                 var rPx = radiusHandleOffset();
-                rHandle.style.top=(rPx['top']-5)+"px";
-                rHandle.style.left=(rPx['left']-5)+"px";
+                rHandle.style.top=(rPx.y-5)+"px";
+                rHandle.style.left=(rPx.x-5)+"px";
                 rHandle.style.display="";
                 this.fireEditEvent('positionchanged');
             },
@@ -656,7 +656,7 @@ Z.Editor=Z.Class.extend({
             //临时编辑按钮的点击
             var handleDomOffset = Z.DomUtil.offsetDom(tmpHandle);
             var res = map._getTileConfig()['resolutions'][map.getZoom()];
-            var plonlat = map._untransformFromViewPoint(new Z.Point(handleDomOffset['left']+5,handleDomOffset['top']+5));
+            var plonlat = map._untransformFromViewPoint(new Z.Point(handleDomOffset.x+5,handleDomOffset.y+5));
             var interIndex = Z.GeoUtils._isPointOnPath(plonlat, geometry, pxTolerance*res);
             if (interIndex >= 0) {
                 lonlats.splice(interIndex+1,0,plonlat);
@@ -677,8 +677,8 @@ Z.Editor=Z.Class.extend({
             //不与端点重叠,如果重叠则不显示
             if (interIndex >= 0 && !isPointOverlapped(plonlat,prjPoints[interIndex],tolerance) && !isPointOverlapped(plonlat,prjPoints[interIndex+1],tolerance)) {
                 var viewPoint = map._containerPointToViewPoint(eventOffset);
-                tmpHandle.style.left = (viewPoint['left']-5)+'px';
-                tmpHandle.style.top = (viewPoint['top']-5)+'px';
+                tmpHandle.style.left = (viewPoint.x-5)+'px';
+                tmpHandle.style.top = (viewPoint.y-5)+'px';
                 tmpHandle.style.display="";
             } else {
                 tmpHandle.style.display="none";
@@ -725,8 +725,8 @@ Z.Editor=Z.Class.extend({
     _refreshHandlePosition:function(handle) {
         var offset = handle.onRefresh();
         if (offset) {
-            handle.style.left = (offset['left']-5)+'px';
-            handle.style.top = (offset['top']-5)+'px';
+            handle.style.left = (offset.x-5)+'px';
+            handle.style.top = (offset.y-5)+'px';
         }
     },
 

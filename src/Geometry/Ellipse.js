@@ -106,15 +106,15 @@ Z.Ellipse = Z.Polygon.extend({
         var center = this._getCenterViewPoint();
         var f1, f2, d;
         if (xfocus) {
-            f1 = new Z.Point(center.left - c, center.top);
-            f2 = new Z.Point(center.left + c, center.top);
+            f1 = new Z.Point(center.x - c, center.y);
+            f2 = new Z.Point(center.x + c, center.y);
             d = a * 2;
         } else {
-            f1 = new Z.Point(center.left, center.top - c);
-            f2 = new Z.Point(center.left, center.top + c);
+            f1 = new Z.Point(center.x, center.y - c);
+            f2 = new Z.Point(center.x, center.y + c);
             d = b * 2;
         }
-        point = new Z.Point(point.left, point.top);
+        point = new Z.Point(point.x, point.y);
 
         /*
          L1 + L2 = D

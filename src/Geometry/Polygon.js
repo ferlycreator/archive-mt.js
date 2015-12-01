@@ -229,7 +229,7 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
         var t = this._hitTestTolerance(),
             pxExtent = this._getPainter().getPixelExtent().expand(t);
 
-        point = new Z.Point(point.left, point.top);
+        point = new Z.Point(point.x, point.y);
 
         if (!pxExtent.contains(point)) { return false; }
 
