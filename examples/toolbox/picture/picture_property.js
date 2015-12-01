@@ -42,7 +42,7 @@ PicturePropertyPanel.prototype = {
         this._map.on('moving zoomend', this._setPanelPosition, this)
                  .on('movestart', this.hide, this);
 
-        this._imageMarker.on('positionchanged', this._setPanelPosition, this)
+        this._imageMarker.on('dragging positionchanged', this._setPanelPosition, this)
                        .on('dragstart', this.hide, this)
                        .on('dragend', this.show, this);
     },
@@ -52,7 +52,7 @@ PicturePropertyPanel.prototype = {
         this._map.off('moving zoomend', this._setPanelPosition, this)
                  .off('movestart', this.hide, this);
 
-        this._imageMarker.off('positionchanged', this._setPanelPosition, this)
+        this._imageMarker.off('dragging positionchanged', this._setPanelPosition, this)
                     .off('dragstart', this.hide, this)
                     .off('dragend', this.show, this);
     },
