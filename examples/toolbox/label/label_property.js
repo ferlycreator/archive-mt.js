@@ -62,9 +62,10 @@ LabelPropertyPanel.prototype = {
     _getViewPoint: function() {
         var labelHeight = this._label.getSize()['height'];
         var mapOffset = this._map.offsetPlatform();
-        var viewPoint = this._map.coordinateToViewPoint(this._label.getCenter())
-                            .substract({left:this._width/2,top:-labelHeight})
+        var position = this._map.coordinateToViewPoint(this._label.getCenter())
+                            .substract({x:this._width/2, y:-labelHeight})
                             .add(mapOffset);
+        var viewPoint = {top:position['y'], left:position['x']};
         return viewPoint;
     },
 

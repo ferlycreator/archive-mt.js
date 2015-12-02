@@ -63,9 +63,10 @@ PicturePropertyPanel.prototype = {
 
     _getViewPoint: function() {
         var mapOffset = this._map.offsetPlatform();
-        var viewPoint = this._map.coordinateToViewPoint(this._imageMarker.getCenter())
-                            .substract({left:this._width/2-this._dx,top:-5-this._dy})
+        var position = this._map.coordinateToViewPoint(this._imageMarker.getCenter())
+                            .substract({x:this._width/2-this._dx,y:-5-this._dy})
                             .add(mapOffset);
+        var viewPoint = {top:position['y'],left:position['x']};
         return viewPoint;
     },
 
