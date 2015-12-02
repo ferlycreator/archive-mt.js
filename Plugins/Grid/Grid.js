@@ -45,7 +45,8 @@ maptalks.Grid = maptalks.Class.extend({
         'width': 300,
         'height': 300,
         'draggable': true,
-        'editable' : true
+        'editable' : true,
+        'dynamic': false
      }
      * @returns {maptalks.Table}
      */
@@ -60,6 +61,8 @@ maptalks.Grid = maptalks.Class.extend({
         this._height = maptalks.Util.getValueOrDefault(this.options['height'],100);
         this._cellWidth = this._width/this._colNum;
         this._cellHeight = this._height/(this._rowNum);
+        this._currentCol = 0;
+        this._currentRow = 0;
         return this;
     },
 
@@ -200,7 +203,7 @@ maptalks.Grid = maptalks.Class.extend({
                 cell.addTo(this._layer);
                 cell.on('mouseover',this._addMouseoverEventToCell,this)
                     .on('mouseout',this._addMouseoutEventToCell,this)
-                    .on('click',this._addEditEventToCell,this)
+                    .on('dblclick',this._addEditEventToCell,this)
                     .on('contextmenu',this._addContextmenuToCell,this);
                 //添加拖动焦点
                 if(i==0&&j==0&&init) {
@@ -228,6 +231,10 @@ maptalks.Grid = maptalks.Class.extend({
                     {'item': '在后面添加列', 'callback': function() {
                         me.addCol(colNum, '空', true);
                     }},
+                    {'item': '设置列样式', 'callback': function() {
+                        me._currentCol = colNum;
+                        me.setStyleForCol(colNum);
+                    }},
                     {'item': '删除列', 'callback': function() {
                         me.removeCol(colNum);
                     }}
@@ -243,6 +250,10 @@ maptalks.Grid = maptalks.Class.extend({
                     }},
                     {'item': '在下面添加行', 'callback': function() {
                         me.addRow(rowNum, '空', true);
+                    }},
+                    {'item': '设置行样式', 'callback': function() {
+                        me._currentRow = rowNum;
+                        me.setStyleForRow(rowNum);
                     }},
                     {'item': '删除行', 'callback': function() {
                         me.removeRow(rowNum);
@@ -301,14 +312,69 @@ maptalks.Grid = maptalks.Class.extend({
 
     _addEditEventToCell: function(event) {
         var cell = event.target;
-        cell.startEditText();
-        var textEditor = cell._textEditor;
-        textEditor.focus();
-        var value = textEditor.value;
-        textEditor.value = '';
-        if(value!='空') {
-            textEditor.value = value;
+        var row = cell._row;
+        if(this.options['dynamic']&&row==0) {//动态表格第一行
+            var selectDom = this._createInputDom(cell);
+            var map = cell.getMap();
+            var viewPoint = cell._computeViewPoint();
+            cell._container = maptalks.DomUtil.createEl('div');
+            cell._container.style.cssText='position:absolute;top:'+viewPoint['y']
+                                        +'px;left:'+viewPoint['x']+'px;z-index:5000;';
+            map._panels.mapPlatform.appendChild(cell._container);
+            cell._container.appendChild(selectDom);
+        } else {
+            cell.startEditText();
+            var textEditor = cell._textEditor;
+            textEditor.focus();
+            var value = textEditor.value;
+            textEditor.value = '';
+            if(value!='空') {
+                textEditor.value = value;
+            }
         }
+    },
+
+    _createInputDom: function(cell) {
+        var labelSize = cell.getSize();
+        var symbol = cell.getSymbol();
+        var width = labelSize['width'];
+        var height = labelSize['height'];
+        var textColor = symbol['textFill'];
+        var textSize = symbol['textSize'];
+        var fill = symbol['markerFill'];
+        var lineColor = symbol['markerLineColor'];
+        var spacing = maptalks.Util.getValueOrDefault(symbol['textLineSpacing'],0);
+        var selectDom = maptalks.DomUtil.createEl('select');
+        selectDom.style.cssText ='background:'+fill+';'+
+            'border:1px solid '+lineColor+';'+
+            'color:'+textColor+';'+
+            'font-size:'+textSize+'px;'+
+            'width:'+(width-spacing)+'px;'+
+            'height:'+(height-spacing)+'px;';
+        var cellDataIndex = cell['dataIndex'];
+        for(var i=0,len=this._columns.length;i<len;i++){
+            var col = this._columns[i];
+            var optionDom = maptalks.DomUtil.createEl('option');
+            optionDom.value = col['dataIndex'];
+            optionDom.innerHTML = col['header'];
+            if(cellDataIndex==col['dataIndex']) {
+                optionDom.selected = true;
+            }
+            selectDom.appendChild(optionDom);
+        }
+        var me = this;
+        me.cell = cell;
+        maptalks.DomUtil.on(selectDom, 'change', function(param){
+            var selectOption = param.target.selectedOptions[0];
+            me.cell['dataIndex'] = selectOption.value;
+            me.cell['header'] = selectOption.text;
+            maptalks.DomUtil.removeDomNode(me.cell._container);
+            delete me.cell._container;
+            delete selectDom;
+            me.cell.setContent(selectOption.text);
+        });
+        return selectDom;
+
     },
 
     /**
@@ -343,8 +409,8 @@ maptalks.Grid = maptalks.Class.extend({
                     var cell  = this._createCell(item,cellOffset);
                     cell._row = i;
                     cell._col = insertColNum+j;
-                    cell.on('click',this._addEditEventToCell,this)
-                        .on('contextmenu',this._addContextmenuToCell,this)
+                    cell.on('dblclick',this._addEditEventToCell,this)
+                        .on('contextmenu',this._addContextmenuToCell,this);
                     cell.addTo(this._layer);
                     colCell.push(cell);
                 }
@@ -357,10 +423,11 @@ maptalks.Grid = maptalks.Class.extend({
                     cell['dataIndex'] = 'new';
                     cell['type'] = 'string';
                     this._columns.splice(insertColNum+j, 0, cell);
+
                 }
                 cell._row = i;
                 cell._col = insertColNum;
-                cell.on('click',this._addEditEventToCell,this)
+                cell.on('dblclick',this._addEditEventToCell,this)
                     .on('contextmenu',this._addContextmenuToCell,this);
                 cell.addTo(this._layer);
                 cells.push(cell);
@@ -424,7 +491,7 @@ maptalks.Grid = maptalks.Class.extend({
             var dataType = col['type'];
             var cellOffset = this._getCellOffset(index, i);
             var text = '空';
-            if(item) {
+            if(item&&item[dataIndex]) {
                 text = item[dataIndex];
             }
             var cell = this._createCell(text,cellOffset);

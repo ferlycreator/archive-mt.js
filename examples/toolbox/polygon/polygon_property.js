@@ -61,9 +61,10 @@ PolygonPropertyPanel.prototype = {
 
     _getViewPoint: function() {
         var mapOffset = this._map.offsetPlatform();
-        var viewPoint = this._map.coordinateToViewPoint(this._polygon.getCenter())
-                            .substract({x:this._width/2,y:-5})
-                            .add(mapOffset);
+        var position = this._map.coordinateToViewPoint(this._polygon.getCenter())
+                                    .substract({x:this._width/2, y:-5})
+                                    .add(mapOffset);
+        var viewPoint = {top:position['y'], left:position['x']};
         return viewPoint;
     },
 
@@ -80,8 +81,8 @@ PolygonPropertyPanel.prototype = {
 
         //边框颜色设置部分
         var borderDom = this._createBorderDom();
-        //边框透明度
-        var lineOpacityDom = this._createOpacityDom('lineOpacity');
+        //边框宽度
+        var lineWidthDom = this._createOpacityDom('lineWidth');
         //边框线形
         var lineDasharrayDom = this._createLineDasharrayDom();
 
@@ -116,12 +117,14 @@ PolygonPropertyPanel.prototype = {
                     symbol['polygonFill'] = color;
                     me._polygon.setSymbol(symbol);
                 })
-            }, {
+            },
+            {
                 type : 'button',
                 hidden: isPolyline,
                 content: polygonOpacityDom,
 
-            }, {
+            },
+             {
                 type : 'button',
                 icon: '../../toolbox/polygon/images/stroke.png',
                 html: true,
@@ -136,26 +139,30 @@ PolygonPropertyPanel.prototype = {
                     me._polygon.setSymbol(symbol);
                 })
 
-            }, {
-                type: 'button',
-                content: lineDasharrayDom,
-            }, {
+            },
+//             {
+//                type: 'button',
+//                content: lineDasharrayDom,
+//            },
+              {
                 type : 'button',
-                content: lineOpacityDom,
+                content: lineWidthDom,
 
-            }, {
-                type : 'button',
-                icon: '../../toolbox/polygon/images/edit.png',
-                click : function(){
-                    me._polygon.startEdit();
-                }
-            }, {
-                type : 'button',
-                icon: '../../toolbox/polygon/images/stop_edit.png',
-                click : function(){
-                    me._polygon.endEdit();
-                }
-            }, {
+              },
+//            {
+//                type : 'button',
+//                icon: '../../toolbox/polygon/images/edit.png',
+//                click : function(){
+//                    me._polygon.startEdit();
+//                }
+//            }, {
+//                type : 'button',
+//                icon: '../../toolbox/polygon/images/stop_edit.png',
+//                click : function(){
+//                    me._polygon.endEdit();
+//                }
+//            },
+            {
                 type : 'button',
                 icon: '../../toolbox/polygon/images/close.png',
                 click : function(){

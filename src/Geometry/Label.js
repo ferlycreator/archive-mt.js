@@ -119,7 +119,6 @@ Z.Label = Z.Marker.extend({
     },
     _registerEvent: function() {
         this.on('shapechanged', this._refresh, this);
-
         this.on('remove', this._onLabelRemove, this);
         return this;
     },
