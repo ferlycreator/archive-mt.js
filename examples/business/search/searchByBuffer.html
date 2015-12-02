@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+        html,body{ margin:0px; height:100%; };
+    </style>
+    <title>MapTalks 示例: 缓冲查询</title>
+</head>
+<body scroll="no" onload="initMap();">
+<div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
+<script type="text/javascript" >
+    var mapObj,featureQuery,topoQuery,layer,drawTool;
+    function initMap(){
+        //创建地图对象
+        mapObj = new maptalks.Map('mapObj', //放置mapObj的div id
+        {
+            center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
+            zoom:   14 //初始缩放级别
+        });
+        //设置底图图层
+        mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
+        {
+            tileInfo: 'web-mercator',
+            urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
+            subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
+        }));
+        //创建图层
+        layer = new maptalks.VectorLayer('layer');
+        //将图层添加到地图对象
+        mapObj.addLayer(layer);
+        //构造绘制工具
+        drawTool = new maptalks.DrawTool({
+            //设置drawTool绘制的图形类型
+            mode: maptalks.Geometry.TYPE_POINT,
+            //设置标注点样式
+            symbol: {
+                'markerFile': '../../../images/marker.png',
+                'markerWidth': 22,
+                'markerHeight': 30,
+                'markerDx': 0,
+                'markerDy' :0
+            }
+        });
+        //将线绘制工具绑定到地图对象
+        drawTool.addTo(mapObj);
+        //监听绘制工具完成事件
+        drawTool.on('drawend', onAfterDraw);
+        drawTool.disable();
+
+        //拓扑运算对象
+        topoQuery = new maptalks.TopoQuery({host:'localhost',port:8090});
+        //构造查询对象
+        featureQuery = new maptalks.FeatureQuery({
+            'host': 'localhost',//空间数据库地址
+            'port': 8090,//端口
+            'mapdb': 'mapdata'//空间库名
+        });
+        //年份工具条
+        var toolbar = new maptalks.Toolbar({
+            id: 'toolbar',//toolbar id
+            position : { //工具条放置位置
+                top: '2',
+                left: '2'
+            },
+            vertical : false,
+            //工具项
+            items: [{
+                type : 'button',
+                content: '标注缓冲点',
+                click : function(){
+                    drawTool.setMode(maptalks.Geometry.TYPE_POINT);
+                    var symbol ={
+                        'markerFile': '../../../images/marker.png',
+                        'markerWidth': 22,
+                        'markerHeight': 30,
+                        'markerDx': 0,
+                        'markerDy' :0
+                    };
+                    drawTool.setSymbol(symbol);
+                    drawTool.enable();
+                }
+            }, {
+                type : 'button',
+                content: '绘制缓冲线',
+                click : function(){
+                    drawTool.setMode(maptalks.Geometry.TYPE_LINESTRING);
+                    var symbol ={
+                        'lineColor':'#0000ff',
+                        'lineWidth':2,
+                        'lineOpacity':1
+                    };
+                    drawTool.setSymbol(symbol);
+                    drawTool.enable();
+                }
+            }, {
+                type : 'button',
+                content: '绘制面',
+                click : function(){
+                    drawTool.setMode(maptalks.Geometry.TYPE_POLYGON);
+                    var symbol ={
+                        'lineColor':'#ab2d00',
+                        'lineWidth':2,
+                        'lineOpacity':1,
+                        'polygonFill': 'ff000d',
+                        'polygonOpacity': 0.2
+                    };
+                    drawTool.setSymbol(symbol);
+                    drawTool.enable();
+                }
+            }]
+        });
+        mapObj.addControl(toolbar);
+    }
+
+    function onAfterDraw(param) {
+        drawTool.disable();
+        var geometry = param.geometry;
+        bufferAndSearchData(geometry);
+    }
+
+    function bufferAndSearchData(geometry) {
+        var coordinate = geometry.getCoordinates();
+        var geometryType = geometry.getType();
+        var filterGeometry;
+        if(geometryType===maptalks.Geometry.TYPE_POLYGON){
+            searchData(geometry);
+        } else {
+            var hitBufferSymbol = {
+                'lineColor' : '#ab2d00',
+                'lineWidth' : 2,
+                'lineOpacity' : 1,
+                'lineDasharray' :[],
+                'polygonFill': '#ff000d',
+                'polygonOpacity': 0.2
+            };
+            //绘制目标监控缓冲区
+            topoQuery.buffer({
+                geometries:[geometry],
+                distance:200,
+                success: function(geometries){
+                    for(var i=0,len=geometries.length;i<len;i++) {
+                        var geo = geometries[i];
+                        geo.setSymbol(hitBufferSymbol);
+                        searchData(geo);
+                    }
+                }
+            });
+        }
+
+    }
+
+    function searchData(geometry) {
+        layer.addGeometry(geometry);
+        var spatialFilter = {
+            'geometry' : geometry, //空间参考图形
+            'relation' : maptalks.SpatialFilter.RELATION_CONTAIN //与空间参考图形的关系
+        };
+        featureQuery.query({
+            'page':0,
+            'count':100,
+            'layer': 'BUSINESS_SH',
+            'queryFilter': {
+                'returnGeometry': true,
+                'resultCrs':'gcj02',
+                'spatialFilter': spatialFilter
+            },
+            /**
+             * 设置空间查询条件
+             */
+            'success': function(geos) {
+                //将返回的图形添加到图层上
+                var geometries = geos[0].features;
+                var symbol = {
+                    'markerType': 'ellipse',
+                    'markerOpacity': 1,
+                    'markerFillOpacity': 0.7,
+                    'markerLineColor': '#ffffff',
+                    'markerLineWidth': 2,
+                    'markerLineOpacity': 0.7,
+                    'markerWidth': 10,
+                    'markerHeight': 10,
+                    'markerFill': '#99ccff',
+                };
+                var labelSymbol = {
+                    'markerType': 'square',
+                    'markerLineColor': '#99ccff',
+                    'markerLineWidth': 1,
+                    'markerLineOpacity': 0.9,
+                    'markerLineDasharray': null,
+                    'markerFillOpacity': 0.6,
+                    // 'markerDy': -20,
+                    'textFaceName': 'arial',
+                    'textSize': 12,
+                    'textFill': '#00ccff',
+                    'textOpacity': 1,
+                    'textSpacing': 30,
+                    'textWrapWidth': null,//auto
+                    'textWrapBefore': false,
+                    'textWrapCharacter': '\n',
+                    'textLineSpacing': 8,
+                    'textHorizontalAlignment': 'middle',//left middle right
+                    'textVerticalAlignment': 'bottom'//top middle bottom
+                };
+                for(var i=0,len=geometries.length;i<len;i++) {
+                    geometries[i].setSymbol(symbol);
+                    geometries[i].setId(i);
+                    geometries[i].on('mouseover',function(){
+                        var labelId = 'label_'+this.getId();
+                        var label = layer.getGeometryById(labelId);
+                        if(label) {
+                            label.show();
+                        } else {
+                            var coordinate = this.getCoordinates();
+                            var props = this.getProperties();
+                            var label = new maptalks.Label(props['poi_name'], coordinate, {id:labelId,symbol:labelSymbol});
+                            layer.addGeometry(label);
+                        }
+                    });
+                    geometries[i].on('mouseout',function(){
+                        var labelId = 'label_'+this.getId();
+                        var label = layer.getGeometryById(labelId);
+                        label.hide();
+                    });
+                }
+                layer.addGeometry(geometries);
+            },
+            'error': function(error) {
+                console.error(error);
+            }
+        });
+    }
+</script>
+<!-- 引擎javascript开发包-->
+<script type="text/javascript" src="../../../maptalks.js"></script>
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+  <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.min.js"></script>
+<![endif]-->
+</body>
+</html>

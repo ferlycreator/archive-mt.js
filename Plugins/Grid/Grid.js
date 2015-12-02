@@ -136,7 +136,6 @@ maptalks.Grid = maptalks.Class.extend({
             insertColNum = colNum;
         }
         this._createCol(insertColNum, data);
-        console.log(this._grid);
         return this;
     },
 
@@ -150,10 +149,10 @@ maptalks.Grid = maptalks.Class.extend({
             for(var j=0,rowLength=row.length;j<rowLength;j++) {
                 var cell = row[j];
                 if(i>rowNum) {
-                    var position = cell.getPosition();
-                    position = this._map.locate(position, 0, this._cellHeight);
+                    var cellOffset = this._getCellOffset(i, 0);
                     cell._row -= 1;
-                    cell.setPosition(position);
+                    this._translateDxDy(cell,cellOffset);
+
                 } else {
                     cell.remove();
                 }
@@ -175,10 +174,9 @@ maptalks.Grid = maptalks.Class.extend({
             for(var j=colNum,rowLength=row.length;j<rowLength;j++) {
                 var cell = row[j];
                 if(j>colNum) {
-                    var position = cell.getPosition();
-                    position = this._map.locate(position, -this._cellWidth, 0);
+                    var cellOffset = this._getCellOffset(-this._cellWidth, 0);
                     cell._col -= 1;
-                    cell.setPosition(position);
+                    this._translateDxDy(cell,cellOffset);
                 } else {
                     cell.remove();
                 }
@@ -253,25 +251,27 @@ maptalks.Grid = maptalks.Class.extend({
                 ]
             };
         }
-        cell._label.setMenu(menuOptions);
-        cell._label.openMenu();
+        cell.setMenu(menuOptions);
+        cell.openMenu();
     },
 
     _addDragHandler: function(cell) {
-        var position = cell.getPosition();
-        var height = this._cellHeight-8;
+        var cellSize = cell.getSize(),
+            height = cellSize['height'],
+            width = cellSize['width'];
         var icon = {
             'markerType': 'ellipse',
             'markerFillOpacity': 0.6,
             'markerLineColor': '#4e98dd',
             'markerLineWidth': 1,
             'markerLineOpacity': 1,
-            'markerWidth': height,
-            'markerHeight': height,
+            'markerWidth': height/2,
+            'markerHeight': height/2,
             'markerFill': '#ffffff',
+            'markerDx': -height/2,
+            'markerDy': 0
         };
-        var center = this._map.locate(position, -this._cellHeight/2, -this._cellHeight/2);
-        var marker = new maptalks.Marker(center,{draggable:true});
+        var marker = new maptalks.Marker(cell.getCenter(),{draggable:true});
         marker.setSymbol(icon);
         this._layer.addGeometry(marker);
         marker.on('dragging',this._dragGrid,this);
@@ -279,15 +279,12 @@ maptalks.Grid = maptalks.Class.extend({
 
     _dragGrid: function(event) {
         var dragOffset = event['dragOffset'];
+        this.options['position'] = event['coordinate'];
         for(var i=0,len=this._grid.length;i<len;i++) {
             var row = this._grid[i];
             for(var j=0,rowLength=row.length;j<rowLength;j++) {
                 var cell = row[j];
-                cell._box.translate(dragOffset);
-                cell._textMarker.translate(dragOffset);
-                if(i==0&&j==0) {//第一个cell
-                    this.options['position'] = cell.getPosition();
-                }
+                cell.translate(dragOffset);
             }
         }
     },
@@ -302,7 +299,7 @@ maptalks.Grid = maptalks.Class.extend({
 
     _addEditEventToCell: function(event) {
         var cell = event.target;
-        cell.startEdit();
+        cell.startEditText();
         var textEditor = cell._textEditor;
         textEditor.focus();
         var value = textEditor.value;
@@ -319,10 +316,8 @@ maptalks.Grid = maptalks.Class.extend({
         for(var i=0,len=lastDataset.length;i<len;i++) {
             var row = lastDataset[i];
             for(var j=0,rowLength=row.length;j<rowLength;j++) {
-                var position = row[j].getPosition();
-                position = this._map.locate(position, 0, -this._cellHeight*insertRowLength);
                 row[j]._row += insertRowLength;
-                row[j].setPosition(position);
+                this._translateDx(row[j], insertRowLength);
             }
         }
         return this;
@@ -332,7 +327,6 @@ maptalks.Grid = maptalks.Class.extend({
         var startCol = insertColNum;//调整起始列
         if(!data||data.length==0) data = '';
         //将列插入grid
-        var position = this.options['position'];
         var cells = new Array();
         var insertColLength = 1;
         for(var i=0;i<this._rowNum;i++) {
@@ -341,8 +335,8 @@ maptalks.Grid = maptalks.Class.extend({
                 var colCell = new Array();
                 for(var j=0,len=data.length;j<len;j++) {
                     var item = data[j];
-                    var cellPosition = this._getCellPosition(position,i,insertColNum+j);
-                    var cell  = this._createCell(cellPosition, item);
+                    var cellOffset = this._getCellOffset(i,insertColNum+j);
+                    var cell  = this._createCell(item,cellOffset);
                     cell._row = i;
                     cell._col = insertColNum+j;
                     cell.on('click',this._addEditEventToCell,this)
@@ -352,8 +346,8 @@ maptalks.Grid = maptalks.Class.extend({
                 }
                 cells.push(colCell);
             } else {
-                var cellPosition = this._getCellPosition(position,i,insertColNum);
-                var cell  = this._createCell(cellPosition, data);
+                var cellOffset = this._getCellOffset(i,insertColNum);
+                var cell  = this._createCell(data,cellOffset);
                 if(i==0) {
                     cell['header'] = 'new';
                     cell['dataIndex'] = 'new';
@@ -390,10 +384,9 @@ maptalks.Grid = maptalks.Class.extend({
             var rowData = this._grid[i];
             for(var j=start,rowLength=rowData.length;j<rowLength;j++) {
                 var cell = rowData[j];
-                var position = cell.getPosition();
-                position = this._map.locate(position,this._cellWidth*insertColLength,0);
+                var cellOffset = this._getCellOffset(this._cellWidth*insertColLength,0);
                 cell._col += insertColLength;
-                cell.setPosition(position);
+                this._translateDxDy(cell, cellOffset);
             }
         }
     },
@@ -410,12 +403,11 @@ maptalks.Grid = maptalks.Class.extend({
 
     _createHeader: function() {
         var headerRow = new Array();
-        var position = this.options['position'];
         for(var i=0,len=this._columns.length;i<len;i++) {
-            var cellPosition = this._getCellPosition(position, 0, i);
+            var cellOffset = this._getCellOffset(0, i);
             var col = this._columns[i];
             var text = col['header'];
-            var cell = this._createCell(cellPosition, text);
+            var cell = this._createCell(text,cellOffset);
             cell._row = 0;
             cell._col = i;
             headerRow.push(cell);
@@ -424,18 +416,17 @@ maptalks.Grid = maptalks.Class.extend({
     },
 
     _createRow: function(index, item) {
-        var position = this.options['position'];
         var cols = new Array();
         for(var i=0;i<this._colNum;i++) {
             var col = this._columns[i];
             var dataIndex = col['dataIndex'];
             var dataType = col['type'];
-            var cellPosition = this._getCellPosition(position,index+1, i);
+            var cellOffset = this._getCellOffset(index+1, i);
             var text = '';
             if(item) {
                 text = item[dataIndex];
             }
-            var cell = this._createCell(cellPosition, text);
+            var cell = this._createCell(text,cellOffset);
             cell._row = index;
             cell._col = i;
             cols[i] = cell;
@@ -443,8 +434,8 @@ maptalks.Grid = maptalks.Class.extend({
         return cols;
     },
 
-    _getCellPosition: function(position, row, col) {
-        return this._map.locate(position, col*this._cellWidth, -row*this._cellHeight);
+    _getCellOffset: function(row, col) {
+        return  {'dx':col*this._cellWidth, 'dy':row*this._cellHeight};
     },
 
     _getColumns: function() {
@@ -469,24 +460,59 @@ maptalks.Grid = maptalks.Class.extend({
         return type;
     },
 
-    _createCell: function(position, text) {
+    _createCell: function(text, cellOffset) {
         var symbol = this.options.symbol;
-        symbol['textWrapWidth'] = this._cellWidth;
-        //设置label属性
         var labelOptions = {
-            'target' : position,
-            'symbol': symbol,
-            'draggable': this.options['draggable'],
-            'content': text,
-            'horizontalAlignment': 'right',
-            'verticalAlignment': 'bottom',
-            'textLineSpacing': 8,
-            'dx': 0,
-            'dy': 0
+               'symbol': {
+                   'markerLineColor': maptalks.Util.getValueOrDefault(symbol['lineColor'],'#ffffff'),
+                   'markerLineWidth': 1,
+                   'markerLineOpacity': 0.9,
+                   'markerLineDasharray': null,
+                   'markerFill': maptalks.Util.getValueOrDefault(symbol['fill'],'#4e98dd'),
+                   'markerFillOpacity': 0.9,
+                   'markerDx': cellOffset['dx'],
+                   'markerDy': cellOffset['dy'],
+
+                   'textFaceName': maptalks.Util.getValueOrDefault(symbol['textFaceName'],'arial'),
+                   'textSize': maptalks.Util.getValueOrDefault(symbol['textSize'],12),
+                   'textFill': maptalks.Util.getValueOrDefault(symbol['textFill'],'#ff0000'),
+                   'textOpacity': 1,
+                   'textSpacing': 30,
+                   'textWrapWidth': this._cellWidth,
+                   'textWrapBefore': false,
+                   'textWrapCharacter': '/n',
+                   'textLineSpacing': 8,
+                   'textHorizontalAlignment': 'right',
+                   'textVerticalAlignment': 'bottom',
+                   'textDx': cellOffset['dx'],
+                   'textDy': cellOffset['dy']
+               },
+               'draggable': false,
+               'autosize': true
         };
-        var label = new maptalks.Label(labelOptions);
+        var coordinate = this.options['position'];
+        var label = new maptalks.Label(text,coordinate,labelOptions);
         return label;
+    },
+
+    //TODO 临时方法,提供label的dx/dy调整,待geometry提供类似方法
+    _translateDxDy: function(cell, cellOffset){
+        var symbol = cell.getSymbol();
+        symbol['markerDx'] = cellOffset['dx'];
+        symbol['markerDy'] = cellOffset['dy'];
+        symbol['textDx'] = cellOffset['dx'];
+        symbol['textDy'] = cellOffset['dy'];
+        cell.setSymbol(symbol);
+    },
+
+    _translateDx: function(cell, num){
+        var cellOffset = this._getCellOffset(cell._row, cell._col+num);
+        symbol['markerDx'] = cellOffset['dx'];
+        symbol['markerDy'] = cellOffset['dy'];
+        symbol['textDx'] = cellOffset['dx'];
+        symbol['textDy'] = cellOffset['dy'];
+        cell.setSymbol(symbol);
     }
+
+
 });
-
-

@@ -82,6 +82,7 @@ Z.Geometry.Drag = Z.Handler.extend({
         this._preCoordDragged = currentCoord;
         this._shadow.translate(dragOffset);
         this.target.translate(dragOffset);
+        param['dragOffset'] = dragOffset;
         /**
          * 触发geometry的dragging事件
          * @member maptalks.Geometry

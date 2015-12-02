@@ -57,8 +57,8 @@
         var menuOptions = {
             'width': 100,
             'style': 'black', //black|white
-            'items' : [{'item': '添加标签', 'callback': function() {
-                var param = {coordinate:marker};
+            'items' : [{'item': '添加图片', 'callback': function() {
+                var param = {coordinate:markerCoordinate,source:marker};
                 markerPicLabel(param);
             }}]
         };
@@ -93,13 +93,28 @@
         marker.setSymbol(icon);
         //将点添加到Layer
         layer.addGeometry(marker);
-
         //picture属性面板
         var picturePropertyPanel = new PicturePropertyPanel();
-
         marker.on('click', function(){
             picturePropertyPanel.addTo(marker);
         });
+        //如果存在目标，则连线
+        var linkSource = param.source;
+        if(linkSource) {
+            var linkOptions = {
+                linkSource: linkSource,
+                linkTarget: marker,
+                symbol: {
+                    "lineColor" : "#474cf8",
+                    "lineWidth" : 1,
+                    "lineOpacity" : 0.8,
+                    'lineDasharray' : [20,10,5,5,5,10]
+                }
+            }
+            var linker = new maptalks.Linker(linkOptions);
+            linker.addTo(mapObj);
+            linker.show();
+        }
     }
 </script>
 <!-- 引擎javascript开发包-->

@@ -10,7 +10,8 @@ LabelPropertyPanel.prototype = {
         this._width = 200;
         this._height = 38;
         this._label = label;
-        this._map = this._label._map;
+        this._symbol = this._label.getSymbol();
+        this._map = this._label.getMap();
         this._panel = this._getPanelByKey(label);
         if(!this._panel) {
             this._panel = this._createPanel();
@@ -39,7 +40,7 @@ LabelPropertyPanel.prototype = {
         this._map.on('moving zoomend', this._setPanelPosition, this)
                  .on('movestart', this.hide, this);
 
-        this._label.on('positionchanged', this._setPanelPosition, this)
+        this._label.on('dragging positionchanged', this._setPanelPosition, this)
                    .on('dragstart', this.hide, this)
                    .on('dragend', this.show, this);
     },
@@ -49,7 +50,7 @@ LabelPropertyPanel.prototype = {
         this._map.off('moving zoomend', this._setPanelPosition, this)
                  .off('movestart', this.hide, this);
 
-        this._label.off('positionchanged', this._setPanelPosition, this)
+        this._label.off('dragging positionchanged', this._setPanelPosition, this)
                     .off('dragstart', this.hide, this)
                     .off('dragend', this.show, this);
     },
@@ -59,9 +60,10 @@ LabelPropertyPanel.prototype = {
     },
 
     _getViewPoint: function() {
+        var labelHeight = this._label.getSize()['height'];
         var mapOffset = this._map.offsetPlatform();
-        var viewPoint = this._map.coordinateToViewPoint(this._label._center)
-                            .substract({left:this._width/2,top:-5})
+        var viewPoint = this._map.coordinateToViewPoint(this._label.getCenter())
+                            .substract({left:this._width/2,top:-labelHeight})
                             .add(mapOffset);
         return viewPoint;
     },
@@ -102,9 +104,8 @@ LabelPropertyPanel.prototype = {
                     var target = param.target;
                     var color = target.style['background-color'];
                     maptalks.DomUtil.setStyle(bgDom, 'background-color:'+color);
-                    var symbol = me._label.getSymbol();
-                    symbol['fill'] = color;
-                    me._label.setSymbol(symbol);
+                    me._symbol['markerFill'] = color;
+                    me._label.setSymbol(me._symbol);
                 })
             }, {
                 type : 'button',
@@ -116,9 +117,8 @@ LabelPropertyPanel.prototype = {
                     var target = param.target;
                     var color = target.style['background-color'];
                     maptalks.DomUtil.setStyle(borderDom, 'background-color:'+color);
-                    var symbol = me._label.getSymbol();
-                    symbol['lineColor'] = color;
-                    me._label.setSymbol(symbol);
+                    me._symbol['markerLineColor'] = color;
+                    me._label.setSymbol(me._symbol);
                 })
 
             }, {
@@ -131,9 +131,8 @@ LabelPropertyPanel.prototype = {
                     var target = param.target;
                     var color = target.style['background-color'];
                     maptalks.DomUtil.setStyle(textColorDom, 'background-color:'+color);
-                    var symbol = me._label.getSymbol();
-                    symbol['textFill'] = color;
-                    me._label.setSymbol(symbol);
+                    me._symbol['textFill'] = color;
+                    me._label.setSymbol(me._symbol);
                 })
 
             }, {
@@ -144,7 +143,7 @@ LabelPropertyPanel.prototype = {
                 type : 'button',
                 icon: '../../toolbox/label/images/edit.png',
                 click : function(){
-                    me._label.startEdit();
+                    me._label.startEditText();
                     var textEditor = me._label._textEditor;
                     textEditor.focus();
                     var value = textEditor.value;
@@ -156,7 +155,7 @@ LabelPropertyPanel.prototype = {
                 type : 'button',
                 icon: '../../toolbox/label/images/stop_edit.png',
                 click : function(){
-                    me._label.endEdit();
+                    me._label.endEditText();
                     var textEditor = me._label._textEditor;
                     maptalks.DomUtil.off(textEditor, 'click', me.show, me);
                 }
@@ -233,17 +232,17 @@ LabelPropertyPanel.prototype = {
     },
 
     _createBgDom: function() {
-        var fillColor = this._label._strokeAndFill['markerFill'];
+        var fillColor = this._symbol['markerFill'];
         return this._createColorDom(fillColor);
     },
 
     _createBorderDom: function() {
-        var borderColor = this._label._strokeAndFill['markerLineColor'];
+        var borderColor = this._symbol['markerLineColor'];
         return this._createColorDom(borderColor);
     },
 
     _createTextColorDom: function() {
-        var textColor = this._label._textStyle['textFill'];
+        var textColor = this._symbol['textFill'];
         return this._createColorDom(textColor);
     },
 
@@ -252,16 +251,17 @@ LabelPropertyPanel.prototype = {
         textSizeDom.style.cssText = 'border:1px solid #333;font-weight:bold;font-size:16px;width:20px;height:18px;color:#333';
         textSizeDom.type='text';
         textSizeDom.maxLength = 2;
-        var textSize = this._label._textStyle['textSize'];
+        var textSize = this._symbol['textSize'];
         textSizeDom.value = textSize;
         var me = this;
         maptalks.DomUtil.on(textSizeDom, 'blur', function(param){
             var target = param.target;
             var newSize = target.value;
-
-            var symbol = me._label.getSymbol();
-            symbol['textSize'] = parseInt(newSize);
-            me._label.setSymbol(symbol);
+            me._symbol['textSize'] = parseInt(newSize);
+            me._label.setSymbol(me._symbol);
+            var labelSize = me._label.getSize();
+            me._symbol['markerWidth'] = labelSize['width'];
+            me._label.setSymbol(me._symbol);
         });
         return textSizeDom;
     },
