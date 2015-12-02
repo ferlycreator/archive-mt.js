@@ -50,9 +50,6 @@ Z.Canvas = {
                  if (Z.Util.isNil(strokeOpacity)) {
                      strokeOpacity = 1;
                  }
-                 // 1
-                 // context.globalAlpha = strokeOpacity;
-                 // context.strokeStyle = strokeColor;
                  context.strokeStyle = this.getRgba(strokeColor,strokeOpacity);
              }
              //低版本ie不支持该属性
