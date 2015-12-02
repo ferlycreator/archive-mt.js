@@ -149,7 +149,9 @@ LabelPropertyPanel.prototype = {
                     textEditor.focus();
                     var value = textEditor.value;
                     textEditor.value = '';
-                    textEditor.value = value;
+                    if(value!='文本标签') {
+                        textEditor.value = value;
+                    }
                     maptalks.DomUtil.on(textEditor, 'click', me.show, me);
                 }
             }, {

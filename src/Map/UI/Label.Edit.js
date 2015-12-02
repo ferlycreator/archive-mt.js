@@ -4,7 +4,7 @@ Z.Label.include({
      * @member maptalks.Label
      * @expose
      */
-    startEditText: function(opts) {
+    startEditText: function() {
         //隐藏label标签
         this.hide();
         this._prepareEditor();
@@ -24,44 +24,47 @@ Z.Label.include({
     },
 
     _computeViewPoint: function() {
-        var width = Z.Util.getValueOrDefault(this._symbol['markerWidth'],0);
-        var height = Z.Util.getValueOrDefault(this._symbol['markerHeight'],0);
+        var labelSize = this.getSize();
+        var width = labelSize['width'];
+        var height = labelSize['height'];
+        this._symbol = this.getSymbol();
         var left = Z.Util.getValueOrDefault(this._symbol['textDx'],0),
             top = Z.Util.getValueOrDefault(this._symbol['textDy'],0);
-        var hAlign = this._symbol['textHorizontalAlignment'];
-        if (hAlign === 'left') {
-            left -= width;
-        } else if (hAlign === 'middle') {
-            left -= width/2;
-        }
+            var hAlign = this._symbol['textHorizontalAlignment'];
+            if (hAlign === 'left') {
+                left -= width;
+            } else if (hAlign === 'middle') {
+                left -= width/2;
+            }
 
-        var rowHeight = this._symbol['textLineSpacing'];
-        var vAlign = this._symbol['textVerticalAlignment'];
-        if (vAlign === 'top') {
-            top = -height - rowHeight;
-        } else if (vAlign === 'middle') {
-            top = -height/2 - rowHeight;
-        } else {
-            top = -rowHeight;
-        }
+            var vAlign = this._symbol['textVerticalAlignment'];
+            if (vAlign === 'top') {
+                top -= (height);
+            } else if (vAlign === 'middle') {
+                top -= height/2;
+            } else {
+                top -= rowHeight;
+            }
         var viewPoint = this._map.coordinateToViewPoint(this.getCenter()).add({x:left,y:top});
         return viewPoint;
     },
 
     _createInputDom: function() {
-        var width = this._symbol['markerWidth'];
-        var height = this._symbol['markerHeight'];
+        var labelSize = this.getSize();
+        var width = labelSize['width'];
+        var height = labelSize['height'];
         var textColor = this._symbol['textFill'];
         var textSize = this._symbol['textSize'];
         var fill = this._symbol['markerFill'];
         var lineColor = this._symbol['markerLineColor'];
+        var spacing = Z.Util.getValueOrDefault(this._symbol['textLineSpacing'],0);
         var inputDom = Z.DomUtil.createEl('textarea');
         inputDom.style.cssText ='background:'+fill+';'+
             'border:1px solid '+lineColor+';'+
             'color:'+textColor+';'+
             'font-size:'+textSize+'px;'+
-            'width:'+width+'px;'+
-            'height:'+height+'px;';
+            'width:'+(width-spacing)+'px;'+
+            'height:'+(height-spacing)+'px;';
         var content = this.getContent();
         inputDom.value = content;
         var me = this;

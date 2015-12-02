@@ -268,8 +268,8 @@ maptalks.Grid = maptalks.Class.extend({
             'markerWidth': height/2,
             'markerHeight': height/2,
             'markerFill': '#ffffff',
-            'markerDx': -height/2,
-            'markerDy': 0
+            'markerDx': -(width/2+height/4),
+            'markerDy': -3*height/4
         };
         var marker = new maptalks.Marker(cell.getCenter(),{draggable:true});
         marker.setSymbol(icon);
