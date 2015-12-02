@@ -357,7 +357,6 @@ Z.Util = {
     isObject: function (obj) {
         return typeof obj === 'object' && !!obj;
     },
-
     /**
      * 设置默认值
      * @param {Object} value 赋值
