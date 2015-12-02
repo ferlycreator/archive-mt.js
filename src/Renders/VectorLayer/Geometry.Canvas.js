@@ -91,10 +91,10 @@ if (Z.Browser.canvas) {
                     var strokeColor = strokeSymbol['stroke'];
                     _ctx.save();
                     var placement = me.options['arrowPlacement'];
-                    if (placement === 'vertex-first' || placement === 'vertext-firstlast') {
+                    if (placement === 'vertex-first' || placement === 'vertex-firstlast') {
                         arrow(_ctx, _points[1], _points[0], strokeColor, strokeOpacity);
                     }
-                    if (placement === 'vertex-last' || placement === 'vertext-firstlast') {
+                    if (placement === 'vertex-last' || placement === 'vertex-firstlast') {
                         arrow(_ctx, _points[_points.length-2], _points[_points.length-1], strokeColor, strokeOpacity);
                     }
                     if (placement === 'point') {
