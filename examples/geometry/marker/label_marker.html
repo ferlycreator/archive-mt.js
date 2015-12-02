@@ -38,31 +38,31 @@
         //将点添加到Layer
         layer.addGeometry(marker);
         //设置label属性
-        var labelOptions = {
-            'symbol': {
-                'markerLineColor': '#ff0000',
-                'markerLineWidth': 2,
-                'markerLineOpacity': 0.9,
-                'markerLineDasharray': null,
-                // 'markerFill': '#4e98dd',
-                'markerFillOpacity': 0.6,
+        var labelSymbol = {
+            'markerType': 'ellipse',
+            'markerLineColor': '#ff0000',
+            'markerLineWidth': 2,
+            'markerLineOpacity': 0.9,
+            'markerLineDasharray': null,
+            // 'markerFill': '#4e98dd',
+            'markerFillOpacity': 0.6,
 
-                'textFaceName': 'arial',
-                'textSize': 12,
-                // 'textFill': '#ff0000',
-                'textOpacity': 1,
-                'textSpacing': 30,
-                'textWrapWidth': null,//auto
-                'textWrapBefore': false,
-                'textWrapCharacter': '\n',
-                'textLineSpacing': 8,
-                'textHorizontalAlignment': 'middle',//left middle right
-                'textVerticalAlignment': 'bottom',//top middle bottom
-            },
-            'draggable': true
+            'textFaceName': 'arial',
+            'textSize': 12,
+            // 'textFill': '#ff0000',
+            'textOpacity': 1,
+            'textSpacing': 30,
+            'textWrapWidth': null,//auto
+            'textWrapBefore': false,
+            'textWrapCharacter': '\n',
+            'textLineSpacing': 8,
+            'textHorizontalAlignment': 'middle',//left middle right
+            'textVerticalAlignment': 'bottom',//top middle bottom
         };
+        var label = new maptalks.Label('上海站精选\n二店', coordinate, {draggable:true});
+        label.setSymbol(labelSymbol);
         //将label添加到指定的图层上
-        layer.addGeometry(new maptalks.Label('上海站精选\n二店', coordinate, {draggable:true}));
+        layer.addGeometry(label);
 
         mapObj.addLayer(svgLayer);
         //测试svg和canvas是否重合
@@ -105,30 +105,23 @@
             },
             vertical : false,
             //工具项
-            items: [{
-                type : 'button',
-                content: '获取label',
-                click : function(){
-                    var labels = marker.getAllLabel();
-                     console.log(labels);
-                }
-            }, {
+            items: [ {
                 type : 'button',
                 content: '隐藏',
                 click : function(){
-                    marker.hideLabel();
+                    label.hide();
                 }
             }, {
                 type : 'button',
                 content: '显示',
                 click : function(){
-                    marker.showLabel();
+                    label.show();
                 }
             }, {
                 type : 'button',
                 content: '删除',
                 click : function(){
-                    marker.removeLabel();
+                    label.remove();
                 }
             }]
         });

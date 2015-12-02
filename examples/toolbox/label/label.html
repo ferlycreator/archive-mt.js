@@ -58,7 +58,7 @@
             'width': 100,
             'style': 'black', //black|white
             'items' : [{'item': '添加标签', 'callback': function() {
-                var param = {geometry:marker};
+                var param = {coordinate:markerCoordinate,geometry:marker};
                 markerLabel(param);
             }}]
         };
@@ -75,7 +75,6 @@
     function markerLabel(param) {
         mapObj.off('click', markerLabel);
         var coordinate = param.coordinate;
-        var geometry = param.geometry;
         //设置label属性
         var options = {
             'symbol': {
@@ -101,30 +100,30 @@
             'draggable': true
         };
         //创建label
-        var label = new maptalks.Label('文本标签', options);
-        if(geometry) {
-            geometry.addLabel(label);
-        } else {
-            var icon = {
-                'markerType': 'ellipse',
-                'markerOpacity': 0,
-                'markerFillOpacity': 0,
-                'markerLineColor': '#0000ff',
-                'markerLineWidth': 1,
-                'markerLineOpacity': 0,
-                'markerWidth': 1,
-                'markerHeight': 1
-            };
-            var marker = new maptalks.Marker(coordinate,{symbol:icon});
-            marker.addLabel(label);
-            layer.addGeometry(marker);
-        }
+        var label = new maptalks.Label('文本标签', coordinate, options);
+        layer.addGeometry(label);
         //label属性面板
         var labelPropertyPanel = new LabelPropertyPanel();
-
         label.on('click', function(){
             labelPropertyPanel.addTo(label);
         });
+        //构造连线
+        var linkSource = param.geometry;
+        if(linkSource) {
+            var linkOptions = {
+                linkSource: linkSource,
+                linkTarget: label,
+                symbol: {
+                    "lineColor" : "#474cf8",
+                    "lineWidth" : 1,
+                    "lineOpacity" : 0.8,
+                    'lineDasharray' : [20,10,5,5,5,10]
+                }
+            }
+            var linker = new maptalks.Linker(linkOptions);
+            linker.addTo(mapObj);
+            linker.show();
+        }
     }
 </script>
 <!-- 引擎javascript开发包-->

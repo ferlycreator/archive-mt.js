@@ -72,20 +72,17 @@ Z.Linker = Z.Class.extend({
         if(this._linker) {
             this._linker.remove();
         }
-        this._linkSource.off('dragging', this._changeLinkPath, this);
-        this._linkSource.off('positionchanged', this._changeLinkPath, this)
+        this._linkSource.off('dragging positionchanged', this._changeLinkPath, this)
                         .off('remove', this.remove, this);
-        this._linkTarget.off('positionchanged', this._changeLinkPath, this)
+        this._linkTarget.off('dragging positionchanged', this._changeLinkPath, this)
                         .off('remove', this.remove, this);
-        // delete this;
     },
 
     _registEvents: function() {
         var me = this;
-        this._linkSource.on('dragging', this._changeLinkPath, this);
-        this._linkSource.on('positionchanged', this._changeLinkPath, this)
+        this._linkSource.on('dragging positionchanged', this._changeLinkPath, this)
                         .on('remove', this.remove, this);
-        this._linkTarget.on('positionchanged', this._changeLinkPath, this)
+        this._linkTarget.on('dragging positionchanged', this._changeLinkPath, this)
                         .on('remove', this.remove, this);
         var trigger = this.options['trigger'];
         me._linker.hide();
@@ -161,11 +158,7 @@ Z.Linker = Z.Class.extend({
          if(!map) {return;}
          var layer = map.getLayer(layerId);
          if(!layer) {
-             if(canvas) {
-                 layer = new Z.VectorLayer(layerId,{'render':'canvas'});
-             } else {
-                 layer = new Z.VectorLayer(layerId);
-             }
+             layer = new Z.VectorLayer(layerId);
              map.addLayer(layer);
          }
          return layer;

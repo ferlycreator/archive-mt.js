@@ -42,7 +42,7 @@ PicturePropertyPanel.prototype = {
         this._map.on('moving zoomend', this._setPanelPosition, this)
                  .on('movestart', this.hide, this);
 
-        this._imageMarker.on('positionchanged', this._setPanelPosition, this)
+        this._imageMarker.on('dragging positionchanged', this._setPanelPosition, this)
                        .on('dragstart', this.hide, this)
                        .on('dragend', this.show, this);
     },
@@ -52,7 +52,7 @@ PicturePropertyPanel.prototype = {
         this._map.off('moving zoomend', this._setPanelPosition, this)
                  .off('movestart', this.hide, this);
 
-        this._imageMarker.off('positionchanged', this._setPanelPosition, this)
+        this._imageMarker.off('dragging positionchanged', this._setPanelPosition, this)
                     .off('dragstart', this.hide, this)
                     .off('dragend', this.show, this);
     },
@@ -135,7 +135,7 @@ PicturePropertyPanel.prototype = {
         inputDom.style.cssText = 'cursor:pointer;position:absolute;left:0;top:0;width:100%;height:100%;z-index:999;opacity:0;';
         aDom.appendChild(inputDom);
         var me = this;
-        Z.DomUtil.on(inputDom, 'change', function(param){
+        maptalks.DomUtil.on(inputDom, 'change', function(param){
             var target = param.target;
             var fileName = target.value;
             if(fileName) {

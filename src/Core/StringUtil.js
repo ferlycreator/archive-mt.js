@@ -144,7 +144,9 @@ Z.StringUtil = {
         var wrapWidth = style['textWrapWidth'];
         if(!wrapWidth || wrapWidth > textWidth) {wrapWidth = textWidth;}
         var textRows = [];
-
+        if(!Z.Util.isString(text)) {
+            text +='';
+        }
         if(wrapChar&&text.indexOf(wrapChar)>=0){
             var texts = text.split(wrapChar);
             //wrapWidth = textWidth/texts.length;

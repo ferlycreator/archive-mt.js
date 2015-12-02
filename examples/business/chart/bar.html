@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+        html,body{ margin:0px; height:100%; };
+    </style>
+    <title>MapTalks 示例: bar chart</title>
+</head>
+<body scroll="no" onload="initMap();">
+<div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
+<script type="text/javascript" >
+    var mapObj,featureQuery,layer;
+    function initMap(){
+        //创建地图对象
+        mapObj = new maptalks.Map('mapObj', //放置mapObj的div id
+        {
+            center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
+            zoom:   14 //初始缩放级别
+        });
+        //设置底图图层
+        mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
+        {
+            /*tileInfo: 'web-mercator',
+            urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
+            subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值*/
+            tileInfo : 'web-mercator',
+            urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
+            /**
+            *urlTemplate中占位符{s}所有数值的数组
+            */
+            subdomains:[1,2,3]
+        }));
+        //创建图层
+        layer = new maptalks.VectorLayer('layer',{render:'canvas'});
+        //将图层添加到地图对象
+        mapObj.addLayer(layer);
+        //构造查询对象
+        featureQuery = new maptalks.FeatureQuery({
+            'host': 'localhost',//空间数据库地址
+            'port': 8090,//端口
+            'mapdb': 'mapdata'//空间库名
+        });
+        queryDataByYear(2012);
+        //年份工具条
+        var toolbar = new maptalks.Toolbar({
+            id: 'toolbar',//toolbar id
+            position : { //工具条放置位置
+                top: '2',
+                left: '2'
+            },
+            vertical : false,
+            //工具项
+            items: [{
+                type : 'button',
+                content: '2012年',
+                click : function(){
+                    queryDataByYear(2012);
+                }
+            }, {
+                type : 'button',
+                content: '2013年',
+                click : function(){
+                   queryDataByYear(2013);
+                }
+            }, {
+                type : 'button',
+                content: '2014年',
+                click : function(){
+                    queryDataByYear(2014);
+                }
+            }]
+        });
+        mapObj.addControl(toolbar);
+    }
+
+    function queryDataByYear(year) {
+        layer.clear();
+        featureQuery.query({
+            'page' : 0,
+            'count': 200000,
+            'layer': 'MALL_SH',
+            'queryFilter': {
+                'returnGeometry': true,
+                'coordinateType':'gcj02',
+                'condition': "year='"+year+"'" //查询条件
+            },
+            'success': function(geos) {
+                //将返回的图形添加到图层上
+                var geometries = geos[0].features;
+                createBarMarker(geometries);
+            },
+            'error': function(error) {
+                console.error(error);
+            }
+        });
+    }
+
+    function createBarMarker(geometries) {
+        var geos = [];
+        for(var i=0,len=geometries.length;i<len;i++) {
+            var geometry = geometries[i];
+            var coordinate = geometry.getCenter();
+            var properties = geometry.properties;
+            var area = properties['area'];
+            var sales = properties['sales'];
+            var shopNum = properties['shop_num'];
+            var areaBar = new maptalks.Marker(coordinate, {'symbol':getAreaBarSymbol(area)});
+            var saleBar = new maptalks.Marker(coordinate, {'symbol':getSaleBarSymbol(sales)});
+            var shopBar = new maptalks.Marker(coordinate, {'symbol':getShopNumBarSymbol(shopNum)});
+            geos.push(areaBar);
+            geos.push(saleBar);
+            geos.push(shopBar);
+        }
+        layer.addGeometry(geos);
+    }
+
+    function getAreaBarSymbol(value) {
+        var bar = {
+            'markerType': 'bar',
+            'markerOpacity': 1,
+            'markerFillOpacity': 1,
+            'markerLineColor': '#0000ff',
+            'markerLineWidth': 1,
+            'markerLineOpacity': 1,
+            'markerPlacement': 'point',
+            'markerWidth': 12,
+            'markerHeight': 10+value/10000,
+            'markerFill': '#ff0000',
+            'markerDx': -12,
+            'markerDy': 0
+        };
+        return bar;
+    }
+
+    function getSaleBarSymbol(value) {
+        var bar = {
+            'markerType': 'bar',
+            'markerOpacity': 1,
+            'markerFillOpacity': 1,
+            'markerLineColor': '#ff00ff',
+            'markerLineWidth': 1,
+            'markerLineOpacity': 1,
+            'markerPlacement': 'point',
+            'markerWidth': 12,
+            'markerHeight': 30+value/5,
+            'markerFill': '#00ff00',
+            'markerDx': 0,
+            'markerDy': 0
+        };
+        return bar;
+    }
+
+    function getShopNumBarSymbol(value) {
+        var bar = {
+            'markerType': 'bar',
+            'markerOpacity': 1,
+            'markerFillOpacity': 1,
+            'markerLineColor': '#333333',
+            'markerLineWidth': 1,
+            'markerLineOpacity': 1,
+            'markerPlacement': 'point',
+            'markerWidth': 12,
+            'markerHeight': 5+value/100,
+            'markerFill': '#0000ff',
+            'markerDx': 12,
+            'markerDy': 0
+        };
+        return bar;
+    }
+</script>
+<!-- 引擎javascript开发包-->
+<script type="text/javascript" src="../../../maptalks.js"></script>
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+  <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.min.js"></script>
+<![endif]-->
+</body>
+</html>
