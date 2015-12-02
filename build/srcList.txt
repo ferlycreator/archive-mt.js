@@ -11,6 +11,7 @@
 ../src/Geo/Point.js
 ../src/Geo/Size.js
 ../src/Geo/CRS.js
+../src/Geo/Matrix/Matrix.js
 ../src/Geo/Transformation/Transformation.js
 ../src/Geo/Projection/Projection.js
 ../src/Geo/Projection/Projection.Common.js

@@ -525,6 +525,11 @@ Z.Matrix.prototype = {
 		};
 	},
 
+    applyToPointInstance:function(point) {
+        var p = this.applyToPoint(point.x, point.y);
+        return new Z.Point(p);
+    },
+
 	/**
 	 * Apply current matrix to array with point objects or point pairs.
 	 * Returns a new array with points in the same format as the input array.
