@@ -76,6 +76,9 @@ Z.Editor=Z.Class.extend({
         var geometry = this.geometryToEdit.copy();
         this.geometry = geometry;
         this.geometry.setId(null);
+        this.geometry.isEditing=function() {
+            return true;
+        }
         this.geometryToEdit.hide();
         this._editStageLayer.addGeometry(geometry);
         if (geometry instanceof Z.Marker) {
