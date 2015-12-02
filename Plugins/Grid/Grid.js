@@ -313,6 +313,7 @@ maptalks.Grid = maptalks.Class.extend({
     _addEditEventToCell: function(event) {
         var cell = event.target;
         var row = cell._row;
+        var cellDataIndex = cell['dataIndex'];
         if(this.options['dynamic']&&row==0) {//动态表格第一行
             var selectDom = this._createInputDom(cell);
             var map = cell.getMap();
@@ -372,9 +373,27 @@ maptalks.Grid = maptalks.Class.extend({
             delete me.cell._container;
             delete selectDom;
             me.cell.setContent(selectOption.text);
+            //将数据填充到列
+            me._getColData(me.cell);
         });
         return selectDom;
+    },
 
+    _getColData: function(cell) {
+        var dataIndex = cell['dataIndex'];
+        var colNum = cell._col;
+        var data = this._data;
+        //{name:'Tom', birth:'1990-1-1', age: 25, marry: 'true'},
+        var newValues = [];
+        for(var i=0,len=data.length;i<len;i++) {
+            var item = data[i];
+            newValues[i+1] = item[dataIndex];
+        }
+        for(var i=1,len=this._grid.length;i<len;i++) {
+            var row = this._grid[i];
+            var cell = row[colNum];
+            cell.setContent(newValues[i]);
+        }
     },
 
     /**
