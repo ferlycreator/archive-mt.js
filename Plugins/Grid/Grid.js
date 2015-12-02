@@ -279,12 +279,14 @@ maptalks.Grid = maptalks.Class.extend({
 
     _dragGrid: function(event) {
         var dragOffset = event['dragOffset'];
-        this.options['position'] = event['coordinate'];
         for(var i=0,len=this._grid.length;i<len;i++) {
             var row = this._grid[i];
             for(var j=0,rowLength=row.length;j<rowLength;j++) {
                 var cell = row[j];
                 cell.translate(dragOffset);
+                if(i==0&&j==0) {
+                    this.options['position'] = cell.getCenter();
+                }
             }
         }
     },
