@@ -127,8 +127,7 @@ Z.PointSymbolizer=Z.Symbolizer.extend({
         });
         var layer = this.geometry.getLayer();
         if (layer.isCanvasRender()) {
-            var layerRender = layer._getRender();
-            var matrix = layerRender.getTransMatrix();
+            var matrix = map._getRender().getTransform();
             if (matrix) {
                 var p = matrix.applyToArray(containerPoints);
                 return p;

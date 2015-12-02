@@ -17,13 +17,6 @@ Z.Geometry.Poly={
         });
     },
 
-    _transformToScreenPoints:function(points) {
-        var map = this.getMap();
-        return this._transformPoints(points, function(p) {
-            return map._transform(p);
-        });
-    },
-
     _transformPoints:function(points,fn) {
         var result = [];
         if (!Z.Util.isArrayHasData(points)) {

@@ -15,11 +15,13 @@ Z.render.map.Render = Z.Class.extend({
         var map = this.map;
         this._clearCanvas();
         if (map.options['zoomAnimation']) {
+            this._context.save();
             var duration = map.options['zoomAnimationDuration'];
+            var baseLayerImage = map.getBaseTileLayer()._getRender().getCanvasImage();
+            var width = this._canvas.width, height = this._canvas.height;
+            var matrix;
             if (map.options['zoomAnimationMode'] && 'performance' === map.options['zoomAnimationMode'].toLowerCase()) {
                 //zoom animation with better performance, only animate baseTileLayer, ignore other layers.
-                var baseLayerImage = map.getBaseTileLayer()._getRender().getCanvasImage();
-                var width = this._canvas.width, height = this._canvas.height;
                 this._drawLayerCanvasImage(baseLayerImage, width, height);
                 this._context.save();
                 Z.animation.animate(new Z.animation.zoom({
@@ -27,14 +29,13 @@ Z.render.map.Render = Z.Class.extend({
                     'scale2': scale,
                     'duration' : map.options['zoomAnimationDuration']
                 }), map, function(frame) {
-                    this._context.save();
+                    matrix = new Z.Matrix().translate(transOrigin.x, transOrigin.y)
+                        .scaleU(frame.scale).translate(-transOrigin.x,-transOrigin.y);
                     this._clearCanvas();
-                    this._context.translate(transOrigin.x,transOrigin.y);
-                    this._context.scale(frame.scale, frame.scale);
-                    this._context.translate(-transOrigin.x,-transOrigin.y);
+                    matrix.applyToContext(this._context);
                     this._drawLayerCanvasImage(baseLayerImage, width, height);
-                    this._context.restore();
                     if (frame.state['end']) {
+                        this._context.restore();
                         this._canvasBackgroundImage = Z.DomUtil.copyCanvas(this._canvas);
                         fn.apply(context, args);
                     }
@@ -48,13 +49,17 @@ Z.render.map.Render = Z.Class.extend({
                     'scale2': scale,
                     'duration' : duration
                 }), map, function(frame) {
-                    var matrix = new Z.Matrix().translate(transOrigin.x, transOrigin.y)
-                        .scaleU(frame.scale);
-                    var overlayMatrix = new Z.Matrix().translate(-transOrigin.x, -transOrigin.y)
-                        .scaleU(frame.scale);
-                    this._transform(matrix, overlayMatrix, transOrigin);
+                    matrix = new Z.Matrix().translate(transOrigin.x, transOrigin.y)
+                        .scaleU(frame.scale).translate(-transOrigin.x,-transOrigin.y);
+                    this.transform(matrix);
                     if (frame.state['end']) {
+                        delete this._transMatrix;
+                        this._clearCanvas();
+                        //only draw basetile layer
+                        matrix.applyToContext(this._context);
+                        this._drawLayerCanvasImage(baseLayerImage, width, height);
                         this._canvasBackgroundImage = Z.DomUtil.copyCanvas(this._canvas);
+                        this._context.restore();
                         fn.apply(context, args);
                     }
                 }, this);
@@ -66,12 +71,16 @@ Z.render.map.Render = Z.Class.extend({
 
     },
 
-    _transform:function(matrix,overlayMatrix,origin) {
+    /**
+     * 对图层进行仿射变换
+     * @param  {Matrix} matrix 变换矩阵
+     */
+    transform:function(matrix) {
         var mwidth = this._canvas.width,
             mheight = this._canvas.height;
         var layers = this._getAllLayerToCanvas();
+        this._transMatrix = matrix;
         this._clearCanvas();
-        var transMatrix = matrix.clone().translate(-origin.x,-origin.y);
         for (var i = 0, len=layers.length; i < len; i++) {
             if (!layers[i].isVisible()) {
                 continue;
@@ -80,12 +89,9 @@ Z.render.map.Render = Z.Class.extend({
             if (render) {
                 this._context.save();
                 if (layers[i] instanceof Z.TileLayer) {
-                    matrix.applyToContext(this._context);
-                    this._context.translate(-origin.x,-origin.y);
+                    this._transMatrix.applyToContext(this._context);
                 } else {
-                    render.transform(transMatrix);
                     render.rendRealTime();
-                    render.removeTransform();
                 }
                 var layerImage = render.getCanvasImage();
                 if (layerImage && layerImage['image']) {
@@ -94,6 +100,14 @@ Z.render.map.Render = Z.Class.extend({
                 this._context.restore();
             }
         }
+    },
+
+    /**
+     * 获取底图当前的仿射矩阵
+     * @return {Matrix} 仿射矩阵
+     */
+    getTransform:function() {
+        return this._transMatrix;
     },
 
     onZoomEnd:function() {
