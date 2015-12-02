@@ -275,7 +275,8 @@ Z.Editor=Z.Class.extend({
      */
     createMarkerEditor:function() {
         var marker = this.geometry,
-            symbol = marker.getSymbol();
+            symbol = marker.getSymbol(),
+            geometryToEdit = this.geometryToEdit;
         var radiusHandle;
         var fnGetVectorSizePos;
         if (marker._canEdit()) {
@@ -299,6 +300,7 @@ Z.Editor=Z.Class.extend({
                     symbol['markerWidth'] = width;
                     symbol['markerHeight'] = height;
                     marker.setSymbol(symbol);
+                    geometryToEdit.setSymbol(symbol);
                 },
                 onUp:function() {
 
