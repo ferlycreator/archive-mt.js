@@ -119,8 +119,8 @@ Z.render.tilelayer.Dom.prototype = {
 
         for (var i = tiles.length - 1; i >= 0; i--) {
             var tileId=tiles[i]['id'],
-                tileLeft = tiles[i]['viewPoint']['left'],
-                tileTop = tiles[i]['viewPoint']['top'],
+                tileLeft = tiles[i]['viewPoint'].x,
+                tileTop = tiles[i]['viewPoint'].y,
                 tileUrl = tiles[i]['url'];
             if (!currentTiles[tileId]) {
                 var tileImage = this._createTileImage(tileLeft,tileTop, tileUrl,(rendWhenReady?checkAndLoad:null));
@@ -195,8 +195,8 @@ Z.render.tilelayer.Dom.prototype = {
             mapWidth = map.width,
             mapDomOffset = map.offsetPlatform(),
             tileConfig = this._layer._getTileConfig();
-        var _holderLeft = mapDomOffset["left"],
-            _holderTop = mapDomOffset["top"],
+        var _holderLeft = mapDomOffset.x,
+            _holderTop = mapDomOffset.y,
             _tileSize = tileConfig["tileSize"];
         var currentTile = null;
         try {

@@ -29,19 +29,15 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
 
     canvas:function(ctx, resources) {
 
-        var points = this._getRenderPoints();
-        if (!Z.Util.isArrayHasData(points)) {
+        var cookedPoints = this._getRenderContainerPoints();
+        if (!Z.Util.isArrayHasData(cookedPoints)) {
             return;
         }
-        var map = this.getMap();
-        var cookedPoints = Z.Util.eachInArray(points,this,function(point) {
-            return map._viewPointToContainerPoint(point);
-        });
         var style = this.style;
         var vectorArray = this._getVectorArray(style);
         var markerType = style['markerType'].toLowerCase();
         var strokeAndFill = this.strokeAndFill;
-        var dxdy = this.getDxDy();
+        // var dxdy = this.getDxDy();
         Z.Canvas.setDefaultCanvasSetting(ctx);
         Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'],strokeAndFill['fill'], null);
         var j;
@@ -51,7 +47,7 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
 
         for (var i = cookedPoints.length - 1; i >= 0; i--) {
             var point = cookedPoints[i];
-            point = point.add(dxdy);
+            // point = point.add(dxdy);
             if (markerType === 'cross' || markerType === 'x'){
                 for (j = vectorArray.length - 1; j >= 0; j--) {
                     vectorArray[j]._add(point);
@@ -180,26 +176,26 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
         var points = this._getVectorArray(style);
         var path;
         if ('triangle' === markerType) {
-           path='M'+points[0]['left']+','+points[0]['top']+ ' ' +
-                'L'+points[1]['left']+','+points[1]['top']+ ' ' +
-                'L'+points[2]['left']+','+points[2]['top']+ ' ' +
+           path='M'+points[0].x+','+points[0].y+ ' ' +
+                'L'+points[1].x+','+points[1].y+ ' ' +
+                'L'+points[2].x+','+points[2].y+ ' ' +
                 Z.SVG.closeChar;
         }  else if ('cross' === markerType || 'x' === markerType) {
-           path='M'+points[0]['left']+','+points[0]['top']+ ' ' +
-                'L'+points[1]['left']+','+points[1]['top']+ ' ' +
-                'M'+points[2]['left']+','+points[2]['top']+ ' ' +
-                'L'+points[3]['left']+','+points[3]['top'];
+           path='M'+points[0].x+','+points[0].y+ ' ' +
+                'L'+points[1].x+','+points[1].y+ ' ' +
+                'M'+points[2].x+','+points[2].y+ ' ' +
+                'L'+points[3].x+','+points[3].y;
         } else if ('diamond' === markerType || 'square' === markerType || 'bar' === markerType) {
-           path='M'+points[0]['left']+','+points[0]['top']+ ' ' +
-                'L'+points[1]['left']+','+points[1]['top']+ ' ' +
-                'L'+points[2]['left']+','+points[2]['top']+ ' ' +
-                'L'+points[3]['left']+','+points[3]['top']+ ' ' +
+           path='M'+points[0].x+','+points[0].y+ ' ' +
+                'L'+points[1].x+','+points[1].y+ ' ' +
+                'L'+points[2].x+','+points[2].y+ ' ' +
+                'L'+points[3].x+','+points[3].y+ ' ' +
                 Z.SVG.closeChar;
         } else if ('pin' === markerType) {
-           path='M'+points[0]['left']+','+points[0]['top']+ ' ' +
-                'C'+points[1]['left']+','+points[1]['top']+ ' ' +
-                points[2]['left']+','+points[2]['top']+ ' ' +
-                points[3]['left']+','+points[3]['top']+ ' ' +
+           path='M'+points[0].x+','+points[0].y+ ' ' +
+                'C'+points[1].x+','+points[1].y+ ' ' +
+                points[2].x+','+points[2].y+ ' ' +
+                points[3].x+','+points[3].y+ ' ' +
                 Z.SVG.closeChar;
         } else {
             //ellipse

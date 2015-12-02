@@ -53,8 +53,8 @@ Z['HeatmapLayer'] = Z.HeatmapLayer = Z.Layer.extend({
 
         // reposition the layer
         this._el.style[Z.DomUtil.TRANSFORM] = 'translate(' +
-          -Math.round(point.left) + 'px,' +
-          -Math.round(point.top) + 'px)';
+          -Math.round(point.x) + 'px,' +
+          -Math.round(point.y) + 'px)';
 
         this._update();
       },
@@ -96,7 +96,7 @@ Z['HeatmapLayer'] = Z.HeatmapLayer = Z.Layer.extend({
           }
 
           var point = this._map.coordinateToViewPoint(coordinate);
-          var latlngPoint = { x: Math.round(point.left), y: Math.round(point.top) };
+          var latlngPoint = { x: Math.round(point.x), y: Math.round(point.y) };
           latlngPoint[valueField] = value;
 
           var radius;

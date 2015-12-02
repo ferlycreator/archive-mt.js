@@ -5,7 +5,7 @@ Z.render.map={};
  */
 Z.render.map.Render = Z.Class.extend({
 
-    onZoomStart:function(scale, focusPos, fn, context, args) {
+    onZoomStart:function(scale, transOrigin, fn, context, args) {
         if (Z.Browser.ielt9) {
             setTimeout(function() {
                 fn.apply(context, args);
@@ -15,32 +15,100 @@ Z.render.map.Render = Z.Class.extend({
         var map = this.map;
         this._clearCanvas();
         if (map.options['zoomAnimation']) {
-            this._rend();
             this._context.save();
-            Z.animation.animate(new Z.animation.zoom({
-                'scale1' : 1,
-                'scale2': scale,
-                'duration' : map.options['zoomAnimationDuration']
-            }), map, function(frame) {
-                /*this._context.save();
-                this._clearCanvas();
-                this._context.translate(focusPos['left'],focusPos['top']);
-                this._context.scale(frame.scale, frame.scale);
-                this._context.translate(-focusPos['left'],-focusPos['top']);
+            var duration = map.options['zoomAnimationDuration'];
+            var baseLayerImage = map.getBaseTileLayer()._getRender().getCanvasImage();
+            var width = this._canvas.width, height = this._canvas.height;
+            var matrix;
+            if (map.options['zoomAnimationMode'] && 'performance' === map.options['zoomAnimationMode'].toLowerCase()) {
+                //zoom animation with better performance, only animate baseTileLayer, ignore other layers.
+                this._drawLayerCanvasImage(baseLayerImage, width, height);
+                this._context.save();
+                Z.animation.animate(new Z.animation.zoom({
+                    'scale1' : 1,
+                    'scale2': scale,
+                    'duration' : map.options['zoomAnimationDuration']
+                }), map, function(frame) {
+                    matrix = new Z.Matrix().translate(transOrigin.x, transOrigin.y)
+                        .scaleU(frame.scale).translate(-transOrigin.x,-transOrigin.y);
+                    this._clearCanvas();
+                    matrix.applyToContext(this._context);
+                    this._drawLayerCanvasImage(baseLayerImage, width, height);
+                    if (frame.state['end']) {
+                        this._context.restore();
+                        this._canvasBackgroundImage = Z.DomUtil.copyCanvas(this._canvas);
+                        fn.apply(context, args);
+                    }
+                }, this);
+            } else {
+                //default zoom animation, animate all the layers, may encounter performance problem.
                 this._rend();
-                this._context.restore();*/
-                this._transform(new Z.Matrix().translate(focusPos['left'], focusPos['top']).scaleU(frame.scale));
-                if (frame.state['end']) {
-                    this._canvasBackgroundImage = Z.DomUtil.copyCanvas(this._canvas);
-                    fn.apply(context, args);
-                }
-            }, this);
+                this._context.save();
+                Z.animation.animate(new Z.animation.zoom({
+                    'scale1' : 1,
+                    'scale2': scale,
+                    'duration' : duration
+                }), map, function(frame) {
+                    matrix = new Z.Matrix().translate(transOrigin.x, transOrigin.y)
+                        .scaleU(frame.scale).translate(-transOrigin.x,-transOrigin.y);
+                    this.transform(matrix);
+                    if (frame.state['end']) {
+                        delete this._transMatrix;
+                        this._clearCanvas();
+                        //only draw basetile layer
+                        matrix.applyToContext(this._context);
+                        this._drawLayerCanvasImage(baseLayerImage, width, height);
+                        this._canvasBackgroundImage = Z.DomUtil.copyCanvas(this._canvas);
+                        this._context.restore();
+                        fn.apply(context, args);
+                    }
+                }, this);
+            }
+
         } else {
             fn.apply(context, args);
         }
 
     },
 
+    /**
+     * 对图层进行仿射变换
+     * @param  {Matrix} matrix 变换矩阵
+     */
+    transform:function(matrix) {
+        var mwidth = this._canvas.width,
+            mheight = this._canvas.height;
+        var layers = this._getAllLayerToCanvas();
+        this._transMatrix = matrix;
+        this._clearCanvas();
+        for (var i = 0, len=layers.length; i < len; i++) {
+            if (!layers[i].isVisible()) {
+                continue;
+            }
+            var render = layers[i]._getRender();
+            if (render) {
+                this._context.save();
+                if (layers[i] instanceof Z.TileLayer) {
+                    this._transMatrix.applyToContext(this._context);
+                } else {
+                    render.rendRealTime();
+                }
+                var layerImage = render.getCanvasImage();
+                if (layerImage && layerImage['image']) {
+                    this._drawLayerCanvasImage(layerImage, mwidth, mheight);
+                }
+                this._context.restore();
+            }
+        }
+    },
+
+    /**
+     * 获取底图当前的仿射矩阵
+     * @return {Matrix} 仿射矩阵
+     */
+    getTransform:function() {
+        return this._transMatrix;
+    },
 
     onZoomEnd:function() {
         // this.insertBackground();
@@ -73,40 +141,12 @@ Z.render.map.Render = Z.Class.extend({
                 }
             }, this);
         } else {
-            this.offsetPlatform(new Z.Point(moveOffset['left'],moveOffset['top']));
-            this._offsetCenterByPixel(new Z.Point(-moveOffset['left'],-moveOffset['top']));
+            this.offsetPlatform(moveOffset);
+            this._offsetCenterByPixel(new Z.Point(-moveOffset.x,-moveOffset.y));
             map._onMoveEnd();
         }
 
 
-    },
-
-    _transform:function(matrix) {
-        var map = this.map;
-        var mwidth = this._canvas.width,
-            mheight = this._canvas.height;
-        var layers = this._getAllLayerToCanvas();
-        this._clearCanvas();
-        for (var i = 0, len=layers.length; i < len; i++) {
-            if (!layers[i].isVisible()) {
-                continue;
-            }
-            var render = layers[i]._getRender();
-            if (render) {
-                this._context.save();
-                if (layers[i] instanceof Z.TileLayer) {
-                    matrix.applyToContext(this._context);
-                } else {
-                    render.transform(matrix);
-                    render.rendRealTime();
-                }
-                var layerImage = render.getCanvasImage();
-                if (layerImage && layerImage['image']) {
-                    this._drawLayerCanvasImage(layerImage, mwidth, mheight);
-                }
-                this._context.restore();
-            }
-        }
     },
 
 
@@ -170,26 +210,26 @@ Z.render.map.Render = Z.Class.extend({
                 canvasImage = canvasImage.getContext('2d');
             }
             //CanvasMock并不一定实现了drawImage(img, sx, sy, w, h, dx, dy, w, h)
-            this._context.drawImage(canvasImage, point['left'], point['top']);
+            this._context.drawImage(canvasImage, point.x, point.y);
         } else {
             var sx, sy, w, h, dx, dy;
-            if (point['left'] <= 0) {
-                sx = -point['left'];
+            if (point.x <= 0) {
+                sx = -point.x;
                 dx = 0;
                 w = Math.min(size['width']-sx,mwidth);
             } else {
                 sx = 0;
-                dx = point['left'];
-                w = mwidth-point['left'];
+                dx = point.x;
+                w = mwidth-point.x;
             }
-            if (point['top'] <= 0) {
-                sy = -point['top'];
+            if (point.y <= 0) {
+                sy = -point.y;
                 dy = 0;
                 h = Math.min(size['height']-sy,mheight);
             } else {
                 sy = 0;
-                dy = point['top'];
-                h = mheight-point['top'];
+                dy = point.y;
+                h = mheight-point.y;
             }
             if (dx < 0 || dy < 0 || w <=0 || h <= 0) {
                 return;

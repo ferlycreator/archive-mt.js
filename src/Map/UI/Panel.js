@@ -108,70 +108,37 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
         var topLeftPoint = this._map.containerPointToCoordinate(containerPoint);
 
         var topCenterPoint = this._map.containerPointToCoordinate(
-            new Z.Point(
-                containerPoint['left'] + Math.round(width/2),
-                containerPoint['top']
-            )
+            containerPoint.add(new Z.Point(Math.round(width/2),0))
         );
         var topCenterBufferPoint = this._map.containerPointToCoordinate(
-            new Z.Point(
-                containerPoint['left'] + Math.round(width/2),
-                containerPoint['top'] - 20
-            )
+            containerPoint.add(new Z.Point(Math.round(width/2),-20))
         );
         var topRightPoint = this._map.containerPointToCoordinate(
-            new Z.Point(
-                containerPoint['left'] + width,
-                containerPoint['top']
-            )
+            containerPoint.add(new Z.Point(width, 0))
         );
         var bottomLeftPoint = this._map.containerPointToCoordinate(
-            new Z.Point(
-                containerPoint['left'],
-                containerPoint['top'] + height
-            )
+            containerPoint.add(new Z.Point(0, height))
         );
         var bottomCenterPoint = this._map.containerPointToCoordinate(
-            new Z.Point(
-                containerPoint['left'] + Math.round(width/2),
-                containerPoint['top'] + height
-            )
+            containerPoint.add(new Z.Point(Math.round(width/2), height))
         );
         var bottomCenterBufferPoint = this._map.containerPointToCoordinate(
-            new Z.Point(
-                containerPoint['left'] + Math.round(width/2),
-                containerPoint['top'] + height + 20
-            )
+            containerPoint.add(new Z.Point(Math.round(width/2), height+20))
         );
         var bottomRightPoint = this._map.containerPointToCoordinate(
-            new Z.Point(
-                containerPoint['left'] + width,
-                containerPoint['top'] + height
-            )
+            containerPoint.add(new Z.Point(width, height))
         );
         var middleLeftPoint = this._map.containerPointToCoordinate(
-            new Z.Point(
-                containerPoint['left'],
-                containerPoint['top'] + Math.round(height/2)
-            )
+            containerPoint.add(new Z.Point(0,Math.round(height/2)))
         );
         var middleLeftBufferPoint = this._map.containerPointToCoordinate(
-            new Z.Point(
-                containerPoint['left'] - 20,
-                containerPoint['top'] + Math.round(height/2)
-            )
+            containerPoint.add(new Z.Point(-20, Math.round(height/2)))
         );
         var middleRightPoint = this._map.containerPointToCoordinate(
-            new Z.Point(
-                containerPoint['left'] + width,
-                containerPoint['top'] + Math.round(height/2)
-            )
+            containerPoint.add(new Z.Point(width, Math.round(height/2)))
         );
         var middleRightBufferPoint = this._map.containerPointToCoordinate(
-            new Z.Point(
-                containerPoint['left'] + width + 20,
-                containerPoint['top'] + Math.round(height/2)
-            )
+            containerPoint.add(new Z.Point(width+20), Math.round(height/2))
         );
         var vertexs = [topCenterPoint,middleRightPoint,bottomCenterPoint,middleLeftPoint];
         return vertexs;
@@ -218,8 +185,9 @@ Z['Panel'] = Z.Panel = Z.Control.extend({
 
     _onMouseMove: function(event) {
         this._endOffset = new Z.Point(parseInt(event.offsetX, 0),parseInt(event.offsetY, 0));
-        var offsetTop = this._endOffset['top']-this._startOffset['top'];
-        var offsetLeft = this._endOffset['left']-this._startOffset['left'];
+        var offset=this._endOffset.substract(this._startOffset);
+        var offsetTop = offset.y;
+        var offsetLeft = offset.x;
         var parentDom = this._panelContainer['parentNode'];
         var domStyle = parentDom['style'];
         var domTop = Z.DomUtil.getPixelValue(domStyle['top']);

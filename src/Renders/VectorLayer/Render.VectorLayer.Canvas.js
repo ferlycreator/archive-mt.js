@@ -36,14 +36,6 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         }
     },
 
-    transform:function(matrix) {
-        this._transMatrix = matrix;
-    },
-
-    getTransMatrix:function() {
-        return this._transMatrix;
-    },
-
     getMap: function() {
         return this._layer.getMap();
     },
@@ -127,11 +119,11 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         var size = this._canvasFullExtent.getSize();
         var canvasNW = this._canvasFullExtent.getMin();
         var detectPoint = point.substract(canvasNW);
-        if (detectPoint['left'] < 0 || detectPoint['left'] > size['width'] || detectPoint['top'] < 0 || detectPoint['top'] > size['height']) {
+        if (detectPoint.x < 0 || detectPoint.x > size['width'] || detectPoint.y < 0 || detectPoint.y > size['height']) {
             return false;
         }
         try {
-            var imgData = this._context.getImageData(detectPoint['left'], detectPoint['top'], 1, 1).data;
+            var imgData = this._context.getImageData(detectPoint.x, detectPoint.y, 1, 1).data;
             if (imgData[3] > 0) {
                 return true;
             }

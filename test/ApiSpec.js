@@ -193,7 +193,7 @@ describe('API', function () {
         });
 
         it('panBy', function() {
-            var offset = {left: 20, top: 20};
+            var offset = {x: 20, y: 20};
 
             expect(function () {
                 map.panBy(offset);
@@ -509,7 +509,7 @@ describe('API', function () {
             };
             var menu = new Z.Menu(options);
             menu.addTo(map);
-            var pos = {x: 10, y: 10};
+            var pos = new Z.Coordinate(10,10);
             menu.show(pos);
 
             expect(function () {
@@ -530,7 +530,7 @@ describe('API', function () {
             };
             var menu = new Z.Menu(options);
             menu.addTo(map);
-            var pos = {x: 10, y: 10};
+            var pos = new Z.Coordinate(10,10);
 
             expect(function () {
                 menu.show(pos);
@@ -2220,11 +2220,11 @@ describe('API', function () {
             expect(function () {
                 for (var i = 0; i < geometries.length; i++) {
                     var geometry = geometries[i];
-                    if ((geometry instanceof Z.MultiPoint) ||
+                    /*if ((geometry instanceof Z.MultiPoint) ||
                         (geometry instanceof Z.MultiPolyline) ||
                         (geometry instanceof Z.MultiPolygon)) {
                         continue;
-                    }
+                    }*/
                     geometry.startEdit();
                     geometry.endEdit();
                 }

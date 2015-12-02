@@ -41,6 +41,8 @@ Z.Matrix = function(context) {
 	if (context) context.setTransform(1, 0, 0, 1, 0, 0);
 };
 
+var Matrix = Z.Matrix;
+
 Z.Matrix.prototype = {
 
 	/**
@@ -523,6 +525,11 @@ Z.Matrix.prototype = {
 		};
 	},
 
+    applyToPointInstance:function(point) {
+        var p = this.applyToPoint(point.x, point.y);
+        return new Z.Point(p);
+    },
+
 	/**
 	 * Apply current matrix to array with point objects or point pairs.
 	 * Returns a new array with points in the same format as the input array.
@@ -557,7 +564,7 @@ Z.Matrix.prototype = {
 		}
 		else {
 			for(; p = points[i]; i++) {
-				mxPoints.push(this.applyToPoint(p.x, p.y));
+				mxPoints.push(new Z.Point(this.applyToPoint(p.x, p.y)));
 			}
 		}
 

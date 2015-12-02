@@ -48,8 +48,8 @@ Z.Transformation.prototype = {
     untransform : function(point, scale) {
         var matrix = this.matrix;
         var x,y;
-        x = point['left'];
-        y = point['top'];
+        x = point.x;
+        y = point.y;
         //inverse matrix
         var x_ = (x*scale/matrix[0]+matrix[2]);
         var y_ = (y*scale/matrix[1]+matrix[3]);

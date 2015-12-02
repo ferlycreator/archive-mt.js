@@ -34,14 +34,10 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
     },
 
     canvas:function(ctx, resources) {
-        var points = this._getRenderPoints();
-        if (!Z.Util.isArrayHasData(points)) {
+        var cookedPoints = this._getRenderContainerPoints();
+        if (!Z.Util.isArrayHasData(cookedPoints)) {
             return;
         }
-        var map = this.getMap();
-        var cookedPoints = Z.Util.eachInArray(points,this,function(point) {
-            return map._viewPointToContainerPoint(point);
-        });
         Z.Canvas.setDefaultCanvasSetting(ctx);
 
         var style = this.style,
@@ -72,7 +68,7 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
             style = this.style,
             size = this.textDesc['size'];
         var alignPoint = Z.StringUtil.getAlignPoint(size, style['textHorizontalAlignment'], style['textVerticalAlignment']);
-        var alignW = alignPoint['left'], alignH = alignPoint['top'];
+        var alignW = alignPoint.x, alignH = alignPoint.y;
         return new Z.Extent(
             dxdy.add(new Z.Point(alignW, alignH)),
             dxdy.add(new Z.Point(alignW+size['width'],alignH+size['height']))

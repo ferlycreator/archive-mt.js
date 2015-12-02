@@ -76,8 +76,8 @@ describe("Control.Nav", function() {
             clock.tick(duration);
             offset = map.offsetPlatform();
 
-            expect(offset.left).to.eql(pos.left + 1);
-            expect(offset.top).to.eql(pos.top);
+            expect(offset.x).to.eql(pos.x + 1);
+            expect(offset.y).to.eql(pos.y);
         });
 
         it("can pan right correctly", function() {
@@ -90,8 +90,8 @@ describe("Control.Nav", function() {
 
             clock.tick(duration);
             offset = map.offsetPlatform();
-            expect(offset.left).to.eql(pos.left - 1);
-            expect(offset.top).to.eql(pos.top);
+            expect(offset.x).to.eql(pos.x - 1);
+            expect(offset.y).to.eql(pos.y);
         });
 
         it("can pan down correctly", function() {
@@ -105,8 +105,8 @@ describe("Control.Nav", function() {
             clock.tick(duration);
             offset = map.offsetPlatform();
 
-            expect(offset.left).to.eql(pos.left);
-            expect(offset.top).to.eql(pos.top - 1);
+            expect(offset.x).to.eql(pos.x);
+            expect(offset.y).to.eql(pos.y - 1);
         });
 
         it("can pan up correctly", function() {
@@ -120,8 +120,8 @@ describe("Control.Nav", function() {
             clock.tick(duration);
             offset = map.offsetPlatform();
 
-            expect(offset.left).to.eql(pos.left);
-            expect(offset.top).to.eql(pos.top + 1);
+            expect(offset.x).to.eql(pos.x);
+            expect(offset.y).to.eql(pos.y + 1);
         });
 
     });

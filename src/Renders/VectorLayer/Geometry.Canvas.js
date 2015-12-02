@@ -34,7 +34,7 @@ if (Z.Browser.canvas) {
         _getRenderCanvasResources:function() {
             var map = this.getMap();
             var pcenter = this._getPCenter();
-            var pt = map._transform(pcenter);
+            var pt = map._transformToViewPoint(pcenter);
             var size = this._getRenderSize();
             return {
                 "fn" : Z.Canvas.sector,
@@ -48,8 +48,7 @@ if (Z.Browser.canvas) {
     Z.Polyline.include({
         _getRenderCanvasResources:function() {
             var prjVertexes = this._getPrjPoints();
-            var points = this._transformToScreenPoints(prjVertexes);
-            var map = this.getMap();
+            var points = this._transformToViewPoint(prjVertexes);
             return {
                 "fn" : Z.Canvas.path,
                 //TODO dasharray可能不从本身的symbol来
@@ -61,8 +60,7 @@ if (Z.Browser.canvas) {
     Z.Polygon.include({
         _getRenderCanvasResources:function() {
             var prjVertexes = this._getPrjPoints();
-            var points = this._transformToScreenPoints(prjVertexes);
-            var map = this.getMap();
+            var points = this._transformToViewPoint(prjVertexes);
             return {
                 "fn" : Z.Canvas.polygon,
                 "context" : [points,this.getSymbol()['lineDasharray']]

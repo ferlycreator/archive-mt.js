@@ -132,8 +132,8 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
             zoomLevel = map.getZoom(),
             mapDomOffset = map.offsetPlatform();
         // console.log(mapDomOffset);
-        var holderLeft=mapDomOffset["left"],
-            holderTop = mapDomOffset["top"],
+        var holderLeft=mapDomOffset.x,
+            holderTop = mapDomOffset.y,
             mapWidth = map.width,
             mapHeight = map.height;
             //中心瓦片信息,包括瓦片编号,和中心点在瓦片上相对左上角的位置
@@ -145,13 +145,13 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
             canvasSize = new Z.Size(mapWidth, mapHeight);
         }
         //中心瓦片上下左右的瓦片数
-        var tileTopNum =Math.ceil(Math.abs((canvasSize['height'] - mapHeight)/2 + centerTileViewPoint.top)/tileSize["height"]),
-            tileLeftNum=Math.ceil(Math.abs((canvasSize['width']- mapWidth)/2 + centerTileViewPoint.left)/tileSize["width"]),
-            tileBottomNum=Math.ceil(Math.abs((canvasSize['height'] - mapHeight)/2 + mapHeight-centerTileViewPoint.top)/tileSize["height"]),
-            tileRightNum=Math.ceil(Math.abs((canvasSize['width'] - mapWidth)/2 + mapWidth-centerTileViewPoint.left)/tileSize["width"]);
+        var tileTopNum =Math.ceil(Math.abs((canvasSize['height'] - mapHeight)/2 + centerTileViewPoint.y)/tileSize["height"]),
+            tileLeftNum=Math.ceil(Math.abs((canvasSize['width']- mapWidth)/2 + centerTileViewPoint.x)/tileSize["width"]),
+            tileBottomNum=Math.ceil(Math.abs((canvasSize['height'] - mapHeight)/2 + mapHeight-centerTileViewPoint.y)/tileSize["height"]),
+            tileRightNum=Math.ceil(Math.abs((canvasSize['width'] - mapWidth)/2 + mapWidth-centerTileViewPoint.x)/tileSize["width"]);
 
     //  只加中心的瓦片，用做调试
-    //  var centerTileImg = this._createTileImage(centerTileViewPoint.left,centerTileViewPoint.top,this.config._getTileUrl(centerTileIndex["topIndex"],centerTileIndex["leftIndex"],zoomLevel),tileSize["height"],tileSize["width"]);
+    //  var centerTileImg = this._createTileImage(centerTileViewPoint.x,centerTileViewPoint.y,this.config._getTileUrl(centerTileIndex["topIndex"],centerTileIndex["leftIndex"],zoomLevel),tileSize["height"],tileSize["width"]);
     //  tileContainer.appendChild(centerTileImg);
 
         var tiles = [];
@@ -160,8 +160,8 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         for (var i=-(tileLeftNum);i<tileRightNum;i++){
             for (var j=-(tileTopNum);j<=tileBottomNum;j++){
                     var tileIndex = tileConfig.getNeighorTileIndex(centerTileIndex["y"], centerTileIndex["x"], j,i, zoomLevel, this.options['repeatWorld']);
-                    var tileLeft = centerTileViewPoint.left + tileSize["width"]*i-holderLeft;
-                    var tileTop = centerTileViewPoint.top +tileSize["height"]*j-holderTop;
+                    var tileLeft = centerTileViewPoint.x + tileSize["width"]*i-holderLeft;
+                    var tileTop = centerTileViewPoint.y +tileSize["height"]*j-holderTop;
                     var tileUrl = this._getTileUrl(tileIndex["x"],tileIndex["y"],zoomLevel);
                     var tileId=[tileIndex["y"], tileIndex["x"], zoomLevel].join('__');
                     var tileDesc = {

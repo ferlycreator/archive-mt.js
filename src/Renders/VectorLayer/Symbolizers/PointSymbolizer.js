@@ -114,7 +114,27 @@ Z.PointSymbolizer=Z.Symbolizer.extend({
         return this.renderPoints;
     },
 
-
+    /**
+     * Get container points to draw on Canvas
+     * @return {[type]} [description]
+     */
+    _getRenderContainerPoints:function() {
+        var points = this._getRenderPoints();
+        var map = this.getMap();
+        var dxdy = this.getDxDy();
+        var containerPoints = Z.Util.eachInArray(points,this,function(point) {
+            return map._viewPointToContainerPoint(point)._add(dxdy);
+        });
+        var layer = this.geometry.getLayer();
+        if (layer.isCanvasRender()) {
+            var matrix = map._getRender().getTransform();
+            if (matrix) {
+                var p = matrix.applyToArray(containerPoints);
+                return p;
+            }
+        }
+        return containerPoints;
+    },
 
     //设置dom/svg/vml类型marker页面位置的方法
     _offsetMarker: function(marker, pt) {
@@ -122,22 +142,22 @@ Z.PointSymbolizer=Z.Symbolizer.extend({
         var point = pt.add(d);
         if (marker.tagName && marker.tagName === 'SPAN') {
             //dom
-            marker.style.left = point['left']+'px';
-            marker.style.top = point['top']+'px';
+            marker.style.left = point.x+'px';
+            marker.style.top = point.y+'px';
         } else {
             if (Z.Browser.vml) {
                 //vml
                 marker.style.position = 'absolute';
-                marker.style.left = point['left'];
-                marker.style.top = point['top'];
+                marker.style.left = point.x;
+                marker.style.top = point.y;
             } else {
                 if (marker.tagName === 'text') {
                     // svg text
-                    marker.setAttribute('x',point['left']);
-                    marker.setAttribute('y',point['top']);
+                    marker.setAttribute('x',point.x);
+                    marker.setAttribute('y',point.y);
                 } else {
                     //svg
-                    marker.setAttribute('transform', 'translate('+point['left']+' '+point['top']+')');
+                    marker.setAttribute('transform', 'translate('+point.x+' '+point.y+')');
                 }
 
             }

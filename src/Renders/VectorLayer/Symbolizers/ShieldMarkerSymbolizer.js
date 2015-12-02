@@ -56,8 +56,8 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
     },
 
     canvas:function(ctx, resources) {
-        var points = this._getRenderPoints();
-        if (!Z.Util.isArrayHasData(points)) {
+        var cookedPoints = this._getRenderContainerPoints();
+        if (!Z.Util.isArrayHasData(cookedPoints)) {
             return;
         }
         Z.Canvas.setDefaultCanvasSetting(ctx);
@@ -67,10 +67,7 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
         Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'], strokeAndFill['fill'], resources);
         Z.Canvas.prepareCanvasFont(ctx,style);
 
-        var map = this.getMap();
-        var cookedPoints = Z.Util.eachInArray(points,this,function(point) {
-            return map._viewPointToContainerPoint(point);
-        });
+
         var img = resources.getImage(style['shieldFile']);
         if (!img) {
             throw new Error(style['shieldFile']+' is invalid');
@@ -104,7 +101,7 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
         var ptAlign = Z.StringUtil.getAlignPoint(size,style['textHorizontalAlignment'],style['textVerticalAlignment']);
         var textExtent = new Z.Extent(
             textDxDy.add(ptAlign),
-            textDxDy.add(new Z.Point(ptAlign['left']-size['width'],ptAlign['top']-size['height']))
+            textDxDy.add(new Z.Point(ptAlign.x-size['width'],ptAlign.y-size['height']))
         );
         return fileExtent.combine(textExtent);
     },

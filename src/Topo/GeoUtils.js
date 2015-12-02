@@ -11,12 +11,12 @@ Z.GeoUtils={
      * @param {maptalks.Point} p2
      */
     distanceToSegment: function(p, p1, p2) {
-        var x = p.left,
-            y = p.top,
-            x1 = p1.left,
-            y1 = p1.top,
-            x2 = p2.left,
-            y2 = p2.top;
+        var x = p.x,
+            y = p.y,
+            x1 = p1.x,
+            y1 = p1.y,
+            x2 = p2.x,
+            y2 = p2.y;
 
         var cross = (x2 - x1) * (x - x1) + (y2 - y1) * (y - y1);
         if (cross <= 0) {
@@ -49,9 +49,8 @@ Z.GeoUtils={
         for (i = 0, j = len - 1; i < len; j = i++) {
             p1 = points[i];
             p2 = points[j];
-
-            if (((p1.top > p.top) !== (p2.top > p.top)) &&
-                (p.left < (p2.left - p1.left) * (p.top - p1.top) / (p2.top - p1.top) + p1.left)) {
+            if (((p1.y > p.y) !== (p2.y > p.y)) &&
+                (p.x < (p2.x - p1.x) * (p.y - p1.y) / (p2.y - p1.y) + p1.x)) {
                 c = !c;
             }
         }

@@ -162,12 +162,12 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
             sp = map.coordinateToViewPoint(this._coordinates),
             pxSize = map.distanceToPixel(this._width, this._height);
 
-        var pxMin = new Z.Point(sp.left, sp.top),
-            pxMax = new Z.Point(sp.left + pxSize.width, sp.top + pxSize.height),
-            pxExtent = new Z.Extent(pxMin.left - t, pxMin.top - t,
-                                    pxMax.left + t, pxMax.top + t);
+        var pxMin = new Z.Point(sp.x, sp.y),
+            pxMax = new Z.Point(sp.x + pxSize.width, sp.y + pxSize.height),
+            pxExtent = new Z.Extent(pxMin.x - t, pxMin.y - t,
+                                    pxMax.x + t, pxMax.y + t);
 
-        point = new Z.Point(point.left, point.top);
+        point = new Z.Point(point.x, point.y);
 
         return pxExtent.contains(point);
     },

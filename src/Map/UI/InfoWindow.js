@@ -148,15 +148,15 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         //只有当tip不是地图打开的时候，才做tip打开滑动操作
         var absolute = this._map._viewPointToContainerPoint(tipCoord);
         var left=0,top=0,tipDom=this._tipDom;
-        if ((absolute['left'])<0) {
-            left=-(absolute['left']-parseInt(tipDom.clientWidth)/2);
-        } else if ((absolute['left']+parseInt(tipDom.clientWidth)-35)>mapWidth) {
-            left=(mapWidth-(absolute['left']+parseInt(tipDom.clientWidth)*3/2));
+        if ((absolute.x)<0) {
+            left=-(absolute.x-parseInt(tipDom.clientWidth)/2);
+        } else if ((absolute.x+parseInt(tipDom.clientWidth)-35)>mapWidth) {
+            left=(mapWidth-(absolute.x+parseInt(tipDom.clientWidth)*3/2));
         }
-        if (absolute['top']<0) {
-            top=-absolute['top']+10;
-        } else if (absolute['top']>mapHeight){
-            top = (mapHeight-absolute['top']-parseInt(tipDom.clientHeight))-30;
+        if (absolute.y<0) {
+            top=-absolute.y+10;
+        } else if (absolute.y>mapHeight){
+            top = (mapHeight-absolute.y-parseInt(tipDom.clientHeight))-30;
         }
         if (top!==0 || left!==0) {
             /*this._tipSlidingExecutor = */this._map._panAnimation(new Z.Point(left,top));
@@ -301,11 +301,11 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         var tipDom = this._tipDom;
         tipDom.style.display = '';
         var tipCoord = new Z.Point(
-            parseInt(pxCoord['left']-parseInt(tipDom.clientWidth)/2+45),
-            parseInt(pxCoord['top']-parseInt(tipDom.clientHeight))
+            parseInt(pxCoord.x-parseInt(tipDom.clientWidth)/2+45),
+            parseInt(pxCoord.y-parseInt(tipDom.clientHeight))
         );
-        tipDom.style.top = tipCoord['top']+'px';
-        tipDom.style.left = tipCoord['left']+'px';
+        tipDom.style.top = tipCoord.y+'px';
+        tipDom.style.left = tipCoord.x+'px';
 
         return tipCoord;
     },
@@ -324,7 +324,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
                 position = this._map.coordinateToViewPoint(new Z.Coordinate(coordinate));
             } else {
                 //是point类型坐标
-                position = this._map._containerPointToViewPoint(new Z.Point(coordinate['left'],coordinate['top']));
+                position = this._map._containerPointToViewPoint(new Z.Point(coordinate.x,coordinate.y));
             }
         } else {
             var center = this._target.getCenter();

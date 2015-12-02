@@ -3,17 +3,17 @@
  * @class maptalks.Point
  * @author Maptalks Team
  */
-Z['Point']=Z.Point=function(left,top) {
-    if (Z.Util.isArrayHasData(left)) {
-        this['left'] = left[0];
-        this['top'] = left[1];
-     } else if (!Z.Util.isNil(left['left']) && !Z.Util.isNil(left['top'])) {
+Z.Point=function(x,y) {
+    if (Z.Util.isArrayHasData(x)) {
+        this.x = x[0];
+        this.y = x[1];
+     } else if (!Z.Util.isNil(x.x) && !Z.Util.isNil(x.y)) {
         //对象
-        this['left'] = left['left'];
-        this['top'] = left['top'];
+        this.x = x.x;
+        this.y = x.y;
     }else {
-        this['top'] = top;
-        this['left'] = left;
+        this.y = y;
+        this.x = x;
      }
      if (this.isNaN()) {
         throw new Error('point is NaN');
@@ -21,51 +21,55 @@ Z['Point']=Z.Point=function(left,top) {
 };
 
 Z.Point.prototype={
+    copy:function() {
+        return new Z.Point(this.x, this.y);
+    },
+
     round:function() {
-        return new Z.Point(Math.round(this['left']),Math.round(this['top']));
+        return new Z.Point(Math.round(this.x),Math.round(this.y));
     },
     equals:function(p) {
-        return this['left'] === p['left'] && this['top'] === p['top'];
+        return this.x === p.x && this.y === p.y;
     },
 
     distanceTo: function(point) {
-        var x = point.left - this.left,
-            y = point.top - this.top;
+        var x = point.x - this.x,
+            y = point.y - this.y;
         return Math.sqrt(x * x + y * y);
     },
 
     //破坏性方法
     _add: function(_point) {
         // if (!_point) {return;}
-        this['left'] += _point['left'];
-        this['top'] += _point['top'];
+        this.x += _point.x;
+        this.y += _point.y;
         return this;
     },
 
     add: function(point) {
-        var offx = this.left + point.left,
-            offy = this.top  + point.top;
+        var offx = this.x + point.x,
+            offy = this.y  + point.y;
         return new Z.Point(offx, offy);
     },
 
     substract: function(point) {
-        var offx = this.left - point.left,
-            offy = this.top  - point.top;
+        var offx = this.x - point.x,
+            offy = this.y  - point.y;
         return new Z.Point(offx, offy);
     },
     //破坏性方法
     _multi: function(ratio) {
-        this['left'] *= ratio;
-        this['top'] *= ratio;
+        this.x *= ratio;
+        this.y *= ratio;
         return this;
     },
     multi: function(ratio) {
-        return new Z.Point(this['left']*ratio, this['top']*ratio);
+        return new Z.Point(this.x*ratio, this.y*ratio);
     },
     isNaN:function() {
-        return isNaN(this['left']) || isNaN(this['top']);
+        return isNaN(this.x) || isNaN(this.y);
     },
     toString:function() {
-        return [this['left'],this['top']].join(',');
+        return [this.x,this.y].join(',');
     }
 };

@@ -326,9 +326,9 @@ Z.Util = {
         if (obj instanceof Z.Coordinate) {
             return true;
         }
-        if (obj && !Z.Util.isNil(obj.x) && !Z.Util.isNil(obj.y)) {
+        /*if (obj && !Z.Util.isNil(obj.x) && !Z.Util.isNil(obj.y)) {
             return true;
-        }
+        }*/
         return false;
     },
     /**

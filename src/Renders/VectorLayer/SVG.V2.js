@@ -39,16 +39,16 @@ if (typeof(document) !== 'undefined') {
             var dx = Z.Util.getValueOrDefault(style['textDx'],0);
             var dy = Z.Util.getValueOrDefault(style['textDy'],0);
 
-            var basePoint = new Z.Point(0+dx, point['top']+dy);
+            var basePoint = new Z.Point(0+dx, point.y+dy);
             var lineHeight = textDesc['rawSize']['height'] + style['textLineSpacing'];
 
             var textDoms = [];
             for(var i=0,len=textRows.length;i<len;i++) {
                 // var content = textRows[i]['text'];
                 var rowAlignPoint = Z.StringUtil.getAlignPoint(textRows[i]['size'],style['textHorizontalAlignment'],style['textVerticalAlignment']);
-                var x = basePoint['left']+rowAlignPoint['left'],
+                var x = basePoint.x+rowAlignPoint.x,
                     //因为svg中dom的anchor从左下角算起, 所以要加上textRows[i]['size']['height']即文字高度, -3是个调试值
-                    y = basePoint['top']+i*lineHeight+textRows[i]['size']['height']-3;
+                    y = basePoint.y+i*lineHeight+textRows[i]['size']['height']-3;
                 var svgDom = fnCreateTextDom(textRows[i], style, x, y);
                 textDoms.push(svgDom);
             }
@@ -71,8 +71,8 @@ if (typeof(document) !== 'undefined') {
 
         refreshContainer:function(map, paper) {
             var domOffset = map.offsetPlatform();
-            var x = -domOffset['left'],
-                y = -domOffset['top'];
+            var x = -domOffset.x,
+                y = -domOffset.y;
             var mapSize =   map.getSize();
             paper.setAttribute('width', mapSize['width']);
             paper.setAttribute('height', mapSize['height']);

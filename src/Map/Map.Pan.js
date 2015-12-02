@@ -27,8 +27,8 @@ Z.Map.include({
         if (typeof(options['animation']) === 'undefined' || options['animation']) {
             this._panAnimation(offset, options['duration']);
         } else {
-            this.offsetPlatform(new Z.Point(offset['left'],offset['top']));
-            this._offsetCenterByPixel(new Z.Point(-offset['left'],-offset['top']));
+            this.offsetPlatform(offset);
+            this._offsetCenterByPixel(new Z.Point(-offset.x,-offset.y));
             this._fireEvent('moving');
             this._onMoveEnd();
         }

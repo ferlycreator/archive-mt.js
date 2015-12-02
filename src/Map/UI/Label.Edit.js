@@ -4,39 +4,35 @@ Z.Label.include({
      * @member maptalks.Label
      * @expose
      */
-    startEditText: function(opts) {
+    startEdit: function(opts) {
         //隐藏label标签
         this.hide();
-        this._prepareEditor();
+        this._prepare();
         this.editing = true;
     },
 
-    _prepareEditor:function() {
-        this._symbol = this.getSymbol();
-        this._map = this.getMap();
+    _prepare:function() {
         var viewPoint = this._computeViewPoint();
         this._container = Z.DomUtil.createEl('div');
-        this._container.style.cssText='position:absolute;top:'+viewPoint['top']
-                                    +'px;left:'+viewPoint['left']+'px;z-index:5000;';
+        this._container.style.cssText='position:absolute;top:'+viewPoint.y+'px;left:'+viewPoint.x+'px;z-index:5000;';
         this._map._panels.mapPlatform.appendChild(this._container);
         this._textEditor = this._createInputDom();
         this._container.appendChild(this._textEditor);
     },
 
     _computeViewPoint: function() {
-        var width = Z.Util.getValueOrDefault(this._symbol['markerWidth'],0);
-        var height = Z.Util.getValueOrDefault(this._symbol['markerHeight'],0);
-        var left = Z.Util.getValueOrDefault(this._symbol['textDx'],0),
-            top = Z.Util.getValueOrDefault(this._symbol['textDy'],0);
-        var hAlign = this._symbol['textHorizontalAlignment'];
+        var width = this._strokeAndFill['markerWidth'];
+        var height = this._strokeAndFill['markerHeight'];
+        var left = this._textStyle['textDx'],top = this._textStyle['textDy'];
+        var hAlign = this._textStyle['textHorizontalAlignment'];
         if (hAlign === 'left') {
             left -= width;
         } else if (hAlign === 'middle') {
             left -= width/2;
         }
 
-        var rowHeight = this._symbol['textLineSpacing'];
-        var vAlign = this._symbol['textVerticalAlignment'];
+        var rowHeight = this._textStyle['textLineSpacing'];
+        var vAlign = this._textStyle['textVerticalAlignment'];
         if (vAlign === 'top') {
             top = -height - rowHeight;
         } else if (vAlign === 'middle') {
@@ -44,17 +40,17 @@ Z.Label.include({
         } else {
             top = -rowHeight;
         }
-        var viewPoint = this._map.coordinateToViewPoint(this.getCenter()).add({left:left,top:top});
+        var viewPoint = this._map.coordinateToViewPoint(this._center).add({left:left,top:top});
         return viewPoint;
     },
 
     _createInputDom: function() {
-        var width = this._symbol['markerWidth'];
-        var height = this._symbol['markerHeight'];
-        var textColor = this._symbol['textFill'];
-        var textSize = this._symbol['textSize'];
-        var fill = this._symbol['markerFill'];
-        var lineColor = this._symbol['markerLineColor'];
+        var width = this._strokeAndFill['markerWidth'];
+        var height = this._strokeAndFill['markerHeight'];
+        var textColor = this._textStyle['textFill'];
+        var textSize = this._textStyle['textSize'];
+        var fill = this._strokeAndFill['markerFill'];
+        var lineColor = this._strokeAndFill['markerLineColor'];
         var inputDom = Z.DomUtil.createEl('textarea');
         inputDom.style.cssText ='background:'+fill+';'+
             'border:1px solid '+lineColor+';'+
@@ -66,7 +62,7 @@ Z.Label.include({
         inputDom.value = content;
         var me = this;
         Z.DomUtil.on(inputDom, 'blur', function(param){
-             me.endEditText();
+             me.endEdit();
         });
         return inputDom;
 
@@ -77,7 +73,7 @@ Z.Label.include({
      * @member maptalks.Label
      * @expose
      */
-    endEditText: function() {
+    endEdit: function() {
         var content = this._textEditor.value;
         this.setContent(content);
         this.show();

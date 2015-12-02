@@ -32,25 +32,24 @@ Z['Extent']= Z.Extent =
         return;
     } else {
          //构造方法二: 参数是两个坐标
-        var fieldX = (Z.Util.isNumber(p1['left'])?'left':'x');
-        var fieldY = (Z.Util.isNumber(p1['top'])?'top':'y');
-        if (Z.Util.isNumber(p1[fieldX]) &&
-            Z.Util.isNumber(p2[fieldX]) &&
-            Z.Util.isNumber(p1[fieldY]) &&
-            Z.Util.isNumber(p2[fieldY])) {
-            if (p1[fieldX]>p2[fieldX]) {
-                this['xmin'] = p2[fieldX];
-                this['xmax'] = p1[fieldX];
+
+        if (Z.Util.isNumber(p1.x) &&
+            Z.Util.isNumber(p2.x) &&
+            Z.Util.isNumber(p1.y) &&
+            Z.Util.isNumber(p2.y)) {
+            if (p1.x>p2.x) {
+                this['xmin'] = p2.x;
+                this['xmax'] = p1.x;
             } else {
-                this['xmin'] = p1[fieldX];
-                this['xmax'] = p2[fieldX];
+                this['xmin'] = p1.x;
+                this['xmax'] = p2.x;
             }
-            if (p1[fieldY]>p2[fieldY]) {
-                this['ymin'] = p2[fieldY];
-                this['ymax'] = p1[fieldY];
+            if (p1.y>p2.y) {
+                this['ymin'] = p2.y;
+                this['ymax'] = p1.y;
             } else {
-                this['ymin'] = p1[fieldY];
-                this['ymax'] = p2[fieldY];
+                this['ymin'] = p1.y;
+                this['ymax'] = p2.y;
             }
             //构造方法三: 参数为一个对象,包含xmin, xmax, ymin, ymax四个属性
         } else if (Z.Util.isNumber(p1['xmin']) &&
@@ -150,9 +149,6 @@ Z.Extent.prototype={
         if (!Z.Util.isNil(coordinate.x)) {
             x = coordinate.x;
             y = coordinate.y;
-        } else if (!Z.Util.isNil(coordinate['left'])) {
-            x = coordinate['left'];
-            y = coordinate['top'];
         }
         return (x >= this.xmin) &&
             (x <= this.xmax) &&

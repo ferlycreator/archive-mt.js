@@ -130,8 +130,8 @@ Z.TileConfig=Z.Class.extend({
                 transOrigin = tileSystem['transOrigin'],
                 res = this['resolutions'][zoomLevel];
 
-            var tileX = Math.floor((point['left']-transOrigin['left'])/(tileSize['width']*res));
-            var tileY = -Math.floor((point['top']-transOrigin['top'])/(tileSize['height']*res));
+            var tileX = Math.floor((point.x-transOrigin.x)/(tileSize['width']*res));
+            var tileY = -Math.floor((point.y-transOrigin.y)/(tileSize['height']*res));
 
             return {'x':tileSystem['scale']['x']*tileX, 'y':tileSystem['scale']['y']*tileY};
         },
@@ -152,8 +152,8 @@ Z.TileConfig=Z.Class.extend({
             var tileLeft = tileIndex['x']*tileSize['width'];
             var tileTop = tileIndex['y']*tileSize['height'];
 
-            var offsetLeft = Math.round(point['left']/resolution-tileSystem['scale']['x']*tileLeft);
-            var offsetTop = Math.round(point['top']/resolution+tileSystem['scale']['y']*tileTop);
+            var offsetLeft = Math.round(point.x/resolution-tileSystem['scale']['x']*tileLeft);
+            var offsetTop = Math.round(point.y/resolution+tileSystem['scale']['y']*tileTop);
 
             //如果x方向为左大右小
             if (tileSystem['scale']['x']<0) {
@@ -210,7 +210,7 @@ Z.TileConfig=Z.Class.extend({
         _getTileFullExtent:function(zoomLevel) {
             var ext = this.fullExtent;
             var transformation = this.transformation;
-            var nwIndex = this.getTileIndex(transformation.transform(new Z.Coordinate(ext['left'],ext['top']),1),zoomLevel);
+            var nwIndex = this.getTileIndex(transformation.transform(new Z.Coordinate(ext['left'],ext['right']),1),zoomLevel);
             var seIndex = this.getTileIndex(transformation.transform(new Z.Coordinate(ext['right'],ext['bottom']),1),zoomLevel);
             return new Z.Extent(nwIndex, seIndex);
         },

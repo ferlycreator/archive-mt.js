@@ -37,7 +37,7 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
     },
 
     canvas:function(ctx, resources) {
-        var canvasResources = this.geometry._getRenderCanvasResources();
+        var canvasResources = this._getRenderResources();
         var strokeAndFill = this.strokeAndFill;
         Z.Canvas.setDefaultCanvasSetting(ctx);
         Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'], null);
@@ -73,8 +73,46 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
             max = map.coordinateToViewPoint(new Z.Coordinate(extent['xmax'],extent['ymax']));
         return new Z.Extent(min,max);
     },
+
+    _getRenderResources:function() {
+        if (!this._rendResources) {
+            this._rendResources = this.geometry._getRenderCanvasResources();
+        }
+        var matrix;
+        var map = this.getMap();
+        var layer = this.geometry.getLayer();
+        if (layer.isCanvasRender()) {
+            matrix = map._getRender().getTransform();
+        }
+
+        var context =this._rendResources['context'];
+        //refer to Geometry.Canvas
+        var points = context[0];
+        var p;
+        if (Z.Util.isArray(points)) {
+            p = Z.Util.eachInArray(points, this, function(point) {
+                var cp = map._viewPointToContainerPoint(point);
+                if (matrix) {
+                    return matrix.applyToPointInstance(cp);
+                }
+                return cp;
+            });
+        } else if (Z instanceof Z.Point) {
+            p = map._viewPointToContainerPoint(points);
+            if (matrix) {
+                p = matrix.applyToPointInstance(points);
+            }
+        }
+        console.log(p);
+        var resources = Z.Util.extend({}, this._rendResources);
+        resources['context'] = [p].concat(context.splice(1));
+
+        return resources;
+    },
+
     refresh:function() {
         var layer = this.geometry.getLayer();
+        delete this._rendResources;
         if (!layer.isCanvasRender()) {
             this.symbolize.apply(this,layer._getRender().getPaintContext());
         }

@@ -69,10 +69,10 @@ Z.LineString = Z.Polyline = Z.Vector.extend({
             se = new Z.Coordinate(extent.xmax, extent.ymin),
             pxMin = map.coordinateToViewPoint(nw),
             pxMax = map.coordinateToViewPoint(se),
-            pxExtent = new Z.Extent(pxMin.left - t, pxMin.top - t,
-                                    pxMax.left + t, pxMax.top + t);
+            pxExtent = new Z.Extent(pxMin.x - t, pxMin.y - t,
+                                    pxMax.x + t, pxMax.y + t);
 
-        point = new Z.Point(point.left, point.top);
+        point = new Z.Point(point.x, point.y);
 
         if (!pxExtent.contains(point)) { return false; }
 
