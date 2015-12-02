@@ -53,7 +53,9 @@ maptalks.Grid = maptalks.Class.extend({
     initialize: function(options) {
         this.setOptions(options);
         this._data = this.options['data'];
+        this._initalData = this.options['data'];
         if(!this._data&&this._data.length==0)  {throw new Error(this.exceptions['NEED_DATA']);}
+        this._initalColumns = this.options['columns'];
         this._columns = this._getColumns();
         this._rowNum = this._data.length+1;//包含表头
         this._colNum = this._columns.length;
@@ -61,8 +63,8 @@ maptalks.Grid = maptalks.Class.extend({
         this._height = maptalks.Util.getValueOrDefault(this.options['height'],100);
         this._cellWidth = this._width/this._colNum;
         this._cellHeight = this._height/(this._rowNum);
-        this._currentCol = 0;
-        this._currentRow = 0;
+        this._currentRow = -1;
+        this._currentCol = -1;
         return this;
     },
 
@@ -139,7 +141,6 @@ maptalks.Grid = maptalks.Class.extend({
             insertColNum = colNum;
         }
         this._createCol(insertColNum, data);
-        console.log(this._grid);
         return this;
     },
 
@@ -190,6 +191,18 @@ maptalks.Grid = maptalks.Class.extend({
         this._colNum -=1;
     },
 
+    remove: function(){
+        for(var i=0,len=this._grid.length;i<len;i++) {
+            var row = this._grid[i];
+            for(var j=0,rowLength=row.length;j<rowLength;j++) {
+                row[j].remove();
+            }
+        }
+        this._gridHandler.remove();
+        this._grid = [];
+        delete this._grid;
+    },
+
     _addToLayer: function(grid,init) {
         var me = this;
         for(var i=0,len=grid.length;i<len;i++) {
@@ -233,7 +246,8 @@ maptalks.Grid = maptalks.Class.extend({
                     }},
                     {'item': '设置列样式', 'callback': function() {
                         me._currentCol = colNum;
-                        me.setStyleForCol(colNum);
+                        me._currentRow = -1;
+                        me._setStyleForGrid();
                     }},
                     {'item': '删除列', 'callback': function() {
                         me.removeCol(colNum);
@@ -253,7 +267,8 @@ maptalks.Grid = maptalks.Class.extend({
                     }},
                     {'item': '设置行样式', 'callback': function() {
                         me._currentRow = rowNum;
-                        me.setStyleForRow(rowNum);
+                        me._currentCol = -1;
+                        me._setStyleForGrid();
                     }},
                     {'item': '删除行', 'callback': function() {
                         me.removeRow(rowNum);
@@ -265,6 +280,7 @@ maptalks.Grid = maptalks.Class.extend({
         cell.setMenu(menuOptions);
         cell.openMenu(coordinate);
     },
+
 
     _addDragHandler: function(cell) {
         var cellSize = cell.getSize(),
@@ -286,6 +302,12 @@ maptalks.Grid = maptalks.Class.extend({
         marker.setSymbol(icon);
         this._layer.addGeometry(marker);
         marker.on('dragging',this._dragGrid,this);
+        this._gridHandler = marker;
+    },
+
+    _setStyleForGrid: function() {
+        var styleEditor = new maptalks.GridStyle();
+        styleEditor.addTo(this);
     },
 
     _dragGrid: function(event) {
@@ -300,6 +322,7 @@ maptalks.Grid = maptalks.Class.extend({
                 }
             }
         }
+        this.fire('dragging',this);
     },
 
     _addMouseoverEventToCell: function(event) {
@@ -353,8 +376,8 @@ maptalks.Grid = maptalks.Class.extend({
             'width:'+(width-spacing)+'px;'+
             'height:'+(height-spacing)+'px;';
         var cellDataIndex = cell['dataIndex'];
-        for(var i=0,len=this._columns.length;i<len;i++){
-            var col = this._columns[i];
+        for(var i=0,len=this._initalColumns.length;i<len;i++){
+            var col = this._initalColumns[i];
             var optionDom = maptalks.DomUtil.createEl('option');
             optionDom.value = col['dataIndex'];
             optionDom.innerHTML = col['header'];
@@ -376,17 +399,20 @@ maptalks.Grid = maptalks.Class.extend({
             //将数据填充到列
             me._getColData(me.cell);
         });
+        maptalks.DomUtil.on(selectDom, 'mouseout', function(param){
+            maptalks.DomUtil.removeDomNode(me.cell._container);
+            delete me.cell._container;
+            delete selectDom;
+        });
         return selectDom;
     },
 
     _getColData: function(cell) {
         var dataIndex = cell['dataIndex'];
         var colNum = cell._col;
-        var data = this._data;
-        //{name:'Tom', birth:'1990-1-1', age: 25, marry: 'true'},
         var newValues = [];
-        for(var i=0,len=data.length;i<len;i++) {
-            var item = data[i];
+        for(var i=0,len=this._initalData.length;i<len;i++) {
+            var item = this._initalData[i];
             newValues[i+1] = item[dataIndex];
         }
         for(var i=1,len=this._grid.length;i<len;i++) {
