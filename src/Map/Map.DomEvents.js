@@ -63,18 +63,21 @@ Z.Map.include({
     },
 
     _handleDOMEvent: function (e) {
-        var type = e.type === 'keypress' && e.keyCode === 13 ? 'click' : e.type;
+        var type = e.type;
         this._fireDOMEvent(this, e, type);
     },
 
     _fireDOMEvent: function (target, e, type) {
-        var containerPoint = Z.DomUtil.getEventContainerPoint(e, this._containerDOM);
         var eventParam = {
-            'coordinate': this.containerPointToCoordinate(containerPoint),
-            'containerPoint':containerPoint,
-            /*'viewPoint':this._containerPointToViewPoint(containerPoint),*/
             'domEvent': e
         };
+        if (type !== 'keypress') {
+            var containerPoint = Z.DomUtil.getEventContainerPoint(e, this._containerDOM);
+            eventParam['coordinate'] = this.containerPointToCoordinate(containerPoint);
+            eventParam['containerPoint'] = containerPoint;
+            /*'viewPoint':this._containerPointToViewPoint(containerPoint),*/
+        }
+
         //阻止右键菜单
         if (type === 'contextmenu') {
             Z.DomUtil.preventDefault(e);
