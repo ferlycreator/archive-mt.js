@@ -16,8 +16,8 @@ Z.Label.include({
         this._map = this.getMap();
         var viewPoint = this._computeViewPoint();
         this._container = Z.DomUtil.createEl('div');
-        this._container.style.cssText='position:absolute;top:'+viewPoint['top']
-                                    +'px;left:'+viewPoint['left']+'px;z-index:5000;';
+        this._container.style.cssText='position:absolute;top:'+viewPoint['y']
+                                    +'px;left:'+viewPoint['x']+'px;z-index:5000;';
         this._map._panels.mapPlatform.appendChild(this._container);
         this._textEditor = this._createInputDom();
         this._container.appendChild(this._textEditor);
@@ -44,7 +44,7 @@ Z.Label.include({
         } else {
             top = -rowHeight;
         }
-        var viewPoint = this._map.coordinateToViewPoint(this.getCenter()).add({left:left,top:top});
+        var viewPoint = this._map.coordinateToViewPoint(this.getCenter()).add({x:left,y:top});
         return viewPoint;
     },
 

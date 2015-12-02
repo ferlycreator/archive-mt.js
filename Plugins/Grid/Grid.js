@@ -482,13 +482,14 @@ maptalks.Grid = maptalks.Class.extend({
                    'textWrapBefore': false,
                    'textWrapCharacter': '/n',
                    'textLineSpacing': 8,
-                   'textHorizontalAlignment': 'right',
-                   'textVerticalAlignment': 'bottom',
+                   'textHorizontalAlignment': 'middle',
+                   'textVerticalAlignment': 'middle',
                    'textDx': cellOffset['dx'],
                    'textDy': cellOffset['dy']
                },
                'draggable': false,
-               'autosize': true
+               'autosize': true,
+               'boxMinWidth': this._cellWidth
         };
         var coordinate = this.options['position'];
         var label = new maptalks.Label(text,coordinate,labelOptions);
