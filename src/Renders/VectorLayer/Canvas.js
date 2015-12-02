@@ -148,7 +148,7 @@ Z.Canvas = {
     },
 
     text:function(ctx, text, pt, style, textDesc) {
-        pt = pt.add(new Z.Point(style['textDx'], style['textDy']));
+        // pt = pt.add(new Z.Point(style['textDx'], style['textDy']));
         this._textOnMultiRow(ctx, textDesc['rows'], style, pt, textDesc['size'], textDesc['rawSize']);
     },
 
