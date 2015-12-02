@@ -136,6 +136,7 @@ maptalks.Grid = maptalks.Class.extend({
             insertColNum = colNum;
         }
         this._createCol(insertColNum, data);
+        console.log(this._grid);
         return this;
     },
 
@@ -173,9 +174,8 @@ maptalks.Grid = maptalks.Class.extend({
             for(var j=colNum,rowLength=row.length;j<rowLength;j++) {
                 var cell = row[j];
                 if(j>colNum) {
-                    var cellOffset = this._getCellOffset(-this._cellWidth, 0);
                     cell._col -= 1;
-                    this._translateDxDy(cell,cellOffset);
+                    this._translateDx(cell);
                 } else {
                     cell.remove();
                 }
@@ -223,10 +223,10 @@ maptalks.Grid = maptalks.Class.extend({
                 'style': 'grey',
                 'items' : [
                     {'item': '在前面添加列', 'callback': function() {
-                        me.addCol(colNum, '', false);
+                        me.addCol(colNum, '空', false);
                     }},
                     {'item': '在后面添加列', 'callback': function() {
-                        me.addCol(colNum, '', true);
+                        me.addCol(colNum, '空', true);
                     }},
                     {'item': '删除列', 'callback': function() {
                         me.removeCol(colNum);
@@ -239,10 +239,10 @@ maptalks.Grid = maptalks.Class.extend({
                 'style': 'grey',
                 'items' : [
                     {'item': '在上面添加行', 'callback': function() {
-                        me.addRow(rowNum, '', false);
+                        me.addRow(rowNum, '空', false);
                     }},
                     {'item': '在下面添加行', 'callback': function() {
-                        me.addRow(rowNum, '', true);
+                        me.addRow(rowNum, '空', true);
                     }},
                     {'item': '删除行', 'callback': function() {
                         me.removeRow(rowNum);
@@ -250,8 +250,9 @@ maptalks.Grid = maptalks.Class.extend({
                 ]
             };
         }
+        var coordinate = event['containerPoint'];
         cell.setMenu(menuOptions);
-        cell.openMenu();
+        cell.openMenu(coordinate);
     },
 
     _addDragHandler: function(cell) {
@@ -326,7 +327,7 @@ maptalks.Grid = maptalks.Class.extend({
 
     _createCol: function(insertColNum, data) {
         var startCol = insertColNum;//调整起始列
-        if(!data||data.length==0) data = '';
+        if(!data||data.length==0) data = '空';
         //将列插入grid
         var cells = new Array();
         var insertColLength = 1;
@@ -365,13 +366,11 @@ maptalks.Grid = maptalks.Class.extend({
         }
         //调整之前的列
         this._adjustDatasetForCol(startCol,insertColLength);
-        //将新增的列加入grid
-        var newColumns = new Array();
         for(var i=0,len=this._grid.length;i<len;i++) {
             var dataLength = data.length;
             if(dataLength>0) {
                 for(var j=0;j<dataLength;j++){
-                    this._grid[i].splice(insertColNum+j, 0, cells[j]);
+                    this._grid[i].splice(insertColNum+j, 0, cells[i]);
                 }
             } else {
                 this._grid[i].splice(insertColNum, 0, cells[i]);
@@ -385,9 +384,8 @@ maptalks.Grid = maptalks.Class.extend({
             var rowData = this._grid[i];
             for(var j=start,rowLength=rowData.length;j<rowLength;j++) {
                 var cell = rowData[j];
-                var cellOffset = this._getCellOffset(this._cellWidth*insertColLength,0);
                 cell._col += insertColLength;
-                this._translateDxDy(cell, cellOffset);
+                this._translateDx(cell);
             }
         }
     },
@@ -497,12 +495,11 @@ maptalks.Grid = maptalks.Class.extend({
     },
 
     //TODO 临时方法,提供label的dx/dy调整,待geometry提供类似方法
-    _translateDxDy: function(cell, cellOffset){
+    _translateDx: function(cell){
+        var cellOffset = this._getCellOffsetTemp(cell._row, cell._col);
         var symbol = cell.getSymbol();
         symbol['markerDx'] = cellOffset['dx'];
-        symbol['markerDy'] = cellOffset['dy'];
         symbol['textDx'] = cellOffset['dx'];
-        symbol['textDy'] = cellOffset['dy'];
         cell.setSymbol(symbol);
     },
 
@@ -516,7 +513,7 @@ maptalks.Grid = maptalks.Class.extend({
 
     _getCellOffsetTemp: function(row, col) {
         return  {'dx':col*this._cellWidth, 'dy':row*this._cellHeight};
-    },
+    }
 
 
 });
