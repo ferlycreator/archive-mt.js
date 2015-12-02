@@ -93,14 +93,14 @@ maptalks.Grid = maptalks.Class.extend({
      * @param {Boolean} below : true,下方;false,上方
      */
     addRow: function(rowNum, data, below) {
-        var insertRowNum = rowNum;
+        var insertRowNum = rowNum+1;
         if(!below) {
-            insertRowNum = rowNum-1;
+            insertRowNum = rowNum;
         }
         //构造新加入的行
         var newDataset = new Array();
         if(!data||data.length==0) {//添加空行
-            newDataset.push(this._createRow(insertRowNum++, data));
+            newDataset.push(this._createRow(insertRowNum, data));
         } else {
             if(maptalks.Util.isArray(data)){
                 for(var i=0,len=data.length;i<len;i++) {
@@ -108,7 +108,7 @@ maptalks.Grid = maptalks.Class.extend({
                     newDataset[i] = this._createRow(insertRowNum++, item);
                 }
             } else {
-                newDataset.push(this._createRow(insertRowNum++, data));
+                newDataset.push(this._createRow(insertRowNum, data));
             }
         }
         //添加新的数据集
@@ -151,8 +151,7 @@ maptalks.Grid = maptalks.Class.extend({
                 if(i>rowNum) {
                     var cellOffset = this._getCellOffset(i, 0);
                     cell._row -= 1;
-                    this._translateDxDy(cell,cellOffset);
-
+                    this._translateDy(cell,cellOffset);
                 } else {
                     cell.remove();
                 }
@@ -304,7 +303,9 @@ maptalks.Grid = maptalks.Class.extend({
         textEditor.focus();
         var value = textEditor.value;
         textEditor.value = '';
-        textEditor.value = value;
+        if(value!='空') {
+            textEditor.value = value;
+        }
     },
 
     /**
@@ -317,7 +318,7 @@ maptalks.Grid = maptalks.Class.extend({
             var row = lastDataset[i];
             for(var j=0,rowLength=row.length;j<rowLength;j++) {
                 row[j]._row += insertRowLength;
-                this._translateDx(row[j], insertRowLength);
+                this._translateDy(row[j]);
             }
         }
         return this;
@@ -396,7 +397,7 @@ maptalks.Grid = maptalks.Class.extend({
         dataset[0] = this._createHeader();
         for(var i=0;i<this._rowNum-1;i++) {
             var item = this._data[i];
-            dataset[i+1] = this._createRow(i, item);
+            dataset[i+1] = this._createRow(i+1, item);
         }
         return dataset;
     },
@@ -421,8 +422,8 @@ maptalks.Grid = maptalks.Class.extend({
             var col = this._columns[i];
             var dataIndex = col['dataIndex'];
             var dataType = col['type'];
-            var cellOffset = this._getCellOffset(index+1, i);
-            var text = '';
+            var cellOffset = this._getCellOffset(index, i);
+            var text = '空';
             if(item) {
                 text = item[dataIndex];
             }
@@ -480,7 +481,6 @@ maptalks.Grid = maptalks.Class.extend({
                    'textSpacing': 30,
                    'textWrapWidth': this._cellWidth,
                    'textWrapBefore': false,
-                   'textWrapCharacter': '/n',
                    'textLineSpacing': 8,
                    'textHorizontalAlignment': 'middle',
                    'textVerticalAlignment': 'middle',
@@ -488,7 +488,7 @@ maptalks.Grid = maptalks.Class.extend({
                    'textDy': cellOffset['dy']
                },
                'draggable': false,
-               'autosize': true,
+               'autosize': false,
                'boxMinWidth': this._cellWidth
         };
         var coordinate = this.options['position'];
@@ -506,14 +506,17 @@ maptalks.Grid = maptalks.Class.extend({
         cell.setSymbol(symbol);
     },
 
-    _translateDx: function(cell, num){
-        var cellOffset = this._getCellOffset(cell._row, cell._col+num);
-        symbol['markerDx'] = cellOffset['dx'];
+    _translateDy: function(cell){
+        var cellOffset = this._getCellOffsetTemp(cell._row, cell._col);
+        var symbol = cell.getSymbol();
         symbol['markerDy'] = cellOffset['dy'];
-        symbol['textDx'] = cellOffset['dx'];
         symbol['textDy'] = cellOffset['dy'];
         cell.setSymbol(symbol);
-    }
+    },
+
+    _getCellOffsetTemp: function(row, col) {
+        return  {'dx':col*this._cellWidth, 'dy':row*this._cellHeight};
+    },
 
 
 });
