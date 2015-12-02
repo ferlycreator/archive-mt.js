@@ -10,6 +10,11 @@ Z.LineString = Z.Polyline = Z.Vector.extend({
 
     type:Z.Geometry['TYPE_LINESTRING'],
 
+    options:{
+        "arrowStyle" : null,
+        "arrowPlacement" : "vertex-last" //vertex-first, vertex-last, vertex-firstlast, point
+    },
+
     initialize:function(coordinates, opts) {
 
         this.setCoordinates(coordinates);

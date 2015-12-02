@@ -40,23 +40,30 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
         var canvasResources = this._getRenderResources();
         var strokeAndFill = this.strokeAndFill;
         Z.Canvas.setDefaultCanvasSetting(ctx);
+        ctx.save();
         Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'], null);
         canvasResources['fn'].apply(this, [ctx].concat(canvasResources['context']));
         if (this.geometry instanceof Z.Polygon) {
-            var fillSymbol = strokeAndFill['fill'];
-            var fillOpacity = fillSymbol['fill-opacity'];
-            var fill=fillSymbol['fill'];
-            var fillStyle;
-            // FIXME: rule?
-            if (this.style['polygonPatternFile']) {
-                var imgUrl = Z.Util.extractCssUrl(fill);
-                var imageTexture = resources.getImage(imgUrl);
-                fillStyle = ctx.createPattern(imageTexture, 'repeat');
-            } else {
-                fillStyle = fill;
-            }
-            Z.Canvas.fillCanvas(ctx, fillStyle, fillOpacity);
+            var fillStyle = this._getStyleToFill(ctx, resources);
+            Z.Canvas.fillCanvas(ctx, fillStyle[0], fillStyle[1]);
         }
+    },
+
+    _getStyleToFill:function(ctx, resources) {
+        var strokeAndFill = this.strokeAndFill;
+        var fillSymbol = strokeAndFill['fill'];
+        var fillOpacity = fillSymbol['fill-opacity'];
+        var fill=fillSymbol['fill'];
+        var fillStyle;
+        // FIXME: rule?
+        if (this.style['polygonPatternFile']) {
+            var imgUrl = Z.Util.extractCssUrl(fill);
+            var imageTexture = resources.getImage(imgUrl);
+            fillStyle = ctx.createPattern(imageTexture, 'repeat');
+        } else {
+            fillStyle = fill;
+        }
+        return [fillStyle, fillOpacity];
     },
 
     getSvgDom:function() {

@@ -50,7 +50,7 @@
 ../src/Geometry/Label.js
 ../src/Map/UI/Label.Edit.js
 ../src/Geometry/Polygon.js
-../src/Geometry/Polyline.js
+../src/Geometry/LineString.js
 ../src/Geometry/Ellipse.js
 ../src/Geometry/Circle.js
 ../src/Geometry/Sector.js
