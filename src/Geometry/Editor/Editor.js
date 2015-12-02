@@ -48,7 +48,7 @@ Z.Editor=Z.Class.extend({
          * 保存原有的symbol
          */
         if (this.opts['symbol']) {
-            this._originalSymbol=this.geometry.getSymbol();
+            this._originalSymbol=this.geometryToEdit.getSymbol();
             this.geometryToEdit.setSymbol(this.opts['symbol']);
         }
 
@@ -77,8 +77,8 @@ Z.Editor=Z.Class.extend({
         this.geometry = geometry;
         this.geometry.setId(null);
         this.geometry.isEditing=function() {
-            return true;
-        }
+            return  true;
+        };
         this.geometryToEdit.hide();
         this._editStageLayer.addGeometry(geometry);
         if (geometry instanceof Z.Marker) {
