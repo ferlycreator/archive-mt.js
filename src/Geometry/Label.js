@@ -6,7 +6,7 @@
  * @author Maptalks Team
  */
 Z.Label = Z.Marker.extend({
-    'defaultSymbol' : {
+    defaultSymbol : {
         "textFaceName": "arial",
         "textSize": 12,
         "textFill": "#000000",
@@ -19,7 +19,9 @@ Z.Label = Z.Marker.extend({
         "textHorizontalAlignment": "middle",//left middle right
         "textVerticalAlignment": "middle", //top middle bottom
         "textAlign": "center",
+    },
 
+    defaultBoxSymbol:{
         "markerType":"square",
         "markerLineColor": "#ff0000",
         "markerLineWidth": 2,
@@ -34,6 +36,8 @@ Z.Label = Z.Marker.extend({
      */
     options: {
         'draggable'    :   false,
+        //是否绘制背景边框
+        'box'          :   true,
         'boxAutoSize'  :   true,
         'boxMinWidth'  :   0,
         'boxPadding'   :   new Z.Size(12,8)
@@ -69,6 +73,7 @@ Z.Label = Z.Marker.extend({
     setContent: function(content) {
         this._content = content;
         this._refresh();
+        return this;
     },
 
     setSymbol:function(symbol, noEvent) {
@@ -77,22 +82,23 @@ Z.Label = Z.Marker.extend({
         }
        var camelSymbol = this._prepareSymbol(symbol);
        var s = {};
-       Z.Util.extend(s, this.defaultSymbol, camelSymbol);
+       Z.Util.extend(s, this.defaultSymbol);
+       if (this.options['box']) {
+            Z.Util.extend(s, this.defaultBoxSymbol);
+       }
+       Z.Util.extend(s,camelSymbol);
        this._symbol = s;
-
-        if (!noEvent) {
-            this._onSymbolChanged();
-        }
+        this._refresh();
         return this;
     },
 
-    _refresh:function() {
-        if (this.options['boxAutoSize']) {
-            var symbol = this.getSymbol();
+    _refresh:function(noEvent) {
+        var symbol = this.getSymbol();
+        symbol['textName'] = this._content;
+        if (this.options['box'] && this.options['boxAutoSize']) {
             if (!symbol['markerType']) {
                 symbol['markerType'] = 'square';
             }
-            symbol['textName'] = this._content;
             var size = Z.StringUtil.splitTextToRow(this._content, symbol)['size'];
             //背景和文字之间的间隔距离
             var padding = this.options['boxPadding'];
@@ -107,11 +113,18 @@ Z.Label = Z.Marker.extend({
             symbol['markerHeight'] = size['height']+padding['height'];
             symbol['markerDx'] = boxAlignPoint.x+size['width']/2;
             symbol['markerDy'] = boxAlignPoint.y+size['height']/2;
-            this.setSymbol(symbol,true);
         }
+        this._symbol = symbol;
+        this._onSymbolChanged();
     },
     _registerEvent: function() {
-        this.on('shapechanged symbolchanged', this._refresh, this);
+        this.on('shapechanged', this._refresh, this);
+
+        this.on('remove', this._onLabelRemove, this);
         return this;
+    },
+    _onLabelRemove:function() {
+        this.off('shapechanged', this._refresh, this);
+        this.off('remove', this._onLabelRemove,this);
     }
 });

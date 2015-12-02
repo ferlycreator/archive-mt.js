@@ -97,13 +97,12 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
                 }
                 return cp;
             });
-        } else if (Z instanceof Z.Point) {
+        } else if (points instanceof Z.Point) {
             p = map._viewPointToContainerPoint(points);
             if (matrix) {
                 p = matrix.applyToPointInstance(points);
             }
         }
-        console.log(p);
         var resources = Z.Util.extend({}, this._rendResources);
         resources['context'] = [p].concat(context.splice(1));
 
