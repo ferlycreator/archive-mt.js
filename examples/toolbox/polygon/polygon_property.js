@@ -62,7 +62,7 @@ PolygonPropertyPanel.prototype = {
     _getViewPoint: function() {
         var mapOffset = this._map.offsetPlatform();
         var viewPoint = this._map.coordinateToViewPoint(this._polygon.getCenter())
-                            .substract({left:this._width/2,top:-5})
+                            .substract({x:this._width/2,y:-5})
                             .add(mapOffset);
         return viewPoint;
     },
