@@ -132,6 +132,9 @@ Z.Matrix.prototype = {
 	 * @param {number} f - scale factor for both x and y (1 does nothing)
 	 */
 	scaleU: function(f) {
+        if (f === 1) {
+            return this;
+        }
 		return this._t(f, 0, 0, f, 0, 0);
 	},
 
