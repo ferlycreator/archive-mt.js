@@ -46,7 +46,7 @@ Z['MaptalksTileLayer'] = Z.MaptalksTileLayer = Z.TileLayer.extend({
         var url = remoteHost + '/tileservice/tileinfo?n=' + this.options['service'];
         var me = this;
         var ajax = new Z.Util.Ajax(url,0,null,function(responseText){
-            var tileInfo = Z.Util.parseJson(responseText);
+            var tileInfo = Z.Util.parseJSON(responseText);
             me._tileConfig = new Z.TileConfig(tileInfo);
             if (onLoadedFn) {
                 onLoadedFn();

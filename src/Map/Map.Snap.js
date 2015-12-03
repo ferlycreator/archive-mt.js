@@ -92,7 +92,7 @@ Z.Map.include({
         var queryString = "config="+encodeURIComponent(JSON.stringify(snapSettings));
         var ajax = new Z.Util.Ajax(url, 0, queryString, function(resultText) {
             //console.log(resultText);
-            var result = Z.Util.parseJson(resultText);
+            var result = Z.Util.parseJSON(resultText);
             if (!result || !result['success']) {
                 if (onErrorFn) {
                     onErrorFn(result);

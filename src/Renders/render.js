@@ -16,8 +16,12 @@ Z.render.Canvas=Z.Class.extend({
         }
         var map = this.getMap();
         var size = map.getSize();
-        this._canvas = Z.Canvas.createCanvas(size['width'],size['height'],map.CanvasClass);
+        var r = Z.Browser.retina?2:1;
+        this._canvas = Z.Canvas.createCanvas(r*size['width'],r*size['height'],map.CanvasClass);
         this._context = this._canvas.getContext('2d');
+        if (Z.Browser.retina) {
+            this._context.scale(2, 2);
+        }
         this._resizeCanvas();
     },
 
@@ -37,7 +41,8 @@ Z.render.Canvas=Z.Class.extend({
         }
         var canvas = this._canvas;
         //retina屏支持
-        var r = 1;
+
+        var r = Z.Browser.retina?2:1;
         canvas.height = r * size['height'];
         canvas.width = r * size['width'];
         if (canvas.style) {

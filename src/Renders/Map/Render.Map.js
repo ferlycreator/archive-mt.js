@@ -6,64 +6,56 @@ Z.render.map={};
 Z.render.map.Render = Z.Class.extend({
 
     onZoomStart:function(scale, transOrigin, fn, context, args) {
+        var map = this.map;
         if (Z.Browser.ielt9) {
             setTimeout(function() {
                 fn.apply(context, args);
-            },800);
+            },map.options['zoomAnimationDuration']);
             return;
         }
-        var map = this.map;
+        var r = Z.Browser.retina?2:1;
+        var mapTransOrigin = transOrigin.multi(r);
+
         this._clearCanvas();
         if (map.options['zoomAnimation']) {
             this._context.save();
-            var duration = map.options['zoomAnimationDuration'];
-            var baseLayerImage = map.getBaseTileLayer()._getRender().getCanvasImage();
-            var width = this._canvas.width, height = this._canvas.height;
-            var matrix;
+            var baseTileLayer = map.getBaseTileLayer(),
+                duration = map.options['zoomAnimationDuration'],
+                baseLayerImage = baseTileLayer._getRender().getCanvasImage(),
+                width = this._canvas.width,
+                height = this._canvas.height;
+            var matrix, retinaMatrix, layersToTransform;
             if (map.options['zoomAnimationMode'] && 'performance' === map.options['zoomAnimationMode'].toLowerCase()) {
                 //zoom animation with better performance, only animate baseTileLayer, ignore other layers.
                 this._drawLayerCanvasImage(baseLayerImage, width, height);
-                this._context.save();
-                Z.animation.animate(new Z.animation.zoom({
-                    'scale1' : 1,
-                    'scale2': scale,
-                    'duration' : map.options['zoomAnimationDuration']
-                }), map, function(frame) {
-                    matrix = new Z.Matrix().translate(transOrigin.x, transOrigin.y)
-                        .scaleU(frame.scale).translate(-transOrigin.x,-transOrigin.y);
-                    this._clearCanvas();
-                    matrix.applyToContext(this._context);
-                    this._drawLayerCanvasImage(baseLayerImage, width, height);
-                    if (frame.state['end']) {
-                        this._context.restore();
-                        this._canvasBackgroundImage = Z.DomUtil.copyCanvas(this._canvas);
-                        fn.apply(context, args);
-                    }
-                }, this);
+                layersToTransform = [baseTileLayer];
             } else {
                 //default zoom animation, animate all the layers, may encounter performance problem.
                 this._rend();
-                this._context.save();
-                Z.animation.animate(new Z.animation.zoom({
-                    'scale1' : 1,
-                    'scale2': scale,
-                    'duration' : duration
-                }), map, function(frame) {
-                    matrix = new Z.Matrix().translate(transOrigin.x, transOrigin.y)
-                        .scaleU(frame.scale).translate(-transOrigin.x,-transOrigin.y);
-                    this.transform(matrix);
-                    if (frame.state['end']) {
-                        delete this._transMatrix;
-                        this._clearCanvas();
-                        //only draw basetile layer
-                        matrix.applyToContext(this._context);
-                        this._drawLayerCanvasImage(baseLayerImage, width, height);
-                        this._canvasBackgroundImage = Z.DomUtil.copyCanvas(this._canvas);
-                        this._context.restore();
-                        fn.apply(context, args);
-                    }
-                }, this);
             }
+            Z.animation.animate(new Z.animation.zoom({
+                'scale1' : 1,
+                'scale2': scale,
+                'duration' : duration
+            }), map, function(frame) {
+                //matrix for layers to caculate points.
+                matrix = new Z.Matrix().translate(transOrigin.x, transOrigin.y)
+                    .scaleU(frame.scale).translate(-transOrigin.x,-transOrigin.y);
+                //matrix for this._context to draw layerImage.
+                retinaMatrix = new Z.Matrix().translate(mapTransOrigin.x, mapTransOrigin.y)
+                    .scaleU(frame.scale).translate(-mapTransOrigin.x,-mapTransOrigin.y).scaleU(r);
+                this.transform(matrix, retinaMatrix, layersToTransform);
+                if (frame.state['end']) {
+                    delete this._transMatrix;
+                    this._clearCanvas();
+                    //only draw basetile layer
+                    matrix.applyToContext(this._context);
+                    this._drawLayerCanvasImage(baseLayerImage, width, height);
+                    this._canvasBackgroundImage = Z.DomUtil.copyCanvas(this._canvas);
+                    this._context.restore();
+                    fn.apply(context, args);
+                }
+            }, this);
 
         } else {
             fn.apply(context, args);
@@ -74,12 +66,17 @@ Z.render.map.Render = Z.Class.extend({
     /**
      * 对图层进行仿射变换
      * @param  {Matrix} matrix 变换矩阵
+     * @param  {Matrix} retinaMatrix retina屏时,用来绘制图层canvas的变换矩阵
+     * @param  {[Layer]} layersToTransform 参与变换和绘制的图层
      */
-    transform:function(matrix) {
+    transform:function(matrix, retinaMatrix, layersToTransform) {
         var mwidth = this._canvas.width,
             mheight = this._canvas.height;
-        var layers = this._getAllLayerToCanvas();
+        var layers = layersToTransform || this._getAllLayerToCanvas();
         this._transMatrix = matrix;
+        if (!retinaMatrix) {
+            retinaMatrix = matrix;
+        }
         this._clearCanvas();
         for (var i = 0, len=layers.length; i < len; i++) {
             if (!layers[i].isVisible()) {
@@ -89,7 +86,7 @@ Z.render.map.Render = Z.Class.extend({
             if (render) {
                 this._context.save();
                 if (layers[i] instanceof Z.TileLayer) {
-                    this._transMatrix.applyToContext(this._context);
+                    retinaMatrix.applyToContext(this._context);
                 } else {
                     render.rendRealTime();
                 }

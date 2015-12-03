@@ -6,6 +6,20 @@
  */
 Z.Handler.Drag = Z.Handler.extend({
 
+    START: Z.Browser.touch ? ['touchstart', 'mousedown'] : ['mousedown'],
+    END: {
+        mousedown: 'mouseup',
+        touchstart: 'touchend',
+        pointerdown: 'touchend',
+        MSPointerDown: 'touchend'
+    },
+    MOVE: {
+        mousedown: 'mousemove',
+        touchstart: 'touchmove',
+        pointerdown: 'touchmove',
+        MSPointerDown: 'touchmove'
+    },
+
     /**
      * @constructor
      * @param {HTMLElement} dom
@@ -23,7 +37,7 @@ Z.Handler.Drag = Z.Handler.extend({
      */
     enable:function(){
         if (!this.dom) {return;}
-        Z.DomUtil.on(this.dom, 'mousedown', this.onMouseDown, this);
+        Z.DomUtil.on(this.dom, this.START.join(' '), this.onMouseDown, this);
     },
 
     /**
@@ -31,7 +45,7 @@ Z.Handler.Drag = Z.Handler.extend({
      */
     disable:function(){
         if (!this.dom) {return;}
-        Z.DomUtil.off(this.dom, 'mousedown', this.onMouseDown);
+        Z.DomUtil.off(this.dom, this.START.join(' '), this.onMouseDown);
     },
 
     onMouseDown:function(event) {
@@ -47,16 +61,18 @@ Z.Handler.Drag = Z.Handler.extend({
         }
         dom['ondragstart'] = function() { return false; };
         this.moved = false;
+        var actual = event.touches ? event.touches[0] : event;
         // if (this.moving) { return; }
-        this.startPos = new Z.Point(event.clientX, event.clientY);
+        this.startPos = new Z.Point(actual.clientX, actual.clientY);
         //2015-10-26 fuzhen 改为document, 解决鼠标移出地图容器后的不可控现象
-        Z.DomUtil.on(document,'mousemove',this.onMouseMove,this);
-        Z.DomUtil.on(document,'mouseup',this.onMouseUp,this);
+        Z.DomUtil.on(document,this.MOVE[event.type],this.onMouseMove,this);
+        Z.DomUtil.on(document,this.END[event.type],this.onMouseUp,this);
     },
 
     onMouseMove:function(event) {
         var dom = this.dom;
-        var newPos = new Z.Point(event.clientX, event.clientY),
+        var actual = event.touches ? event.touches[0] : event;
+        var newPos = new Z.Point(actual.clientX, actual.clientY),
             offset = newPos.substract(this.startPos);
         if (!offset.x && !offset.y) {
             return;
@@ -81,7 +97,7 @@ Z.Handler.Drag = Z.Handler.extend({
              * @return {Object} mousePos: {'left': 0px, 'top': 0px}
              */
             this.fire('dragging',{
-                    'mousePos': new Z.Point(event.clientX, event.clientY)
+                    'mousePos': new Z.Point(actual.clientX, actual.clientY)
                 });
             /*try {
 
@@ -98,8 +114,12 @@ Z.Handler.Drag = Z.Handler.extend({
 
     onMouseUp:function(event){
         var dom = this.dom;
-        Z.DomUtil.off(document,'mousemove',this.onMouseMove);
-        Z.DomUtil.off(document,'mouseup',this.onMouseUp);
+        var actual = event.changedTouches ? event.changedTouches[0] : event;
+        for (var i in this.MOVE) {
+            Z.DomUtil
+                .off(document, this.MOVE[i], this.onMouseMove, this)
+                .off(document, this.END[i], this.onMouseUp, this);
+        }
         if(dom['releaseCapture']) {
             dom['releaseCapture']();
         } else if(window.captureEvents) {
@@ -115,7 +135,7 @@ Z.Handler.Drag = Z.Handler.extend({
              * @return {Object} mousePos: {'left': 0px, 'top': 0px}
              */
             this.fire('dragend',{
-                'mousePos': new Z.Point(parseInt(event.clientX,0),parseInt(event.clientY,0))
+                'mousePos': new Z.Point(parseInt(actual.clientX,0),parseInt(actual.clientY,0))
             });
         }
         // this.moving = false;

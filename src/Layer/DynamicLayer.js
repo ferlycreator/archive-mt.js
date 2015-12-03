@@ -60,7 +60,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
         }
         var queryString=this._formQueryString( this.getCondition(), param_spatialFilter);
         var ajax = new Z.Util.Ajax(url,0,queryString,function(responseText){
-            var result = Z.Util.parseJson(responseText);
+            var result = Z.Util.parseJSON(responseText);
             if (result && result["success"]) {
                 me._render.rend(me.options['showOnTileLoadComplete']);
             }

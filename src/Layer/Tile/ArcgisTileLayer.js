@@ -50,7 +50,7 @@ Z['ArcgisTileLayer'] = Z.ArcgisTileLayer = Z.TileLayer.extend({
             var url = Z.host+"/maptalks/proxy?url="+remoteUrl;
             var me = this;
             var ajax = new Z.Util.Ajax(url,0,null,function(responseText){
-                var serviceInfo = Z.Util.parseJson(responseText);
+                var serviceInfo = Z.Util.parseJSON(responseText);
                 var tileInfo = me._parseServiceInfo(serviceInfo);
                 me._tileConfig = new Z.TileConfig(tileInfo);
                 if (onLoadedFn) {
