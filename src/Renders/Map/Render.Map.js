@@ -24,7 +24,7 @@ Z.render.map.Render = Z.Class.extend({
                 baseLayerImage = baseTileLayer._getRender().getCanvasImage(),
                 width = this._canvas.width,
                 height = this._canvas.height;
-            var matrix, mapCanvasMatrix, layersToTransform;
+            var matrix, retinaMatrix, layersToTransform;
             if (map.options['zoomAnimationMode'] && 'performance' === map.options['zoomAnimationMode'].toLowerCase()) {
                 //zoom animation with better performance, only animate baseTileLayer, ignore other layers.
                 this._drawLayerCanvasImage(baseLayerImage, width, height);
@@ -42,9 +42,9 @@ Z.render.map.Render = Z.Class.extend({
                 matrix = new Z.Matrix().translate(transOrigin.x, transOrigin.y)
                     .scaleU(frame.scale).translate(-transOrigin.x,-transOrigin.y);
                 //matrix for this._context to draw layerImage.
-                mapCanvasMatrix = new Z.Matrix().translate(mapTransOrigin.x, mapTransOrigin.y)
+                retinaMatrix = new Z.Matrix().translate(mapTransOrigin.x, mapTransOrigin.y)
                     .scaleU(frame.scale).translate(-mapTransOrigin.x,-mapTransOrigin.y).scaleU(r);
-                this.transform(matrix, mapCanvasMatrix, layersToTransform);
+                this.transform(matrix, retinaMatrix, layersToTransform);
                 if (frame.state['end']) {
                     delete this._transMatrix;
                     this._clearCanvas();
@@ -66,15 +66,17 @@ Z.render.map.Render = Z.Class.extend({
     /**
      * 对图层进行仿射变换
      * @param  {Matrix} matrix 变换矩阵
-     * @param  {Matrix} mapCanvasMatrix this._context用来绘制图层canvas的变换矩阵
+     * @param  {Matrix} retinaMatrix retina屏时,用来绘制图层canvas的变换矩阵
      * @param  {[Layer]} layersToTransform 参与变换和绘制的图层
      */
-    transform:function(matrix, mapCanvasMatrix, layersToTransform) {
-        this._clearCanvas();
+    transform:function(matrix, retinaMatrix, layersToTransform) {
         var mwidth = this._canvas.width,
             mheight = this._canvas.height;
         var layers = layersToTransform || this._getAllLayerToCanvas();
         this._transMatrix = matrix;
+        if (!retinaMatrix) {
+            retinaMatrix = matrix;
+        }
         this._clearCanvas();
         for (var i = 0, len=layers.length; i < len; i++) {
             if (!layers[i].isVisible()) {
@@ -84,7 +86,7 @@ Z.render.map.Render = Z.Class.extend({
             if (render) {
                 this._context.save();
                 if (layers[i] instanceof Z.TileLayer) {
-                    mapCanvasMatrix.applyToContext(this._context);
+                    retinaMatrix.applyToContext(this._context);
                 } else {
                     render.rendRealTime();
                 }
