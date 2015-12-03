@@ -13,7 +13,7 @@ Z.GeoJSON={
          */
         fromGeoJSON:function(geoJSON, crs) {
             if (Z.Util.isString(geoJSON)) {
-                geoJSON = Z.Util.parseJson(geoJSON);
+                geoJSON = Z.Util.parseJSON(geoJSON);
             }
             if (Z.Util.isArray(geoJSON)) {
                 var resultGeos = [];

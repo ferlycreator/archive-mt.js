@@ -121,7 +121,7 @@ Z.FeatureQuery.prototype={
                 }
                 return;
             } else {
-                var result = Z.Util.parseJson(response);
+                var result = Z.Util.parseJSON(response);
                 if (!result) {
                     //20000是未知错误的错误代码
                     if (Z.Util.isFunction(opts['error'])) {

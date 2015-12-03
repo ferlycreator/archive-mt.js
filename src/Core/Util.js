@@ -125,7 +125,7 @@ Z.Util = {
      * @param {String} str 字符串
      * @return {Object} JSON object
      */
-    parseJson:function(str) {
+    parseJSON:function(str) {
         if (!str || !Z.Util.isString(str)) {
             return str;
         }

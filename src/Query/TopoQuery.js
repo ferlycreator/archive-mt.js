@@ -94,7 +94,7 @@ Z.TopoQuery.prototype={
             var queryString = formQueryString();
             var ajax = new Z.Util.Ajax(url, 0, queryString, function(
                     resultText) {
-                var result = Z.Util.parseJson(resultText);
+                var result = Z.Util.parseJSON(resultText);
                 if (!result["success"]) {
                     if (opts['error']) {
                         opts['error'](result);
@@ -157,7 +157,7 @@ Z.TopoQuery.prototype={
         var queryString = formQueryString();
         var ajax = new Z.Util.Ajax(url, 0, queryString, function(
                 resultText) {
-            var result = Z.Util.parseJson(resultText);
+            var result = Z.Util.parseJSON(resultText);
             if (!result["success"]) {
                 if (opts['error']) {
                     opts['error'](result);
