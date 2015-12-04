@@ -40,6 +40,7 @@ Z.Label = Z.Marker.extend({
         'box'          :   true,
         'boxAutoSize'  :   true,
         'boxMinWidth'  :   0,
+        'boxMinHeight' :   0,
         'boxPadding'   :   new Z.Size(12,8)
     },
 
@@ -105,14 +106,20 @@ Z.Label = Z.Marker.extend({
             var boxAlignPoint = Z.StringUtil.getAlignPoint(size, symbol['textHorizontalAlignment'], symbol['textVerticalAlignment']);
             boxAlignPoint = boxAlignPoint.add(new Z.Point(Z.Util.getValueOrDefault(symbol['textDx'],0),Z.Util.getValueOrDefault(symbol['textDy'],0)));
             symbol['markerWidth'] = size['width']+padding['width'];
-            if (this.options['boxMinWidth']) {
-                if (symbol['markerWidth'] < this.options['boxMinWidth']) {
-                    symbol['markerWidth'] = this.options['boxMinWidth'];
-                }
-            }
+
             symbol['markerHeight'] = size['height']+padding['height'];
             symbol['markerDx'] = boxAlignPoint.x+size['width']/2;
             symbol['markerDy'] = boxAlignPoint.y+size['height']/2;
+        }
+        if (this.options['boxMinWidth']) {
+            if (!symbol['markerWidth'] || symbol['markerWidth'] < this.options['boxMinWidth']) {
+                symbol['markerWidth'] = this.options['boxMinWidth'];
+            }
+        }
+        if (this.options['boxMinHeight']) {
+            if (!symbol['markerHeight'] || symbol['markerHeight'] < this.options['boxMinHeight']) {
+                symbol['markerHeight'] = this.options['boxMinHeight'];
+            }
         }
         this._symbol = symbol;
         this._onSymbolChanged();
