@@ -26,7 +26,7 @@ Z.Point.prototype={
     },
 
     round:function() {
-        return new Z.Point(Math.round(this.x),Math.round(this.y));
+        return new Z.Point(Z.Util.canvasRound(this.x),Z.Util.canvasRound(this.y));
     },
     equals:function(p) {
         return this.x === p.x && this.y === p.y;

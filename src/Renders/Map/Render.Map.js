@@ -121,7 +121,7 @@ Z.render.map.Render = Z.Class.extend({
             if (!t) {
                 duration = map.options['panAnimationDuration'];
             } else {
-                duration = t;
+                duration = t*1.5;
             }
             var panMoveOffset = moveOffset.multi(0.5);
             Z.animation.animate(new Z.animation.pan({
@@ -180,6 +180,7 @@ Z.render.map.Render = Z.Class.extend({
             }
         }
     },
+
 
     _drawLayerCanvasImage:function(layerImage, mwidth, mheight) {
         if (mwidth === 0 || mheight === 0){

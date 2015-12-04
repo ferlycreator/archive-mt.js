@@ -139,8 +139,8 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
             //中心瓦片信息,包括瓦片编号,和中心点在瓦片上相对左上角的位置
         var centerTileIndex =  tileConfig.getCenterTileIndex(map._getPrjCenter(), zoomLevel);
         //计算中心瓦片的top和left偏移值
-        var centerTileViewPoint=new Z.Point(Math.round(parseFloat(mapWidth/2-centerTileIndex["offsetLeft"])),
-                                                Math.round(parseFloat(mapHeight/2-centerTileIndex["offsetTop"])));
+        var centerTileViewPoint=new Z.Point(parseFloat(mapWidth/2-centerTileIndex["offsetLeft"]),
+                                                parseFloat(mapHeight/2-centerTileIndex["offsetTop"]));
         if (!canvasSize || !(canvasSize instanceof Z.Size)) {
             canvasSize = new Z.Size(mapWidth, mapHeight);
         }
