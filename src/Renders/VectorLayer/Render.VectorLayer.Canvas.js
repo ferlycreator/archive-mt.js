@@ -225,7 +225,6 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         //载入资源后再进行绘制
         if (!this._canvas) {
             this._createCanvas();
-            Z.Canvas.disableImageSmoothing(this._context);
         }
 
         var fullExtent = map._getViewExtent()/*.expand(size)*/;
