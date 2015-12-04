@@ -140,7 +140,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         var centerTileIndex =  tileConfig.getCenterTileIndex(map._getPrjCenter(), zoomLevel);
         //计算中心瓦片的top和left偏移值
         var centerTileViewPoint=new Z.Point(parseFloat(mapWidth/2-centerTileIndex["offsetLeft"]),
-                                                parseFloat(mapHeight/2-centerTileIndex["offsetTop"]));
+                                                parseFloat(mapHeight/2-centerTileIndex["offsetTop"])).round();
         if (!canvasSize || !(canvasSize instanceof Z.Size)) {
             canvasSize = new Z.Size(mapWidth, mapHeight);
         }

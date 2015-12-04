@@ -121,7 +121,7 @@ Z.render.map.Render = Z.Class.extend({
             if (!t) {
                 duration = map.options['panAnimationDuration'];
             } else {
-                duration = t*1.5;
+                duration = t;
             }
             var panMoveOffset = moveOffset.multi(0.5);
             Z.animation.animate(new Z.animation.pan({
@@ -190,13 +190,6 @@ Z.render.map.Render = Z.Class.extend({
         var point = layerImage['point'];
         var size = layerImage['size'];
 
-        var layer = layerImage['layer'];
-        var enableImageSmoothing = (!(layer instanceof Z.DynamicLayer) && (layer instanceof Z.TileLayer));
-        if (enableImageSmoothing) {
-            Z.Canvas.enableImageSmoothing(this._context);
-        } else {
-            Z.Canvas.disableImageSmoothing(this._context);
-        }
         var canvasImage = layerImage['image'];
         if (Z.runningInNode) {
             if (canvasImage.toBuffer) {

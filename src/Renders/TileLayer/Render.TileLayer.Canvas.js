@@ -51,47 +51,24 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
     },
 
     rend:function(options) {
-        var tileGrid = this._layer._getTiles(/*this.getMap().getSize().multi(2.2)*/);
+        var tileGrid = this._layer._getTiles();
         if (!tileGrid) {
             return;
         }
         this._rending = true;
-        var tiles = tileGrid['tiles'];
-        var fullTileExtent = tileGrid['fullExtent'];
         if (!this._canvas) {
             this._createCanvas();
-            Z.Canvas.enableImageSmoothing(this._context);
-        }
-        //canvas大小不做缩小, 只根据需要增大, 直到超过系统允许: testCanvas 结果为false
-        var preZ = this._z;
-        this._z = this.getMap().getZoom();
-        if (this._z !== preZ) {
-            this._canvasFullExtent = fullTileExtent;
-            this._resizeCanvas(fullTileExtent.getSize());
-        } else {
-            var preSize = this._canvasFullExtent.getSize();
-            this._canvasFullExtent = fullTileExtent;
-            var extentSize = fullTileExtent.getSize();
-            if (!preSize.equals(extentSize)) {
-                this._resizeCanvas(this._canvasFullExtent.getSize());
-            } else {
-                this._clearCanvas();
-            }
         }
 
-        var tileCache = this._tileCache;
-        if (!this._tileRended) {
-            this._tileRended = {};
-        }
-        var tileRended = this._tileRended;
-        this._tileRended = {};
+        var tiles = tileGrid['tiles'],
+            tileCache = this._tileCache,
+            tileSize = this._layer._getTileSize(),
+            tileRended = this._tileRended = {};
 
-        var mapViewExtent = this.getMap()._getViewExtent();
-        var tileSize = this._layer._getTileSize();
+        this._canvasFullExtent =  this.getMap()._getViewExtent();
         //遍历瓦片
         this._tileToLoadCounter = 0;
-
-        this._resizeCanvas(this._canvasFullExtent.getSize());
+        this._clearCanvas();
 
         for (var i = tiles.length - 1; i >= 0; i--) {
             var tile = tiles[i];
@@ -103,7 +80,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
                     this._drawTile(tile['viewPoint'], cached);
                     this._tileRended[tileId] = cached;
             } else {
-                if (mapViewExtent.isIntersect(new Z.Extent(tile['viewPoint'], tile['viewPoint'].add(new Z.Point(tileSize['width'], tileSize['height']))))) {
+                if (this._canvasFullExtent.isIntersect(new Z.Extent(tile['viewPoint'], tile['viewPoint'].add(new Z.Point(tileSize['width'], tileSize['height']))))) {
                     this._tileToLoadCounter++;
                     this._tileQueue[tileId+"@"+tile['viewPoint'].toString()] = tile;
                 }
