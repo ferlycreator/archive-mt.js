@@ -174,7 +174,6 @@ Z.Canvas = {
             ctx.lineWidth = 1;
             ctx.miterLimit = 10; //default
         }
-
         ctx.fillText(text, pt.x, pt.y);
     },
 

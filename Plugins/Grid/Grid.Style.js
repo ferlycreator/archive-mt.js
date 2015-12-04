@@ -117,7 +117,7 @@ maptalks.GridStyle = maptalks.Class.extend({
                  icon: 'images/bold.png',
                  trigger: 'click',
                  click : function(){
-                     me._setGridStyle('textFaceName','bolder Arial');
+                     me._setGridStyle('textFaceName','bold 20px arial');
                  }
             },
             {
@@ -125,31 +125,31 @@ maptalks.GridStyle = maptalks.Class.extend({
                  icon: 'images/italic.png',
                  trigger: 'click',
                  click : function(){
-                     me._setGridStyle('textFaceName','italic Arial');
+                     me._setGridStyle('textFaceName','italic 20px arial');
                  }
             },
-//            {
-//                type : 'button',
-//                icon: 'images/left.png',
-//                trigger: 'click',
-//                click : function(){
-//                    me._setGridStyle('textAlign','left');
-//                }
-//            }, {
-//               type : 'button',
-//               icon: 'images/center.png',
-//               trigger: 'click',
-//                click : function(){
-//                   me._setGridStyle('textAlign','middle');
-//               }
-//            }, {
-//               type : 'button',
-//               icon: 'images/right.png',
-//               trigger: 'click',
-//                click : function(){
-//                   me._setGridStyle('textAlign','right');
-//               }
-//            }
+            {
+                type : 'button',
+                icon: 'images/left.png',
+                trigger: 'click',
+                click : function(){
+                    me._setGridStyle('textAlign','left');
+                }
+            }, {
+               type : 'button',
+               icon: 'images/center.png',
+               trigger: 'click',
+                click : function(){
+                   me._setGridStyle('textAlign','center');
+               }
+            }, {
+               type : 'button',
+               icon: 'images/right.png',
+               trigger: 'click',
+                click : function(){
+                   me._setGridStyle('textAlign','right');
+               }
+            }
             ]
         });
         panel.addTo(this._map);
@@ -171,22 +171,27 @@ maptalks.GridStyle = maptalks.Class.extend({
         var row = this._gridData[rowNum];
         for(var j=0,rowLength=row.length;j<rowLength;j++) {
             var cell = row[j];
-            var symbol = cell.getSymbol();
-            symbol[attr] = value;
-            cell.setSymbol(symbol);
+            this._setStyleToCell(cell,attr,value);
         }
-
     },
 
     _setColStyle: function(colNum, attr, value) {
         for(var i=0,len=this._gridData.length;i<len;i++) {
             var row = this._gridData[i];
             var cell = row[colNum];
+            this._setStyleToCell(cell,attr,value);
+        }
+    },
+
+    _setStyleToCell(cell, attr, value) {
+        var symbol = cell.getSymbol();
+        if(attr==='textAlign') {
+            cell.setTextAlign(value);
+        } else {
             var symbol = cell.getSymbol();
             symbol[attr] = value;
             cell.setSymbol(symbol);
         }
-
     },
 
     _colorItems: function (callback) {

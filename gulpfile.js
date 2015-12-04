@@ -9,6 +9,7 @@ var karma = require('karma').server;
 var connect = require('gulp-connect');
 var browserSync = require('browser-sync');
 var reload = browserSync.reload;
+var rev = require('gulp-rev');
 var revCollector = require('gulp-rev-collector');
 
 var minimist = require('minimist');

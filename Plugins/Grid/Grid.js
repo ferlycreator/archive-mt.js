@@ -575,6 +575,8 @@ maptalks.Grid = maptalks.Class.extend({
 
     _createCell: function(text, cellOffset) {
         var symbol = this.options.symbol;
+        var textSize = maptalks.Util.getValueOrDefault(symbol['textSize'],12);
+        var textLineSpacing = maptalks.Util.getValueOrDefault(symbol['textLineSpacing'],8);
         var labelOptions = {
                'symbol': {
                    'markerLineColor': maptalks.Util.getValueOrDefault(symbol['lineColor'],'#ffffff'),
@@ -587,21 +589,22 @@ maptalks.Grid = maptalks.Class.extend({
                    'markerDy': cellOffset['dy'],
 
                    'textFaceName': maptalks.Util.getValueOrDefault(symbol['textFaceName'],'arial'),
-                   'textSize': maptalks.Util.getValueOrDefault(symbol['textSize'],12),
+                   'textSize': textSize,
                    'textFill': maptalks.Util.getValueOrDefault(symbol['textFill'],'#ff0000'),
                    'textOpacity': 1,
                    'textSpacing': 30,
                    'textWrapWidth': this._cellWidth,
                    'textWrapBefore': false,
-                   'textLineSpacing': 8,
+                   'textLineSpacing': textLineSpacing,
                    'textHorizontalAlignment': 'middle',
                    'textVerticalAlignment': 'middle',
                    'textDx': cellOffset['dx'],
                    'textDy': cellOffset['dy']
                },
                'draggable': false,
-               'autosize': false,
-               'boxMinWidth': this._cellWidth
+               'boxAutoSize': false,
+               'boxMinWidth': this._cellWidth,
+               'boxMinHeight': this._cellHeight
         };
         var coordinate = this.options['position'];
         var label = new maptalks.Label(text,coordinate,labelOptions);
@@ -628,6 +631,5 @@ maptalks.Grid = maptalks.Class.extend({
     _getCellOffsetTemp: function(row, col) {
         return  {'dx':col*this._cellWidth, 'dy':row*this._cellHeight};
     }
-
 
 });

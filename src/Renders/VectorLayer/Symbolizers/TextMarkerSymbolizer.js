@@ -15,7 +15,7 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
 
         "textHorizontalAlignment" : "middle", //left | middle | right | auto
         "textVerticalAlignment"   : "middle",   // top | middle | bottom | auto
-        "textAlign"                : "center" //left | right | center | auto
+        "textAlign"               : "center" //left | right | center | auto
     },
 
     initialize:function(symbol, geometry) {

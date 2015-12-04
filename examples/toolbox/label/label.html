@@ -97,7 +97,10 @@
                 'textHorizontalAlignment': 'middle',//left middle right
                 'textVerticalAlignment': 'bottom',//top middle bottom
             },
-            'draggable': true
+           'draggable': false,
+           'boxAutoSize': false,
+           'boxMinWidth': 500,
+           'boxMinHeight': 100
         };
         //创建label
         var label = new maptalks.Label('文本标签', coordinate, options);

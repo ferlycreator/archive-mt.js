@@ -57,6 +57,12 @@
                 click : function(param){
                      mapObj.on('click', markerGrid);
                 }
+            },{
+                type : 'button',
+                content: '标签',
+                click : function(param){
+                     mapObj.on('click', markerLabel);
+                }
             }]
         });
         mapObj.addControl(toolbar);
@@ -183,11 +189,66 @@
         }
         return data;
     }
+
+    function markerLabel(param) {
+        mapObj.off('click', markerLabel);
+        var coordinate = param.coordinate;
+        //设置label属性
+        var options = {
+            'symbol': {
+                'markerLineColor': '#ff0000',
+                'markerLineWidth': 1,
+                'markerLineOpacity': 0.9,
+                'markerLineDasharray': null,
+                'markerFill': '#4e98dd',
+                'markerFillOpacity': 0.9,
+
+                'textFaceName': 'arial',
+                'textSize': 12,
+                'textFill': '#ff0000',
+                'textOpacity': 1,
+                'textSpacing': 30,
+                'textWrapWidth': null,//auto
+                'textWrapBefore': false,
+                //'textWrapCharacter': '\n',
+                'textLineSpacing': 8,
+                'textHorizontalAlignment': 'middle',//left middle right
+                'textVerticalAlignment': 'bottom',//top middle bottom
+            },
+            'draggable': true
+        };
+        //创建label
+        var label = new maptalks.Label('文本标签', coordinate, options);
+        layer.addGeometry(label);
+        //label属性面板
+        var labelPropertyPanel = new LabelPropertyPanel();
+        label.on('click', function(){
+            labelPropertyPanel.addTo(label);
+        });
+        //构造连线
+        var linkSource = param.geometry;
+        if(linkSource) {
+            var linkOptions = {
+                linkSource: linkSource,
+                linkTarget: label,
+                symbol: {
+                    "lineColor" : "#474cf8",
+                    "lineWidth" : 1,
+                    "lineOpacity" : 0.8,
+                    'lineDasharray' : [20,10,5,5,5,10]
+                }
+            }
+            var linker = new maptalks.Linker(linkOptions);
+            linker.addTo(mapObj);
+            linker.show();
+        }
+    }
 </script>
 <!-- 引擎javascript开发包-->
 <script type="text/javascript" src="../../../maptalks.js"></script>
 <script type="text/javascript" src="../../../Plugins/Grid/Grid.js"></script>
 <script type="text/javascript" src="../../../Plugins/Grid/Grid.Style.js"></script>
+<script type="text/javascript" src="../../../examples/toolbox/label/label_property.js"></script>
 <script type="text/javascript" src="data.js"></script>
 <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
 <!--[if lt IE 9]>
