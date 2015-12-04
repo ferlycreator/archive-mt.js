@@ -53,7 +53,10 @@ Z.Map.include({
                       * @member maptalks.Map
                       * @event keypress
                       */
-                     'keypress ';
+                     'keypress '+
+                     'touchstart '+
+                     'touchmove '+
+                     'touchend ';
         if (remove) {
             Z.DomUtil.removeDomEvent(this._containerDOM, events, this._handleDOMEvent);
         } else {
@@ -72,10 +75,13 @@ Z.Map.include({
             'domEvent': e
         };
         if (type !== 'keypress') {
-            var containerPoint = Z.DomUtil.getEventContainerPoint(e, this._containerDOM);
-            eventParam['coordinate'] = this.containerPointToCoordinate(containerPoint);
-            eventParam['containerPoint'] = containerPoint;
-            /*'viewPoint':this._containerPointToViewPoint(containerPoint),*/
+            var actual = e.touches ? e.touches[0] : e;
+            if (actual) {
+                var containerPoint = Z.DomUtil.getEventContainerPoint(actual, this._containerDOM);
+                eventParam['coordinate'] = this.containerPointToCoordinate(containerPoint);
+                eventParam['containerPoint'] = containerPoint;
+                /*'viewPoint':this._containerPointToViewPoint(containerPoint),*/
+            }
         }
 
         //阻止右键菜单
