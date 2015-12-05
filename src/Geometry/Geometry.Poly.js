@@ -22,7 +22,8 @@ Z.Geometry.Poly={
         if (!Z.Util.isArrayHasData(points)) {
             return result;
         }
-        var is2D = false;
+        var is2D = false,
+            isSimplify = this.getLayer() && this.getLayer().options['enableSimplify'];
         for (var i=0,len=points.length;i<len;i++) {
             var p = points[i];
             if (Z.Util.isNil(p)) {
@@ -38,16 +39,20 @@ Z.Geometry.Poly={
                     }
                     p_r.push(fn(p[j]));
                 }
-                var simplifiedPoints = Z.Simplify.simplify(p_r, 2, false);
-                result.push(simplifiedPoints);
+
+                if (isSimplify) {
+                    p_r = Z.Simplify.simplify(p_r, 2, false);
+                }
+                result.push(p_r);
             } else {
                 var pp = fn(p);//map._transformToViewPoint(p);
                 result.push(pp);
             }
         }
         if (!is2D) {
-            var simpliedResult = Z.Simplify.simplify(result, 2, false);
-            return simpliedResult;
+            if (isSimplify) {
+                result = Z.Simplify.simplify(result, 2, false);
+            }
         }
         return result;
     },
