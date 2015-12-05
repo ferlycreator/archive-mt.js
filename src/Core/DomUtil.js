@@ -268,7 +268,7 @@ Z.DomUtil = {
      * @return {Object} 屏幕坐标
      */
     getEventPagePoint:function(ev) {
-        ev = window.event || ev;
+        ev = ev || window.event;
         if(ev.pageX || ev.pageY){
             return {x:ev.pageX, y:ev.pageY};
         }else{

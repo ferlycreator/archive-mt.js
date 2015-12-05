@@ -14,7 +14,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
 
     remove:function() {
         var map = this.getMap();
-        map.off('_moveend _resize _zoomend',this.rend,this);
+        map.off('_moveend _resize _zoomend',this._onMapEvent,this);
         if (this._onMapMoving) {
             map.off('_moving',this._onMapMoving,this);
         }
@@ -60,10 +60,15 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
             this._createCanvas();
         }
 
+        if (!this._tileRended) {
+            this._tileRended = {};
+        }
+        var tileRended = this._tileRended;
+        this._tileRended = {};
+
         var tiles = tileGrid['tiles'],
             tileCache = this._tileCache,
-            tileSize = this._layer._getTileSize(),
-            tileRended = this._tileRended = {};
+            tileSize = this._layer._getTileSize();
 
         this._canvasFullExtent =  this.getMap()._getViewExtent();
         //遍历瓦片
@@ -210,12 +215,12 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
 
     _registerEvents:function() {
         var map = this.getMap();
-        map.on('_moveend _resize _zoomend',this.rend,this);
+        map.on('_moveend _zoomend _resize',this._onMapEvent,this);
         if (this._layer.options['rendWhenPanning']) {
         var rendSpan = this._layer.options['rendSpanWhenPanning'];
             if (Z.Util.isNumber(rendSpan) && rendSpan >= 0) {
                 if (rendSpan > 0) {
-                    this._onMapMoving = Z.Util.throttle(this.rend,1,this);
+                    this._onMapMoving = Z.Util.throttle(this.rend,rendSpan,this);
                 } else {
                     this._onMapMoving = this.rend;
                 }
@@ -223,6 +228,15 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
             }
         }
 
+    },
+
+    _onMapEvent:function(param) {
+        if (param['type'] === '_moveend' || param['type'] === '_zoomend') {
+            this.rend();
+        } else if (param['type'] === '_resize') {
+            this._resizeCanvas();
+            this.rend();
+        }
     },
 
     _fireLoadedEvent:function() {

@@ -120,9 +120,17 @@ Z.Canvas = {
         ctx['maptalks-img-smoothing-disabled'] = false;
     },
 
+    /*disableImageSmoothing:function(ctx) {
+
+        ctx.mozImageSmoothingEnabled = false;
+        ctx.webkitImageSmoothingEnabled = false;
+        ctx.msImageSmoothingEnabled = false;
+        ctx.imageSmoothingEnabled = false;
+    },*/
     image:function(ctx, pt, img, width, height) {
         pt = pt.round();
         var x=pt.x,y=pt.y;
+        // Z.Canvas.disableImageSmoothing(ctx);
         if (Z.Util.isNumber(width) && Z.Util.isNumber(height)) {
             ctx.drawImage(img,x,y,width,height);
         } else {
