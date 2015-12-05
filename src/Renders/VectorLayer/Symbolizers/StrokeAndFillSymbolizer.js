@@ -111,7 +111,7 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
             }
         }
         var resources = Z.Util.extend({}, this._rendResources);
-        resources['context'] = [p].concat(context.splice(1));
+        resources['context'] = [p].concat(context.slice(1));
 
         return resources;
     },
