@@ -147,6 +147,14 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         this.map.config({'doubleClickZoom':true});
     },
 
+    _addGeometryToStage:function(geometry) {
+        var drawLayer = this._getDrawLayer();
+        geometry.isEditing = function() {
+            return true;
+        };
+        drawLayer.addGeometry(geometry);
+    },
+
     _clickForPoint: function(param) {
         var geometry = new Z.Marker(param['coordinate']);
         if (this.symbol) {
@@ -198,18 +206,15 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         var containerPoint = this._getMouseContainerPoint(param);
         if (!this._isValidContainerPoint(containerPoint)) {return;}
         var coordinate = this._containerPointToLonlat(containerPoint);
-        var drawLayer = this._getDrawLayer();
+        // var drawLayer = this._getDrawLayer();
         var path = this._getLonlats();
         if (path.length === 1) {
             path.push(coordinate);
-             drawLayer.addGeometry(this.geometry);
+            this._addGeometryToStage(this.geometry);
         } else {
             path[path.length-1] = coordinate;
-            //path.push(coordinate);
         }
-        // this.drawToolLayer.removeGeometry(this.geometry);
         this._setLonlats(path);
-        // this.drawToolLayer.addGeometry(this.geometry);
     },
 
     _dblclickForPath:function(param) {
@@ -244,11 +249,10 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
             if (symbol) {
                 this.geometry.setSymbol(symbol);
             }
-            this.drawToolLayer.addGeometry(this.geometry);
+            this._addGeometryToStage(this.geometry);
         } else {
             this.geometry.setCoordinates(path);
         }
-        //<--
         this._endDraw(param);
     },
 
@@ -258,7 +262,6 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         function genGeometry(coordinate) {
             var symbol = me.getSymbol();
             var geometry = me.geometry;
-            var drawLayer = me._getDrawLayer();
             var _map = me.map;
             var center;
             switch (me.mode) {
@@ -266,7 +269,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
                 if (!geometry) {
                     geometry = new Z.Circle(coordinate,0);
                     geometry.setSymbol(symbol);
-                    drawLayer.addGeometry(geometry);
+                    me._addGeometryToStage(geometry);
                     break;
                 }
                 center =geometry.getCenter();
@@ -277,12 +280,12 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
                 if (!geometry) {
                     geometry = new Z.Ellipse(coordinate,0,0);
                     geometry.setSymbol(symbol);
-                    drawLayer.addGeometry(geometry);
+                    me._addGeometryToStage(geometry);
                     break;
                 }
                 center = geometry.getCenter();
-                var rx = _map.computeDistance(center,{x:coordinate.x, y:center.y});
-                var ry = _map.computeDistance(center,{x:center.x, y:coordinate.y});
+                var rx = _map.computeDistance(center,new Z.Coordinate({x:coordinate.x, y:center.y}));
+                var ry = _map.computeDistance(center,new Z.Coordinate({x:center.x, y:coordinate.y}));
                 geometry.setWidth(rx * 2);
                 geometry.setHeight(ry * 2);
             break;
@@ -290,12 +293,12 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
                 if (!geometry) {
                     geometry = new Z.Rectangle(coordinate,0,0);
                     geometry.setSymbol(symbol);
-                    drawLayer.addGeometry(geometry);
+                    me._addGeometryToStage(geometry);
                     break;
                 }
                 var nw =geometry.getCoordinates();
-                var width = _map.computeDistance(nw,{x:coordinate.x, y:nw.y});
-                var height = _map.computeDistance(nw,{x:nw.x, y:coordinate.y});
+                var width = _map.computeDistance(nw,new Z.Coordinate({x:coordinate.x, y:nw.y}));
+                var height = _map.computeDistance(nw,new Z.Coordinate({x:nw.x, y:coordinate.y}));
                 geometry.setWidth(width);
                 geometry.setHeight(height);
             break;
