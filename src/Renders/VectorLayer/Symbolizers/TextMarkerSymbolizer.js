@@ -25,7 +25,6 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
         this.strokeAndFill = this.translateStrokeAndFill(this.style);
         var props = this.geometry.getProperties();
         this.textContent = Z.StringUtil.content(this.style['textName'], props);
-        // this.textSize = Z.StringUtil.stringLength(this.textContent,this.style['textFaceName'],this.style['textSize']);
         this.textDesc = Z.StringUtil.splitTextToRow(this.textContent, this.style);
     },
 

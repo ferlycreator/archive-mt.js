@@ -963,11 +963,9 @@ Z['Map']=Z.Map=Z.Class.extend({
     offsetPlatform:function(offset) {
         if (!offset) {
             return this._mapViewPoint;
-
         } else {
-            var _offset = offset.round();
-            this._mapViewPoint = this._mapViewPoint.add(_offset);
-            this._getRender().offsetPlatform(_offset);
+            this._mapViewPoint = this._mapViewPoint.add(offset);
+            this._getRender().offsetPlatform(offset);
             return this;
         }
     },

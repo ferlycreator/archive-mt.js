@@ -181,6 +181,7 @@ Z.render.map.Render = Z.Class.extend({
         }
     },
 
+
     _drawLayerCanvasImage:function(layerImage, mwidth, mheight) {
         if (mwidth === 0 || mheight === 0){
             return;
@@ -189,13 +190,6 @@ Z.render.map.Render = Z.Class.extend({
         var point = layerImage['point'];
         var size = layerImage['size'];
 
-        var layer = layerImage['layer'];
-        var enableImageSmoothing = (!(layer instanceof Z.DynamicLayer) && (layer instanceof Z.TileLayer));
-        if (enableImageSmoothing) {
-            Z.Canvas.enableImageSmoothing(this._context);
-        } else {
-            Z.Canvas.disableImageSmoothing(this._context);
-        }
         var canvasImage = layerImage['image'];
         if (Z.runningInNode) {
             if (canvasImage.toBuffer) {

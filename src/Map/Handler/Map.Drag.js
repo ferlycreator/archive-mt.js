@@ -11,13 +11,7 @@ Z.Map.Drag = Z.Handler.extend({
         var map = this.target;
         if (!map) {return;}
         this.dom = map._containerDOM;
-        if (!Z.Browser.mobile) {
-            this._dragHandler = new Z.Handler.Drag(this.dom);
-        }
-        //TODO 其它触摸屏幕
-//            else {
-//                this['draggable'] = new Z.Handler.Touch(this.dom);
-//            }
+        this._dragHandler = new Z.Handler.Drag(this.dom);
         map.on("mousedown", this._onMouseDown,this);
 
         this._dragHandler.on("dragstart", this._onDragStart, this);

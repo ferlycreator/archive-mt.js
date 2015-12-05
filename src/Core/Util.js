@@ -314,7 +314,12 @@ Z.Util = {
      * @return {Number} 处理后的坐标值
      */
     canvasRound:function(num) {
-        return (0.5 + num) << 0; //结果 + 0.5 据说能变得平滑
+        if (num > 0) {
+            return (0.5 + num) << 0;
+        } else {
+            return (num - 0.5) << 0;
+        }
+
     },
 
     /**

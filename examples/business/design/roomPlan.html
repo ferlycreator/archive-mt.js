@@ -275,10 +275,12 @@
         });
     }
 
-    //添加标注图片时间到map上
+    //添加标注图片事件到map上
     function addEventToMap(param) {
         markerFile = param.target.src;
-        mapObj.on('click', markerPicLabel);
+        if(markerFile) {
+            mapObj.on('click', markerPicLabel);
+        }
     }
 
     //标注图片

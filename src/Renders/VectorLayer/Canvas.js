@@ -28,7 +28,7 @@ Z.Canvas = {
     },
 
     prepareCanvasFont:function(ctx, style) {
-        ctx.font='bold '+style['textSize']+'px '+style['textFaceName'];
+        ctx.font=style['textSize']+'px '+style['textFaceName'];
         var fill=style['textFill'];
         if (!fill) {return;}
         var fillOpacity = style['textOpacity'];
@@ -120,27 +120,13 @@ Z.Canvas = {
         ctx['maptalks-img-smoothing-disabled'] = false;
     },
 
-    disableImageSmoothing:function(ctx) {
-
-        ctx.mozImageSmoothingEnabled = false;
-        ctx.webkitImageSmoothingEnabled = false;
-        ctx.msImageSmoothingEnabled = false;
-        ctx.imageSmoothingEnabled = false;
-    },
-
-    enableImageSmoothing:function(ctx) {
-        ctx.mozImageSmoothingEnabled = true;
-        ctx.webkitImageSmoothingEnabled = true;
-        ctx.msImageSmoothingEnabled = true;
-        ctx.imageSmoothingEnabled = true;
-    },
-
     image:function(ctx, pt, img, width, height) {
+        pt = pt.round();
         var x=pt.x,y=pt.y;
         if (Z.Util.isNumber(width) && Z.Util.isNumber(height)) {
             ctx.drawImage(img,x,y,width,height);
         } else {
-            ctx.drawImage(img,pt.x,pt.y);
+            ctx.drawImage(img,x,y);
         }
     },
 
@@ -163,18 +149,20 @@ Z.Canvas = {
     _textOnLine: function(ctx, text, pt, textHaloRadius, textHaloFill) {
         //http://stackoverflow.com/questions/14126298/create-text-outline-on-canvas-in-javascript
         //根据text-horizontal-alignment和text-vertical-alignment计算绘制起始点偏移量
-        pt = pt.add(new Z.Point(0,3));
+        pt = pt.add(new Z.Point(0,3)).round();
+        var x = pt.x, y=pt.y;
         if (textHaloRadius) {
             ctx.miterLimit = 2;
             ctx.lineJoin = 'circle';
             var lineWidth=(textHaloRadius*2-1);
-            ctx.lineWidth = lineWidth;
+            ctx.lineWidth = Z.Util.canvasRound(lineWidth);
             ctx.strokeStyle =Z.Canvas.getRgba(textHaloFill, 1);
-            ctx.strokeText(text, pt.x, pt.y);
+            ctx.strokeText(text, x, y);
             ctx.lineWidth = 1;
             ctx.miterLimit = 10; //default
         }
-        ctx.fillText(text, pt.x, pt.y);
+
+        ctx.fillText(text, x, y);
     },
 
 
@@ -238,10 +226,7 @@ Z.Canvas = {
 
         var isDashed = Z.Util.isArrayHasData(lineDashArray);
         for (var i=0, len=points.length; i<len;i++) {
-            var point = new Z.Point(
-                Z.Util.canvasRound(points[i].x),
-                Z.Util.canvasRound(points[i].y)
-            );
+            var point = points[i].round();
             if (!isDashed || context.setLineDash) {//ie9以上浏览器
                 if (i === 0) {
                     context.moveTo(point.x, point.y);
@@ -253,10 +238,7 @@ Z.Canvas = {
                     if(i === len-1) {
                         break;
                     }
-                    var nextPoint = new Z.Point(
-                        Z.Util.canvasRound(points[i+1].x),
-                        Z.Util.canvasRound(points[i+1].y)
-                    );
+                    var nextPoint = points[i+1].round();
                     drawDashLine(point, nextPoint, lineDashArray);
 
                 }
@@ -281,11 +263,11 @@ Z.Canvas = {
             context.beginPath();
             context.strokeStyle = Z.Canvas.getRgba("#ffffff",0);
             for (var j = points.length - 1; j >= 0; j--) {
-                var outline = points[j];
+                var outline = points[j].round();
                 if (j === points.length - 1) {
-                    context.moveTo(Z.Util.canvasRound(outline.x), Z.Util.canvasRound(outline.y));
+                    context.moveTo(outline.x, outline.y);
                 } else {
-                    context.lineTo(Z.Util.canvasRound(outline.x),Z.Util.canvasRound(outline.y));
+                    context.lineTo(outline.x,outline.y);
                 }
             }
             context.closePath();
@@ -298,9 +280,18 @@ Z.Canvas = {
 
     bezierCurve:function(context, points, lineDashArray) {
         context.beginPath(points);
-        context.moveTo(points[0].x,points[0].y);
-        context.bezierCurveTo(points[1].x,points[1].y,points[2].x,points[2].y,points[3].x,points[3].y);
+        var start = points[0].round();
+        context.moveTo(start.x,start.y);
+        Z.Canvas.bezierCurveTo.apply(Z.Canvas, [context].concat(points.splice(1)));
+        // context.bezierCurveTo(points[1].x,points[1].y,points[2].x,points[2].y,points[3].x,points[3].y);
         context.stroke();
+    },
+
+    bezierCurveTo:function(ctx, p1, p2, p3) {
+        p1 = p1.round();
+        p2 = p2.round();
+        p3 = p3.round();
+        ctx.bezierCurveTo(p1.x,p1.y,p2.x,p2.y,p3.x,p3.y);
     },
 
     //各种图形的绘制方法
@@ -314,17 +305,18 @@ Z.Canvas = {
            ctx.beginPath();
            //从椭圆的左端点开始顺时针绘制四条三次贝塞尔曲线
            ctx.moveTo(x - a, y);
-           ctx.bezierCurveTo(x - a, y - oy, x - ox, y - b, x, y - b);
-           ctx.bezierCurveTo(x + ox, y - b, x + a, y - oy, x + a, y);
-           ctx.bezierCurveTo(x + a, y + oy, x + ox, y + b, x, y + b);
-           ctx.bezierCurveTo(x - ox, y + b, x - a, y + oy, x - a, y);
+           Z.Canvas.bezierCurveTo(ctx, new Z.Point(x - a, y - oy), new Z.Point(x - ox, y - b), new Z.Point(x, y - b));
+           Z.Canvas.bezierCurveTo(ctx, new Z.Point(x + ox, y - b), new Z.Point(x + a, y - oy), new Z.Point(x + a, y));
+           Z.Canvas.bezierCurveTo(ctx, new Z.Point(x + a, y + oy), new Z.Point(x + ox, y + b), new Z.Point(x, y + b));
+           Z.Canvas.bezierCurveTo(ctx, new Z.Point(x - ox, y + b), new Z.Point(x - a, y + oy), new Z.Point(x - a, y));
            ctx.closePath();
            ctx.stroke();
         }
+        pt = pt.round();
         if (size['width'] === size['height']) {
             //如果高宽相同,则直接绘制圆形, 提高效率
             ctx.beginPath();
-            ctx.arc(pt.x,pt.y,size['width'],0,2*Math.PI);
+            ctx.arc(pt.x,pt.y,Z.Util.canvasRound(size['width']),0,2*Math.PI);
             ctx.stroke();
         } else {
             bezierEllipse(pt.x,pt.y,size["width"],size["height"]);
@@ -333,8 +325,9 @@ Z.Canvas = {
     },
 
     rectangle:function(ctx, pt, size) {
+        pt = pt.round();
         ctx.beginPath();
-        ctx.rect(Z.Util.canvasRound(pt.x), Z.Util.canvasRound(pt.y),
+        ctx.rect(pt.x, pt.y,
             Z.Util.canvasRound(size['width']),Z.Util.canvasRound(size['height']));
         ctx.stroke();
     },
@@ -369,6 +362,7 @@ Z.Canvas = {
             ctx.restore();
             ctx.stroke();
         }
+        pt = pt.round();
         sector(ctx,pt.x,pt.y,size,startAngle,endAngle);
     }
 };
