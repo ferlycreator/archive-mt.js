@@ -83,6 +83,7 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
 
     _getRenderResources:function() {
         if (!this._rendResources) {
+            //render resources geometry returned are based on view points.
             this._rendResources = this.geometry._getRenderCanvasResources();
         }
         var matrix;
@@ -93,11 +94,13 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
         }
 
         var context =this._rendResources['context'];
+        var transContext = [];
         //refer to Geometry.Canvas
         var points = context[0];
-        var p;
+        var containerPoints;
+        //convert view points to container points needed by canvas
         if (Z.Util.isArray(points)) {
-            p = Z.Util.eachInArray(points, this, function(point) {
+            containerPoints = Z.Util.eachInArray(points, this, function(point) {
                 var cp = map._viewPointToContainerPoint(point);
                 if (matrix) {
                     return matrix.applyToPointInstance(cp);
@@ -105,13 +108,37 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
                 return cp;
             });
         } else if (points instanceof Z.Point) {
-            p = map._viewPointToContainerPoint(points);
+            containerPoints = map._viewPointToContainerPoint(points);
             if (matrix) {
-                p = matrix.applyToPointInstance(points);
+                containerPoints = matrix.applyToPointInstance(points);
             }
         }
+        transContext.push(containerPoints);
+        var scale;
+
+        for (var i = 1, len = context.length;i<len;i++) {
+            if (matrix) {
+                //scale width and height if geometry has
+                if (Z.Util.isNumber(context[i]) || (context[i] instanceof Z.Size)) {
+                    if (matrix && !scale) {
+                        scale = matrix.decompose()['scale'];
+                    }
+                    if (Z.Util.isNumber(context[i])) {
+                        transContext.push(scale.x*context[i]);
+                    } else {
+                        transContext.push(new Z.Size(context[i].width*scale.x, context[i].height*scale.y));
+                    }
+                } else {
+                    transContext.push(context[i]);
+                }
+            } else {
+                transContext.push(context[i]);
+            }
+
+        }
+
         var resources = Z.Util.extend({}, this._rendResources);
-        resources['context'] = [p].concat(context.slice(1));
+        resources['context'] = transContext;
 
         return resources;
     },
