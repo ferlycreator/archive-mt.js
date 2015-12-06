@@ -250,7 +250,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
                 return;
             }
             var painter = geo._getPainter();
-            if (painter.hasPointSymbolizer()) {
+            if (me._shouldEcoTransform && painter.hasPointSymbolizer()) {
                 me._shouldEcoTransform = false;
             }
             painter.paint();
