@@ -9,7 +9,7 @@ Z.Map.include({
          * @return {Object} params: {'target':this}
          */
         me._fireEvent('zoomstart');
-        var zoomDuration = this.options['zoomAnimationDuration']*(endScale - startScale)/endScale;
+        var zoomDuration = this.options['zoomAnimationDuration']*Math.abs(endScale - startScale)/Math.abs(endScale-1);
         this._getRender().onZoomStart(startScale, endScale, focusPos, zoomDuration, this._onZoomEnd, this, [nextZoomLevel]);
     },
 

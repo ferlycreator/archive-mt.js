@@ -12,6 +12,12 @@ Z['Map']=Z.Map=Z.Class.extend({
     options:{
         "zoomAnimation" : true,
         "zoomAnimationDuration" : 300,
+        //controls whether other layers than base tilelayer will show during zoom animation.
+        "layerZoomAnimation" : true,
+
+        //economically transform, whether point symbolizers transforms during transformation (eg. zoom animation)
+        //set to true can prevent drastic low performance when number of point symbolizers is large.
+        "ecoTransform" : false,
 
         "panAnimation":true,
         //每秒滑动的像素距离

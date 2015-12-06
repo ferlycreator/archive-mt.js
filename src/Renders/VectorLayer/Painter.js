@@ -23,10 +23,18 @@ Z.Painter = Z.Class.extend({
         var symbolizers = [];
         for (var i = this.registerSymbolizers.length - 1; i >= 0; i--) {
             if (this.registerSymbolizers[i].test(this.geometry, symbol)) {
-                symbolizers.push(new this.registerSymbolizers[i](symbol, this.geometry));
+                var symbolizer = new this.registerSymbolizers[i](symbol, this.geometry);
+                symbolizers.push(symbolizer);
+                if (symbolizer instanceof Z.PointSymbolizer) {
+                    this._hasPointSymbolizer = true;
+                }
             }
         }
         return symbolizers;
+    },
+
+    hasPointSymbolizer:function() {
+        return this._hasPointSymbolizer;
     },
 
     _getSymbol:function() {
