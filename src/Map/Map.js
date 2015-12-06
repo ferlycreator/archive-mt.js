@@ -288,6 +288,30 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     /**
+     * 获取与scale最接近的缩放级别
+     * @param  {Number} scale    [description]
+     * @param  {[type]} fromZoom [description]
+     * @return {[type]}          [description]
+     */
+    getZoomForScale:function(scale, fromZoom) {
+        if (Z.Util.isNil(fromZoom)) {
+            fromZoom = this.getZoom();
+        }
+        var res = this._getResolution(fromZoom),
+            resolutions = this._getTileConfig()['resolutions'],
+            min = Number.MAX_VALUE,
+            hit = -1;
+        for (var i = resolutions.length - 1; i >= 0; i--) {
+            var test = Math.abs(res/resolutions[i]-scale);
+            if (test < min) {
+                min = test;
+                hit = i;
+            }
+        }
+        return hit;
+    },
+
+    /**
      * 设置地图的缩放级别
      * @param {Number} z 新的缩放级别
      * @expose
@@ -978,8 +1002,11 @@ Z['Map']=Z.Map=Z.Class.extend({
      * 获取当前缩放级别的投影坐标分辨率
      * @return {Number} resolution
      */
-    _getResolution:function() {
-        return this._tileConfig.getResolution(this.getZoom());
+    _getResolution:function(zoom) {
+        if (Z.Util.isNil(zoom)) {
+            zoom = this.getZoom();
+        }
+        return this._tileConfig.getResolution(zoom);
     },
 
     /**
