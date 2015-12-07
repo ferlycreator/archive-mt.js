@@ -59,12 +59,12 @@ Z.StringUtil = {
      * @param {String} fontSize 字体大小
      * @return {maptalks.Size} size对象
      */
-    stringLength:function(text, font, fontSize) {
+    stringLength:function(text, font) {
         //TODO 该函数在非浏览器环境下无法执行
         var ruler = Z.StringUtil._getStrRuler();
-        ruler.style.fontFamily = font;
-        ruler.style.fontSize = fontSize+'px';
-        ruler.style.fontWeight = 'bold';
+        ruler.style.font = font;
+        // ruler.style.fontSize = fontSize+'px';
+        // ruler.style.fontWeight = 'bold';
         ruler.innerHTML = text;
         return new Z.Size(ruler.clientWidth, ruler.clientHeight);
     },
@@ -90,18 +90,16 @@ Z.StringUtil = {
      * @param {Number} wrapWidth 限定宽度
      * @return {String[]} 分割后的字符串数组
      */
-    splitContent: function(content, textLength, size, wrapWidth) {
-        if(!Z.Util.isString(content)) {
-            content = String(content);
-        }
+    splitContent: function(content, textLength, wrapWidth) {
         var rowNum = Math.ceil(textLength/wrapWidth);
-        var fontSize = parseInt(wrapWidth/size);
+        var avgLen = textLength / content.length;
+        var approxLen =  Math.floor(wrapWidth / avgLen);
         var result = [];
         for(var i=0;i<rowNum;i++) {
             if(i < rowNum -1 ) {
-                result.push(content.substring(i*fontSize, (i+1)*fontSize));
+                result.push(content.substring(i*approxLen, (i+1)*approxLen));
             } else {
-                result.push(content.substring(i*fontSize));
+                result.push(content.substring(i*approxLen));
             }
         }
         return result;
@@ -134,10 +132,9 @@ Z.StringUtil = {
      * @return {Object} 分割后的文本信息{rowNum: rowNum, textSize: textSize, rows: textRows};
      */
     splitTextToRow: function(text, style) {
-        var font = Z.Util.getValueOrDefault(style['textFaceName'],'arial');
-        var fontSize = Z.Util.getValueOrDefault(style['textSize'],12);
+        var font = Z.TextMarkerSymbolizer.getFont(style);
         var lineSpacing = Z.Util.getValueOrDefault(style['textLineSpacing'],0);
-        var rawTextSize = Z.StringUtil.stringLength(text,font,fontSize);
+        var rawTextSize = Z.StringUtil.stringLength(text,font);
         var textWidth = rawTextSize['width'];
         var textHeight = rawTextSize['height'];
         var wrapChar = Z.Util.getValueOrDefault(style['textWrapCharacter'],null);
@@ -153,12 +150,12 @@ Z.StringUtil = {
             for(var i=0,len=texts.length;i<len;i++) {
                 var t = texts[i];
                 //TODO stringLength是个比较昂贵的操作, 需降低其运行频率
-                var tSize = Z.StringUtil.stringLength(t,font,fontSize);
+                var tSize = Z.StringUtil.stringLength(t,font);
                 var tWidth = tSize['width'];
                 if(tWidth>wrapWidth) {
-                    var contents = Z.StringUtil.splitContent(t, tWidth, fontSize, wrapWidth);
+                    var contents = Z.StringUtil.splitContent(t, tWidth, wrapWidth);
                     for (var ii = 0; ii < contents.length; ii++) {
-                        textRows.push({'text':contents[ii],'size':Z.StringUtil.stringLength(contents[ii],font,fontSize)});
+                        textRows.push({'text':contents[ii],'size':Z.StringUtil.stringLength(contents[ii],font)});
                     }
                 } else {
                     textRows.push({'text':t,'size':tSize});
@@ -166,9 +163,9 @@ Z.StringUtil = {
             }
         } else {
             if(textWidth>wrapWidth) {
-                var splitted = Z.StringUtil.splitContent(text, textWidth, fontSize, wrapWidth);
+                var splitted = Z.StringUtil.splitContent(text, textWidth, wrapWidth);
                 for (var iii = 0; iii < splitted.length; iii++) {
-                    textRows.push({'text':splitted[iii],'size':Z.StringUtil.stringLength(splitted[iii],font,fontSize)});
+                    textRows.push({'text':splitted[iii],'size':Z.StringUtil.stringLength(splitted[iii],font)});
                 }
             } else {
                 textRows.push({'text':text,'size':rawTextSize});

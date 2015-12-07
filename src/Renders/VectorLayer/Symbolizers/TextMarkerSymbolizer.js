@@ -140,3 +140,11 @@ Z.TextMarkerSymbolizer.test=function(geometry, symbol) {
     }
     return false;
 };
+
+Z.TextMarkerSymbolizer.getFont=function(style) {
+    if (style['textFont']) {
+        return style['textFont'];
+    } else {
+        return style['textSize']+'px '+style['textFaceName'];
+    }
+};

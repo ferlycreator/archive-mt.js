@@ -28,12 +28,8 @@ Z.Canvas = {
     },
 
     prepareCanvasFont:function(ctx, style) {
-        if (style['textFont']) {
-            ctx.font=style['textFont'];
-        } else {
-            ctx.font=style['textSize']+'px '+style['textFaceName'];
-        }
-
+        var font = Z.TextMarkerSymbolizer.getFont(style);
+        ctx.font = font;
         var fill=style['textFill'];
         if (!fill) {return;}
         var fillOpacity = style['textOpacity'];

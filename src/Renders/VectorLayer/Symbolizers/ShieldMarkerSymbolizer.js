@@ -28,7 +28,6 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
         var props = this.geometry.getProperties();
         this.textContent = Z.StringUtil.content(this.style['shieldName'], props);
         this.textDesc = Z.StringUtil.splitTextToRow(this.textContent, this.style);
-        // this.textSize = Z.StringUtil.stringLength(this.textContent,this.style['textFaceName'],this.style['textSize']);
         this.shieldFileWidth = 0;
         this.shieldFileHeight = 0;
     },
