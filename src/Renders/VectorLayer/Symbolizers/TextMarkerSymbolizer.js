@@ -1,17 +1,18 @@
 Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
     defaultSymbol:{
-        "textFaceName"    : "arial",
-        "textSize"         : 10,
-        "textFill"         : "#000000",
-        "textOpacity"      : 1,
-        "textHaloFill"    : "#ffffff",
-        "textHaloRadius"  : 0,
-        "textWrapWidth"   : null,
-        "textWrapCharacter": "",
-        "textLineSpacing": 0,
+        "textFaceName"      : "arial",
+        "textSize"          : 10,
+        "textFont"          : null,
+        "textFill"          : "#000000",
+        "textOpacity"       : 1,
+        "textHaloFill"      : "#ffffff",
+        "textHaloRadius"    : 0,
+        "textWrapWidth"     : null,
+        "textWrapCharacter" : "",
+        "textLineSpacing"   : 0,
 
-        "textDx"           : 0,
-        "textDy"           : 0,
+        "textDx"            : 0,
+        "textDy"            : 0,
 
         "textHorizontalAlignment" : "middle", //left | middle | right | auto
         "textVerticalAlignment"   : "middle",   // top | middle | bottom | auto
