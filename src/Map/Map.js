@@ -221,6 +221,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         if (!center) {
             return this;
         }
+        center = new Z.Coordinate(center);
         if (!this._tileConfig || !this._loaded) {
             this._center = center;
             return this;
