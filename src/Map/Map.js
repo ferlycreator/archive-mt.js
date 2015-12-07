@@ -805,7 +805,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     _initRender:function() {
-        if (this.options['render'] === 'canvas') {
+        if (!!this._containerDOM.getContext) {
             this._render = new Z.render.map.Canvas(this);
         } else {
             this._render = new Z.render.map.Dom(this);
