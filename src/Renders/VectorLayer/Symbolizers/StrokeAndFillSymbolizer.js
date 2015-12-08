@@ -78,7 +78,7 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
         }
         var min = map.coordinateToViewPoint(new Z.Coordinate(extent['xmin'],extent['ymin'])),
             max = map.coordinateToViewPoint(new Z.Coordinate(extent['xmax'],extent['ymax']));
-        return new Z.Extent(min,max);
+        return new Z.Extent(min,max).expand(this.style['lineWidth']/2);
     },
 
     _getRenderResources:function() {
