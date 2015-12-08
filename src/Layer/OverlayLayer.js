@@ -158,6 +158,12 @@ Z.OverlayLayer=Z.Layer.extend({
      * @expose
      */
     removeGeometry:function(geometry) {
+        if (Z.Util.isArray(geometry)) {
+            for (var i = geometry.length - 1; i >= 0; i--) {
+                this.removeGeometry(geometry[i]);
+            }
+            return;
+        }
         if (!(geometry instanceof Z.Geometry)) {
             geometry = this.getGeometryById(geometry);
         }

@@ -42,9 +42,9 @@ Z.render.map.Dom = Z.render.map.Render.extend({
                 }
             }
             if (hit) {
-                map._containerDOM.style.cursor=cursor;
+                map._trySetCursor(cursor);
             } else {
-                map._containerDOM.style.cursor="default";
+                map._trySetCursor('default');
             }
         };
         map.on('_mousemove',this._onMapMouseMove,this);

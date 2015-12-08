@@ -45,10 +45,8 @@ Z.Map.EventToGeometry = Z.Handler.extend({
         if (map.isBusy() || !map._canvasLayers || map._canvasLayers.length === 0) {
             return;
         }
-        // console.log('_queryGeometries');
         var domEvent = event;//param['domEvent'];
         var eventType = domEvent.type;
-        // var mouseOffset = param['containerPoint'];//Z.DomUtil.getEventContainerPoint(domEvent, map._containerDOM);
         var containerPoint = Z.DomUtil.getEventContainerPoint(domEvent, map._containerDOM);
         var coordinate = map.containerPointToCoordinate(containerPoint);
         this.options = {
@@ -61,37 +59,41 @@ Z.Map.EventToGeometry = Z.Handler.extend({
                 clearTimeout(this._queryIdentifyTimeout);
             }
         if ('mousemove' === eventType) {
-            //mousemove才需要做15ms的判断
-            var throttle = 100;//15毫秒
             this._queryIdentifyTimeout = setTimeout(function() {
                 map.identify(me.options);
-            },throttle);
+            }, 10);
         } else {
-            //如果不是mousemove,则立即执行, 不然点击时, 只会响应mousedown, 后续的mouseup和click等都会被timeout屏蔽掉
-            // this._queryIdentifyTimeout = setTimeout(function() {
-               map.identify(me.options);
-            // },10);
+            map.identify(me.options);
         }
 
-        function fireGeometryEvent(result) {
+        function fireGeometryEvent(geometries) {
             var i,len;
-            var geometries = result;
             if(eventType === 'mousemove') {
+                var geoMap = {};
+                if (Z.Util.isArrayHasData(geometries)) {
+                    for (i = geometries.length - 1; i >= 0; i--) {
+                        geoMap[geometries[i]._getInternalId()] = geometries[i];
+                        if (geometries[i].options['cursor']) {
+                            map.setCursor(geometries[i].options['cursor']);
+                        }
+                        geometries[i]._onMouseOver(domEvent);
+                    }
+                } else {
+                    map.setCursor(null);
+                }
                 var oldTargets = me._prevMouseOverTargets;
+                me._prevMouseOverTargets = geometries;
                 if (Z.Util.isArrayHasData(oldTargets)) {
                     for(i=0,len=oldTargets.length; i<len; i++) {
                         var oldTarget = oldTargets[i];
+                        var oldTargetId = oldTargets[i]._getInternalId();
                         if(geometries && geometries.length>0) {
                             var mouseout = true;
                             /**
                             * 鼠标经过的新位置中不包含老的目标geometry
                             */
-                            for(var j=0,size=geometries.length; j<size; j++) {
-                                var geometry = geometries[j];
-                                if(oldTarget === geometry) {
-                                    mouseout = false;
-                                    break;
-                                }
+                            if (geoMap[oldTargetId]) {
+                                mouseout = false;
                             }
                             if(mouseout) {
                                 oldTarget._onMouseOut(domEvent);
@@ -101,11 +103,7 @@ Z.Map.EventToGeometry = Z.Handler.extend({
                         }
                     }
                 }
-                if(!geometries) {return;}
-                for(i=0,len=geometries.length; i<len; i++) {
-                    geometries[i]._onMouseOver(domEvent);
-                }
-                me._prevMouseOverTargets = geometries;
+
             } else {
                 if(!geometries) {return;}
                 for(i=0,len=geometries.length; i<len; i++) {

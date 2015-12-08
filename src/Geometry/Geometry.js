@@ -40,8 +40,9 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     },
 
     options:{
-        'visible':true,
-        'editable':true
+        'visible'   : true,
+        'editable'  : true,
+        'cursor'    : null
     },
 
     /**

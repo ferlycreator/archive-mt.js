@@ -37,7 +37,6 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
         var vectorArray = this._getVectorArray(style);
         var markerType = style['markerType'].toLowerCase();
         var strokeAndFill = this.strokeAndFill;
-        // var dxdy = this.getDxDy();
         Z.Canvas.setDefaultCanvasSetting(ctx);
         Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'],strokeAndFill['fill'], null);
         var j;
@@ -47,7 +46,6 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
 
         for (var i = cookedPoints.length - 1; i >= 0; i--) {
             var point = cookedPoints[i];
-            // point = point.add(dxdy);
             if (markerType === 'cross' || markerType === 'x'){
                 for (j = vectorArray.length - 1; j >= 0; j--) {
                     vectorArray[j]._add(point);

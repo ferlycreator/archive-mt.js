@@ -75,13 +75,13 @@ Z.Map.include({
             var allGeos = layers[i].getGeometries();
             for (var j=0, length = allGeos.length; j<length; j++) {
                 var geo = allGeos[j];
-                if (!geo) {
+                if (!geo || !geo.isVisible()) {
                     continue;
                 }
-                /*var pxExtent = geo._getPainter().getPixelExtent();
-                if (!pointExtent.isIntersect(pxExtent)) {
+                var pxExtent = !geo._getPainter()? null : geo._getPainter().getPixelExtent();
+                if (!pxExtent || !pxExtent.containsPoint(point)) {
                     continue;
-                }*/
+                }
                 if (geo._containsPoint(point)) {
                     hits.push(geo);
                 }

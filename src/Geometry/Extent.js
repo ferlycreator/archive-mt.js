@@ -65,6 +65,13 @@ Z['Extent']= Z.Extent =
 };
 
 Z.Extent.prototype={
+    containsPoint:function(point) {
+        if (point.x >= this['xmin'] && point.x <= this['xmax'] && point.y >= this['ymin'] && point.y <= this['ymax']) {
+            return true;
+        }
+        return false;
+    },
+
     getSize:function() {
         return new Z.Size(this.getWidth(), this.getHeight());
     },
