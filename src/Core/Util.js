@@ -309,11 +309,11 @@ Z.Util = {
     },
 
     /**
-     * canvas坐标值处理
+     * 四舍五入
      * @param  {Number} num 坐标值
      * @return {Number} 处理后的坐标值
      */
-    canvasRound:function(num) {
+    round:function(num) {
         if (num > 0) {
             return (0.5 + num) << 0;
         } else {

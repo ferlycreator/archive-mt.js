@@ -1169,9 +1169,9 @@ Z['Map']=Z.Map=Z.Class.extend({
 
     /**
      * 像素转化为距离
-     * @param  {[type]} width [description]
-     * @param  {[type]} height [description]
-     * @return {[type]}    [description]
+     * @param  {Number} width 横轴像素长度
+     * @param  {Number} height 纵轴像素长度
+     * @return {Number}    distance
      * @expose
      */
     pixelToDistance:function(width, height) {
@@ -1195,8 +1195,8 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 返回距离coordinate坐标距离为dx, dy的坐标
      * @param  {Coordinate} coordinate 坐标
-     * @param  {Number} dx         x轴上的距离, 坐标为经纬度时,单位为米, 坐标为像素时, 单位为像素
-     * @param  {Number} dy         y轴上的距离, 坐标为经纬度时,单位为米, 坐标为像素时, 单位为像素
+     * @param  {Number} dx         x轴上的距离, 地图CRS为经纬度时,单位为米, 地图CRS为像素时, 单位为像素
+     * @param  {Number} dy         y轴上的距离, 地图CRS为经纬度时,单位为米, 地图CRS为像素时, 单位为像素
      * @return {Coordinate}            新的坐标
      */
     locate:function(coordinate, dx, dy) {

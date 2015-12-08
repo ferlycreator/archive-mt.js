@@ -164,7 +164,7 @@ Z.Canvas = {
             ctx.miterLimit = 2;
             ctx.lineJoin = 'circle';
             var lineWidth=(textHaloRadius*2-1);
-            ctx.lineWidth = Z.Util.canvasRound(lineWidth);
+            ctx.lineWidth = Z.Util.round(lineWidth);
             ctx.strokeStyle =Z.Canvas.getRgba(textHaloFill, 1);
             ctx.strokeText(text, x, y);
             ctx.lineWidth = 1;
@@ -325,7 +325,7 @@ Z.Canvas = {
         if (size['width'] === size['height']) {
             //如果高宽相同,则直接绘制圆形, 提高效率
             ctx.beginPath();
-            ctx.arc(pt.x,pt.y,Z.Util.canvasRound(size['width']),0,2*Math.PI);
+            ctx.arc(pt.x,pt.y,Z.Util.round(size['width']),0,2*Math.PI);
             ctx.stroke();
         } else {
             bezierEllipse(pt.x,pt.y,size["width"],size["height"]);
@@ -337,7 +337,7 @@ Z.Canvas = {
         pt = pt.round();
         ctx.beginPath();
         ctx.rect(pt.x, pt.y,
-            Z.Util.canvasRound(size['width']),Z.Util.canvasRound(size['height']));
+            Z.Util.round(size['width']),Z.Util.round(size['height']));
         ctx.stroke();
     },
 
