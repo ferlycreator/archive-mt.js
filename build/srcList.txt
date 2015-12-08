@@ -48,7 +48,6 @@
 ../src/Geometry/Geometry.Poly.js
 ../src/Geometry/Marker.js
 ../src/Geometry/Label.js
-../src/Map/UI/Label.Edit.js
 ../src/Geometry/Polygon.js
 ../src/Geometry/LineString.js
 ../src/Geometry/Ellipse.js
@@ -62,6 +61,7 @@
 ../src/Geometry/MultiPolygon.js
 ../src/Geometry/GeoJSON.js
 ../src/Geometry/Editor/Editor.js
+../src/Geometry/Editor/Label.Edit.js
 ../src/Map/Map.js
 ../src/Map/Map.Animation.js
 ../src/Map/Map.Pan.js
