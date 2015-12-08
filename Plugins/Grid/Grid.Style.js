@@ -117,7 +117,7 @@ maptalks.GridStyle = maptalks.Class.extend({
                  icon: 'images/bold.png',
                  trigger: 'click',
                  click : function(){
-                     me._setGridStyle('textFaceName','bold 20px arial');
+                     me._setGridStyle('textFont','bold');
                  }
             },
             {
@@ -125,7 +125,7 @@ maptalks.GridStyle = maptalks.Class.extend({
                  icon: 'images/italic.png',
                  trigger: 'click',
                  click : function(){
-                     me._setGridStyle('textFaceName','italic 20px arial');
+                     me._setGridStyle('textFont','italic');
                  }
             },
             {

@@ -69,20 +69,22 @@ maptalks.Grid = maptalks.Class.extend({
     },
 
     /**
-     * 将grid添加到对象上
+     * add grid to layer.
      * @param {maptalks.Layer} layer
      */
     addTo: function (layer) {
         if(!layer) {return;}
         this._layer = layer;
-        this._map = this._layer.getMap();
+        var map = this._layer.getMap();
         this._grid = this._createGrid();
         this._addToLayer(this._grid,true);
+        //create adjustment layer
+        this._createAdjustLayer(map);
         return this;
     },
 
     /**
-     * 设置属性
+     * set options.
      * @param {Object} options
      * @expose
      */
@@ -126,6 +128,7 @@ maptalks.Grid = maptalks.Class.extend({
         this._adjustDatasetForRow(newDataset.length, lastDataset);
         this._grid = startDataset.concat(newDataset).concat(lastDataset);
         this._rowNum +=newDataset.length;
+        //添加行底部拉伸线
         return this;
     },
 
@@ -203,7 +206,7 @@ maptalks.Grid = maptalks.Class.extend({
         delete this._grid;
     },
 
-    _addToLayer: function(grid,init) {
+    _addToLayer: function(grid, init) {
         var me = this;
         for(var i=0,len=grid.length;i<len;i++) {
             var row = grid[i];
@@ -397,7 +400,7 @@ maptalks.Grid = maptalks.Class.extend({
             delete selectDom;
             me.cell.setContent(selectOption.text);
             //将数据填充到列
-            me._getColData(me.cell);
+            me._setColData(me.cell);
         });
         maptalks.DomUtil.on(selectDom, 'mouseout', function(param){
             maptalks.DomUtil.removeDomNode(me.cell._container);
@@ -407,7 +410,7 @@ maptalks.Grid = maptalks.Class.extend({
         return selectDom;
     },
 
-    _getColData: function(cell) {
+    _setColData: function(cell) {
         var dataIndex = cell['dataIndex'];
         var colNum = cell._col;
         var newValues = [];
@@ -609,6 +612,49 @@ maptalks.Grid = maptalks.Class.extend({
         var coordinate = this.options['position'];
         var label = new maptalks.Label(text,coordinate,labelOptions);
         return label;
+    },
+
+    _createAdjustLayer: function(map) {
+        var adjustLayerId = 'grid_adjustment_layer';
+        this._adjustLayer = map.getLayer(adjustLayerId);
+        if(!this._adjustLayer) {
+            this._adjustLayer = new maptalks.VectorLayer(adjustLayerId);
+            map.addLayer(this._adjustLayer);
+//            this._adjustLayer.bringToBack();
+        }
+        this._adjustRows = new Array();
+        this._adjustCols = new Array();
+        var startPoint = this.options['position'];
+        for(var i=0,len=this._grid.length;i<len;i++) {
+            var row = this._grid[i];
+            var cell = row[0];
+            var rowLine = this._createAdjustLineForRow(map,cell,startPoint);
+            this._adjustRows.push(rowLine);
+        }
+        this._adjustLayer.addGeometry(this._adjustRows);
+//        this._adjustLayer.addGeometry(this.adjustCols);
+    },
+
+    _createAdjustLineForRow(map,cell,startPoint) {
+        var size = cell.getSize();
+        var symbol = cell.getSymbol(),
+            dx = symbol['textDx'],
+            dy = symbol['textDy'];
+        var leftPoint = map.locate(startPoint,
+                        -map.pixelToDistance(size['width']/2,0),
+                        -map.pixelToDistance(0,size['height']/2+dy));
+        var rightPoint = map.locate(startPoint,
+                        map.pixelToDistance(this._width-size['width']/2,0),
+                        -map.pixelToDistance(0,size['height']/2+dy));
+        var line = new maptalks.LineString([leftPoint,rightPoint],{draggable: true,cursor: 's-resize'});
+        var symbol = {
+            'lineColor' : '#ff00ff',
+            'lineWidth' : 1,
+            'lineDasharray' : null,//线形
+            'lineOpacity' : 0.8
+        };
+        line.setSymbol(symbol);
+        return line;
     },
 
     //TODO 临时方法,提供label的dx/dy调整,待geometry提供类似方法
