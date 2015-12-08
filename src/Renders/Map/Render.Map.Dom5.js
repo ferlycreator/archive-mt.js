@@ -29,18 +29,20 @@ Z.render.map.Dom = Z.render.map.Render.extend({
         this._onMapMouseMove=function(param) {
             var vp = map._containerPointToViewPoint(param['containerPoint']);
             var layers = map.getLayers();
-            var hit = false;
-            for (var i = 0; i < layers.length; i++) {
+            var hit = false,
+                cursor;
+            for (var i = layers.length - 1; i >= 0; i--) {
                 var layer = layers[i];
                 if (layer instanceof Z.VectorLayer && layer.isCanvasRender()) {
-                    if (layer._getRender().hitDetect(vp)) {
+                    if (layer.options['cursor'] !== 'default' && layer._getRender().hitDetect(vp)) {
+                        cursor = layer.options['cursor'];
                         hit = true;
                         break;
                     }
                 }
             }
             if (hit) {
-                map._containerDOM.style.cursor="pointer";
+                map._containerDOM.style.cursor=cursor;
             } else {
                 map._containerDOM.style.cursor="default";
             }

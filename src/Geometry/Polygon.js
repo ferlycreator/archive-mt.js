@@ -1,4 +1,4 @@
-/**
+ /**
  * 多边形类
  * @class maptalks.Polygon
  * @extends maptalks.Vector
@@ -54,17 +54,22 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
         }
         var rings = Z.GeoJSON.fromGeoJSONCoordinates(coordinates);
         var len = rings.length;
-        this.points = this._trimRing(rings[0]);
-        if (len > 1) {
-            var holes = [];
-            for (var i=1; i<len;i++) {
-                if (!rings[i]) {
-                    continue;
+        if (rings[0] instanceof Z.Coordinate) {
+            this.points = this._trimRing(rings);
+        } else {
+            this.points = this._trimRing(rings[0]);
+            if (len > 1) {
+                var holes = [];
+                for (var i=1; i<len;i++) {
+                    if (!rings[i]) {
+                        continue;
+                    }
+                    holes.push(this._trimRing(rings[i]));
                 }
-                holes.push(this._trimRing(rings[i]));
+                this.holes = holes;
             }
-            this.holes = holes;
         }
+
         this._projectRings();
     },
 

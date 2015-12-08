@@ -12,6 +12,12 @@ Z['Map']=Z.Map=Z.Class.extend({
     options:{
         "zoomAnimation" : true,
         "zoomAnimationDuration" : 300,
+        //controls whether other layers than base tilelayer will show during zoom animation.
+        "layerZoomAnimation" : true,
+
+        //economically transform, whether point symbolizers transforms during transformation (eg. zoom animation)
+        //set to true can prevent drastic low performance when number of point symbolizers is large.
+        "ecoTransform" : false,
 
         "panAnimation":true,
         //每秒滑动的像素距离
@@ -215,6 +221,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         if (!center) {
             return this;
         }
+        center = new Z.Coordinate(center);
         if (!this._tileConfig || !this._loaded) {
             this._center = center;
             return this;
@@ -285,6 +292,30 @@ Z['Map']=Z.Map=Z.Class.extend({
      */
     getZoom:function() {
         return this._zoomLevel;
+    },
+
+    /**
+     * 获取与scale最接近的缩放级别
+     * @param  {Number} scale    [description]
+     * @param  {[type]} fromZoom [description]
+     * @return {[type]}          [description]
+     */
+    getZoomForScale:function(scale, fromZoom) {
+        if (Z.Util.isNil(fromZoom)) {
+            fromZoom = this.getZoom();
+        }
+        var res = this._getResolution(fromZoom),
+            resolutions = this._getTileConfig()['resolutions'],
+            min = Number.MAX_VALUE,
+            hit = -1;
+        for (var i = resolutions.length - 1; i >= 0; i--) {
+            var test = Math.abs(res/resolutions[i]-scale);
+            if (test < min) {
+                min = test;
+                hit = i;
+            }
+        }
+        return hit;
     },
 
     /**
@@ -774,7 +805,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     _initRender:function() {
-        if (this.options['render'] === 'canvas') {
+        if (!!this._containerDOM.getContext) {
             this._render = new Z.render.map.Canvas(this);
         } else {
             this._render = new Z.render.map.Dom(this);
@@ -978,8 +1009,11 @@ Z['Map']=Z.Map=Z.Class.extend({
      * 获取当前缩放级别的投影坐标分辨率
      * @return {Number} resolution
      */
-    _getResolution:function() {
-        return this._tileConfig.getResolution(this.getZoom());
+    _getResolution:function(zoom) {
+        if (Z.Util.isNil(zoom)) {
+            zoom = this.getZoom();
+        }
+        return this._tileConfig.getResolution(zoom);
     },
 
     /**

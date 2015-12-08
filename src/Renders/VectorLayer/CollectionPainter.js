@@ -93,5 +93,14 @@ Z.CollectionPainter=Z.Class.extend({
             result = result.concat(painter.getSvgDom());
         });
         return result;
+    },
+
+    hasPointSymbolizer:function() {
+        this._eachPainter(function(painter) {
+            if (painter.hasPointSymbolizer()) {
+                return true;
+            }
+        });
+        return false;
     }
 });

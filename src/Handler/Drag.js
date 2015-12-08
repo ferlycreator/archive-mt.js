@@ -71,6 +71,9 @@ Z.Handler.Drag = Z.Handler.extend({
     },
 
     onMouseMove:function(event) {
+        if ( event.touches && event.touches.length > 1) {
+            return;
+        }
         var dom = this.dom;
         Z.DomUtil.preventDefault(event);
         var actual = event.touches ? event.touches[0] : event;

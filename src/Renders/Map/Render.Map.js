@@ -5,51 +5,45 @@ Z.render.map={};
  */
 Z.render.map.Render = Z.Class.extend({
 
-    onZoomStart:function(scale, transOrigin, fn, context, args) {
+    onZoomStart:function(startScale, endScale, transOrigin, duration, fn, context, args) {
         var map = this.map;
         if (Z.Browser.ielt9) {
             setTimeout(function() {
                 fn.apply(context, args);
-            },map.options['zoomAnimationDuration']);
+            },duration);
             return;
         }
-        var r = Z.Browser.retina?2:1;
-        var mapTransOrigin = transOrigin.multi(r);
+
 
         this._clearCanvas();
         if (map.options['zoomAnimation']) {
             this._context.save();
             var baseTileLayer = map.getBaseTileLayer(),
-                duration = map.options['zoomAnimationDuration'],
+                // duration = zoomDuration || map.options['zoomAnimationDuration'],
                 baseLayerImage = baseTileLayer._getRender().getCanvasImage(),
                 width = this._canvas.width,
                 height = this._canvas.height;
-            var matrix, retinaMatrix, layersToTransform;
-            if (map.options['zoomAnimationMode'] && 'performance' === map.options['zoomAnimationMode'].toLowerCase()) {
+            var layersToTransform;
+            if (!map.options['layerZoomAnimation']) {
                 //zoom animation with better performance, only animate baseTileLayer, ignore other layers.
                 this._drawLayerCanvasImage(baseLayerImage, width, height);
                 layersToTransform = [baseTileLayer];
             } else {
-                //default zoom animation, animate all the layers, may encounter performance problem.
+                //default zoom animation, animate all the layers.
                 this._rend();
             }
             Z.animation.animate(new Z.animation.zoom({
-                'scale1' : 1,
-                'scale2': scale,
+                'scale1' : startScale,
+                'scale2': endScale,
                 'duration' : duration
             }), map, function(frame) {
-                //matrix for layers to caculate points.
-                matrix = new Z.Matrix().translate(transOrigin.x, transOrigin.y)
-                    .scaleU(frame.scale).translate(-transOrigin.x,-transOrigin.y);
-                //matrix for this._context to draw layerImage.
-                retinaMatrix = new Z.Matrix().translate(mapTransOrigin.x, mapTransOrigin.y)
-                    .scaleU(frame.scale).translate(-mapTransOrigin.x,-mapTransOrigin.y).scaleU(r);
-                this.transform(matrix, retinaMatrix, layersToTransform);
+                var matrixes = this._getZoomMatrix(frame.scale, transOrigin);
+                this.transform(matrixes[0], matrixes[1], layersToTransform);
                 if (frame.state['end']) {
                     delete this._transMatrix;
                     this._clearCanvas();
                     //only draw basetile layer
-                    matrix.applyToContext(this._context);
+                    matrixes[0].applyToContext(this._context);
                     this._drawLayerCanvasImage(baseLayerImage, width, height);
                     this._canvasBackgroundImage = Z.DomUtil.copyCanvas(this._canvas);
                     this._context.restore();
@@ -61,6 +55,23 @@ Z.render.map.Render = Z.Class.extend({
             fn.apply(context, args);
         }
 
+    },
+
+    /**
+     * get Transform Matrix for zooming
+     * @param  {Number} scale  scale
+     * @param  {Point} origin Transform Origin
+     */
+    _getZoomMatrix:function(scale, origin) {
+        var r = Z.Browser.retina?2:1;
+        var mapTransOrigin = origin.multi(r);
+        //matrix for layers to caculate points.
+        var matrix = new Z.Matrix().translate(origin.x, origin.y)
+            .scaleU(scale).translate(-origin.x,-origin.y);
+        //matrix for this._context to draw layerImage.
+        var retinaMatrix = new Z.Matrix().translate(mapTransOrigin.x, mapTransOrigin.y)
+            .scaleU(scale).translate(-mapTransOrigin.x,-mapTransOrigin.y).scaleU(r);
+        return [matrix, retinaMatrix];
     },
 
     /**
@@ -77,25 +88,42 @@ Z.render.map.Render = Z.Class.extend({
         if (!retinaMatrix) {
             retinaMatrix = matrix;
         }
+        //automatically enable ecoTransform with mobile browsers.
+        var ecoTransform = Z.Browser.mobile || this.map.options['ecoTransform'];
         this._clearCanvas();
+        if (ecoTransform) {
+            this._context.save();
+            retinaMatrix.applyToContext(this._context);
+        }
+
         for (var i = 0, len=layers.length; i < len; i++) {
             if (!layers[i].isVisible()) {
                 continue;
             }
             var render = layers[i]._getRender();
             if (render) {
-                this._context.save();
-                if (layers[i] instanceof Z.TileLayer) {
-                    retinaMatrix.applyToContext(this._context);
-                } else {
-                    render.rendRealTime();
+                if (!ecoTransform) {
+                    this._context.save();
+                    if (layers[i] instanceof Z.TileLayer || render.shouldEcoTransform()) {
+                        retinaMatrix.applyToContext(this._context);
+                    } else {
+                        //redraw all the geometries with transform matrix
+                        //this may bring low performance if number of geometries is large.
+                        render.rendRealTime();
+                    }
                 }
+
                 var layerImage = render.getCanvasImage();
                 if (layerImage && layerImage['image']) {
                     this._drawLayerCanvasImage(layerImage, mwidth, mheight);
                 }
-                this._context.restore();
+                 if (!ecoTransform) {
+                    this._context.restore();
+                }
             }
+        }
+        if (ecoTransform) {
+            this._context.restore();
         }
     },
 
@@ -121,7 +149,7 @@ Z.render.map.Render = Z.Class.extend({
             if (!t) {
                 duration = map.options['panAnimationDuration'];
             } else {
-                duration = t;
+                duration = t*(Math.abs(moveOffset.x)+Math.abs(moveOffset.y))/600;
             }
             var panMoveOffset = moveOffset.multi(0.5);
             Z.animation.animate(new Z.animation.pan({

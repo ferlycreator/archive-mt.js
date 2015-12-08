@@ -1,5 +1,5 @@
 Z.Map.include({
-    _onZoomStart:function(scale,focusPos,nextZoomLevel) {
+    _onZoomStart:function(startScale, endScale, focusPos, nextZoomLevel) {
         var me = this;
         this._hideOverlayLayers();
         /**
@@ -9,7 +9,8 @@ Z.Map.include({
          * @return {Object} params: {'target':this}
          */
         me._fireEvent('zoomstart');
-        this._getRender().onZoomStart(scale,focusPos, this._onZoomEnd, this, [nextZoomLevel]);
+        var zoomDuration = this.options['zoomAnimationDuration']*Math.abs(endScale - startScale)/Math.abs(endScale-1);
+        this._getRender().onZoomStart(startScale, endScale, focusPos, zoomDuration, this._onZoomEnd, this, [nextZoomLevel]);
     },
 
     _onZoomEnd:function(nextZoomLevel) {
@@ -40,8 +41,11 @@ Z.Map.include({
         return nextZoomLevel;
     },
 
-    _zoom:function(nextZoomLevel, focusPos) {
+    _zoom:function(nextZoomLevel, focusPos, startScale) {
         if (!this.options['enableZoom']) {return;}
+        if (Z.Util.isNil(startScale)) {
+            startScale = 1;
+        }
         this._enablePanAnimation=false;
         nextZoomLevel = this._checkZoomLevel(nextZoomLevel);
         if (this._originZoomLevel === nextZoomLevel) {
@@ -71,7 +75,7 @@ Z.Map.include({
                 );
         }
         this._offsetCenterByPixel(pixelOffset);
-        this._onZoomStart(scale,focusPos,nextZoomLevel);
+        this._onZoomStart(startScale, scale, focusPos, nextZoomLevel);
     },
 
     _getZoomMillisecs:function() {

@@ -17,11 +17,13 @@ Z.animation = {
                 pause = listener(frame);
             }
             if (pause) {
+                Z.Util.cancelAnimFrame(framer._animeFrameId);
                 return;
             }
         }
         if (frame.state['playing']) {
-            Z.Util.requestAnimFrame(function() {
+            var animeFrameId = Z.Util.requestAnimFrame(function() {
+                framer._animeFrameId = animeFrameId;
                 framer._rendAnimationFrame(frame);
                 Z.animation.animate(animation, framer, listener, context);
             });
@@ -118,7 +120,7 @@ Z.animation.pan = function(options) {
     var distance = options['distance'],
         duration = options['duration']?options['duration']:1000,
         start = options['start'] ? options['start'] : Date.now();
-    var easing = Z.animation.Easing.inAndOut;
+    var easing = Z.animation.Easing.easeOut;
     var preDistance = null;
     return function(time) {
         if (time < start) {

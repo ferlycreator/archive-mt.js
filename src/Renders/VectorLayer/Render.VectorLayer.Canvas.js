@@ -136,6 +136,15 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
 
     },
 
+    //determin whether this layer can be economically transformed, ecoTransform can bring better performance.
+    //if all the geometries to rend are vectors including polygons and linestrings, ecoTransform won't reduce user experience.
+    shouldEcoTransform:function() {
+        if (Z.Util.isNil(this._shouldEcoTransform)) {
+            return true;
+        }
+        return this._shouldEcoTransform;
+    },
+
     _clearTimeout:function() {
         if (this._rendTimeout) {
             clearTimeout(this._rendTimeout);
@@ -229,6 +238,8 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
 
         var fullExtent = map._getViewExtent()/*.expand(size)*/;
         this._clearCanvas();
+        var me = this;
+        this._shouldEcoTransform = true;
         this._layer._eachGeometry(function(geo) {
             //geo的map可能为null,因为绘制为延时方法
             if (!geo || !geo.isVisible() || !geo.getMap() || !geo.getLayer() || (!geo.getLayer().isCanvasRender())) {
@@ -238,13 +249,15 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
             if (!ext || !ext.isIntersect(fullExtent)) {
                 return;
             }
-            geo._getPainter().paint();
+            var painter = geo._getPainter();
+            if (me._shouldEcoTransform && painter.hasPointSymbolizer()) {
+                me._shouldEcoTransform = false;
+            }
+            painter.paint();
         });
         this._canvasFullExtent = fullExtent;
         this._requestMapToRend();
     },
-
-
 
     _requestMapToRend:function() {
         if (!this.getMap().isBusy()) {
