@@ -1143,13 +1143,13 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     /**
-     * 在当前比例尺下将距离转换为像素
-     * @param  {double} x [description]
-     * @param  {double} y [description]
-     * @return {[type]}   [description]
+     * 在当前比例尺下将距离转换为像素长度
+     * @param  {Number} xDist x轴上的距离
+     * @param  {Number} yDist y轴上的距离
+     * @return {Size}   结果属性上的width为x轴上的像素长度, height为y轴上的像素长度
      * @expose
      */
-    distanceToPixel: function(x,y) {
+    distanceToPixel: function(xDist,yDist) {
         var tileConfig = this._getTileConfig();
         if (!tileConfig) {
             return null;
@@ -1160,18 +1160,19 @@ Z['Map']=Z.Map=Z.Class.extend({
         }
         //计算前刷新scales
         var center = this.getCenter(),
-            target = projection.locate(center,x,y),
-            res = this._getResolution();//tileConfig['resolutions'];
-        var width = !x?0:(projection.project({x:target.x,y:center.y}).x-projection.project(center).x)/res;
-        var height = !y?0:(projection.project({x:target.x,y:center.y}).y-projection.project(target).y)/res;
+            target = projection.locate(center,xDist,yDist),
+            res = this._getResolution();
+
+        var width = !xDist?0:(projection.project(new Z.Coordinate(target.x, center.y)).x-projection.project(center).x)/res;
+        var height = !yDist?0:(projection.project(new Z.Coordinate(target.x, center.y)).y-projection.project(target).y)/res;
         return new Z.Size(Math.round(Math.abs(width)), Math.round(Math.abs(height)));
     },
 
     /**
      * 像素转化为距离
-     * @param  {[type]} width [description]
-     * @param  {[type]} height [description]
-     * @return {[type]}    [description]
+     * @param  {Number} width 横轴像素长度
+     * @param  {Number} height 纵轴像素长度
+     * @return {Number}    distance
      * @expose
      */
     pixelToDistance:function(width, height) {
@@ -1186,7 +1187,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         //计算前刷新scales
         var center = this.getCenter(),
             pcenter = this._getPrjCenter(),
-            res = this._getResolution();//tileConfig['resolutions'][this.getZoom()];
+            res = this._getResolution();
         var pTarget = new Z.Coordinate(pcenter.x+width*res, pcenter.y+height*res);
         var target = projection.unproject(pTarget);
         return projection.getGeodesicLength(target,center);
@@ -1195,8 +1196,8 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 返回距离coordinate坐标距离为dx, dy的坐标
      * @param  {Coordinate} coordinate 坐标
-     * @param  {Number} dx         x轴上的距离, 坐标为经纬度时,单位为米, 坐标为像素时, 单位为像素
-     * @param  {Number} dy         y轴上的距离, 坐标为经纬度时,单位为米, 坐标为像素时, 单位为像素
+     * @param  {Number} dx         x轴上的距离, 地图CRS为经纬度时,单位为米, 地图CRS为像素时, 单位为像素
+     * @param  {Number} dy         y轴上的距离, 地图CRS为经纬度时,单位为米, 地图CRS为像素时, 单位为像素
      * @return {Coordinate}            新的坐标
      */
     locate:function(coordinate, dx, dy) {
