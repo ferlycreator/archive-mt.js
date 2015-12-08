@@ -43,7 +43,13 @@ Z.Map.include({
     /**
      * Identify
      * @member maptalks.Map
-     * @param  {opts} opts 查询参数 {coordinate: coordinate, "layers": [], "success": fn}
+     * @param  {opts} opts 查询参数 {
+     *                     //是否排除内部图层
+     *                     includeInternals : true|false,
+     *                     coordinate: coordinate,
+     *                     "layers": [],
+     *                     "success": fn
+     *                     }
      * @expose
      */
     identify: function(opts) {
@@ -69,7 +75,7 @@ Z.Map.include({
         // var pointExtent = new Z.Extent(point, point);
         for (i=0, len=layers.length; i<len; i++) {
             var layer = layers[i];
-            if(!layer || !layer.getMap() || layer.getId().indexOf(Z.internalLayerPrefix) >= 0) {
+            if(!layer || !layer.getMap() || (!opts['includeInternals'] && layer.getId().indexOf(Z.internalLayerPrefix) >= 0)) {
                 continue;
             }
             var allGeos = layers[i].getGeometries();
