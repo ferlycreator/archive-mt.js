@@ -50,6 +50,7 @@ Z.Map.EventToGeometry = Z.Handler.extend({
         var containerPoint = Z.DomUtil.getEventContainerPoint(domEvent, map._containerDOM);
         var coordinate = map.containerPointToCoordinate(containerPoint);
         this.options = {
+            'includeInternals' : true,
             'coordinate' : coordinate,
             'layers': map._canvasLayers,
             'success': Z.Util.bind(fireGeometryEvent, this)
