@@ -51,6 +51,7 @@ Z.Geometry.Drag = Z.Handler.extend({
             return true;
         };
         this._dragStageLayer.addGeometry(this._shadow);
+        this.target.on('symbolchanged', this._onTargetUpdated, this);
         this.target.hide();
         /**
          * 触发geometry的dragstart事件
@@ -60,6 +61,12 @@ Z.Geometry.Drag = Z.Handler.extend({
          */
         this.target._fireEvent('dragstart');
         return this;
+    },
+
+    _onTargetUpdated:function() {
+        if (this._shadow) {
+            this._shadow.setSymbol(this.target.getSymbol());
+        }
     },
 
      _prepareDragStageLayer:function() {
@@ -98,6 +105,7 @@ Z.Geometry.Drag = Z.Handler.extend({
         map._trySetCursor('default');
         map.off('mousemove', this._dragging, this);
         map.off('mouseup', this._endDrag, this);
+        this.target.off('symbolchanged', this._onTargetUpdated, this);
         if (map['draggable']) {
             map['draggable'].enable();
         }

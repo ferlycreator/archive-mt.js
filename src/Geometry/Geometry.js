@@ -266,8 +266,8 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     isVisible:function() {
-
-        return this.options['visible'];
+        var symbol = this.getSymbol();
+        return this.options['visible'] || (Z.Util.isNumber(symbol['opacity']) && symbol['opacity'] <= 0);
     },
 
     /**
@@ -301,6 +301,10 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         var json = this.toJSON();
         //FIXME symbol信息没有被拷贝过来
         var ret = Z.Geometry.fromJSON(json);
+        if (this._isEditingOrDragging()) {
+            //when geometry is editing or dragging, visible may be set to false
+            ret.options['visible'] = true;
+        }
         return ret;
     },
 
