@@ -50,7 +50,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
 
     },
 
-    rend:function(options) {
+    rend:function() {
         var tileGrid = this._layer._getTiles();
         if (!tileGrid) {
             return;
