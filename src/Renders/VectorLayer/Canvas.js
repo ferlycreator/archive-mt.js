@@ -38,7 +38,6 @@ Z.Canvas = {
 
     // TODO: no prepare, set style just before stroke/fill
     prepareCanvas:function(context, strokeSymbol, fillSymbol){
-        context.restore();
         if (strokeSymbol) {
             var strokeWidth = strokeSymbol['stroke-width'];
             if (!Z.Util.isNil(strokeWidth)) {context.lineWidth = strokeWidth;}
@@ -79,17 +78,18 @@ Z.Canvas = {
 
     fillCanvas:function(context, fillStyle, fillOpacity){
         if (fillStyle) {
+            var alpha = context.globalAlpha;
             if (!Z.Util.isString(fillStyle)/*fillStyle instanceof CanvasPattern*/) {
-                context.globalAlpha = fillOpacity;
+                context.globalAlpha *= fillOpacity;
                 context.fillStyle = fillStyle;
             } else if (Z.Util.isString(fillStyle)) {
                 if (!Z.Canvas.hexColorRe.test(fillStyle)) {
-                    context.globalAlpha = fillOpacity;
+                    context.globalAlpha *= fillOpacity;
                 }
                 context.fillStyle = this.getRgba(fillStyle, fillOpacity);
             }
             context.fill('evenodd');
-            context.globalAlpha = 1; // restore here?
+            context.globalAlpha = alpha;
         }
     },
 
