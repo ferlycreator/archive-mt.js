@@ -98,6 +98,11 @@ Z.Class.extend = function (props) {
             }
             return config;
         } else {
+            if (arguments.length === 2) {
+                var convert = {};
+                convert[conf] = arguments[1];
+                conf = convert;
+            }
             for (var i in conf) {
                 if (conf.hasOwnProperty(i)) {
                      this.options[i] = conf[i];
