@@ -151,6 +151,33 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     /**
+     * 设置地图的鼠标样式
+     * @param {cursor} cursor 鼠标样式, 同css cursor
+     */
+    setCursor:function(cursor) {
+        delete this._cursor;
+        this._trySetCursor(cursor);
+        this._cursor = cursor;
+        return this;
+    },
+
+    /**
+     * try to change cursor when map is not setCursored
+     * @param  {String} cursor css cursor
+     */
+    _trySetCursor:function(cursor) {
+        if (!this._cursor) {
+            if (!cursor) {
+                cursor = 'default';
+            }
+            if (this._containerDOM && this._containerDOM.style) {
+                this._containerDOM.style.cursor = cursor;
+            }
+        }
+        return this;
+    },
+
+    /**
      * 获取地图容器的宽度和高度
      * @return {{'width':?, 'height':?}}} 地图容器大小,单位像素
      * @expose

@@ -83,9 +83,6 @@ Z.Handler.Drag = Z.Handler.extend({
             return;
         }
         if (!this.moved) {
-            if (!dom.style.cursor || dom.style.cursor === 'default') {
-                dom.style.cursor = 'move';
-            }
             /**
              * 触发dragstart事件
              * @event dragstart
@@ -130,9 +127,6 @@ Z.Handler.Drag = Z.Handler.extend({
             dom['releaseCapture']();
         } else if(window.captureEvents) {
             window.captureEvents(window['Event'].MOUSEMOVE|window['Event'].MOUSEUP);
-        }
-        if (dom.style.cursor === 'move') {
-            dom.style.cursor = 'default';
         }
         if (this.moved/* && this.moving*/) {
             /**
