@@ -372,15 +372,6 @@ Z.Util = {
     },
 
     /**
-     * 数字四舍五入, 效率较高
-     * @param  {Number} num 数字
-     * @return {Number}
-     */
-    roundNumber:function(num) {
-        return (0.5+num) << 0;
-    },
-
-    /**
      * 判断数组中是否包含obj
      * @param {Object} obj
      * @return {Boolean} true|false

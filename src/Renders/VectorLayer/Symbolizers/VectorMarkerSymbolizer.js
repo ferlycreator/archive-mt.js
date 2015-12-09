@@ -54,6 +54,9 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
                 Z.Canvas.path(ctx,vectorArray.slice(0,2),null);
                 Z.Canvas.path(ctx,vectorArray.slice(2,4),null);
             } else if (markerType === 'diamond' || markerType === 'bar' || markerType === 'square' || markerType === 'triangle'){
+                if (markerType === 'bar') {
+                    point = point.add(new Z.Point(0,-style['markerLineWidth']/2));
+                }
                 for (j = vectorArray.length - 1; j >= 0; j--) {
                     vectorArray[j]._add(point);
                 }
@@ -61,12 +64,17 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
                 Z.Canvas.polygon(ctx,vectorArray,null);
                 Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']['fill'],strokeAndFill['fill']['fill-opacity']);
             } else if (markerType === 'pin') {
+                point = point.add(new Z.Point(0,-style['markerLineWidth']/2));
                 for (j = vectorArray.length - 1; j >= 0; j--) {
                     vectorArray[j]._add(point);
                 }
+                ctx.save();
+                ctx.lineCap = 'round';
                 Z.Canvas.bezierCurve(ctx,vectorArray,null);
                 Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']['fill'],strokeAndFill['fill']['fill-opacity']);
+                ctx.restore();
             } else if (markerType === 'pie') {
+                point = point.add(new Z.Point(0,-style['markerLineWidth']/2));
                 var angle = Math.atan(width/2/height)*180/Math.PI;
                 Z.Canvas.sector(ctx, point, height, 90-angle, 90+angle);
                 Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']['fill'],strokeAndFill['fill']['fill-opacity']);
@@ -230,8 +238,8 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
         var v0,v1,v2,v3;
         if ('triangle' === markerType) {
             v0 = new Z.Point(left,top-hh);
-            v1 = new Z.Point(Z.Util.roundNumber(left-hw),Z.Util.roundNumber(top+hh));
-            v2 = new Z.Point(Z.Util.roundNumber(left+hw),Z.Util.roundNumber(top+hh));
+            v1 = new Z.Point(left-hw,top+hh);
+            v2 = new Z.Point(left+hw,top+hh);
             return [v0,v1,v2];
         } else if ('cross' === markerType) {
             v0 = new Z.Point((left-hw),top);
@@ -266,8 +274,8 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
         } else if ('pin' === markerType) {
               var extWidth = height*Math.atan(hw/hh);
               v0 = new Z.Point(left,top);
-              v1 = new Z.Point(Math.round(left-extWidth),Math.round(top-height));
-              v2 = new Z.Point(Math.round(left+extWidth),Math.round(top-height));
+              v1 = new Z.Point(left-extWidth,top-height);
+              v2 = new Z.Point(left+extWidth,top-height);
               v3 = new Z.Point(left,top);
               return [v0,v1,v2,v3];
         }
