@@ -771,7 +771,9 @@ Z['Map']=Z.Map=Z.Class.extend({
     viewPointToCoordinate: function(viewPoint) {
         var projection = this._getProjection();
         if (!viewPoint || !projection) {return null;}
-        return this._untransformFromViewPoint(viewPoint);
+        var p = this._untransformFromViewPoint(viewPoint);
+        var c = projection.unproject(p);
+        return c;
     },
 
     /**

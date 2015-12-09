@@ -79,8 +79,8 @@ if (Z.Browser.canvas) {
                 hw = arrowWidth/2;
 
             var v0 = new Z.Point(0,-hh),
-                v1 = new Z.Point(Z.Util.roundNumber(-hw),Z.Util.roundNumber(hh)),
-                v2 = new Z.Point(Z.Util.roundNumber(hw),Z.Util.roundNumber(hh));
+                v1 = new Z.Point(Z.Util.round(-hw),Z.Util.round(hh)),
+                v2 = new Z.Point(Z.Util.round(hw),Z.Util.round(hh));
             var pts = [v0, v1, v2];
             var me = this;
             var fn = function(_ctx, _points, _dasharray) {
