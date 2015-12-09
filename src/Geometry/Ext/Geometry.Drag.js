@@ -32,7 +32,7 @@ Z.Geometry.Drag = Z.Handler.extend({
         if (this.isDragging()) {
             return this;
         }
-        Z.DomUtil.addStyle(map._containerDOM,'cursor', 'move');
+        map._trySetCursor('move');
         if (map['draggable']) {
             map['draggable'].disable();
         }
@@ -51,9 +51,8 @@ Z.Geometry.Drag = Z.Handler.extend({
             return true;
         };
         this._dragStageLayer.addGeometry(this._shadow);
+        this.target.on('symbolchanged', this._onTargetUpdated, this);
         this.target.hide();
-
-
         /**
          * 触发geometry的dragstart事件
          * @member maptalks.Geometry
@@ -62,6 +61,12 @@ Z.Geometry.Drag = Z.Handler.extend({
          */
         this.target._fireEvent('dragstart');
         return this;
+    },
+
+    _onTargetUpdated:function() {
+        if (this._shadow) {
+            this._shadow.setSymbol(this.target.getSymbol());
+        }
     },
 
      _prepareDragStageLayer:function() {
@@ -97,8 +102,10 @@ Z.Geometry.Drag = Z.Handler.extend({
      */
     _endDrag: function(param) {
         var map = this.target.getMap();
+        map._trySetCursor('default');
         map.off('mousemove', this._dragging, this);
         map.off('mouseup', this._endDrag, this);
+        this.target.off('symbolchanged', this._onTargetUpdated, this);
         if (map['draggable']) {
             map['draggable'].enable();
         }
@@ -114,7 +121,7 @@ Z.Geometry.Drag = Z.Handler.extend({
          * @return {Object} params: {'target':this}
          */
         this.target._fireEvent('dragend', param);
-        Z.DomUtil.addStyle(map._containerDOM,'cursor', 'default');
+
     },
 
     isDragging:function() {

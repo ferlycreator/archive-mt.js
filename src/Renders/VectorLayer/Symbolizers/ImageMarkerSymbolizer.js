@@ -24,7 +24,7 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
             console.error('img missed');
             return;
         }
-
+        this._prepareContext(ctx);
         var width = style['markerWidth'];
         var height = style['markerHeight'];
         if (!Z.Util.isNumber(width) || !Z.Util.isNumber(height)) {

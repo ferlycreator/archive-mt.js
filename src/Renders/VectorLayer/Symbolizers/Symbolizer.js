@@ -34,6 +34,17 @@ Z.Symbolizer = Z.Class.extend({
         }
     },
 
+    _prepareContext:function(ctx) {
+        var symbol = this.symbol;
+        ctx.restore();
+        Z.Canvas.setDefaultCanvasSetting(ctx);
+        if (Z.Util.isNumber(symbol['opacity'])) {
+            ctx.globalAlpha = symbol['opacity'];
+        } else {
+            ctx.globalAlpha = 1;
+        }
+    },
+
     getMap:function() {
         return this.geometry.getMap();
     }

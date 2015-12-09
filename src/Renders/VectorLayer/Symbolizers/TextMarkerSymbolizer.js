@@ -38,12 +38,10 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
         if (!Z.Util.isArrayHasData(cookedPoints)) {
             return;
         }
-        Z.Canvas.setDefaultCanvasSetting(ctx);
-
         var style = this.style,
             textContent = this.textContent,
             strokeAndFill = this.strokeAndFill;
-
+        this._prepareContext(ctx);
         Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'], strokeAndFill['fill'], resources);
         Z.Canvas.prepareCanvasFont(ctx,style);
 

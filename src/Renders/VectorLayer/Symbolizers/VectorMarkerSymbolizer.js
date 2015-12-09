@@ -37,7 +37,7 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
         var vectorArray = this._getVectorArray(style);
         var markerType = style['markerType'].toLowerCase();
         var strokeAndFill = this.strokeAndFill;
-        Z.Canvas.setDefaultCanvasSetting(ctx);
+        this._prepareContext(ctx);
         Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'],strokeAndFill['fill'], null);
         var j;
 
@@ -96,11 +96,16 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
         var markerType = style['markerType'].toLowerCase();
         var width = style['markerWidth'],
             height = style['markerHeight'];
+        var result;
         if (markerType  === 'bar' || markerType  === 'pie' || markerType  === 'pin') {
-            return new Z.Extent(dxdy.add(new Z.Point(-width/2,-height)), dxdy.add(new Z.Point(width/2,0)));
+            result = new Z.Extent(dxdy.add(new Z.Point(-width/2,-height)), dxdy.add(new Z.Point(width/2,0)));
         } else {
-            return new Z.Extent(dxdy.add(new Z.Point(-width/2,-height/2)), dxdy.add(new Z.Point(width/2,height/2)));
+            result = new Z.Extent(dxdy.add(new Z.Point(-width/2,-height/2)), dxdy.add(new Z.Point(width/2,height/2)));
         }
+        if (this.style['markerLineWidth']) {
+            result = result.expand(this.style['markerLineWidth']/2);
+        }
+        return result;
     },
 
 

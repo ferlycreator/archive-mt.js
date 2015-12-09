@@ -52,19 +52,25 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         this._draw();
     },
 
-    rend:function(ignoreResourceCheck) {
+    rend:function(geometries) {
         this._clearTimeout();
         if (!this.getMap() || this.getMap().isBusy()) {
             return;
         }
+
+        //editing or dragging
+        if (Z.Util.isArrayHasData(geometries) && geometries.length === 1) {
+            if (geometries[0]._isEditingOrDragging()) {
+                this._draw();
+                return;
+            }
+        }
+
         var me = this;
         this._rendTimeout = setTimeout(function() {
-            if (true===ignoreResourceCheck) {
-                me._draw();
-            } else {
-                me._promise();
-            }
+            me._promise();
         },50);
+
     },
 
     getPaintContext:function() {

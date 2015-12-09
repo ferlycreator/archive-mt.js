@@ -39,8 +39,7 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
     canvas:function(ctx, resources) {
         var canvasResources = this._getRenderResources();
         var strokeAndFill = this.strokeAndFill;
-        Z.Canvas.setDefaultCanvasSetting(ctx);
-        ctx.save();
+        this._prepareContext(ctx);
         Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'], null);
         canvasResources['fn'].apply(this, [ctx].concat(canvasResources['context']));
         if (this.geometry instanceof Z.Polygon) {
