@@ -8,7 +8,6 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
     type: 'tile',
 
     options: {
-        'opacity':1,
         'errorTileUrl':Z.prefix+'images/error.png',
         'urlTemplate':Z.prefix+'images/blank.png',
         'subdomains':[''],

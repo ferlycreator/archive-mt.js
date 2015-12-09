@@ -267,7 +267,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      */
     isVisible:function() {
         var symbol = this.getSymbol();
-        return this.options['visible'] || (Z.Util.isNumber(symbol['opacity']) && symbol['opacity'] <= 0);
+        return this.options['visible'] && (!symbol || Z.Util.isNil(symbol['opacity']) || (Z.Util.isNumber(symbol['opacity']) && symbol['opacity'] > 0));
     },
 
     /**

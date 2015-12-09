@@ -16,7 +16,8 @@ Z['Layer']=Z.Layer=Z.Class.extend({
         'minZoom':-1,
         'maxZoom':-1,
         //图层是否可见
-        'visible':true
+        'visible':true,
+        'opacity': 1
     },
 
 
@@ -158,7 +159,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
      * @return {Boolean} true/false
      */
     isVisible:function() {
-        return this.options['visible'] || (Z.Util.isNumber(this.options['opacity']) && this.options['opacity']<=0);
+        return this.options['visible'] && (Z.Util.isNumber(this.options['opacity']) && this.options['opacity'] > 0);
     },
 
     remove:function() {
