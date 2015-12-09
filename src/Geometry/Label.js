@@ -100,8 +100,8 @@ Z.Label = Z.Marker.extend({
        }
        Z.Util.extend(s,camelSymbol);
        this._symbol = s;
-        this._refresh();
-        return this;
+       this._refresh();
+       return this;
     },
 
     _refresh:function(noEvent) {
