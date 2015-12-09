@@ -3,7 +3,12 @@ Z.Geometry.mergeOptions({
      * @cfg {Boolean} [draggable="false"] geometry能否拖动
      * @member maptalks.Geometry
      */
-    'draggable': false
+    'draggable': false,
+    /**
+     * @cfg {String} [draggableAixs=null] fixed geometry dragging on particular axis: x or y
+     * @member maptalks.Geometry
+     */
+    'draggableAxis' : null
 });
 
 Z.Geometry.Drag = Z.Handler.extend({
@@ -79,11 +84,17 @@ Z.Geometry.Drag = Z.Handler.extend({
     },
 
     _dragging: function(param) {
+        var axis = this._shadow.options['draggableAxis'];
         var currentCoord = param['coordinate'];
         if(!this._preCoordDragged) {
             this._preCoordDragged = currentCoord;
         }
         var dragOffset = currentCoord.substract(this._preCoordDragged);
+        if ('x' === axis) {
+            dragOffset.y = 0;
+        } else if ('y' === axis) {
+            dragOffset.x = 0;
+        }
         this._preCoordDragged = currentCoord;
         this._shadow.translate(dragOffset);
         this.target.translate(dragOffset);
