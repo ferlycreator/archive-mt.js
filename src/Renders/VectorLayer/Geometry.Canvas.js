@@ -5,7 +5,7 @@ if (Z.Browser.canvas) {
         _getRenderCanvasResources:function() {
             var map = this.getMap();
             var pcenter = this._getPCenter();
-            var pt = map._transform(pcenter);
+            var pt = map._transformToViewPoint(pcenter);
             var size = this._getRenderSize();
             return {
                 "fn" : Z.Canvas.ellipse,
@@ -21,7 +21,7 @@ if (Z.Browser.canvas) {
     Z.Rectangle.include({
         _getRenderCanvasResources:function() {
             var map = this.getMap();
-            var pt = map._transform(this._getPNw());
+            var pt = map._transformToViewPoint(this._getPNw());
             var size = this._getRenderSize();
             return {
                 "fn" : Z.Canvas.rectangle,
