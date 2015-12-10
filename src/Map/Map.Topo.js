@@ -71,15 +71,18 @@ Z.Map.include({
         }
         var point = this.coordinateToViewPoint(opts['coordinate']).round();
         var fn = opts['success'];
-        var hits = [];
-        // var pointExtent = new Z.Extent(point, point);
-        for (i=0, len=layers.length; i<len; i++) {
+        var hits = [],
+            isEnd =false;
+        for (i = layers.length - 1; i >= 0; i--) {
+            if (isEnd) {
+                break;
+            }
             var layer = layers[i];
             if(!layer || !layer.getMap() || (!opts['includeInternals'] && layer.getId().indexOf(Z.internalLayerPrefix) >= 0)) {
                 continue;
             }
             var allGeos = layers[i].getGeometries();
-            for (var j=0, length = allGeos.length; j<length; j++) {
+            for (var j = allGeos.length - 1; j >= 0; j--) {
                 var geo = allGeos[j];
                 if (!geo || !geo.isVisible()) {
                     continue;
@@ -90,6 +93,12 @@ Z.Map.include({
                 }
                 if (geo._containsPoint(point)) {
                     hits.push(geo);
+                    if (opts['count']) {
+                        if (hits.length >= opts['count']) {
+                            isEnd = true;
+                            break;
+                        }
+                    }
                 }
             }
         }
