@@ -14,11 +14,25 @@ Z.Geometry.mergeOptions({
 Z.Geometry.Drag = Z.Handler.extend({
     dragStageLayerId : Z.internalLayerPrefix+'_drag_stage',
 
+    START: Z.Browser.touch ? ['touchstart', 'mousedown'] : ['mousedown'],
+    END: {
+        mousedown: 'mouseup',
+        touchstart: 'touchend',
+        pointerdown: 'touchend',
+        MSPointerDown: 'touchend'
+    },
+    MOVE: {
+        mousedown: 'mousemove',
+        touchstart: 'touchmove',
+        pointerdown: 'touchmove',
+        MSPointerDown: 'touchmove'
+    },
+
     addHooks: function () {
-        this.target.on('mousedown', this._startDrag, this);
+        this.target.on(this.START.join(' '), this._startDrag, this);
     },
     removeHooks: function () {
-        this.target.off('mousedown', this._startDrag, this);
+        this.target.off(this.START.join(' '), this._startDrag, this);
     },
     /**
      * 开始移动Geometry, 进入移动模式
@@ -37,12 +51,16 @@ Z.Geometry.Drag = Z.Handler.extend({
         if (this.isDragging()) {
             return this;
         }
+        var domEvent = param['domEvent'];
+        if ( domEvent.touches && domEvent.touches.length > 1) {
+            return;
+        }
         map._trySetCursor('move');
         if (map['draggable']) {
             map['draggable'].disable();
         }
-        map.on('mousemove', this._dragging, this);
-        map.on('mouseup', this._endDrag, this);
+        map.on(this.MOVE[param.type], this._dragging, this);
+        map.on(this.END[param.type], this._endDrag, this);
         delete this._preCoordDragged;
         this._isDragging = true;
 
@@ -84,6 +102,10 @@ Z.Geometry.Drag = Z.Handler.extend({
     },
 
     _dragging: function(param) {
+        var domEvent = param['domEvent'];
+        if ( domEvent.touches && domEvent.touches.length > 1) {
+            return;
+        }
         var axis = this._shadow.options['draggableAxis'];
         var currentCoord = param['coordinate'];
         if(!this._preCoordDragged) {
@@ -114,8 +136,12 @@ Z.Geometry.Drag = Z.Handler.extend({
     _endDrag: function(param) {
         var map = this.target.getMap();
         map._trySetCursor('default');
-        map.off('mousemove', this._dragging, this);
-        map.off('mouseup', this._endDrag, this);
+        for (var i in this.MOVE) {
+             map.off(this.MOVE[i], this._dragging, this);
+             map.off(this.END[i], this._endDrag, this);
+        }
+        // map.off('mousemove', this._dragging, this);
+        // map.off('mouseup', this._endDrag, this);
         this.target.off('symbolchanged', this._onTargetUpdated, this);
         if (map['draggable']) {
             map['draggable'].enable();

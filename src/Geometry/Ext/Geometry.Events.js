@@ -37,17 +37,21 @@ Z.Geometry.include({
      * @param  {Event} event 事件对象
      * @return {Object} 事件返回参数
      */
-    _getEventParams: function(event,type) {
+    _getEventParams: function(e,type) {
         var map = this.getMap();
-        var containerPoint = Z.DomUtil.getEventContainerPoint(event, map._containerDOM);
-        var coordinate = map._untransform(containerPoint);
-        //统一的参数, target是geometry引用, pixel是事件的屏幕坐标, coordinate是事件的经纬度坐标
-        return {
-            'containerPoint':containerPoint,
-            'coordinate':coordinate,
-            //'viewPoint' : map._containerPointToViewPoint(containerPoint),
-            'domEvent':event
+        var eventParam = {
+            'domEvent':e
         };
+        var actual = e.touches ? e.touches[0] : e;
+        if (actual) {
+            var containerPoint = Z.DomUtil.getEventContainerPoint(actual, map._containerDOM);
+            eventParam['coordinate'] = map.containerPointToCoordinate(containerPoint);
+            eventParam['containerPoint'] = containerPoint;
+            /*'viewPoint':this._containerPointToViewPoint(containerPoint),*/
+        }
+
+        //统一的参数, target是geometry引用, pixel是事件的屏幕坐标, coordinate是事件的经纬度坐标
+        return eventParam;
     },
 
     _onMouseOver: function(event) {
@@ -55,14 +59,14 @@ Z.Geometry.include({
             return;
         }
         var originalEvent = event;
-        var params = this._getEventParams(originalEvent,'mouseover');
+        var params = this._getEventParams(originalEvent,event.type);
         /**
          * 触发geometry的mouseover事件
          * @member maptalks.Geometry
          * @event mouseover
          * @return {Object} params: {'target':this, 'pixel':pixel, 'coordinate':coordinate}
          */
-        this._fireEvent('mouseover', params);
+        this._fireEvent(event.type, params);
     },
 
     _onMouseOut: function(event) {
@@ -70,13 +74,13 @@ Z.Geometry.include({
             return;
         }
         var originalEvent = event;
-        var params = this._getEventParams(originalEvent,'mouseout');
+        var params = this._getEventParams(originalEvent,event.type);
         /**
          * 触发geometry的mouseout事件
          * @member maptalks.Geometry
          * @event mouseout
          * @return {Object} params: {'target':this, 'pixel':pixel, 'coordinate':coordinate}
          */
-        this._fireEvent('mouseout', params);
+        this._fireEvent(event.type, params);
     }
 });
