@@ -3,14 +3,19 @@ Z.Projection={
     getInstance:function(projection) {
         if (!projection) {return this.getDefault();}
         var instance = null;
-        for (var p in Z.ProjectionInstance) {
-            if (Z.ProjectionInstance.hasOwnProperty(p)) {
-                if ((''+projection).toUpperCase() === Z.ProjectionInstance[p].srs) {
-                    instance = Z.ProjectionInstance[p];
-                    break;
+        if (Z.Util.isString(projection)) {
+            for (var p in Z.ProjectionInstance) {
+                if (Z.ProjectionInstance.hasOwnProperty(p)) {
+                    if ((''+projection).toUpperCase() === Z.ProjectionInstance[p].srs) {
+                        instance = Z.ProjectionInstance[p];
+                        break;
+                    }
                 }
             }
+        } else {
+            instance = projection;
         }
+
         if (instance) {
             Z.Util.extend(instance,Z.Projection.Util);
         } else {
