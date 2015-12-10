@@ -28,7 +28,7 @@
             subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
         }));
         //创建放置图形的图层
-        var layer = new maptalks.VectorLayer('layer',{render:'Canvas'});
+        var layer = new maptalks.VectorLayer('layer');
         //将图层添加到地图
         mapObj.addLayer(layer);
 
@@ -36,16 +36,12 @@
         var polyline = new maptalks.LineString(
             //线端点坐标数组
             [[121.454716,31.272095],[121.459007,31.25933],[121.458149,31.241572],[121.460381,31.229977],[121.473427,31.222784]],
-            {
-                draggable: true,
-                arrowStyle:"classic",
-                arrowPlacement:"point" //vertext-first, vertext-last, vertext-firstlast
-            });
+            {draggable: true});
         //设置线样式
         var polylineSymbol = {
             'lineColor' : '#ff00ff',
             'lineWidth' : 5,
-            // 'lineDasharray' : [20,10,5,5,5,10],//线形
+            'lineDasharray' : [20,10,5,5,5,10],//线形
             'lineOpacity' : 1
         };
         polyline.setSymbol(polylineSymbol);

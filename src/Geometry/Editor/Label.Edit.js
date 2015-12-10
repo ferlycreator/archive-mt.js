@@ -26,8 +26,10 @@ Z.Label.include({
         var map = this.getMap();
         var symbol = this.getSymbol();
         var labelSize = this.getSize();
-        var align = Z.StringUtil.getAlignPoint(labelSize, symbol['textHorizontalAlignment'], symbol['textVerticalAlignment']);
-
+        var left = Z.Util.getValueOrDefault(symbol['textDx'],0),
+            top = Z.Util.getValueOrDefault(symbol['textDy'],0);
+        var align = Z.StringUtil.getAlignPoint(labelSize, symbol['textHorizontalAlignment'], symbol['textVerticalAlignment'])
+                    .add({x:left,y:top});
         var viewPoint = map.coordinateToViewPoint(this.getCenter()).add(align);
         return viewPoint;
     },

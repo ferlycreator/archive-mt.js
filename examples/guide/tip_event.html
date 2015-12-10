@@ -46,37 +46,6 @@
         marker.setSymbol(icon);
         //将点添加到Layer
         layer.addGeometry(marker);
-        //为marker添加tip标签
-        var options = {
-            'symbol': {
-                'lineColor': '#ffffff',
-                'lineWidth': 1,
-                'lineOpacity': 0.9,
-                'lineDasharray': null,
-                'fill': '#4e98dd',
-                'fillOpacity': 0.9,
-
-                'textFaceName': 'arial',
-                'textSize': 12,
-                'textFill': '#ff0000',
-                'textOpacity': 1,
-                'textSpacing': 30,
-                'textWrapWidth': 50,
-                'textWrapBefore': false,
-                'textWrapCharacter': '_',
-                'textLineSpacing': 8
-            },
-            'draggable': true,
-            'horizontalAlignment': 'middle',//left middle right
-            'verticalAlignment': 'middle',//top middle bottom
-            'dx': 0,
-            'dy': 0,
-            'content': '上海大厦'
-        };
-        //创建label
-        var label = new maptalks.Label(options);
-        //为marker添加label
-        marker.addLabel(label);
 
         //创建线对象
         var polyline = new maptalks.Polyline(

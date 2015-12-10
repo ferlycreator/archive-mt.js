@@ -25,22 +25,21 @@ Z.Linker = Z.Class.extend({
     },
 
     /**
-     * 将连接线添加到指定的map上
-     * @param {maptalks.Map} map对象
+     * add linker to layer
+     * @param {maptalks.Layer} layer
      * @returns {maptalks.Linker}
      * @expose
      */
-    addTo: function (map) {
+    addTo: function (layer) {
         this.remove();
-        this._map = map;
-        this._internalLayer = this._getInternalLayer(map, Z.internalLayerPrefix+'linker');
+        this._map = layer.getMap();
         var linkPoints = this._computeLinkPoint();
         this._linker  = new Z.Polyline(linkPoints);
         var symbol = this.options['symbol'];
         if(symbol) {
             this._linker.setSymbol(symbol);
         }
-        this._internalLayer.addGeometry(this._linker);
+        layer.addGeometry(this._linker);
         this._registEvents();
         return this;
     },
@@ -152,15 +151,5 @@ Z.Linker = Z.Class.extend({
             }
         }
         return [nearestSourcePoint,nearestTargetPoint];
-    },
-
-    _getInternalLayer: function(map, layerId, canvas) {
-         if(!map) {return;}
-         var layer = map.getLayer(layerId);
-         if(!layer) {
-             layer = new Z.VectorLayer(layerId);
-             map.addLayer(layer);
-         }
-         return layer;
-     }
+    }
 });

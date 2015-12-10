@@ -102,7 +102,7 @@
                     window.setInterval(function(){
                         var layer = routePlayer.player.markerLayer;
                         if(layer) {
-                            var movingGeos = layer.getAllGeometries();
+                            var movingGeos = layer.getGeometries();
                             topoQuery.relate({
                                 source:geo,
                                 targets:movingGeos,

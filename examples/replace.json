@@ -1,4 +1,4 @@
 {
-  "../../maptalks.js": "../maptalks.min.js",
-  "../../../maptalks.js": "../maptalks.min.js"
+  "../../../maptalks.js": "http://42.121.108.110/maptalks/maptalks.js",
+  "../../maptalks.js": "http://42.121.108.110/maptalks/maptalks.js"
 }

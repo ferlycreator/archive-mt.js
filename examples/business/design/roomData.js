@@ -13,7 +13,7 @@ function getRectangle(coordinate, width, height) {
     //多边形属性面板
     var polygonPropertyPanel = new PolygonPropertyPanel();
     //绑定激活多边形属性面板事件
-    rect.on('click', function(){
+    rect.on('dblclick', function(){
         polygonPropertyPanel.addTo(rect);
     });
     return rect;
@@ -75,10 +75,10 @@ function getMarker(coordiante, markerFile) {
     };
     marker.setSymbol(icon);
     //picture属性面板
-    var picturePropertyPanel = new PicturePropertyPanel();
-    marker.on('click', function(){
-        picturePropertyPanel.addTo(marker);
-    });
+    // var picturePropertyPanel = new PicturePropertyPanel();
+    // marker.on('click', function(){
+    //     picturePropertyPanel.addTo(marker);
+    // });
     return marker;
 }
 

@@ -26,13 +26,7 @@
             zoom:  0,
             enablePopTip:   true,
             enableMoveSilde:true,
-            navControl:true,
-            navControlOptions: {
-                position: {
-                    top: '20',
-                    right: '10'
-                }
-            },
+            navControl:false,
             doubleClickZoom:false
         });
 
@@ -226,7 +220,7 @@
         //多边形属性面板
         var polygonPropertyPanel = new PolygonPropertyPanel();
         //绑定激活多边形属性面板事件
-        polygon.on('click', function(){
+        polygon.on('dblclick', function(){
             polygonPropertyPanel.addTo(polygon);
         });
 	    polygon.on('mousedown', function(){
@@ -241,33 +235,31 @@
         //设置label属性
         var options = {
             'symbol': {
-                'lineColor': '#ff0000',
-                'lineWidth': 1,
-                'lineOpacity': 0.9,
-                'lineDasharray': null,
-                'fill': '#4e98dd',
-                'fillOpacity': 0.9,
+                'markerLineColor': '#cccccc',
+                'markerLineWidth': 1,
+                'markerLineOpacity': 0.1,
+                'markerLineDasharray': null,
+                'markerFill': '#66cccc',
+                'markerFillOpacity': 0.9,
 
                 'textFaceName': 'arial',
                 'textSize': 12,
-                'textFill': '#ff0000',
+                'textFill': '#ffffff',
                 'textOpacity': 1,
                 'textSpacing': 30,
                 'textWrapWidth': null,//auto
                 'textWrapBefore': false,
-                'textWrapCharacter': '\n',
-                'textLineSpacing': 8
+                //'textWrapCharacter': '\n',
+                'textLineSpacing': 8,
+                'textHorizontalAlignment': 'middle',//left middle right
+                'textVerticalAlignment': 'bottom',//top middle bottom
             },
-            'draggable': true,
-            'horizontalAlignment': 'right',//left middle right
-            'verticalAlignment': 'top',//top middle bottom
-            'dx': 0,
-            'dy': 0,
-            'content': '文本标签',
-            'target':coordinate
+           'draggable': true,
+           'boxAutoSize': true
         };
         //创建label
-        var label = new maptalks.Label(options).addTo(layer);
+        var label = new maptalks.Label('文本标签', coordinate, options);
+        layer.addGeometry(label);
         //label属性面板
         var labelPropertyPanel = new LabelPropertyPanel();
         label.on('click', function(){
@@ -275,10 +267,12 @@
         });
     }
 
-    //添加标注图片时间到map上
+    //添加标注图片事件到map上
     function addEventToMap(param) {
         markerFile = param.target.src;
-        mapObj.on('click', markerPicLabel);
+        if(markerFile) {
+            mapObj.on('click', markerPicLabel);
+        }
     }
 
     //标注图片
@@ -329,10 +323,10 @@
         //将点添加到Layer
         layer.addGeometry(marker);
         //picture属性面板
-        var picturePropertyPanel = new PicturePropertyPanel();
-        marker.on('click', function(){
-            picturePropertyPanel.addTo(marker);
-        });
+        // var picturePropertyPanel = new PicturePropertyPanel();
+        // marker.on('click', function(){
+        //     picturePropertyPanel.addTo(marker);
+        // });
     }
 </script>
 <script type="text/javascript" src="../../../maptalks.js"></script>

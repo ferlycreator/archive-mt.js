@@ -18,7 +18,6 @@ Z.Label = Z.Marker.extend({
         "textLineSpacing": 8,
         "textHorizontalAlignment": "middle",//left middle right
         "textVerticalAlignment": "middle", //top middle bottom
-        "textAlign": "center",
     },
 
     defaultBoxSymbol:{
@@ -41,7 +40,8 @@ Z.Label = Z.Marker.extend({
         'boxAutoSize'  :   true,
         'boxMinWidth'  :   0,
         'boxMinHeight' :   0,
-        'boxPadding'   :   new Z.Size(12,8)
+        'boxPadding'   :   new Z.Size(12,8),
+        'textAlign'    :   'center'
     },
 
     /**
@@ -77,6 +77,17 @@ Z.Label = Z.Marker.extend({
         return this;
     },
 
+     /**
+     * 设置text相对label水平对齐方式
+     */
+    setTextAlign: function(textAlign) {
+        if(this.options['textAlign']!==textAlign) {
+            this._setTextAlign(textAlign);
+            this.options['textAlign'] = textAlign;
+            return this;
+        }
+    },
+
     setSymbol:function(symbol, noEvent) {
         if (!symbol || symbol === this.options['symbol']) {
            symbol = {};
@@ -89,8 +100,8 @@ Z.Label = Z.Marker.extend({
        }
        Z.Util.extend(s,camelSymbol);
        this._symbol = s;
-        this._refresh();
-        return this;
+       this._refresh();
+       return this;
     },
 
     _refresh:function(noEvent) {
@@ -124,9 +135,45 @@ Z.Label = Z.Marker.extend({
         this._symbol = symbol;
         this._onSymbolChanged();
     },
+
+    _setTextAlign: function(align) {
+        var symbol = this.getSymbol();
+        if (!symbol['markerType']) {
+            symbol['markerType'] = 'square';
+        }
+        var size = Z.StringUtil.splitTextToRow(this._content, symbol)['size'];
+        if (this.options['box'] && !this.options['boxAutoSize']
+           &&size['width']<this.options['boxMinWidth']) {
+            var textDx = Z.Util.getValueOrDefault(symbol['textDx'],0);
+            var textAlign = Z.Util.getValueOrDefault(this.options['textAlign'], 'center');
+            var dx = (this.options['boxMinWidth'] - size['width'])/2;
+            if(textAlign==='left') {
+                textDx = textDx+dx;
+                if(align==='right') {
+                    dx = textDx+dx;
+                } else {
+                    dx = textDx;
+                }
+            } else if(textAlign==='right') {
+                textDx = textDx-dx;
+                if(align==='left') {
+                    dx = textDx-dx;
+                } else {
+                    dx = textDx;
+                }
+            } else {
+                if(align==='left') {
+                    dx = textDx-dx;
+                } else {
+                    dx = textDx+dx;
+                }
+            }
+            symbol['textDx']= dx;
+            this._onSymbolChanged();
+        }
+    },
     _registerEvent: function() {
         this.on('shapechanged', this._refresh, this);
-
         this.on('remove', this._onLabelRemove, this);
         return this;
     },

@@ -39,7 +39,7 @@
         layer.addGeometry(marker);
         //设置label属性
         var labelSymbol = {
-            'markerType': 'ellipse',
+            // 'markerType': 'ellipse',
             'markerLineColor': '#ff0000',
             'markerLineWidth': 2,
             'markerLineOpacity': 0.9,
@@ -57,9 +57,14 @@
             'textWrapCharacter': '\n',
             'textLineSpacing': 8,
             'textHorizontalAlignment': 'middle',//left middle right
-            'textVerticalAlignment': 'bottom',//top middle bottom
+            'textVerticalAlignment': 'top'//top middle bottom
         };
-        var label = new maptalks.Label('上海站精选\n二店', coordinate, {draggable:true});
+        var label = new maptalks.Label('上海站精选\n二店', coordinate, {draggable:true,
+           'boxAutoSize': false,
+           'boxMinWidth': 100,
+           'boxMinHeight': 50,
+            'textAlign' : 'right'
+            });
         label.setSymbol(labelSymbol);
         //将label添加到指定的图层上
         layer.addGeometry(label);
@@ -96,36 +101,6 @@
         // };
         // //将label添加到指定的图层上
         // marker.addLabel(new maptalks.Label('上海大_厦辅楼', labelOptions2));
-
-       var toolbar = new maptalks.Toolbar({
-            id: 'toolbar',//toolbar id
-            position : { //工具条放置位置
-                top: '2',
-                left: '2'
-            },
-            vertical : false,
-            //工具项
-            items: [ {
-                type : 'button',
-                content: '隐藏',
-                click : function(){
-                    label.hide();
-                }
-            }, {
-                type : 'button',
-                content: '显示',
-                click : function(){
-                    label.show();
-                }
-            }, {
-                type : 'button',
-                content: '删除',
-                click : function(){
-                    label.remove();
-                }
-            }]
-        });
-        mapObj.addControl(toolbar);
     }
 </script>
 <!-- 引擎javascript开发包-->

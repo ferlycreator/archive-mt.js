@@ -92,12 +92,15 @@
                 'textSpacing': 30,
                 'textWrapWidth': null,//auto
                 'textWrapBefore': false,
-                'textWrapCharacter': '_',
+                //'textWrapCharacter': '\n',
                 'textLineSpacing': 8,
                 'textHorizontalAlignment': 'middle',//left middle right
                 'textVerticalAlignment': 'bottom',//top middle bottom
             },
-            'draggable': true
+           'draggable': false,
+           'boxAutoSize': false,
+           'boxMinWidth': 500,
+           'boxMinHeight': 100
         };
         //创建label
         var label = new maptalks.Label('文本标签', coordinate, options);

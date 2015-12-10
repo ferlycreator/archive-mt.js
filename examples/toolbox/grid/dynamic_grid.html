@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+        html,body{ margin:0px; height:100%; };
+    </style>
+    <title>MapTalks 示例: 动态表格</title>
+</head>
+<body scroll="no" onload="initMap();">
+<div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
+<script type="text/javascript" >
+    var mapObj,layer,currentLayerId;
+    function initMap(){
+        //创建地图对象
+        mapObj = new maptalks.Map("mapObj",{
+            center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
+            zoom:   13, //初始缩放级别
+            doubleClickZoom: false
+        });
+        //设置底图图层
+        mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
+        {
+            tileInfo: 'web-mercator',
+            urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
+            subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
+        }));
+        //创建图层
+        layer = new maptalks.VectorLayer('layer');
+        //将图层添加到地图对象
+        mapObj.addLayer(layer);
+        //工具
+        var toolbar = new maptalks.Toolbar({
+            position : { //工具条放置位置
+                top: '10',
+                right: '10'
+            },
+            vertical : false,
+            //工具项
+            items: [{
+                type : 'button',
+                content: '商场',
+                click : function(param){
+                     addMall();
+                     currentLayerId = 'market';
+                }},{
+                type : 'button',
+                content: '公园',
+                click : function(param){
+                    addPark();
+                    currentLayerId = 'park';
+                }},{
+                type : 'button',
+                icon: 'images/grid.png',
+                click : function(param){
+                     mapObj.on('click', markerGrid);
+                }
+            },{
+                type : 'button',
+                content: '标签',
+                click : function(param){
+                     mapObj.on('click', markerLabel);
+                }
+            }]
+        });
+        mapObj.addControl(toolbar);
+    }
+
+    function addMall() {
+        var malls=[{name:'九六广场',coordinate:{x:121.524884,y:31.227384},sales:5.3,area:66127,shop_num:100},
+          {name:'八佰伴',coordinate:{x:121.516881,y:31.228274},sales:15.5,area:145000,shop_num:1003},
+          {name:'世贸广场',coordinate:{x:121.475737,y:31.234407},sales:8.9,area:170000,shop_num:850},
+          {name:'来福士',coordinate:{x:121.476799,y:31.232866},sales:11.5,area:143865,shop_num:256},
+          {name:'恒隆广场',coordinate:{x:121.453594,y:31.227565},sales:25.6,area:80000,shop_num:1036},
+          {name:'嘉里中心',coordinate:{x:121.450075,y:31.224446},sales:13.9,area:34478,shop_num:986},
+          {name:'静安广场',coordinate:{x:121.448015,y:31.230721},sales:12.7,area:26600,shop_num:865},
+          {name:'时代广场',coordinate:{x:121.478742,y:31.224262},sales:15.1,area:109000,shop_num:367}];
+        var malls = createMarkers(malls,'images/market.png');
+        var mallLayer = mapObj.getLayer('market');
+        if(!mallLayer) {
+            mallLayer = new maptalks.VectorLayer('market');
+            mapObj.addLayer(mallLayer);
+            mallLayer.addGeometry(malls);
+        }
+    }
+
+    function addPark() {
+        var parks=[{name:'世纪公园',coordinate:{x:121.551526,y:31.2153564},visitors:10000,area:15.6},
+          {name:'顾村公园',coordinate:{x:121.363903,y:31.339322},visitors:300,area:15.5},
+          {name:'复兴公园',coordinate:{x:121.469316,y:31.217343},visitors:2000,area:8.9},
+          {name:'长风公园',coordinate:{x:121.39925,y:31.22471},visitors:3000,area:5.3},
+          {name:'梅园公园',coordinate:{x:121.526753,y:31.236236},visitors:2100,area:2.1},
+          {name:'静安公园',coordinate:{x:121.446492,y:31.221886},visitors:1500,area:1.6}];
+        var parks = createMarkers(parks,'images/school.png');
+        var parkLayer = mapObj.getLayer('park');
+        if(!parkLayer) {
+            var parkLayer = new maptalks.VectorLayer('park');
+            mapObj.addLayer(parkLayer);
+            parkLayer.addGeometry(parks);
+        }
+    }
+
+    function createMarkers(data, imageUrl) {
+        var markers = [];
+        for (var i = 0; i < data.length; i++) {
+            var item = data[i];
+            //创建点的坐标对象
+            var coordinate = new maptalks.Coordinate(item.coordinate.x,item.coordinate.y);
+            //设置图片
+            var icon = {
+                'markerFile': imageUrl,
+                'markerWidth': 20,
+                'markerHeight': 26
+            };
+            //创建点对象
+            var marker = new maptalks.Marker(coordinate,{'draggable':false});
+            marker.setSymbol(icon);
+            var props = {};
+            for(var obj in item){
+                if(obj!='coordinate'){
+                    props[obj] = item[obj];
+                }
+            }
+            marker.setProperties(props);
+            markers.push(marker);
+        }
+        return markers;
+    }
+
+    function markerGrid(param) {
+        mapObj.off('click', markerGrid);
+        var coordinate = param.coordinate;
+        var data = getData(currentLayerId);
+        var gridOptions = {
+            'title': 'title',
+            'columns': getColumns(currentLayerId),
+            'data': data,
+            'symbol': {
+                'lineColor': '#ffffff',
+                'fill': '#4e98dd',
+                'textFaceName': 'arial',
+                'textSize': 12,
+                'textFill': '#ebf2f9',
+                'textWrapWidth': 100
+            },
+            'position': coordinate,
+            'width': 300,
+            'height': 20*(data.length+1),
+            'draggable': true,
+            'editable' : true,
+            'dynamic': true
+        };
+        var grid = new maptalks.Grid(gridOptions);
+        grid.addTo(layer);
+    }
+
+    function getColumns(layerId) {
+        var layer = mapObj.getLayer(layerId);
+        var geometries = layer.getGeometries();
+        var geometry = geometries[0];
+        var properties = geometry.getProperties();
+        var columns = [];
+        for(var key in properties){
+            var column = {
+                header: key,
+                dataIndex: key,
+                type: 'string',
+                fromDb: true
+            };
+            columns.push(column);
+        }
+        return columns;
+    }
+
+    function getData(layerId){
+        var layer = mapObj.getLayer(layerId);
+        var geometries = layer.getGeometries();
+        var data = [];
+        for (var i = 0; i < geometries.length; i++) {
+            var geometry = geometries[i];
+            var item = {};
+            var properties = geometry.getProperties();
+            for(var key in properties){
+                item[key] = properties[key];
+            }
+            data.push(item);
+        }
+        return data;
+    }
+
+    function markerLabel(param) {
+        mapObj.off('click', markerLabel);
+        var coordinate = param.coordinate;
+        //设置label属性
+        var options = {
+            'symbol': {
+                'markerLineColor': '#ff0000',
+                'markerLineWidth': 1,
+                'markerLineOpacity': 0.9,
+                'markerLineDasharray': null,
+                'markerFill': '#4e98dd',
+                'markerFillOpacity': 0.9,
+
+                'textFaceName': 'arial',
+                'textSize': 12,
+                'textFill': '#ff0000',
+                'textOpacity': 1,
+                'textSpacing': 30,
+                'textWrapWidth': null,//auto
+                'textWrapBefore': false,
+                //'textWrapCharacter': '\n',
+                'textLineSpacing': 8,
+                'textHorizontalAlignment': 'middle',//left middle right
+                'textVerticalAlignment': 'bottom',//top middle bottom
+            },
+            'draggable': true
+        };
+        //创建label
+        var label = new maptalks.Label('文本标签', coordinate, options);
+        layer.addGeometry(label);
+        //label属性面板
+        var labelPropertyPanel = new LabelPropertyPanel();
+        label.on('click', function(){
+            labelPropertyPanel.addTo(label);
+        });
+        //构造连线
+        var linkSource = param.geometry;
+        if(linkSource) {
+            var linkOptions = {
+                linkSource: linkSource,
+                linkTarget: label,
+                symbol: {
+                    "lineColor" : "#474cf8",
+                    "lineWidth" : 1,
+                    "lineOpacity" : 0.8,
+                    'lineDasharray' : [20,10,5,5,5,10]
+                }
+            }
+            var linker = new maptalks.Linker(linkOptions);
+            linker.addTo(mapObj);
+            linker.show();
+        }
+    }
+</script>
+<!-- 引擎javascript开发包-->
+<script type="text/javascript" src="../../../maptalks.js"></script>
+<script type="text/javascript" src="../../../Plugins/Grid/Grid.js"></script>
+<script type="text/javascript" src="../../../Plugins/Grid/Grid.Style.js"></script>
+<script type="text/javascript" src="../../../examples/toolbox/label/label_property.js"></script>
+<script type="text/javascript" src="data.js"></script>
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+  <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.min.js"></script>
+<![endif]-->
+</body>
+</html>
