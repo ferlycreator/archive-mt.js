@@ -179,14 +179,21 @@ Z['Map']=Z.Map=Z.Class.extend({
 
     _setPriorityCursor:function(cursor) {
         if (!cursor) {
+            var hasCursor = false;
+            if (this._priorityCursor) {
+                hasCursor = true;
+            }
             delete this._priorityCursor;
-            this.setCursor(this._cursor);
+            if (hasCursor) {
+                this.setCursor(this._cursor);
+            }
         } else {
             this._priorityCursor = cursor;
             if (this._containerDOM && this._containerDOM.style) {
                 this._containerDOM.style.cursor = cursor;
             }
         }
+        return this;
     },
 
     /**
