@@ -166,7 +166,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @param  {String} cursor css cursor
      */
     _trySetCursor:function(cursor) {
-        if (!this._cursor) {
+        if (!this._cursor && !this._priorityCursor) {
             if (!cursor) {
                 cursor = 'default';
             }
@@ -175,6 +175,18 @@ Z['Map']=Z.Map=Z.Class.extend({
             }
         }
         return this;
+    },
+
+    _setPriorityCursor:function(cursor) {
+        if (!cursor) {
+            delete this._priorityCursor;
+            this.setCursor(this._cursor);
+        } else {
+            this._priorityCursor = cursor;
+            if (this._containerDOM && this._containerDOM.style) {
+                this._containerDOM.style.cursor = cursor;
+            }
+        }
     },
 
     /**
