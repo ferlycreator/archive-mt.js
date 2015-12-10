@@ -190,6 +190,15 @@ Z.Util = {
         return wrapperFn;
     },
 
+    removeFromArray:function(obj, array) {
+        for (var i = array.length - 1; i >= 0; i--) {
+            if (array[i] === obj) {
+                return array.splice(i, 1);
+            }
+        }
+        return null;
+    },
+
     /**
      * 遍历数组中的每个元素,并执行fn操作, 兼容N维数组, 如果数组中有null或undefined,则continue不作处理
      * @param {Array}   points 数组

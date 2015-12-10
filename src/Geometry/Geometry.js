@@ -315,6 +315,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      */
     remove:function() {
         this._rootRemove(true);
+        return this;
     },
 
     /**
