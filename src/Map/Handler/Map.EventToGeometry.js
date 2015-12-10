@@ -53,6 +53,8 @@ Z.Map.EventToGeometry = Z.Handler.extend({
         var coordinate = map.containerPointToCoordinate(containerPoint);
         this.options = {
             'includeInternals' : true,
+            //return only one geometry on top
+            'count' : 1,
             'coordinate' : coordinate,
             'layers': map._canvasLayers,
             'success': Z.Util.bind(fireGeometryEvent, this)
@@ -113,10 +115,10 @@ Z.Map.EventToGeometry = Z.Handler.extend({
                 }
 
             } else {
-                if(!geometries) {return;}
-                for (i = geometries.length - 1; i >= 0; i--) {
-                    geometries[i]._onEvent(domEvent);
-                }
+                if(!geometries || geometries.length === 0) {return;}
+                // for (i = geometries.length - 1; i >= 0; i--) {
+                geometries[geometries.length - 1]._onEvent(domEvent);
+                // }
             }
         }
 
