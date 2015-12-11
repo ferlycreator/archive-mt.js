@@ -52,24 +52,50 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         this._draw();
     },
 
-    rend:function(geometries) {
+    /**
+     * rend layer
+     * @param  {[Geometry]} geometries   geometries to rend
+     * @param  {boolean} ignorePromise   whether escape step of promise
+     */
+    rend:function(geometries, ignorePromise) {
         this._clearTimeout();
         if (!this.getMap() || this.getMap().isBusy()) {
             return;
         }
-
-        //editing or dragging
         if (Z.Util.isArrayHasData(geometries) && geometries.length === 1) {
+            //if geometry is being editted or dragged, draw it ASAP
             if (geometries[0]._isEditingOrDragging()) {
-                this._draw();
-                return;
+                var resources = geometries[0]._getExternalResource();
+                //if true, it means geometry's resources are all loaded and ready to draw.
+                var isReadyToDraw = true;
+                if (Z.Util.isArrayHasData(resources)) {
+                    if (!this._resources) {
+                        isReadyToDraw = false;
+                    } else {
+                        for (var i = resources.length - 1; i >= 0; i--) {
+                            if (!this._resources.getImage(resources[i])) {
+                                isReadyToDraw = false;
+                                break;
+                            }
+                        }
+                    }
+
+                }
+                if (isReadyToDraw) {
+                    this._draw();
+                    return;
+                }
             }
         }
 
         var me = this;
         this._rendTimeout = setTimeout(function() {
-            me._promise();
-        },50);
+            if (ignorePromise) {
+                me._draw();
+            } else {
+                me._promise();
+            }
+        },10);
 
     },
 
@@ -149,6 +175,13 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
             return true;
         }
         return this._shouldEcoTransform;
+    },
+
+    isResourceLoaded:function(url) {
+        if (!this._resources) {
+            return false;
+        }
+        return this._resources.getImage(url);
     },
 
     _clearTimeout:function() {
