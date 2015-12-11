@@ -19,9 +19,9 @@ Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
         }
         var style = this.style;
         var url = style['markerFile'];
-        var img = resources.getImage(url);
+        var img = !resources?null:resources.getImage(url);
         if (!img) {
-            console.error('img missed');
+            // console.error('img missed');
             return;
         }
         this._prepareContext(ctx);

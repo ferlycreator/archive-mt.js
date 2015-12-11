@@ -60,7 +60,7 @@
 ../src/Geometry/MultiPolyline.js
 ../src/Geometry/MultiPolygon.js
 ../src/Geometry/GeoJSON.js
-../src/Geometry/Editor/Editor.js
+../src/Geometry/Editor/GeometryEditor.js
 ../src/Geometry/Editor/Label.Edit.js
 ../src/Map/Map.js
 ../src/Map/Map.Animation.js

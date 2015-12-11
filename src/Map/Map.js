@@ -166,10 +166,29 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @param  {String} cursor css cursor
      */
     _trySetCursor:function(cursor) {
-        if (!this._cursor) {
+        if (!this._cursor && !this._priorityCursor) {
             if (!cursor) {
                 cursor = 'default';
             }
+            if (this._containerDOM && this._containerDOM.style) {
+                this._containerDOM.style.cursor = cursor;
+            }
+        }
+        return this;
+    },
+
+    _setPriorityCursor:function(cursor) {
+        if (!cursor) {
+            var hasCursor = false;
+            if (this._priorityCursor) {
+                hasCursor = true;
+            }
+            delete this._priorityCursor;
+            if (hasCursor) {
+                this.setCursor(this._cursor);
+            }
+        } else {
+            this._priorityCursor = cursor;
             if (this._containerDOM && this._containerDOM.style) {
                 this._containerDOM.style.cursor = cursor;
             }
@@ -771,7 +790,9 @@ Z['Map']=Z.Map=Z.Class.extend({
     viewPointToCoordinate: function(viewPoint) {
         var projection = this._getProjection();
         if (!viewPoint || !projection) {return null;}
-        return this._untransformFromViewPoint(viewPoint);
+        var p = this._untransformFromViewPoint(viewPoint);
+        var c = projection.unproject(p);
+        return c;
     },
 
     /**

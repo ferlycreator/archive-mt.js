@@ -38,10 +38,12 @@ Z.Symbolizer = Z.Class.extend({
         var symbol = this.symbol;
         ctx.restore();
         Z.Canvas.setDefaultCanvasSetting(ctx);
+        var layer = this.geometry.getLayer(),
+            layerOpacity = layer.options['opacity'];
         if (Z.Util.isNumber(symbol['opacity'])) {
-            ctx.globalAlpha = symbol['opacity'];
+            ctx.globalAlpha = symbol['opacity']*layerOpacity;
         } else {
-            ctx.globalAlpha = 1;
+            ctx.globalAlpha = layerOpacity;
         }
     },
 

@@ -109,15 +109,16 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
         } else if (points instanceof Z.Point) {
             containerPoints = map._viewPointToContainerPoint(points);
             if (matrix) {
-                containerPoints = matrix.applyToPointInstance(points);
+                containerPoints = matrix.applyToPointInstance(containerPoints);
             }
         }
         transContext.push(containerPoints);
         var scale;
 
+        //scale width ,height or radius if geometry has
         for (var i = 1, len = context.length;i<len;i++) {
             if (matrix) {
-                //scale width and height if geometry has
+
                 if (Z.Util.isNumber(context[i]) || (context[i] instanceof Z.Size)) {
                     if (matrix && !scale) {
                         scale = matrix.decompose()['scale'];

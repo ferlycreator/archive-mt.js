@@ -160,9 +160,19 @@ Z.Painter = Z.Class.extend({
             return;
         }
         var layer = this.geometry.getLayer();
+        //check if geometry's resources have already loaded, if not, layer render needs to promise to load resources at first.
+        var resources = this.geometry._getExternalResource();
+        if (!needPromise && Z.Util.isArrayHasData(resources)) {
+            for (var i = resources.length - 1; i >= 0; i--) {
+            if (!layer._getRender().isResourceLoaded(resources[i])) {
+                    needPromise = true;
+                    break;
+                }
+            }
+        }
         if (layer.isCanvasRender()) {
-            var isRealTime = (this.geometry.isEditing && this.geometry.isEditing())
-                                || (this.geometry.isDragging && this.geometry.isDragging());
+            var isRealTime = !needPromise && ((this.geometry.isEditing && this.geometry.isEditing())
+                                || (this.geometry.isDragging && this.geometry.isDragging()));
             var render = this.geometry.getLayer()._getRender();
             if (!render) {
                 return;
@@ -170,7 +180,7 @@ Z.Painter = Z.Class.extend({
             if (isRealTime) {
                 render.rendRealTime();
             } else {
-                render.rend(needPromise);
+                render.rend(null,needPromise);
             }
         }
     },
@@ -197,7 +207,6 @@ Z.Painter = Z.Class.extend({
     remove:function() {
         this._removeCache();
         this._removeSymbolizers();
-        this._rendCanvas(false);
     },
 
     _removeSymbolizers:function() {
