@@ -638,7 +638,7 @@ maptalks.Grid = maptalks.Class.extend({
         if(!this._adjustLayer) {
             this._adjustLayer = new maptalks.VectorLayer(adjustLayerId);
             map.addLayer(this._adjustLayer);
-//            this._adjustLayer.bringToBack();
+            this._adjustLayer.bringToBack();
         }
         this._adjustRows = new Array();
         this._adjustCols = new Array();
@@ -672,9 +672,7 @@ maptalks.Grid = maptalks.Class.extend({
         var leftPoint = map.locate(startPoint,
                         -map.pixelToDistance(size['width']/2,0),
                         -map.pixelToDistance(0,size['height']/2+dy));
-        var rightPoint = map.locate(startPoint,
-                        map.pixelToDistance(this._width-size['width']/2,0),
-                        -map.pixelToDistance(0,size['height']/2+dy));
+        var rightPoint = map.locate(leftPoint,map.pixelToDistance(this._width,0),0);
         var line = new maptalks.LineString([leftPoint,rightPoint],{draggable:true, cursor:'s-resize'});
         var symbol = {
             'lineColor' : '#e2dfed',
@@ -691,17 +689,16 @@ maptalks.Grid = maptalks.Class.extend({
         rowLine.on('dragging',function(event){
             var dragOffset = event['dragOffset'];
             var dx = dragOffset.x,dy=dragOffset.y;
-            var sign=1;
-            if(dx<0){
-                sign=-1;
+            var sign=-1;
+            if(dy<0){
+                sign=1;
             }
-            var distance = map.computeDistance(new maptalks.Coordinate(0,0), dragOffset);
+            var distance = map.computeDistance(new maptalks.Coordinate(0,0), new maptalks.Coordinate(0,dy));
             var pixel = map.distanceToPixel(0, distance);
             me._height +=pixel['height']*sign;
             var offset = new maptalks.Coordinate(-dx, 0);
             rowLine.translate(offset);
             me._resizeRow(cell, dragOffset);
-
             me._translateRowLine(cell, new maptalks.Coordinate(0,dy));
             //add dy to grid width
             me._extendColLine(map);
@@ -733,23 +730,25 @@ maptalks.Grid = maptalks.Class.extend({
         if(dy<0) {
             sign = 1;
         }
-        var distance = this._map.computeDistance(new maptalks.Coordinate(0,0), dragOffset);
+        var distance = this._map.computeDistance(new maptalks.Coordinate(0,0), new maptalks.Coordinate(0,dy));
         var pixel = this._map.distanceToPixel(0,distance);
         var height = pixel['height']*sign;
         for(var i=rowNum;i<this._rowNum;i++) {
             var row = this._grid[i];
             for(var j=0;j<this._colNum;j++){
                 var cell = row[j];
+                var symbol = cell.getSymbol();
                 if(i===rowNum) {
                     cell.options['boxMinHeight']+=height;
+                    if(cell.options['boxMinHeight']<symbol['markerHeight']) {
+                        symbol['markerHeight'] = cell.options['boxMinHeight'];
+                    }
+                    symbol['markerDy']+=height/2;
+                    symbol['textDy']+=height/2;
+                } else {
+                    symbol['markerDy']+=height;
+                    symbol['textDy']+=height;
                 }
-                var symbol = cell.getSymbol();
-                if(cell.options['boxMinHeight']<symbol['markerHeight']) {
-                    symbol['markerHeight'] = cell.options['boxMinHeight'];
-                }
-                var cellSize = cell.getSize();
-                symbol['markerDy']+=height/2;
-                symbol['textDy']+=height/2;
                 cell.setSymbol(symbol);
             }
         }
@@ -773,25 +772,48 @@ maptalks.Grid = maptalks.Class.extend({
         return line;
     },
 
-    _addEventToColLine: function(map, colLine, cell) {
-        var me = this;
+    _addEventToColLine: function(map,colLine,cell) {
+        var me=this;
+        var symbol = cell.getSymbol();
         colLine.on('dragging',function(event){
-            var dragOffset = event['dragOffset'];
-            var dx=dragOffset.x,dy=dragOffset.y;
-            var sign=1;
-            if(dy<0) {
-                sign=-1;
-            }
-            var distance = map.computeDistance(new maptalks.Coordinate(0,0), dragOffset);
-            var pixel = map.distanceToPixel(distance, 0);
-            me._width +=pixel['width']*sign;
-            var offset = new maptalks.Coordinate(0, -dy);
-            colLine.translate(offset);
-            me._resizeCol(cell, dragOffset);
-            me._translateColLine(cell, new maptalks.Coordinate(dx, 0));
+            var startPoint=me.options['position'];
+            var endPoint=event['coordinate'];
+            var distance=map.computeDistance(startPoint,endPoint);
+            var pixel=map.distanceToPixel(distance,0);
+            var width=pixel['width']-symbol['markerWidth'];
+            me._width+=width;
+            me._resizeCol(cell,width);
             //add dy to grid width
             me._extendRowLine(map);
+
+            var dragOffset=event['dragOffset'];
+            var dx=dragOffset.x,dy=dragOffset.y;
+            var offset=new maptalks.Coordinate(0,-dy);
+            colLine.translate(offset);
+            me._translateColLine(cell,new maptalks.Coordinate(dx,0));
+            symbol['markerWidth']+=width;
         });
+    },
+
+    _resizeCol: function(cell,width) {
+        var colNum = cell._col;
+        for(var i=0,len=this._grid.length;i<len;i++) {
+            var row = this._grid[i];
+            for(var j=colNum,rowLength=row.length;j<rowLength;j++) {
+                var cell = row[j];
+                var symbol = cell.getSymbol();
+                if(j==colNum) {
+                    cell.options['boxMinWidth']+=width;
+                    symbol['markerWidth'] = cell.options['boxMinWidth'];
+                    symbol['markerDx']+=width/2;
+                    symbol['textDx']+=width/2;
+                } else {
+                    symbol['markerDx']+=width;
+                    symbol['textDx']+=width;
+                }
+                cell.setSymbol(symbol);
+            }
+        }
     },
 
     _translateColLine: function(cell, dragOffset) {
@@ -809,35 +831,6 @@ maptalks.Grid = maptalks.Class.extend({
             var leftPoint = coordinates[0];
             var rightPoint = map.locate(leftPoint,map.pixelToDistance(this._width,0),0);
             line.setCoordinates([leftPoint,rightPoint]);
-        }
-    },
-
-    _resizeCol: function(cell, dragOffset) {
-        var colNum = cell._col;
-        var dx = dragOffset.x;
-        var sign = 1;
-        if(dx<0) {
-            sign = -1;
-        }
-        var distance = this._map.computeDistance(new maptalks.Coordinate(0,0), dragOffset);
-        var pixel = this._map.distanceToPixel(distance, 0);
-        var width = pixel['width']*sign;
-        for(var i=0,len=this._grid.length;i<len;i++) {
-            var row = this._grid[i];
-            for(var j=colNum,rowLength=row.length;j<rowLength;j++) {
-                var cell = row[j];
-                if(j===colNum) {
-                    cell.options['boxMinWidth']+=width;
-                }
-                var symbol = cell.getSymbol();
-                if(cell.options['boxMinWidth']<symbol['markerWidth']) {
-                    symbol['markerWidth'] = cell.options['boxMinWidth'];
-                }
-                var cellSize = cell.getSize();
-                symbol['markerDx']+=width/2;
-                symbol['textDx']+=width/2;
-                cell.setSymbol(symbol);
-            }
         }
     },
 
