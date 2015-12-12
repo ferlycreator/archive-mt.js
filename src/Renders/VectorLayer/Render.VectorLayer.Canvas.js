@@ -120,9 +120,10 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
      * @expose
      */
     show: function() {
-        this._layer._eachGeometry(function(geo) {
+        /*this._layer._eachGeometry(function(geo) {
             geo.show();
-        });
+        });*/
+        this._requestMapToRend();
     },
 
     /**
@@ -130,9 +131,10 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
      * @expose
      */
     hide: function() {
-        this._layer._eachGeometry(function(geo) {
+        /*this._layer._eachGeometry(function(geo) {
             geo.hide();
-        });
+        });*/
+        this._requestMapToRend();
     },
 
     setZIndex: function(zindex) {

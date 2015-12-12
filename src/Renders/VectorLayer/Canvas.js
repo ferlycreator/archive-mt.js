@@ -118,7 +118,7 @@ Z.Canvas = {
     },
 
     resetContextState:function(ctx) {
-        ctx['maptalks-img-smoothing-disabled'] = false;
+        // ctx['maptalks-img-smoothing-disabled'] = false;
     },
 
     /*disableImageSmoothing:function(ctx) {

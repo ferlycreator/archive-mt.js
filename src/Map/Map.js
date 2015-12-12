@@ -78,9 +78,10 @@ Z['Map']=Z.Map=Z.Class.extend({
             if (Z.runningInNode) {
                 //node环境中map的containerDOM即为模拟Canvas容器, 例如node-canvas
                 //获取模拟Canvas类的类型, 用以在各图层的渲染器中构造Canvas
-                this.CanvasClass = function(){};
+                /*this.CanvasClass = function(){};
                 this.CanvasClass.constructor = this._containerDOM.constructor;
-                this.CanvasClass.prototype = Object.create(Object.getPrototypeOf(this._containerDOM));
+                this.CanvasClass.prototype = Object.create(Object.getPrototypeOf(this._containerDOM));*/
+                this.CanvasClass = require('../canvas');
             }
         }
 
@@ -909,6 +910,9 @@ Z['Map']=Z.Map=Z.Class.extend({
     _eachLayer:function(fn) {
         if (arguments.length < 2) {return;}
         var layerLists = Array.prototype.slice.call(arguments, 1);
+        if (layerLists && !Z.Util.isArray(layerLists)) {
+            layerLists = [layerLists];
+        }
         var layers = [];
         for (var i=0, len=layerLists.length;i<len;i++) {
             layers = layers.concat(layerLists[i]);

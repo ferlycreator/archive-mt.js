@@ -79,7 +79,7 @@ Z.Util = {
                     }
                     this._nodeFS.readFile(url,'binary',function(err,data) {
                         if (err) {
-                            console.error('fail to read:',url,data.length);
+                            console.error('fail to read:',url,data?data.length:0);
                             return;
                         } else {
                             var onloadFn = img.onload;

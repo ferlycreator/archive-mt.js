@@ -44,8 +44,12 @@ Z.render.map.Render = Z.Class.extend({
                     this._clearCanvas();
                     //only draw basetile layer
                     matrixes[0].applyToContext(this._context);
-                    this._drawLayerCanvasImage(baseLayerImage, width, height);
-                    this._canvasBackgroundImage = Z.DomUtil.copyCanvas(this._canvas);
+                    if (baseLayerImage) {
+                        this._drawLayerCanvasImage(baseLayerImage, width, height);
+                        this._canvasBackgroundImage = Z.DomUtil.copyCanvas(this._canvas);
+                    } else {
+                        delete this._canvasBackgroundImage;
+                    }
                     this._context.restore();
                     fn.apply(context, args);
                 }
@@ -214,16 +218,15 @@ Z.render.map.Render = Z.Class.extend({
         if (mwidth === 0 || mheight === 0){
             return;
         }
-
         var point = layerImage['point'];
         var size = layerImage['size'];
-
         var canvasImage = layerImage['image'];
         if (Z.runningInNode) {
             if (canvasImage.toBuffer) {
                 //node-canvas
                 canvasImage = new Image();
-                canvasImage.src = layerImage['image'].toBuffer();
+                var buffer = layerImage['image'].toBuffer();
+                canvasImage.src = buffer;
             } else {
                 //canvas2svg
                 canvasImage = canvasImage.getContext('2d');

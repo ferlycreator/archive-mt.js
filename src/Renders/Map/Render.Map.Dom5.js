@@ -26,28 +26,31 @@ Z.render.map.Dom = Z.render.map.Render.extend({
             // this.rend();
             this._refreshSVGPaper();
         },this);
-        this._onMapMouseMove=function(param) {
-            var vp = map._containerPointToViewPoint(param['containerPoint']);
-            var layers = map.getLayers();
-            var hit = false,
-                cursor;
-            for (var i = layers.length - 1; i >= 0; i--) {
-                var layer = layers[i];
-                if (layer instanceof Z.VectorLayer && layer.isCanvasRender()) {
-                    if (layer.options['cursor'] !== 'default' && layer._getRender().hitDetect(vp)) {
-                        cursor = layer.options['cursor'];
-                        hit = true;
-                        break;
+        if (!Z.Browser.mobile && Z.Browser.canvas) {
+             this._onMapMouseMove=function(param) {
+                var vp = map._containerPointToViewPoint(param['containerPoint']);
+                var layers = map.getLayers();
+                var hit = false,
+                    cursor;
+                for (var i = layers.length - 1; i >= 0; i--) {
+                    var layer = layers[i];
+                    if (layer instanceof Z.VectorLayer && layer.isCanvasRender()) {
+                        if (layer.options['cursor'] !== 'default' && layer._getRender().hitDetect(vp)) {
+                            cursor = layer.options['cursor'];
+                            hit = true;
+                            break;
+                        }
                     }
                 }
-            }
-            if (hit) {
-                map._trySetCursor(cursor);
-            } else {
-                map._trySetCursor('default');
-            }
-        };
-        map.on('_mousemove',this._onMapMouseMove,this);
+                if (hit) {
+                    map._trySetCursor(cursor);
+                } else {
+                    map._trySetCursor('default');
+                }
+            };
+            map.on('_mousemove',this._onMapMouseMove,this);
+        }
+
     },
 
 

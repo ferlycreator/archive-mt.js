@@ -1,3 +1,6 @@
+//根据script查找
+Z.prefix = '';
+
 if (!Z.runningInNode) {
     (function(){
         //解析host地址，插入css和vml定义
@@ -14,8 +17,7 @@ if (!Z.runningInNode) {
             }
         }
 
-        //根据script查找
-        Z.prefix = '';
+
         var scriptTags = document.getElementsByTagName('script');
         var regex = /[\/^]maptalks(?:\.min)?\.js/;
         for (var i = 0, len = scriptTags.length; i < len; i++) {
