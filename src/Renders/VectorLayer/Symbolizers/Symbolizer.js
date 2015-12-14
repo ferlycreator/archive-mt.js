@@ -36,7 +36,7 @@ Z.Symbolizer = Z.Class.extend({
 
     _prepareContext:function(ctx) {
         var symbol = this.symbol;
-        ctx.restore();
+        // ctx.restore();
         Z.Canvas.setDefaultCanvasSetting(ctx);
         var layer = this.geometry.getLayer(),
             layerOpacity = layer.options['opacity'];
