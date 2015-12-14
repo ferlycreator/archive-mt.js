@@ -339,6 +339,10 @@ maptalks.Grid = maptalks.Class.extend({
             var line = this._adjustRows[i];
             line.translate(dragOffset);
         }
+        for(var i=0,len=this._adjustCols.length;i<len;i++) {
+            var line = this._adjustCols[i];
+            line.translate(dragOffset);
+        }
         this.fire('dragging',this);
     },
 
@@ -634,7 +638,7 @@ maptalks.Grid = maptalks.Class.extend({
         if(!this._adjustLayer) {
             this._adjustLayer = new maptalks.VectorLayer(adjustLayerId);
             map.addLayer(this._adjustLayer);
-//            this._adjustLayer.bringToBack();
+            this._adjustLayer.bringToBack();
         }
         this._adjustRows = new Array();
         this._adjustCols = new Array();
@@ -644,7 +648,7 @@ maptalks.Grid = maptalks.Class.extend({
             var row = this._grid[i];
             var cell = row[0];
             var rowLine = this._createAdjustLineForRow(map,cell,startPoint);
-            this._addEventToRowLine(rowLine, cell);
+            this._addEventToRowLine(map, rowLine, cell);
             this._adjustRows.push(rowLine);
         }
         this._adjustLayer.addGeometry(this._adjustRows);
@@ -654,10 +658,100 @@ maptalks.Grid = maptalks.Class.extend({
         for(var i=0;i<this._colNum;i++) {
             var cell = firstRow[i];
             var colLine = this._createAdjustLineForCol(map,cell,startPoint);
-            this._addEventToColLine(colLine, cell);
+            this._addEventToColLine(map,colLine, cell);
             this._adjustCols.push(colLine);
         }
         this._adjustLayer.addGeometry(this._adjustCols);
+    },
+
+    _createAdjustLineForRow(map,cell,startPoint) {
+        var size = cell.getSize();
+        var symbol = cell.getSymbol(),
+            dx = symbol['textDx'],
+            dy = symbol['textDy'];
+        var leftPoint = map.locate(startPoint,
+                        -map.pixelToDistance(size['width']/2,0),
+                        -map.pixelToDistance(0,size['height']/2+dy));
+        var rightPoint = map.locate(leftPoint,map.pixelToDistance(this._width,0),0);
+        var line = new maptalks.LineString([leftPoint,rightPoint],{draggable:true, cursor:'s-resize'});
+        var symbol = {
+            'lineColor' : '#e2dfed',
+            'lineWidth' : 3,
+            'lineDasharray' : null,//线形
+            'lineOpacity' : 0.8
+        };
+        line.setSymbol(symbol);
+        return line;
+    },
+
+    _addEventToRowLine: function(map, rowLine, cell) {
+        var me = this;
+        rowLine.on('dragging',function(event){
+            var dragOffset = event['dragOffset'];
+            var dx = dragOffset.x,dy=dragOffset.y;
+            var sign=-1;
+            if(dy<0){
+                sign=1;
+            }
+            var distance = map.computeDistance(new maptalks.Coordinate(0,0), new maptalks.Coordinate(0,dy));
+            var pixel = map.distanceToPixel(0, distance);
+            me._height +=pixel['height']*sign;
+            var offset = new maptalks.Coordinate(-dx, 0);
+            rowLine.translate(offset);
+            me._resizeRow(cell, dragOffset);
+            me._translateRowLine(cell, new maptalks.Coordinate(0,dy));
+            //add dy to grid width
+            me._extendColLine(map);
+        });
+    },
+
+    _translateRowLine: function(cell, dragOffset) {
+        var rowNum = cell._row;
+        for(var i=rowNum+1,len=this._adjustRows.length;i<len;i++) {
+            var line = this._adjustRows[i];
+            line.translate(dragOffset);
+        }
+    },
+
+    _extendColLine: function(map) {
+        for(var i=0,len=this._adjustCols.length;i<len;i++) {
+            var line = this._adjustCols[i];
+            var coordinates = line.getCoordinates();
+            var upPoint = coordinates[0];
+            var downPoint = map.locate(upPoint,0,-map.pixelToDistance(0,this._height));
+            line.setCoordinates([upPoint,downPoint]);
+        }
+    },
+
+    _resizeRow: function(cell, dragOffset) {
+        var rowNum = cell._row;
+        var dy = dragOffset.y;
+        var sign = -1;
+        if(dy<0) {
+            sign = 1;
+        }
+        var distance = this._map.computeDistance(new maptalks.Coordinate(0,0), new maptalks.Coordinate(0,dy));
+        var pixel = this._map.distanceToPixel(0,distance);
+        var height = pixel['height']*sign;
+        for(var i=rowNum;i<this._rowNum;i++) {
+            var row = this._grid[i];
+            for(var j=0;j<this._colNum;j++){
+                var cell = row[j];
+                var symbol = cell.getSymbol();
+                if(i===rowNum) {
+                    cell.options['boxMinHeight']+=height;
+                    if(cell.options['boxMinHeight']<symbol['markerHeight']) {
+                        symbol['markerHeight'] = cell.options['boxMinHeight'];
+                    }
+                    symbol['markerDy']+=height/2;
+                    symbol['textDy']+=height/2;
+                } else {
+                    symbol['markerDy']+=height;
+                    symbol['textDy']+=height;
+                }
+                cell.setSymbol(symbol);
+            }
+        }
     },
 
     _createAdjustLineForCol(map,cell,startPoint) {
@@ -678,105 +772,65 @@ maptalks.Grid = maptalks.Class.extend({
         return line;
     },
 
-    _addEventToColLine: function(colLine, cell) {
-        var me = this;
+    _addEventToColLine: function(map,colLine,cell) {
+        var me=this;
+        var symbol = cell.getSymbol();
         colLine.on('dragging',function(event){
-            var dragOffset = event['dragOffset'];
-            var dy = dragOffset.y;
-            var offset = new maptalks.Coordinate(0, -dy);
+            var startPoint=me.options['position'];
+            var endPoint=event['coordinate'];
+            var distance=map.computeDistance(startPoint,endPoint);
+            var pixel=map.distanceToPixel(distance,0);
+            var width=pixel['width']-symbol['markerWidth'];
+            me._width+=width;
+            me._resizeCol(cell,width);
+            //add dy to grid width
+            me._extendRowLine(map);
+
+            var dragOffset=event['dragOffset'];
+            var dx=dragOffset.x,dy=dragOffset.y;
+            var offset=new maptalks.Coordinate(0,-dy);
             colLine.translate(offset);
-            me._resizeCol(cell, dragOffset);
+            me._translateColLine(cell,new maptalks.Coordinate(dx,0));
+            symbol['markerWidth']+=width;
         });
     },
 
-    _resizeCol: function(cell, dragOffset) {
+    _resizeCol: function(cell,width) {
         var colNum = cell._col;
-        var dx = dragOffset.x;
-        var sign = 1;
-        if(dx<0) {
-            sign = -1;
-        }
-        var distance = this._map.computeDistance(new maptalks.Coordinate(0,0), dragOffset);
-        var pixel = this._map.distanceToPixel(distance, 0);
-        var width = pixel['width']*sign;
         for(var i=0,len=this._grid.length;i<len;i++) {
             var row = this._grid[i];
             for(var j=colNum,rowLength=row.length;j<rowLength;j++) {
                 var cell = row[j];
-                if(j===colNum) {
+                var symbol = cell.getSymbol();
+                if(j==colNum) {
                     cell.options['boxMinWidth']+=width;
-                }
-                var symbol = cell.getSymbol();
-                if(cell.options['boxMinWidth']<symbol['markerWidth']) {
                     symbol['markerWidth'] = cell.options['boxMinWidth'];
+                    symbol['markerDx']+=width/2;
+                    symbol['textDx']+=width/2;
+                } else {
+                    symbol['markerDx']+=width;
+                    symbol['textDx']+=width;
                 }
-                var cellSize = cell.getSize();
-                symbol['markerDx']+=width/2;
-                symbol['textDx']+=width/2;
                 cell.setSymbol(symbol);
             }
         }
     },
 
-    _createAdjustLineForRow(map,cell,startPoint) {
-        var size = cell.getSize();
-        var symbol = cell.getSymbol(),
-            dx = symbol['textDx'],
-            dy = symbol['textDy'];
-        var leftPoint = map.locate(startPoint,
-                        -map.pixelToDistance(size['width']/2,-2),
-                        -map.pixelToDistance(0,size['height']/2+dy-2));
-        var rightPoint = map.locate(startPoint,
-                        map.pixelToDistance(this._width-size['width']/2,-2),
-                        -map.pixelToDistance(0,size['height']/2+dy-2));
-        var line = new maptalks.LineString([leftPoint,rightPoint],{draggable:true, cursor:'s-resize'});
-        var symbol = {
-            'lineColor' : '#e2dfed',
-            'lineWidth' : 3,
-            'lineDasharray' : null,//线形
-            'lineOpacity' : 0.8
-        };
-        line.setSymbol(symbol);
-        return line;
-    },
-
-    _addEventToRowLine: function(rowLine, cell) {
-        var me = this;
-        rowLine.on('dragging',function(event){
-            var dragOffset = event['dragOffset'];
-            var dx = dragOffset.x;
-            var offset = new maptalks.Coordinate(-dx, 0);
-            rowLine.translate(offset);
-            me._resizeRow(cell, dragOffset);
-        });
-    },
-
-    _resizeRow: function(cell, dragOffset) {
-        var rowNum = cell._row;
-        var dy = dragOffset.y;
-        var sign = -1;
-        if(dy<0) {
-            sign = 1;
+    _translateColLine: function(cell, dragOffset) {
+        var colNum = cell._col;
+        for(var i=colNum+1,len=this._adjustCols.length;i<len;i++) {
+            var line = this._adjustCols[i];
+            line.translate(dragOffset);
         }
-        var distance = this._map.computeDistance(new maptalks.Coordinate(0,0), dragOffset);
-        var pixel = this._map.distanceToPixel(0,distance);
-        var height = pixel['height']*sign;
-        for(var i=rowNum;i<this._rowNum;i++) {
-            var row = this._grid[i];
-            for(var j=0;j<this._colNum;j++){
-                var cell = row[j];
-                if(i===rowNum) {
-                    cell.options['boxMinHeight']+=height;
-                }
-                var symbol = cell.getSymbol();
-                if(cell.options['boxMinHeight']<symbol['markerHeight']) {
-                    symbol['markerHeight'] = cell.options['boxMinHeight'];
-                }
-                var cellSize = cell.getSize();
-                symbol['markerDy']+=height/2;
-                symbol['textDy']+=height/2;
-                cell.setSymbol(symbol);
-            }
+    },
+
+    _extendRowLine: function(map) {
+        for(var i=0,len=this._adjustRows.length;i<len;i++) {
+            var line = this._adjustRows[i];
+            var coordinates = line.getCoordinates();
+            var leftPoint = coordinates[0];
+            var rightPoint = map.locate(leftPoint,map.pixelToDistance(this._width,0),0);
+            line.setCoordinates([leftPoint,rightPoint]);
         }
     },
 
