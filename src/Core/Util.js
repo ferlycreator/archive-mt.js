@@ -77,10 +77,12 @@ Z.Util = {
                     if (!this._nodeFS) {
                         this._nodeFS = require('fs');
                     }
-                    this._nodeFS.readFile(url,'binary',function(err,data) {
+                    var data = this._nodeFS.readFile(url,function(err,data) {
                         if (err) {
-                            console.error('fail to read:',url,data?data.length:0);
-                            return;
+                            var onerrorFn = img.onerror;
+                            if (onerrorFn) {
+                                onerrorFn.call(img);
+                            }
                         } else {
                             var onloadFn = img.onload;
                             if (onloadFn) {
@@ -88,8 +90,10 @@ Z.Util = {
                                     onloadFn.call(img);
                                 };
                             }
+
                             img.src = data;
                         }
+
                     });
                 }
             } catch (err) {
