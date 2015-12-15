@@ -88,15 +88,6 @@ Z.Label = Z.Marker.extend({
         }
     },
 
-    /**
-    * resize label
-    * @param {maptalks.Size} size
-    */
-    resize: function(size) {
-       this._refresh();
-       return this;
-    },
-
     setSymbol:function(symbol, noEvent) {
         if (!symbol || symbol === this.options['symbol']) {
            symbol = {};

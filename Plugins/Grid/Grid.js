@@ -112,10 +112,15 @@ maptalks.Grid = maptalks.Class.extend({
             if(maptalks.Util.isArray(data)){
                 for(var i=0,len=data.length;i<len;i++) {
                     var item = data[i];
-                    newDataset[i] = this._createRow(insertRowNum++, item);
+                    var row = this._createRow(insertRowNum, item);
+                    newDataset[i] = row;
+                    this._insertAdjustLineForNewRow(row,insertRowNum);
+                    insertRowNum+=1;
                 }
             } else {
-                newDataset.push(this._createRow(insertRowNum, data));
+                var row = this._createRow(insertRowNum, data);
+                newDataset.push(row);
+                this._insertAdjustLineForNewRow(row,insertRowNum);
             }
         }
         //添加新的数据集
@@ -128,8 +133,42 @@ maptalks.Grid = maptalks.Class.extend({
         this._adjustDatasetForRow(newDataset.length, lastDataset);
         this._grid = startDataset.concat(newDataset).concat(lastDataset);
         this._rowNum +=newDataset.length;
-        //添加行底部拉伸线
         return this;
+    },
+
+    _insertAdjustLineForNewRow: function(row,insertRowNum) {
+        var cell = row[0];
+        var map = this._adjustLayer.getMap();
+        //添加行底部拉伸线
+        var line = this._createAdjustLineForRow(map,cell);
+        var cellHeight = cell.options['boxMinHeight'];
+        this._height += cellHeight;
+        var distance = map.pixelToDistance(0,cellHeight);
+        var offset = map.locate(new maptalks.Coordinate(0,0),0,-distance);
+        //调整插入行之后的调整线的位置
+        for(var i=insertRowNum,len=this._adjustRows.length;i<len;i++) {
+            var rowLine = this._adjustRows[i];
+            rowLine.translate(offset);
+        }
+        this._adjustRows.splice(insertRowNum, 0, line);
+        this._adjustLayer.addGeometry(line);
+    },
+
+    _removeAdjustLineForRow: function(cell) {
+        var map = this._adjustLayer.getMap();
+        var rowNum = cell._row;
+        var line = this._adjustRows[rowNum];
+        line.remove();
+        //调整rowNum之后的调整线
+        var cellHeight = cell.options['boxMinHeight'];
+        this._height -= cellHeight;
+        var distance = map.pixelToDistance(0,cellHeight);
+        var offset = map.locate(new maptalks.Coordinate(0,0),0,distance);
+        for(var i=rowNum+1;i<this._adjustRows.length;i++) {
+            var rowLine = this._adjustRows[i];
+            rowLine.translate(offset);
+        }
+        this._adjustRows.splice(rowNum,1);
     },
 
     /**
@@ -152,23 +191,29 @@ maptalks.Grid = maptalks.Class.extend({
      * @param {Number} rowNum 行号
      */
     removeRow: function(rowNum) {
+        var removeRow = this._grid[rowNum];
+        var firstCell = removeRow[0];
+        var size = firstCell.getSize();
         for(var i=rowNum,len=this._grid.length;i<len;i++) {
             var row = this._grid[i];
+            if(i===rowNum) {
+                this._removeAdjustLineForRow(row[0]);
+            }
             for(var j=0,rowLength=row.length;j<rowLength;j++) {
                 var cell = row[j];
                 if(i>rowNum) {
                     var cellOffset = this._getCellOffset(i, 0);
                     cell._row -= 1;
-                    this._translateDy(cell,cellOffset);
+                    this._translateDy(cell,-size['height']);
                 } else {
                     cell.remove();
                 }
             }
         }
         //移除行数据
-        this._grid.splice(rowNum, 1);
+        this._grid.splice(rowNum,1);
         //总行数减少
-        this._rowNum -=1;
+        this._rowNum-=1;
     },
 
     /**
@@ -453,7 +498,7 @@ maptalks.Grid = maptalks.Class.extend({
             var row = lastDataset[i];
             for(var j=0,rowLength=row.length;j<rowLength;j++) {
                 row[j]._row += insertRowLength;
-                this._translateDy(row[j]);
+                this._translateDy(row[j],this._cellHeight);
             }
         }
         return this;
@@ -569,7 +614,26 @@ maptalks.Grid = maptalks.Class.extend({
     },
 
     _getCellOffset: function(row, col) {
-        return  {'dx':col*this._cellWidth, 'dy':row*this._cellHeight};
+        var dx=0,dy=0;
+        if(this._grid) {
+            if(row>0){
+                dy = this._cellHeight;
+                var rows = this._grid[row];
+                var cell = rows[0];
+                var symbol = cell.getSymbol();
+                dy=symbol['markerDy'];
+            }
+            if(col>0) {
+                var firstRow = this._grid[0];
+                var cell = firstRow[col];
+                var symbol = cell.getSymbol();
+                dx=symbol['markerDx'];
+            }
+        } else {
+            dx=this._cellWidth*col;
+            dy=this._cellHeight*row;
+        }
+        return  {'dx':dx,'dy':dy};
     },
 
     _getColumns: function() {
@@ -638,17 +702,15 @@ maptalks.Grid = maptalks.Class.extend({
         if(!this._adjustLayer) {
             this._adjustLayer = new maptalks.VectorLayer(adjustLayerId);
             map.addLayer(this._adjustLayer);
-            this._adjustLayer.bringToBack();
+//            this._adjustLayer.bringToBack();
         }
         this._adjustRows = new Array();
         this._adjustCols = new Array();
-        var startPoint = this.options['position'];
         //add row adjust line
         for(var i=0,len=this._grid.length;i<len;i++) {
             var row = this._grid[i];
             var cell = row[0];
-            var rowLine = this._createAdjustLineForRow(map,cell,startPoint);
-            this._addEventToRowLine(map, rowLine, cell);
+            var rowLine = this._createAdjustLineForRow(map,cell);
             this._adjustRows.push(rowLine);
         }
         this._adjustLayer.addGeometry(this._adjustRows);
@@ -657,21 +719,22 @@ maptalks.Grid = maptalks.Class.extend({
         var firstRow = this._grid[0];
         for(var i=0;i<this._colNum;i++) {
             var cell = firstRow[i];
-            var colLine = this._createAdjustLineForCol(map,cell,startPoint);
-            this._addEventToColLine(map,colLine, cell);
+            var colLine = this._createAdjustLineForCol(map,cell);
             this._adjustCols.push(colLine);
         }
         this._adjustLayer.addGeometry(this._adjustCols);
     },
 
-    _createAdjustLineForRow(map,cell,startPoint) {
-        var size = cell.getSize();
+    _createAdjustLineForRow(map,cell) {
+        var startPoint = this.options['position'];
         var symbol = cell.getSymbol(),
             dx = symbol['textDx'],
-            dy = symbol['textDy'];
+            dy = symbol['textDy'],
+            width = cell.options['boxMinWidth'],
+            height = cell.options['boxMinHeight'];
         var leftPoint = map.locate(startPoint,
-                        -map.pixelToDistance(size['width']/2,0),
-                        -map.pixelToDistance(0,size['height']/2+dy));
+                        -map.pixelToDistance(width/2,0),
+                        -map.pixelToDistance(0,height/2+dy));
         var rightPoint = map.locate(leftPoint,map.pixelToDistance(this._width,0),0);
         var line = new maptalks.LineString([leftPoint,rightPoint],{draggable:true, cursor:'s-resize'});
         var symbol = {
@@ -681,10 +744,11 @@ maptalks.Grid = maptalks.Class.extend({
             'lineOpacity' : 0.8
         };
         line.setSymbol(symbol);
+        this._addEventToRowLine(map,cell,line);
         return line;
     },
 
-    _addEventToRowLine: function(map, rowLine, cell) {
+    _addEventToRowLine: function(map,cell,rowLine) {
         var me = this;
         rowLine.on('dragging',function(event){
             var dragOffset = event['dragOffset'];
@@ -754,7 +818,8 @@ maptalks.Grid = maptalks.Class.extend({
         }
     },
 
-    _createAdjustLineForCol(map,cell,startPoint) {
+    _createAdjustLineForCol(map,cell) {
+        var startPoint = this.options['position'];
         var size = cell.getSize();
         var symbol = cell.getSymbol(),
             dx = symbol['textDx'],
@@ -769,29 +834,31 @@ maptalks.Grid = maptalks.Class.extend({
             'lineOpacity' : 0.8
         };
         line.setSymbol(symbol);
+        this._addEventToColLine(map,line,cell);
         return line;
     },
 
     _addEventToColLine: function(map,colLine,cell) {
         var me=this;
-        var symbol = cell.getSymbol();
         colLine.on('dragging',function(event){
-            var startPoint=me.options['position'];
-            var endPoint=event['coordinate'];
-            var distance=map.computeDistance(startPoint,endPoint);
-            var pixel=map.distanceToPixel(distance,0);
-            var width=pixel['width']-symbol['markerWidth'];
+            var symbol=cell.getSymbol();
+            var cellDx=symbol['markerDx'];
+            var cellSize=cell.getSize();
+            var cellWidth=cellSize['width'];
+
+            var startPoint=map.coordinateToContainerPoint(me.options['position']);
+            var endPoint=event['containerPoint'];
+            var pixel=endPoint.substract(startPoint);
+            var width=pixel['x']-(cellDx+cellWidth/2);
             me._width+=width;
             me._resizeCol(cell,width);
             //add dy to grid width
             me._extendRowLine(map);
 
             var dragOffset=event['dragOffset'];
-            var dx=dragOffset.x,dy=dragOffset.y;
-            var offset=new maptalks.Coordinate(0,-dy);
+            var offset=new maptalks.Coordinate(0,-dragOffset.y);
             colLine.translate(offset);
-            me._translateColLine(cell,new maptalks.Coordinate(dx,0));
-            symbol['markerWidth']+=width;
+            me._translateColLine(cell,new maptalks.Coordinate(dragOffset.x,0));
         });
     },
 
@@ -843,11 +910,10 @@ maptalks.Grid = maptalks.Class.extend({
         cell.setSymbol(symbol);
     },
 
-    _translateDy: function(cell){
-        var cellOffset = this._getCellOffsetTemp(cell._row, cell._col);
+    _translateDy: function(cell,height){
         var symbol = cell.getSymbol();
-        symbol['markerDy'] = cellOffset['dy'];
-        symbol['textDy'] = cellOffset['dy'];
+        symbol['markerDy'] += height;
+        symbol['textDy'] += height;
         cell.setSymbol(symbol);
     },
 
