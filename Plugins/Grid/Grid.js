@@ -80,6 +80,11 @@ maptalks.Grid = maptalks.Class.extend({
         this._addToLayer(this._grid,true);
         //create adjustment layer
         this._createAdjustLayer(this._map);
+        var me=this;
+
+        this._map.on('resize zoomend', function(){
+            me._refrestAdjustLayer(me._map);
+        });
         return this;
     },
 
@@ -133,6 +138,8 @@ maptalks.Grid = maptalks.Class.extend({
         this._adjustDatasetForRow(newDataset.length, lastDataset);
         this._grid = startDataset.concat(newDataset).concat(lastDataset);
         this._rowNum +=newDataset.length;
+        //延展列调整线
+        this._extendColLine();
         return this;
     },
 
@@ -171,6 +178,41 @@ maptalks.Grid = maptalks.Class.extend({
         this._adjustRows.splice(rowNum,1);
     },
 
+    _insertAdjustLineForNewCol: function(cell, insertColNum) {
+        var map = this._adjustLayer.getMap();
+        //添加行底部拉伸线
+        var line = this._createAdjustLineForCol(map,cell);
+        var cellWidth = cell.options['boxMinWidth'];
+        this._width += cellWidth;
+        var distance = map.pixelToDistance(cellWidth,0);
+        var offset = map.locate(new maptalks.Coordinate(0,0),distance,0);
+        //调整插入列之后的调整线的位置
+        for(var i=insertColNum,len=this._adjustCols.length;i<len;i++) {
+            var colLine = this._adjustCols[i];
+            colLine.translate(offset);
+        }
+        this._adjustCols.splice(insertColNum, 0, line);
+        this._adjustLayer.addGeometry(line);
+    },
+
+    _removeAdjustLineForCol: function(cell) {
+        var map = this._adjustLayer.getMap();
+        var colNum = cell._col;
+        var line = this._adjustCols[colNum];
+        line.remove();
+        //调整colNum之后的调整线
+        var size = cell.getSize();
+        var cellWidth = size['width'];
+        this._width -= cellWidth;
+        var distance = map.pixelToDistance(cellWidth,0);
+        var offset = map.locate(new maptalks.Coordinate(0,0),-distance,0);
+        for(var i=colNum+1;i<this._adjustCols.length;i++) {
+            var colLine = this._adjustCols[i];
+            colLine.translate(offset);
+        }
+        this._adjustCols.splice(colNum,1);
+    },
+
     /**
      * 添加一列
      * @param {Number} colNum 添加新列的位置
@@ -183,6 +225,8 @@ maptalks.Grid = maptalks.Class.extend({
             insertColNum = colNum;
         }
         this._createCol(insertColNum, data);
+        //延展行调整线
+        this._extendRowLine();
         return this;
     },
 
@@ -214,6 +258,8 @@ maptalks.Grid = maptalks.Class.extend({
         this._grid.splice(rowNum,1);
         //总行数减少
         this._rowNum-=1;
+        //延展列调整线
+        this._extendColLine();
     },
 
     /**
@@ -221,22 +267,31 @@ maptalks.Grid = maptalks.Class.extend({
      * @param {Number} colNum 列号
      */
     removeCol: function(colNum) {
+        var firstRow = this._grid[0];
+        var removeCell = firstRow[colNum];
+        var size = removeCell.getSize();
         for(var i=0,len=this._grid.length;i<len;i++) {
             var row = this._grid[i];
             for(var j=colNum,rowLength=row.length;j<rowLength;j++) {
                 var cell = row[j];
+                var width = 0;
+                if(i==0&&j==colNum) {
+                    this._removeAdjustLineForCol(cell);
+                }
                 if(j>colNum) {
-                    cell._col -= 1;
-                    this._translateDx(cell);
+                    cell._col-=1;
+                    this._translateDx(cell,-size['width']);
                 } else {
                     cell.remove();
                 }
             }
             //删除列数据
-            this._grid[i].splice(colNum, 1);
+            this._grid[i].splice(colNum,1);
         }
         //移除列数据
-        this._colNum -=1;
+        this._colNum-=1;
+        //延展行调整线
+        this._extendRowLine();
     },
 
     remove: function(){
@@ -524,6 +579,10 @@ maptalks.Grid = maptalks.Class.extend({
                         .on('contextmenu',this._addContextmenuToCell,this);
                     cell.addTo(this._layer);
                     colCell.push(cell);
+                    if(i==0){
+                        //添加列调整线
+                        this._insertAdjustLineForNewCol(cell,insertColNum+j);
+                    }
                 }
                 cells.push(colCell);
             } else {
@@ -534,7 +593,6 @@ maptalks.Grid = maptalks.Class.extend({
                     cell['dataIndex'] = 'new';
                     cell['type'] = 'string';
                     this._columns.splice(insertColNum+j, 0, cell);
-
                 }
                 cell._row = i;
                 cell._col = insertColNum;
@@ -542,30 +600,34 @@ maptalks.Grid = maptalks.Class.extend({
                     .on('contextmenu',this._addContextmenuToCell,this);
                 cell.addTo(this._layer);
                 cells.push(cell);
+                if(i==0){
+                    //添加列调整线
+                    this._insertAdjustLineForNewCol(cell, insertColNum);
+                }
             }
         }
-        //调整之前的列
-        this._adjustDatasetForCol(startCol,insertColLength);
         for(var i=0,len=this._grid.length;i<len;i++) {
             var dataLength = data.length;
             if(dataLength>0) {
                 for(var j=0;j<dataLength;j++){
-                    this._grid[i].splice(insertColNum+j, 0, cells[i]);
+                    this._grid[i].splice(insertColNum+j,0,cells[i]);
                 }
             } else {
-                this._grid[i].splice(insertColNum, 0, cells[i]);
+                this._grid[i].splice(insertColNum,0,cells[i]);
             }
         }
         this._colNum+=insertColLength;
+        //调整之后的列
+        this._adjustDatasetForCol(startCol,insertColLength);
     },
 
-    _adjustDatasetForCol: function(start, insertColLength) {
+    _adjustDatasetForCol: function(start,insertColLength) {
         for(var i=0,len=this._grid.length;i<len;i++) {
             var rowData = this._grid[i];
-            for(var j=start,rowLength=rowData.length;j<rowLength;j++) {
+            for(var j=start+1,rowLength=rowData.length;j<rowLength;j++) {
                 var cell = rowData[j];
                 cell._col += insertColLength;
-                this._translateDx(cell);
+                this._translateDx(cell,this._cellWidth);
             }
         }
     },
@@ -696,6 +758,19 @@ maptalks.Grid = maptalks.Class.extend({
         return label;
     },
 
+    _refrestAdjustLayer: function(map) {
+        for(var i=0,len=this._adjustRows.length;i<len;i++) {
+            var line = this._adjustRows[i];
+            line.remove();
+        }
+        for(var i=0,len=this._adjustCols.length;i<len;i++) {
+            var line = this._adjustCols[i];
+            line.remove();
+        }
+        this._createAdjustLayer(map);
+
+    },
+
     _createAdjustLayer: function(map) {
         var adjustLayerId = 'grid_adjustment_layer';
         this._adjustLayer = map.getLayer(adjustLayerId);
@@ -765,7 +840,7 @@ maptalks.Grid = maptalks.Class.extend({
             me._resizeRow(cell, dragOffset);
             me._translateRowLine(cell, new maptalks.Coordinate(0,dy));
             //add dy to grid width
-            me._extendColLine(map);
+            me._extendColLine();
         });
     },
 
@@ -777,7 +852,8 @@ maptalks.Grid = maptalks.Class.extend({
         }
     },
 
-    _extendColLine: function(map) {
+    _extendColLine: function() {
+        var map = this._adjustLayer.getMap();
         for(var i=0,len=this._adjustCols.length;i<len;i++) {
             var line = this._adjustCols[i];
             var coordinates = line.getCoordinates();
@@ -853,7 +929,7 @@ maptalks.Grid = maptalks.Class.extend({
             me._width+=width;
             me._resizeCol(cell,width);
             //add dy to grid width
-            me._extendRowLine(map);
+            me._extendRowLine();
 
             var dragOffset=event['dragOffset'];
             var offset=new maptalks.Coordinate(0,-dragOffset.y);
@@ -891,7 +967,8 @@ maptalks.Grid = maptalks.Class.extend({
         }
     },
 
-    _extendRowLine: function(map) {
+    _extendRowLine: function() {
+        var map = this._adjustLayer.getMap();
         for(var i=0,len=this._adjustRows.length;i<len;i++) {
             var line = this._adjustRows[i];
             var coordinates = line.getCoordinates();
@@ -902,11 +979,10 @@ maptalks.Grid = maptalks.Class.extend({
     },
 
     //TODO 临时方法,提供label的dx/dy调整,待geometry提供类似方法
-    _translateDx: function(cell){
-        var cellOffset = this._getCellOffsetTemp(cell._row, cell._col);
+    _translateDx: function(cell,width){
         var symbol = cell.getSymbol();
-        symbol['markerDx'] = cellOffset['dx'];
-        symbol['textDx'] = cellOffset['dx'];
+        symbol['markerDx'] += width;
+        symbol['textDx'] += width;
         cell.setSymbol(symbol);
     },
 
@@ -915,10 +991,6 @@ maptalks.Grid = maptalks.Class.extend({
         symbol['markerDy'] += height;
         symbol['textDy'] += height;
         cell.setSymbol(symbol);
-    },
-
-    _getCellOffsetTemp: function(row, col) {
-        return  {'dx':col*this._cellWidth, 'dy':row*this._cellHeight};
     }
 
 });
