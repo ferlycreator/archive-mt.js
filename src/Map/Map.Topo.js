@@ -70,7 +70,8 @@ Z.Map.include({
             }
         }
         var point = this.coordinateToViewPoint(opts['coordinate']).round();
-        var fn = opts['success'];
+        var fn = opts['success'],
+            filter = opts['filter'];
         var hits = [],
             isEnd =false;
         for (i = layers.length - 1; i >= 0; i--) {
@@ -91,7 +92,7 @@ Z.Map.include({
                 if (!pxExtent || !pxExtent.containsPoint(point)) {
                     continue;
                 }
-                if (geo._containsPoint(point)) {
+                if (geo._containsPoint(point) && (filter && filter(geo))) {
                     hits.push(geo);
                     if (opts['count']) {
                         if (hits.length >= opts['count']) {

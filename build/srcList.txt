@@ -76,7 +76,7 @@
 ../src/Map/Handler/Map.DoubleClickZoom.js
 ../src/Map/Handler/Map.ScrollWheelZoom.js
 ../src/Map/Handler/Map.TouchZoom.js
-../src/Map/Handler/Map.EventToGeometry.js
+../src/Map/Handler/Map.GeometryEvents.js
 ../src/Renders/render.js
 ../src/Renders/Animation/Animation.js
 ../src/Renders/Map/Render.Map.js
