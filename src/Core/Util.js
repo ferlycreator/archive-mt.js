@@ -44,7 +44,7 @@ Z.Util = {
     },
 
     loadImage:function(img, url) {
-        if (Z.runningInNode && !img.setAttribute) {
+        if (Z.runningInNode) {
             //canvas-node的Image对象
             try {
                 if (Z.Util.isURL(url)) {
