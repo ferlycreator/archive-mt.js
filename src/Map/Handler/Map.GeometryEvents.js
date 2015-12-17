@@ -1,12 +1,12 @@
 Z.Map.mergeOptions({
     /**
-     * @cfg {Boolean} [eventToGeometry="true"] geometry事件监控
+     * @cfg {Boolean} [geometryEvents="true"] geometry事件监控
      * @member maptalks.Map
      */
-    'eventToGeometry': true
+    'geometryEvents': true
 });
 
-Z.Map.EventToGeometry = Z.Handler.extend({
+Z.Map.GeometryEvents = Z.Handler.extend({
     EVENTS: 'mousedown mouseup mousemove click dblclick contextmenu touchstart touchmove touchend',
 
     addHooks: function() {
@@ -19,17 +19,17 @@ Z.Map.EventToGeometry = Z.Handler.extend({
             canvasContainer = map._panels.mapWrapper;
         }
         if(canvasContainer) {
-            Z.DomUtil.on(canvasContainer,this.EVENTS, this._queryGeometries, this);
+            Z.DomUtil.on(canvasContainer,this.EVENTS, this._identifyGeometryEvents, this);
         }
         //之所以取消在map上的监听, 是因为map事件在geometry事件之前发生, 会导致一些互动上的问题
-        // map.on('_mousedown _mouseup _mousemove _click _dblclick _contextmenu', this._queryGeometries, this);
+        // map.on('_mousedown _mouseup _mousemove _click _dblclick _contextmenu', this._identifyGeometryEvents, this);
 
     },
 
     removeHooks: function() {
         var map = this.target;
         /**
-        map.off('mousedown mouseup mousemove click dblclick contextmenu', this._queryGeometries, this);*/
+        map.off('mousedown mouseup mousemove click dblclick contextmenu', this._identifyGeometryEvents, this);*/
         var canvasContainer;
         if (Z.Browser.ie9) {
             canvasContainer = map._panels.canvasLayerContainer;
@@ -37,26 +37,47 @@ Z.Map.EventToGeometry = Z.Handler.extend({
             canvasContainer = map._panels.mapPlatform;
         }
         if(canvasContainer) {
-            Z.DomUtil.off(canvasContainer,this.EVENTS, this._queryGeometries, this);
+            Z.DomUtil.off(canvasContainer,this.EVENTS, this._identifyGeometryEvents, this);
         }
-        // map.off('_mousedown _mouseup _mousemove _click _dblclick _contextmenu', this._queryGeometries, this);
+        // map.off('_mousedown _mouseup _mousemove _click _dblclick _contextmenu', this._identifyGeometryEvents, this);
     },
 
-    _queryGeometries: function(event) {
+    _identifyGeometryEvents: function(domEvent) {
         var map = this.target;
         if (map.isBusy() || !map._canvasLayers || map._canvasLayers.length === 0) {
             return;
         }
-        var domEvent = event;//param['domEvent'];
-        var eventType = domEvent.type;
-        var containerPoint = Z.DomUtil.getEventContainerPoint(domEvent, map._containerDOM);
-        var coordinate = map.containerPointToCoordinate(containerPoint);
+        var layers = [];
+        for (var i = 0; i < map._canvasLayers.length; i++) {
+            if (map._canvasLayers[i].options['geometryEvents']) {
+                layers.push(map._canvasLayers[i]);
+            }
+        };
+        if (layers.length === 0) {
+            return;
+        }
+        var eventType = domEvent.type,
+            containerPoint = Z.DomUtil.getEventContainerPoint(domEvent, map._containerDOM),
+            coordinate = map.containerPointToCoordinate(containerPoint);
+        var geometryCursorStyle = null;
         this.options = {
             'includeInternals' : true,
-            //return only one geometry on top
+            //return only one geometry on top,
+            'filter':function(geometry) {
+                var eventToFire = geometry._getEventTypeToFire(domEvent);
+                if (eventType === 'mousemove') {
+                    if (!geometryCursorStyle && geometry.options['cursor']) {
+                        geometryCursorStyle = geometry.options['cursor'];
+                    }
+                }
+                if (!geometry.hasListeners(eventToFire)) {
+                    return false;
+                }
+                return true;
+            },
             'count' : 1,
             'coordinate' : coordinate,
-            'layers': map._canvasLayers,
+            'layers': layers,
             'success': Z.Util.bind(fireGeometryEvent, this)
         };
         var me = this;
@@ -66,30 +87,24 @@ Z.Map.EventToGeometry = Z.Handler.extend({
         if ('mousemove' === eventType  || eventType === 'touchmove') {
             this._queryIdentifyTimeout = setTimeout(function() {
                 map.identify(me.options);
-            }, 10);
+            }, 20);
         } else {
             map.identify(me.options);
         }
 
         function fireGeometryEvent(geometries) {
             var i;
-            if(eventType === 'mousemove' || eventType === 'touchmove') {
+            if(eventType === 'mousemove') {
                 var geoMap = {};
-                var hasCursor = false;
                 if (Z.Util.isArrayHasData(geometries)) {
                     for (i = geometries.length - 1; i >= 0; i--) {
                         geoMap[geometries[i]._getInternalId()] = geometries[i];
                         //the first geometry is on the top, so ignore the latter cursors.
-                        if (!hasCursor && geometries[i].options['cursor']) {
-                            map._setPriorityCursor(geometries[i].options['cursor']);
-                            hasCursor = true;
-                        }
                         geometries[i]._onMouseOver(domEvent);
                     }
                 }
-                if (!hasCursor) {
-                    map._setPriorityCursor(null);
-                }
+
+                map._setPriorityCursor(geometryCursorStyle);
 
                 var oldTargets = me._prevMouseOverTargets;
                 me._prevMouseOverTargets = geometries;
@@ -125,4 +140,4 @@ Z.Map.EventToGeometry = Z.Handler.extend({
     }
 });
 
-Z.Map.addInitHook('addHandler', 'eventToGeometry', Z.Map.EventToGeometry);
+Z.Map.addInitHook('addHandler', 'geometryEvents', Z.Map.GeometryEvents);

@@ -180,7 +180,7 @@ Z.Painter = Z.Class.extend({
             if (isRealTime) {
                 render.rendRealTime();
             } else {
-                render.rend(null,needPromise);
+                render.rend(null,!needPromise);
             }
         }
     },

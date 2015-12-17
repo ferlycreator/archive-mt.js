@@ -513,7 +513,12 @@ Z.Editor=Z.Class.extend({
         var vertexHandles = [],
             newVertexHandles = [];
         function getVertexCoordinates() {
-            return shadow.getCoordinates()[0];
+            if (shadow instanceof Z.Polygon) {
+                return shadow.getCoordinates()[0];
+            } else {
+                return shadow.getCoordinates();
+            }
+
         }
         function getVertexPrjCoordinates() {
             return shadow._getPrjPoints();
@@ -571,8 +576,12 @@ Z.Editor=Z.Class.extend({
                 nextIndex = index - 1;
             }
             //refresh two neighbor "new vertex" handles.
-            newVertexHandles[index][propertyOfVertexRefreshFn]();
-            newVertexHandles[nextIndex][propertyOfVertexRefreshFn]();
+            if (newVertexHandles[index]) {
+                newVertexHandles[index][propertyOfVertexRefreshFn]();
+            }
+            if (newVertexHandles[nextIndex]) {
+                newVertexHandles[nextIndex][propertyOfVertexRefreshFn]();
+            }
 
             me.fireEditEvent('shapechanging');
         }

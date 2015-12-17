@@ -4,7 +4,8 @@ Z.VectorLayer=Z.OverlayLayer.extend({
 
     options:{
         'enableSimplify'    : true,
-        'cursor'            : 'pointer'
+        'cursor'            : 'pointer',
+        'geometryEvents'    : true
     },
 
     /**

@@ -8,28 +8,25 @@ Z.Geometry.include({
         if (!this.getMap()) {
             return;
         }
-        //map抛过来的事件中有originEvent, 而dom直接抛的没有
-        var originalEvent = event;
+        var eventType = this._getEventTypeToFire(event);
+        if ('contextmenu' === eventType && this.hasListeners('contextmenu')) {
+            Z.DomUtil.stopPropagation(event);
+            Z.DomUtil.preventDefault(event);
+        }
+        var params = this._getEventParams(event, eventType);
+        this._fireEvent(eventType, params);
+    },
+
+    _getEventTypeToFire:function(originalEvent) {
         var eventType = originalEvent.type;
-        var eventFired = eventType;
-        //TODO 未来需要加入touch事件
-        /*if (eventFired !== 'mousedown' && eventFired !== 'mouseup' || e) {
-            //只有mousedown和mouseup事件允许继续传递, 以让map能够拖动
-            Z.DomUtil.stopPropagation(originalEvent);
-        }*/
         //事件改名
-        if ('click' === eventFired || 'mousedown' === eventFired) {
+        if ('click' === eventType || 'mousedown' === eventType) {
             var button = originalEvent.button;
             if (button === 2) {
-                eventFired = 'contextmenu';
+                eventType = 'contextmenu';
             }
         }
-        if ('contextmenu' === eventFired && this.hasListeners('contextmenu')) {
-            Z.DomUtil.stopPropagation(originalEvent);
-            Z.DomUtil.preventDefault(originalEvent);
-        }
-        var params = this._getEventParams(originalEvent, eventFired);
-        this._fireEvent(eventFired, params);
+        return eventType;
     },
 
     /**
