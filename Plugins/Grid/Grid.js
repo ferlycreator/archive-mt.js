@@ -816,7 +816,7 @@ maptalks.Grid = maptalks.Class.extend({
         this._adjustLayer.addGeometry(this._adjustCols);
     },
 
-    _createAdjustLineForRow(map,cell) {
+    _createAdjustLineForRow: function(map,cell) {
         var startPoint = this.options['position'];
         var symbol = cell.getSymbol(),
             dx = symbol['textDx'],
@@ -911,7 +911,7 @@ maptalks.Grid = maptalks.Class.extend({
         }
     },
 
-    _createAdjustLineForCol(map,cell) {
+    _createAdjustLineForCol: function(map,cell) {
         var startPoint = this.options['position'];
         var size = cell.getSize();
         var symbol = cell.getSymbol(),

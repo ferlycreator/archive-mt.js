@@ -12,7 +12,7 @@
 <body scroll="no" onload="initMap();">
 <div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
 <script type="text/javascript" >
-    var mapObj;
+    var mapObj,label;
     function initMap(){
         //创建地图对象
         mapObj = new maptalks.Map("mapObj",{
@@ -59,7 +59,7 @@
             'textHorizontalAlignment': 'middle',//left middle right
             'textVerticalAlignment': 'top'//top middle bottom
         };
-        var label = new maptalks.Label('上海站精选\n二店', coordinate, {draggable:true,
+        label = new maptalks.Label('上海站精选\n二店', coordinate, {draggable:true,
            'boxAutoSize': false,
            'boxMinWidth': 100,
            'boxMinHeight': 50,

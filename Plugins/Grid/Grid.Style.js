@@ -183,7 +183,7 @@ maptalks.GridStyle = maptalks.Class.extend({
         }
     },
 
-    _setStyleToCell(cell, attr, value) {
+    _setStyleToCell: function(cell, attr, value) {
         var symbol = cell.getSymbol();
         if(attr==='textAlign') {
             cell.setTextAlign(value);
