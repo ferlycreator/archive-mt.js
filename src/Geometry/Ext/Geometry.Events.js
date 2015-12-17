@@ -10,10 +10,10 @@ Z.Geometry.include({
         }
         var eventType = this._getEventTypeToFire(event);
         if ('contextmenu' === eventType && this.hasListeners('contextmenu')) {
-            Z.DomUtil.stopPropagation(originalEvent);
-            Z.DomUtil.preventDefault(originalEvent);
+            Z.DomUtil.stopPropagation(event);
+            Z.DomUtil.preventDefault(event);
         }
-        var params = this._getEventParams(originalEvent, eventType);
+        var params = this._getEventParams(event, eventType);
         this._fireEvent(eventType, params);
     },
 
