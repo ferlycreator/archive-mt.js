@@ -128,7 +128,7 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
             isClose = false;
         }
         if (ring.length < least) {
-            throw new Error(this.exceptions['INVALID_COORDINATES']+', ring length is only '+ring.length);
+            //throw new Error(this.exceptions['INVALID_COORDINATES']+', ring length is only '+ring.length);
         }
         return isClose;
     },
