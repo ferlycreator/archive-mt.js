@@ -20,10 +20,8 @@ Z['Map']=Z.Map=Z.Class.extend({
         "ecoTransform" : false,
 
         "panAnimation":true,
-        //每秒滑动的像素距离
+        //default pan animation duration
         "panAnimationDuration" : 600,
-
-        "ecoTransform" : false,
 
         'enableZoom':true,
         'enableInfoWindow':true,
