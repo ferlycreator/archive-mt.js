@@ -26,6 +26,9 @@ Z.render.map.Dom = Z.render.map.Render.extend({
             // this.rend();
             this._refreshSVGPaper();
         },this);
+        if (typeof window !== 'undefined' ) {
+            Z.DomUtil.on(window, 'resize', this._onResize, this);
+        }
         if (!Z.Browser.mobile && Z.Browser.canvas) {
              this._onMapMouseMove=function(param) {
                 var vp = map._containerPointToViewPoint(param['containerPoint']);
@@ -164,6 +167,14 @@ Z.render.map.Dom = Z.render.map.Render.extend({
             this._context.scale(2, 2);
         }
         this._panels.canvasLayerContainer.appendChild(this._canvas);
+    },
+
+    /**
+     * 设置地图的watcher, 用来监视地图容器的大小变化
+     * @ignore
+     */
+    _onResize:function() {
+        this.map.invalidateSize();
     },
 
     /**

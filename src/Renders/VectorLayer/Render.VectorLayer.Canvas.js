@@ -235,17 +235,15 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
                             var img = new Image();
                             img.onload = function(){
                                 me._resources.addResource(url,this);
-                                resolve({/*'url':this.src,'image':img*/});
+                                resolve({});
                             };
                             img.onabort = function(){
-                                //me._resources.addResource(this.src,this);
-                                resolve({/*'url':this.src,'image':img*/});
+                                resolve({});
                             };
                             img.onerror = function(){
-                                resolve({/*'url':this.src,'image':img*/});
+                                resolve({});
                             };
                             Z.Util.loadImage(img,  resourceUrls[i]);
-                            // img.src = resourceUrls[i];
                         });
                         promises.push(promise);
                     } else {
@@ -265,7 +263,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
 
     _draw:function() {
         var map = this.getMap();
-        if (!map /*|| map.isBusy()*/) {
+        if (!map) {
             return;
         }
         if (this._layer.isEmpty()) {
@@ -277,7 +275,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
             this._createCanvas();
         }
 
-        var fullExtent = map._getViewExtent()/*.expand(size)*/;
+        var fullExtent = map._getViewExtent();
         this._clearCanvas();
         var me = this;
         var counter = 0;

@@ -821,15 +821,32 @@ Z['Map']=Z.Map=Z.Class.extend({
         return coordinate;
     },
 //-----------------------------------------------------------------------
+    /**
+     * Checks if the map container size changed
+     */
+    invalidateSize:function() {
+        if (this._resizeTimeout) {
+            clearTimeout(this._resizeTimeout);
+        }
+        var me = this;
+        this._resizeTimeout = setTimeout(function() {
+            var watched = me._getContainerDomSize();
+            if (me.width !== watched.width || me.height !== watched.height) {
+                var oldHeight = me.height;
+                var oldWidth = me.width;
+                me._updateMapSize(watched);
+                var resizeOffset = new Z.Point((watched.width-oldWidth) / 2,(watched.height-oldHeight) / 2);
+                me._offsetCenterByPixel(resizeOffset);
+                /**
+                 * 触发map的resize事件
+                 * @member maptalks.Map
+                 * @event resize
+                 */
+                me._fireEvent('resize');
+            }
+        }, 100);
 
-    _onResize:function(resizeOffset) {
-        this._offsetCenterByPixel(resizeOffset);
-        /**
-         * 触发map的resize事件
-         * @member maptalks.Map
-         * @event resize
-         */
-        this._fireEvent('resize');
+        return this;
     },
 
     _fireEvent:function(eventName, param) {
@@ -840,13 +857,8 @@ Z['Map']=Z.Map=Z.Class.extend({
 
     _Load:function() {
         this._originZoomLevel = this._zoomLevel;
-        if (!Z.runningInNode) {
-            this._initContainerWatcher();
-        }
-
         this._registerDomEvents();
         this._loadAllLayers();
-        // this.callInitHooks();
         this._loaded = true;
         this._callOnLoadHooks();
         //this.fire('mapready');
@@ -880,7 +892,6 @@ Z['Map']=Z.Map=Z.Class.extend({
      */
     getLayers:function() {
         return this._getLayers(function(layer) {
-            //layer.getId().indexOf(Z.internalLayerPrefix)表示是内部图层
             if (layer === this._baseTileLayer || layer.getId().indexOf(Z.internalLayerPrefix) >= 0) {
                 return false;
             }
@@ -1234,26 +1245,6 @@ Z['Map']=Z.Map=Z.Class.extend({
     getPanel: function() {
         /*return this._panels.mapViewPort;*/
         return this._getRender().getPanel();
-    },
-
-    /**
-     * 设置地图的watcher, 用来监视地图容器的大小变化
-     * @ignore
-     */
-    _initContainerWatcher:function() {
-        var map = this;
-        map._watcher = setInterval(function() {
-            if (map.isBusy()) {
-                return;
-            }
-            var watched = map._getContainerDomSize();
-            if (map.width !== watched.width || map.height !== watched.height) {
-                var oldHeight = map.height;
-                var oldWidth = map.width;
-                map._updateMapSize(watched);
-                map._onResize(new Z.Point((watched.width-oldWidth) / 2,(watched.height-oldHeight) / 2));
-            }
-        },800);
     }
 });
 
