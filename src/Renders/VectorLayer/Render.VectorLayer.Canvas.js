@@ -280,6 +280,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         var fullExtent = map._getViewExtent()/*.expand(size)*/;
         this._clearCanvas();
         var me = this;
+        var counter = 0;
         this._shouldEcoTransform = true;
         this._layer._eachGeometry(function(geo) {
             //geo的map可能为null,因为绘制为延时方法
@@ -290,9 +291,13 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
             if (!ext || !ext.isIntersect(fullExtent)) {
                 return;
             }
+            counter++;
             var painter = geo._getPainter();
             if (me._shouldEcoTransform && painter.hasPointSymbolizer()) {
                 me._shouldEcoTransform = false;
+            }
+            if (counter > me._layer.options['thresholdOfEcoTransform']) {
+                me._shouldEcoTransform = true;
             }
             painter.paint();
         });

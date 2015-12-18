@@ -23,6 +23,8 @@ Z['Map']=Z.Map=Z.Class.extend({
         //每秒滑动的像素距离
         "panAnimationDuration" : 600,
 
+        "ecoTransform" : false,
+
         'enableZoom':true,
         'enableInfoWindow':true,
         'crs':Z.CRS.GCJ02,

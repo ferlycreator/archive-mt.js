@@ -3,9 +3,10 @@ Z.VectorLayer=Z.OverlayLayer.extend({
     type : 'vector',
 
     options:{
-        'enableSimplify'    : true,
-        'cursor'            : 'pointer',
-        'geometryEvents'    : true
+        'enableSimplify'            : true,
+        'cursor'                    : 'pointer',
+        'geometryEvents'            : true,
+        'thresholdOfEcoTransform'   : 30
     },
 
     /**
