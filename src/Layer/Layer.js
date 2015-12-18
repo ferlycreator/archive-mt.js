@@ -162,6 +162,15 @@ Z['Layer']=Z.Layer=Z.Class.extend({
         if (Z.Util.isNumber(this.options['opacity']) && this.options['opacity'] <= 0) {
             return false;
         }
+        var map = this.getMap();
+        if (map) {
+            var zoom = map.getZoom();
+            if ((this.options['maxZoom'] !== -1 && this.options['maxZoom'] < zoom)
+                    || this.options['minZoom'] > zoom) {
+                return false;
+            }
+        }
+
         if (Z.Util.isNil(this.options['visible'])) {
             this.options['visible'] = true;
         }
