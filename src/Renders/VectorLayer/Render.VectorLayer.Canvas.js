@@ -204,60 +204,63 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
             this._requestMapToRend();
             return;
         }
-        var me = this;
-        var preResources = this._resources;
-        //如果resource已经存在, 则不再重复载入资源
-        /*if (this._resources) {
-            return [new Z.Promise(function(resolve, reject) {resolve(me._resources);})];
-        }*/
-        //20150530 loadResource不加载canvasLayer中的geometry icon资源，故每次绘制canvas都去重新检查并下载资源
-        var promises = [];
-        this._resources = new Z.render.vectorlayer.Canvas.Resources();
+        var resourceUrls = [];
         this._layer._eachGeometry(function(geo) {
             if (!geo || !geo.isVisible()) {
                 return;
             }
-            /*if (!ext || !ext.isIntersect(mapExtent)) {
-                return;
-            }*/
-            var resourceUrls = geo._getExternalResource();
-            if (Z.Util.isArrayHasData(resourceUrls)) {
-                //重复
-                var cache = {};
-                for (var i = resourceUrls.length - 1; i >= 0; i--) {
-                    var url = resourceUrls[i];
-                    if (cache[url]) {
-                        continue;
-                    }
-                    cache[url] = 1;
-                    if (!preResources || !preResources.getImage(url)) {
-                        var promise = new Z.Promise(function(resolve, reject) {
-                            var img = new Image();
-                            img.onload = function(){
-                                me._resources.addResource(url,this);
-                                resolve({});
-                            };
-                            img.onabort = function(){
-                                resolve({});
-                            };
-                            img.onerror = function(){
-                                resolve({});
-                            };
-                            Z.Util.loadImage(img,  resourceUrls[i]);
-                        });
-                        promises.push(promise);
-                    } else {
-                        me._resources.addResource(url,preResources.getImage(url));
-                    }
+            resourceUrls = resourceUrls.concat(geo._getExternalResource());
+        });
+        this._loadResources(resourceUrls, this._draw, this);
+    },
+
+    /**
+     * loadResource from resourceUrls
+     * @param  {[String]} resourceUrls Array of urls to load
+     * @param  {fn} onComplete          callback after loading complete
+     * @param  {object} context      callback's context
+     */
+    _loadResources:function(resourceUrls, onComplete, context) {
+        var me = this;
+        var preResources = this._resources;
+        this._resources = new Z.render.vectorlayer.Canvas.Resources();
+        var promises = [];
+        if (Z.Util.isArrayHasData(resourceUrls)) {
+            //重复
+            var cache = {};
+            for (var i = resourceUrls.length - 1; i >= 0; i--) {
+                var url = resourceUrls[i];
+                if (cache[url]) {
+                    continue;
+                }
+                cache[url] = 1;
+                if (!preResources || !preResources.getImage(url)) {
+                    var promise = new Z.Promise(function(resolve, reject) {
+                        var img = new Image();
+                        img.onload = function(){
+                            me._resources.addResource(url,this);
+                            resolve({});
+                        };
+                        img.onabort = function(){
+                            resolve({});
+                        };
+                        img.onerror = function(){
+                            resolve({});
+                        };
+                        Z.Util.loadImage(img,  resourceUrls[i]);
+                    });
+                    promises.push(promise);
+                } else {
+                    me._resources.addResource(url,preResources.getImage(url));
                 }
             }
-        });
+        }
         if (promises.length > 0) {
             Z.Promise.all(promises).then(function(reources) {
-                me._draw();
+                onComplete.call(context);
             });
         } else {
-            this._draw();
+            onComplete.call(context);
         }
     },
 

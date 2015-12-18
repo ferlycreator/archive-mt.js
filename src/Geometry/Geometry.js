@@ -627,22 +627,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     _getExternalResource:function() {
         var geometry = this;
         var symbol = geometry.getSymbol();
-        if (!symbol) {
-            return null;
-        }
-        var resources = [];
-        var icon = symbol['markerFile'];
-        if (icon) {
-            resources.push(icon);
-        }
-        icon = symbol['shieldFile'];
-        if (icon) {
-            resources.push(icon);
-        }
-        var fill = symbol['polygonPatternFile'];
-        if (fill) {
-            resources.push(Z.Util.extractCssUrl(fill));
-        }
+        var resources = Z.Geometry.getExternalResource(symbol);
         return resources;
     },
 
@@ -752,3 +737,23 @@ Z.Geometry.fromJSON = function(json) {
     }
     return geometry;
 };
+
+Z.Geometry.getExternalResource = function(symbol) {
+    if (!symbol) {
+        return null;
+    }
+    var resources = [];
+    var icon = symbol['markerFile'];
+    if (icon) {
+        resources.push(icon);
+    }
+    icon = symbol['shieldFile'];
+    if (icon) {
+        resources.push(icon);
+    }
+    var fill = symbol['polygonPatternFile'];
+    if (fill) {
+        resources.push(Z.Util.extractCssUrl(fill));
+    }
+    return resources;
+}

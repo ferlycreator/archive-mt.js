@@ -54,8 +54,21 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         this.map.config({'draggable': false});
         this.drawToolLayer = this._getDrawLayer();
         this._clearEvents();
-        this._registerEvents();
+        this._prepare(this._registerEvents);
+        // this._registerEvents();
         return this;
+    },
+
+    _prepare:function(onComplete) {
+        var symbol = this.getSymbol();
+        var resources = Z.Geometry.getExternalResource(symbol);
+        if (Z.Util.isArrayHasData(resources)) {
+            //load external resources at first
+            this.drawToolLayer._getRender()._loadResources(resources, onComplete, this);
+        } else {
+            onComplete.call(this);
+        }
+
     },
 
     /**
@@ -94,7 +107,6 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
     getSymbol:function() {
         var symbol = this.symbol;
         if(symbol) {
-            // this.symbol = Z.Util.convertFieldNameStyle(symbol, 'camel');
             return this.symbol;
         } else {
             return this.defaultStrokeSymbol;
@@ -172,13 +184,15 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
     _clickForPath:function(param) {
         var containerPoint = this._getMouseContainerPoint(param);
         var coordinate = this._containerPointToLonlat(containerPoint);
+        var symbol = this.getSymbol();
         if (!this.geometry) {
             //无论画线还是多边形, 都是从线开始的
             this.geometry = new Z.Polyline([coordinate]);
-            var symbol = this.getSymbol();
+
             if (symbol) {
                 this.geometry.setSymbol(symbol);
             }
+            this._addGeometryToStage(this.geometry);
             /**
              * 触发 drawstart 事件
              * @event drawstart
@@ -188,8 +202,18 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         } else {
             var path = this._getLonlats();
             path.push(coordinate);
-            //这一行代码取消注册后, 会造成dblclick无法响应, 可能是存在循环调用,造成浏览器无法正常响应事件
-            // this._setLonlats(path);
+            if (Z.Geometry['TYPE_POLYGON'] == this.mode && path.length === 3) {
+                var polygon = new Z.Polygon([path]);
+                if (symbol) {
+                    var pSymbol = Z.Util.extend({},symbol,{'lineOpacity':0});
+                    polygon.setSymbol(pSymbol);
+                }
+                this._polygon = polygon;
+                this._addGeometryToStage(polygon);
+
+            }
+                //这一行代码取消注释后, 会造成dblclick无法响应, 可能是存在循环调用,造成浏览器无法正常响应事件
+            this._setLonlats(path);
             if (this.map.hasListeners('drawvertex')) {
                 /**
                  * 触发drawvertex事件：端点绘制事件，当为多边形或者多折线绘制了一个新的端点后会触发此事件
@@ -206,15 +230,18 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         var containerPoint = this._getMouseContainerPoint(param);
         if (!this._isValidContainerPoint(containerPoint)) {return;}
         var coordinate = this._containerPointToLonlat(containerPoint);
-        // var drawLayer = this._getDrawLayer();
+
         var path = this._getLonlats();
-        if (path.length === 1) {
-            path.push(coordinate);
-            this._addGeometryToStage(this.geometry);
+        var tailPath = [path[path.length-1], coordinate];
+        if (!this._movingTail) {
+            var symbol = this.getSymbol();
+            this._movingTail = new Z.LineString(tailPath,{
+                'symbol' : symbol
+            });
+            this._addGeometryToStage(this._movingTail);
         } else {
-            path[path.length-1] = coordinate;
+            this._movingTail.setCoordinates(tailPath);
         }
-        this._setLonlats(path);
     },
 
     _dblclickForPath:function(param) {
@@ -241,9 +268,13 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
             return;
         }
         this.geometry.remove();
-        //-->2014-10-28 增加只在双击时才封闭多边形
+        if (this._movingTail) {
+            this._movingTail.remove();
+        }
+        if (this._polygon) {
+            this._polygon.remove();
+        }
         if (Z.Geometry['TYPE_POLYGON'] == this.mode) {
-
             this.geometry = new Z.Polygon([path]);
             var symbol=this.getSymbol();
             if (symbol) {
@@ -380,8 +411,12 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
     _setLonlats:function(lonlats) {
         if (this.geometry instanceof Z.Polygon) {
             this.geometry.setCoordinates([lonlats]);
+
         } else if (this.geometry instanceof Z.Polyline) {
             this.geometry.setCoordinates(lonlats);
+        }
+        if (this._polygon) {
+            this._polygon.setCoordinates([lonlats]);
         }
     },
 
@@ -392,7 +427,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
      */
     _getMouseContainerPoint:function(event) {
         Z.DomUtil.stopPropagation(event['domEvent']);
-        var result = event['containerPoint'];//Z.DomUtil.getEventContainerPoint(event,this.map._containerDOM);
+        var result = event['containerPoint'];
         return result;
     },
 
