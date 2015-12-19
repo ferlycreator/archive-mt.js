@@ -85,6 +85,7 @@ Z.VectorLayer=Z.OverlayLayer.extend({
             delete this._geoMap[geoId];
         }
         delete this._geoCache[internalId];
+        this._counter--;
         if (this.isCanvasRender() && this._render) {
             this._render.rend();
         }

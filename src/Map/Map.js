@@ -1125,7 +1125,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     /**
      * 投影坐标转化为容器的相对坐标
      * @param  {Coordinate} pCoordinate 投影坐标
-     * @return {Object}             容器相对坐标
+     * @return {Point}             容器相对坐标
      */
     _transformToViewPoint:function(pCoordinate) {
         var containerPoint = this._transform(pCoordinate);

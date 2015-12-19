@@ -69,7 +69,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
     },
 
     isCanvasRender:function() {
-        if (Z.Browser.canvas/*this.map._getRender() instanceof Z.render.map.Canvas*/) {
+        if (Z.Browser.canvas) {
             return true;
         } else {
             return false;

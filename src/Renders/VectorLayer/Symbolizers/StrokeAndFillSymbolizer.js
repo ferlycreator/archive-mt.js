@@ -71,12 +71,12 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
 
     getPixelExtent:function() {
         var map = this.getMap();
-        var extent = this.geometry.getExtent();
+        var extent = this.geometry._getPrjExtent();
         if (!extent) {
             return null;
         }
-        var min = map.coordinateToViewPoint(new Z.Coordinate(extent['xmin'],extent['ymin'])),
-            max = map.coordinateToViewPoint(new Z.Coordinate(extent['xmax'],extent['ymax']));
+        var min = map._transformToViewPoint(new Z.Coordinate(extent['xmin'],extent['ymin'])),
+            max = map._transformToViewPoint(new Z.Coordinate(extent['xmax'],extent['ymax']));
         return new Z.Extent(min,max).expand(this.style['lineWidth']/2);
     },
 

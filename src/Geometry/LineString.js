@@ -69,11 +69,11 @@ Z.LineString = Z.Polyline = Z.Vector.extend({
     _containsPoint: function(point) {
         var map = this.getMap(),
             t = this._hitTestTolerance(),
-            extent = this.getExtent(),
+            extent = this._getPrjExtent(),
             nw = new Z.Coordinate(extent.xmin, extent.ymax),
             se = new Z.Coordinate(extent.xmax, extent.ymin),
-            pxMin = map.coordinateToViewPoint(nw),
-            pxMax = map.coordinateToViewPoint(se),
+            pxMin = map._transformToViewPoint(nw),
+            pxMax = map._transformToViewPoint(se),
             pxExtent = new Z.Extent(pxMin.x - t, pxMin.y - t,
                                     pxMax.x + t, pxMax.y + t);
 
