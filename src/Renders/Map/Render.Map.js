@@ -18,16 +18,24 @@ Z.render.map.Render = Z.Class.extend({
         this._clearCanvas();
         if (map.options['zoomAnimation']) {
             this._context.save();
-            var baseTileLayer = map.getBaseTileLayer(),
+            var baseTileLayer = map.getBaseTileLayer();
+            var baseLayerImage;
+            if (baseTileLayer.isCanvasRender()) {
                 // duration = zoomDuration || map.options['zoomAnimationDuration'],
-                baseLayerImage = baseTileLayer._getRender().getCanvasImage(),
-                width = this._canvas.width,
+                baseLayerImage = baseTileLayer._getRender().getCanvasImage();
+            }
+
+            var width = this._canvas.width,
                 height = this._canvas.height;
             var layersToTransform;
             if (!map.options['layerZoomAnimation']) {
-                //zoom animation with better performance, only animate baseTileLayer, ignore other layers.
-                this._drawLayerCanvasImage(baseLayerImage, width, height);
-                layersToTransform = [baseTileLayer];
+                if (baseLayerImage) {
+                    //zoom animation with better performance, only animate baseTileLayer, ignore other layers.
+                    this._drawLayerCanvasImage(baseLayerImage, width, height);
+                    layersToTransform = [baseTileLayer];
+                } else {
+                    layersToTransform = [];
+                }
             } else {
                 //default zoom animation, animate all the layers.
                 this._rend();
@@ -309,10 +317,10 @@ Z.render.map.Render = Z.Class.extend({
 
 
     _zoomAnimationEnd:function() {
-        if (Z.Browser.ielt9 || !this._panels || !this._panels.mapContainer) {return;}
+        if (Z.Browser.ielt9 || !this._panels || !this._panels.tileContainer) {return;}
         //恢复底图的css3 transform
-        var mapContainer = this._panels.mapContainer;
-        mapContainer.style.top=0+"px";
-        mapContainer.style.left=0+"px";
+        var tileContainer = this._panels.tileContainer;
+        tileContainer.style.top=0+"px";
+        tileContainer.style.left=0+"px";
     },
 });

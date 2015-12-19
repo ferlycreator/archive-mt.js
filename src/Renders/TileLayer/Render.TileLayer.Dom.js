@@ -183,9 +183,7 @@ Z.render.tilelayer.Dom.prototype = {
     },
 
     _removeOutsideTiles:function() {
-        //var _mapContainer = this.map.mapContainer;
         if (this._layer.getMap().isBusy()) {
-            //console.log("blocked");
             return;
         }
         var tileContainer = this._tileContainer;
