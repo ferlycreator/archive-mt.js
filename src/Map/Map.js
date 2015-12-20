@@ -73,6 +73,9 @@ Z['Map']=Z.Map=Z.Class.extend({
 
         if (Z.Util.isString(this._container)) {
             this._containerDOM = document.getElementById(this._container);
+            if (!this._containerDOM) {
+                throw new Error('invalid container: \''+_container+'\'');
+            }
         } else {
             this._containerDOM = _container;
             if (Z.runningInNode) {
@@ -863,7 +866,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     _initRender:function() {
-        if (!!this._containerDOM.getContext) {
+        if (Z.Browser.canvas) {
             this._render = new Z.render.map.Canvas(this);
         } else {
             this._render = new Z.render.map.Dom(this);
@@ -930,24 +933,6 @@ Z['Map']=Z.Map=Z.Class.extend({
         }
     },
 
-    /**
-     * 显示所有的Overlayer图层
-     * @return {[type]} [description]
-     */
-    _showOverlayLayers:function() {
-        this._getRender().showOverlayLayers();
-        return this;
-    },
-
-    /**
-     * 隐藏所有的Overlayer图层
-     * @return {[type]} [description]
-     */
-    _hideOverlayLayers:function() {
-        this._getRender().hideOverlayLayers();
-        return this;
-    },
-
     _getTileConfig:function() {
         return this._tileConfig;
     },
@@ -1006,10 +991,20 @@ Z['Map']=Z.Map=Z.Class.extend({
         this._prjCenter = projection.project(this._center);
     },
 
-
-
     _getContainerDomSize:function(){
-        return this._getRender().getContainerDomSize();
+        if (!this._containerDOM) {return null;}
+        var containerDOM = this._containerDOM,
+            width,height;
+        if (!Z.Util.isNil(containerDOM.offsetWidth) && !Z.Util.isNil(containerDOM.offsetWidth)) {
+            width = parseInt(containerDOM.offsetWidth,0);
+            height = parseInt(containerDOM.offsetHeight,0);
+        } else if (!Z.Util.isNil(containerDOM.width) && !Z.Util.isNil(containerDOM.height)) {
+            width = containerDOM.width;
+            height = containerDOM.height;
+        } else {
+            throw new Error('can not get size of container');
+        }
+        return new Z.Size(width, height);
     },
 
     _updateMapSize:function(mSize) {

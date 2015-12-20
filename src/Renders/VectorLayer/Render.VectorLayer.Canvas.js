@@ -6,36 +6,6 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         this._registerEvents();
     },
 
-    _registerEvents:function() {
-        this.getMap().on('_zoomend _moveend _resize',this._onMapEvent,this);
-    },
-
-    _onMapEvent:function(param) {
-        if (param['type'] === '_zoomend') {
-            this._layer._eachGeometry(function(geo) {
-                geo._onZoomEnd();
-            });
-            if (!this._resources) {
-                this.rend();
-            } else {
-                this._draw();
-            }
-        } else if (param['type'] === '_moveend') {
-            if (!this._resources) {
-                this.rend();
-            } else {
-                this._draw();
-            }
-        } else if (param['type'] === '_resize') {
-            this._resizeCanvas();
-            if (!this._resources) {
-                this.rend();
-            } else {
-                this._draw();
-            }
-        }
-    },
-
     getMap: function() {
         return this._layer.getMap();
     },
@@ -53,11 +23,11 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
     },
 
     /**
-     * rend layer
-     * @param  {[Geometry]} geometries   geometries to rend
+     * render layer
+     * @param  {[Geometry]} geometries   geometries to render
      * @param  {boolean} ignorePromise   whether escape step of promise
      */
-    rend:function(geometries, ignorePromise) {
+    render:function(geometries, ignorePromise) {
         this._clearTimeout();
         if (!this.getMap() || this.getMap().isBusy()) {
             return;
@@ -171,7 +141,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
     },
 
     //determin whether this layer can be economically transformed, ecoTransform can bring better performance.
-    //if all the geometries to rend are vectors including polygons and linestrings, ecoTransform won't reduce user experience.
+    //if all the geometries to render are vectors including polygons and linestrings, ecoTransform won't reduce user experience.
     shouldEcoTransform:function() {
         if (Z.Util.isNil(this._shouldEcoTransform)) {
             return true;
@@ -184,6 +154,36 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
             return false;
         }
         return this._resources.getImage(url);
+    },
+
+    _registerEvents:function() {
+        this.getMap().on('_zoomend _moveend _resize',this._onMapEvent,this);
+    },
+
+    _onMapEvent:function(param) {
+        if (param['type'] === '_zoomend') {
+            this._layer._eachGeometry(function(geo) {
+                geo._onZoomEnd();
+            });
+            if (!this._resources) {
+                this.render();
+            } else {
+                this._draw();
+            }
+        } else if (param['type'] === '_moveend') {
+            if (!this._resources) {
+                this.render();
+            } else {
+                this._draw();
+            }
+        } else if (param['type'] === '_resize') {
+            this._resizeCanvas();
+            if (!this._resources) {
+                this.render();
+            } else {
+                this._draw();
+            }
+        }
     },
 
     _clearTimeout:function() {
@@ -308,7 +308,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
 
     _requestMapToRend:function() {
         if (!this.getMap().isBusy()) {
-            this._mapRender.rend();
+            this._mapRender.render();
         }
         this._layer.fire('layerloaded');
     }

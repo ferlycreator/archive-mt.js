@@ -88,7 +88,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         if (!this.getMap()) {return;}
         this.clear();
         if (this._prepareLoad()) {
-            this._render.rend(true);
+            this._render.render(true);
         }
     },
 

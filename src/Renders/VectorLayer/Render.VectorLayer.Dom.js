@@ -54,7 +54,7 @@ Z.render.vectorlayer.Dom.prototype= {
      * @param  {[type]} geometries [description]
      * @return {[type]}            [description]
      */
-    rend:function(geometries) {
+    render:function(geometries) {
         if (!geometries) {
             this._rendAll();
             return;

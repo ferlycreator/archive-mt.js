@@ -1,7 +1,6 @@
 Z.Map.include({
     _onZoomStart:function(startScale, endScale, focusPos, nextZoomLevel) {
         var me = this;
-        this._hideOverlayLayers();
         /**
          * 触发map的zoomstart事件
          * @member maptalks.Map
@@ -17,7 +16,6 @@ Z.Map.include({
 
         this._originZoomLevel=nextZoomLevel;
         this._getRender().onZoomEnd();
-        this._showOverlayLayers();
         this._zooming = false;
         /**
          * 触发map的zoomend事件

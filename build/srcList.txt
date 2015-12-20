@@ -80,7 +80,7 @@
 ../src/Renders/render.js
 ../src/Renders/Animation/Animation.js
 ../src/Renders/Map/Render.Map.js
-../src/Renders/Map/Render.Map.Dom5.js
+../src/Renders/Map/Render.Map.Dom.js
 ../src/Renders/Map/Render.Map.Canvas.js
 ../src/Renders/TileLayer/TileCache.js
 ../src/Renders/TileLayer/Render.TileLayer.js

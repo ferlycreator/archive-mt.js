@@ -19,10 +19,10 @@ Z.render.tilelayer.Dom.prototype = {
 
     _onMapEvent:function(param) {
         if (param['type'] === '_moving' || param['type'] === '_moveend' || param['type'] === '_resize') {
-            this.rend();
+            this.render();
         } else if (param['type'] === '_zoomend') {
             this.clear();
-            this.rend(true);
+            this.render(true);
         } else if (param['type'] === '_zoomstart') {
             this.clearExecutors();
         }
@@ -41,7 +41,7 @@ Z.render.tilelayer.Dom.prototype = {
 
     show:function() {
         this._tileContainer.style.display="";
-        this.rend(true);
+        this.render(true);
     },
 
     hide:function() {
@@ -80,7 +80,7 @@ Z.render.tilelayer.Dom.prototype = {
      * @param  {Boolean} rendWhenReady 是否待瓦片载入完成后再渲染
      * @return {[type]}               [description]
      */
-    rend:function(rendWhenReady) {
+    render:function(rendWhenReady) {
         var tileGrid = this._layer._getTiles();
         if (!tileGrid) {
             return;

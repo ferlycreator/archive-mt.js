@@ -34,7 +34,7 @@ Z.Map.GeometryEvents = Z.Handler.extend({
         if (Z.Browser.ie9) {
             canvasContainer = map._panels.canvasLayerContainer;
         } else {
-            canvasContainer = map._panels.mapPlatform;
+            canvasContainer = map._panels.mapWrapper;
         }
         if(canvasContainer) {
             Z.DomUtil.off(canvasContainer,this.EVENTS, this._identifyGeometryEvents, this);

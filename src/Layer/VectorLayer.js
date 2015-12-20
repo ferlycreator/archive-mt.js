@@ -51,19 +51,10 @@ Z.VectorLayer=Z.OverlayLayer.extend({
             this._initRender();
             this._render.setZIndex(this.getZIndex());
         }
-        this._render.rend();
+        this._render.render();
         return this;
     },
 
-    /**
-     * 绘制Geometry
-     * @param  {[type]} geometries [description]
-     * @return {[type]}            [description]
-     */
-    _rend:function(geometries) {
-        this._render.rend(geometries);
-        return this;
-    },
 
     /**
      * 当geometry被移除时触发
@@ -87,7 +78,7 @@ Z.VectorLayer=Z.OverlayLayer.extend({
         delete this._geoCache[internalId];
         this._counter--;
         if (this.isCanvasRender() && this._render) {
-            this._render.rend();
+            this._render.render();
         }
     }
 });

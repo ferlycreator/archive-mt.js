@@ -62,7 +62,7 @@ Z['DynamicLayer']=Z.DynamicLayer=Z.TileLayer.extend({
         var ajax = new Z.Util.Ajax(url,0,queryString,function(responseText){
             var result = Z.Util.parseJSON(responseText);
             if (result && result["success"]) {
-                me._render.rend(me.options['showOnTileLoadComplete']);
+                me._render.render(me.options['showOnTileLoadComplete']);
             }
         });
         //保证在高频率load时，dynamicLayer总能在zoom结束时只调用一次
