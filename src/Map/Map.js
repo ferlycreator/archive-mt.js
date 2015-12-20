@@ -171,8 +171,9 @@ Z['Map']=Z.Map=Z.Class.extend({
             if (!cursor) {
                 cursor = 'default';
             }
-            if (this._containerDOM && this._containerDOM.style) {
-                this._containerDOM.style.cursor = cursor;
+            var panel = this.getPanel();
+            if (panel && panel.style) {
+                panel.style.cursor = cursor;
             }
         }
         return this;
@@ -190,8 +191,9 @@ Z['Map']=Z.Map=Z.Class.extend({
             }
         } else {
             this._priorityCursor = cursor;
-            if (this._containerDOM && this._containerDOM.style) {
-                this._containerDOM.style.cursor = cursor;
+            var panel = this.getPanel();
+            if (panel && panel.style) {
+                panel.style.cursor = cursor;
             }
         }
         return this;
@@ -1236,7 +1238,6 @@ Z['Map']=Z.Map=Z.Class.extend({
     * 获取地图容器
     */
     getPanel: function() {
-        /*return this._panels.mapViewPort;*/
         return this._getRender().getPanel();
     }
 });

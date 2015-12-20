@@ -187,7 +187,10 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
     },
 
     getPanel: function() {
-        return this.map._containerDOM;
+        if (this._isCanvasContainer) {
+            return this.map._containerDOM;
+        }
+        return this.map._panels.mapWrapper;
     },
 
     /**
@@ -202,7 +205,6 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
         }
 
         containerDOM.innerHTML = '';
-        containerDOM.className = 'MAP_CONTAINER_TOP';
 
         var controlWrapper = Z.DomUtil.createEl('div');
         controlWrapper.className = 'MAP_CONTROL_WRAPPER';
