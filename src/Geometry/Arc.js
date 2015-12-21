@@ -21,12 +21,12 @@ Z.Arc = Z.LineString.extend({
                     _ctx.moveTo(p.x, p.y);
                 }
                 var left = len - i;
-                if (left < degree) {
+                if (left <= degree) {
                     if (left === 2) {
                         p = _points[len-1];
                         _ctx.lineTo(p.x, p.y)
                     } else if (left === 3) {
-                        Z.Canvas._quadraticCurveTo(_ctx, _points[len-2],_quadraticCurveTo)
+                        Z.Canvas._quadraticCurveTo(_ctx, _points[len-2],_points[len-1]);
                     }
                 } else {
                     var points = [];
