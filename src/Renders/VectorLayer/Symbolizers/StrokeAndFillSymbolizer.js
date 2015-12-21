@@ -7,7 +7,7 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
         "lineDasharray": [],
         "lineCap" : "butt", //“butt”, “square”, “round”
         "lineJoin" : "round", //“bevel”, “round”, “miter”
-        "polygonFill": "#ffffff",
+        "polygonFill": null,
         "polygonOpacity": 0
     },
 
@@ -186,8 +186,8 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
             },
 
             "fill" : {
-                "fill"          : s['polygonFill'] || s['polygonPatternFile'],
-                "fill-opacity"  : s["polygonOpacity"]
+                "fill"          : s['polygonFill'] || s['polygonPatternFile'] || s['lineColor'] || s['linePatternFile'],
+                "fill-opacity"  : s["polygonOpacity"] || s['lineOpacity']
             }
         };
         //vml和svg对linecap的定义不同

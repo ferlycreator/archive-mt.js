@@ -299,7 +299,6 @@ Z.Canvas = {
         var start = points[0].round();
         ctx.moveTo(start.x,start.y);
         Z.Canvas._bezierCurveTo.apply(Z.Canvas, [ctx].concat(points.splice(1)));
-        // ctx._bezierCurveTo(points[1].x,points[1].y,points[2].x,points[2].y,points[3].x,points[3].y);
         Z.Canvas._stroke(ctx, lineOpacity);
     },
 
@@ -308,6 +307,12 @@ Z.Canvas = {
         p2 = p2.round();
         p3 = p3.round();
         ctx.bezierCurveTo(p1.x,p1.y,p2.x,p2.y,p3.x,p3.y);
+    },
+
+    _quadraticCurveTo:function(ctx, p1, p2) {
+        p1 = p1.round();
+        p2 = p2.round();
+        ctx.quadraticCurveTo(p1.x,p1.y,p2.x,p2.y);
     },
 
     //各种图形的绘制方法
