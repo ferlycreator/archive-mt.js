@@ -132,9 +132,13 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
                 return true;
             }
         } catch (error) {
+            if (!this._errorThrown) {
+                console.warn('hit detect failed with tainted canvas, some geometries have external resources in another domain:\n', error);
+                this._errorThrown = true;
+            }
             //usually a CORS error will be thrown if the canvas uses resources from other domain.
             //this may happen when a geometry is filled with pattern file.
-            return true;
+            return false;
         }
         return false;
 

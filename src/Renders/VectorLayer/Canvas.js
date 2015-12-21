@@ -47,7 +47,10 @@ Z.Canvas = {
                  if (Z.Util.isCssUrl(strokeColor)) {
                     var imgUrl = Z.Util.extractCssUrl(strokeColor);
                     var imageTexture = resources.getImage(imgUrl);
-                    ctx.strokeStyle = ctx.createPattern(imageTexture, 'repeat');
+                    if (imageTexture) {
+                        //image texture may be undefined when map is requested to render before resources are loaded.
+                        ctx.strokeStyle = ctx.createPattern(imageTexture, 'repeat');
+                    }
                  } else {
                     ctx.strokeStyle = this.getRgba(strokeColor,1);
                  }
