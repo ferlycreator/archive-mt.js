@@ -88,6 +88,7 @@ maptalks.Grid = maptalks.Class.extend({
         this._map.on('resize zoomend', function(){
             me._refrestAdjustLayer(me._map);
         });
+        this._map.options['doubleClickZoom'] = false;
         return this;
     },
 
@@ -320,6 +321,20 @@ maptalks.Grid = maptalks.Class.extend({
         this._gridHandler.remove();
         this._grid = [];
         delete this._grid;
+        //删除行交互线
+        for(var i=0,len=this._adjustRows.length;i<len;i++) {
+            var line = this._adjustRows[i];
+            line.remove();
+        }
+        this._adjustRows=[];
+        delete this._adjustRows;
+        //删除列交互线
+        for(var i=0,len=this._adjustCols.length;i<len;i++) {
+            var line =this._adjustCols[i];
+            line.remove();
+        }
+        this._adjustCols=[];
+        delete this._adjustCols;
     },
 
     _addToLayer: function(grid, init) {
