@@ -1,7 +1,7 @@
 Z.render.map={};
 
 /**
- * 地图渲染类的父类, 不可实例化, 定义了地图渲染类中共用方法
+ * Common functions of map renders.
  */
 Z.render.map.Render = Z.Class.extend({
 

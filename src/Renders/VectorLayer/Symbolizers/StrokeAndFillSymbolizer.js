@@ -43,7 +43,7 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
         Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'], strokeAndFill['fill'], resources);
         canvasResources['fn'].apply(this, [ctx].concat(canvasResources['context']));
         if (this.geometry instanceof Z.Polygon) {
-            Z.Canvas.fillCanvas(ctx, strokeAndFill['fill-opacity']);
+            Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']['fill-opacity']);
         }
     },
 
