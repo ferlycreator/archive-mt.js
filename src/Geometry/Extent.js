@@ -65,6 +65,19 @@ Z['Extent']= Z.Extent =
 };
 
 Z.Extent.prototype={
+    round:function() {
+        return new Z.Extent(Z.Util.round(this['xmin']), Z.Util.round(this['ymin']),
+            Z.Util.round(this['xmax']),Z.Util.round(this['ymax']));
+    },
+
+    _round:function() {
+        this['xmin'] = Z.Util.round(this['xmin']);
+        this['ymin'] = Z.Util.round(this['ymin']);
+        this['xmax'] = Z.Util.round(this['xmax']);
+        this['ymax'] = Z.Util.round(this['ymax']);
+        return this;
+    },
+
     containsPoint:function(point) {
         if (point.x >= this['xmin'] && point.x <= this['xmax'] && point.y >= this['ymin'] && point.y <= this['ymax']) {
             return true;

@@ -156,6 +156,19 @@ if (typeof(document) !== 'undefined') {
 
             for (key in strokeSymbol) {
                 if (strokeSymbol.hasOwnProperty(key)) {
+                    if (key.toLowerCase() === 'stroke') {
+                        //模式填充
+                        var strokeValue = strokeSymbol[key];
+                        if (Z.Util.isNil(strokeValue)) {
+                            continue;
+                        }
+                        var isUrl = strokeValue.match(Z.SVG._ISURL);
+                        if (isUrl) {
+                            var pattern = Z.SVG.SVG.createPattern(isUrl, svgShape, paper);
+                            svgShape.setAttribute(key, pattern);
+                            continue;
+                        }
+                    }
                     svgShape.setAttribute(key, strokeSymbol[key]);
                 }
             }
@@ -170,7 +183,7 @@ if (typeof(document) !== 'undefined') {
                         }
                         var isUrl = fillValue.match(Z.SVG._ISURL);
                         if (isUrl) {
-                            var pattern = Z.SVG.SVG.fillWithPattern(isUrl, svgShape, paper);
+                            var pattern = Z.SVG.SVG.createPattern(isUrl, svgShape, paper);
                             svgShape.setAttribute(key, pattern);
                             continue;
                         }
@@ -187,7 +200,7 @@ if (typeof(document) !== 'undefined') {
          * @param  {[type]}  paper  [description]
          * @return {[type]}         [description]
          */
-        fillWithPattern:function(isUrl,svgShape,paper) {
+        createPattern:function(isUrl,svgShape,paper) {
             function setAttributes(el, attr) {
                 var xlink = "http://www.w3.org/1999/xlink";
                 if (attr) {

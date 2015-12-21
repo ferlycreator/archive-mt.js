@@ -38,7 +38,8 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
         var markerType = style['markerType'].toLowerCase();
         var strokeAndFill = this.strokeAndFill;
         this._prepareContext(ctx);
-        Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'],strokeAndFill['fill'], null);
+        Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'],strokeAndFill['fill'], resources);
+        var lineOpacity = strokeAndFill['stroke']['stroke-opacity'];
         var j;
 
         var width = style['markerWidth'],
@@ -51,8 +52,8 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
                     vectorArray[j]._add(point);
                 }
                 //线类型
-                Z.Canvas.path(ctx,vectorArray.slice(0,2),null);
-                Z.Canvas.path(ctx,vectorArray.slice(2,4),null);
+                Z.Canvas.path(ctx,vectorArray.slice(0,2),null, lineOpacity);
+                Z.Canvas.path(ctx,vectorArray.slice(2,4),null, lineOpacity);
             } else if (markerType === 'diamond' || markerType === 'bar' || markerType === 'square' || markerType === 'triangle'){
                 if (markerType === 'bar') {
                     point = point.add(new Z.Point(0,-style['markerLineWidth']/2));
@@ -61,8 +62,8 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
                     vectorArray[j]._add(point);
                 }
                 //面类型
-                Z.Canvas.polygon(ctx,vectorArray,null);
-                Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']['fill'],strokeAndFill['fill']['fill-opacity']);
+                Z.Canvas.polygon(ctx,vectorArray,null, lineOpacity);
+                Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']['fill-opacity']);
             } else if (markerType === 'pin') {
                 point = point.add(new Z.Point(0,-style['markerLineWidth']/2));
                 for (j = vectorArray.length - 1; j >= 0; j--) {
@@ -70,18 +71,18 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
                 }
                 ctx.save();
                 ctx.lineCap = 'round';
-                Z.Canvas.bezierCurve(ctx,vectorArray,null);
-                Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']['fill'],strokeAndFill['fill']['fill-opacity']);
+                Z.Canvas.bezierCurve(ctx,vectorArray,null, lineOpacity);
+                Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']['fill-opacity']);
                 ctx.restore();
             } else if (markerType === 'pie') {
                 point = point.add(new Z.Point(0,-style['markerLineWidth']/2));
                 var angle = Math.atan(width/2/height)*180/Math.PI;
-                Z.Canvas.sector(ctx, point, height, 90-angle, 90+angle);
-                Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']['fill'],strokeAndFill['fill']['fill-opacity']);
+                Z.Canvas.sector(ctx, point, height, 90-angle, 90+angle, lineOpacity);
+                Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']['fill-opacity']);
             } else {
                 //ellipse default
-                Z.Canvas.ellipse(ctx, point, new Z.Size(width/2,height/2));
-                Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']['fill'],strokeAndFill['fill']['fill-opacity']);
+                Z.Canvas.ellipse(ctx, point, new Z.Size(width/2,height/2), lineOpacity);
+                Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']['fill-opacity']);
             }
         }
 

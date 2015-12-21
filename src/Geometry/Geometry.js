@@ -753,5 +753,9 @@ Z.Geometry.getExternalResource = function(symbol) {
     if (fill) {
         resources.push(Z.Util.extractCssUrl(fill));
     }
+    var linePattern = symbol['linePatternFile'];
+    if (linePattern) {
+        resources.push(Z.Util.extractCssUrl(linePattern));
+    }
     return resources;
 }

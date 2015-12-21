@@ -9,7 +9,7 @@ if (Z.Browser.canvas) {
             var size = this._getRenderSize();
             return {
                 "fn" : Z.Canvas.ellipse,
-                "context" : [pt, size]
+                "context" : [pt, size, this.getSymbol()['lineOpacity']]
             };
         }
     };
@@ -25,7 +25,7 @@ if (Z.Browser.canvas) {
             var size = this._getRenderSize();
             return {
                 "fn" : Z.Canvas.rectangle,
-                "context" : [pt, size]
+                "context" : [pt, size, this.getSymbol()['lineOpacity']]
             };
         }
     });
@@ -38,7 +38,7 @@ if (Z.Browser.canvas) {
             var size = this._getRenderSize();
             return {
                 "fn" : Z.Canvas.sector,
-                "context" : [pt, size['width'], this.getStartAngle(), this.getEndAngle()]
+                "context" : [pt, size['width'], this.getStartAngle(), this.getEndAngle(), this.getSymbol()['lineOpacity']]
             };
         }
 
@@ -55,7 +55,7 @@ if (Z.Browser.canvas) {
                 "context" : [points,this.getSymbol()['lineDasharray']]
             };*/
             //draw a triangle arrow
-            function arrow(_ctx, pc, pp, color, opacity) {
+            function arrow(_ctx, pc, pp, opacity) {
                 var angle = Math.atan2(pp.x - pc.x, pc.y - pp.y);
                 var matrix = new Z.Matrix().translate(pp.x, pp.y).rotate(angle);
                 var ptsToDraw = matrix.applyToArray(pts);
@@ -64,7 +64,7 @@ if (Z.Browser.canvas) {
                     _ctx.setLineDash([]);
                 }
                 Z.Canvas.polygon(_ctx, ptsToDraw);
-                Z.Canvas.fillCanvas(_ctx, color, opacity);
+                Z.Canvas.fillCanvas(_ctx, opacity);
             }
 
             var prjVertexes = this._getPrjPoints();
@@ -83,23 +83,20 @@ if (Z.Browser.canvas) {
                 v2 = new Z.Point(Z.Util.round(hw),Z.Util.round(hh));
             var pts = [v0, v1, v2];
             var me = this;
-            var fn = function(_ctx, _points, _dasharray) {
-                Z.Canvas.path(_ctx, _points, _dasharray);
+            var fn = function(_ctx, _points, _dasharray, _lineOpacity) {
+                Z.Canvas.path(_ctx, _points, _dasharray, _lineOpacity);
                 if (me.options['arrowStyle'] && _points.length >= 2) {
-                    var strokeSymbol = this.strokeAndFill['stroke'];
-                    var strokeOpacity = strokeSymbol['stroke-opacity'];
-                    var strokeColor = strokeSymbol['stroke'];
                     _ctx.save();
                     var placement = me.options['arrowPlacement'];
                     if (placement === 'vertex-first' || placement === 'vertex-firstlast') {
-                        arrow(_ctx, _points[1], _points[0], strokeColor, strokeOpacity);
+                        arrow(_ctx, _points[1], _points[0], _lineOpacity);
                     }
                     if (placement === 'vertex-last' || placement === 'vertex-firstlast') {
-                        arrow(_ctx, _points[_points.length-2], _points[_points.length-1], strokeColor, strokeOpacity);
+                        arrow(_ctx, _points[_points.length-2], _points[_points.length-1], _lineOpacity);
                     }
                     if (placement === 'point') {
                         for (var i = 0, len = _points.length-1; i < len; i++) {
-                            arrow(_ctx, _points[i], _points[i+1], strokeColor, strokeOpacity);
+                            arrow(_ctx, _points[i], _points[i+1], _lineOpacity);
                         }
                     }
                     _ctx.restore();
@@ -108,7 +105,7 @@ if (Z.Browser.canvas) {
             return {
                 "fn" : fn,
                 //TODO dasharray可能不从本身的symbol来
-                "context" : [points,this.getSymbol()['lineDasharray']]
+                "context" : [points,this.getSymbol()['lineDasharray'], this.getSymbol()['lineOpacity']]
             };
         }
     });
@@ -119,7 +116,7 @@ if (Z.Browser.canvas) {
             var points = this._transformToViewPoint(prjVertexes);
             return {
                 "fn" : Z.Canvas.polygon,
-                "context" : [points,this.getSymbol()['lineDasharray']]
+                "context" : [points,this.getSymbol()['lineDasharray'], this.getSymbol()['lineOpacity']]
             };
         }
     });

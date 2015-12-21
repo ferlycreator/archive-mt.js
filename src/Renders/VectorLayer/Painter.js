@@ -105,6 +105,7 @@ Z.Painter = Z.Class.extend({
                 for (var i = this.symbolizers.length - 1; i >= 0; i--) {
                     this.pxExtent = this.pxExtent.combine(this.symbolizers[i].getPixelExtent());
                 }
+                this.pxExtent._round();
             }
         }
         return this.pxExtent;

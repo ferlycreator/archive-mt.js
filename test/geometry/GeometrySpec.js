@@ -28,6 +28,7 @@ describe('Geometry', function() {
     });
 
     it("Marker._containsPoint", function() {
+        layer.clear();
         var geometry = new Z.Marker(center, {
             symbol: {
                 markerFile : Z.prefix + 'images/marker.png',
@@ -51,6 +52,7 @@ describe('Geometry', function() {
     });
 
     it("Circle._containsPoint", function() {
+        layer.clear();
         var geometry = new Z.Circle(center, 10, {
             symbol: {
                 'lineWidth': 6
@@ -75,6 +77,7 @@ describe('Geometry', function() {
     });
 
     it("Ellipse._containsPoint", function() {
+        layer.clear();
         var geometry = new Z.Ellipse(center, 20, 10, {
             symbol: {
                 'lineWidth': 6
@@ -99,6 +102,7 @@ describe('Geometry', function() {
     });
 
     it("Sector._containsPoint", function() {
+        layer.clear();
         var geometry = new Z.Sector(center, 10, 90, 405, {
             symbol: {
                 'lineWidth': 6
@@ -123,6 +127,7 @@ describe('Geometry', function() {
     });
 
     it("Rectangle._containsPoint", function() {
+        layer.clear();
         var geometry = new Z.Rectangle(center, 20, 10, {
             symbol: {
                 'lineWidth': 6
@@ -147,6 +152,7 @@ describe('Geometry', function() {
     });
 
     it("Polyline._containsPoint", function() {
+        layer.clear();
         var geometry = new Z.Polyline([
             new Z.Coordinate([center.x, center.y + 0.001]),
             new Z.Coordinate([center.x, center.y]),
@@ -175,6 +181,7 @@ describe('Geometry', function() {
     });
 
     it("Polygon._containsPoint", function() {
+        layer.clear();
         var geometry = new Z.Polygon([[
             new Z.Coordinate([center.x, center.y + 0.001]),
             new Z.Coordinate([center.x, center.y]),
