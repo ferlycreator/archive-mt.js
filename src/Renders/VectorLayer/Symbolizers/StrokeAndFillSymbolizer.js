@@ -119,8 +119,10 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
 
         }
 
-        var resources = Z.Util.extend({}, this._rendResources);
-        resources['context'] = transContext;
+        var resources = {
+            'fn' : this._rendResources['fn'],
+            'context' : transContext
+        };
 
         return resources;
     },

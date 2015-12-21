@@ -14,8 +14,8 @@ Z.Canvas = {
 
     setDefaultCanvasSetting:function(ctx) {
         ctx.lineWidth = 3;
-        ctx.strokeStyle = this.getRgba('#474cf8',1);
-        ctx.fillStyle = this.getRgba('#ffffff',0);
+        ctx.strokeStyle = 'rgba(71,76,248,1)';//this.getRgba('#474cf8',1);
+        ctx.fillStyle = 'rgba(255,255,255,0)';//this.getRgba('#ffffff',0);
         ctx.textAlign='start';
         ctx.textBaseline='hanging';
         var fontSize = 11;
@@ -24,7 +24,6 @@ Z.Canvas = {
             ctx.setLineDash([]);
         }
         ctx.globalAlpha = 1;
-        ctx.save();
     },
 
     prepareCanvasFont:function(ctx, style) {
@@ -90,7 +89,7 @@ Z.Canvas = {
         ctx.globalAlpha = alpha;
     },
 
-    hexColorRe: /^#([0-9a-f]{6}|[0-9a-f]{3})$/i,
+    // hexColorRe: /^#([0-9a-f]{6}|[0-9a-f]{3})$/i,
 
     // support #RRGGBB/#RGB now.
     // if color was like [red, orange...]/rgb(a)/hsl(a), op will not combined to result
@@ -98,18 +97,18 @@ Z.Canvas = {
         if (Z.Util.isNil(op)) {
             op = 1;
         }
-        if (!Z.Canvas.hexColorRe.test(color)) {
+        if ('rgba' === color.substring(0,4)) {
             return color;
         }
         var r, g, b;
         if (color.length === 7) {
-            r = parseInt(color.slice(1, 3), 16);
-            g = parseInt(color.slice(3, 5), 16);
-            b = parseInt(color.slice(5, 7), 16);
+            r = parseInt(color.substring(1, 3), 16);
+            g = parseInt(color.substring(3, 5), 16);
+            b = parseInt(color.substring(5, 7), 16);
         } else {
-            r = parseInt(color.slice(1, 2), 16) * 17;
-            g = parseInt(color.slice(2, 3), 16) * 17;
-            b = parseInt(color.slice(3, 4), 16) * 17;
+            r = parseInt(color.substring(1, 2), 16) * 17;
+            g = parseInt(color.substring(2, 3), 16) * 17;
+            b = parseInt(color.substring(3, 4), 16) * 17;
         }
         return "rgba("+r+","+g+","+b+","+op+")";
     },
@@ -275,9 +274,8 @@ Z.Canvas = {
         Z.Canvas._stroke(ctx, lineOpacity);
         //因为canvas只填充moveto,lineto,lineto的空间, 而dashline的moveto不再构成封闭空间, 所以重新绘制图形轮廓用于填充
         if (Z.Util.isArrayHasData(lineDashArray) && !ctx.setLineDash) {
-            ctx.save();
             ctx.beginPath();
-            ctx.strokeStyle = Z.Canvas.getRgba("#ffffff",0);
+            ctx.strokeStyle = 'rgba(255,255,255,0)';
             for (var j = points.length - 1; j >= 0; j--) {
                 var outline = points[j].round();
                 if (j === points.length - 1) {
@@ -288,7 +286,6 @@ Z.Canvas = {
             }
             ctx.closePath();
             Z.Canvas._stroke(ctx, lineOpacity);
-            ctx.restore();
         }
 
 

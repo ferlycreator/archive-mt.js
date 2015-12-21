@@ -69,11 +69,11 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
                 for (j = vectorArray.length - 1; j >= 0; j--) {
                     vectorArray[j]._add(point);
                 }
-                ctx.save();
-                ctx.lineCap = 'round';
+                var lineCap = ctx.lineCap;
+                ctx.lineCap = 'round'; //set line cap to round to close the pin bottom
                 Z.Canvas.bezierCurve(ctx,vectorArray,null, lineOpacity);
                 Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']['fill-opacity']);
-                ctx.restore();
+                ctx.lineCap = lineCap;
             } else if (markerType === 'pie') {
                 point = point.add(new Z.Point(0,-style['markerLineWidth']/2));
                 var angle = Math.atan(width/2/height)*180/Math.PI;

@@ -158,16 +158,17 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         var tileSize = this._layer._getTileSize();
         var opacity = this._layer.config()['opacity'];
         var isFaded = !Z.Util.isNil(opacity) && opacity < 1;
+        var alpha;
         if (isFaded) {
+            alpha = this._context.globalAlpha;
             if (opacity <= 0) {
                 return;
             }
-            this._context.save();
             this._context.globalAlpha = opacity;
         }
         Z.Canvas.image(this._context, point.substract(this._canvasFullExtent.getMin()), tileImage, tileSize['width'],tileSize['height']);
         if (isFaded) {
-            this._context.restore();
+            this._context.globalAlpha = alpha;
         }
     },
 

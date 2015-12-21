@@ -59,10 +59,6 @@ if (Z.Browser.canvas) {
                 var angle = Math.atan2(pp.x - pc.x, pc.y - pp.y);
                 var matrix = new Z.Matrix().translate(pp.x, pp.y).rotate(angle);
                 var ptsToDraw = matrix.applyToArray(pts);
-                if (_ctx.setLineDash) {
-                    //remove line dash effect if any
-                    _ctx.setLineDash([]);
-                }
                 Z.Canvas.polygon(_ctx, ptsToDraw);
                 Z.Canvas.fillCanvas(_ctx, opacity);
             }
@@ -85,8 +81,11 @@ if (Z.Browser.canvas) {
             var me = this;
             var fn = function(_ctx, _points, _dasharray, _lineOpacity) {
                 Z.Canvas.path(_ctx, _points, _dasharray, _lineOpacity);
+                if (_ctx.setLineDash) {
+                    //remove line dash effect if any
+                    _ctx.setLineDash([]);
+                }
                 if (me.options['arrowStyle'] && _points.length >= 2) {
-                    _ctx.save();
                     var placement = me.options['arrowPlacement'];
                     if (placement === 'vertex-first' || placement === 'vertex-firstlast') {
                         arrow(_ctx, _points[1], _points[0], _lineOpacity);
@@ -99,7 +98,6 @@ if (Z.Browser.canvas) {
                             arrow(_ctx, _points[i], _points[i+1], _lineOpacity);
                         }
                     }
-                    _ctx.restore();
                 }
             };
             return {
