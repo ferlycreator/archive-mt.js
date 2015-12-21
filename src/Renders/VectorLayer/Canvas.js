@@ -97,7 +97,7 @@ Z.Canvas = {
         if (Z.Util.isNil(op)) {
             op = 1;
         }
-        if ('rgba' === color.substring(0,4)) {
+        if ('#' !== color.substring(0,1)) {
             return color;
         }
         var r, g, b;

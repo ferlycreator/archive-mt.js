@@ -30,12 +30,8 @@ Z.render.map.Render = Z.Class.extend({
                 }
             }, this);
         } else {
-            this.offsetPlatform(moveOffset);
-            this._offsetCenterByPixel(new Z.Point(-moveOffset.x,-moveOffset.y));
             map._onMoveEnd();
         }
-
-
     },
 
     /**
