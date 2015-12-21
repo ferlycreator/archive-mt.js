@@ -1,4 +1,4 @@
-Z.Arc = Z.LineString.extend({
+Z.Curve = Z.LineString.extend({
     options:{
         'bezierCurveDegree' : 3
     },
