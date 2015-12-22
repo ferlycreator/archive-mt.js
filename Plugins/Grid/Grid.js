@@ -156,6 +156,115 @@ maptalks.Grid = maptalks.Class.extend({
         return this;
     },
 
+    moveRow: function(sourceRowNum, direction) {
+        var targetRowNum = sourceRowNum;
+        if(direction==='up') {
+            if(sourceRowNum>0) {
+                targetRowNum = sourceRowNum-1;
+            }
+        } else if (direction==='down') {
+            if(sourceRowNum<this._rowNum-1) {
+                targetRowNum = sourceRowNum+1;
+            }
+        }
+        this._changeRowOrder(sourceRowNum, targetRowNum);
+    },
+
+    _changeRowOrder: function(sourceRowNum, targetRowNum) {
+        if(sourceRowNum===targetRowNum) {return;}
+        var sourceRow = this._grid[sourceRowNum];
+        var targetRow = this._grid[targetRowNum];
+        var firstSourceCell = sourceRow[0];
+        var sourceRowSymbol = firstSourceCell.getSymbol();
+        var sourceCellSize = firstSourceCell.getSize();
+        var sourceRowHeight = sourceCellSize['height'];
+        var sourceRowDy = sourceRowSymbol['markerDy'];
+        var firstTargetCell = targetRow[0];
+        var targetRowSymbol = firstTargetCell.getSymbol();
+        var targetCellSize = firstTargetCell.getSize();
+        var targetRowHeight = targetCellSize['height'];
+        var targetRowDy = targetRowSymbol['markerDy'];
+        if(sourceRowDy<targetRowDy) {
+            sourceRowDy = sourceRowDy+targetRowHeight;
+            targetRowDy = targetRowDy-sourceRowHeight;
+        } else {
+            sourceRowDy = sourceRowDy-targetRowHeight;
+            targetRowDy = targetRowDy+sourceRowHeight;
+        }
+        //调整行位置
+        for(var i=0,len=sourceRow.length;i<len;i++) {
+            var symbol=sourceRow[i].getSymbol();
+            symbol['markerDy']=sourceRowDy;
+            symbol['textDy']=sourceRowDy;
+            sourceRow[i].setSymbol(symbol);
+            sourceRow[i]._row=targetRowNum;
+        }
+        this._grid[targetRowNum]=sourceRow;
+        for(var i=0,len=targetRow.length;i<len;i++) {
+            var symbol=targetRow[i].getSymbol();
+            symbol['markerDy']=targetRowDy;
+            symbol['textDy']=targetRowDy;
+            targetRow[i].setSymbol(symbol);
+            targetRow[i]._row=sourceRowNum;
+        }
+        this._grid[sourceRowNum]=targetRow;
+    },
+
+    moveCol: function(sourceColNum, direction) {
+        var targetColNum = sourceColNum;
+        if(direction==='left') {
+            if(sourceColNum>0) {
+                targetColNum = sourceColNum-1;
+            }
+        } else if (direction==='right') {
+            if(sourceColNum<this._colNum-1) {
+                targetColNum = sourceColNum+1;
+            }
+        }
+        this._changeColOrder(sourceColNum, targetColNum);
+    },
+
+    _changeColOrder: function(sourceColNum, targetColNum) {
+        if(sourceColNum===targetColNum) {return;}
+        var firstRow = this._grid[0];
+        var firstSourceCell = firstRow[sourceColNum];
+        var firstTargetCell = firstRow[targetColNum];
+        var sourceSymbol = firstSourceCell.getSymbol();
+        var sourceCellSize = firstSourceCell.getSize();
+        var sourceColWidth = sourceCellSize['width'];
+        var sourceColDx = sourceSymbol['markerDx'];
+
+        var targetSymbol = firstTargetCell.getSymbol();
+        var targetCellSize = firstTargetCell.getSize();
+        var targetColWidth = targetCellSize['width'];
+        var targetColDx = targetSymbol['markerDx'];
+        if(sourceColDx<targetColDx) {
+            sourceColDx = sourceColDx+targetColWidth;
+            targetColDx = targetColDx-sourceColWidth;
+        } else {
+            sourceColDx = sourceColDx-targetColWidth;
+            targetColDx = targetColDx+sourceColWidth;
+        }
+        //调整列位置
+        for(var i=0,len=this._grid.length;i<len;i++) {
+            var row = this._grid[i];
+            var sourceCellSymbol = row[sourceColNum].getSymbol();
+            sourceCellSymbol['markerDx']=sourceColDx;
+            sourceCellSymbol['textDx']=sourceColDx;
+            row[sourceColNum].setSymbol(sourceCellSymbol);
+            row[sourceColNum]._col=targetColNum;
+
+            var targetCellSymbol = row[targetColNum].getSymbol();
+            targetCellSymbol['markerDx']=targetColDx;
+            targetCellSymbol['textDx']=targetColDx;
+            row[targetColNum].setSymbol(targetCellSymbol);
+            row[targetColNum]._col=sourceColNum;
+            var temp = row[sourceColNum];
+            row[sourceColNum] = row[targetColNum];
+            row[targetColNum] = temp;
+        }
+    },
+
     _insertAdjustLineForNewRow: function(row,insertRowNum) {
         var cell = row[0];
         var map = this._adjustLayer.getMap();
@@ -378,6 +487,12 @@ maptalks.Grid = maptalks.Class.extend({
                     {'item': '在后面添加列', 'callback': function() {
                         me.addCol(colNum, '空', true);
                     }},
+                    {'item': '左移', 'callback': function() {
+                        me.moveCol(colNum, 'left');
+                    }},
+                    {'item': '右移', 'callback': function() {
+                        me.moveCol(colNum, 'right');
+                    }},
                     {'item': '设置列样式', 'callback': function() {
                         me._currentCol = colNum;
                         me._currentRow = -1;
@@ -398,6 +513,12 @@ maptalks.Grid = maptalks.Class.extend({
                     }},
                     {'item': '在下面添加行', 'callback': function() {
                         me.addRow(rowNum, '空', true);
+                    }},
+                    {'item': '上移', 'callback': function() {
+                        me.moveRow(rowNum, 'up');
+                    }},
+                    {'item': '下移', 'callback': function() {
+                        me.moveRow(rowNum, 'down');
                     }},
                     {'item': '设置行样式', 'callback': function() {
                         me._currentRow = rowNum;

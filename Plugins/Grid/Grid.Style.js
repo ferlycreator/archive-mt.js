@@ -165,8 +165,13 @@ maptalks.GridStyle = maptalks.Class.extend({
                 click : function(){
                    me._setGridStyle('textAlign','right');
                }
-            }
-            ]
+            }, {
+               type : 'button',
+               icon: 'images/toolbox/close.png',
+               click : function(){
+                   me._panel.hide();
+               }
+            }]
         });
         panel.addTo(this._map);
         return panel;
