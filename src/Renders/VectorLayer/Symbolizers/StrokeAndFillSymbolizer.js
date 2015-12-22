@@ -103,7 +103,7 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
 
                 if (Z.Util.isNumber(context[i]) || (context[i] instanceof Z.Size)) {
                     if (matrix && !scale) {
-                        scale = matrix.decompose()['scale'];
+                        scale = matrix._scale;
                     }
                     if (Z.Util.isNumber(context[i])) {
                         transContext.push(scale.x*context[i]);

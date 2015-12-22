@@ -125,6 +125,8 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
             mheight = this._canvas.height;
         var layers = layersToTransform || this._getAllLayerToCanvas();
         this._transMatrix = matrix;
+        var scale = matrix.decompose()['scale'];
+        this._transMatrix._scale = scale;
         if (!retinaMatrix) {
             retinaMatrix = matrix;
         }
