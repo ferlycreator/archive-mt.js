@@ -29,7 +29,8 @@ Z.Symbolizer = Z.Class.extend({
             //结束后的回调函数
             if (Z.Util.isFunction(arguments[arguments.length-2])) {
                 var fn = arguments[arguments.length-2];
-                fn.call(arguments[arguments.length-1]);
+                var args = arguments[arguments.length-1];
+                fn.call(args);
             }
         }
     },

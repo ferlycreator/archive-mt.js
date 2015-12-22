@@ -151,10 +151,9 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     getExtent:function() {
-        if (!this._extent) {
-            this._extent = this._computeExtent(this._getProjection());
-        }
-        return this._extent;
+        var prjExt = this._getPrjExtent();
+        var p = this._getProjection();
+        return new Z.Extent(p.unproject({x:prjExt['xmin'],y:prjExt['ymin']}), p.unproject({x:prjExt['xmax'],y:prjExt['ymax']}));
     },
 
     /**
@@ -571,13 +570,12 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     },
 
     _getPrjExtent:function() {
-        var ext = this.getExtent();
-        var p = this._getProjection();
-        if (ext) {
-            return new Z.Extent(p.project({x:ext['xmin'],y:ext['ymin']}), p.project({x:ext['xmax'],y:ext['ymax']}));
-        } else {
-            return null;
+        if (!this._extent) {
+            var p = this._getProjection();
+            var ext = this._computeExtent(p);
+            this._extent = new Z.Extent(p.project({x:ext['xmin'],y:ext['ymin']}), p.project({x:ext['xmax'],y:ext['ymax']}));
         }
+        return this._extent;
     },
 
     _rootRemove:function(isFireEvent) {
@@ -627,22 +625,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     _getExternalResource:function() {
         var geometry = this;
         var symbol = geometry.getSymbol();
-        if (!symbol) {
-            return null;
-        }
-        var resources = [];
-        var icon = symbol['markerFile'];
-        if (icon) {
-            resources.push(icon);
-        }
-        icon = symbol['shieldFile'];
-        if (icon) {
-            resources.push(icon);
-        }
-        var fill = symbol['polygonPatternFile'];
-        if (fill) {
-            resources.push(Z.Util.extractCssUrl(fill));
-        }
+        var resources = Z.Geometry.getExternalResource(symbol);
         return resources;
     },
 
@@ -752,3 +735,31 @@ Z.Geometry.fromJSON = function(json) {
     }
     return geometry;
 };
+
+Z.Geometry.fromGeoJSON = function(geoJSON) {
+    return Z.GeoJSON.fromGeoJSON(geoJSON);
+}
+
+Z.Geometry.getExternalResource = function(symbol) {
+    if (!symbol) {
+        return null;
+    }
+    var resources = [];
+    var icon = symbol['markerFile'];
+    if (icon) {
+        resources.push(icon);
+    }
+    icon = symbol['shieldFile'];
+    if (icon) {
+        resources.push(icon);
+    }
+    var fill = symbol['polygonPatternFile'];
+    if (fill) {
+        resources.push(Z.Util.extractCssUrl(fill));
+    }
+    var linePattern = symbol['linePatternFile'];
+    if (linePattern) {
+        resources.push(Z.Util.extractCssUrl(linePattern));
+    }
+    return resources;
+}

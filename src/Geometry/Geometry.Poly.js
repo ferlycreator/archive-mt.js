@@ -11,47 +11,45 @@ Z.Geometry.Poly={
      * @ignore
      */
     _transformToViewPoint:function(points) {
-        var map = this.getMap();
-        return this._transformPoints(points, function(p) {
-            return map._transformToViewPoint(p);
-        });
-    },
-
-    _transformPoints:function(points,fn) {
         var result = [];
         if (!Z.Util.isArrayHasData(points)) {
             return result;
         }
-        var is2D = false,
+        var map = this.getMap();
+        var is2dArray = Z.Util.isArray(points[0]),
             isSimplify = this.getLayer() && this.getLayer().options['enableSimplify'];
+        var tolerance;
+        if (isSimplify) {
+            var pxTolerance = 2;
+            tolerance = map._getResolution()*pxTolerance;
+        }
+        if (!is2dArray && isSimplify) {
+            points = Z.Simplify.simplify(points, tolerance, false);
+        }
         for (var i=0,len=points.length;i<len;i++) {
             var p = points[i];
             if (Z.Util.isNil(p)) {
                 continue;
             }
-            if (Z.Util.isArray(p)) {
-                is2D = true;
-                //二维数组
+            if (is2dArray) {
+                if (!Z.Util.isArrayHasData(p)) {
+                    result.push([]);
+                    continue;
+                }
+                if (isSimplify) {
+                    p = Z.Simplify.simplify(p, tolerance, false);
+                }
                 var p_r = [];
                 for (var j=0,jlen=p.length;j<jlen;j++) {
                     if (Z.Util.isNil(p[j])) {
                         continue;
                     }
-                    p_r.push(fn(p[j]));
-                }
-
-                if (isSimplify) {
-                    p_r = Z.Simplify.simplify(p_r, 2, false);
+                    p_r.push(map._transformToViewPoint(p[j]));
                 }
                 result.push(p_r);
             } else {
-                var pp = fn(p);//map._transformToViewPoint(p);
+                var pp = map._transformToViewPoint(p);
                 result.push(pp);
-            }
-        }
-        if (!is2D) {
-            if (isSimplify) {
-                result = Z.Simplify.simplify(result, 2, false);
             }
         }
         return result;

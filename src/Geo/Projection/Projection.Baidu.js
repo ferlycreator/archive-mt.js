@@ -5,8 +5,7 @@ Z.ProjectionInstance.Baidu={
 	},
 	unproject:function(p){
 		return this.projections.convertMC2LL(p);
-	},
-    rad:function(a){return a*Math.PI/180;}
+	}
 };
 
 Z.Util.extend(Z.ProjectionInstance.Baidu, Z.ProjectionInstance.GeoMethods.WGS84Geodesic);

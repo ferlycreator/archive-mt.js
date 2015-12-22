@@ -40,7 +40,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
         this._zIndex = zIndex;
         if (this.map) {
             var layerList = this._getLayerList();
-            this.map._sortLayersZ(layerList);
+            this.map._sortLayersByZIndex(layerList);
         }
         if (this._render) {
             this._render.setZIndex(zIndex);
@@ -133,10 +133,10 @@ Z['Layer']=Z.Layer=Z.Class.extend({
      */
     show:function() {
         if (!this.options['visible']) {
+            this.options['visible'] = true;
             if (this._getRender()) {
                 this._getRender().show();
             }
-            this.options['visible'] = true;
         }
         return this;
     },
@@ -146,10 +146,10 @@ Z['Layer']=Z.Layer=Z.Class.extend({
      */
     hide:function() {
         if (this.options['visible']) {
+            this.options['visible'] = false;
             if (this._getRender()) {
                 this._getRender().hide();
             }
-            this.options['visible'] = false;
         }
         return this;
     },
@@ -162,6 +162,15 @@ Z['Layer']=Z.Layer=Z.Class.extend({
         if (Z.Util.isNumber(this.options['opacity']) && this.options['opacity'] <= 0) {
             return false;
         }
+        var map = this.getMap();
+        if (map) {
+            var zoom = map.getZoom();
+            if ((this.options['maxZoom'] !== -1 && this.options['maxZoom'] < zoom)
+                    || this.options['minZoom'] > zoom) {
+                return false;
+            }
+        }
+
         if (Z.Util.isNil(this.options['visible'])) {
             this.options['visible'] = true;
         }
@@ -191,19 +200,6 @@ Z['Layer']=Z.Layer=Z.Class.extend({
      */
     _getLayerList:function() {
         if (!this.map) {return null;}
-        if (this instanceof Z.VectorLayer) {
-            if (this.isCanvasRender()) {
-                return this.map._canvasLayers;
-            } else {
-                return this.map._svgLayers;
-            }
-        } else if (this instanceof Z.DynamicLayer) {
-            return this.map._dynLayers;
-        } else if (this instanceof Z.TileLayer) {
-            return this.map._tileLayers;
-        } else if (this instanceof Z.HeatmapLayer) {
-            return this.map._heatLayers;
-        }
-        return null;
+        return this.map._layers;
     }
 });

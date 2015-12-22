@@ -9,21 +9,22 @@ Z.animation = {
     animate : function(animation, framer, listener, context) {
         var now = Z.animation.now();
         var frame = animation(now);
-        if (listener) {
-            var pause;
-            if (context) {
-                pause = listener.call(context,frame);
-            } else {
-                pause = listener(frame);
-            }
-            if (pause) {
-                Z.Util.cancelAnimFrame(framer._animeFrameId);
-                return;
-            }
-        }
+
         if (frame.state['playing']) {
             var animeFrameId = Z.Util.requestAnimFrame(function() {
-                framer._animeFrameId = animeFrameId;
+                framer.animeFrameId = animeFrameId;
+                if (listener) {
+                    var pause;
+                    if (context) {
+                        pause = listener.call(context,frame);
+                    } else {
+                        pause = listener(frame);
+                    }
+                    if (pause) {
+                        Z.Util.cancelAnimFrame(framer.animeFrameId);
+                        return;
+                    }
+                }
                 framer._rendAnimationFrame(frame);
                 Z.animation.animate(animation, framer, listener, context);
             });
@@ -33,6 +34,12 @@ Z.animation = {
                 setTimeout(function() {
                     Z.animation.animate(animation, framer, listener, context);
                 },frame.state['startTime']-now);
+            } else {
+                if (context) {
+                    listener.call(context,frame);
+                } else {
+                    listener(frame);
+                }
             }
         }
     }

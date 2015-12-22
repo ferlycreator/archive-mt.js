@@ -7,7 +7,7 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
         "lineDasharray": [],
         "lineCap" : "butt", //“butt”, “square”, “round”
         "lineJoin" : "round", //“bevel”, “round”, “miter”
-        "polygonFill": "#ffffff",
+        "polygonFill": null,
         "polygonOpacity": 0
     },
 
@@ -40,29 +40,11 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
         var canvasResources = this._getRenderResources();
         var strokeAndFill = this.strokeAndFill;
         this._prepareContext(ctx);
-        Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'], null);
+        Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'], strokeAndFill['fill'], resources);
         canvasResources['fn'].apply(this, [ctx].concat(canvasResources['context']));
         if (this.geometry instanceof Z.Polygon) {
-            var fillStyle = this._getStyleToFill(ctx, resources);
-            Z.Canvas.fillCanvas(ctx, fillStyle[0], fillStyle[1]);
+            Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']['fill-opacity']);
         }
-    },
-
-    _getStyleToFill:function(ctx, resources) {
-        var strokeAndFill = this.strokeAndFill;
-        var fillSymbol = strokeAndFill['fill'];
-        var fillOpacity = fillSymbol['fill-opacity'];
-        var fill=fillSymbol['fill'];
-        var fillStyle;
-        // FIXME: rule?
-        if (this.style['polygonPatternFile']) {
-            var imgUrl = Z.Util.extractCssUrl(fill);
-            var imageTexture = resources.getImage(imgUrl);
-            fillStyle = ctx.createPattern(imageTexture, 'repeat');
-        } else {
-            fillStyle = fill;
-        }
-        return [fillStyle, fillOpacity];
     },
 
     getSvgDom:function() {
@@ -71,12 +53,12 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
 
     getPixelExtent:function() {
         var map = this.getMap();
-        var extent = this.geometry.getExtent();
+        var extent = this.geometry._getPrjExtent();
         if (!extent) {
             return null;
         }
-        var min = map.coordinateToViewPoint(new Z.Coordinate(extent['xmin'],extent['ymin'])),
-            max = map.coordinateToViewPoint(new Z.Coordinate(extent['xmax'],extent['ymax']));
+        var min = map._transformToViewPoint(new Z.Coordinate(extent['xmin'],extent['ymin'])),
+            max = map._transformToViewPoint(new Z.Coordinate(extent['xmax'],extent['ymax']));
         return new Z.Extent(min,max).expand(this.style['lineWidth']/2);
     },
 
@@ -121,7 +103,7 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
 
                 if (Z.Util.isNumber(context[i]) || (context[i] instanceof Z.Size)) {
                     if (matrix && !scale) {
-                        scale = matrix.decompose()['scale'];
+                        scale = matrix._scale;
                     }
                     if (Z.Util.isNumber(context[i])) {
                         transContext.push(scale.x*context[i]);
@@ -137,8 +119,10 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
 
         }
 
-        var resources = Z.Util.extend({}, this._rendResources);
-        resources['context'] = transContext;
+        var resources = {
+            'fn' : this._rendResources['fn'],
+            'context' : transContext
+        };
 
         return resources;
     },
@@ -184,13 +168,16 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
         if (result['polygonPatternFile']) {
             delete result['polygonFill'];
         }
+        if (result['linePatternFile']) {
+            delete result['lineColor'];
+        }
         return result;
     },
 
     translateStrokeAndFill:function(s) {
         var result = {
             "stroke" :{
-                "stroke" : s['lineColor'],
+                "stroke" : s['lineColor'] || s['linePatternFile'],
                 "stroke-width" : s['lineWidth'],
                 "stroke-opacity" : s['lineOpacity'],
                 "stroke-dasharray": s['lineDasharray'],
@@ -199,8 +186,8 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
             },
 
             "fill" : {
-                "fill"          : s['polygonFill'] || s['polygonPatternFile'],
-                "fill-opacity"  : s["polygonOpacity"]
+                "fill"          : s['polygonFill'] || s['polygonPatternFile'] || s['lineColor'] || s['linePatternFile'],
+                "fill-opacity"  : s["polygonOpacity"] || s['lineOpacity']
             }
         };
         //vml和svg对linecap的定义不同

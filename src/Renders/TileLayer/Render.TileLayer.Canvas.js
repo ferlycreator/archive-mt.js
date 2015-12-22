@@ -26,7 +26,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
     },
 
     show:function() {
-        this.rend();
+        this.render();
     },
 
     hide:function() {
@@ -50,7 +50,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
 
     },
 
-    rend:function() {
+    render:function() {
         var tileGrid = this._layer._getTiles();
         if (!tileGrid) {
             return;
@@ -158,16 +158,17 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         var tileSize = this._layer._getTileSize();
         var opacity = this._layer.config()['opacity'];
         var isFaded = !Z.Util.isNil(opacity) && opacity < 1;
+        var alpha;
         if (isFaded) {
+            alpha = this._context.globalAlpha;
             if (opacity <= 0) {
                 return;
             }
-            this._context.save();
             this._context.globalAlpha = opacity;
         }
         Z.Canvas.image(this._context, point.substract(this._canvasFullExtent.getMin()), tileImage, tileSize['width'],tileSize['height']);
         if (isFaded) {
-            this._context.restore();
+            this._context.globalAlpha = alpha;
         }
     },
 
@@ -209,7 +210,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
 
     _requestMapToRend:function() {
         if (!this.getMap().isBusy()) {
-            this._mapRender.rend();
+            this._mapRender.render();
         }
     },
 
@@ -220,9 +221,9 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         var rendSpan = this._layer.options['rendSpanWhenPanning'];
             if (Z.Util.isNumber(rendSpan) && rendSpan >= 0) {
                 if (rendSpan > 0) {
-                    this._onMapMoving = Z.Util.throttle(this.rend,rendSpan,this);
+                    this._onMapMoving = Z.Util.throttle(this.render,rendSpan,this);
                 } else {
-                    this._onMapMoving = this.rend;
+                    this._onMapMoving = this.render;
                 }
                 map.on('_moving',this._onMapMoving,this);
             }
@@ -232,10 +233,10 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
 
     _onMapEvent:function(param) {
         if (param['type'] === '_moveend' || param['type'] === '_zoomend') {
-            this.rend();
+            this.render();
         } else if (param['type'] === '_resize') {
             this._resizeCanvas();
-            this.rend();
+            this.render();
         }
     },
 

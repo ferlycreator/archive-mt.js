@@ -121,13 +121,18 @@ Z.PointSymbolizer=Z.Symbolizer.extend({
     _getRenderContainerPoints:function() {
         var points = this._getRenderPoints();
         var map = this.getMap();
+        var matrix = map._getRender().getTransform();
         var dxdy = this.getDxDy();
+        if (matrix) {
+            var scale = matrix._scale;
+            dxdy = new Z.Point(dxdy.x/scale.x, dxdy.y/scale.y);
+        }
+
         var containerPoints = Z.Util.eachInArray(points,this,function(point) {
             return map._viewPointToContainerPoint(point)._add(dxdy);
         });
         var layer = this.geometry.getLayer();
         if (layer.isCanvasRender()) {
-            var matrix = map._getRender().getTransform();
             if (matrix) {
                 var p = matrix.applyToArray(containerPoints);
                 return p;

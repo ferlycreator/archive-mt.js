@@ -52,7 +52,6 @@ Z.Painter = Z.Class.extend({
         for (var i = this.symbolizers.length - 1; i >= 0; i--) {
             this.symbolizers[i].symbolize.apply(this.symbolizers[i], contexts.concat(this._registerEvents, this));
         }
-        // this._registerEvents();
         this._painted = true;
     },
 
@@ -106,6 +105,7 @@ Z.Painter = Z.Class.extend({
                 for (var i = this.symbolizers.length - 1; i >= 0; i--) {
                     this.pxExtent = this.pxExtent.combine(this.symbolizers[i].getPixelExtent());
                 }
+                this.pxExtent._round();
             }
         }
         return this.pxExtent;
@@ -180,7 +180,7 @@ Z.Painter = Z.Class.extend({
             if (isRealTime) {
                 render.rendRealTime();
             } else {
-                render.rend(null,!needPromise);
+                render.render(null,!needPromise);
             }
         }
     },

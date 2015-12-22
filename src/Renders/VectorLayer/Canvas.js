@@ -12,19 +12,18 @@ Z.Canvas = {
         return canvas;
     },
 
-    setDefaultCanvasSetting:function(context) {
-        context.lineWidth = 3;
-        context.strokeStyle = this.getRgba('#474cf8',1);
-        context.fillStyle = this.getRgba('#ffffff',0);
-        context.textAlign='start';
-        context.textBaseline='hanging';
+    setDefaultCanvasSetting:function(ctx) {
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = 'rgba(71,76,248,1)';//this.getRgba('#474cf8',1);
+        ctx.fillStyle = 'rgba(255,255,255,0)';//this.getRgba('#ffffff',0);
+        ctx.textAlign='start';
+        ctx.textBaseline='hanging';
         var fontSize = 11;
-        context.font=fontSize+'px arial';
-        if (context.setLineDash) {
-            context.setLineDash([]);
+        ctx.font=fontSize+'px arial';
+        if (ctx.setLineDash) {
+            ctx.setLineDash([]);
         }
-        context.globalAlpha = 1;
-        context.save();
+        ctx.globalAlpha = 1;
     },
 
     prepareCanvasFont:function(ctx, style) {
@@ -37,38 +36,45 @@ Z.Canvas = {
     },
 
     // TODO: no prepare, set style just before stroke/fill
-    prepareCanvas:function(context, strokeSymbol, fillSymbol){
+    prepareCanvas:function(ctx, strokeSymbol, fillSymbol, resources){
         if (strokeSymbol) {
             var strokeWidth = strokeSymbol['stroke-width'];
-            if (!Z.Util.isNil(strokeWidth)) {context.lineWidth = strokeWidth;}
-            var strokeOpacity = strokeSymbol['stroke-opacity'];
-            if (strokeWidth === 0) {
-                strokeOpacity = 0;
+            if (!Z.Util.isNil(strokeWidth)) {
+                ctx.lineWidth = strokeWidth;
             }
             var strokeColor = strokeSymbol['stroke'];
              if (strokeColor)  {
-                 if (Z.Util.isNil(strokeOpacity)) {
-                     strokeOpacity = 1;
+                 if (Z.Util.isCssUrl(strokeColor)) {
+                    var imgUrl = Z.Util.extractCssUrl(strokeColor);
+                    var imageTexture = resources.getImage(imgUrl);
+                    if (imageTexture) {
+                        //image texture may be undefined when map is requested to render before resources are loaded.
+                        ctx.strokeStyle = ctx.createPattern(imageTexture, 'repeat');
+                    }
+                 } else {
+                    ctx.strokeStyle = this.getRgba(strokeColor,1);
                  }
-                 context.strokeStyle = this.getRgba(strokeColor,strokeOpacity);
              }
              //低版本ie不支持该属性
-             if (context.setLineDash) {
+             if (ctx.setLineDash) {
                  var strokeDash=(strokeSymbol['stroke-dasharray']);
                  if (Z.Util.isArrayHasData(strokeDash)) {
-                    context.setLineDash(strokeDash);
+                    ctx.setLineDash(strokeDash);
                  }
              }
          }
          if (fillSymbol) {
-             var fill=fillSymbol['fill'];
-             if (!fill) {return;}
-             var fillOpacity = fillSymbol['fill-opacity'];
-             // 2
-             // will override 1 above if fillSymbol was set
-             // context.globalAlpha = fillOpacity;
-             // context.fillStyle = fill;
-             context.fillStyle =this.getRgba(fill, fillOpacity);
+            var fill=fillSymbol['fill'];
+            if (!fill) {
+                return;
+            }
+            if (Z.Util.isCssUrl(fill)) {
+                var imgUrl = Z.Util.extractCssUrl(fill);
+                var imageTexture = resources.getImage(imgUrl);
+                ctx.fillStyle = ctx.createPattern(imageTexture, 'repeat');
+            } else {
+                ctx.fillStyle =this.getRgba(fill, 1);
+            }
          }
     },
 
@@ -76,24 +82,17 @@ Z.Canvas = {
         ctx.clearRect(x1, y1, x2, y2);
     },
 
-    fillCanvas:function(context, fillStyle, fillOpacity){
-        if (fillStyle) {
-            var alpha = context.globalAlpha;
-            if (!Z.Util.isString(fillStyle)/*fillStyle instanceof CanvasPattern*/) {
-                context.globalAlpha *= fillOpacity;
-                context.fillStyle = fillStyle;
-            } else if (Z.Util.isString(fillStyle)) {
-                if (!Z.Canvas.hexColorRe.test(fillStyle)) {
-                    context.globalAlpha *= fillOpacity;
-                }
-                context.fillStyle = this.getRgba(fillStyle, fillOpacity);
-            }
-            context.fill('evenodd');
-            context.globalAlpha = alpha;
+    fillCanvas:function(ctx, fillOpacity){
+        if (Z.Util.isNil(fillOpacity)) {
+            fillOpacity = 1;
         }
+        var alpha = ctx.globalAlpha;
+        ctx.globalAlpha *= fillOpacity;
+        ctx.fill('evenodd');
+        ctx.globalAlpha = alpha;
     },
 
-    hexColorRe: /^#([0-9a-f]{6}|[0-9a-f]{3})$/i,
+    // hexColorRe: /^#([0-9a-f]{6}|[0-9a-f]{3})$/i,
 
     // support #RRGGBB/#RGB now.
     // if color was like [red, orange...]/rgb(a)/hsl(a), op will not combined to result
@@ -101,18 +100,18 @@ Z.Canvas = {
         if (Z.Util.isNil(op)) {
             op = 1;
         }
-        if (!Z.Canvas.hexColorRe.test(color)) {
+        if ('#' !== color.substring(0,1)) {
             return color;
         }
         var r, g, b;
         if (color.length === 7) {
-            r = parseInt(color.slice(1, 3), 16);
-            g = parseInt(color.slice(3, 5), 16);
-            b = parseInt(color.slice(5, 7), 16);
+            r = parseInt(color.substring(1, 3), 16);
+            g = parseInt(color.substring(3, 5), 16);
+            b = parseInt(color.substring(5, 7), 16);
         } else {
-            r = parseInt(color.slice(1, 2), 16) * 17;
-            g = parseInt(color.slice(2, 3), 16) * 17;
-            b = parseInt(color.slice(3, 4), 16) * 17;
+            r = parseInt(color.substring(1, 2), 16) * 17;
+            g = parseInt(color.substring(2, 3), 16) * 17;
+            b = parseInt(color.substring(3, 4), 16) * 17;
         }
         return "rgba("+r+","+g+","+b+","+op+")";
     },
@@ -183,7 +182,17 @@ Z.Canvas = {
         Z.Canvas.text(ctx, text, point, style, textDesc);
     },
 
-    _path:function(context, points, lineDashArray) {
+    _stroke:function(ctx, strokeOpacity) {
+        if (Z.Util.isNil(strokeOpacity)) {
+            strokeOpacity = 1;
+        }
+        var alpha = ctx.globalAlpha;
+        ctx.globalAlpha *= strokeOpacity;
+        ctx.stroke();
+        ctx.globalAlpha = alpha;
+    },
+
+    _path:function(ctx, points, lineDashArray) {
 
         function drawDashLine(startPoint, endPoint, dashArray) {
           //https://davidowens.wordpress.com/2010/09/07/html-5-canvas-and-dashed-lines/
@@ -213,7 +222,7 @@ Z.Canvas = {
                 checkX.cap = capmax;
               }
 
-              context.moveTo(fromX, fromY);
+              ctx.moveTo(fromX, fromY);
               var offsetX = fromX;
               var offsetY = fromY;
               var idx = 0, dash = true;
@@ -224,8 +233,8 @@ Z.Canvas = {
                 offsetX = checkX.cap(toX, offsetX + (Math.cos(ang) * len));
                 offsetY = checkY.cap(toY, offsetY + (Math.sin(ang) * len));
 
-                if (dash) {context.lineTo(offsetX, offsetY);}
-                else {context.moveTo(offsetX, offsetY);}
+                if (dash) {ctx.lineTo(offsetX, offsetY);}
+                else {ctx.moveTo(offsetX, offsetY);}
 
                 idx = (idx + 1) % pattern.length;
                 dash = !dash;
@@ -236,11 +245,11 @@ Z.Canvas = {
         var isDashed = Z.Util.isArrayHasData(lineDashArray);
         for (var i=0, len=points.length; i<len;i++) {
             var point = points[i].round();
-            if (!isDashed || context.setLineDash) {//ie9以上浏览器
+            if (!isDashed || ctx.setLineDash) {//ie9以上浏览器
                 if (i === 0) {
-                    context.moveTo(point.x, point.y);
+                    ctx.moveTo(point.x, point.y);
                 } else {
-                    context.lineTo(point.x,point.y);
+                    ctx.lineTo(point.x,point.y);
                 }
             } else {
                 if (isDashed) {
@@ -255,56 +264,59 @@ Z.Canvas = {
          }
     },
 
-    path:function(context, points, lineDashArray) {
-        context.beginPath();
-        Z.Canvas._path(context,points,lineDashArray);
-        context.stroke();
+    path:function(ctx, points, lineDashArray, lineOpacity) {
+        ctx.beginPath();
+        Z.Canvas._path(ctx,points,lineDashArray);
+        Z.Canvas._stroke(ctx, lineOpacity);
     },
 
-    polygon:function(context, points, lineDashArray) {
-        context.beginPath();
-        Z.Canvas._path(context,points,lineDashArray);
-        context.closePath();
-        context.stroke();
+    polygon:function(ctx, points, lineDashArray, lineOpacity) {
+        ctx.beginPath();
+        Z.Canvas._path(ctx,points,lineDashArray);
+        ctx.closePath();
+        Z.Canvas._stroke(ctx, lineOpacity);
         //因为canvas只填充moveto,lineto,lineto的空间, 而dashline的moveto不再构成封闭空间, 所以重新绘制图形轮廓用于填充
-        if (Z.Util.isArrayHasData(lineDashArray) && !context.setLineDash) {
-            context.save();
-            context.beginPath();
-            context.strokeStyle = Z.Canvas.getRgba("#ffffff",0);
+        if (Z.Util.isArrayHasData(lineDashArray) && !ctx.setLineDash) {
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(255,255,255,0)';
             for (var j = points.length - 1; j >= 0; j--) {
                 var outline = points[j].round();
                 if (j === points.length - 1) {
-                    context.moveTo(outline.x, outline.y);
+                    ctx.moveTo(outline.x, outline.y);
                 } else {
-                    context.lineTo(outline.x,outline.y);
+                    ctx.lineTo(outline.x,outline.y);
                 }
             }
-            context.closePath();
-            context.stroke();
-            context.restore();
+            ctx.closePath();
+            Z.Canvas._stroke(ctx, lineOpacity);
         }
 
 
     },
 
-    bezierCurve:function(context, points, lineDashArray) {
-        context.beginPath(points);
+    bezierCurve:function(ctx, points, lineDashArray, lineOpacity) {
+        ctx.beginPath(points);
         var start = points[0].round();
-        context.moveTo(start.x,start.y);
-        Z.Canvas.bezierCurveTo.apply(Z.Canvas, [context].concat(points.splice(1)));
-        // context.bezierCurveTo(points[1].x,points[1].y,points[2].x,points[2].y,points[3].x,points[3].y);
-        context.stroke();
+        ctx.moveTo(start.x,start.y);
+        Z.Canvas._bezierCurveTo.apply(Z.Canvas, [ctx].concat(points.splice(1)));
+        Z.Canvas._stroke(ctx, lineOpacity);
     },
 
-    bezierCurveTo:function(ctx, p1, p2, p3) {
+    _bezierCurveTo:function(ctx, p1, p2, p3) {
         p1 = p1.round();
         p2 = p2.round();
         p3 = p3.round();
         ctx.bezierCurveTo(p1.x,p1.y,p2.x,p2.y,p3.x,p3.y);
     },
 
+    _quadraticCurveTo:function(ctx, p1, p2) {
+        p1 = p1.round();
+        p2 = p2.round();
+        ctx.quadraticCurveTo(p1.x,p1.y,p2.x,p2.y);
+    },
+
     //各种图形的绘制方法
-    ellipse:function (ctx, pt, size) {
+    ellipse:function (ctx, pt, size, lineOpacity) {
         //TODO canvas scale后会产生错误?
         function bezierEllipse( x, y, a, b)
         {
@@ -314,34 +326,34 @@ Z.Canvas = {
            ctx.beginPath();
            //从椭圆的左端点开始顺时针绘制四条三次贝塞尔曲线
            ctx.moveTo(x - a, y);
-           Z.Canvas.bezierCurveTo(ctx, new Z.Point(x - a, y - oy), new Z.Point(x - ox, y - b), new Z.Point(x, y - b));
-           Z.Canvas.bezierCurveTo(ctx, new Z.Point(x + ox, y - b), new Z.Point(x + a, y - oy), new Z.Point(x + a, y));
-           Z.Canvas.bezierCurveTo(ctx, new Z.Point(x + a, y + oy), new Z.Point(x + ox, y + b), new Z.Point(x, y + b));
-           Z.Canvas.bezierCurveTo(ctx, new Z.Point(x - ox, y + b), new Z.Point(x - a, y + oy), new Z.Point(x - a, y));
+           Z.Canvas._bezierCurveTo(ctx, new Z.Point(x - a, y - oy), new Z.Point(x - ox, y - b), new Z.Point(x, y - b));
+           Z.Canvas._bezierCurveTo(ctx, new Z.Point(x + ox, y - b), new Z.Point(x + a, y - oy), new Z.Point(x + a, y));
+           Z.Canvas._bezierCurveTo(ctx, new Z.Point(x + a, y + oy), new Z.Point(x + ox, y + b), new Z.Point(x, y + b));
+           Z.Canvas._bezierCurveTo(ctx, new Z.Point(x - ox, y + b), new Z.Point(x - a, y + oy), new Z.Point(x - a, y));
            ctx.closePath();
-           ctx.stroke();
+           Z.Canvas._stroke(ctx, lineOpacity);
         }
         pt = pt.round();
         if (size['width'] === size['height']) {
             //如果高宽相同,则直接绘制圆形, 提高效率
             ctx.beginPath();
             ctx.arc(pt.x,pt.y,Z.Util.round(size['width']),0,2*Math.PI);
-            ctx.stroke();
+            Z.Canvas._stroke(ctx, lineOpacity);
         } else {
             bezierEllipse(pt.x,pt.y,size["width"],size["height"]);
         }
 
     },
 
-    rectangle:function(ctx, pt, size) {
+    rectangle:function(ctx, pt, size, lineOpacity) {
         pt = pt.round();
         ctx.beginPath();
         ctx.rect(pt.x, pt.y,
             Z.Util.round(size['width']),Z.Util.round(size['height']));
-        ctx.stroke();
+        Z.Canvas._stroke(ctx, lineOpacity);
     },
 
-    sector:function(ctx, pt, size, startAngle, endAngle) {
+    sector:function(ctx, pt, size, startAngle, endAngle, lineOpacity) {
         function sector(ctx, x, y, radius, startAngle, endAngle) {
             var rad = Math.PI / 180;
             var sDeg = rad*-endAngle;
@@ -369,7 +381,7 @@ Z.Canvas = {
             ctx.lineTo(radius,0);
             ctx.closePath();
             ctx.restore();
-            ctx.stroke();
+            Z.Canvas._stroke(ctx, lineOpacity);
         }
         pt = pt.round();
         sector(ctx,pt.x,pt.y,size,startAngle,endAngle);

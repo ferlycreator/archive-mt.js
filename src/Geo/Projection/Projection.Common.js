@@ -5,6 +5,8 @@
 Z.ProjectionInstance={};
 Z.ProjectionInstance.GeoMethods={};
 Z.ProjectionInstance.GeoMethods.WGS84Geodesic={
+    rad: function(a) { return a * Math.PI / 180; },
+
     getGeodesicLength:function(mlonlat1,mlonlat2){
         if (!mlonlat1 || !mlonlat2) {return 0;}
         try {

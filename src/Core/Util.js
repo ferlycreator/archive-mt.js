@@ -46,63 +46,54 @@ Z.Util = {
     loadImage:function(img, url) {
         if (Z.runningInNode) {
             //canvas-node的Image对象
-            try {
-                if (Z.Util.isURL(url)) {
-                    //读取远程图片
-                    if (!this._nodeHttp) {
-                        this._nodeHttp = require('http');
-                    }
-                    this._nodeHttp.get(url,
-                        function(res) {
+            if (Z.Util.isURL(url)) {
+                //读取远程图片
+                if (!this._nodeHttp) {
+                    this._nodeHttp = require('http');
+                }
+                this._nodeHttp.get(url,
+                    function(res) {
 
-                            var data = new Buffer(parseInt(res.headers['content-length'],10));
-                            var pos = 0;
-                            res.on('data', function(chunk) {
-                              chunk.copy(data, pos);
-                              pos += chunk.length;
-                            });
-                            res.on('end', function () {
-                                var onloadFn = img.onload;
-                                if (onloadFn) {
-                                    img.onload = function() {
-                                        onloadFn.call(img);
-                                    };
-                                }
-                                img.src = data;
-                            });
-                        }
-                    );
-                } else {
-                    //读取本地图片
-                    if (!this._nodeFS) {
-                        this._nodeFS = require('fs');
-                    }
-                    var data = this._nodeFS.readFile(url,function(err,data) {
-                        if (err) {
-                            var onerrorFn = img.onerror;
-                            if (onerrorFn) {
-                                onerrorFn.call(img);
-                            }
-                        } else {
+                        var data = new Buffer(parseInt(res.headers['content-length'],10));
+                        var pos = 0;
+                        res.on('data', function(chunk) {
+                          chunk.copy(data, pos);
+                          pos += chunk.length;
+                        });
+                        res.on('end', function () {
                             var onloadFn = img.onload;
                             if (onloadFn) {
                                 img.onload = function() {
                                     onloadFn.call(img);
                                 };
                             }
-
                             img.src = data;
+                        });
+                    }
+                );
+            } else {
+                //读取本地图片
+                if (!this._nodeFS) {
+                    this._nodeFS = require('fs');
+                }
+                var data = this._nodeFS.readFile(url,function(err,data) {
+                    if (err) {
+                        var onerrorFn = img.onerror;
+                        if (onerrorFn) {
+                            onerrorFn.call(img);
+                        }
+                    } else {
+                        var onloadFn = img.onload;
+                        if (onloadFn) {
+                            img.onload = function() {
+                                onloadFn.call(img);
+                            };
                         }
 
-                    });
-                }
-            } catch (err) {
-                var onerrorFn = img.onerror;
-                if (onerrorFn) {
-                    img.onerror = function() {
-                        onerrorFn.call(img);
-                    };
-                }
+                        img.src = data;
+                    }
+
+                });
             }
         } else {
             img.src=url;

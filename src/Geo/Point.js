@@ -4,14 +4,17 @@
  * @author Maptalks Team
  */
 Z.Point=function(x,y) {
-    if (Z.Util.isArrayHasData(x)) {
-        this.x = x[0];
-        this.y = x[1];
-     } else if (!Z.Util.isNil(x.x) && !Z.Util.isNil(x.y)) {
+    if (!Z.Util.isNil(x) && !Z.Util.isNil(y)) {
+        this.x = x;
+        this.y = y;
+    } else if (!Z.Util.isNil(x.x) && !Z.Util.isNil(x.y)) {
         //对象
         this.x = x.x;
         this.y = x.y;
-    }else {
+    } else if (Z.Util.isArrayHasData(x)) {
+        this.x = x[0];
+        this.y = x[1];
+     } else {
         this.y = y;
         this.x = x;
      }

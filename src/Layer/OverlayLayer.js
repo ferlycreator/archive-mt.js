@@ -66,14 +66,7 @@ Z.OverlayLayer=Z.Layer.extend({
      * @return {Boolean} 是
      */
     isEmpty:function() {
-        var empty = true;
-        for (var prop in this._geoCache){
-            if (this._geoCache.hasOwnProperty(prop)) {
-                empty = false;
-                break;
-            }
-        }
-        return empty;
+        return this._counter === 0;
     },
 
     /**
@@ -110,6 +103,7 @@ Z.OverlayLayer=Z.Layer.extend({
             //内部全局唯一的id
             geo._setInternalId(internalId);
             this._geoCache[internalId] = geo;
+            this._counter++;
             geo._prepare(this);
             if (fitView) {
                 var geoCenter = geo.getCenter();
@@ -126,7 +120,7 @@ Z.OverlayLayer=Z.Layer.extend({
         }
         var map = this.getMap();
         if (map) {
-            this._rend(geometries);
+            this._getRender().render(geometries);
             if (fitView) {
                 var z = map.getFitZoom(extent);
                 var center = {x:centerSum.x/fitCounter, y:centerSum.y/fitCounter};
@@ -202,4 +196,5 @@ Z.OverlayLayer.addInitHook(function() {
     this._geoCache={};
     this._geoMap={};
     this._resources={};
+    this._counter = 0;
 });

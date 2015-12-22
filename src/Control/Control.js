@@ -181,7 +181,7 @@ Z.Map.include({
      * @expose
      */
     addControl: function (control) {
-        if (this.isCanvasRender()) {
+        if (!!this._containerDOM.getContext) {
             return this;
         }
         control.addTo(this);

@@ -69,7 +69,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
     },
 
     isCanvasRender:function() {
-        if (Z.Browser.canvas/*this.map._getRender() instanceof Z.render.map.Canvas*/) {
+        if (Z.Browser.canvas) {
             return true;
         } else {
             return false;
@@ -88,7 +88,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         if (!this.getMap()) {return;}
         this.clear();
         if (this._prepareLoad()) {
-            this._render.rend(true);
+            this._render.render(true);
         }
     },
 

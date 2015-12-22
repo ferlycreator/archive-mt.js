@@ -6,36 +6,6 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         this._registerEvents();
     },
 
-    _registerEvents:function() {
-        this.getMap().on('_zoomend _moveend _resize',this._onMapEvent,this);
-    },
-
-    _onMapEvent:function(param) {
-        if (param['type'] === '_zoomend') {
-            this._layer._eachGeometry(function(geo) {
-                geo._onZoomEnd();
-            });
-            if (!this._resources) {
-                this.rend();
-            } else {
-                this._draw();
-            }
-        } else if (param['type'] === '_moveend') {
-            if (!this._resources) {
-                this.rend();
-            } else {
-                this._draw();
-            }
-        } else if (param['type'] === '_resize') {
-            this._resizeCanvas();
-            if (!this._resources) {
-                this.rend();
-            } else {
-                this._draw();
-            }
-        }
-    },
-
     getMap: function() {
         return this._layer.getMap();
     },
@@ -53,11 +23,11 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
     },
 
     /**
-     * rend layer
-     * @param  {[Geometry]} geometries   geometries to rend
+     * render layer
+     * @param  {[Geometry]} geometries   geometries to render
      * @param  {boolean} ignorePromise   whether escape step of promise
      */
-    rend:function(geometries, ignorePromise) {
+    render:function(geometries, ignorePromise) {
         this._clearTimeout();
         if (!this.getMap() || this.getMap().isBusy()) {
             return;
@@ -162,16 +132,20 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
                 return true;
             }
         } catch (error) {
+            if (!this._errorThrown) {
+                console.warn('hit detect failed with tainted canvas, some geometries have external resources in another domain:\n', error);
+                this._errorThrown = true;
+            }
             //usually a CORS error will be thrown if the canvas uses resources from other domain.
             //this may happen when a geometry is filled with pattern file.
-            return true;
+            return false;
         }
         return false;
 
     },
 
     //determin whether this layer can be economically transformed, ecoTransform can bring better performance.
-    //if all the geometries to rend are vectors including polygons and linestrings, ecoTransform won't reduce user experience.
+    //if all the geometries to render are vectors including polygons and linestrings, ecoTransform won't reduce user experience.
     shouldEcoTransform:function() {
         if (Z.Util.isNil(this._shouldEcoTransform)) {
             return true;
@@ -184,6 +158,36 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
             return false;
         }
         return this._resources.getImage(url);
+    },
+
+    _registerEvents:function() {
+        this.getMap().on('_zoomend _moveend _resize',this._onMapEvent,this);
+    },
+
+    _onMapEvent:function(param) {
+        if (param['type'] === '_zoomend') {
+            this._layer._eachGeometry(function(geo) {
+                geo._onZoomEnd();
+            });
+            if (!this._resources) {
+                this.render();
+            } else {
+                this._draw();
+            }
+        } else if (param['type'] === '_moveend') {
+            if (!this._resources) {
+                this.render();
+            } else {
+                this._draw();
+            }
+        } else if (param['type'] === '_resize') {
+            this._resizeCanvas();
+            if (!this._resources) {
+                this.render();
+            } else {
+                this._draw();
+            }
+        }
     },
 
     _clearTimeout:function() {
@@ -204,68 +208,69 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
             this._requestMapToRend();
             return;
         }
-        var me = this;
-        var preResources = this._resources;
-        //如果resource已经存在, 则不再重复载入资源
-        /*if (this._resources) {
-            return [new Z.Promise(function(resolve, reject) {resolve(me._resources);})];
-        }*/
-        //20150530 loadResource不加载canvasLayer中的geometry icon资源，故每次绘制canvas都去重新检查并下载资源
-        var promises = [];
-        this._resources = new Z.render.vectorlayer.Canvas.Resources();
+        var resourceUrls = [];
         this._layer._eachGeometry(function(geo) {
             if (!geo || !geo.isVisible()) {
                 return;
             }
-            /*if (!ext || !ext.isIntersect(mapExtent)) {
-                return;
-            }*/
-            var resourceUrls = geo._getExternalResource();
-            if (Z.Util.isArrayHasData(resourceUrls)) {
-                //重复
-                var cache = {};
-                for (var i = resourceUrls.length - 1; i >= 0; i--) {
-                    var url = resourceUrls[i];
-                    if (cache[url]) {
-                        continue;
-                    }
-                    cache[url] = 1;
-                    if (!preResources || !preResources.getImage(url)) {
-                        var promise = new Z.Promise(function(resolve, reject) {
-                            var img = new Image();
-                            img.onload = function(){
-                                me._resources.addResource(url,this);
-                                resolve({/*'url':this.src,'image':img*/});
-                            };
-                            img.onabort = function(){
-                                //me._resources.addResource(this.src,this);
-                                resolve({/*'url':this.src,'image':img*/});
-                            };
-                            img.onerror = function(){
-                                resolve({/*'url':this.src,'image':img*/});
-                            };
-                            Z.Util.loadImage(img,  resourceUrls[i]);
-                            // img.src = resourceUrls[i];
-                        });
-                        promises.push(promise);
-                    } else {
-                        me._resources.addResource(url,preResources.getImage(url));
-                    }
+            resourceUrls = resourceUrls.concat(geo._getExternalResource());
+        });
+        this._loadResources(resourceUrls, this._draw, this);
+    },
+
+    /**
+     * loadResource from resourceUrls
+     * @param  {[String]} resourceUrls Array of urls to load
+     * @param  {fn} onComplete          callback after loading complete
+     * @param  {object} context      callback's context
+     */
+    _loadResources:function(resourceUrls, onComplete, context) {
+        var me = this;
+        var preResources = this._resources;
+        this._resources = new Z.render.vectorlayer.Canvas.Resources();
+        var promises = [];
+        if (Z.Util.isArrayHasData(resourceUrls)) {
+            //重复
+            var cache = {};
+            for (var i = resourceUrls.length - 1; i >= 0; i--) {
+                var url = resourceUrls[i];
+                if (cache[url]) {
+                    continue;
+                }
+                cache[url] = 1;
+                if (!preResources || !preResources.getImage(url)) {
+                    var promise = new Z.Promise(function(resolve, reject) {
+                        var img = new Image();
+                        img.onload = function(){
+                            me._resources.addResource(url,this);
+                            resolve({});
+                        };
+                        img.onabort = function(){
+                            resolve({});
+                        };
+                        img.onerror = function(){
+                            resolve({});
+                        };
+                        Z.Util.loadImage(img,  resourceUrls[i]);
+                    });
+                    promises.push(promise);
+                } else {
+                    me._resources.addResource(url,preResources.getImage(url));
                 }
             }
-        });
+        }
         if (promises.length > 0) {
             Z.Promise.all(promises).then(function(reources) {
-                me._draw();
+                onComplete.call(context);
             });
         } else {
-            this._draw();
+            onComplete.call(context);
         }
     },
 
     _draw:function() {
         var map = this.getMap();
-        if (!map /*|| map.isBusy()*/) {
+        if (!map) {
             return;
         }
         if (this._layer.isEmpty()) {
@@ -277,9 +282,10 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
             this._createCanvas();
         }
 
-        var fullExtent = map._getViewExtent()/*.expand(size)*/;
+        var fullExtent = map._getViewExtent();
         this._clearCanvas();
         var me = this;
+        var counter = 0;
         this._shouldEcoTransform = true;
         this._layer._eachGeometry(function(geo) {
             //geo的map可能为null,因为绘制为延时方法
@@ -290,9 +296,13 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
             if (!ext || !ext.isIntersect(fullExtent)) {
                 return;
             }
+            counter++;
             var painter = geo._getPainter();
             if (me._shouldEcoTransform && painter.hasPointSymbolizer()) {
                 me._shouldEcoTransform = false;
+            }
+            if (counter > me._layer.options['thresholdOfEcoTransform']) {
+                me._shouldEcoTransform = true;
             }
             painter.paint();
         });
@@ -302,7 +312,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
 
     _requestMapToRend:function() {
         if (!this.getMap().isBusy()) {
-            this._mapRender.rend();
+            this._mapRender.render();
         }
         this._layer.fire('layerloaded');
     }
