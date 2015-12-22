@@ -44,13 +44,19 @@ Z.Map.GeometryEvents = Z.Handler.extend({
 
     _identifyGeometryEvents: function(domEvent) {
         var map = this.target;
-        if (map.isBusy() || !map._canvasLayers || map._canvasLayers.length === 0) {
+        var vectorLayers = map._getLayers(function(layer) {
+            if (layer instanceof Z.VectorLayer) {
+                return true;
+            }
+            return false;
+        });
+        if (map.isBusy() || !vectorLayers || vectorLayers.length === 0) {
             return;
         }
         var layers = [];
-        for (var i = 0; i < map._canvasLayers.length; i++) {
-            if (map._canvasLayers[i].options['geometryEvents']) {
-                layers.push(map._canvasLayers[i]);
+        for (var i = 0; i < vectorLayers.length; i++) {
+            if (vectorLayers[i].options['geometryEvents']) {
+                layers.push(vectorLayers[i]);
             }
         };
         if (layers.length === 0) {

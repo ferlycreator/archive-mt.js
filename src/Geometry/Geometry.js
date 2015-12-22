@@ -736,6 +736,10 @@ Z.Geometry.fromJSON = function(json) {
     return geometry;
 };
 
+Z.Geometry.fromGeoJSON = function(geoJSON) {
+    return Z.GeoJSON.fromGeoJSON(geoJSON);
+}
+
 Z.Geometry.getExternalResource = function(symbol) {
     if (!symbol) {
         return null;

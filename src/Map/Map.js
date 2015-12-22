@@ -92,11 +92,7 @@ Z['Map']=Z.Map=Z.Class.extend({
 
         //Layers
         this._baseTileLayer=null;
-        this._tileLayers=[];
-        this._svgLayers=[];
-
-        this._canvasLayers=[];
-        this._dynLayers=[];
+        this._layers = [];
 
         //shallow copy options
         var opts = Z.Util.extend({}, options);
@@ -613,43 +609,16 @@ Z['Map']=Z.Map=Z.Class.extend({
                 throw new Error(this.exceptions['DUPLICATE_LAYER_ID']+':'+id);
             }
             this._layerCache[id] = layer;
-            //DynamicLayer必须要放在前面, 因为dynamiclayer同时也是tilelayer, tilelayer的代码也同时会执行
-            if (layer instanceof Z.DynamicLayer) {
-                layer._prepare(this, this._dynLayers.length);
-                this._dynLayers.push(layer);
-                if (this._loaded) {
-                    layer.load();
-                }
-            } else if (layer instanceof Z.TileLayer) {
-                layer._prepare(this, this._tileLayers.length);
-                this._tileLayers.push(layer);
-                if (this._loaded) {
-                    layer.load();
-                }
-            } else if (layer instanceof Z.VectorLayer) {
-                if (this.isCanvasRender() || layer.isCanvasRender()) {
-                    // canvas render
-                    layer._prepare(this, this._canvasLayers.length);
-                    this._canvasLayers.push(layer);
-
-                } else {
-                    // svg render
-                    layer._prepare(this,this._svgLayers.length);
-                    this._svgLayers.push(layer);
-
-                }
-                if (this._loaded) {
-                        layer.load();
-                    }
-            } else {
-                continue;
+            layer._prepare(this, this._layers.length);
+            this._layers.push(layer);
+            if (this._loaded) {
+                layer.load();
             }
-
         }
         return this;
     },
 
-    _sortLayersZ:function(layerList) {
+    _sortLayersByZIndex:function(layerList) {
         layerList.sort(function(a,b) {
             return a.getZIndex()-b.getZIndex();
         });
@@ -664,30 +633,23 @@ Z['Map']=Z.Map=Z.Class.extend({
             return this;
         }
         var layersToOrder = [];
+        var minZ = Number.MAX_VALUE;
         for (var i = 0; i < layers.length; i++) {
             var layer = layers[i];
             if (Z.Util.isString(layers[i])) {
                 layer = this.getLayer(layer);
             }
-            if (!(layer instanceof Z.Layer)) {
-                throw new Error('It must be a layer to order.');
+            if (!(layer instanceof Z.Layer) || !layer.getMap() || layer.getMap() !== this) {
+                throw new Error('It must be a layer added to this map to order.');
+            }
+            if (layer.getZIndex() < minZ) {
+                minZ = layer.getZIndex();
             }
             layersToOrder.push(layer);
         }
-
-        function getMaxZ(_layerList) {
-            return _layerList[_layerList.length-1].getZIndex();
-        }
-
         for (var ii = 0; ii < layersToOrder.length; ii++) {
-            var list = layersToOrder[ii]._getLayerList();
-            if (list.length === 1 || list[list.length-1] === layersToOrder[i]) {
-                continue;
-            }
-            var max = getMaxZ(list);
-            layersToOrder[ii].setZIndex(max+1);
+            layersToOrder[ii].setZIndex(minZ+ii);
         }
-
         return this;
     },
 
@@ -709,17 +671,7 @@ Z['Map']=Z.Map=Z.Class.extend({
             return this;
         }
         layer.remove();
-        if (layer instanceof Z.VectorLayer) {
-            if (layer.isCanvasRender()) {
-                this._removeLayer(layer, this._canvasLayers);
-            } else {
-                this._removeLayer(layer, this._svgLayers);
-            }
-        } else if (layer instanceof Z.DynamicLayer) {
-            this._removeLayer(layer, this._dynLayers);
-        } else if (layer instanceof Z.TileLayer) {
-            this._removeLayer(layer, this._tileLayers);
-        }
+        this._removeLayer(layer, this._layers);
         var id = layer.getId();
         delete this._layerCache[id];
         return this;
@@ -908,9 +860,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {[Layer]}        符合过滤条件的图层数组
      */
     _getLayers:function(filter) {
-        var layers = [this._baseTileLayer].concat(this._tileLayers).concat(this._dynLayers)
-        .concat(this._canvasLayers)
-        .concat(this._svgLayers);
+        var layers = [this._baseTileLayer].concat(this._layers);
         var result = [];
         for (var i = 0; i < layers.length; i++) {
             if (!filter || filter.call(this,layers[i])) {
