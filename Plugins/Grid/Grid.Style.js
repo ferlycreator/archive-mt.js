@@ -71,6 +71,8 @@ maptalks.GridStyle = maptalks.Class.extend({
         var bgDom = this._createBgDom();
         //文字颜色
         var textColorDom = this._createTextColorDom();
+        //边框颜色设置部分
+        var borderDom = this._createBorderDom();
         var me = this;
         var panel = new maptalks.Toolbar({
             position : viewPoint,
@@ -78,7 +80,7 @@ maptalks.GridStyle = maptalks.Class.extend({
             //工具项
             items: [{
                 type : 'button',
-                icon: 'images/trash.png',
+                icon: 'images/toolbox/trash.png',
                 click : function(){
                     if(confirm('您确认要删除该表格！')){
                         me._panel.remove();
@@ -87,7 +89,7 @@ maptalks.GridStyle = maptalks.Class.extend({
                 }
             },{
                 type : 'button',
-                icon : 'images/paint.png',
+                icon : 'images/toolbox/paint.png',
                 html: true,
                 trigger: 'click',
                 content: bgDom,
@@ -99,8 +101,22 @@ maptalks.GridStyle = maptalks.Class.extend({
                     me._setGridStyle('markerFill',color);
                 })
             }, {
+               type : 'button',
+               icon: 'images/toolbox/stroke.png',
+               html: true,
+               trigger: 'click',
+               content: borderDom,
+               children : this._colorItems(function(param){
+                   var target = param.target;
+                   var color = target.style['background-color'];
+                   maptalks.DomUtil.setStyle(borderDom, 'background-color:'+color);
+                   //改变行与列的边框色
+                   me._setGridStyle('markerLineColor',color);
+               })
+
+           }, {
                 type : 'button',
-                icon: 'images/font.png',
+                icon: 'images/toolbox/font.png',
                 html: true,
                 trigger: 'click',
                 content: textColorDom,
@@ -114,15 +130,15 @@ maptalks.GridStyle = maptalks.Class.extend({
             },
              {
                  type : 'button',
-                 icon: 'images/bold.png',
+                 icon: 'images/toolbox/bold.png',
                  trigger: 'click',
                  click : function(){
-                     me._setGridStyle('textFont','bold');
+                     me._setGridStyle('textFont','bolder');
                  }
             },
             {
                  type : 'button',
-                 icon: 'images/italic.png',
+                 icon: 'images/toolbox/italic.png',
                  trigger: 'click',
                  click : function(){
                      me._setGridStyle('textFont','italic');
@@ -130,27 +146,32 @@ maptalks.GridStyle = maptalks.Class.extend({
             },
             {
                 type : 'button',
-                icon: 'images/left.png',
+                icon: 'images/toolbox/left.png',
                 trigger: 'click',
                 click : function(){
                     me._setGridStyle('textAlign','left');
                 }
             }, {
                type : 'button',
-               icon: 'images/center.png',
+               icon: 'images/toolbox/center.png',
                trigger: 'click',
                 click : function(){
                    me._setGridStyle('textAlign','center');
                }
             }, {
                type : 'button',
-               icon: 'images/right.png',
+               icon: 'images/toolbox/right.png',
                trigger: 'click',
                 click : function(){
                    me._setGridStyle('textAlign','right');
                }
-            }
-            ]
+            }, {
+               type : 'button',
+               icon: 'images/toolbox/close.png',
+               click : function(){
+                   me._panel.hide();
+               }
+            }]
         });
         panel.addTo(this._map);
         return panel;
@@ -171,7 +192,12 @@ maptalks.GridStyle = maptalks.Class.extend({
         var row = this._gridData[rowNum];
         for(var j=0,rowLength=row.length;j<rowLength;j++) {
             var cell = row[j];
-            this._setStyleToCell(cell,attr,value);
+            var symbol = cell.getSymbol();
+            var style = value;
+            if(attr=='textFont') {
+                style = value +' '+symbol['textSize'] +'px '+ symbol['textFaceName'];
+            }
+            this._setStyleToCell(cell,attr,style);
         }
     },
 
@@ -179,11 +205,16 @@ maptalks.GridStyle = maptalks.Class.extend({
         for(var i=0,len=this._gridData.length;i<len;i++) {
             var row = this._gridData[i];
             var cell = row[colNum];
-            this._setStyleToCell(cell,attr,value);
+            var symbol = cell.getSymbol();
+            var style = value;
+            if(attr=='textFont') {
+                style = value +' '+symbol['textSize'] +'px '+ symbol['textFaceName'];
+            }
+            this._setStyleToCell(cell,attr,style);
         }
     },
 
-    _setStyleToCell(cell, attr, value) {
+    _setStyleToCell: function(cell, attr, value) {
         var symbol = cell.getSymbol();
         if(attr==='textAlign') {
             cell.setTextAlign(value);
@@ -260,6 +291,10 @@ maptalks.GridStyle = maptalks.Class.extend({
 
     _createTextColorDom: function() {
         return this._createColorDom('#ff0000');
+    },
+
+    _createBorderDom: function() {
+        return this._createColorDom('#ffffff');
     },
 
     _createColorDom: function(color) {

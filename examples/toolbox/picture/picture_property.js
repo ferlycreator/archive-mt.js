@@ -150,6 +150,7 @@ PicturePropertyPanel.prototype = {
             var symbol = me._imageMarker.getSymbol();
             symbol['markerFile'] = url;
             me._imageMarker.setSymbol(symbol);
+            inputDom.value='';
         });
         return aDom;
     },
