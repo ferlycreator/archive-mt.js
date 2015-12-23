@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+        html,body{ margin:0px; height:100%; };
+    </style>
+    <title>MapTalks 示例: 动态图层</title>
+</head>
+<body scroll="no" onload="initMap();">
+<div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
+<script type="text/javascript" >
+    var mapObj;
+    function initMap(){
+        //创建地图对象
+        mapObj = new maptalks.Map('mapObj', //放置mapObj的div id
+        {
+            center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
+            zoom:   5 //初始缩放级别
+        });
+        //设置底图图层
+        mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
+        {
+            tileInfo: 'web-mercator',
+            urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
+            subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
+        }));
+
+        var spatial = {
+            // RELATION_CONTAIN
+            relation: 1,
+            geometry: {
+                type: 'Polygon',
+                coordinates: [
+                    [ [110.0, 64.0], [150.0, 64.0], [150.0, 10.0], [110.0, 10.0], [110.0, 64.0] ]
+                ]
+            }
+        };
+
+        var style = [
+            '#layer {',
+            '  polygon-fill: #0000FF;',
+            '  [name="Korea"] { polygon-fill: #00FF00; }',
+            '  line-color: #FF0000;',
+            '}'
+        ].join('');
+
+        var layerDef = {
+            name: 'ne_10m_admin_0_countries',
+            condition: '',
+            spatialFilter: spatial,
+            cartocss: style,
+            cartocss_version: '3.0.0'
+        };
+        var options = {
+            baseUrl: 'http://127.0.0.1:8080/maps',
+            mapdb: 'testdb',
+            layers: [layerDef]
+        };
+
+        var layer = new maptalks.DynamicLayer('dynamic-layer', options);
+        mapObj.addLayer(layer);
+    }
+</script>
+<!-- 引擎javascript开发包-->
+<script type="text/javascript" src="../../maptalks.js"></script>
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+  <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.min.js"></script>
+<![endif]-->
+</body>
+</html>
