@@ -54,7 +54,7 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
         }
         var rings = Z.GeoJSON.fromGeoJSONCoordinates(coordinates);
         var len = rings.length;
-        if (rings[0] instanceof Z.Coordinate) {
+        if (!Z.Util.isArray(rings[0])) {
             this.points = this._trimRing(rings);
         } else {
             this.points = this._trimRing(rings[0]);

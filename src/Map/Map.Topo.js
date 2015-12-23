@@ -92,7 +92,7 @@ Z.Map.include({
                 if (!pxExtent || !pxExtent.containsPoint(point)) {
                     continue;
                 }
-                if (geo._containsPoint(point) && (filter && filter(geo))) {
+                if (geo._containsPoint(point) && (!filter || (filter && filter(geo)))) {
                     hits.push(geo);
                     if (opts['count']) {
                         if (hits.length >= opts['count']) {
