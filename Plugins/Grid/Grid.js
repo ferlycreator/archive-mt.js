@@ -6,10 +6,12 @@ maptalks.Grid = maptalks.Class.extend({
      */
     'exceptionDefs':{
         'en-US':{
-            'NEED_DATA':'You must set data to Gird options.'
+            'NEED_DATA':'You must set data to Gird options.',
+            'NEED_COLUMN':'You must set columns to Gird options.'
         },
         'zh-CN':{
-            'NEED_DATA':'你必须为Grid指定data。'
+            'NEED_DATA':'你必须为Grid指定data。',
+            'NEED_COLUMN':'你必须为Grid指定columns。'
         }
     },
 
@@ -45,24 +47,41 @@ maptalks.Grid = maptalks.Class.extend({
         'width': 300,
         'height': 300,
         'draggable': true,
-        'editable' : true,
+        'editable': true,
+        'header': true,
+        'order': true,
         'dynamic': false
      }
      * @returns {maptalks.Table}
      */
     initialize: function(options) {
         this.setOptions(options);
-        this._data = this.options['data'];
-        this._initalData = this.options['data'];
-        if(!this._data&&this._data.length==0)  {throw new Error(this.exceptions['NEED_DATA']);}
+        if(!this.options['data']&&this.options['data'].length==0)  {throw new Error(this.exceptions['NEED_DATA']);}
+        if(!this.options['columns']&&this.options['columns'].length==0)  {throw new Error(this.exceptions['NEED_COLUMN']);}
+        //包含序号列
+        if(this.options['order']) {
+            var orderCol = {header:'序号', dataIndex: 'maptalks_order', type: 'number'};
+            this.options['columns'].unshift(orderCol);
+
+            var dataArray = this.options['data'];
+            for(var i=0,len=dataArray.length;i<len;i++) {
+                dataArray[i]['maptalks_order'] =i+1;
+            }
+        }
         this._initalColumns = this.options['columns'];
         this._columns = this._getColumns();
-        this._rowNum = this._data.length+1;//包含表头
         this._colNum = this._columns.length;
+        this._data = this.options['data'];
+        this._initalData = this.options['data'];
+        this._rowNum = this._data.length;
+        //包含表头
+        if(this.options['header']) {
+            this._rowNum += 1;
+        }
         this._width = maptalks.Util.getValueOrDefault(this.options['width'],100);
         this._height = maptalks.Util.getValueOrDefault(this.options['height'],100);
         this._cellWidth = this._width/this._colNum;
-        this._cellHeight = this._height/(this._rowNum);
+        this._cellHeight = this._height/this._rowNum;
         this._currentRow = -1;
         this._currentCol = -1;
         this._rowHeights = new Array();
@@ -108,6 +127,10 @@ maptalks.Grid = maptalks.Class.extend({
      */
     setOptions: function(options) {
         maptalks.Util.setOptions(this, options);
+        if (!this.options['width']) this.options['width'] = 300;
+        if (!this.options['height']) this.options['width'] = 300;
+        if (!this.options['header'] && this.options['header']!==false) this.options['header'] = true;
+        if (!this.options['order'] && this.options['order']!==false) this.options['order'] = true;
         return this;
     },
 
@@ -198,6 +221,9 @@ maptalks.Grid = maptalks.Class.extend({
             symbol['textDy']=sourceRowDy;
             sourceRow[i].setSymbol(symbol);
             sourceRow[i]._row=targetRowNum;
+            if(this.options['order']&&this._columns[i]['dataIndex']==='maptalks_order'){
+                sourceRow[i].setContent(targetRowNum);
+            }
         }
         this._grid[targetRowNum]=sourceRow;
         for(var i=0,len=targetRow.length;i<len;i++) {
@@ -206,6 +232,9 @@ maptalks.Grid = maptalks.Class.extend({
             symbol['textDy']=targetRowDy;
             targetRow[i].setSymbol(symbol);
             targetRow[i]._row=sourceRowNum;
+            if(this.options['order']&&this._columns[i]['dataIndex']==='maptalks_order'){
+                targetRow[i].setContent(sourceRowNum);
+            }
         }
         this._grid[sourceRowNum]=targetRow;
     },
@@ -374,6 +403,9 @@ maptalks.Grid = maptalks.Class.extend({
                 if(i>rowNum) {
                     var cellOffset = this._getCellOffset(i, 0);
                     cell._row -= 1;
+                    if(this.options['order']&&this._columns[j]['dataIndex']==='maptalks_order'){
+                        cell.setContent(cell._row);
+                    }
                     this._translateDy(cell,-size['height']);
                 } else {
                     cell.remove();
@@ -705,6 +737,9 @@ maptalks.Grid = maptalks.Class.extend({
             var row = lastDataset[i];
             for(var j=0,rowLength=row.length;j<rowLength;j++) {
                 row[j]._row += insertRowLength;
+                if(this.options['order']&&this._columns[j]['dataIndex']==='maptalks_order'){
+                    row[j].setContent(row[j]._row);
+                }
                 this._translateDy(row[j],this._cellHeight);
             }
         }
@@ -788,10 +823,16 @@ maptalks.Grid = maptalks.Class.extend({
 
     _createGrid: function() {
         var dataset = new Array();
-        dataset[0] = this._createHeader();
-        for(var i=0;i<this._rowNum-1;i++) {
-            var item = this._data[i];
-            dataset[i+1] = this._createRow(i+1, item);
+        for(var i=0;i<this._rowNum;i++) {
+            if(i==0&&this.options['header']) {
+                dataset[0] = this._createHeader();
+            } else {
+                var item = this._data[i];
+                if(this.options['header']) {
+                    item = this._data[i-1];
+                }
+                dataset[i] = this._createRow(i, item);
+            }
         }
         return dataset;
     },
@@ -820,6 +861,9 @@ maptalks.Grid = maptalks.Class.extend({
             var text = '空';
             if(item&&item[dataIndex]) {
                 text = item[dataIndex];
+            }
+            if(this.options['order']&&dataIndex==='maptalks_order'){
+                text = index;
             }
             var cellOffset = this._getCellOffset(index, i);
             var size = new maptalks.Size(this._colWidths[i], this._rowHeights[index]);
