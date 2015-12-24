@@ -117,7 +117,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
      * @return {Boolean}       true|false
      */
     hitDetect:function(point) {
-        if (!this._context || !this._canvasFullExtent) {
+        if (!this._context || !this._canvasFullExtent || this._layer.isEmpty()) {
             return false;
         }
         var size = this._canvasFullExtent.getSize();
