@@ -74,6 +74,7 @@ Z.Label = Z.Marker.extend({
     setContent: function(content) {
         this._content = content;
         this._refresh();
+        this.fire('contentchange', {target:this});
         return this;
     },
 
