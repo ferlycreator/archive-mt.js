@@ -28,13 +28,13 @@ Z.LineString = Z.Polyline = Z.Vector.extend({
      */
     setCoordinates:function(coordinates) {
         if (!coordinates) {
-            this.points = null;
+            this._points = null;
             this._setPrjPoints(null);
             return;
         }
-        this.points = Z.GeoJSON.fromGeoJSONCoordinates(coordinates);
+        this._points = Z.GeoJSON.fromGeoJSONCoordinates(coordinates);
         if (this.getMap()) {
-            this._setPrjPoints(this._projectPoints(this.points));
+            this._setPrjPoints(this._projectPoints(this._points));
         } else {
             this._onShapeChanged();
         }
@@ -47,10 +47,10 @@ Z.LineString = Z.Polyline = Z.Vector.extend({
      * @expose
      */
     getCoordinates:function() {
-        if (!this.points) {
+        if (!this._points) {
             return [];
         }
-        return this.points;
+        return this._points;
     },
 
     _computeGeodesicLength:function(projection) {
