@@ -56,16 +56,16 @@ Z.Geometry.Poly={
     },
 
     _setPrjPoints:function(prjPoints) {
-        this.prjPoints = prjPoints;
+        this._prjPoints = prjPoints;
         this._onShapeChanged();
     },
 
     _getPrjPoints:function() {
-        if (!this.prjPoints) {
-            var points = this.points;
-            this.prjPoints = this._projectPoints(points);
+        if (!this._prjPoints) {
+            var points = this._points;
+            this._prjPoints = this._projectPoints(points);
         }
-        return this.prjPoints;
+        return this._prjPoints;
     },
 
     /**
@@ -77,18 +77,18 @@ Z.Geometry.Poly={
         if (!projection) {
             return;
         }
-        if (this.prjPoints) {
-            this.points = this._unprojectPoints(this._getPrjPoints());
+        if (this._prjPoints) {
+            this._points = this._unprojectPoints(this._getPrjPoints());
         }
-        if (this.prjHoles) {
+        if (this._prjHoles) {
             this.holes = this._unprojectPoints(this._getPrjHoles());
         }
     },
 
     _clearProjection:function() {
-        this.prjPoints = null;
-        if (this.prjHoles) {
-            this.prjHoles = null;
+        this._prjPoints = null;
+        if (this._prjHoles) {
+            this._prjHoles = null;
         }
     },
 
@@ -109,7 +109,7 @@ Z.Geometry.Poly={
     },
 
     _computeCenter:function(projection) {
-        var ring=this.points;
+        var ring=this._points;
         if (!Z.Util.isArrayHasData(ring)) {
             return null;
         }
@@ -129,7 +129,7 @@ Z.Geometry.Poly={
     },
 
     _computeExtent:function(projection) {
-        var ring = this.points;
+        var ring = this._points;
         if (!Z.Util.isArrayHasData(ring)) {
             return null;
         }

@@ -47,17 +47,17 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
      */
     setCoordinates:function(coordinates) {
         if (!coordinates) {
-            this.points = null;
+            this._points = null;
             this.holes = null;
             this._projectRings();
             return;
         }
         var rings = Z.GeoJSON.fromGeoJSONCoordinates(coordinates);
         var len = rings.length;
-        if (rings[0] instanceof Z.Coordinate) {
-            this.points = this._trimRing(rings);
+        if (!Z.Util.isArray(rings[0])) {
+            this._points = this._trimRing(rings);
         } else {
-            this.points = this._trimRing(rings[0]);
+            this._points = this._trimRing(rings[0]);
             if (len > 1) {
                 var holes = [];
                 for (var i=1; i<len;i++) {
@@ -80,7 +80,7 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
      * @returns {Coordinate[]} 坐标数组
      */
     getCoordinates:function() {
-        if (!this.points) {
+        if (!this._points) {
             return [];
         }
         if (Z.Util.isArrayHasData(this.holes)) {
@@ -88,9 +88,9 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
             for (var i = 0; i < this.holes.length; i++) {
                 holes.push(this._closeRing(this.holes[i]));
             }
-            return [this._closeRing(this.points)].concat(holes);
+            return [this._closeRing(this._points)].concat(holes);
         }
-        return [this._closeRing(this.points)];
+        return [this._closeRing(this._points)];
     },
 
     _projectRings:function() {
@@ -98,8 +98,8 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
             this._onShapeChanged();
             return;
         }
-        this.prjPoints = this._projectPoints(this.points);
-        this.prjHoles = this._projectPoints(this.holes);
+        this._prjPoints = this._projectPoints(this._points);
+        this._prjHoles = this._projectPoints(this.holes);
         this._onShapeChanged();
     },
 
@@ -163,7 +163,7 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
      * @expose
      */
     getShell:function() {
-       return this.points;
+       return this._points;
     },
 
 
@@ -195,10 +195,10 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
 
 
     _getPrjHoles:function() {
-        if (!this.prjHoles) {
-            this.prjHoles = this._projectPoints(this.holes);
+        if (!this._prjHoles) {
+            this._prjHoles = this._projectPoints(this.holes);
         }
-        return this.prjHoles;
+        return this._prjHoles;
     },
 
     _computeGeodesicLength:function(projection) {

@@ -186,10 +186,17 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
             },
 
             "fill" : {
-                "fill"          : s['polygonFill'] || s['polygonPatternFile'] || s['lineColor'] || s['linePatternFile'],
-                "fill-opacity"  : s["polygonOpacity"] || s['lineOpacity']
+                "fill"          : s['polygonFill'] || s['polygonPatternFile'],
+                "fill-opacity"  : s["polygonOpacity"]
             }
         };
+        //if linestring has arrow, needs to fill arrow with same color of line-color
+        if (this.geometry instanceof Z.LineString) {
+             result['fill'] = {
+                "fill"          : result["stroke"]["stroke"],
+                "fill-opacity"  : result["stroke"]["stroke-opacity"]
+             };
+        }
         //vml和svg对linecap的定义不同
         if (result['stroke']['stroke-linecap'] === "butt") {
             if (Z.Browser.vml) {

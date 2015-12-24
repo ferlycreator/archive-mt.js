@@ -514,7 +514,8 @@ Z.Editor=Z.Class.extend({
             newVertexHandles = [];
         function getVertexCoordinates() {
             if (shadow instanceof Z.Polygon) {
-                return shadow.getCoordinates()[0];
+                var coordinates = shadow.getCoordinates()[0];
+                return coordinates.slice(0, coordinates.length-1);
             } else {
                 return shadow.getCoordinates();
             }
@@ -606,7 +607,13 @@ Z.Editor=Z.Class.extend({
         }
         function createNewVertexHandle(index) {
             var vertexCoordinates = getVertexCoordinates();
-            var vertex = vertexCoordinates[index].add(vertexCoordinates[index+1]).multi(1/2);
+            var nextVertex;
+            if (index+1 >= vertexCoordinates.length) {
+                nextVertex = vertexCoordinates[0];
+            } else {
+                nextVertex = vertexCoordinates[index+1];
+            }
+            var vertex = vertexCoordinates[index].add(nextVertex).multi(1/2);
             var handle = me.createHandle(vertex,{
                 'markerType' : 'square',
                 'symbol'     : {'opacity' : 0.4},
@@ -648,12 +655,12 @@ Z.Editor=Z.Class.extend({
                     vertexCoordinates = getVertexCoordinates();
                     var vertexIndex = handle[propertyOfVertexIndex];
                     var nextIndex;
-                    if (vertexIndex === newVertexHandles.length - 1) {
+                    if (vertexIndex === vertexCoordinates.length - 1) {
                         nextIndex = 0;
                     } else {
                         nextIndex = vertexIndex + 1;
                     }
-                    var refreshVertex = vertexCoordinates[vertexIndex].add(vertexCoordinates[vertexIndex+1]).multi(1/2);
+                    var refreshVertex = vertexCoordinates[vertexIndex].add(vertexCoordinates[nextIndex]).multi(1/2);
                     handle.setCoordinates(refreshVertex);
                 }
             });
@@ -666,6 +673,10 @@ Z.Editor=Z.Class.extend({
             if (i<len-1) {
                 newVertexHandles.push(createNewVertexHandle.call(this,i));
             }
+        }
+        if (shadow instanceof Z.Polygon) {
+            //1 more vertex handle for polygon
+            newVertexHandles.push(createNewVertexHandle.call(this,vertexCoordinates.length-1));
         }
         this._appendHandler(newVertexHandles);
         this._appendHandler(vertexHandles);

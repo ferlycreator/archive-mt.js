@@ -271,6 +271,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         if (this._movingTail) {
             this._movingTail.remove();
         }
+        delete this._movingTail;
         if (this._polygon) {
             this._polygon.remove();
         }

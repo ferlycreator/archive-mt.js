@@ -6,10 +6,6 @@ Z.render.tilelayer.Dom = function(layer) {
 };
 
 Z.render.tilelayer.Dom.prototype = {
-
-    //瓦片图层的基础ZIndex
-    baseZIndex:15,
-
     _registerEvents:function() {
         var map = this._layer.getMap();
         map.on('_moveend _resize _zoomend _zoomstart',this._onMapEvent,this);
@@ -51,7 +47,7 @@ Z.render.tilelayer.Dom.prototype = {
 
     setZIndex:function(zIndex) {
         if (this._tileContainer) {
-            this._tileContainer.style.zIndex = (this.baseZIndex+zIndex);
+            this._tileContainer.style.zIndex = (zIndex);
         }
     },
 
