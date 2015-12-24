@@ -41,8 +41,7 @@ Z['Control'] = Z.Control = Z.Class.extend({
      * @returns {maptalks.Control}
      */
     initialize: function (options) {
-        this.setOption(options);
-        return this;
+        Z.Util.setOptions(this, options);
     },
 
     /**
@@ -54,57 +53,28 @@ Z['Control'] = Z.Control = Z.Class.extend({
     addTo: function (map) {
         this.remove();
         this._map = map;
-        this._controlContainer = map._panels.controlWrapper;
-
+        var controlContainer = map._panels.controlWrapper;
         this._container = Z.DomUtil.createEl('div');
         this._container.className = 'MAP_CONTROL';
-        Z.DomUtil.setStyle(this._container, 'z-index: 3003');
         var controlDom = this._buildOn(map);
         if(controlDom) {
-            this._updateContainerPosition();
+            this._updatePosition();
             this._container.appendChild(controlDom);
-            this._controlContainer.appendChild(this._container);
+            controlContainer.appendChild(this._container);
         }
-        this._afterAdd();
         return this;
     },
 
-    _updateContainerPosition: function(){
+    _updatePosition: function(){
         var position = this.options['position'];
         if(position) {
             Z.DomUtil.setStyle(this._container, 'position:absolute');
         }
-        if(position['top']) {
-            Z.DomUtil.setStyle(this._container, 'top: '+ position['top']+'px');
+        for (var p in position) {
+            if (position.hasOwnProperty(p)) {
+                Z.DomUtil.setStyle(this._container, p+': '+ position[p]+'px');
+            }
         }
-        if(position['right']) {
-            Z.DomUtil.setStyle(this._container, 'right: '+ position['right']+'px');
-        }
-        if(position['bottom']) {
-            Z.DomUtil.setStyle(this._container, 'bottom: '+ position['bottom']+'px');
-        }
-        if(position['left']) {
-            Z.DomUtil.setStyle(this._container, 'left:'+ position['left']+'px');
-        }
-    },
-
-    /**
-     * 设置组件配置项
-     * @param {Object} options
-     * @expose
-     */
-    setOption: function(options) {
-        Z.Util.setOptions(this, options);
-        return this;
-    },
-
-    /**
-     * 获取组件配置项
-     * @return {Object} options
-     * @expose
-     */
-    getOption: function() {
-        return this.options;
     },
 
     /**
@@ -162,12 +132,9 @@ Z['Control'] = Z.Control = Z.Class.extend({
         if (this._onRemove) {
             this._onRemove(this._map);
         }
-        this._map = null;
+        delete this._map;
+        delete this._container;
         return this;
-    },
-
-    _afterAdd: function() {
-
     }
 
 });
