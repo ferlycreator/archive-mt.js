@@ -229,20 +229,11 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         var preResources = this._resources;
         this._resources = new Z.render.vectorlayer.Canvas.Resources();
         var promises = [];
-        if (Z.Util.isArrayHasData(resourceUrls)) {
-            //重复
-            var cache = {};
-            for (var i = resourceUrls.length - 1; i >= 0; i--) {
-                var url = resourceUrls[i];
-                if (cache[url]) {
-                    continue;
-                }
-                cache[url] = 1;
-                if (!preResources || !preResources.getImage(url)) {
-                    var promise = new Z.Promise(function(resolve, reject) {
+        function onPromiseCallback(_url) {
+            return function(resolve, reject) {
                         var img = new Image();
                         img.onload = function(){
-                            me._resources.addResource(url,this);
+                            me._resources.addResource(_url,this);
                             resolve({});
                         };
                         img.onabort = function(){
@@ -252,7 +243,20 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
                             resolve({});
                         };
                         Z.Util.loadImage(img,  resourceUrls[i]);
-                    });
+                    };
+        }
+        if (Z.Util.isArrayHasData(resourceUrls)) {
+            //重复
+            var cache = {};
+            for (var i = resourceUrls.length - 1; i >= 0; i--) {
+                var url = resourceUrls[i];
+                if (cache[url] || !url) {
+                    continue;
+                }
+                cache[url] = 1;
+                if (!preResources || !preResources.getImage(url)) {
+                    //closure it to preserve url's value
+                    var promise = new Z.Promise((onPromiseCallback)(url));
                     promises.push(promise);
                 } else {
                     me._resources.addResource(url,preResources.getImage(url));
