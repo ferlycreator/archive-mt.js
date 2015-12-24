@@ -11,11 +11,12 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
      * @cfg {Object} options 信息窗属性
      */
     options: {
-        'width' : 300,
-        'title' : '',
-        'content' : '',
-        'style' : 'default',//black|white
-        'position' : null
+        'autoPan'   : true,
+        'width'     : 300,
+        'custom'    : false,
+        'title'     : '',
+        'content'   : '',
+        'offset'    : null
     },
 
     /**
@@ -24,9 +25,8 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
      * @param {Object} options
      * @return {maptalks.InfoWindow}
      */
-    initialize:function (options) {
-        this.setOptions(options);
-        return this;
+    initialize:function(options) {
+        Z.Util.setOptions(this,options);
     },
 
     /**
@@ -36,65 +36,46 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
     addTo: function(target) {
         if(target instanceof Z.Map) {
             this._map = target;
-        } else { //Geometry的情况
+        } else { //Geometry
             this._map = target.getMap();
         }
         this._target = target;
-        var tipContainer = this._map._panels.tipContainer;
-        this._tipDom = tipContainer._tipDom;
-        if (!this._tipDom) {
-            this._tipDom = this._createTipDom();
-            tipContainer.innerHTML = '';
-            tipContainer.appendChild(this._tipDom);
-            tipContainer._tipDom = this._tipDom;
-            Z.DomUtil.on(this._tipDom, 'mousedown dblclick', Z.DomUtil.stopPropagation);
-        }
         this._registerEvent();
         return this;
     },
 
-    /**
-     * 显示信息窗口前
-     * @param {Object} param 参数
-     */
-    /*beforeOpen: function(param) {
-        var beforeOpenFn = this.options.beforeOpen;
-        if(beforeOpenFn){
-            var argLen = beforeOpenFn.length;
-            if(argLen == 2) {
-                beforeOpenFn(param, Z.Util.bind(this.show, this));
-            } else {
-                beforeOpenFn(param);
-                this.show();
-            }
-        }
-        return this;
-    },*/
-
-    /**
-     * 设置InfoWindow窗口
-     * @param {Array} options 项 {"items":[], width:240, beforeOpen:fn}
-     * @expose
-     */
-    setOptions: function(options) {
-        if(!options) {
-            options = {};
-        }
-        if(Z.Util.isNil(options['style'])||options['style'] === 'default') {
-            options['style'] = '';
-        } else {
-            options['style'] = '-' + options['style'];
-        }
-        Z.Util.setOptions(this,options);
+    getTarget:function() {
+        return this._target;
     },
 
-    /**
-     * 返回infoWindow设置
-     * @return {Object} infoWindow设置
-     * @expose
-     */
-    getOptions: function() {
-        return this.options;
+    setContent:function(content) {
+        this.options['content'] = content;
+        if (this.isOpen()) {
+            delete this._map._infoWindow['dom'];
+            this.show(this._coordinate);
+        } else if (this._isOnStage()) {
+            delete this._map._infoWindow['dom'];
+        }
+        return this;
+    },
+
+    getContent:function() {
+        return this.options['content'];
+    },
+
+    setTitle:function(title) {
+        this.options['title'] = title;
+        if (this.isOpen()) {
+            delete this._map._infoWindow['dom'];
+            this.show(this._coordinate);
+        } else if (this._isOnStage()) {
+            delete this._map._infoWindow['dom'];
+        }
+        return this;
+    },
+
+    getTitle:function() {
+        return this.options['title'];
     },
 
     /**
@@ -103,8 +84,10 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
      */
     remove: function() {
         this.hide();
-        this._removeEvent();
-        // delete this.options;
+        this._map.off('_zoomstart', this._onZoomStart, this);
+        this._map.off('_zoomend', this._onZoomEnd, this);
+        delete this._target;
+        delete this._map;
         return this;
     },
 
@@ -113,12 +96,12 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
      * @expose
      */
     hide:function() {
-        this._tipDom._vis = false;
-        this._hideTipDom();
-    },
-
-    _hideTipDom:function() {
-        this._tipDom.style.display = 'none';
+        if (!this._target) {
+            return;
+        }
+        if (this.isOpen()) {
+            this._getDOM().style.display = 'none';
+        }
     },
 
     /**
@@ -127,7 +110,19 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
      * @expose
      */
     isOpen:function() {
-        return (this._tipDom && this._tipDom._vis && this._tipDom._target === this);
+        return this._isOnStage() && this._getDOM().style.display !== 'none';
+    },
+
+    /**
+     * get pixel size of the infowindow
+     * @return {[type]} [description]
+     */
+    getSize:function() {
+        if (this._size) {
+            return this._size.copy();
+        } else {
+            return null;
+        }
     },
 
     /**
@@ -136,140 +131,121 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
      * @expose
      */
     show: function(coordinate) {
-        this._tipDom._vis = true;
-        this._tipDom._target = this;
-        this._fillInfoWindow();
-        var tipCoord = this._offsetTipDom(coordinate);
-        var size = this._map.getSize();
-        var mapWidth = size['width'],
-            mapHeight = size['height'];
-        if (mapWidth===0||mapHeight===0) {return;}
-        this._target.fire('beforeopeninfowindow');
-        //只有当tip不是地图打开的时候，才做tip打开滑动操作
-        var absolute = this._map._viewPointToContainerPoint(tipCoord);
-        var left=0,top=0,tipDom=this._tipDom;
-        if ((absolute.x)<0) {
-            left=-(absolute.x-parseInt(tipDom.clientWidth)/2);
-        } else if ((absolute.x+parseInt(tipDom.clientWidth)-35)>mapWidth) {
-            left=(mapWidth-(absolute.x+parseInt(tipDom.clientWidth)*3/2));
+        if (!this._target) {
+            return;
         }
-        if (absolute.y<0) {
-            top=-absolute.y+10;
-        } else if (absolute.y>mapHeight){
-            top = (mapHeight-absolute.y-parseInt(tipDom.clientHeight))-30;
+        this.fire('showstart');
+        this._prepare();
+        var anchor = this._getAnchor(coordinate),
+            mapSize = this._map.getSize();
+        var mapWidth = mapSize['width'],
+            mapHeight = mapSize['height'];
+
+        var dom = this._getDOM();
+        dom.style.position = 'absolute';
+        dom.style.left = anchor.x+'px';
+        dom.style.top = anchor.y+'px';
+        dom.style.display="";
+
+        if (this.options['autoPan']) {
+            //pan map if
+            var containerPoint = this._map._viewPointToContainerPoint(anchor);
+            var size = this.getSize(),
+                clientWidth = dom.clientWidth,
+                clientHeight = dom.clientHeight;
+            var left=0,top=0;
+            if ((containerPoint.x)<0) {
+                left=-(containerPoint.x-parseInt(clientWidth)/2);
+            } else if ((containerPoint.x+parseInt(clientWidth)-35)>mapWidth) {
+                left=(mapWidth-(containerPoint.x+parseInt(clientWidth)*3/2));
+            }
+            if (containerPoint.y<0) {
+                top=-containerPoint.y+50;
+            } else if (containerPoint.y>mapHeight){
+                top = (mapHeight-containerPoint.y-parseInt(clientHeight))-30;
+            }
+            if (top!==0 || left!==0) {
+                this._map._panAnimation(new Z.Point(left,top),600);
+            }
         }
-        if (top!==0 || left!==0) {
-            /*this._tipSlidingExecutor = */this._map._panAnimation(new Z.Point(left,top));
-        }
-        this._target.fire('openinfowindow');
+        this._target.fire('showend');
         return this;
     },
 
-    _getTipWidth:function() {
+    _prepare:function() {
+        if (this._isOnStage() && this._map._infoWindow['dom']) {
+            return;
+        }
+        var container = this._map._panels.tipContainer;
+        container.innerHTML = '';
+        this._map._infoWindow =  {
+            'target' : this
+        };
+        var dom = this._map._infoWindow['dom'] = this._createDOM();
+        Z.DomUtil.on(dom, 'mousedown dblclick', Z.DomUtil.stopPropagation);
+        dom.style.position = 'absolute';
+        dom.style.left = -99999+'px';
+        dom.style.top = -99999+'px';
+        container.appendChild(dom);
+        this._size = new Z.Size(dom.clientWidth+6, dom.clientHeight);
+        dom.style.display = "none";
+    },
+
+    //get anchor of infowindow to place
+    _getAnchor: function(_coordinate) {
+        var position;
+        var coordinate = _coordinate;
+        this._coordinate = _coordinate;
+        if(!coordinate) {
+            coordinate = this._target.getCenter();
+        }
+        var size = this.getSize();
+        var anchor = this._map.coordinateToViewPoint(new Z.Coordinate(coordinate));
+        anchor = anchor.add(new Z.Point(-size['width']/2, -size['height']));
+        var offset = this.options['offset']?new Z.Point(this.options['offset']):null;
+        if (offset) {
+            anchor = anchor.add(offset);
+        }
+        if (!_coordinate && (this._target instanceof Z.Marker)) {
+            var markerSize = this._target.getSize();
+            anchor = anchor.add(new Z.Point(0, -markerSize['height']-20));
+        }
+        return anchor;
+    },
+
+    _isOnStage:function() {
+        return (this._map._infoWindow && this._map._infoWindow['target'] == this);
+    },
+
+    _getDOM:function() {
+        return this._map._infoWindow['dom'];
+    },
+
+    _getWidth:function() {
         var defaultWidth = 300;
-        var tipWidth = this.options['width'];
-        if (!tipWidth) {
-            tipWidth = defaultWidth;
+        var width = this.options['width'];
+        if (!width) {
+            width = defaultWidth;
         }
-        return tipWidth;
+        return width;
     },
 
-    _fillInfoWindow:function() {
-        var tipWidth = this._getTipWidth();
-        this._tipDom.tipBoxDom.style.width = tipWidth+'px';
-
-        var tipTitle = this.options['title'];
-        if (Z.Util.isNil(tipTitle)) {
-            tipTitle = '';
-        }
-        this._tipDom.titleDom.innerHTML= tipTitle;
-
-        var tipContent = this.options['content'];
-        if (Z.Util.isNil(tipContent)) {
-            tipContent = '';
-        }
-        this._tipDom.contentDom.innerHTML= tipContent;
-    },
-
-    _createTipDom: function(){
-        var tipContainer = Z.DomUtil.createEl('div');
-        tipContainer.style.display = 'none';
-        tipContainer.style.width = this._getTipWidth()+'px';
-        var suffix = this.options['style'];
-        Z.DomUtil.setClass(tipContainer, 'maptalks-infowindow'+suffix);
-
-        var tipBoxDom = this._createTipBoxDom();
-
-
-        var titleDom = this._createTitleDom();
-        var contentDom = this._createContentDom();
-        var headerDom = this._createHeaderDom();
-        headerDom.appendChild(titleDom);
-        tipBoxDom.appendChild(headerDom);
-        tipBoxDom.appendChild(contentDom);
-        tipBoxDom.appendChild(this._createArrowDom());
-
-        tipContainer.titleDom = titleDom;
-        tipContainer.contentDom = contentDom;
-        tipContainer.tipBoxDom = tipBoxDom;
-
-        tipContainer.appendChild(tipBoxDom);
-        return tipContainer;
-    },
-
-    _createTipBoxDom: function() {
-        var tipBoxDom = Z.DomUtil.createEl('div');
-        Z.DomUtil.setClass(tipBoxDom, 'maptalks-infowindow-box');
-        /*if (this.options.width) {
-            tipBoxDom.style.width = this.options.width+'px';
-        }*/
-
-        return tipBoxDom;
-    },
-
-    _createTitleDom:function() {
-        var titleDom = Z.DomUtil.createEl('span');
-        Z.DomUtil.setClass(titleDom, 'maptalks-infowindow-title');
-        /*var title = this.options.title;
-        if(title) {
-            titleDom.innerHTML = title;
-        }*/
-        return titleDom;
-    },
-
-    _createHeaderDom: function() {
-        var tipHeaderDom = Z.DomUtil.createEl('div');
-        Z.DomUtil.setClass(tipHeaderDom, 'maptalks-infowindow-header');
-        // tipHeaderDom.appendChild(titleDom);
-
-        var closeDom = Z.DomUtil.createEl('a');
-        var me = this;
-        Z.DomUtil.setClass(closeDom, 'maptalks-infowindow-close');
-        Z.DomUtil.addDomEvent(closeDom, 'click', function(event){
-            Z.DomUtil.stopPropagation(event);
-            me.hide();
-        });
-        var closeImage = Z.DomUtil.createElOn('img', 'border:none;');
-        closeImage.src = Z.prefix+'images/tip_close.gif';
-        closeDom.appendChild(closeImage);
-        tipHeaderDom.appendChild(closeDom);
-        return tipHeaderDom;
-    },
-
-    _createContentDom: function() {
-        var contentDom = Z.DomUtil.createEl('div');
-        Z.DomUtil.setClass(contentDom, 'maptalks-infowindow-content');
-        /*var content = this.options.content;
-        if(content) {
-            contentDom.innerHTML = content;
-        }*/
-        return contentDom;
-    },
-
-    _createArrowDom: function() {
-        var arrowDom = Z.DomUtil.createEl('div');
-        Z.DomUtil.setClass(arrowDom, 'maptalks-infowindow-arrow');
-        return arrowDom;
+    _createDOM: function(){
+        if (this.options['custom']) {
+            return this.options['content'];
+        } else {
+            var dom = Z.DomUtil.createEl('div');
+            dom.className = 'maptalks-msgBox';
+            dom.style.width = this._getWidth()+'px';
+            var content = '<em class="maptalks-ico"></em>';
+            if (this.options['title']) {
+                content += '<h2>'+this.options['title']+'</h2>';
+            }
+            content += '<a href="javascript:;" onclick="this.parentNode.style.display=\'none\';" '+
+            ' class="maptalks-close"></a><div class="maptalks-msgContent">'+this.options['content']+'</div>';
+            dom.innerHTML = content;
+            return dom;
+        };
     },
 
     _registerEvent:function() {
@@ -277,65 +253,18 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         this._map.on('_zoomend', this._onZoomEnd, this);
     },
 
-    _removeEvent:function() {
-        this._map.off('_zoomstart', this._onZoomStart, this);
-        this._map.off('_zoomend', this._onZoomEnd, this);
-    },
-
     _onZoomStart:function() {
         if (this.isOpen()) {
-            this._hideTipDom();
+            this._getDOM().style.left = -99999+'px';
+            this._getDOM().style.top = -99999+'px';
         }
     },
 
     _onZoomEnd:function() {
         if (this.isOpen()) {
-            this._offsetTipDom();
-            this._tipDom.style.display='';
+            var anchor = this._getAnchor(this._coordinate);
+            this._getDOM().style.left = anchor.x+'px';
+            this._getDOM().style.top = anchor.y+'px';
         }
-    },
-
-    //获取信息框打开位置
-    _offsetTipDom: function(coordinate) {
-        var pxCoord = this._getShowPosition(coordinate);
-        var tipDom = this._tipDom;
-        tipDom.style.display = '';
-        var tipCoord = new Z.Point(
-            parseInt(pxCoord.x-parseInt(tipDom.clientWidth)/2+45),
-            parseInt(pxCoord.y-parseInt(tipDom.clientHeight))
-        );
-        tipDom.style.top = tipCoord.y+'px';
-        tipDom.style.left = tipCoord.x+'px';
-
-        return tipCoord;
-    },
-
-    //获取显示位置
-    _getShowPosition: function(coordinate) {
-        var position;
-        if(!coordinate) {
-            coordinate = this.position;
-        }
-        if(coordinate){
-            if (coordinate['containerPoint']) {
-                coordinate = coordinate['containerPoint'];
-            }
-            if(Z.Util.isCoordinate(coordinate)) {
-                position = this._map.coordinateToViewPoint(new Z.Coordinate(coordinate));
-            } else {
-                //是point类型坐标
-                position = this._map._containerPointToViewPoint(new Z.Point(coordinate.x,coordinate.y));
-            }
-        } else {
-            var center = this._target.getCenter();
-            position = this._map.coordinateToViewPoint(center);
-            //如果是标注, 则上移infowindow, 让箭头落在marker上沿
-            if (this._target instanceof Z.Marker) {
-                var size = this._target.getSize();
-                position._add(new Z.Point(0, -size['height']));
-            }
-        }
-
-        return position;
     }
 });

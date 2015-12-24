@@ -17,6 +17,7 @@ Z.Map.include({
         this._originZoomLevel=nextZoomLevel;
         this._getRender().onZoomEnd();
         this._zooming = false;
+        this._enablePanAnimation=true;
         /**
          * 触发map的zoomend事件
          * @member maptalks.Map
