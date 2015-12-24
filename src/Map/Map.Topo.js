@@ -11,7 +11,7 @@ Z.Map.include({
      * @expose
      */
     computeDistance: function(lonlat1, lonlat2) {
-        if (!Z.Util.isCoordinate(lonlat1) || !Z.Util.isCoordinate(lonlat2) || !this._getProjection()) {return null;}
+        if (!this._getProjection()) {return null;}
         var p1 = new Z.Coordinate(lonlat1),
             p2 = new Z.Coordinate(lonlat2);
         if (p1.equals(p2)) {return 0;}
