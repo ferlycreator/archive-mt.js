@@ -1,3 +1,6 @@
+maptalks.Grid = {};
+maptalks.Grid.dataindex_center = 'maptalks_geometry_center';
+
 maptalks.Grid = maptalks.Class.extend({
     includes: [maptalks.Eventable],
 
@@ -108,6 +111,8 @@ maptalks.Grid = maptalks.Class.extend({
             me._refrestAdjustLayer(me._map);
         });
         this._map.options['doubleClickZoom'] = false;
+        //If dynamic table and has order column, add number label to geometry;
+
         return this;
     },
 
@@ -339,11 +344,6 @@ maptalks.Grid = maptalks.Class.extend({
         this._width += cellWidth;
         var distance = map.pixelToDistance(cellWidth,0);
         var offset = map.locate(new maptalks.Coordinate(0,0),distance,0);
-        //调整插入列之后的调整线的位置
-        for(var i=insertColNum,len=this._adjustCols.length;i<len;i++) {
-            var colLine = this._adjustCols[i];
-            colLine.translate(offset);
-        }
         this._adjustCols.splice(insertColNum, 0, line);
         this._adjustLayer.addGeometry(line);
         this._colWidths.splice(insertColNum, 0, cellWidth);
@@ -354,18 +354,6 @@ maptalks.Grid = maptalks.Class.extend({
         var colNum = cell._col;
         var line = this._adjustCols[colNum];
         line.remove();
-        //调整colNum之后的调整线
-        var size = cell.getSize();
-        var cellWidth = size['width'];
-        this._width -= cellWidth;
-        var distance = map.pixelToDistance(cellWidth,0);
-        var offset = map.locate(new maptalks.Coordinate(0,0),-distance,0);
-        for(var i=colNum+1;i<this._adjustCols.length;i++) {
-            var colLine = this._adjustCols[i];
-            colLine.translate(offset);
-        }
-        this._adjustCols.splice(colNum,1);
-        this._colWidths.splice(colNum,1);
     },
 
     /**
@@ -427,7 +415,9 @@ maptalks.Grid = maptalks.Class.extend({
     removeCol: function(colNum) {
         var firstRow = this._grid[0];
         var removeCell = firstRow[colNum];
-        var size = removeCell.getSize();
+        var removeSize = removeCell.getSize();
+        var startPoint = this.options['position'];
+        var map = this._adjustLayer.getMap();
         for(var i=0,len=this._grid.length;i<len;i++) {
             var row = this._grid[i];
             for(var j=colNum,rowLength=row.length;j<rowLength;j++) {
@@ -435,10 +425,21 @@ maptalks.Grid = maptalks.Class.extend({
                 var width = 0;
                 if(i==0&&j==colNum) {
                     this._removeAdjustLineForCol(cell);
+                    //表格宽度缩短
+                    this._width -= removeSize['width'];
                 }
                 if(j>colNum) {
+                    this._translateDx(cell,-removeSize['width']);
+                    if(i==0) {
+                        var colLine = this._adjustCols[cell._col];
+                        var size = cell.getSize();
+                        var symbol = cell.getSymbol(),
+                            dx = symbol['textDx'];
+                        var upPoint = map.locate(startPoint,map.pixelToDistance(size['width']/2+dx,0),map.pixelToDistance(0,size['height']/2));
+                        var downPoint = map.locate(upPoint,0,-map.pixelToDistance(0,this._height));
+                        colLine.setCoordinates([upPoint,downPoint]);
+                    }
                     cell._col-=1;
-                    this._translateDx(cell,-size['width']);
                 } else {
                     cell.remove();
                 }
@@ -446,6 +447,8 @@ maptalks.Grid = maptalks.Class.extend({
             //删除列数据
             this._grid[i].splice(colNum,1);
         }
+        this._colWidths.splice(colNum,1);
+        this._adjustCols.splice(colNum,1);
         //移除列数据
         this._colNum-=1;
         //延展行调整线
@@ -811,12 +814,24 @@ maptalks.Grid = maptalks.Class.extend({
     },
 
     _adjustDatasetForCol: function(start,insertColLength) {
+        var startPoint = this.options['position'];
+        var map = this._adjustLayer.getMap();
         for(var i=0,len=this._grid.length;i<len;i++) {
             var rowData = this._grid[i];
             for(var j=start+1,rowLength=rowData.length;j<rowLength;j++) {
                 var cell = rowData[j];
                 cell._col += insertColLength;
                 this._translateDx(cell,this._cellWidth);
+                //调整交互列
+                if(i==0){
+                    var colLine = this._adjustCols[j];
+                    var size = cell.getSize();
+                    var symbol = cell.getSymbol(),
+                        dx = symbol['textDx'];
+                    var upPoint = map.locate(startPoint,map.pixelToDistance(size['width']/2+dx,0),map.pixelToDistance(0,size['height']/2));
+                    var downPoint = map.locate(upPoint,0,-map.pixelToDistance(0,this._height));
+                    colLine.setCoordinates([upPoint,downPoint]);
+                }
             }
         }
     },
