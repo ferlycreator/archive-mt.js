@@ -5,26 +5,28 @@ Z.render.map={};
  */
 Z.render.map.Render = Z.Class.extend({
 
-    panAnimation:function(moveOffset, t) {
-        moveOffset = new Z.Point(moveOffset);
+    panAnimation:function(distance, t) {
+        distance = new Z.Point(distance);
         var map = this.map;
         if (map.options['panAnimation']) {
             var duration;
             if (!t) {
                 duration = map.options['panAnimationDuration'];
             } else {
-                duration = t*(Math.abs(moveOffset.x)+Math.abs(moveOffset.y))/600;
+                duration = t;
             }
-            var panMoveOffset = moveOffset.multi(0.5);
+            map._panAnimating = true;
             Z.animation.animate(new Z.animation.pan({
-                'distance': panMoveOffset,
+                'distance': distance,
                 'duration' : duration
             }), map, function(frame) {
                 if (!map._enablePanAnimation) {
+                    map._panAnimating = false;
                     map._onMoveEnd();
                     return true;
                 }
                 if (frame.state['end']) {
+                    map._panAnimating = false;
                     map._onMoveEnd();
                     return true;
                 }
