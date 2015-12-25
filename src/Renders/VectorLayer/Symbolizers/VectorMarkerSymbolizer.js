@@ -166,6 +166,9 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
                 result['stroke']['stroke-linecap'] = "flat";
             }
         }
+        if (result['stroke']['stroke-width'] === 0) {
+            result['stroke']['stroke-opacity'] = 0;
+        }
         return result;
     },
 
