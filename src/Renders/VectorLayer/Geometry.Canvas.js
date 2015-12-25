@@ -51,6 +51,8 @@ if (Z.Browser.canvas) {
                 if (!lineWidth) {
                     lineWidth = 3;
                 }
+                //TODO 箭头与线宽度的比率相差近四倍,导致不太协调
+                lineWidth = lineWidth/2;
                 var arrowWidth = lineWidth*3,
                     arrowHeight = lineWidth*4,
                     hh = arrowHeight/2,

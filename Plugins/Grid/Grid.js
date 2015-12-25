@@ -129,7 +129,7 @@ maptalks.Grid = maptalks.Class.extend({
         var numberLabel = new maptalks.Label(num, coordinate, options);
         this._layer.addGeometry(numberLabel);
 
-        cell.on('remove', function(){
+        cell.on('hide remove', function(){
             numberLabel.remove();
         }, this);
         var me=this;
