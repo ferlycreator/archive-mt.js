@@ -39,7 +39,6 @@
 ../src/Geometry/Geometry.js
 ../src/Geometry/Ext/Geometry.Edit.js
 ../src/Geometry/Ext/Geometry.Drag.js
-../src/Geometry/Ext/Geometry.InfoWindow.js
 ../src/Geometry/Ext/Geometry.Events.js
 ../src/Geometry/Ext/Geometry.Panel.js
 ../src/Geometry/Extent.js
