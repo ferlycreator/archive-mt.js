@@ -55,7 +55,7 @@ Z['Control'] = Z.Control = Z.Class.extend({
         this._map = map;
         var controlContainer = map._panels.controlWrapper;
         this._container = Z.DomUtil.createEl('div');
-        this._container.className = 'MAP_CONTROL';
+        // this._container.className = 'MAP_CONTROL';
         var controlDom = this._buildOn(map);
         if(controlDom) {
             this._updatePosition();

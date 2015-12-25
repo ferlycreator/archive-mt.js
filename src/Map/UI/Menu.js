@@ -24,9 +24,7 @@ Z.Menu = Z.Class.extend({
      * @expose
      */
     initialize: function(options) {
-
         this.setOptions(options);
-        return this;
     },
 
     /**
