@@ -10,7 +10,7 @@ Z['Control']['Zoom'] = Z.Control.Zoom = Z.Control.extend({
      * @cfg {Object} options zoom控件属性
      */
     options:{
-        'position'  : Z.Control['top_right'],
+        'position'  : Z.Control['top_left'],
         'slider'    : true,
         'zoomLevel' : true
     },

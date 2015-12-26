@@ -4,7 +4,7 @@
  * @extends maptalks.Class
  * @author Maptalks Team
  */
-Z['Control'] = Z.Control = Z.Class.extend({
+Z.Control = Z.Class.extend({
     includes: [Z.Eventable],
 
     statics: {
