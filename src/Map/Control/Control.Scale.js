@@ -22,7 +22,7 @@ Z['Control']['Scale'] = Z.Control.Scale = Z.Control.extend({
                           ';-moz-box-sizing: content-box;box-sizing: content-box;background: #fff; background: rgba(255, 255, 255, 0.5);'
     },
 
-    _buildOn: function (map) {
+    buildOn: function (map) {
         this._map = map;
         this._scaleContainer = Z.DomUtil.createEl('div');
         this._addScales();

@@ -10,8 +10,12 @@ Z.DomUtil = {
      * @param {String} tagName 标签名
      * @return {HTMLElement} element
      */
-    createEl:function(tagName) {
-        return document.createElement(tagName);
+    createEl:function(tagName, className) {
+        var el = document.createElement(tagName);
+        if (className) {
+            Z.DomUtil.setClass(el, className);
+        }
+        return el;
     },
 
     /**

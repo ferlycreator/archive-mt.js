@@ -1,16 +1,14 @@
-
-.maptalks-biaochi { position: absolute; left: 10px; top: 0;}
 .maptalks-bc-1 { width: 57px; height: 58px; background: url(../images/control/2.png) no-repeat;}
 .maptalks-bc-2 { width: 49px; height: 49px; background: url(../images/control/2_2.png) no-repeat; position: absolute; left: 75px; top: 5px;}
 
-.maptalks-sf-dx { margin: 16px; text-align: center;}
-.maptalks-sf-dx .maptalks-value { display: block; width: 23px; height: 23px; background: #172029; color: #fff;  line-height: 23px; font-size: 12px;}
-.maptalks-sf-Main {margin-top: 6px;}
-.maptalks-sf-Main a.maptalks-plus ,.maptalks-sf-Main a.maptalks-reduce {display: block; width: 21px; height: 21px; border: 1px solid #363539; background: #172029; color: #fff;  line-height: 23px; text-decoration: none;}
-.maptalks-sf-m-wrap { width: 21px; height: 124px; background: #34495e; background:url(../images/control/kedu.png) repeat-y; border: 1px solid #35383b;}
-.maptalks-sf-m-wrap .maptalks-sf-inner { width: 5px; height: 112px; background: #372e2b; border-radius: 2px; -moz-border-radius: 2px; -webkit-border-radius: 2px; margin: 4px auto; position: relative;}
-.maptalks-sf-m-wrap .maptalks-sf-inner .maptalks-scroll-line { width: 5px; height: 50%; position: absolute; bottom: 0; left: 0; background: #1bbc9b; border-radius: 2px; -moz-border-radius: 2px; -webkit-border-radius: 2px;}
-.maptalks-sf-m-wrap .maptalks-sf-inner .maptalks-scroll-dot { width: 15px; height: 15px; background: url(../images/control/3.png) no-repeat; position: absolute; bottom: 45%; left: -5px; cursor: pointer;}
+.maptalks-zoom { margin: 16px; text-align: center;}
+.maptalks-zoom .maptalks-zoom-zoomlevel { display: block; width: 23px; height: 23px; background: #172029; color: #fff;  line-height: 23px; font-size: 12px;}
+.maptalks-zoom-slider {margin-top: 6px;}
+.maptalks-zoom-slider a.maptalks-zoom-zoomin ,.maptalks-zoom-slider a.maptalks-zoom-zoomout {display: block; width: 21px; height: 21px; border: 1px solid #363539; background: #172029; color: #fff;  line-height: 19px; text-decoration: none;}
+.maptalks-zoom-slider-box { width: 21px; height: 124px; background: #34495e; background:url(../images/control/kedu.png) repeat-y; border: 1px solid #35383b;}
+.maptalks-zoom-slider-box .maptalks-zoom-slider-ruler { width: 5px; height: 112px; background: #372e2b; border-radius: 2px; -moz-border-radius: 2px; -webkit-border-radius: 2px; margin: 4px auto; position: relative;}
+.maptalks-zoom-slider-box .maptalks-zoom-slider-ruler .maptalks-zoom-slider-reading { width: 5px; height: 50%; position: absolute; bottom: 0; left: 0; background: #1bbc9b; border-radius: 2px; -moz-border-radius: 2px; -webkit-border-radius: 2px;}
+.maptalks-zoom-slider-box .maptalks-zoom-slider-ruler .maptalks-zoom-slider-dot { width: 15px; height: 15px; background: url(../images/control/3.png) no-repeat; position: absolute; bottom: 45%; left: -5px; cursor: pointer;}
 
 .maptalks-toolbar-horizonal { border: 1px solid #3b3e44;}
 .maptalks-toolbar-horizonal ul ,.maptalks-toolbar-hx ul {margin: 0;padding: 0;}
@@ -43,21 +41,21 @@
 .maptalks-toolbar-vertical li .maptalks-dropMenu em.maptalks-ico { display: block; width: 5px; height: 6px; background: url(../images/control/4.png) no-repeat; position: absolute; top: -4px; left: 12px;}
 .maptalks-toolbar-vertical li .maptalks-dropMenu li.maptalks-on ,.maptalks-Menu-vertical li .maptalks-dropMenu li:hover { background: #0e595e;}
 
-.maptalks-ctMain { position: relative; background: #fff; padding: 1px; width: 172px; border: 1px solid #727070; box-shadow: 3px 5px 10px #dbdada;}
-.maptalks-ctMain em.maptalks-ico { display: block; width: 17px; height: 10px; background: url(../images/control/5.png) no-repeat; position: absolute; top: -10px; left: 8px;}
-.maptalks-ctMain .maptalks-ctnav { color: #5a5756; border-top: 2px solid #ddd; margin: 0; padding: 0; font-size: 12px;}
-.maptalks-ctMain .maptalks-ctnav li { list-style: none; height: 30px; line-height: 30px; text-indent: 16px;}
-.maptalks-ctMain .maptalks-ctnav.maptalks-fisrtli { border-top: none;}
-.maptalks-ctMain .maptalks-ctnav li.maptalks-cur { background: #1bbc9b; color: #fff;}
+.maptalks-menu { background: #fff; padding: 1px; width: 172px; border: 1px solid #b4b3b3; box-shadow: 3px 5px 10px #dbdada;}
+.maptalks-menu em.maptalks-ico { display: block; width: 17px; height: 10px; background: url(../images/control/5.png) no-repeat; position: absolute; top: -10px; left: 8px;}
+.maptalks-menu .maptalks-menu-items { color: #5a5756; margin: 0; padding: 0; font-size: 12px;}
+.maptalks-menu .maptalks-menu-items li { list-style: none; height: 30px; line-height: 30px; text-indent: 16px;}
+.maptalks-menu .maptalks-menu-items li:hover {background: #007fbe; color: #fff;cursor:pointer;}
+.maptalks-menu .maptalks-menu-items li.maptalks-menu-splitter { list-style: none; height: 2px; background: #ddd;}
 
-.maptalks-msgBox { background: #fff; border: 1px solid #b4b3b3; border-radius: 3px; box-shadow: 3px 5px 5px #dbdada; position: relative;}
+.maptalks-msgBox { background: #fff; border: 1px solid #b4b3b3; border-radius: 3px; box-shadow: 3px 5px 5px #dbdada;}
 .maptalks-msgBox em.maptalks-ico { display: block; width: 17px; height: 10px; background: url(../images/control/5_1.png) no-repeat; position: absolute; left: 50%; margin-left: -5px; bottom: -10px;}
 .maptalks-msgBox h2 { display: block; height: 30px; line-height: 30px; font-weight: bold; font-size: 14px; padding: 0 10px;  margin: 0;}
 .maptalks-msgBox a.maptalks-close { display: block; width: 13px; height: 13px; background: url(../images/control/infownd-close.png) no-repeat; position: absolute; top: 8px; right: 10px;}
 .maptalks-msgBox a.maptalks-close:hover { background: url(../images/control/infownd-close-hover.png) no-repeat;}
 .maptalks-msgBox .maptalks-msgContent { font-size: 12px;padding: 10px; min-width: 200px;}
 
-.maptalks-panel { background: #fff; border: 1px solid #b4b3b3; border-radius: 3px; box-shadow: 3px 5px 5px #dbdada; position: relative;}
-.maptalks-panel .maptalks-msgContent { padding: 10px; min-width: 200px; min-height: 60px;}
+.maptalks-panel { background: #fff; border: 1px solid #b4b3b3; border-radius: 3px; box-shadow: 3px 5px 5px #dbdada;}
+.maptalks-panel .maptalks-panel-content { padding: 10px; min-width: 200px; min-height: 60px;}
 .maptalks-panel a.maptalks-close { display: block; width: 6px; height: 7px; background: url(../images/control/close-2.png) no-repeat; position: absolute; top: 10px; right: 10px;}
-.maptalks-panel a.maptalks-close:hover { opacity: 0.8;}
+.maptalks-panel a.maptalks-close:hover { opacity: 0.5;}

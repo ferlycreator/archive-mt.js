@@ -12,7 +12,7 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
 
     options:{
         'symbol':{
-            'markerFile' : Z.prefix+'images/marker.png',
+            'markerFile' : Z.prefix+'images/resource/marker.png',
             'markerHeight' : 26,
             'markerWidth' : 18
         }

@@ -564,7 +564,7 @@ describe('API', function () {
                 id: 'id1',
                 position: {top: 10, left: 10}
             });
-            control._buildOn = buildOn;
+            control.buildOn = buildOn;
 
             expect(function () {
                 control.addTo(map);
@@ -576,7 +576,7 @@ describe('API', function () {
                 id: 'id1',
                 position: {top: 10, left: 10}
             });
-            control._buildOn = buildOn;
+            control.buildOn = buildOn;
             control.addTo(map);
             var pos = {
                 top: 20,

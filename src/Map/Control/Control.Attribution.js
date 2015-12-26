@@ -22,7 +22,7 @@ Z.Control.Attribution = Z.Control.extend({
 	},
 
 
-	_buildOn: function (map) {
+	buildOn: function (map) {
 		this._attributionContainer = Z.DomUtil.createEl('div');
 		Z.DomUtil.setStyle(this._attributionContainer, Z.Control.Attribution['maptalks-control-attribution-bg']);
         Z.DomUtil.on(this._attributionContainer, 'mousedown mousemove dblclick contextmenu', Z.DomUtil.stopPropagation);

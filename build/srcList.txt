@@ -40,7 +40,6 @@
 ../src/Geometry/Ext/Geometry.Edit.js
 ../src/Geometry/Ext/Geometry.Drag.js
 ../src/Geometry/Ext/Geometry.Events.js
-../src/Geometry/Ext/Geometry.Panel.js
 ../src/Geometry/Extent.js
 ../src/Geometry/Vector.js
 ../src/Geometry/Geometry.Center.js
@@ -102,6 +101,7 @@
 ../src/Renders/VectorLayer/Geometry.Canvas.js
 ../src/Renders/VectorLayer/Painter.js
 ../src/Renders/VectorLayer/CollectionPainter.js
+../src/Map/UI/UI.js
 ../src/Map/UI/InfoWindow.js
 ../src/Map/UI/Menu.js
 ../src/Map/Map.ContextMenu.js
@@ -111,9 +111,9 @@
 ../src/Map/Control/Control.Attribution.js
 ../src/Map/Control/Control.Nav.js
 ../src/Map/Control/Control.Scale.js
+../src/Map/Control/Control.Panel.js
 ../src/Map/UI/Button.js
 ../src/Map/UI/Toolbar.js
-../src/Map/UI/Panel.js
 ../src/Linker/Linker.js
 ../src/Topo/GeoUtils.js
 ../src/Topo/SimplifyUtil.js

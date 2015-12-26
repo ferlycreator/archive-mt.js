@@ -4,8 +4,7 @@
  * @extends maptalks.Class
  * @author Maptalks Team
  */
-Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
-    includes: [Z.Eventable],
+Z['InfoWindow'] = Z.InfoWindow = Z.UIComponent.extend({
 
     /**
      * @cfg {Object} options 信息窗属性
@@ -29,32 +28,13 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         Z.Util.setOptions(this,options);
     },
 
-    /**
-     * 将信息框添加到对象上
-     * @param {maptalks.Map} map/geometry
-     */
-    addTo: function(target) {
-        if(target instanceof Z.Map) {
-            this._map = target;
-        } else { //Geometry
-            this._map = target.getMap();
-        }
-        this._target = target;
-        this._registerEvent();
-        return this;
-    },
-
-    getTarget:function() {
-        return this._target;
-    },
-
     setContent:function(content) {
         this.options['content'] = content;
         if (this.isOpen()) {
-            delete this._map._infoWindow['dom'];
+            delete this._dom;
             this.show(this._coordinate);
         } else if (this._isOnStage()) {
-            delete this._map._infoWindow['dom'];
+            delete this._dom;
         }
         return this;
     },
@@ -66,10 +46,10 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
     setTitle:function(title) {
         this.options['title'] = title;
         if (this.isOpen()) {
-            delete this._map._infoWindow['dom'];
+            delete this._dom;
             this.show(this._coordinate);
         } else if (this._isOnStage()) {
-            delete this._map._infoWindow['dom'];
+            delete this._dom;
         }
         return this;
     },
@@ -79,43 +59,8 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
     },
 
     /**
-     * 移除infoWindow设置
-     * @expose
-     */
-    remove: function() {
-        this.hide();
-        this._map.off('_zoomstart', this._onZoomStart, this);
-        this._map.off('_zoomend', this._onZoomEnd, this);
-        delete this._target;
-        delete this._map;
-        return this;
-    },
-
-    /**
-     * 隐藏信息框
-     * @expose
-     */
-    hide:function() {
-        if (!this._target) {
-            return;
-        }
-        if (this.isOpen()) {
-            this._getDOM().style.display = 'none';
-        }
-    },
-
-    /**
-     * 判断信息框是否打开
-     * @returns {Boolean} true|false
-     * @expose
-     */
-    isOpen:function() {
-        return this._isOnStage() && this._getDOM().style.display !== 'none';
-    },
-
-    /**
-     * get pixel size of the infowindow
-     * @return {[type]} [description]
+     * get pixel size of info window
+     * @return {Size} size
      */
     getSize:function() {
         if (this._size) {
@@ -125,70 +70,50 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         }
     },
 
-    /**
-     * 显示infoWindow
-     * @param {maptalks.Coordinate} 坐标
-     * @expose
-     */
-    show: function(coordinate) {
-        if (!this._target) {
-            return;
-        }
-        this.fire('showstart');
-        this._prepare();
-        var anchor = this._getAnchor(coordinate),
-            mapSize = this._map.getSize();
-        var mapWidth = mapSize['width'],
-            mapHeight = mapSize['height'];
-
-        var dom = this._getDOM();
-        dom.style.position = 'absolute';
-        dom.style.left = anchor.x+'px';
-        dom.style.top = anchor.y+'px';
-        dom.style.display="";
-
-        if (this.options['autoPan']) {
-            //pan map if
-            var containerPoint = this._map._viewPointToContainerPoint(anchor);
-            var size = this.getSize(),
-                clientWidth = dom.clientWidth,
-                clientHeight = dom.clientHeight;
-            var left=0,top=0;
-            if ((containerPoint.x)<0) {
-                left=-(containerPoint.x-parseInt(clientWidth)/2);
-            } else if ((containerPoint.x+parseInt(clientWidth)-35)>mapWidth) {
-                left=(mapWidth-(containerPoint.x+parseInt(clientWidth)*3/2));
-            }
-            if (containerPoint.y<0) {
-                top=-containerPoint.y+50;
-            } else if (containerPoint.y>mapHeight){
-                top = (mapHeight-containerPoint.y-parseInt(clientHeight))-30;
-            }
-            if (top!==0 || left!==0) {
-                this._map._panAnimation(new Z.Point(left,top),600);
-            }
-        }
-        this._target.fire('showend');
-        return this;
-    },
-
-    _prepare:function() {
-        if (this._isOnStage() && this._map._infoWindow['dom']) {
-            return;
-        }
+    _prepareDOM:function() {
         var container = this._map._panels.tipContainer;
         container.innerHTML = '';
+        var dom;
+        if (this._isOnStage() && this._dom) {
+            dom = this._dom;
+            container.appendChild(dom);
+        } else {
+            dom = this._dom = this._createDOM();
+            Z.DomUtil.on(dom, 'mousedown dblclick', Z.DomUtil.stopPropagation);
+            dom.style.position = 'absolute';
+            dom.style.left = -99999+'px';
+            dom.style.top = -99999+'px';
+            container.appendChild(dom);
+            this._size = new Z.Size(dom.clientWidth+6, dom.clientHeight);
+            dom.style.display = "none";
+        }
         this._map._infoWindow =  {
             'target' : this
         };
-        var dom = this._map._infoWindow['dom'] = this._createDOM();
-        Z.DomUtil.on(dom, 'mousedown dblclick', Z.DomUtil.stopPropagation);
-        dom.style.position = 'absolute';
-        dom.style.left = -99999+'px';
-        dom.style.top = -99999+'px';
-        container.appendChild(dom);
-        this._size = new Z.Size(dom.clientWidth+6, dom.clientHeight);
-        dom.style.display = "none";
+    },
+
+    _createDOM: function(){
+        if (this.options['custom']) {
+            if (Z.Util.isString(this.options['content'])) {
+                var container = Z.DomUtil.createEl('div');
+                container.innerHTML = this.options['content'];
+                return container;
+            } else {
+                return this.options['content'];
+            }
+        } else {
+            var dom = Z.DomUtil.createEl('div');
+            dom.className = 'maptalks-msgBox';
+            dom.style.width = this._getWidth()+'px';
+            var content = '<em class="maptalks-ico"></em>';
+            if (this.options['title']) {
+                content += '<h2>'+this.options['title']+'</h2>';
+            }
+            content += '<a href="javascript:;" onclick="this.parentNode.style.display=\'none\';" '+
+            ' class="maptalks-close"></a><div class="maptalks-msgContent">'+this.options['content']+'</div>';
+            dom.innerHTML = content;
+            return dom;
+        };
     },
 
     //get anchor of infowindow to place
@@ -218,7 +143,10 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
     },
 
     _getDOM:function() {
-        return this._map._infoWindow['dom'];
+        if (!this._isOnStage()) {
+            return null;
+        }
+        return this._dom;
     },
 
     _getWidth:function() {
@@ -230,27 +158,14 @@ Z['InfoWindow'] = Z.InfoWindow = Z.Class.extend({
         return width;
     },
 
-    _createDOM: function(){
-        if (this.options['custom']) {
-            return this.options['content'];
-        } else {
-            var dom = Z.DomUtil.createEl('div');
-            dom.className = 'maptalks-msgBox';
-            dom.style.width = this._getWidth()+'px';
-            var content = '<em class="maptalks-ico"></em>';
-            if (this.options['title']) {
-                content += '<h2>'+this.options['title']+'</h2>';
-            }
-            content += '<a href="javascript:;" onclick="this.parentNode.style.display=\'none\';" '+
-            ' class="maptalks-close"></a><div class="maptalks-msgContent">'+this.options['content']+'</div>';
-            dom.innerHTML = content;
-            return dom;
-        };
-    },
-
-    _registerEvent:function() {
+    _registerEvents:function() {
         this._map.on('_zoomstart', this._onZoomStart, this);
         this._map.on('_zoomend', this._onZoomEnd, this);
+    },
+
+    _removeEvents:function() {
+        this._map.off('_zoomstart', this._onZoomStart, this);
+        this._map.off('_zoomend', this._onZoomEnd, this);
     },
 
     _onZoomStart:function() {

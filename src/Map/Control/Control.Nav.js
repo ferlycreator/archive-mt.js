@@ -4,16 +4,16 @@
  * @extends maptalks.Control
  * @author Maptalks Team
  */
-Z['Control']['Nav'] = Z.Control.Nav = Z.Control.extend({
+Z.Control.Nav = Z.Control.extend({
 
     /**
      * @cfg {Object} options 导航控件属性
      */
     options:{
-        'position' : Z.Control['bottom_right']
+        'position' : Z.Control['top_left']
     },
 
-    _buildOn: function (map) {
+    buildOn: function (map) {
         this._map = map;
         this._navControlContainer = Z.DomUtil.createEl('div');
         this._panToLeftButton  = this._createButton('maptalks-control-nav-button maptalks-control-nav-left', this._panToLeft);
@@ -79,23 +79,12 @@ Z.Map.mergeOptions({
      * @cfg {Boolean} [navControl="false"] 是否显示导航控件
      * @member maptalks.Map
      */
-    'navControl' : false,
-    /**
-     * @cfg {Object}  navControlOptions 导航控件设置
-     * @member maptalks.Map
-     */
-    'navControlOptions' : {
-        'position' : Z.Control['bottom_right']
-    }
+    'navControl' : false
 });
 
 Z.Map.addOnLoadHook(function () {
     if (this.options['navControl']) {
-        var navControlOptions = this['options']['navControlOptions'];
-        if(!navControlOptions['position']) {
-            navControlOptions['position'] = Z.Control['bottom_right'];
-        }
-        this.navControl = new Z.Control.Nav(navControlOptions);
-        this['addControl'](this.navControl);
+        this.navControl = new Z.Control.Nav();
+        this.addControl(this.navControl);
     }
 });

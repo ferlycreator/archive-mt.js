@@ -57,7 +57,7 @@ Z.Label = Z.Marker.extend({
         this._content = content;
         this._coordinates = new Z.Coordinate(coordinates);
         this._initOptions(options);
-        this._registerEvent();
+        this._registerEvents();
         this._refresh();
     },
 
@@ -174,7 +174,7 @@ Z.Label = Z.Marker.extend({
             this._onSymbolChanged();
         }
     },
-    _registerEvent: function() {
+    _registerEvents: function() {
         this.on('shapechanged', this._refresh, this);
         this.on('remove', this._onLabelRemove, this);
         return this;
