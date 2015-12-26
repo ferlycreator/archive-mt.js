@@ -5,6 +5,23 @@ Z.render.map={};
  */
 Z.render.map.Render = Z.Class.extend({
 
+    /**
+     * get Transform Matrix for zooming
+     * @param  {Number} scale  scale
+     * @param  {Point} origin Transform Origin
+     */
+    getZoomMatrix:function(scale, origin) {
+        var r = Z.Browser.retina?2:1;
+        var mapTransOrigin = origin.multi(r);
+        //matrix for layers to caculate points.
+        var matrix = new Z.Matrix().translate(origin.x, origin.y)
+            .scaleU(scale).translate(-origin.x,-origin.y);
+        //matrix for this._context to draw layerImage.
+        var retinaMatrix = new Z.Matrix().translate(mapTransOrigin.x, mapTransOrigin.y)
+            .scaleU(scale).translate(-mapTransOrigin.x,-mapTransOrigin.y).scaleU(r);
+        return [matrix, retinaMatrix];
+    },
+
     panAnimation:function(distance, t) {
         distance = new Z.Point(distance);
         var map = this.map;

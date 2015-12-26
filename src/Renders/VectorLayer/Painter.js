@@ -178,7 +178,7 @@ Z.Painter = Z.Class.extend({
                 return;
             }
             if (isRealTime) {
-                render.rendRealTime();
+                render.renderImmediate();
             } else {
                 render.render(null,!needPromise);
             }
