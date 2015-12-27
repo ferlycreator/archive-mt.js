@@ -206,7 +206,6 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
             return;
         }
         if (this._layer.isEmpty()) {
-            this._requestMapToRend();
             return;
         }
         var resourceUrls = [];
@@ -281,7 +280,6 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
             return;
         }
         if (this._layer.isEmpty()) {
-            this._requestMapToRend();
             return;
         }
         //载入资源后再进行绘制

@@ -87,7 +87,7 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
                     delete this._transMatrix;
                     this._clearCanvas();
                     //only draw basetile layer
-                    matrixes[0].applyToContext(this._context);
+                    matrixes[1].applyToContext(this._context);
                     this._drawLayerCanvasImage(baseLayerImage, width, height);
                     this._canvasBackgroundImage = Z.DomUtil.copyCanvas(this._canvas);
                     this._context.restore();

@@ -1,14 +1,6 @@
 Z.render={};
 
 Z.render.Canvas=Z.Class.extend({
-    getCanvasImage:function() {
-        if (!this._canvasFullExtent) {
-            return null;
-        }
-        var size = this._canvasFullExtent.getSize();
-        var point = this._canvasFullExtent.getMin();
-        return {'image':this._canvas,'layer':this._layer,'point':this.getMap()._viewPointToContainerPoint(point),'size':size};
-    },
 
     _createCanvas:function() {
         if (this._canvas) {
