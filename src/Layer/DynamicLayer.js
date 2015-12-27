@@ -33,15 +33,6 @@ Z['DynamicLayer'] = Z.DynamicLayer = Z.TileLayer.extend({
      */
     _prepareLoad: function() {
         var map = this.getMap();
-        var zoom = map.getZoom();
-        var min = this.getMinZoom();
-        var max = this.getMaxZoom();
-        if (!Z.Util.isNil(min) && min >= 0 && zoom < min) {
-            return false;
-        }
-        if (!Z.Util.isNil(max) && max >= 0 && zoom > max) {
-            return false;
-        }
         if (!this.options['layers'] || !this.options['mapdb']) {
             return false;
         }
@@ -122,85 +113,7 @@ Z['DynamicLayer'] = Z.DynamicLayer = Z.TileLayer.extend({
             };
             mapConfig.layers.push(layer);
         }
-        // what does 'application/json' mean?
         return JSON.stringify(mapConfig);
-    },
-
-    /**
-     * 获取最小显示比例尺级别
-     * @expose
-     * @returns {Number}
-     */
-    getMinZoom: function(){
-        var map = this.getMap();
-        var ret =  this.options['minZoom'];
-        if (Z.Util.isNil(ret)) {
-            ret = map.getMinZoom();
-        }
-        return ret;
-    },
-    /**
-     * 获取最大显示比例尺级别
-     * @expose
-     * @returns {Number}
-     */
-    getMaxZoom: function(){
-         var map = this.getMap();
-        var ret =  this.options['maxZoom'];
-        if (Z.Util.isNil(ret)) {
-            ret = map.getMaxZoom();
-        }
-        return ret;
-    },
-    /**
-     * 设定动态图层的最小显示比例尺层级
-     * @expose
-     * @param zoomLevel {Number}
-     *
-     */
-    setMinZoom: function(zoomLevel) {
-        if (this.map) {
-            var mapmin = this.map.getMinZoom();
-            if (zoomLevel < mapmin) {
-                zoomLevel = mapmin;
-            }
-        }
-        this.options['minZoom']=zoomLevel;
-        return this;
-    },
-    /**
-     * 设定动态图层的最大显示比例尺层级
-     * @expose
-     * @param zoomLevel {Number}
-     */
-    setMaxZoom: function(zoomLevel) {
-        if (this.map) {
-            var mapmax = this.map.getMaxZoom();
-            if (zoomLevel > mapmax) {
-                zoomLevel = mapmax;
-            }
-        }
-        this.options['maxZoom']=zoomLevel;
-        return this;
-    },
-
-    /**
-     * 设定动态图层的透明度
-     * @param opacity
-     * @expose
-     */
-    setOpacity: function(opacity) {
-        this.options['opacity'] = opacity;
-        return this;
-    },
-
-    /**
-     * 返回动态图层的透明度
-     * @return {Number} 透明度
-     * @expose
-     */
-    getOpacity: function() {
-        return this.options['opacity'];
     }
 
 });
