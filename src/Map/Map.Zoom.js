@@ -13,7 +13,7 @@ Z.Map.include({
         }
         this._enablePanAnimation = false;
         this._zooming = true;
-        this._fireEvent('zoomstart');
+        this._fireEvent('zoomstart', {"from" : this._originZoomLevel, "to": nextZoomLevel});
         if (!origin) {
             origin = new Z.Point(this.width/2, this.height/2);
         }
@@ -40,7 +40,7 @@ Z.Map.include({
     _onZoomEnd:function(nextZoomLevel, zoomOffset) {
         this._zoomLevel=nextZoomLevel;
         this._offsetCenterByPixel(zoomOffset);
-
+        var _originZoomLevel = this._originZoomLevel;
         this._originZoomLevel=nextZoomLevel;
         this._getRender().onZoomEnd();
         this._zooming = false;
@@ -51,7 +51,7 @@ Z.Map.include({
          * @event zoomend
          * @return {Object} params: {'target':this}
          */
-        this._fireEvent('zoomend');
+        this._fireEvent('zoomend',{"from" : _originZoomLevel, "to": nextZoomLevel});
     },
 
 
