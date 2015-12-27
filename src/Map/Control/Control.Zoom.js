@@ -58,8 +58,7 @@ Z['Control']['Zoom'] = Z.Control.Zoom = Z.Control.extend({
 
         dom.appendChild(zoomDOM);
 
-        map.on('_zoomend', this._update, this);
-        map.on('_zoomstart', this._update, this);
+        map.on('_zoomend _zoomstart', this._update, this);
 
         this._update();
         this._registerDomEvents();
@@ -92,11 +91,11 @@ Z['Control']['Zoom'] = Z.Control.Zoom = Z.Control.extend({
         if (this._zoomOutButton) {
             Z.DomUtil.on(this._zoomOutButton, 'click', map.zoomOut, map);
         }
+        //TODO slider dot拖放缩放逻辑还没有实现
     },
 
     _onRemove: function (map) {
-        map.off('_zoomend', this._onZoomEnd, this);
-        map.off('_zoomstart', this._onZoomStart, this);
+        map.off('_zoomend _zoomstart', this._onZoomEnd, this);
     }
 });
 
@@ -106,13 +105,6 @@ Z.Map.mergeOptions({
      * @member maptalks.Map
      */
     'zoomControl': false,
-    /**
-     * @cfg {Object}  zoomControlOptions zoom控件设置
-     * @member maptalks.Map
-     */
-    'zoomControlOptions' : {
-        'position' : Z.Control['top_right']
-    }
 });
 
 Z.Map.addOnLoadHook(function () {

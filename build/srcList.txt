@@ -106,12 +106,14 @@
 ../src/Map/UI/Menu.js
 ../src/Map/Map.ContextMenu.js
 ../src/Geometry/Ext/Geometry.Menu.js
+../src/Geometry/Ext/Geometry.InfoWindow.js
 ../src/Control/Control.js
 ../src/Map/Control/Control.Zoom.js
 ../src/Map/Control/Control.Attribution.js
 ../src/Map/Control/Control.Nav.js
 ../src/Map/Control/Control.Scale.js
 ../src/Map/Control/Control.Panel.js
+../src/Map/Control/Control.Toolbar.js
 ../src/Map/UI/Button.js
 ../src/Map/UI/Toolbar.js
 ../src/Linker/Linker.js

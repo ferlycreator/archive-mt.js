@@ -12,6 +12,7 @@ Z['InfoWindow'] = Z.InfoWindow = Z.UIComponent.extend({
     options: {
         'autoPan'   : true,
         'width'     : 300,
+        'minHeight' : 120,
         'custom'    : false,
         'title'     : '',
         'content'   : '',
@@ -85,6 +86,11 @@ Z['InfoWindow'] = Z.InfoWindow = Z.UIComponent.extend({
             dom.style.top = -99999+'px';
             container.appendChild(dom);
             this._size = new Z.Size(dom.clientWidth+6, dom.clientHeight);
+            var minHeight = this.options['minHeight'];
+            if (minHeight>0 && this._size['height']/minHeight) {
+                dom.style.height = minHeight+'px';
+                this._size['height'] = minHeight;
+            }
             dom.style.display = "none";
         }
         this._map._infoWindow =  {

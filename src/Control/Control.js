@@ -12,7 +12,7 @@ Z.Control = Z.Class.extend({
          * @static
          * @cfg {Object} top_left 左上角
          */
-        'top_left' : {'top': '40','left': '60'},
+        'top_left' : {'top': '20','left': '20'},
         /**
          * @static
          * @cfg {Object} top_right 右上角

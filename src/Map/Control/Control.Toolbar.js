@@ -40,12 +40,13 @@ Z.Control.Toolbar = Z.Control.extend({
                         var li = Z.DomUtil.createEl('li');
                         li.innerHTML = '<a href="javascript:;">'+child['item']+'</a>'
                         li.style.cursor = 'pointer';
+                        Z.DomUtil.on(li,'mouseout',Z.DomUtil.stopPropagation);
                         Z.DomUtil.on(li.childNodes[0],'click',(onButtonClick)(child['click'], index, i));
                         menuUL.appendChild(li);
                     }
                     Z.DomUtil.on(menuDom,'mouseout',function(e) {
+                        //TODO mouseout解决不完美, 鼠标移出menuDom时, mouseout并不能随时响应
                         if (e.target.nodeName.toLowerCase() === 'div') {
-                            console.log('out');
                             Z.DomUtil.removeDomNode(menuDom);
                             delete dom._childrenMenu;
                         }

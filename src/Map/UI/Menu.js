@@ -37,7 +37,6 @@ Z.Menu = Z.UIComponent.extend({
      */
     setItems: function(items) {
         this.options['items'] = items;
-        delete this._dom;
         return this;
     },
 
@@ -64,23 +63,18 @@ Z.Menu = Z.UIComponent.extend({
     _prepareDOM:function() {
         var container = this._map._panels.tipContainer;
         container.innerHTML = '';
-        var dom;
-        if (this._isOnStage() && this._dom) {
-            dom = this._dom;
-            container.appendChild(dom);
-        } else {
-            dom = this._dom = this._createDOM();
-            Z.DomUtil.on(dom, 'mousedown dblclick', Z.DomUtil.stopPropagation);
-            dom.style.position = 'absolute';
-            dom.style.left = -99999+'px';
-            dom.style.top = -99999+'px';
-            container.appendChild(dom);
-            this._size = new Z.Size(dom.clientWidth+6, dom.clientHeight);
-            dom.style.display = "none";
-        }
+        var dom = this._dom = this._createDOM();
+        Z.DomUtil.on(dom, 'mousedown dblclick', Z.DomUtil.stopPropagation);
+        dom.style.position = 'absolute';
+        dom.style.left = -99999+'px';
+        dom.style.top = -99999+'px';
+        container.appendChild(dom);
+        this._size = new Z.Size(dom.clientWidth+6, dom.clientHeight);
+        dom.style.display = "none";
         this._map._contextmenu =  {
             'target' : this
         };
+        return dom
     },
 
     _createDOM:function() {
@@ -136,14 +130,7 @@ Z.Menu = Z.UIComponent.extend({
         return ul;
     },
 
-    _isOnStage:function() {
-        return (this._map._contextmenu && this._map._contextmenu['target'] == this);
-    },
-
     _getDOM:function() {
-        if (!this._isOnStage()) {
-            return null;
-        }
         return this._dom;
     },
 
@@ -190,7 +177,7 @@ Z.Menu.Handler={
     setMenu: function(options) {
         this._menuOptions = options;
         if (this._menu) {
-            this._menu.setOptions(options);
+            Z.Util.setOptions(this._menu, options);
         } else {
             this.on('contextmenu', this._defaultOpenMenu, this);
         }
