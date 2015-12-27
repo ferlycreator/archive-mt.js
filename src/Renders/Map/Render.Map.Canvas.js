@@ -139,7 +139,7 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
                     } else {
                         //redraw all the geometries with transform matrix
                         //this may bring low performance if number of geometries is large.
-                        render._draw();
+                        render.draw();
                     }
                 }
 

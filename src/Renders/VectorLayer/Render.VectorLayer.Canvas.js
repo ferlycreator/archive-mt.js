@@ -19,7 +19,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
      * 实时绘制并请求地图重绘
      */
     renderImmediate:function() {
-        this._draw();
+        this.draw();
         this._requestMapToRend();
     },
 
@@ -275,7 +275,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
 
 
 
-    _draw:function() {
+    draw:function() {
         var map = this.getMap();
         if (!map) {
             return;

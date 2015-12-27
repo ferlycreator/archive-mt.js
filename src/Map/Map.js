@@ -811,7 +811,6 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     _Load:function() {
-        this._originZoomLevel = this._zoomLevel;
         this._registerDomEvents();
         this._loadAllLayers();
         this._loaded = true;
