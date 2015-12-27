@@ -90,17 +90,22 @@ Z['DynamicLayer'] = Z.DynamicLayer = Z.TileLayer.extend({
         var mapConfig = {};
         mapConfig.version = '1.0.0';
         // mapConfig.extent = [];
-        mapConfig.minzoom = this.getMinZoom();
-        mapConfig.maxzoom = this.getMaxZoom();
         mapConfig.layers = [];
         for(var i = 0, len = this.options.layers.length; i < len; i++) {
             var l = this.options.layers[i];
             var q = {
-                condition: l.condition,
-                spatialFilter: l.spatialFilter,
+                // avoid string "undefined"
+                condition: l.condition ? l.condition : '',
                 resultCrs: map.getCRS(),
                 resultFields: ['*']
             };
+            if (l.spatialFilter && Z.Util.isObject(l.spatialFilter)) {
+                if (l.spatialFilter instanceof Z.SpatialFilter) {
+                    q.spatialFilter = l.spatialFilter.toJSON;
+                } else {
+                    q.spatialFilter = l.spatialFilter;
+                }
+            }
             var layer = {
                 type: 'maptalks',
                 options: {
