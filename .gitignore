@@ -2,6 +2,7 @@
 dist/
 .idea/
 *.iml
+.tern-port
 
 ### *tags
 GPATH
