@@ -542,13 +542,13 @@ Z['Map']=Z.Map=Z.Class.extend({
         this._baseTileLayer = baseTileLayer;
         var me = this;
         //删除背景
-        this._baseTileLayer.on('layerloaded',function() {
-            // me._removeBackGroundDOM();
+        function onBaseTileLayerLoaded() {
             this._fireEvent('baselayerload');
             if (isChange) {
                 this._fireEvent('baselayerchangeend');
             }
-        },this);
+        }
+        this._baseTileLayer.onOnce('layerloaded',onBaseTileLayerLoaded,this);
         this._baseTileLayer._loadTileConfig(function() {
             var tileConfig = me._baseTileLayer._getTileConfig();
             var changed = me._setTileConfig(tileConfig);

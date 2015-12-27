@@ -147,6 +147,15 @@ Z.Eventable = {
  */
 Z.Eventable.on = Z.Eventable['addEventListener'];
 
+Z.Eventable.onOnce = function(eventTypeArr, handler, context) {
+    var me = this;
+    function onceHandler() {
+        handler.call(context, arguments);
+        me.off(eventTypeArr, onceHandler, context);
+    }
+    this.on(eventTypeArr, onceHandler, context);
+}
+
 /**
  * 删除事件
  * @param {String} eventTypeArr 事件名字符串，多个事件名用空格分开
