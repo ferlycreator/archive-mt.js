@@ -45,65 +45,73 @@ Z.Util = {
 
     loadImage:function(img, url) {
         if (Z.runningInNode) {
-            //canvas-node的Image对象
-            if (Z.Util.isURL(url)) {
-                //读取远程图片
-                var loader;
-                if (url.indexOf('https://') === 0) {
-                    if (!this._nodeHttps) {
-                        this._nodeHttps = require('https');
+            try {
+                //canvas-node的Image对象
+                if (Z.Util.isURL(url)) {
+                    //读取远程图片
+                    var loader;
+                    if (url.indexOf('https://') === 0) {
+                        if (!this._nodeHttps) {
+                            this._nodeHttps = require('https');
+                        }
+                        loader = this._nodeHttps;
+                    } else {
+                        if (!this._nodeHttp) {
+                            this._nodeHttp = require('http');
+                        }
+                        loader = this._nodeHttp;
                     }
-                    loader = this._nodeHttps;
+
+                        loader.get(url,
+                            function(res) {
+
+                                var data = new Buffer(parseInt(res.headers['content-length'],10));
+                                var pos = 0;
+                                res.on('data', function(chunk) {
+                                  chunk.copy(data, pos);
+                                  pos += chunk.length;
+                                });
+                                res.on('end', function () {
+                                    var onloadFn = img.onload;
+                                    if (onloadFn) {
+                                        img.onload = function() {
+                                            onloadFn.call(img);
+                                        };
+                                    }
+                                    img.src = data;
+                                });
+                            }
+                        );
+
                 } else {
-                    if (!this._nodeHttp) {
-                        this._nodeHttp = require('http');
+                    //读取本地图片
+                    if (!this._nodeFS) {
+                        this._nodeFS = require('fs');
                     }
-                    loader = this._nodeHttp;
-                }
-
-                loader.get(url,
-                    function(res) {
-
-                        var data = new Buffer(parseInt(res.headers['content-length'],10));
-                        var pos = 0;
-                        res.on('data', function(chunk) {
-                          chunk.copy(data, pos);
-                          pos += chunk.length;
-                        });
-                        res.on('end', function () {
+                    var data = this._nodeFS.readFile(url,function(err,data) {
+                        if (err) {
+                            var onerrorFn = img.onerror;
+                            if (onerrorFn) {
+                                onerrorFn.call(img);
+                            }
+                        } else {
                             var onloadFn = img.onload;
                             if (onloadFn) {
                                 img.onload = function() {
                                     onloadFn.call(img);
                                 };
                             }
+
                             img.src = data;
-                        });
-                    }
-                );
-            } else {
-                //读取本地图片
-                if (!this._nodeFS) {
-                    this._nodeFS = require('fs');
+                        }
+
+                    });
                 }
-                var data = this._nodeFS.readFile(url,function(err,data) {
-                    if (err) {
-                        var onerrorFn = img.onerror;
-                        if (onerrorFn) {
-                            onerrorFn.call(img);
-                        }
-                    } else {
-                        var onloadFn = img.onload;
-                        if (onloadFn) {
-                            img.onload = function() {
-                                onloadFn.call(img);
-                            };
-                        }
-
-                        img.src = data;
-                    }
-
-                });
+            } catch (error) {
+                var onerrorFn = img.onerror;
+                if (onerrorFn) {
+                    onerrorFn.call(img);
+                }
             }
         } else {
             img.src=url;

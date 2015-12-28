@@ -206,6 +206,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
             return;
         }
         if (this._layer.isEmpty()) {
+            this._layer.fire('layerloaded');
             return;
         }
         var resourceUrls = [];
@@ -240,9 +241,14 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
                             resolve({});
                         };
                         img.onerror = function(){
-                            resolve({});
+                            reject({});
                         };
-                        Z.Util.loadImage(img,  resourceUrls[i]);
+                        try {
+                            Z.Util.loadImage(img,  _url);
+                        } catch (err) {
+                            reject({});
+                        }
+
                     };
         }
         if (Z.Util.isArrayHasData(resourceUrls)) {
@@ -265,6 +271,8 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         }
         if (promises.length > 0) {
             Z.Promise.all(promises).then(function(reources) {
+                onComplete.call(context);
+            },function() {
                 onComplete.call(context);
             });
         } else {
