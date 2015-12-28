@@ -222,6 +222,22 @@ Z.TileConfig=Z.Class.extend({
          * @param  {[type]} zoomLevel [description]
          * @return {[type]}           [description]
          */
+        getTileProjectedSw: function(tileY, tileX, zoomLevel) {
+            var tileSystem = this.tileSystem;
+            var resolution = this['resolutions'][zoomLevel];
+            var tileSize = this['tileSize'];
+            var y = tileSystem['origin']['y'] + tileSystem['scale']['y']*(tileY+(tileSystem['scale']['y']==1?2:1))*(resolution* tileSize['height']);
+            var x = tileSystem['scale']['x']*(tileX+(tileSystem['scale']['x']==1?0:1))*resolution*tileSize['width']+tileSystem['origin']['x'];
+            return [x, y];
+        },
+
+        /**
+         * 计算瓦片左上角的经纬度坐标
+         * @param  {[type]} tileY     [description]
+         * @param  {[type]} tileX     [description]
+         * @param  {[type]} zoomLevel [description]
+         * @return {[type]}           [description]
+         */
         getTileProjectedNw:function(tileY,tileX,zoomLevel) {
             var tileSystem = this.tileSystem;
             var resolution = this['resolutions'][zoomLevel];
@@ -234,4 +250,3 @@ Z.TileConfig=Z.Class.extend({
 
 
 });
-

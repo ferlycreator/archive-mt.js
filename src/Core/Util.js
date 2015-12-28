@@ -664,7 +664,7 @@ Z.Util.Ajax.prototype= {
      * doPost Request
      * @member maptalks.Util.Ajax
      */
-    post : function() {
+    post : function(contentType) {
         var sUrl = this.Url;
         var queryString = this.createQueryString();
         this.XmlHttp.open("POST",sUrl,true);
@@ -672,8 +672,9 @@ Z.Util.Ajax.prototype= {
             this.XmlHttp.responseType=this.responseType;
         }
         //alert((typeof this.XmlHttp));
-        if(!window.XDomainRequest){
-            this.XmlHttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+        var ct = contentType ? contentType : 'application/x-www-form-urlencoded';
+        if(!window.XDomainRequest) {
+            this.XmlHttp.setRequestHeader("Content-Type", ct);
         }
         this.XmlHttp.send(queryString);
     },
