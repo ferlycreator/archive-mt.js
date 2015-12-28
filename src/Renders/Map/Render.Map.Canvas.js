@@ -94,10 +94,11 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
                     fn.call(me);
                 }
             }, this);
-
         } else {
             fn.call(me);
         }
+
+
 
     },
 

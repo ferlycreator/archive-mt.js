@@ -11,7 +11,7 @@ Z['MultiPoint'] = Z.MultiPoint = Z.MultiPoly.extend({
 
     options:{
         'symbol':{
-            'markerFile' : Z.prefix+'images/marker.png',
+            'markerFile' : Z.prefix+'images/resource/marker.png',
             'markerHeight' : 30,
             'markerWidth' : 22
         }

@@ -513,7 +513,7 @@ describe('API', function () {
             menu.show(pos);
 
             expect(function () {
-                menu.close();
+                // menu.close();
                 menu.remove();
             }).to.not.throwException();
         });

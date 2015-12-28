@@ -11,6 +11,7 @@ describe("Control.Zoom", function() {
         container.style.height = '600px';
         document.body.appendChild(container);
         var option = {
+            zoomAnimation: false,
             zoom: 15,
             center: center
         };
@@ -32,10 +33,10 @@ describe("Control.Zoom", function() {
         it("when enabled, can trigger correct events", function() {
             var control = new Z.Control.Zoom();
             var spy = sinon.spy();
-            control._zoomIn = spy;
-            control._zoomOut = spy;
+            map.zoomIn = spy;
+            map.zoomOut = spy;
             map.addControl(control);
-            control.enable();
+            // control.enable();
 
             spy.reset();
             happen.click(control._zoomInButton);
@@ -64,7 +65,7 @@ describe("Control.Zoom", function() {
             expect(map.getZoom()).to.be(zoom - 1);
         });
 
-        it("when disabled, don't update zoom of map", function() {
+       /* it("when disabled, don't update zoom of map", function() {
             var control = new Z.Control.Zoom();
             map.addControl(control);
             var zoom = map.getZoom();
@@ -75,7 +76,7 @@ describe("Control.Zoom", function() {
 
             happen.click(control._zoomOutButton);
             expect(map.getZoom()).to.be(zoom);
-        });
+        });*/
 
     });
 

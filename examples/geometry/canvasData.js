@@ -2,13 +2,13 @@ CanvasData = {
     addTo: function(layer) {
         this.layer = layer;
         this/*._addLabel()*/
-            ._addPictureMarker()
-            ._addVectorMarker()
-//            ._addShieldMarker()
-            ._addPolyline()
-            ._addPolygon()
-            ._addMultiPoint()
-            ._addMultiPolyline()
+           //  ._addPictureMarker()
+           //  ._addVectorMarker()
+           // ._addShieldMarker()
+           //  ._addPolyline()
+           //  ._addPolygon()
+           //  ._addMultiPoint()
+           //  ._addMultiPolyline()
             ._addMultiPolygon();
     },
     _addLabel: function() {
@@ -38,7 +38,7 @@ CanvasData = {
          var coordinate = new maptalks.Coordinate(121.49645813232394,31.251841364503086);
         //设置图片
         var icon = {
-            'markerFile': '../../images/marker.png',
+            'markerFile': '../../images/resource/marker.png',
             'markerWidth': 22,
             'markerHeight': 30,
             'markerDx': 0,
@@ -92,7 +92,7 @@ CanvasData = {
             "polygonOpacity": 0.5,
             "shieldPlacement"  : "vertex",
 
-            "shieldFile"      :  "/images/marker.png",
+            "shieldFile"      :  "/images/resource/marker.png",
             "shieldOpacity"    :  1,
             "shieldDx"         :  0,
             "shieldDy"         :  0,
@@ -144,7 +144,7 @@ CanvasData = {
             'lineColor' : '#ff00ff',
             'lineWidth' : 5,
             'lineDasharray' : [20,10,5,5,5,10],//线形
-            'lineOpacity' : 1
+            'lineOpacity' : 0.5
         };
         polyline.setSymbol(polylineSymbol);
         //将线添加到Layer
@@ -196,7 +196,7 @@ CanvasData = {
             'markerFillOpacity': 1,
             // 'marker-line-color': '#0000ff',
             'markerLineWidth': 5,
-            'markerLineOpacity': 1,
+            'markerLineOpacity': 0.1,
             'markerPlacement': 'point',
             'markerWidth': 50,
             'markerHeight': 40,
@@ -241,10 +241,12 @@ CanvasData = {
         var polygons = [polygon1,polygon2];
          //设置面样式
         var polygonSymbol = {
-            'lineColor' : '#0000ff',
-            'lineWidth' : 2,
+            // 'lineColor' : '#0000ff',
+            'linePatternFile': 'url("https://mdn.mozillademos.org/files/222/Canvas_createpattern.png")',
+            // 'linePatternFile': 'url("pattern.png")',
+            'lineWidth' : 20,
             'lineDasharray' : null,//线形
-            'lineOpacity' : 1,
+            'lineOpacity' : 0.6,
             'polygon-fill' : '#ff00ff',
             'polygonFill' : 'rgb(255, 0, 255)',
             'polygonOpacity' : 0.8

@@ -1,4 +1,4 @@
-describe("Control.Nav", function() {
+/*describe("Control.Nav", function() {
 
     var container;
     var map;
@@ -127,3 +127,4 @@ describe("Control.Nav", function() {
     });
 
 });
+*/

@@ -1,48 +1,72 @@
 SvgData = {
     addTo: function(layer) {
         this.layer = layer;
-        this/*._addLabel()*/
-            ._addPictureMarker()
-            ._addVectorMarker()
-            ._addShieldMarker()
-            ._addPolyline()
-            ._addPolygon()
-            ._addMultiPoint()
-            ._addMultiPolyline()
-            ._addMultiPolygon();
+        this
+        ._addLabel()
+        ._addPictureMarker()
+        ._addTextMarker()
+        ._addVectorMarker()
+        ._addShieldMarker()
+        ._addPolyline()
+        ._addPolygon()
+        ._addMultiPoint()
+        ._addMultiPolyline()
+        ._addMultiPolygon();
     },
     _addLabel: function() {
        var coordinate = new maptalks.Coordinate(121.4718247247321,31.254666307610087);
        var option = {
            'symbol': {
-               'lineColor': '#ffffff',
-               'lineWidth': 1,
-               'lineOpacity': 0.9,
-               'lineDasharray': null,
-               'fill': '#4e98dd',
-               'fillOpacity': 0.9,
+               'markerFillOpacity': 0.3,
                'textFaceName': 'arial',
                'textSize': 16,
                'textFill': '#ff0000',
                'textWrapWidth': 250
            },
-           'target': coordinate,
-           'draggable': true,
-           'content': '###########SVG############'
+           'draggable': true
        };
        //创建label
-       var label = new maptalks.Label(option).addTo(this.layer);
+       var label = new maptalks.Label('###########SVG############', coordinate, option).addTo(this.layer);
        return this;
     },
     _addPictureMarker: function() {
          var coordinate = new maptalks.Coordinate(121.47195347076484,31.251107599217637);
         //设置图片
         var icon = {
-            'markerFile': '../../images/marker.png',
+            'markerFile': '../../images/resource/marker.png',
             'markerWidth': 22,
             'markerHeight': 30,
             'markerDx': 0,
             'markerDy' :0
+        };
+        //创建点对象
+        var marker = new maptalks.Marker(coordinate,{'draggable':true});
+        //设置点样式
+        marker.setSymbol(icon);
+        //将点添加到Layer
+        this.layer.addGeometry(marker);
+        return this;
+    },
+    _addTextMarker: function() {
+         var coordinate = new maptalks.Coordinate(121.4718247247321,31.256666307610087);
+        //设置图片
+        var icon = {
+            "text-placement"    : "point", // point | vertex | line | interior
+
+            "text-name"         : "I'm a text marker",
+            "text-face-name"    : "arial",
+            "text-size"         : "20",
+            "text-fill"         : "#550033",
+            "text-opacity"      : 1,
+            "text-halo-fill"  : "#fff",
+            "text-halo-radius": 0,
+
+            "text-dx"           : 0,
+            "text-dy"           : 0,
+
+            "text-horizontal-alignment" : "middle", //left | middle | right | auto
+            "text-vertical-alignment"   : "middle",   // top | middle | bottom | auto
+            "text-align"                : "left" //left | right | center | auto
         };
         //创建点对象
         var marker = new maptalks.Marker(coordinate,{'draggable':true});
@@ -92,7 +116,7 @@ SvgData = {
             "polygonOpacity": 0.5,
             "shieldPlacement"  : "vertex",
 
-            "shieldFile"      :  "/images/marker.png",
+            "shieldFile"      :  "/images/resource/marker.png",
             "shieldOpacity"    :  1,
             "shieldDx"         :  0,
             "shieldDy"         :  0,

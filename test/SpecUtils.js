@@ -99,7 +99,7 @@ var GeoSymbolTester = {
     markerSymbols : [
             {
                 "marker-placement":"point", //point | line | interior
-                "marker-file"   : "images/marker.png",
+                "marker-file"   : "images/resource/marker.png",
                 //设定marker-file后, 只有下面的属性起作用
                 "marker-width"  : 20,
                 "marker-height" : 20,
@@ -146,7 +146,7 @@ var GeoSymbolTester = {
             {
                 "shield-placement"  : "point", // point | vertex | line | interior
 
-                "shield-file"       : "images/marker.png",
+                "shield-file"       : "images/resource/marker.png",
 
                 "shield-name"       : "文本标注：[marker_name]",
                 "shield-face-name"  : "arial",
@@ -169,14 +169,14 @@ var GeoSymbolTester = {
     ],
 
     lineAndFill: {
-                "line-pattern-file" : "images/marker.png",
+                "line-pattern-file" : "images/resource/marker.png",
                 "line-color"        : "#f00",
                 "line-width"        : 5,
                 "line-opacity"      : 1,
                 "line-join"         : "miter", //round bevel
                 "line-cap"          : "round", //butt square
                 "line-dasharray"    : [20, 5, 20],
-                "polygon-pattern-file"  : "images/marker.png",
+                "polygon-pattern-file"  : "images/resource/marker.png",
                 "polygon-fill"          : "#f00",
                 "polygon-opacity"       : 1
             },
