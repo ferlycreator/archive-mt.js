@@ -18,10 +18,10 @@ Z.Map.include({
         if (host) {
             url = host+'/snapservice/';
         } else {
-            var url = new Z.Url(Z.prefix);
-            host = url.getHost();
-            var port = url.getPort();
-            url = 'http://'+ host + ':' + port + '/snapservice/';
+            var prefixUrl = new Z.Url(Z.prefix);
+            var prefixHost = prefixUrl.getHost();
+            var prefixPort = prefixUrl.getPort();
+            url = 'http://'+ prefixHost + ':' + prefixPort + '/snapservice/';
         }
         var profile = this.toJSON(options['profile']);
         if (extent) {
@@ -48,5 +48,6 @@ Z.Map.include({
             }
         });
         ajax.post("text/plain");
+        return this;
     }
 });
