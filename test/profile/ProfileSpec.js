@@ -98,7 +98,8 @@ describe('#Map Profile', function () {
                 "baseTileLayer" : false,
                 "layers" : false
             });
-            expect(profile.baseTileLayer).not.to.be.ok();
+            expect(profile.baseTileLayer).to.be.ok();
+            expect(profile.baseTileLayer.options.visible).not.to.be.ok();
             expect(profile.layers).not.to.be.ok();
         });
 
