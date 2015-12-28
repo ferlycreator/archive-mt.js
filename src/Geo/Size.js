@@ -9,6 +9,10 @@ Z.Size=function(width,height) {
 };
 
 Z.Size.prototype={
+    copy:function() {
+        return new Z.Size(this['width'], this['height']);
+    },
+
     add:function(size) {
         return new Z.Size(this['width']+size['width'], this['height']+size['height']);
     },

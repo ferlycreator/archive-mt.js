@@ -8,7 +8,7 @@ Z.Geometry.include({
     setInfoWindow:function(options) {
         this._infoWinOptions = options;
         if (this._infoWindow) {
-            this._infoWindow.setOptions(options);
+            Z.Util.setOptions(this._infoWindow, options);
         }
         return this;
     },

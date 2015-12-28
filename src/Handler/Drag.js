@@ -23,13 +23,9 @@ Z.Handler.Drag = Z.Handler.extend({
     /**
      * @constructor
      * @param {HTMLElement} dom
-     * @param {Object} opts
      */
-    initialize:function(dom, opts){
+    initialize:function(dom){
         this.dom = dom;
-        if (opts) {
-            Z.Util.extend(this,opts);
-        }
     },
 
     /**

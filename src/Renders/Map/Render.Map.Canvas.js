@@ -49,25 +49,14 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
         }
     },
 
-    onZoomStart:function(startScale, endScale, transOrigin, duration, fn, context, args) {
+    onZoomStart:function(startScale, endScale, transOrigin, duration, fn) {
         var map = this.map;
+        var me = this;
         if (Z.Browser.ielt9) {
             setTimeout(function() {
-                fn.apply(context, args);
+                fn.call(me);
             },duration);
             return;
-        }
-
-        function getZoomMatrix(scale, origin) {
-            var r = Z.Browser.retina?2:1;
-            var mapTransOrigin = origin.multi(r);
-            //matrix for layers to caculate points.
-            var matrix = new Z.Matrix().translate(origin.x, origin.y)
-                .scaleU(scale).translate(-origin.x,-origin.y);
-            //matrix for this._context to draw layerImage.
-            var retinaMatrix = new Z.Matrix().translate(mapTransOrigin.x, mapTransOrigin.y)
-                .scaleU(scale).translate(-mapTransOrigin.x,-mapTransOrigin.y).scaleU(r);
-            return [matrix, retinaMatrix];
         }
 
         this._clearCanvas();
@@ -92,27 +81,25 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
                 'scale2': endScale,
                 'duration' : duration
             }), map, function(frame) {
-                var matrixes = getZoomMatrix(frame.scale, transOrigin);
+                var matrixes = this.getZoomMatrix(frame.scale, transOrigin);
                 this.transform(matrixes[0], matrixes[1], layersToTransform);
                 if (frame.state['end']) {
                     delete this._transMatrix;
                     this._clearCanvas();
                     //only draw basetile layer
-                    matrixes[0].applyToContext(this._context);
+                    matrixes[1].applyToContext(this._context);
                     this._drawLayerCanvasImage(baseLayerImage, width, height);
                     this._canvasBackgroundImage = Z.DomUtil.copyCanvas(this._canvas);
                     this._context.restore();
-                    fn.apply(context, args);
+                    fn.call(me);
                 }
             }, this);
 
         } else {
-            fn.apply(context, args);
+            fn.call(me);
         }
 
     },
-
-
 
     /**
      * 对图层进行仿射变换
@@ -130,6 +117,7 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
         if (!retinaMatrix) {
             retinaMatrix = matrix;
         }
+
         //automatically enable ecoTransform with mobile browsers.
         var ecoTransform = Z.Browser.mobile || this.map.options['ecoTransform'];
         this._clearCanvas();
@@ -151,7 +139,7 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
                     } else {
                         //redraw all the geometries with transform matrix
                         //this may bring low performance if number of geometries is large.
-                        render.rendRealTime();
+                        render.draw();
                     }
                 }
 
@@ -159,7 +147,7 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
                 if (layerImage && layerImage['image']) {
                     this._drawLayerCanvasImage(layerImage, mwidth, mheight);
                 }
-                 if (!ecoTransform) {
+                if (!ecoTransform) {
                     this._context.restore();
                 }
             }

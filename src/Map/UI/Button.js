@@ -29,7 +29,6 @@ Z['Button'] = Z.Button = Z.Class.extend({
         if(options) {
             this._dom = this._createDom(options);
         }
-        return null;
     },
 
     _createDom : function(options) {

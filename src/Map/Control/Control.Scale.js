@@ -1,4 +1,5 @@
 /**
+ * TODO 该控件完全照抄的Leaflet, 需要重写
  * 比例尺控件
  * @class maptalks.Control.Scale
  * @extends maptalks.Control
@@ -13,20 +14,20 @@ Z['Control']['Scale'] = Z.Control.Scale = Z.Control.extend({
         'position' : Z.Control['bottom_left'],
         'maxWidth': 100,
         'metric': true,
-        'imperial': true
+        'imperial': false
     },
 
     statics: {
-        'maptalks-control-scale' : 'border: 2px solid #6490C4;border-top: none;line-height: 1.1;padding: 2px 5px 1px;'+
-                          'color: #6490C4;font-size: 11px;text-align:center;white-space: nowrap;overflow: hidden'+
-                          ';-moz-box-sizing: content-box;box-sizing: content-box;background: #fff; background: rgba(255, 255, 255, 0.5);'
+        'maptalks-control-scale' : 'border: 2px solid #000000;border-top: none;line-height: 1.1;padding: 2px 5px 1px;'+
+                          'color: #000000;font-size: 11px;text-align:center;white-space: nowrap;overflow: hidden'+
+                          ';-moz-box-sizing: content-box;box-sizing: content-box;background: #fff; background: rgba(255, 255, 255, 0);'
     },
 
-    _buildOn: function (map) {
+    buildOn: function (map) {
         this._map = map;
         this._scaleContainer = Z.DomUtil.createEl('div');
         this._addScales();
-        map.on('moveend zoomend', this._update, this);
+        map.on('zoomend', this._update, this);
         if (this._map._loaded) {
             this._update();
         }
@@ -34,7 +35,7 @@ Z['Control']['Scale'] = Z.Control.Scale = Z.Control.extend({
     },
 
     _onRemove: function (map) {
-        map.off('moveend zoomend', this._update, this);
+        map.off('zoomend', this._update, this);
     },
 
     _addScales: function () {
@@ -63,7 +64,7 @@ Z['Control']['Scale'] = Z.Control.Scale = Z.Control.extend({
 
     _updateMetric: function (maxMeters) {
         var meters = this._getRoundNum(maxMeters),
-            label = meters < 1000 ? meters + ' 米' : (meters / 1000) + ' 公里';
+            label = meters < 1000 ? meters + ' m' : (meters / 1000) + ' km';
 
         this._updateScale(this._mScale, label, meters / maxMeters);
     },
@@ -75,11 +76,11 @@ Z['Control']['Scale'] = Z.Control.Scale = Z.Control.extend({
         if (maxFeet > 5280) {
             maxMiles = maxFeet / 5280;
             miles = this._getRoundNum(maxMiles);
-            this._updateScale(this._iScale, miles + ' 米', miles / maxMiles);
+            this._updateScale(this._iScale, miles + ' mile', miles / maxMiles);
 
         } else {
             feet = this._getRoundNum(maxFeet);
-            this._updateScale(this._iScale, feet + ' 英尺', feet / maxFeet);
+            this._updateScale(this._iScale, feet + ' feet', feet / maxFeet);
         }
     },
 
@@ -106,23 +107,12 @@ Z.Map.mergeOptions({
      * @cfg {Boolean} [scaleControl="false"] 是否显示比例尺
      * @member maptalks.Map
      */
-    'scaleControl' : false,
-    /**
-     * @cfg {Object}  scaleControlOptions 比例尺控件设置
-     * @member maptalks.Map
-     */
-    'scaleControlOptions' : {
-        'position' : Z.Control['bottom_left'],
-        'maxWidth': 100,
-        'metric': true,
-        'imperial': false
-    }
+    'scaleControl' : false
 });
 
 Z.Map.addOnLoadHook(function () {
     if (this.options['scaleControl']) {
-        var scaleControlOptions = this.options['scaleControlOptions'];
-        this.scaleControl = new Z.Control.Scale(scaleControlOptions);
+        this.scaleControl = new Z.Control.Scale(this.options['scaleControl']);
         this.addControl(this.scaleControl);
     }
 });

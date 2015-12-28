@@ -16,10 +16,11 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
     },
 
     /**
-     * 实时绘制
+     * 实时绘制并请求地图重绘
      */
-    rendRealTime:function() {
-        this._draw();
+    renderImmediate:function() {
+        this.draw();
+        this._requestMapToRend();
     },
 
     /**
@@ -52,7 +53,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
 
                 }
                 if (isReadyToDraw) {
-                    this._draw();
+                    this.renderImmediate();
                     return;
                 }
             }
@@ -61,7 +62,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         var me = this;
         this._rendTimeout = setTimeout(function() {
             if (ignorePromise) {
-                me._draw();
+                me.renderImmediate();
             } else {
                 me._promise();
             }
@@ -172,20 +173,20 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
             if (!this._resources) {
                 this.render();
             } else {
-                this._draw();
+                this.renderImmediate();
             }
         } else if (param['type'] === '_moveend') {
             if (!this._resources) {
                 this.render();
             } else {
-                this._draw();
+                this.renderImmediate();
             }
         } else if (param['type'] === '_resize') {
             this._resizeCanvas();
             if (!this._resources) {
                 this.render();
             } else {
-                this._draw();
+                this.renderImmediate();
             }
         }
     },
@@ -205,7 +206,6 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
             return;
         }
         if (this._layer.isEmpty()) {
-            this._requestMapToRend();
             return;
         }
         var resourceUrls = [];
@@ -215,7 +215,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
             }
             resourceUrls = resourceUrls.concat(geo._getExternalResource());
         });
-        this._loadResources(resourceUrls, this._draw, this);
+        this._loadResources(resourceUrls, this.renderImmediate, this);
     },
 
     /**
@@ -272,13 +272,14 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         }
     },
 
-    _draw:function() {
+
+
+    draw:function() {
         var map = this.getMap();
         if (!map) {
             return;
         }
         if (this._layer.isEmpty()) {
-            this._requestMapToRend();
             return;
         }
         //载入资源后再进行绘制
@@ -311,7 +312,6 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
             painter.paint();
         });
         this._canvasFullExtent = fullExtent;
-        this._requestMapToRend();
     },
 
     _requestMapToRend:function() {

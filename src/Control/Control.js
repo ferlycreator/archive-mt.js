@@ -4,13 +4,15 @@
  * @extends maptalks.Class
  * @author Maptalks Team
  */
-Z['Control'] = Z.Control = Z.Class.extend({
+Z.Control = Z.Class.extend({
+    includes: [Z.Eventable],
+
     statics: {
         /**
          * @static
          * @cfg {Object} top_left 左上角
          */
-        'top_left' : {'top': '40','left': '60'},
+        'top_left' : {'top': '20','left': '20'},
         /**
          * @static
          * @cfg {Object} top_right 右上角
@@ -32,7 +34,7 @@ Z['Control'] = Z.Control = Z.Class.extend({
      * @cfg {Object} options 组件配置
      */
     options:{
-        'position' : {'top': '40','left': '60'}
+
     },
 
     /**
@@ -41,8 +43,7 @@ Z['Control'] = Z.Control = Z.Class.extend({
      * @returns {maptalks.Control}
      */
     initialize: function (options) {
-        this.setOption(options);
-        return this;
+        Z.Util.setOptions(this, options);
     },
 
     /**
@@ -54,57 +55,33 @@ Z['Control'] = Z.Control = Z.Class.extend({
     addTo: function (map) {
         this.remove();
         this._map = map;
-        this._controlContainer = map._panels.controlWrapper;
-
+        var controlContainer = map._panels.controlWrapper;
         this._container = Z.DomUtil.createEl('div');
-        this._container.className = 'MAP_CONTROL';
-        Z.DomUtil.setStyle(this._container, 'z-index: 3003');
-        var controlDom = this._buildOn(map);
+        Z.DomUtil.setStyle(this._container, 'position:absolute');
+        Z.DomUtil.addStyle(this._container, 'z-index', 3);
+        Z.DomUtil.on(this._container, 'mousedown mousemove click, dblclick contextmenu', Z.DomUtil.stopPropagation)
+        var controlDom = this.buildOn(map);
         if(controlDom) {
-            this._updateContainerPosition();
+            this._updatePosition();
             this._container.appendChild(controlDom);
-            this._controlContainer.appendChild(this._container);
+            controlContainer.appendChild(this._container);
         }
-        this._afterAdd();
         return this;
     },
 
-    _updateContainerPosition: function(){
+    _updatePosition: function(){
         var position = this.options['position'];
-        if(position) {
-            Z.DomUtil.setStyle(this._container, 'position:absolute');
+        for (var p in position) {
+            if (position.hasOwnProperty(p)) {
+                position[p] = parseInt(position[p]);
+                this._container.style[p] = position[p]+'px';
+            }
         }
-        if(position['top']) {
-            Z.DomUtil.setStyle(this._container, 'top: '+ position['top']+'px');
-        }
-        if(position['right']) {
-            Z.DomUtil.setStyle(this._container, 'right: '+ position['right']+'px');
-        }
-        if(position['bottom']) {
-            Z.DomUtil.setStyle(this._container, 'bottom: '+ position['bottom']+'px');
-        }
-        if(position['left']) {
-            Z.DomUtil.setStyle(this._container, 'left:'+ position['left']+'px');
-        }
-    },
-
-    /**
-     * 设置组件配置项
-     * @param {Object} options
-     * @expose
-     */
-    setOption: function(options) {
-        Z.Util.setOptions(this, options);
-        return this;
-    },
-
-    /**
-     * 获取组件配置项
-     * @return {Object} options
-     * @expose
-     */
-    getOption: function() {
-        return this.options;
+        this.fire('positionupdate', {
+            'target' : this,
+            //copy the position
+            'position' : Z.Util.extend({},this.options['position'])
+        });
     },
 
     /**
@@ -113,7 +90,7 @@ Z['Control'] = Z.Control = Z.Class.extend({
      * @expose
      */
     getPosition: function () {
-        return this.options['position'];
+        return Z.Util.extend({},this.options['position']);
     },
 
     /**
@@ -122,9 +99,27 @@ Z['Control'] = Z.Control = Z.Class.extend({
      * @expose
      */
     setPosition: function (position) {
-        this.options['position'] = position;
-        this._updateContainerPosition();
+        this.options['position'] = Z.Util.extend({},position);
+        this._updatePosition();
         return this;
+    },
+
+    getContainerPoint:function() {
+        var position = this.options['position'];
+
+        var size = thia._map.getSize();
+        var x,y;
+        if (!Z.Util.isNil(position['top'])) {
+            x = position['top'];
+        } else if (!Z.Util.isNil(position['bottom'])) {
+            x = size['height'] - position['bottom'];
+        }
+        if (!Z.Util.isNil(position['left'])) {
+            y = position['left'];
+        } else if (!Z.Util.isNil(position['right'])) {
+            y = size['width'] - position['right'];
+        }
+        return new Z.Point(x,y);
     },
 
     /**
@@ -162,12 +157,9 @@ Z['Control'] = Z.Control = Z.Class.extend({
         if (this._onRemove) {
             this._onRemove(this._map);
         }
-        this._map = null;
+        delete this._map;
+        delete this._container;
         return this;
-    },
-
-    _afterAdd: function() {
-
     }
 
 });

@@ -63,6 +63,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         if (!this._tileRended) {
             this._tileRended = {};
         }
+        this._tileZoom = this.getMap().getZoom();
         var tileRended = this._tileRended;
         this._tileRended = {};
 
@@ -206,6 +207,15 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         if (this._tileToLoadCounter === 0) {
              this._fireLoadedEvent();
         }
+    },
+
+    getCanvasImage:function() {
+        if (!this._canvasFullExtent || this._tileZoom !== this.getMap().getZoom()) {
+            return null;
+        }
+        var size = this._canvasFullExtent.getSize();
+        var point = this._canvasFullExtent.getMin();
+        return {'image':this._canvas,'layer':this._layer,'point':this.getMap()._viewPointToContainerPoint(point),'size':size};
     },
 
     _requestMapToRend:function() {

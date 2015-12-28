@@ -7,22 +7,18 @@
     <style type="text/css">
         html,body{ margin:0px; height:100%; };
     </style>
-    <title>MapTalks 示例: Panel控件</title>
+    <title>MapTalks 示例: 动态图层</title>
 </head>
 <body scroll="no" onload="initMap();">
 <div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
 <script type="text/javascript" >
-    var mapObj, panel;
+    var mapObj;
     function initMap(){
         //创建地图对象
         mapObj = new maptalks.Map('mapObj', //放置mapObj的div id
         {
             center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
-            zoom:   11, //初始缩放级别
-            navControl: true,//nav控件
-            navControlOptions : {//设置控件放置位置
-                position : maptalks.Control['top_left']
-            }
+            zoom:   5 //初始缩放级别
         });
         //设置底图图层
         mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
@@ -31,33 +27,44 @@
             urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
             subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
         }));
-        //构建panel
-        panel = new maptalks.Control.Panel({
-            position : {//放置panel的位置
-                top: '150',
-                left: '150'
-            },
-            draggable: true,//能否拖动
-            custom: false, //content值能否为html
-            content: '面板内容'
-        });
-        /**
-        * 将面板绑定到地图容器上
-        */
-        mapObj.addControl(panel);
-        //创建图层
-        var layer = new maptalks.VectorLayer('layer');
-        //将图层添加到地图对象
+
+        var spatial = {
+            // RELATION_CONTAIN
+            relation: 1,
+            geometry: {
+                type: 'Polygon',
+                coordinates: [
+                    [ [110.0, 64.0], [150.0, 64.0], [150.0, 10.0], [110.0, 10.0], [110.0, 64.0] ]
+                ]
+            }
+        };
+
+        var style = [
+            '#layer {',
+            '  polygon-fill: #0000FF;',
+            '  [name="Korea"] { polygon-fill: #00FF00; }',
+            '  line-color: #FF0000;',
+            '}'
+        ].join('');
+
+        var layerDef = {
+            name: 'ne_10m_admin_0_countries',
+            condition: '',
+            spatialFilter: spatial,
+            cartocss: style,
+            cartocss_version: '3.0.0'
+        };
+        var options = {
+            baseUrl: 'http://127.0.0.1:8080/maps',
+            mapdb: 'testdb',
+            layers: [layerDef]
+        };
+
+        var layer = new maptalks.DynamicLayer('dynamic-layer', options);
         mapObj.addLayer(layer);
-        //创建点的坐标对象
-        var markerCoordinate = new maptalks.Coordinate(121.489935,31.24432);
-        //创建点对象
-        var marker = new maptalks.Marker([121.489935,31.24432]);
-        layer.addGeometry(marker);
-
-
     }
 </script>
+<!-- 引擎javascript开发包-->
 <script type="text/javascript" src="../../maptalks.js"></script>
 <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
 <!--[if lt IE 9]>

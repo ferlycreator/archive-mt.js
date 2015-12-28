@@ -398,17 +398,17 @@ describe('API', function () {
 
     describe('Map.UI.InfoWindow', function() {
 
-        it('setOption', function() {
-            var win = new Z.InfoWindow();
-            var options = {
-                title: 'title',
-                content: 'content'
-            };
+        // it('setOption', function() {
+        //     var win = new Z.InfoWindow();
+        //     var options = {
+        //         title: 'title',
+        //         content: 'content'
+        //     };
 
-            expect(function() {
-                win.setOptions(options);
-            }).to.not.throwException();
-        });
+        //     expect(function() {
+        //         win.setOptions(options);
+        //     }).to.not.throwException();
+        // });
 
         it('show/hide/isOpen', function() {
 
@@ -432,43 +432,43 @@ describe('API', function () {
 
     describe('Map.UI.Menu', function() {
 
-        it('setOptions', function() {
-            var menu = new Z.Menu();
-            var options = {
-                position: null,
-                beforeOpen: null,
-                items: [
-                    {item: 'item1'},
-                    {item: 'item2'}
-                ],
-                width: 160
-            };
+        // it('setOptions', function() {
+        //     var menu = new Z.Menu();
+        //     var options = {
+        //         position: null,
+        //         beforeOpen: null,
+        //         items: [
+        //             {item: 'item1'},
+        //             {item: 'item2'}
+        //         ],
+        //         width: 160
+        //     };
 
-            expect(function () {
-                menu.setOptions(options);
-            }).to.not.throwException();
-        });
+        //     expect(function () {
+        //         menu.setOptions(options);
+        //     }).to.not.throwException();
+        // });
 
-        it('getOptions', function() {
-            var menu = new Z.Menu();
-            var options = {
-                position: null,
-                beforeOpen: null,
-                items: [
-                    {item: 'item1'},
-                    {item: 'item2'}
-                ],
-                width: 160
-            };
-            menu.setOptions(options);
+        // it('getOptions', function() {
+        //     var menu = new Z.Menu();
+        //     var options = {
+        //         position: null,
+        //         beforeOpen: null,
+        //         items: [
+        //             {item: 'item1'},
+        //             {item: 'item2'}
+        //         ],
+        //         width: 160
+        //     };
+        //     menu.setOptions(options);
 
-            var got = menu.getOptions();
+        //     var got = menu.getOptions();
 
-            expect(got).to.eql(options);
-        });
+        //     expect(got).to.eql(options);
+        // });
 
         it('addTo', function() {
-            var menu = new Z.Menu();
+
             var options = {
                 position: null,
                 beforeOpen: null,
@@ -478,7 +478,7 @@ describe('API', function () {
                 ],
                 width: 160
             };
-            menu.setOptions(options);
+            var menu = new Z.Menu(options);
 
             expect(function () {
                 menu.addTo(map);
@@ -564,7 +564,7 @@ describe('API', function () {
                 id: 'id1',
                 position: {top: 10, left: 10}
             });
-            control._buildOn = buildOn;
+            control.buildOn = buildOn;
 
             expect(function () {
                 control.addTo(map);
@@ -576,7 +576,7 @@ describe('API', function () {
                 id: 'id1',
                 position: {top: 10, left: 10}
             });
-            control._buildOn = buildOn;
+            control.buildOn = buildOn;
             control.addTo(map);
             var pos = {
                 top: 20,

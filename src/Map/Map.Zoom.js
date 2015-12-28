@@ -1,29 +1,57 @@
 Z.Map.include({
-    _onZoomStart:function(startScale, endScale, focusPos, nextZoomLevel) {
+    _zoomAnimation:function(nextZoomLevel, origin, startScale) {
+        if (!this.options['enableZoom']) {return;}
+        if (Z.Util.isNil(startScale)) {
+            startScale = 1;
+        }
+        if (Z.Util.isNil(this._originZoomLevel)) {
+            this._originZoomLevel = this.getZoom();
+        }
+        nextZoomLevel = this._checkZoomLevel(nextZoomLevel);
+        if (this._originZoomLevel === nextZoomLevel) {
+            return;
+        }
+        this._enablePanAnimation = false;
+        this._zooming = true;
+        this._fireEvent('zoomstart', {"from" : this._originZoomLevel, "to": nextZoomLevel});
+        if (!origin) {
+            origin = new Z.Point(this.width/2, this.height/2);
+        }
+        this._onZoomStart(startScale, origin, nextZoomLevel);
+    },
+
+    _onZoomStart:function(startScale, transOrigin, nextZoomLevel) {
         var me = this;
+        var resolutions=this._tileConfig['resolutions'];
+        var endScale = resolutions[this._originZoomLevel]/resolutions[nextZoomLevel];
+        var zoomOffset = this._getZoomCenterOffset(nextZoomLevel, transOrigin, startScale);
         /**
          * 触发map的zoomstart事件
          * @member maptalks.Map
          * @event zoomstart
          * @return {Object} params: {'target':this}
          */
-        me._fireEvent('zoomstart');
         var zoomDuration = this.options['zoomAnimationDuration']*Math.abs(endScale - startScale)/Math.abs(endScale-1);
-        this._getRender().onZoomStart(startScale, endScale, focusPos, zoomDuration, this._onZoomEnd, this, [nextZoomLevel]);
+        this._getRender().onZoomStart(startScale, endScale, transOrigin, zoomDuration, function(){
+            me._onZoomEnd(nextZoomLevel, zoomOffset);
+        });
     },
 
-    _onZoomEnd:function(nextZoomLevel) {
-
+    _onZoomEnd:function(nextZoomLevel, zoomOffset) {
+        this._zoomLevel=nextZoomLevel;
+        this._offsetCenterByPixel(zoomOffset);
+        var _originZoomLevel = this._originZoomLevel;
         this._originZoomLevel=nextZoomLevel;
         this._getRender().onZoomEnd();
         this._zooming = false;
+        this._enablePanAnimation=true;
         /**
          * 触发map的zoomend事件
          * @member maptalks.Map
          * @event zoomend
          * @return {Object} params: {'target':this}
          */
-        this._fireEvent('zoomend');
+        this._fireEvent('zoomend',{"from" : _originZoomLevel, "to": nextZoomLevel});
     },
 
 
@@ -39,44 +67,43 @@ Z.Map.include({
         return nextZoomLevel;
     },
 
-    _zoom:function(nextZoomLevel, focusPos, startScale) {
-        if (!this.options['enableZoom']) {return;}
+    _zoom:function(nextZoomLevel, origin, startScale) {
+        this._zooming = true;
+        this._fireEvent('zoomstart');
+        this._zoomLevel = nextZoomLevel;
+        if (!origin) {
+            origin = new Z.Point(this.width/2, this.height/2);
+        }
+        var zoomOffset = this._getZoomCenterOffset(nextZoomLevel, origin, startScale);
+        this._offsetCenterByPixel(zoomOffset);
+    },
+
+
+
+    _getZoomCenterOffset:function(nextZoomLevel, origin, startScale) {
         if (Z.Util.isNil(startScale)) {
             startScale = 1;
         }
-        this._enablePanAnimation=false;
-        nextZoomLevel = this._checkZoomLevel(nextZoomLevel);
-        if (this._originZoomLevel === nextZoomLevel) {
-            return;
-        }
-        this._zooming = true;
-        if (!focusPos) {
-            focusPos = new Z.Point(this.width/2, this.height/2);
-        }
-        // this._getRender().removeBackGroundDOM();
         var resolutions=this._tileConfig['resolutions'];
-        this._zoomLevel=nextZoomLevel;
-        var scale = resolutions[this._originZoomLevel]/resolutions[nextZoomLevel];
-        var pixelOffset;
         var zScale;
+        var zoomOffset;
         if (nextZoomLevel<this._originZoomLevel) {
             zScale = resolutions[nextZoomLevel+1]/resolutions[nextZoomLevel];
-            pixelOffset = new Z.Point(
-                    -(focusPos.x-this.width/2)*(1-zScale),
-                    -(focusPos.y-this.height/2)*(1-zScale)
+            zoomOffset = new Z.Point(
+                    -(origin.x-this.width/2)*(startScale-zScale),
+                    -(origin.y-this.height/2)*(startScale-zScale)
                 );
         } else {
             zScale = resolutions[nextZoomLevel-1]/resolutions[nextZoomLevel];
-            pixelOffset = new Z.Point(
-                    (focusPos.x-this.width/2)*(zScale-1),
-                    (focusPos.y-this.height/2)*(zScale-1)
+            zoomOffset = new Z.Point(
+                    (origin.x-this.width/2)*(zScale-startScale),
+                    (origin.y-this.height/2)*(zScale-startScale)
                 );
         }
-        this._offsetCenterByPixel(pixelOffset);
-        this._onZoomStart(startScale, scale, focusPos, nextZoomLevel);
+        return zoomOffset;
     },
 
     _getZoomMillisecs:function() {
-        return 150;
+        return 600;
     }
 });

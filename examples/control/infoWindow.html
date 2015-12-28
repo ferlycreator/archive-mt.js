@@ -12,7 +12,7 @@
 <body scroll="no" onload="initMap();">
 <div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
 <script type="text/javascript" >
-    var mapObj;
+    var mapObj, infoWindow;
     function initMap(){
         //创建地图对象
         mapObj = new maptalks.Map('mapObj', //放置mapObj的div id
@@ -39,17 +39,16 @@
         //将点添加到Layer
         layer.addGeometry(marker);
         //设置信息窗
-        var infoWindowOptions = {
-            'width': 300,
-            'style': 'default', //black|white
+        infoWindow = new maptalks.InfoWindow({
+            // 'width': 600,
             'title' : '信息窗',
-            'content' : '正文'
-        };
+            'content' : '正文<br><br><br><br><br>换行'
+        });
+        infoWindow.addTo(marker);
         //将信息窗绑定到图形上
-        marker.setInfoWindow(infoWindowOptions);
         //设置打开信息窗的图形事件
-        marker.on('click', function(){
-            marker.openInfoWindow();
+        marker.on('click', function(param){
+            infoWindow.show();
         });
     }
 </script>

@@ -64,7 +64,7 @@ Z.Map.TouchZoom = Z.Handler.extend({
 
         var render = map._getRender();
 
-        var matrix = render._getZoomMatrix(scale, origin);
+        var matrix = render.getZoomMatrix(scale, origin);
         render.transform.apply(render, matrix);
 
         Z.DomUtil.preventDefault(event);
@@ -87,7 +87,7 @@ Z.Map.TouchZoom = Z.Handler.extend({
         if (zoom === -1) {
             zoom = map.getZoom();
         }
-        map._zoom(zoom, this._preOrigin, this._scale);
+        map._zoomAnimation(zoom, this._preOrigin, this._scale);
     }
 });
 

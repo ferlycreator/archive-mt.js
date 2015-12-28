@@ -5,26 +5,45 @@ Z.render.map={};
  */
 Z.render.map.Render = Z.Class.extend({
 
-    panAnimation:function(moveOffset, t) {
-        moveOffset = new Z.Point(moveOffset);
+    /**
+     * get Transform Matrix for zooming
+     * @param  {Number} scale  scale
+     * @param  {Point} origin Transform Origin
+     */
+    getZoomMatrix:function(scale, origin) {
+        var r = Z.Browser.retina?2:1;
+        var mapTransOrigin = origin.multi(r);
+        //matrix for layers to caculate points.
+        var matrix = new Z.Matrix().translate(origin.x, origin.y)
+            .scaleU(scale).translate(-origin.x,-origin.y);
+        //matrix for this._context to draw layerImage.
+        var retinaMatrix = new Z.Matrix().translate(mapTransOrigin.x, mapTransOrigin.y)
+            .scaleU(scale).translate(-mapTransOrigin.x,-mapTransOrigin.y).scaleU(r);
+        return [matrix, retinaMatrix];
+    },
+
+    panAnimation:function(distance, t) {
+        distance = new Z.Point(distance);
         var map = this.map;
         if (map.options['panAnimation']) {
             var duration;
             if (!t) {
                 duration = map.options['panAnimationDuration'];
             } else {
-                duration = t*(Math.abs(moveOffset.x)+Math.abs(moveOffset.y))/600;
+                duration = t;
             }
-            var panMoveOffset = moveOffset.multi(0.5);
+            map._panAnimating = true;
             Z.animation.animate(new Z.animation.pan({
-                'distance': panMoveOffset,
+                'distance': distance,
                 'duration' : duration
             }), map, function(frame) {
                 if (!map._enablePanAnimation) {
+                    map._panAnimating = false;
                     map._onMoveEnd();
                     return true;
                 }
                 if (frame.state['end']) {
+                    map._panAnimating = false;
                     map._onMoveEnd();
                     return true;
                 }

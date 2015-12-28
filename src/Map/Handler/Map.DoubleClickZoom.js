@@ -20,7 +20,7 @@ Z.Map.DoubleClickZoom = Z.Handler.extend({
         if(map.options['doubleClickZoom']) {
             var oldZoom = map.getZoom(),
                 zoom = param['domEvent']['shiftKey'] ? Math.ceil(oldZoom) - 1 : Math.floor(oldZoom) + 1;
-            map._zoom(zoom, param['containerPoint']);
+            map._zoomAnimation(zoom, param['containerPoint']);
         }
 
     }
