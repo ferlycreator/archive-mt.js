@@ -48,10 +48,20 @@ Z.Util = {
             //canvas-node的Image对象
             if (Z.Util.isURL(url)) {
                 //读取远程图片
-                if (!this._nodeHttp) {
-                    this._nodeHttp = require('http');
+                var loader;
+                if (url.indexOf('https://') === 0) {
+                    if (!this._nodeHttps) {
+                        this._nodeHttps = require('https');
+                    }
+                    loader = this._nodeHttps;
+                } else {
+                    if (!this._nodeHttp) {
+                        this._nodeHttp = require('http');
+                    }
+                    loader = this._nodeHttp;
                 }
-                this._nodeHttp.get(url,
+
+                loader.get(url,
                     function(res) {
 
                         var data = new Buffer(parseInt(res.headers['content-length'],10));
@@ -598,7 +608,7 @@ Z.Util.Ajax =
      * @param {Function} oResultFunc 会到函数
      * @param {String} responseType 响应类型 text/xml/json
      */
-    function(sUrl,sRecvTyp,sQueryString,oResultFunc,responseType) {
+function(sUrl,sRecvTyp,sQueryString,oResultFunc,responseType) {
     this.Url = sUrl;
     this.QueryString = sQueryString;
     this.resultFunc = oResultFunc;
