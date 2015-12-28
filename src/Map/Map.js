@@ -431,7 +431,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     zoomIn: function() {
-        this._zoomAnimation(this.getZoom() + 1);
+        this.setZoom(this.getZoom() + 1);
         return this;
     },
 
@@ -440,7 +440,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     zoomOut: function() {
-        this._zoomAnimation(this.getZoom() - 1);
+        this.setZoom(this.getZoom() - 1);
         return this;
     },
 
@@ -458,7 +458,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         }
         if (this._zoomLevel != zoomLevel) {
             this.setCenter(center);
-            this._zoomAnimation(zoomLevel);
+            this.setZoom(zoomLevel);
         } else {
             this.setCenter(center);
         }
