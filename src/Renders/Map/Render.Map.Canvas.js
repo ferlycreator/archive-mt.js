@@ -60,44 +60,40 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
         }
 
         this._clearCanvas();
-        if (map.options['zoomAnimation']) {
-            this._context.save();
-            var baseTileLayer = map.getBaseTileLayer();
-            var baseLayerImage = baseTileLayer._getRender().getCanvasImage();
+        this._context.save();
+        var baseTileLayer = map.getBaseTileLayer();
+        var baseLayerImage = baseTileLayer._getRender().getCanvasImage();
 
-            var width = this._canvas.width,
-                height = this._canvas.height;
-            var layersToTransform;
-            if (!map.options['layerZoomAnimation']) {
-                //zoom animation with better performance, only animate baseTileLayer, ignore other layers.
-                this._drawLayerCanvasImage(baseLayerImage, width, height);
-                layersToTransform = [baseTileLayer];
-            } else {
-                //default zoom animation, animate all the layers.
-                this.render();
-            }
-            Z.animation.animate(new Z.animation.zoom({
-                'scale1' : startScale,
-                'scale2': endScale,
-                'duration' : duration
-            }), map, function(frame) {
-                var matrixes = this.getZoomMatrix(frame.scale, transOrigin);
-                this.transform(matrixes[0], matrixes[1], layersToTransform);
-                if (frame.state['end']) {
-                    delete this._transMatrix;
-                    this._clearCanvas();
-                    //only draw basetile layer
-                    matrixes[1].applyToContext(this._context);
-                    this._drawLayerCanvasImage(baseLayerImage, width, height);
-                    this._canvasBackgroundImage = Z.DomUtil.copyCanvas(this._canvas);
-                    this._context.restore();
-                    fn.call(me);
-                }
-            }, this);
-
+        var width = this._canvas.width,
+            height = this._canvas.height;
+        var layersToTransform;
+        if (!map.options['layerZoomAnimation']) {
+            //zoom animation with better performance, only animate baseTileLayer, ignore other layers.
+            this._drawLayerCanvasImage(baseLayerImage, width, height);
+            layersToTransform = [baseTileLayer];
         } else {
-            fn.call(me);
+            //default zoom animation, animate all the layers.
+            this.render();
         }
+        Z.animation.animate(new Z.animation.zoom({
+            'scale1' : startScale,
+            'scale2': endScale,
+            'duration' : duration
+        }), map, function(frame) {
+            var matrixes = this.getZoomMatrix(frame.scale, transOrigin);
+            this.transform(matrixes[0], matrixes[1], layersToTransform);
+            if (frame.state['end']) {
+                delete this._transMatrix;
+                this._clearCanvas();
+                //only draw basetile layer
+                matrixes[1].applyToContext(this._context);
+                this._drawLayerCanvasImage(baseLayerImage, width, height);
+                this._canvasBackgroundImage = Z.DomUtil.copyCanvas(this._canvas);
+                this._context.restore();
+                fn.call(me);
+            }
+        }, this);
+
 
     },
 

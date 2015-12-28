@@ -69,13 +69,13 @@ Z.Map.include({
 
     _zoom:function(nextZoomLevel, origin, startScale) {
         this._zooming = true;
+        nextZoomLevel = this._checkZoomLevel(nextZoomLevel);
         this._fireEvent('zoomstart');
-        this._zoomLevel = nextZoomLevel;
         if (!origin) {
             origin = new Z.Point(this.width/2, this.height/2);
         }
         var zoomOffset = this._getZoomCenterOffset(nextZoomLevel, origin, startScale);
-        this._offsetCenterByPixel(zoomOffset);
+        this._onZoomEnd(nextZoomLevel, zoomOffset);
     },
 
 

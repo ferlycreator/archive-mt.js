@@ -369,7 +369,11 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     setZoom:function(z) {
-        this._zoomAnimation(z);
+        if (this.options['zoomAnimation']) {
+            this._zoomAnimation(z);
+        } else {
+            this._zoom(z);
+        }
         return this;
     },
 
