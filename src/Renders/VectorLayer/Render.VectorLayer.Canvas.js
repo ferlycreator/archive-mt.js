@@ -206,6 +206,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
             return;
         }
         if (this._layer.isEmpty()) {
+            this.renderImmediate();
             this._layer.fire('layerloaded');
             return;
         }
@@ -287,14 +288,14 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         if (!map) {
             return;
         }
-        if (this._layer.isEmpty()) {
-            return;
-        }
+
         //载入资源后再进行绘制
         if (!this._canvas) {
             this._createCanvas();
         }
-
+        if (this._layer.isEmpty()) {
+            return;
+        }
         var fullExtent = map._getViewExtent();
         this._clearCanvas();
         var me = this;
@@ -323,7 +324,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
     },
 
     _requestMapToRend:function() {
-        if (!this.getMap() || !this.getMap().isBusy()) {
+        if (this.getMap() && !this.getMap().isBusy()) {
             this._mapRender.render();
         }
         this._layer.fire('layerloaded');
