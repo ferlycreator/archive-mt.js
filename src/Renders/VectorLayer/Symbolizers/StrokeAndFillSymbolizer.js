@@ -203,6 +203,10 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
                 result['stroke']['stroke-linecap'] = "flat";
             }
         }
+        //it has no use to set stroke-width to 0 in canvas, so set stroke-opacity to make it disapear.
+        if (result['stroke']['stroke-width'] === 0) {
+            result['stroke']['stroke-opacity'] = 0;
+        }
         return result;
     }
 
