@@ -101,5 +101,9 @@ Z.Map.include({
                 );
         }
         return zoomOffset;
+    },
+
+    _getZoomMillisecs:function() {
+        return 600;
     }
 });

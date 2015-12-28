@@ -29,7 +29,7 @@ Z['Toolbar'] = Z.Toolbar = Z.Control.extend({
         }]
     },
 
-    _buildOn: function (map) {
+    buildOn: function (map) {
         this._map = map;
         this._toolbarContainer = Z.DomUtil.createEl('div');
         if(this.options['className']) {

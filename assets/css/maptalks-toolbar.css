@@ -1,0 +1,37 @@
+.maptalks-control-toolbar {
+    background-color: #ffffff;
+    border: 1px solid #C4C7CC;
+    max-height: 35px;
+    width: 100%;
+    max-width: 100%;
+}
+
+.maptalks-control-toolbar-vertical {
+    background-color: #ffffff;
+    border: 1px solid #C4C7CC;
+    max-width: 35px;
+    height: 100%;
+    max-height: 100%;
+}
+
+.maptalks-control-button {
+    position: relative;
+    cursor: pointer;
+    background-color: #ffffff;
+    border: 0px;
+    border-right: 1px solid #ecedef;
+    color: #6490C4;
+    font-size: 16px;
+    white-space: nowrap;
+}
+
+.maptalks-control-button-hover {
+    position: relative;
+    cursor: pointer;
+    //background-color: #ffffff;
+    border: 0px;
+    border: 1px solid #6490C4;
+    //color: #ffffff;
+    font-size: 16px;
+    white-space: nowrap;
+}
