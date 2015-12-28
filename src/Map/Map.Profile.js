@@ -81,10 +81,10 @@ Z.Map.include({
         profile['options'] = this.config();
         profile["options"]["center"] = this.getCenter();
         profile["options"]["zoom"] = this.getZoom();
-
         var baseTileLayer = this.getBaseTileLayer();
-        if (Z.Util.isNil(options['baseTileLayer']) || options['baseTileLayer']) {
-            profile['baseTileLayer'] = baseTileLayer.toJSON(options['baseTileLayer']);
+        profile['baseTileLayer'] = baseTileLayer.toJSON(options['baseTileLayer']);
+        if (!Z.Util.isNil(options['baseTileLayer']) && !options['baseTileLayer']) {
+            profile['baseTileLayer']['options']['visible'] = false;
         }
         if (Z.Util.isNil(options['layers']) || options['layers'] === true) {
             var layers = this.getLayers();

@@ -9,13 +9,19 @@ Z.Map.include({
         var extent = options['extent'],
             zoom = options['zoom'];
         var format = options['format'];
+        if (!format) {
+            format = 'png';
+        }
         //optional host and port, if need another snap server to perform snapping.
         var host = options['host'];
         var url;
         if (host) {
-            url = host+'/snap/';
+            url = host+'/snapservice/';
         } else {
-            url = this.prefix + 'snap/';
+            var url = new Z.Url(Z.prefix);
+            host = url.getHost();
+            var port = url.getPort();
+            url = 'http://'+ host + ':' + port + '/snapservice/';
         }
         var profile = this.toJSON(options['profile']);
         if (extent) {
@@ -24,16 +30,14 @@ Z.Map.include({
         if (!Z.Util.isNil(zoom)) {
             profile.options['zoom'] = zoom;
         }
-        if (!format) {
-            format = 'png';
-        }
+
         var snapConfig = {
             "format" : format,
             "profile" : profile
         }
         var ajax = new Z.Util.Ajax(url, 0, JSON.stringify(snapConfig), function(responseText) {
             var result = JSON.parse(responseText);
-            if (result['sucess']) {
+            if (result['success']) {
                 if (options['success']) {
                     options['success'](result);
                 }
