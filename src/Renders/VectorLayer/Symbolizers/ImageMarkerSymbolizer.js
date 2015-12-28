@@ -1,6 +1,6 @@
 Z.ImageMarkerSymbolizer = Z.PointSymbolizer.extend({
 
-    defaultIcon: Z.prefix+'images/marker.png',
+    defaultIcon: Z.prefix+'images/resource/marker.png',
 
     initialize:function(symbol, geometry) {
         this.symbol = symbol;

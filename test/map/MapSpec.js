@@ -17,6 +17,7 @@ describe('#Map', function () {
         container.style.height = '600px';
         document.body.appendChild(container);
         var option = {
+            zoomAnimation:false,
             zoom: 17,
             center: center
         };

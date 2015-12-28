@@ -31,7 +31,7 @@ describe('Geometry', function() {
         layer.clear();
         var geometry = new Z.Marker(center, {
             symbol: {
-                markerFile : Z.prefix + 'images/marker.png',
+                markerFile : Z.prefix + 'images/resource/marker.png',
                 markerHeight : 30,
                 markerWidth : 22,
                 dx : 0,
