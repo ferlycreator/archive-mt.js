@@ -84,9 +84,9 @@ Z['Button'] = Z.Button = Z.Class.extend({
                 }, this);
             }
 
-            Z.DomUtil.on(_parentDom, 'mouseout', function() {
-                Z.DomUtil.setStyle(dropdownMenu, 'display: none');
-            }, this);
+//            Z.DomUtil.on(_parentDom, 'mouseout', function() {
+//                Z.DomUtil.setStyle(dropdownMenu, 'display: none');
+//            }, this);
 
             Z.DomUtil.on(dropdownMenu, 'mouseout', function() {
                 Z.DomUtil.setStyle(dropdownMenu, 'display: none');
@@ -119,7 +119,7 @@ Z['Button'] = Z.Button = Z.Class.extend({
     _createHtmlDom : function(options) {
         var _htmlDom = Z.DomUtil.createEl('span');
         Z.DomUtil.on(_htmlDom, 'click dblclick contextmenu', Z.DomUtil.stopPropagation);
-        _htmlDom.appendChild(options['content']);
+        _htmlDom.appendChild(options['item']);
         return _htmlDom;
     },
 

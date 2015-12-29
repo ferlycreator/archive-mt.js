@@ -88,7 +88,7 @@ maptalks.GridStyle = maptalks.Class.extend({
                     }
                 }
             },{
-                type : 'button',
+                type : 'menu',
                 icon : 'images/toolbox/paint.png',
                 html: true,
                 trigger: 'click',
@@ -101,7 +101,7 @@ maptalks.GridStyle = maptalks.Class.extend({
                     me._setGridStyle('markerFill',color);
                 })
             }, {
-               type : 'button',
+               type : 'menu',
                icon: 'images/toolbox/stroke.png',
                html: true,
                trigger: 'click',
@@ -115,7 +115,7 @@ maptalks.GridStyle = maptalks.Class.extend({
                })
 
            }, {
-                type : 'button',
+                type : 'menu',
                 icon: 'images/toolbox/font.png',
                 html: true,
                 trigger: 'click',
@@ -280,7 +280,7 @@ maptalks.GridStyle = maptalks.Class.extend({
 
     _createColorSpanDom: function(color) {
         var spanDom = maptalks.DomUtil.createEl('span');
-        spanDom.style.cssText = 'width:50px;height:50px;background-color:'+color+';';
+        spanDom.style.cssText = 'display:-moz-inline-box;display:inline-block;text-align:center;width:20px;height:20px;background-color:'+color+';';
         spanDom.innerText = '　　';
         return spanDom;
     },

@@ -938,8 +938,6 @@ maptalks.Grid = maptalks.Class.extend({
             rowData = this._data[index-1];
         }
         if(!rowData) return;
-        var geometry = rowData[maptalks.Grid.dataindex_geometry];
-        var coordinate = geometry.getCenter();
         var cols = new Array();
         for(var i=0;i<this._colNum;i++) {
             var col = this._columns[i];
@@ -959,6 +957,8 @@ maptalks.Grid = maptalks.Class.extend({
             cell._col = i;
             cols[i] = cell;
             if(this.options['dynamic']&&this.options['order']&&dataIndex==='maptalks_order') {
+                var geometry = rowData[maptalks.Grid.dataindex_geometry];
+                var coordinate = geometry.getCenter();
                 this._addNumberLabelToGeometry(coordinate, cell);
             }
         }
