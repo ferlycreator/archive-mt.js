@@ -68,10 +68,10 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
 
         var img = resources.getImage(style['shieldFile']);
         if (!img) {
-            throw new Error(style['shieldFile']+' is invalid');
+            console.warn(style['shieldFile']+' is invalid');
         }
-        this.shieldFileWidth = img.width;
-        this.shieldFileHeight = img.height;
+        this.shieldFileWidth = img ? img.width:0;
+        this.shieldFileHeight = img ? img.height:0;
         for (var i = 0, len=cookedPoints.length;i<len;i++) {
             var pt = cookedPoints[i];
             Z.Canvas.shield(ctx, pt, img, this.textContent, this.textDesc, style);

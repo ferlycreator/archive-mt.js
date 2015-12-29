@@ -206,6 +206,8 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
             return;
         }
         if (this._layer.isEmpty()) {
+            this.renderImmediate();
+            this._layer.fire('layerloaded');
             return;
         }
         var resourceUrls = [];
@@ -240,9 +242,14 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
                             resolve({});
                         };
                         img.onerror = function(){
-                            resolve({});
+                            reject({});
                         };
-                        Z.Util.loadImage(img,  resourceUrls[i]);
+                        try {
+                            Z.Util.loadImage(img,  _url);
+                        } catch (err) {
+                            reject({});
+                        }
+
                     };
         }
         if (Z.Util.isArrayHasData(resourceUrls)) {
@@ -266,6 +273,8 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         if (promises.length > 0) {
             Z.Promise.all(promises).then(function(reources) {
                 onComplete.call(context);
+            },function() {
+                onComplete.call(context);
             });
         } else {
             onComplete.call(context);
@@ -279,14 +288,14 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         if (!map) {
             return;
         }
-        if (this._layer.isEmpty()) {
-            return;
-        }
+
         //载入资源后再进行绘制
         if (!this._canvas) {
             this._createCanvas();
         }
-
+        if (this._layer.isEmpty()) {
+            return;
+        }
         var fullExtent = map._getViewExtent();
         this._clearCanvas();
         var me = this;
@@ -315,7 +324,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
     },
 
     _requestMapToRend:function() {
-        if (!this.getMap() || !this.getMap().isBusy()) {
+        if (this.getMap() && !this.getMap().isBusy()) {
             this._mapRender.render();
         }
         this._layer.fire('layerloaded');

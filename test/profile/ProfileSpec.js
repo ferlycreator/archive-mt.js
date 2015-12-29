@@ -33,11 +33,6 @@ describe('#Map Profile', function () {
             expect(json.options).to.eql(tile.config());
             expect(json.id).to.eql(tile.getId());
 
-            json = tile.toJSON({
-                "options" : false
-            });
-            expect(json).to.be.ok();
-            expect(json.options).not.to.be.ok();
         });
 
         it('get tilelayer from a profile json',function() {
@@ -100,12 +95,11 @@ describe('#Map Profile', function () {
             expect(profile.baseTileLayer).to.be.ok();
 
             profile = map.toJSON({
-                "options" : false,
                 "baseTileLayer" : false,
                 "layers" : false
             });
-            expect(profile.options).not.to.be.ok();
-            expect(profile.baseTileLayer).not.to.be.ok();
+            expect(profile.baseTileLayer).to.be.ok();
+            expect(profile.baseTileLayer.options.visible).not.to.be.ok();
             expect(profile.layers).not.to.be.ok();
         });
 
@@ -142,6 +136,36 @@ describe('#Map Profile', function () {
             expect(profile.layers[0]).to.be.eql(tile2.toJSON());
             expect(profile.layers[1]).to.be.eql(vectorLayer.toJSON());
             expect(profile.layers[2]).to.be.eql(vectorLayer2.toJSON());
+        });
+
+        it("get profile of selected layers",function() {
+            map.setBaseTileLayer(tile);
+            var tile2 = new maptalks.TileLayer('road',{
+                urlTemplate:"http://t{s}.tianditu.com/DataServer?T=cva_w&x={x}&y={y}&l={z}",
+                subdomains:['1','2','3','4','5'],
+                opacity:0.6
+            });
+            map.addLayer(tile2);
+            var vectorLayer = new Z.VectorLayer("vector-canvas",{"render":"canvas"});
+            var geometries = genAllTypeGeometries();
+            vectorLayer.addGeometry(geometries);
+            var vectorLayer2 = new Z.VectorLayer("vector");
+            vectorLayer2.addGeometry(genAllTypeGeometries());
+            map.addLayer([vectorLayer, vectorLayer2]);
+
+            var profile = map.toJSON({
+                "layers" : [
+                    {
+                        "id" : "road"
+                    },
+                    {
+                        "id" : "vector"
+                    }
+                ]
+            });
+            expect(profile.layers).to.have.length(2);
+            expect(profile.layers[0]).to.be.eql(tile2.toJSON());
+            expect(profile.layers[1]).to.be.eql(vectorLayer2.toJSON());
         });
 
         it('get map from various profile',function() {

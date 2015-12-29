@@ -45,55 +45,73 @@ Z.Util = {
 
     loadImage:function(img, url) {
         if (Z.runningInNode) {
-            //canvas-node的Image对象
-            if (Z.Util.isURL(url)) {
-                //读取远程图片
-                if (!this._nodeHttp) {
-                    this._nodeHttp = require('http');
-                }
-                this._nodeHttp.get(url,
-                    function(res) {
+            try {
+                //canvas-node的Image对象
+                if (Z.Util.isURL(url)) {
+                    //读取远程图片
+                    var loader;
+                    if (url.indexOf('https://') === 0) {
+                        if (!this._nodeHttps) {
+                            this._nodeHttps = require('https');
+                        }
+                        loader = this._nodeHttps;
+                    } else {
+                        if (!this._nodeHttp) {
+                            this._nodeHttp = require('http');
+                        }
+                        loader = this._nodeHttp;
+                    }
 
-                        var data = new Buffer(parseInt(res.headers['content-length'],10));
-                        var pos = 0;
-                        res.on('data', function(chunk) {
-                          chunk.copy(data, pos);
-                          pos += chunk.length;
-                        });
-                        res.on('end', function () {
+                        loader.get(url,
+                            function(res) {
+
+                                var data = new Buffer(parseInt(res.headers['content-length'],10));
+                                var pos = 0;
+                                res.on('data', function(chunk) {
+                                  chunk.copy(data, pos);
+                                  pos += chunk.length;
+                                });
+                                res.on('end', function () {
+                                    var onloadFn = img.onload;
+                                    if (onloadFn) {
+                                        img.onload = function() {
+                                            onloadFn.call(img);
+                                        };
+                                    }
+                                    img.src = data;
+                                });
+                            }
+                        );
+
+                } else {
+                    //读取本地图片
+                    if (!this._nodeFS) {
+                        this._nodeFS = require('fs');
+                    }
+                    var data = this._nodeFS.readFile(url,function(err,data) {
+                        if (err) {
+                            var onerrorFn = img.onerror;
+                            if (onerrorFn) {
+                                onerrorFn.call(img);
+                            }
+                        } else {
                             var onloadFn = img.onload;
                             if (onloadFn) {
                                 img.onload = function() {
                                     onloadFn.call(img);
                                 };
                             }
+
                             img.src = data;
-                        });
-                    }
-                );
-            } else {
-                //读取本地图片
-                if (!this._nodeFS) {
-                    this._nodeFS = require('fs');
+                        }
+
+                    });
                 }
-                var data = this._nodeFS.readFile(url,function(err,data) {
-                    if (err) {
-                        var onerrorFn = img.onerror;
-                        if (onerrorFn) {
-                            onerrorFn.call(img);
-                        }
-                    } else {
-                        var onloadFn = img.onload;
-                        if (onloadFn) {
-                            img.onload = function() {
-                                onloadFn.call(img);
-                            };
-                        }
-
-                        img.src = data;
-                    }
-
-                });
+            } catch (error) {
+                var onerrorFn = img.onerror;
+                if (onerrorFn) {
+                    onerrorFn.call(img);
+                }
             }
         } else {
             img.src=url;
@@ -598,7 +616,7 @@ Z.Util.Ajax =
      * @param {Function} oResultFunc 会到函数
      * @param {String} responseType 响应类型 text/xml/json
      */
-    function(sUrl,sRecvTyp,sQueryString,oResultFunc,responseType) {
+function(sUrl,sRecvTyp,sQueryString,oResultFunc,responseType) {
     this.Url = sUrl;
     this.QueryString = sQueryString;
     this.resultFunc = oResultFunc;
