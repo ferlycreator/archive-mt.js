@@ -83,14 +83,14 @@ Z['Button'] = Z.Button = Z.Class.extend({
                     Z.DomUtil.setStyle(dropdownMenu, 'display: inline-block');
                 }, this);
             }
+
+//            Z.DomUtil.on(_parentDom, 'mouseout', function() {
+//                Z.DomUtil.setStyle(dropdownMenu, 'display: none');
+//            }, this);
+
             Z.DomUtil.on(dropdownMenu, 'mouseout', function() {
                 Z.DomUtil.setStyle(dropdownMenu, 'display: none');
             }, this);
-//                if(tag) {
-//                    Z.DomUtil.on(_parentDom, 'mouseout', function() {
-//                        Z.DomUtil.setStyle(dropdownMenu, 'display: none');
-//                    }, this);
-//                }
         }
         if(options['children'] && options['children'].length>0) {
             var dropdownMenu = Z.DomUtil.createElOn('ul', 'display: none;');
@@ -119,7 +119,7 @@ Z['Button'] = Z.Button = Z.Class.extend({
     _createHtmlDom : function(options) {
         var _htmlDom = Z.DomUtil.createEl('span');
         Z.DomUtil.on(_htmlDom, 'click dblclick contextmenu', Z.DomUtil.stopPropagation);
-        _htmlDom.appendChild(options['content']);
+        _htmlDom.appendChild(options['item']);
         return _htmlDom;
     },
 
@@ -159,7 +159,7 @@ Z['Button'] = Z.Button = Z.Class.extend({
         var icon = options['icon'];
         var iconWidth = Z.Util.getValueOrDefault(options['iconWidth'],16);
         var iconHeight = Z.Util.getValueOrDefault(options['iconHeight'],16);
-        var content = options['content'];
+        var content = options['item'];
         var html = options['html'];
         if(icon) {
             var _imgDom = Z.DomUtil.createEl('img');

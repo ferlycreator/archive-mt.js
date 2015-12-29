@@ -1,3 +1,6 @@
+maptalks.Grid = {};
+maptalks.Grid.dataindex_geometry = 'maptalks_geometry';
+
 maptalks.Grid = maptalks.Class.extend({
     includes: [maptalks.Eventable],
 
@@ -6,10 +9,12 @@ maptalks.Grid = maptalks.Class.extend({
      */
     'exceptionDefs':{
         'en-US':{
-            'NEED_DATA':'You must set data to Gird options.'
+            'NEED_DATA':'You must set data to Gird options.',
+            'NEED_COLUMN':'You must set columns to Gird options.'
         },
         'zh-CN':{
-            'NEED_DATA':'你必须为Grid指定data。'
+            'NEED_DATA':'你必须为Grid指定data。',
+            'NEED_COLUMN':'你必须为Grid指定columns。'
         }
     },
 
@@ -45,24 +50,41 @@ maptalks.Grid = maptalks.Class.extend({
         'width': 300,
         'height': 300,
         'draggable': true,
-        'editable' : true,
+        'editable': true,
+        'header': true,
+        'order': true,
         'dynamic': false
      }
      * @returns {maptalks.Table}
      */
     initialize: function(options) {
         this.setOptions(options);
-        this._data = this.options['data'];
-        this._initalData = this.options['data'];
-        if(!this._data&&this._data.length==0)  {throw new Error(this.exceptions['NEED_DATA']);}
+        if(!this.options['data']&&this.options['data'].length==0)  {throw new Error(this.exceptions['NEED_DATA']);}
+        if(!this.options['columns']&&this.options['columns'].length==0)  {throw new Error(this.exceptions['NEED_COLUMN']);}
+        //包含序号列
+        if(this.options['order']) {
+            var orderCol = {header:'序号', dataIndex: 'maptalks_order', type: 'number'};
+            this.options['columns'].unshift(orderCol);
+
+            var dataArray = this.options['data'];
+            for(var i=0,len=dataArray.length;i<len;i++) {
+                dataArray[i]['maptalks_order'] =i+1;
+            }
+        }
         this._initalColumns = this.options['columns'];
         this._columns = this._getColumns();
-        this._rowNum = this._data.length+1;//包含表头
         this._colNum = this._columns.length;
+        this._data = this.options['data'];
+        this._initalData = this.options['data'];
+        this._rowNum = this._data.length;
+        //包含表头
+        if(this.options['header']) {
+            this._rowNum += 1;
+        }
         this._width = maptalks.Util.getValueOrDefault(this.options['width'],100);
         this._height = maptalks.Util.getValueOrDefault(this.options['height'],100);
         this._cellWidth = this._width/this._colNum;
-        this._cellHeight = this._height/(this._rowNum);
+        this._cellHeight = this._height/this._rowNum;
         this._currentRow = -1;
         this._currentCol = -1;
         this._rowHeights = new Array();
@@ -92,6 +114,63 @@ maptalks.Grid = maptalks.Class.extend({
         return this;
     },
 
+    _addNumberLabelToGeometry: function(coordinate, cell) {
+        //设置label属性
+        var cellSymbol = cell.getSymbol();
+        var options = {
+            'symbol': this._convertCellSymbolToNumberSymbol(cellSymbol),
+            'draggable': false,
+            'boxAutoSize': false,
+            'boxMinWidth': 18,
+            'boxMinHeight': 18
+        };
+        //创建label
+        var num = cell.getContent();
+        var numberLabel = new maptalks.Label(num, coordinate, options);
+        this._layer.addGeometry(numberLabel);
+
+        cell.on('hide remove', function(){
+            numberLabel.remove();
+        }, this);
+        var me=this;
+        cell.on('symbolchanged', function(){
+            var symbol = me._convertCellSymbolToNumberSymbol(cell.getSymbol());
+            numberLabel.setSymbol(symbol);
+        },this);
+        cell.on('contentchange positionchanged', function(){
+            var number = cell.getContent();
+            numberLabel.setContent(number);
+        },this);
+    },
+
+    _convertCellSymbolToNumberSymbol: function(cellSymbol){
+        var symbol = {
+            'markerType' : 'ellipse',
+            'markerLineColor': maptalks.Util.getValueOrDefault(cellSymbol['markerLineColor'],'#ffffff'),
+            'markerLineWidth': cellSymbol['markerLineWidth'],
+            'markerLineOpacity': cellSymbol['markerLineOpacity'],
+            'markerFill': maptalks.Util.getValueOrDefault(cellSymbol['markerFill'],'#4e98dd'),
+            'markerFillOpacity': cellSymbol['markerFillOpacity'],
+            'markerDx': 0,
+            'markerDy': 9,
+            'markerHeight' : 18,
+            'markerWidth': 18,
+
+            'textFaceName': maptalks.Util.getValueOrDefault(cellSymbol['textFaceName'],'arial'),
+            'textSize': cellSymbol['textSize'],
+            'textFill': maptalks.Util.getValueOrDefault(cellSymbol['textFill'],'#ff0000'),
+            'textOpacity': cellSymbol['textOpacity'],
+            'textSpacing': cellSymbol['textSpacing'],
+            'textWrapBefore': false,
+            'textLineSpacing': cellSymbol['textLineSpacing'],
+            'textHorizontalAlignment': cellSymbol['textHorizontalAlignment'],
+            'textVerticalAlignment': cellSymbol['textVerticalAlignment'],
+            'textDx': 0,
+            'textDy': 9
+        };
+        return symbol;
+    },
+
     _initRowHeightAndColWidth: function() {
         for(var i=0;i<this._rowNum;i++) {
             this._rowHeights[i] = this._cellHeight;
@@ -108,6 +187,10 @@ maptalks.Grid = maptalks.Class.extend({
      */
     setOptions: function(options) {
         maptalks.Util.setOptions(this, options);
+        if (!this.options['width']) this.options['width'] = 300;
+        if (!this.options['height']) this.options['width'] = 300;
+        if (!this.options['header'] && this.options['header']!==false) this.options['header'] = true;
+        if (!this.options['order'] && this.options['order']!==false) this.options['order'] = true;
         return this;
     },
 
@@ -198,6 +281,10 @@ maptalks.Grid = maptalks.Class.extend({
             symbol['textDy']=sourceRowDy;
             sourceRow[i].setSymbol(symbol);
             sourceRow[i]._row=targetRowNum;
+            if(this.options['order']&&this._columns[i]['dataIndex']==='maptalks_order'){
+                sourceRow[i].setContent(targetRowNum);
+                sourceRow[i].fire('positionchanged',{target:sourceRow[i]});
+            }
         }
         this._grid[targetRowNum]=sourceRow;
         for(var i=0,len=targetRow.length;i<len;i++) {
@@ -206,6 +293,10 @@ maptalks.Grid = maptalks.Class.extend({
             symbol['textDy']=targetRowDy;
             targetRow[i].setSymbol(symbol);
             targetRow[i]._row=sourceRowNum;
+            if(this.options['order']&&this._columns[i]['dataIndex']==='maptalks_order'){
+                targetRow[i].setContent(sourceRowNum);
+                targetRow[i].fire('positionchanged',{target:targetRow[i]});
+            }
         }
         this._grid[sourceRowNum]=targetRow;
     },
@@ -248,6 +339,7 @@ maptalks.Grid = maptalks.Class.extend({
         //调整列位置
         for(var i=0,len=this._grid.length;i<len;i++) {
             var row = this._grid[i];
+            if(!row) return;
             var sourceCellSymbol = row[sourceColNum].getSymbol();
             sourceCellSymbol['markerDx']=sourceColDx;
             sourceCellSymbol['textDx']=sourceColDx;
@@ -310,11 +402,6 @@ maptalks.Grid = maptalks.Class.extend({
         this._width += cellWidth;
         var distance = map.pixelToDistance(cellWidth,0);
         var offset = map.locate(new maptalks.Coordinate(0,0),distance,0);
-        //调整插入列之后的调整线的位置
-        for(var i=insertColNum,len=this._adjustCols.length;i<len;i++) {
-            var colLine = this._adjustCols[i];
-            colLine.translate(offset);
-        }
         this._adjustCols.splice(insertColNum, 0, line);
         this._adjustLayer.addGeometry(line);
         this._colWidths.splice(insertColNum, 0, cellWidth);
@@ -325,18 +412,6 @@ maptalks.Grid = maptalks.Class.extend({
         var colNum = cell._col;
         var line = this._adjustCols[colNum];
         line.remove();
-        //调整colNum之后的调整线
-        var size = cell.getSize();
-        var cellWidth = size['width'];
-        this._width -= cellWidth;
-        var distance = map.pixelToDistance(cellWidth,0);
-        var offset = map.locate(new maptalks.Coordinate(0,0),-distance,0);
-        for(var i=colNum+1;i<this._adjustCols.length;i++) {
-            var colLine = this._adjustCols[i];
-            colLine.translate(offset);
-        }
-        this._adjustCols.splice(colNum,1);
-        this._colWidths.splice(colNum,1);
     },
 
     /**
@@ -366,6 +441,7 @@ maptalks.Grid = maptalks.Class.extend({
         var size = firstCell.getSize();
         for(var i=rowNum,len=this._grid.length;i<len;i++) {
             var row = this._grid[i];
+            if(!row) return;
             if(i===rowNum) {
                 this._removeAdjustLineForRow(row[0]);
             }
@@ -374,6 +450,9 @@ maptalks.Grid = maptalks.Class.extend({
                 if(i>rowNum) {
                     var cellOffset = this._getCellOffset(i, 0);
                     cell._row -= 1;
+                    if(this.options['order']&&this._columns[j]['dataIndex']==='maptalks_order'){
+                        cell.setContent(cell._row);
+                    }
                     this._translateDy(cell,-size['height']);
                 } else {
                     cell.remove();
@@ -395,18 +474,32 @@ maptalks.Grid = maptalks.Class.extend({
     removeCol: function(colNum) {
         var firstRow = this._grid[0];
         var removeCell = firstRow[colNum];
-        var size = removeCell.getSize();
+        var removeSize = removeCell.getSize();
+        var startPoint = this.options['position'];
+        var map = this._adjustLayer.getMap();
         for(var i=0,len=this._grid.length;i<len;i++) {
             var row = this._grid[i];
+            if(!row) return;
             for(var j=colNum,rowLength=row.length;j<rowLength;j++) {
                 var cell = row[j];
                 var width = 0;
                 if(i==0&&j==colNum) {
                     this._removeAdjustLineForCol(cell);
+                    //表格宽度缩短
+                    this._width -= removeSize['width'];
                 }
                 if(j>colNum) {
+                    this._translateDx(cell,-removeSize['width']);
+                    if(i==0) {
+                        var colLine = this._adjustCols[cell._col];
+                        var size = cell.getSize();
+                        var symbol = cell.getSymbol(),
+                            dx = symbol['textDx'];
+                        var upPoint = map.locate(startPoint,map.pixelToDistance(size['width']/2+dx,0),map.pixelToDistance(0,size['height']/2));
+                        var downPoint = map.locate(upPoint,0,-map.pixelToDistance(0,this._height));
+                        colLine.setCoordinates([upPoint,downPoint]);
+                    }
                     cell._col-=1;
-                    this._translateDx(cell,-size['width']);
                 } else {
                     cell.remove();
                 }
@@ -414,6 +507,8 @@ maptalks.Grid = maptalks.Class.extend({
             //删除列数据
             this._grid[i].splice(colNum,1);
         }
+        this._colWidths.splice(colNum,1);
+        this._adjustCols.splice(colNum,1);
         //移除列数据
         this._colNum-=1;
         //延展行调整线
@@ -423,6 +518,7 @@ maptalks.Grid = maptalks.Class.extend({
     remove: function(){
         for(var i=0,len=this._grid.length;i<len;i++) {
             var row = this._grid[i];
+            if(!row) return;
             for(var j=0,rowLength=row.length;j<rowLength;j++) {
                 row[j].remove();
             }
@@ -450,6 +546,7 @@ maptalks.Grid = maptalks.Class.extend({
         var me = this;
         for(var i=0,len=grid.length;i<len;i++) {
             var row = grid[i];
+            if(!row) return;
             for(var j=0,rowNum=row.length;j<rowNum;j++) {
                 var cell = row[j];
                 if(init) {
@@ -481,24 +578,24 @@ maptalks.Grid = maptalks.Class.extend({
                 'width': 100,
                 'style': 'grey',
                 'items' : [
-                    {'item': '在前面添加列', 'callback': function() {
+                    {'item': '在前面添加列', 'click': function() {
                         me.addCol(colNum, '空', false);
                     }},
-                    {'item': '在后面添加列', 'callback': function() {
+                    {'item': '在后面添加列', 'click': function() {
                         me.addCol(colNum, '空', true);
                     }},
-                    {'item': '左移', 'callback': function() {
+                    {'item': '左移', 'click': function() {
                         me.moveCol(colNum, 'left');
                     }},
-                    {'item': '右移', 'callback': function() {
+                    {'item': '右移', 'click': function() {
                         me.moveCol(colNum, 'right');
                     }},
-                    {'item': '设置列样式', 'callback': function() {
+                    {'item': '设置列样式', 'click': function() {
                         me._currentCol = colNum;
                         me._currentRow = -1;
                         me._setStyleForGrid();
                     }},
-                    {'item': '删除列', 'callback': function() {
+                    {'item': '删除列', 'click': function() {
                         me.removeCol(colNum);
                     }}
                 ]
@@ -508,30 +605,30 @@ maptalks.Grid = maptalks.Class.extend({
                 'width': 100,
                 'style': 'grey',
                 'items' : [
-                    {'item': '在上面添加行', 'callback': function() {
+                    {'item': '在上面添加行', 'click': function() {
                         me.addRow(rowNum, '空', false);
                     }},
-                    {'item': '在下面添加行', 'callback': function() {
+                    {'item': '在下面添加行', 'click': function() {
                         me.addRow(rowNum, '空', true);
                     }},
-                    {'item': '上移', 'callback': function() {
+                    {'item': '上移', 'click': function() {
                         me.moveRow(rowNum, 'up');
                     }},
-                    {'item': '下移', 'callback': function() {
+                    {'item': '下移', 'click': function() {
                         me.moveRow(rowNum, 'down');
                     }},
-                    {'item': '设置行样式', 'callback': function() {
+                    {'item': '设置行样式', 'click': function() {
                         me._currentRow = rowNum;
                         me._currentCol = -1;
                         me._setStyleForGrid();
                     }},
-                    {'item': '删除行', 'callback': function() {
+                    {'item': '删除行', 'click': function() {
                         me.removeRow(rowNum);
                     }}
                 ]
             };
         }
-        var coordinate = event['containerPoint'];
+        var coordinate = event['coordinate'];
         cell.setMenu(menuOptions);
         cell.openMenu(coordinate);
     },
@@ -579,6 +676,7 @@ maptalks.Grid = maptalks.Class.extend({
         var dragOffset = event['dragOffset'];
         for(var i=0,len=this._grid.length;i<len;i++) {
             var row = this._grid[i];
+            if(!row) return;
             for(var j=0,rowLength=row.length;j<rowLength;j++) {
                 var cell = row[j];
                 cell.translate(dragOffset);
@@ -690,6 +788,7 @@ maptalks.Grid = maptalks.Class.extend({
         }
         for(var i=1,len=this._grid.length;i<len;i++) {
             var row = this._grid[i];
+            if(!row) return;
             var cell = row[colNum];
             cell.setContent(newValues[i]);
         }
@@ -705,6 +804,9 @@ maptalks.Grid = maptalks.Class.extend({
             var row = lastDataset[i];
             for(var j=0,rowLength=row.length;j<rowLength;j++) {
                 row[j]._row += insertRowLength;
+                if(this.options['order']&&this._columns[j]['dataIndex']==='maptalks_order'){
+                    row[j].setContent(row[j]._row);
+                }
                 this._translateDy(row[j],this._cellHeight);
             }
         }
@@ -776,22 +878,41 @@ maptalks.Grid = maptalks.Class.extend({
     },
 
     _adjustDatasetForCol: function(start,insertColLength) {
+        var startPoint = this.options['position'];
+        var map = this._adjustLayer.getMap();
         for(var i=0,len=this._grid.length;i<len;i++) {
             var rowData = this._grid[i];
+            if(!rowData) return;
             for(var j=start+1,rowLength=rowData.length;j<rowLength;j++) {
                 var cell = rowData[j];
                 cell._col += insertColLength;
                 this._translateDx(cell,this._cellWidth);
+                //调整交互列
+                if(i==0){
+                    var colLine = this._adjustCols[j];
+                    var size = cell.getSize();
+                    var symbol = cell.getSymbol(),
+                        dx = symbol['textDx'];
+                    var upPoint = map.locate(startPoint,map.pixelToDistance(size['width']/2+dx,0),map.pixelToDistance(0,size['height']/2));
+                    var downPoint = map.locate(upPoint,0,-map.pixelToDistance(0,this._height));
+                    colLine.setCoordinates([upPoint,downPoint]);
+                }
             }
         }
     },
 
     _createGrid: function() {
         var dataset = new Array();
-        dataset[0] = this._createHeader();
-        for(var i=0;i<this._rowNum-1;i++) {
-            var item = this._data[i];
-            dataset[i+1] = this._createRow(i+1, item);
+        for(var i=0;i<this._rowNum;i++) {
+            if(i==0&&this.options['header']) {
+                dataset.push(this._createHeader());
+            } else {
+                var item = this._data[i];
+                if(this.options['header']) {
+                    item = this._data[i-1];
+                }
+                dataset.push(this._createRow(i, item));
+            }
         }
         return dataset;
     },
@@ -812,6 +933,11 @@ maptalks.Grid = maptalks.Class.extend({
     },
 
     _createRow: function(index, item) {
+        var rowData = this._data[index];
+        if(this.options['header']) {
+            rowData = this._data[index-1];
+        }
+        if(!rowData) return;
         var cols = new Array();
         for(var i=0;i<this._colNum;i++) {
             var col = this._columns[i];
@@ -821,12 +947,20 @@ maptalks.Grid = maptalks.Class.extend({
             if(item&&item[dataIndex]) {
                 text = item[dataIndex];
             }
+            if(this.options['order']&&dataIndex==='maptalks_order'){
+                text = index;
+            }
             var cellOffset = this._getCellOffset(index, i);
             var size = new maptalks.Size(this._colWidths[i], this._rowHeights[index]);
             var cell = this._createCell(text,cellOffset,size);
             cell._row = index;
             cell._col = i;
             cols[i] = cell;
+            if(this.options['dynamic']&&this.options['order']&&dataIndex==='maptalks_order') {
+                var geometry = rowData[maptalks.Grid.dataindex_geometry];
+                var coordinate = geometry.getCenter();
+                this._addNumberLabelToGeometry(coordinate, cell);
+            }
         }
         return cols;
     },
@@ -929,13 +1063,14 @@ maptalks.Grid = maptalks.Class.extend({
         if(!this._adjustLayer) {
             this._adjustLayer = new maptalks.VectorLayer(adjustLayerId);
             map.addLayer(this._adjustLayer);
-//            this._adjustLayer.bringToBack();
+            this._adjustLayer.bringToBack();
         }
         this._adjustRows = new Array();
         this._adjustCols = new Array();
         //add row adjust line
         for(var i=0,len=this._grid.length;i<len;i++) {
             var row = this._grid[i];
+            if(!row) return;
             var cell = row[0];
             var rowLine = this._createAdjustLineForRow(map,cell);
             this._adjustRows.push(rowLine);
@@ -1095,6 +1230,7 @@ maptalks.Grid = maptalks.Class.extend({
         var colNum = cell._col;
         for(var i=0,len=this._grid.length;i<len;i++) {
             var row = this._grid[i];
+            if(!row) return;
             for(var j=colNum,rowLength=row.length;j<rowLength;j++) {
                 var cell = row[j];
                 var symbol = cell.getSymbol();

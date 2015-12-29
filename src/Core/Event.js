@@ -99,6 +99,21 @@ Z.Eventable = {
         return handlerChain.length;
     },
 
+   /**
+    * copy event listener from target object
+    * @param {Object} target
+    */
+    copyEventListener: function(target) {
+        var eventMap = target._eventMap;
+        if(!eventMap) return;
+        for (var eventType in eventMap) {
+            var events = eventMap[eventType];
+            for(var i=0,len=events.length;i<len;i++) {
+                this.on(eventType, events[i].handler, events[i].context);
+            }
+        }
+    },
+
     _executeListeners:function(eventType, param) {
         if (!this._eventMap) {return;}
         //if (!this.hasListeners(eventType)) {return;}
