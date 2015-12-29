@@ -544,6 +544,13 @@ Z.Util = {
         document.head.appendChild( script ).parentNode.removeChild( script );
     },
 
+    globalScript: function( file ) {
+        var script = document.createElement( "script" );
+        script.type = "text/javascript"
+        script.src = file;
+        document.head.appendChild( script );
+    },
+
     /**
      * 获取异常信息
      * @param {String} exceptionStr 异常字符串
