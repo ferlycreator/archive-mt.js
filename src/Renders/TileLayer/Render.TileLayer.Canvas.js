@@ -111,7 +111,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         }
         var gradualOpacity = null;
         if (this._gradualLoading && this._totalTileToLoad && this._layer.options['gradualLoading']) {
-            gradualOpacity = ((this._totalTileToLoad - this._tileToLoadCounter) / this._totalTileToLoad) * 3;
+            gradualOpacity = ((this._totalTileToLoad - this._tileToLoadCounter) / this._totalTileToLoad) * 2;
             if (gradualOpacity > 1) {
                 gradualOpacity = 1;
             }
@@ -261,6 +261,8 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         if (param['type'] === '_moveend' || param['type'] === '_zoomend') {
             if (param['type'] === '_zoomend') {
                 this._gradualLoading = true;
+            } else {
+                this._gradualLoading = false;
             }
             this.render();
         } else if (param['type'] === '_resize') {
