@@ -268,7 +268,7 @@ Z.Menu.Handler={
     */
     closeMenu: function() {
         if(this._menu) {
-            this._menu.close();
+            this._menu.hide();
         }
         return this;
     },

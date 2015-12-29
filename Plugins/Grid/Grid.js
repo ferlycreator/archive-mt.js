@@ -578,24 +578,24 @@ maptalks.Grid = maptalks.Class.extend({
                 'width': 100,
                 'style': 'grey',
                 'items' : [
-                    {'item': '在前面添加列', 'callback': function() {
+                    {'item': '在前面添加列', 'click': function() {
                         me.addCol(colNum, '空', false);
                     }},
-                    {'item': '在后面添加列', 'callback': function() {
+                    {'item': '在后面添加列', 'click': function() {
                         me.addCol(colNum, '空', true);
                     }},
-                    {'item': '左移', 'callback': function() {
+                    {'item': '左移', 'click': function() {
                         me.moveCol(colNum, 'left');
                     }},
-                    {'item': '右移', 'callback': function() {
+                    {'item': '右移', 'click': function() {
                         me.moveCol(colNum, 'right');
                     }},
-                    {'item': '设置列样式', 'callback': function() {
+                    {'item': '设置列样式', 'click': function() {
                         me._currentCol = colNum;
                         me._currentRow = -1;
                         me._setStyleForGrid();
                     }},
-                    {'item': '删除列', 'callback': function() {
+                    {'item': '删除列', 'click': function() {
                         me.removeCol(colNum);
                     }}
                 ]
@@ -605,30 +605,30 @@ maptalks.Grid = maptalks.Class.extend({
                 'width': 100,
                 'style': 'grey',
                 'items' : [
-                    {'item': '在上面添加行', 'callback': function() {
+                    {'item': '在上面添加行', 'click': function() {
                         me.addRow(rowNum, '空', false);
                     }},
-                    {'item': '在下面添加行', 'callback': function() {
+                    {'item': '在下面添加行', 'click': function() {
                         me.addRow(rowNum, '空', true);
                     }},
-                    {'item': '上移', 'callback': function() {
+                    {'item': '上移', 'click': function() {
                         me.moveRow(rowNum, 'up');
                     }},
-                    {'item': '下移', 'callback': function() {
+                    {'item': '下移', 'click': function() {
                         me.moveRow(rowNum, 'down');
                     }},
-                    {'item': '设置行样式', 'callback': function() {
+                    {'item': '设置行样式', 'click': function() {
                         me._currentRow = rowNum;
                         me._currentCol = -1;
                         me._setStyleForGrid();
                     }},
-                    {'item': '删除行', 'callback': function() {
+                    {'item': '删除行', 'click': function() {
                         me.removeRow(rowNum);
                     }}
                 ]
             };
         }
-        var coordinate = event['containerPoint'];
+        var coordinate = event['coordinate'];
         cell.setMenu(menuOptions);
         cell.openMenu(coordinate);
     },

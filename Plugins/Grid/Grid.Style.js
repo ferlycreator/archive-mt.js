@@ -92,7 +92,7 @@ maptalks.GridStyle = maptalks.Class.extend({
                 icon : 'images/toolbox/paint.png',
                 html: true,
                 trigger: 'click',
-                content: bgDom,
+                item: bgDom,
                 children : this._colorItems(function(param){
                     var target = param.target;
                     var color = target.style['background-color'];
@@ -105,7 +105,7 @@ maptalks.GridStyle = maptalks.Class.extend({
                icon: 'images/toolbox/stroke.png',
                html: true,
                trigger: 'click',
-               content: borderDom,
+               item: borderDom,
                children : this._colorItems(function(param){
                    var target = param.target;
                    var color = target.style['background-color'];
@@ -119,7 +119,7 @@ maptalks.GridStyle = maptalks.Class.extend({
                 icon: 'images/toolbox/font.png',
                 html: true,
                 trigger: 'click',
-                content: textColorDom,
+                item: textColorDom,
                 children : this._colorItems(function(param){
                     var target = param.target;
                     var color = target.style['background-color'];
@@ -228,49 +228,49 @@ maptalks.GridStyle = maptalks.Class.extend({
     _colorItems: function (callback) {
         var fn = callback;
         return [{//子菜单
-            content: this._createColorSpanDom('#cc0000'),
+            item: this._createColorSpanDom('#cc0000'),
             vertical : true,
             click : function(param){
                 fn.call(this, param);
             }
         }, {
-            content: this._createColorSpanDom('#d56a00'),
+            item: this._createColorSpanDom('#d56a00'),
             vertical : true,
             click : function(param){
                 fn.call(this, param);
             }
         }, {
-            content: this._createColorSpanDom('#a29900'),
+            item: this._createColorSpanDom('#a29900'),
             vertical : true,
             click : function(param){
                 fn.call(this, param);
             }
         }, {
-            content: this._createColorSpanDom('#55a455'),
+            item: this._createColorSpanDom('#55a455'),
             vertical : true,
             click : function(param){
                 fn.call(this, param);
             }
         }, {
-            content: this._createColorSpanDom('#3398cc'),
+            item: this._createColorSpanDom('#3398cc'),
             vertical : true,
             click : function(param){
                 fn.call(this, param);
             }
         }, {
-            content: this._createColorSpanDom('#663399'),
+            item: this._createColorSpanDom('#663399'),
             vertical : true,
             click : function(param){
                 fn.call(this, param);
             }
         }, {
-            content: this._createColorSpanDom('#cc0066'),
+            item: this._createColorSpanDom('#cc0066'),
             vertical : true,
             click : function(param){
                 fn.call(this, param);
             }
         }, {
-            content: this._createColorSpanDom('#333333'),
+            item: this._createColorSpanDom('#333333'),
             vertical : true,
             click : function(param){
                 fn.call(this, param);

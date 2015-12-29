@@ -48,8 +48,12 @@ Z.Canvas = {
                     var imgUrl = Z.Util.extractCssUrl(strokeColor);
                     var imageTexture = resources.getImage(imgUrl);
                     if (imageTexture) {
+                        var  patternCanvas = this.createCanvas(strokeWidth,strokeWidth);
+                        var patternCtx = patternCanvas.getContext('2d');
+                        patternCtx.drawImage(imageTexture,0,0,strokeWidth,strokeWidth);
                         //image texture may be undefined when map is requested to render before resources are loaded.
-                        ctx.strokeStyle = ctx.createPattern(imageTexture, 'repeat');
+                        ctx.strokeStyle = ctx.createPattern(patternCanvas, 'repeat');
+                        strokeSymbol['stroke-dasharray'] = [];
                     }
                  } else {
                     ctx.strokeStyle = this.getRgba(strokeColor,1);
