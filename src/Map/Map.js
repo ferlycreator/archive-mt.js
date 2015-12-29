@@ -540,7 +540,7 @@ Z['Map']=Z.Map=Z.Class.extend({
             this._baseTileLayer._onRemove();
         }
         baseTileLayer.config({
-            'rendWhenPanning':true
+            'renderWhenPanning':true
         });
         baseTileLayer._prepare(this,-1);
         this._baseTileLayer = baseTileLayer;

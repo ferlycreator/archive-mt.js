@@ -320,9 +320,13 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
         if (!layerImage || mwidth === 0 || mheight === 0){
             return;
         }
+        var alpha = this._context.globalAlpha;
         var point = layerImage['point'];
         var size = layerImage['size'];
         var canvasImage = layerImage['image'];
+        if (Z.Util.isNumber(layerImage['opacity'])) {
+            this._context.globalAlpha *= layerImage['opacity'];
+        }
         if (Z.runningInNode) {
             if (canvasImage.toBuffer) {
                 //node-canvas
@@ -360,6 +364,7 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
             }
             this._context.drawImage(canvasImage, sx, sy, w, h, dx, dy, w, h);
         }
+        this._context.globalAlpha = alpha;
     },
 
     _getAllLayerToCanvas:function() {
