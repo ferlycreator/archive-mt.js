@@ -11,7 +11,11 @@ SvgData = {
         ._addPolygon()
         ._addMultiPoint()
         ._addMultiPolyline()
-        ._addMultiPolygon();
+        ._addMultiPolygon()
+        ._addCircle()
+        ._addEllipse()
+        ._addRectangle()
+        ._addSector();
     },
     _addLabel: function() {
        var coordinate = new maptalks.Coordinate(121.4718247247321,31.254666307610087);
@@ -192,7 +196,7 @@ SvgData = {
             'lineDasharray' : [20,10,5,5,5,10],//线形
             'lineOpacity' : 1,
             // 'polygon-fill' : '#ff00ff',
-            'polygonFill' : 'rgb(255, 0, 255)',
+            'polygonFill' : 'rgb(0, 0, 255)',
             'polygonOpacity' : 0.8
         };
         polygon.setSymbol(polygonSymbol);
@@ -274,11 +278,71 @@ SvgData = {
             'lineDasharray' : null,//线形
             'lineOpacity' : 1,
             'polygon-fill' : '#ff00ff',
-            'polygonFill' : 'rgb(255, 0, 255)',
+            'polygonFill' : 'rgb(255, 0, 0)',
             'polygonOpacity' : 0.8
         };
         var multiPolygon = new maptalks.MultiPolygon(polygons,{symbol:polygonSymbol,draggable:true});
         this.layer.addGeometry(multiPolygon);
+        return this;
+    },
+
+    _addCircle:function() {
+        var circle = new maptalks.Circle([121.46403558975318, 31.225110285375695], 300,{draggable: true});
+        circle.setSymbol({
+            'lineColor' : '#000000',
+            'lineWidth' : 2,
+            'lineDasharray' : null,//线形
+            'lineOpacity' : 1,
+            'polygon-fill' : '#ff00ff',
+            'polygonFill' : 'rgb(255, 255, 0)',
+            'polygonOpacity' : 0.8
+        });
+        this.layer.addGeometry(circle);
+        return this;
+    },
+
+    _addEllipse:function() {
+        var ellipse = new maptalks.Ellipse([121.47180326705995, 31.223532236481937], 300, 500,{draggable: true});
+        ellipse.setSymbol({
+            'lineColor' : '#000000',
+            'lineWidth' : 2,
+            'lineDasharray' : null,//线形
+            'lineOpacity' : 1,
+            'polygon-fill' : '#ff00ff',
+            'polygonFill' : 'rgb(255, 255, 0)',
+            'polygonOpacity' : 0.8
+        });
+        this.layer.addGeometry(ellipse);
+        return this;
+    },
+
+    _addRectangle:function() {
+        var rect = new maptalks.Rectangle([121.47708185440119, 31.22191746150361], 300, 500,{draggable: true});
+        rect.setSymbol({
+            'lineColor' : '#000000',
+            'lineWidth' : 2,
+            'lineDasharray' : null,//线形
+            'lineOpacity' : 1,
+            'polygon-fill' : '#ff00ff',
+            'polygonFill' : 'rgb(255, 255, 0)',
+            'polygonOpacity' : 0.8
+        });
+        this.layer.addGeometry(rect);
+        return this;
+    },
+
+    _addSector:function() {
+        var sector = new maptalks.Sector([121.48004301315352, 31.224302914814704], 300, 50, 90,{draggable: true});
+        sector.setSymbol({
+            'lineColor' : '#000000',
+            'lineWidth' : 2,
+            'lineDasharray' : null,//线形
+            'lineOpacity' : 1,
+            'polygon-fill' : '#ff00ff',
+            'polygonFill' : 'rgb(255, 255, 0)',
+            'polygonOpacity' : 0.8
+        });
+        this.layer.addGeometry(sector);
         return this;
     }
 

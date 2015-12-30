@@ -39,7 +39,8 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
         var strokeAndFill = this.strokeAndFill;
         this._prepareContext(ctx);
         Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'],strokeAndFill['fill'], resources);
-        var lineOpacity = strokeAndFill['stroke']['stroke-opacity'];
+        var lineOpacity = strokeAndFill['stroke']['stroke-opacity'],
+            fillOpacity = strokeAndFill['fill']['fill-opacity'];
         var j;
 
         var width = style['markerWidth'],
@@ -62,8 +63,7 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
                     vectorArray[j]._add(point);
                 }
                 //面类型
-                Z.Canvas.polygon(ctx,vectorArray,null, lineOpacity);
-                Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']['fill-opacity']);
+                Z.Canvas.polygon(ctx,vectorArray,null, lineOpacity, fillOpacity);
             } else if (markerType === 'pin') {
                 point = point.add(new Z.Point(0,-style['markerLineWidth']/2));
                 for (j = vectorArray.length - 1; j >= 0; j--) {
@@ -72,17 +72,15 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
                 var lineCap = ctx.lineCap;
                 ctx.lineCap = 'round'; //set line cap to round to close the pin bottom
                 Z.Canvas.bezierCurve(ctx,vectorArray,null, lineOpacity);
-                Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']['fill-opacity']);
+                Z.Canvas.fillCanvas(ctx, fillOpacity);
                 ctx.lineCap = lineCap;
             } else if (markerType === 'pie') {
                 point = point.add(new Z.Point(0,-style['markerLineWidth']/2));
                 var angle = Math.atan(width/2/height)*180/Math.PI;
-                Z.Canvas.sector(ctx, point, height, 90-angle, 90+angle, lineOpacity);
-                Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']['fill-opacity']);
+                Z.Canvas.sector(ctx, point, height, 90-angle, 90+angle, lineOpacity, fillOpacity);
             } else {
                 //ellipse default
-                Z.Canvas.ellipse(ctx, point, new Z.Size(width/2,height/2), lineOpacity);
-                Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']['fill-opacity']);
+                Z.Canvas.ellipse(ctx, point, new Z.Size(width/2,height/2), lineOpacity, fillOpacity);
             }
         }
 

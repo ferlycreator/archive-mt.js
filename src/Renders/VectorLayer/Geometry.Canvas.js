@@ -9,7 +9,7 @@ if (Z.Browser.canvas) {
             var size = this._getRenderSize();
             return {
                 "fn" : Z.Canvas.ellipse,
-                "context" : [pt, size, this.getSymbol()['lineOpacity']]
+                "context" : [pt, size]
             };
         }
     };
@@ -25,7 +25,7 @@ if (Z.Browser.canvas) {
             var size = this._getRenderSize();
             return {
                 "fn" : Z.Canvas.rectangle,
-                "context" : [pt, size, this.getSymbol()['lineOpacity']]
+                "context" : [pt, size]
             };
         }
     });
@@ -38,7 +38,7 @@ if (Z.Browser.canvas) {
             var size = this._getRenderSize();
             return {
                 "fn" : Z.Canvas.sector,
-                "context" : [pt, size['width'], this.getStartAngle(), this.getEndAngle(), this.getSymbol()['lineOpacity']]
+                "context" : [pt, size['width'], this.getStartAngle(), this.getEndAngle()]
             };
         }
 
@@ -65,8 +65,7 @@ if (Z.Browser.canvas) {
                 var angle = Math.atan2(point.x - prePoint.x, prePoint.y - point.y);
                 var matrix = new Z.Matrix().translate(point.x, point.y).rotate(angle);
                 var ptsToDraw = matrix.applyToArray(pts);
-                Z.Canvas.polygon(ctx, ptsToDraw);
-                Z.Canvas.fillCanvas(ctx, opacity);
+                Z.Canvas.polygon(ctx, ptsToDraw, null, opacity, opacity);
         },
 
         _getRenderCanvasResources:function() {
@@ -100,7 +99,7 @@ if (Z.Browser.canvas) {
             return {
                 "fn" : fn,
                 //TODO dasharray可能不从本身的symbol来
-                "context" : [points,this.getSymbol()['lineDasharray'], this.getSymbol()['lineOpacity']]
+                "context" : [points,this.getSymbol()['lineDasharray']]
             };
         }
     });
@@ -111,7 +110,7 @@ if (Z.Browser.canvas) {
             var points = this._transformToViewPoint(prjVertexes);
             return {
                 "fn" : Z.Canvas.polygon,
-                "context" : [points,this.getSymbol()['lineDasharray'], this.getSymbol()['lineOpacity']]
+                "context" : [points,this.getSymbol()['lineDasharray']]
             };
         }
     });
