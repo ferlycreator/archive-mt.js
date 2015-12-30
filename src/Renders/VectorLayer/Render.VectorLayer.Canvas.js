@@ -207,7 +207,6 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         }
         if (this._layer.isEmpty()) {
             this.renderImmediate();
-            this._layer.fire('layerloaded');
             return;
         }
         var resourceUrls = [];
@@ -307,7 +306,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
                 return;
             }
             var ext = geo._getPainter().getPixelExtent();
-            if (!ext || !ext.isIntersect(fullExtent)) {
+            if (!ext || !ext.intersects(fullExtent)) {
                 return;
             }
             counter++;

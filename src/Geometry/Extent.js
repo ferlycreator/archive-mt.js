@@ -147,7 +147,7 @@ Z.Extent.prototype={
      * @param  {maptalks.Extent}  ext2 比较的extent
      * @return {Boolean} true：表明两个extent相交
      */
-    isIntersect:function(ext2) {
+    intersects:function(ext2) {
         var rxmin = Math.max(this['xmin'], ext2['xmin']);
         var rymin = Math.max(this['ymin'], ext2['ymin']);
         var rxmax = Math.min(this['xmax'], ext2['xmax']);

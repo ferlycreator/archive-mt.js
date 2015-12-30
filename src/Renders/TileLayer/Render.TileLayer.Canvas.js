@@ -87,7 +87,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
                     this._drawTile(tile['viewPoint'], cached);
                     this._tileRended[tileId] = cached;
             } else {
-                if (this._canvasFullExtent.isIntersect(new Z.Extent(tile['viewPoint'], tile['viewPoint'].add(new Z.Point(tileSize['width'], tileSize['height']))))) {
+                if (this._canvasFullExtent.intersects(new Z.Extent(tile['viewPoint'], tile['viewPoint'].add(new Z.Point(tileSize['width'], tileSize['height']))))) {
                     this._tileToLoadCounter++;
                     this._tileQueue[tileId+"@"+tile['viewPoint'].toString()] = tile;
                 }
@@ -209,7 +209,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
 
         var tileSize = this._layer._getTileSize();
         var viewExtent = this.getMap()._getViewExtent();
-        if (viewExtent.isIntersect(new Z.Extent(point, point.add(new Z.Point(tileSize['width'], tileSize['height']))))) {
+        if (viewExtent.intersects(new Z.Extent(point, point.add(new Z.Point(tileSize['width'], tileSize['height']))))) {
             this._requestMapToRend();
         }
         if (this._tileToLoadCounter === 0) {

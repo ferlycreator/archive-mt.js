@@ -48,15 +48,11 @@ Z.Canvas = {
                     var imgUrl = Z.Util.extractCssUrl(strokeColor);
                     var imageTexture = resources.getImage(imgUrl);
                     if (imageTexture) {
-                        var  patternCanvas = this.createCanvas(strokeWidth,strokeWidth);
-                        var patternCtx = patternCanvas.getContext('2d');
-                        patternCtx.drawImage(imageTexture,0,0,strokeWidth,strokeWidth);
-                        //image texture may be undefined when map is requested to render before resources are loaded.
-                        ctx.strokeStyle = ctx.createPattern(patternCanvas, 'repeat');
                         strokeSymbol['stroke-dasharray'] = [];
+                        ctx.strokeStyle = ctx.createPattern(imageTexture, 'repeat');
                     }
                  } else {
-                    ctx.strokeStyle = this.getRgba(strokeColor,1);
+                    ctx.strokeStyle = Z.Canvas.getRgba(strokeColor,1);
                  }
              }
              //低版本ie不支持该属性
@@ -124,13 +120,6 @@ Z.Canvas = {
         // ctx['maptalks-img-smoothing-disabled'] = false;
     },
 
-    /*disableImageSmoothing:function(ctx) {
-
-        ctx.mozImageSmoothingEnabled = false;
-        ctx.webkitImageSmoothingEnabled = false;
-        ctx.msImageSmoothingEnabled = false;
-        ctx.imageSmoothingEnabled = false;
-    },*/
     image:function(ctx, pt, img, width, height) {
         pt = pt.round();
         var x=pt.x,y=pt.y;
@@ -198,8 +187,16 @@ Z.Canvas = {
         ctx.globalAlpha = alpha;
     },
 
-    _path:function(ctx, points, lineDashArray) {
-
+    _path:function(ctx, points, lineDashArray, lineOpacity) {
+        function fillWithPattern(p1, p2) {
+            var dx = p1.x - p2.x;
+            var dy = p1.y - p2.y;
+            ctx.save();
+            ctx.translate(p1.x, p1.y-ctx.lineWidth/2);
+            ctx.rotate(Math.atan2(dy,dx));
+            Z.Canvas._stroke(ctx, lineOpacity);
+            ctx.restore();
+        }
         function drawDashLine(startPoint, endPoint, dashArray) {
           //https://davidowens.wordpress.com/2010/09/07/html-5-canvas-and-dashed-lines/
           //
@@ -249,6 +246,7 @@ Z.Canvas = {
         if (!Z.Util.isArrayHasData(points)) {return;}
 
         var isDashed = Z.Util.isArrayHasData(lineDashArray);
+        var isPatternLine = !Z.Util.isString(ctx.strokeStyle);
         for (var i=0, len=points.length; i<len;i++) {
             var point = points[i].round();
             if (!isDashed || ctx.setLineDash) {//ie9以上浏览器
@@ -257,13 +255,19 @@ Z.Canvas = {
                 } else {
                     ctx.lineTo(point.x,point.y);
                 }
+                if (isPatternLine && i > 0) {
+                    var prePoint = points[i-1].round();
+                    fillWithPattern(prePoint, point);
+                    ctx.beginPath();
+                    ctx.moveTo(point.x,point.y);
+                }
             } else {
                 if (isDashed) {
                     if(i === len-1) {
                         break;
                     }
                     var nextPoint = points[i+1].round();
-                    drawDashLine(point, nextPoint, lineDashArray);
+                    drawDashLine(point, nextPoint, lineDashArray, isPatternLine);
 
                 }
             }
@@ -272,17 +276,16 @@ Z.Canvas = {
 
     path:function(ctx, points, lineDashArray, lineOpacity) {
         ctx.beginPath();
-        Z.Canvas._path(ctx,points,lineDashArray);
+        Z.Canvas._path(ctx,points,lineDashArray, lineOpacity);
         Z.Canvas._stroke(ctx, lineOpacity);
     },
 
-    polygon:function(ctx, points, lineDashArray, lineOpacity) {
-        ctx.beginPath();
-        Z.Canvas._path(ctx,points,lineDashArray);
-        ctx.closePath();
-        Z.Canvas._stroke(ctx, lineOpacity);
+    polygon:function(ctx, points, lineDashArray, lineOpacity, fillOpacity) {
+        var isPatternLine = !Z.Util.isString(ctx.strokeStyle);
+        var fillFirst = (Z.Util.isArrayHasData(lineDashArray) && !ctx.setLineDash) || isPatternLine;
         //因为canvas只填充moveto,lineto,lineto的空间, 而dashline的moveto不再构成封闭空间, 所以重新绘制图形轮廓用于填充
-        if (Z.Util.isArrayHasData(lineDashArray) && !ctx.setLineDash) {
+        if (fillFirst) {
+            ctx.save();
             ctx.beginPath();
             ctx.strokeStyle = 'rgba(255,255,255,0)';
             for (var j = points.length - 1; j >= 0; j--) {
@@ -295,9 +298,16 @@ Z.Canvas = {
             }
             ctx.closePath();
             Z.Canvas._stroke(ctx, lineOpacity);
+            Z.Canvas.fillCanvas(ctx, fillOpacity);
+            ctx.restore();
         }
-
-
+        ctx.beginPath();
+        Z.Canvas._path(ctx,points,lineDashArray, lineOpacity);
+        ctx.closePath();
+        Z.Canvas._stroke(ctx, lineOpacity);
+        if (!fillFirst) {
+            Z.Canvas.fillCanvas(ctx, fillOpacity);
+        }
     },
 
     bezierCurve:function(ctx, points, lineDashArray, lineOpacity) {
@@ -322,7 +332,7 @@ Z.Canvas = {
     },
 
     //各种图形的绘制方法
-    ellipse:function (ctx, pt, size, lineOpacity) {
+    ellipse:function (ctx, pt, size, lineOpacity, fillOpacity) {
         //TODO canvas scale后会产生错误?
         function bezierEllipse( x, y, a, b)
         {
@@ -348,18 +358,19 @@ Z.Canvas = {
         } else {
             bezierEllipse(pt.x,pt.y,size["width"],size["height"]);
         }
-
+        Z.Canvas.fillCanvas(ctx, fillOpacity);
     },
 
-    rectangle:function(ctx, pt, size, lineOpacity) {
+    rectangle:function(ctx, pt, size, lineOpacity, fillOpacity) {
         pt = pt.round();
         ctx.beginPath();
         ctx.rect(pt.x, pt.y,
             Z.Util.round(size['width']),Z.Util.round(size['height']));
         Z.Canvas._stroke(ctx, lineOpacity);
+        Z.Canvas.fillCanvas(ctx, fillOpacity);
     },
 
-    sector:function(ctx, pt, size, startAngle, endAngle, lineOpacity) {
+    sector:function(ctx, pt, size, startAngle, endAngle, lineOpacity, fillOpacity) {
         function sector(ctx, x, y, radius, startAngle, endAngle) {
             var rad = Math.PI / 180;
             var sDeg = rad*-endAngle;
@@ -391,5 +402,6 @@ Z.Canvas = {
         }
         pt = pt.round();
         sector(ctx,pt.x,pt.y,size,startAngle,endAngle);
+        Z.Canvas.fillCanvas(ctx, fillOpacity);
     }
 };

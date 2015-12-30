@@ -6,12 +6,16 @@ Z.Map.include({
      * @expose
      */
     snap:function(options) {
-        var extent = options['extent'],
-            zoom = options['zoom'];
-        var format = options['format'];
-        if (!format) {
-            format = 'png';
+        if (!options) {
+            options = {
+                "extent"    : this.getExtent(),
+                "zoom"      : this.getZoom(),
+                "format"    : "png"
+            };
         }
+        var extent = options['extent'] || this.getExtent(),
+            zoom = options['zoom']  || this.getZoom(),
+            format = options['format'] || "png";
         //optional host and port, if need another snap server to perform snapping.
         var host = options['host'];
         var url;
@@ -23,13 +27,9 @@ Z.Map.include({
             var prefixPort = prefixUrl.getPort();
             url = 'http://'+ prefixHost + ':' + prefixPort + '/snapservice/';
         }
-        var profile = this.toJSON(options['profile']);
-        if (extent) {
-            profile.options['extent'] = extent;
-        }
-        if (!Z.Util.isNil(zoom)) {
-            profile.options['zoom'] = zoom;
-        }
+        var profile = this.toJSON(Z.Util.extend({}, options['profile'], {'clipExtent':extent}));
+        profile.options['extent'] = extent;
+        profile.options['zoom'] = zoom;
 
         var snapConfig = {
             "format" : format,

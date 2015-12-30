@@ -242,11 +242,13 @@ CanvasData = {
          //设置面样式
         var polygonSymbol = {
             // 'lineColor' : '#0000ff',
-            'linePatternFile': 'url("https://mdn.mozillademos.org/files/222/Canvas_createpattern.png")',
+            // 'linePatternFile': 'url("https://mdn.mozillademos.org/files/222/Canvas_createpattern.png")',
+            'linePatternFile': 'url("car.png")',
             // 'linePatternFile': 'url("pattern.png")',
-            'lineWidth' : 20,
+            'lineWidth' : 12,
             'lineDasharray' : null,//线形
-            'lineOpacity' : 0.6,
+            'lineOpacity' : 1,
+            'lineDasharray' : [20,10,5,5,5,10],
             'polygon-fill' : '#ff00ff',
             'polygonFill' : 'rgb(255, 0, 255)',
             'polygonOpacity' : 0.8
