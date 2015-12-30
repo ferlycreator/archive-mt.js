@@ -24,6 +24,12 @@ Z.Point=function(x,y) {
 };
 
 Z.Point.prototype={
+    _abs:function() {
+        this.x = Math.abs(this.x);
+        this.y = Math.abs(this.y);
+        return this;
+    },
+
     copy:function() {
         return new Z.Point(this.x, this.y);
     },
