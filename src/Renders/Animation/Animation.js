@@ -35,10 +35,14 @@ Z.animation = {
                     Z.animation.animate(animation, framer, listener, context);
                 },frame.state['startTime']-now);
             } else {
-                if (context) {
-                    listener.call(context,frame);
-                } else {
-                    listener(frame);
+                if (listener) {
+                    setTimeout(function() {
+                        if (context) {
+                            listener.call(context,frame);
+                        } else {
+                            listener(frame);
+                        }
+                    },1);
                 }
             }
         }
