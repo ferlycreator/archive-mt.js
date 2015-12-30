@@ -22,9 +22,16 @@ Z.Layer.include({
 
         if (this instanceof Z.OverlayLayer) {
             if (Z.Util.isNil(options['geometries']) || options['geometries']) {
+                var clipExtent;
+                if (options['clipExtent']) {
+                    clipExtent = new Z.Extent(options['clipExtent']);
+                }
                 var geoJSONs = [];
                 var geometries = this.getGeometries();
                 for (var i = 0, len=geometries.length; i < len; i++) {
+                    if (clipExtent && !clipExtent.intersects(geometries[i].getExtent())) {
+                        continue;
+                    }
                     geoJSONs.push(geometries[i].toJSON(options['geometries']));
                 }
                 profile['geometries'] = geoJSONs;
@@ -81,16 +88,30 @@ Z.Map.include({
         profile['options'] = this.config();
         profile["options"]["center"] = this.getCenter();
         profile["options"]["zoom"] = this.getZoom();
+
         var baseTileLayer = this.getBaseTileLayer();
         profile['baseTileLayer'] = baseTileLayer.toJSON(options['baseTileLayer']);
         if (!Z.Util.isNil(options['baseTileLayer']) && !options['baseTileLayer']) {
             profile['baseTileLayer']['options']['visible'] = false;
         }
+
+        var extraLayerOptions = {};
+        if (options['clipExtent']) {
+            //if clipExtent is set, only geometries intersecting with extent will be exported.
+            //clipExtent's value can be an extent or true (map's current extent)
+            if (options['clipExtent'] === true)  {
+                extraLayerOptions['clipExtent'] = this.getExtent();
+            } else {
+                extraLayerOptions['clipExtent'] =options['clipExtent'];
+            }
+        }
+
         if (Z.Util.isNil(options['layers']) || options['layers'] === true) {
             var layers = this.getLayers();
             var layersJSON = [];
             for (var i = 0, len=layers.length; i < len; i++) {
-                layersJSON.push(layers[i].toJSON(options['layers']));
+                var options = Z.Util.extend({},options['layers'],extraLayerOptions);
+                layersJSON.push(layers[i].toJSON(options));
             }
             profile["layers"] = layersJSON;
         } else if (Z.Util.isArrayHasData(options['layers'])) {
@@ -99,7 +120,8 @@ Z.Map.include({
             for (var i = 0; i < layers.length; i++) {
                 var exportOption = layers[i];
                 var layer = this.getLayer(exportOption['id']);
-                layersJSON.push(layer.toJSON(exportOption['options']));
+                var options = Z.Util.extend({},exportOption['options'],extraLayerOptions);
+                layersJSON.push(layer.toJSON(options));
             }
             profile["layers"] = layersJSON;
         }
