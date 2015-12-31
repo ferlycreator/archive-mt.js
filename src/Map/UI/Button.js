@@ -32,41 +32,42 @@ Z['Button'] = Z.Button = Z.Class.extend({
     },
 
     _createDom : function(options) {
-        if(options['type'] === 'button') {
-            return this._createButtonDom(options);
-        } else if(options['type'] === 'html') {
-            return this._createHtmlDom(options);
-        } else if(options['type'] === 'menu') {
-            return this._createMenuDom(options);
-        }
+        return this._createMenuDom(options);
     },
 
-     _createButtonDom : function(options) {
-        var _buttonDom = Z.DomUtil.createEl('button');
-        Z.DomUtil.on(_buttonDom, 'click dblclick contextmenu', Z.DomUtil.stopPropagation);
-        Z.DomUtil.addClass(_buttonDom, 'maptalks-control-button');
-        _buttonDom.appendChild(this._createIconDom(options));
+    _createMenuDom : function(options, tag) {
+        var _menuDom = Z.DomUtil.createEl('span');
+        if(tag) {
+            _menuDom = Z.DomUtil.createEl(tag);
+        }
+        var width = Z.Util.getValueOrDefault(options['width'],16);
+        var height = Z.Util.getValueOrDefault(options['height'],16);
+        _menuDom.style.cssText='text-align:center;display:-moz-inline-box;display:inline-block;width:'+width+'px;height:'+height+'px;';
+        _menuDom.style.cssText
+        Z.DomUtil.on(_menuDom, 'click dblclick contextmenu', Z.DomUtil.stopPropagation);
+        Z.DomUtil.addClass(_menuDom, 'maptalks-control-button');
+        _menuDom.appendChild(this._createIconDom(options));
         if(options['click']) {
-            Z.DomUtil.on(_buttonDom, 'click', options['click'], this);
+            Z.DomUtil.on(_menuDom, 'click', options['click'], this);
         }
         if(options['mouseover']) {
-            Z.DomUtil.on(_buttonDom, 'mouseover', options['mouseover'], this);
+            Z.DomUtil.on(_menuDom, 'mouseover', options['mouseover'], this);
         } else {
-            Z.DomUtil.on(_buttonDom, 'mouseover', function() {
-                Z.DomUtil.removeClass(_buttonDom, 'maptalks-control-button');
-                Z.DomUtil.addClass(_buttonDom, 'maptalks-control-button-hover');
+            Z.DomUtil.on(_menuDom, 'mouseover', function() {
+                Z.DomUtil.removeClass(_menuDom, 'maptalks-control-button');
+                Z.DomUtil.addClass(_menuDom, 'maptalks-control-button-hover');
             }, this);
         }
         if(options['mouseout']) {
-            Z.DomUtil.on(_buttonDom, 'mouseout', options['mouseout'], this);
+            Z.DomUtil.on(_menuDom, 'mouseout', options['mouseout'], this);
         } else {
-            Z.DomUtil.on(_buttonDom, 'mouseout', function() {
-                Z.DomUtil.removeClass(_buttonDom, 'maptalks-control-button-hover');
-                Z.DomUtil.addClass(_buttonDom, 'maptalks-control-button');
+            Z.DomUtil.on(_menuDom, 'mouseout', function() {
+                Z.DomUtil.removeClass(_menuDom, 'maptalks-control-button-hover');
+                Z.DomUtil.addClass(_menuDom, 'maptalks-control-button');
             }, this);
         }
-        _buttonDom = this._createDropMenu(_buttonDom, options, 'li');
-        return _buttonDom;
+        _menuDom = this._createDropMenu(_menuDom, options, tag);
+        return _menuDom;
     },
 
     _createDropMenu: function(_parentDom, options, tag) {
@@ -116,57 +117,15 @@ Z['Button'] = Z.Button = Z.Class.extend({
         return _parentDom;
     },
 
-    _createHtmlDom : function(options) {
-        var _htmlDom = Z.DomUtil.createEl('span');
-        Z.DomUtil.on(_htmlDom, 'click dblclick contextmenu', Z.DomUtil.stopPropagation);
-        _htmlDom.appendChild(options['item']);
-        return _htmlDom;
-    },
-
-    _createMenuDom : function(options, tag) {
-        var _menuDom = Z.DomUtil.createEl('span');
-        if(tag) {
-            _menuDom = Z.DomUtil.createEl(tag);
-        }
-        Z.DomUtil.on(_menuDom, 'click dblclick contextmenu', Z.DomUtil.stopPropagation);
-        Z.DomUtil.addClass(_menuDom, 'maptalks-control-button');
-        _menuDom.appendChild(this._createIconDom(options));
-        if(options['click']) {
-            Z.DomUtil.on(_menuDom, 'click', options['click'], this);
-        }
-        if(options['mouseover']) {
-            Z.DomUtil.on(_menuDom, 'mouseover', options['mouseover'], this);
-        } else {
-            Z.DomUtil.on(_menuDom, 'mouseover', function() {
-                Z.DomUtil.removeClass(_menuDom, 'maptalks-control-button');
-                Z.DomUtil.addClass(_menuDom, 'maptalks-control-button-hover');
-            }, this);
-        }
-        if(options['mouseout']) {
-            Z.DomUtil.on(_menuDom, 'mouseout', options['mouseout'], this);
-        } else {
-            Z.DomUtil.on(_menuDom, 'mouseout', function() {
-                Z.DomUtil.removeClass(_menuDom, 'maptalks-control-button-hover');
-                Z.DomUtil.addClass(_menuDom, 'maptalks-control-button');
-            }, this);
-        }
-        _menuDom = this._createDropMenu(_menuDom, options, tag);
-        return _menuDom;
-    },
-
     _createIconDom : function(options) {
         var _spanDom = Z.DomUtil.createEl('span');
         var icon = options['icon'];
-        var iconWidth = Z.Util.getValueOrDefault(options['iconWidth'],16);
-        var iconHeight = Z.Util.getValueOrDefault(options['iconHeight'],16);
         var content = options['item'];
         var html = options['html'];
         if(icon) {
             var _imgDom = Z.DomUtil.createEl('img');
             _imgDom.src=icon;
             _imgDom.border=0;
-            _imgDom.width=iconWidth;
-            _imgDom.height=iconHeight;
             _spanDom.appendChild(_imgDom);
             if(content) {
                 if(html) {

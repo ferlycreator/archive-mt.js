@@ -19,19 +19,19 @@
     cursor: pointer;
     background-color: #ffffff;
     border: 0px;
-    border-right: 1px solid #ecedef;
-    color: #6490C4;
+    padding: 5px;
     font-size: 16px;
     white-space: nowrap;
+    text-align: center;
 }
 
 .maptalks-control-button-hover {
     position: relative;
     cursor: pointer;
-    //background-color: #ffffff;
+    background-color: #F3F3FA;
+    padding: 5px;
     border: 0px;
-    border: 1px solid #6490C4;
-    //color: #ffffff;
     font-size: 16px;
     white-space: nowrap;
+    text-align: center;
 }
