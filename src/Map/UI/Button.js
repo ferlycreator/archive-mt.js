@@ -42,7 +42,12 @@ Z['Button'] = Z.Button = Z.Class.extend({
         }
         var width = Z.Util.getValueOrDefault(options['width'],16);
         var height = Z.Util.getValueOrDefault(options['height'],16);
-        _menuDom.style.cssText='text-align:center;display:-moz-inline-box;display:inline-block;width:'+width+'px;height:'+height+'px;';
+        var vertical = Z.Util.getValueOrDefault(options['vertical'],false);
+        var block = 'inline-block';
+        if(vertical) {
+            block = 'block';
+        }
+        _menuDom.style.cssText='text-align:center;display:-moz-inline-box;display:'+block+';width:'+width+'px;height:'+height+'px;';
         _menuDom.style.cssText
         Z.DomUtil.on(_menuDom, 'click dblclick contextmenu', Z.DomUtil.stopPropagation);
         Z.DomUtil.addClass(_menuDom, 'maptalks-control-button');
@@ -71,17 +76,22 @@ Z['Button'] = Z.Button = Z.Class.extend({
     },
 
     _createDropMenu: function(_parentDom, options, tag) {
+        var vertical = Z.Util.getValueOrDefault(options['vertical'],false);
+        var block = 'inline-block';
+        if(vertical) {
+            block = 'block';
+        }
         function addMenuDropEvent(dropdownMenu, trigger, tag) {
             if(trigger === 'click') {
                 Z.DomUtil.on(_parentDom, 'click', function() {
-                    Z.DomUtil.setStyle(dropdownMenu, 'display: inline-block');
+                    Z.DomUtil.setStyle(dropdownMenu, 'display: '+block);
                 }, this);
                 Z.DomUtil.on(dropdownMenu, 'mouseover', function() {
-                    Z.DomUtil.setStyle(dropdownMenu, 'display: inline-block');
+                    Z.DomUtil.setStyle(dropdownMenu, 'display: '+block);
                 }, this);
             } else {
                 Z.DomUtil.on(_parentDom, 'mouseover', function() {
-                    Z.DomUtil.setStyle(dropdownMenu, 'display: inline-block');
+                    Z.DomUtil.setStyle(dropdownMenu, 'display: '+block);
                 }, this);
             }
 
@@ -107,7 +117,7 @@ Z['Button'] = Z.Button = Z.Class.extend({
             if(items&&items.length>0) {
                 for(var i=0,len=items.length;i<len;i++) {
                     var item = items[i];
-                    item['vertical'] = options['vertical'];
+                    item['vertical'] = Z.Util.getValueOrDefault(item['vertical'],options['vertical']);
                     item['position'] = options['position'];
                     dropdownMenu.appendChild(this._createMenuDom(item, 'li'));
                 }
@@ -123,9 +133,13 @@ Z['Button'] = Z.Button = Z.Class.extend({
         var content = options['item'];
         var html = options['html'];
         if(icon) {
+            var width = Z.Util.getValueOrDefault(options['iconWidth'],options['width']);
+            var height = Z.Util.getValueOrDefault(options['iconHeight'],options['height']);
             var _imgDom = Z.DomUtil.createEl('img');
             _imgDom.src=icon;
             _imgDom.border=0;
+            _imgDom.width=width;
+            _imgDom.height=height;
             _spanDom.appendChild(_imgDom);
             if(content) {
                 if(html) {
@@ -202,5 +216,4 @@ Z['Button'] = Z.Button = Z.Class.extend({
     getDom: function() {
         return this._dom;
     }
-
 });
