@@ -73,14 +73,17 @@ maptalks.GridStyle = maptalks.Class.extend({
         var textColorDom = this._createTextColorDom();
         //边框颜色设置部分
         var borderDom = this._createBorderDom();
+        //文字大小
+        var textSizeInputDom = this._createTextSizeInputDom(12);
         var me = this;
         var panel = new maptalks.Toolbar({
             position : viewPoint,
             vertical : false,
             //工具项
             items: [{
-                type : 'button',
                 icon: 'images/toolbox/trash.png',
+                width: 20,
+                height: 20,
                 click : function(){
                     if(confirm('您确认要删除该表格！')){
                         me._panel.remove();
@@ -88,8 +91,9 @@ maptalks.GridStyle = maptalks.Class.extend({
                     }
                 }
             },{
-                type : 'menu',
                 icon : 'images/toolbox/paint.png',
+                width: 20,
+                height: 20,
                 html: true,
                 trigger: 'click',
                 item: bgDom,
@@ -101,8 +105,9 @@ maptalks.GridStyle = maptalks.Class.extend({
                     me._setGridStyle('markerFill',color);
                 })
             }, {
-               type : 'menu',
                icon: 'images/toolbox/stroke.png',
+               width: 20,
+               height: 20,
                html: true,
                trigger: 'click',
                item: borderDom,
@@ -115,8 +120,9 @@ maptalks.GridStyle = maptalks.Class.extend({
                })
 
            }, {
-                type : 'menu',
                 icon: 'images/toolbox/font.png',
+                width: 20,
+                height: 20,
                 html: true,
                 trigger: 'click',
                 item: textColorDom,
@@ -128,46 +134,65 @@ maptalks.GridStyle = maptalks.Class.extend({
                     me._setGridStyle('textFill',color);
                 })
             },
-             {
-                 type : 'button',
-                 icon: 'images/toolbox/bold.png',
-                 trigger: 'click',
-                 click : function(){
-                     me._setGridStyle('textFont','bolder');
-                 }
+            {
+                width: 20,
+                height: 20,
+                item: textSizeInputDom,
+                children : this._numberItems(function(param){
+                    var target = param.target;
+                    var textSize = parseFloat(target.innerText);
+                    textSizeInputDom.value=textSize;
+                    //改变行与列的背景色
+                    me._setGridStyle('textSize',textSize);
+                })
+
             },
             {
-                 type : 'button',
-                 icon: 'images/toolbox/italic.png',
-                 trigger: 'click',
-                 click : function(){
-                     me._setGridStyle('textFont','italic');
-                 }
+                icon: 'images/toolbox/bold.png',
+                width: 20,
+                height: 20,
+                trigger: 'click',
+                click : function(){
+                    me._setGridStyle('textFont','bolder');
+                }
             },
             {
-                type : 'button',
+                icon: 'images/toolbox/italic.png',
+                width: 20,
+                height: 20,
+                trigger: 'click',
+                click : function(){
+                    me._setGridStyle('textFont','italic');
+                }
+            },
+            {
                 icon: 'images/toolbox/left.png',
+                width: 20,
+                height: 20,
                 trigger: 'click',
                 click : function(){
                     me._setGridStyle('textAlign','left');
                 }
             }, {
-               type : 'button',
-               icon: 'images/toolbox/center.png',
-               trigger: 'click',
+                icon: 'images/toolbox/center.png',
+                width: 20,
+                height: 20,
+                trigger: 'click',
                 click : function(){
-                   me._setGridStyle('textAlign','center');
-               }
+                    me._setGridStyle('textAlign','center');
+                }
             }, {
-               type : 'button',
                icon: 'images/toolbox/right.png',
+               width: 20,
+               height: 20,
                trigger: 'click',
                 click : function(){
                    me._setGridStyle('textAlign','right');
                }
             }, {
-               type : 'button',
                icon: 'images/toolbox/close.png',
+               width: 20,
+               height: 20,
                click : function(){
                    me._panel.hide();
                }
@@ -225,63 +250,93 @@ maptalks.GridStyle = maptalks.Class.extend({
         }
     },
 
+    _numberItems : function (callback) {
+        var fn = callback;
+        var nums =['12','14','16','18','20','30','60'];
+        return this._createNumberMenuItems(nums,fn);
+     },
+
+     _createNumberMenuItems: function(nums,fn) {
+         var items= new Array();
+         for(var i=0,len=nums.length;i<len;i++) {
+             var num = nums[i];
+             var itemObj = {
+                 item: this._createTextSizeSelectDom(num),
+                 width: 20,
+                 height: 20,
+                 html: true,
+                 click : function(param){
+                     fn.call(this, param);
+                 }
+             };
+             items.push(itemObj);
+         }
+         return items;
+     },
+
+    _createTextSizeSelectDom: function(textSize) {
+        var textSizeDom = maptalks.DomUtil.createEl('span');
+        textSizeDom.style.cssText = 'display:-moz-inline-box;display:inline-block;width:25px;height:20px;line-height:20px;color:#000000;font-weight:bolder;font-size:16px;';
+        textSizeDom.innerText = textSize;
+        return textSizeDom;
+    },
+
+     _createTextSizeInputDom: function(textSize) {
+        var textSizeDom = maptalks.DomUtil.createEl('input');
+        textSizeDom.type='text';
+        textSizeDom.maxLength="2";
+        textSizeDom.size=2;
+        textSizeDom.style.cssText = 'display:-moz-inline-box;display:inline-block;width:30px;height:20px;line-height:20px;color:#000000;font-weight:bolder;font-size:16px;';
+        textSizeDom.value = textSize;
+        var me = this;
+        maptalks.DomUtil.on(textSizeDom, 'keyup', function(param){
+            var target = param.target;
+            var newValue = target.value;
+            if(!parseInt(newValue)) {
+                return;
+            }
+            var textSize = parseFloat(newValue);
+            me._symbol['textSize'] = textSize;
+            me._label.setSymbol(me._symbol);
+            textSizeDom.value=textSize;
+        });
+        return textSizeDom;
+     },
+
     _colorItems: function (callback) {
         var fn = callback;
-        return [{//子菜单
-            item: this._createColorSpanDom('#cc0000'),
-            vertical : true,
-            click : function(param){
-                fn.call(this, param);
-            }
-        }, {
-            item: this._createColorSpanDom('#d56a00'),
-            vertical : true,
-            click : function(param){
-                fn.call(this, param);
-            }
-        }, {
-            item: this._createColorSpanDom('#a29900'),
-            vertical : true,
-            click : function(param){
-                fn.call(this, param);
-            }
-        }, {
-            item: this._createColorSpanDom('#55a455'),
-            vertical : true,
-            click : function(param){
-                fn.call(this, param);
-            }
-        }, {
-            item: this._createColorSpanDom('#3398cc'),
-            vertical : true,
-            click : function(param){
-                fn.call(this, param);
-            }
-        }, {
-            item: this._createColorSpanDom('#663399'),
-            vertical : true,
-            click : function(param){
-                fn.call(this, param);
-            }
-        }, {
-            item: this._createColorSpanDom('#cc0066'),
-            vertical : true,
-            click : function(param){
-                fn.call(this, param);
-            }
-        }, {
-            item: this._createColorSpanDom('#333333'),
-            vertical : true,
-            click : function(param){
-                fn.call(this, param);
-            }
-        }];
+        var colors =['#ffffff','#cc0000','#d56a00','#a29900','#55a455','#3398cc',
+        '#663399','#cc0066','#333333',null];
+        return this._createColorMenuItems(colors,fn);
+    },
+
+    _createColorMenuItems: function(colors,fn) {
+        var items= new Array();
+        for(var i=0,len=colors.length;i<len;i++) {
+            var color = colors[i];
+            var itemObj = {
+                item: this._createColorSpanDom(color),
+                width: 20,
+                height: 20,
+                html: true,
+                click : function(param){
+                    fn.call(this, param);
+                }
+            };
+            items.push(itemObj);
+        }
+        return items;
     },
 
     _createColorSpanDom: function(color) {
         var spanDom = maptalks.DomUtil.createEl('span');
-        spanDom.style.cssText = 'display:-moz-inline-box;display:inline-block;text-align:center;width:20px;height:20px;background-color:'+color+';';
-        spanDom.innerText = '　　';
+        if(color) {
+            spanDom.style.cssText = 'display:-moz-inline-box;display:inline-block;width:16px;height:16px;border:1px solid #000000;background-color:'+color+';';
+            spanDom.innerText = '';
+        } else {
+            spanDom.style.cssText = 'display:-moz-inline-box;display:inline-block;text-align:center;line-height:20px;color:red;';
+            spanDom.innerText = '无';
+        }
         return spanDom;
     },
 
@@ -299,7 +354,7 @@ maptalks.GridStyle = maptalks.Class.extend({
 
     _createColorDom: function(color) {
         var colorDom = maptalks.DomUtil.createEl('input');
-        colorDom.style.cssText = 'width:3px;height:15px;background-color:'+color+';border:1px solid #333';
+        colorDom.style.cssText = 'width:5px;height:9px;background-color:'+color+';border:1px solid #333';
         colorDom.readOnly = true;
         return colorDom;
     },
