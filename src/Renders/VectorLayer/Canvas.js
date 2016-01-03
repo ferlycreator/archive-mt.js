@@ -48,8 +48,12 @@ Z.Canvas = {
                     var imgUrl = Z.Util.extractCssUrl(strokeColor);
                     var imageTexture = resources.getImage(imgUrl);
                     if (imageTexture) {
+                        //Todo set image width and height for lineWidth
+                        var  patternCanvas = this.createCanvas(strokeWidth,strokeWidth);
+                        var patternCtx = patternCanvas.getContext('2d');
+                        patternCtx.drawImage(imageTexture,0,0,strokeWidth,strokeWidth);
                         strokeSymbol['stroke-dasharray'] = [];
-                        ctx.strokeStyle = ctx.createPattern(imageTexture, 'repeat');
+                        ctx.strokeStyle = ctx.createPattern(patternCanvas, 'repeat');
                     }
                  } else {
                     ctx.strokeStyle = Z.Canvas.getRgba(strokeColor,1);
