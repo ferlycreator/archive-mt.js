@@ -57,9 +57,41 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
         if (!extent) {
             return null;
         }
-        var min = map._transformToViewPoint(new Z.Coordinate(extent['xmin'],extent['ymin'])),
-            max = map._transformToViewPoint(new Z.Coordinate(extent['xmax'],extent['ymax']));
-        return new Z.Extent(min,max).expand(this.style['lineWidth']/2);
+        // var min = map._transformToViewPoint(new Z.Coordinate(extent['xmin'],extent['ymin'])),
+        //     max = map._transformToViewPoint(new Z.Coordinate(extent['xmax'],extent['ymax']));
+        // return new Z.Extent(min,max).expand(this.style['lineWidth']/2);
+        //
+        // this ugly implementation is to improve perf as we can
+        // it tries to avoid creating instances to save cpu consumption.
+        if (!this._extMin || !this._extMax) {
+            this._extMin = new Z.Coordinate(0,0);
+            this._extMax = new Z.Coordinate(0,0);
+        }
+        this._extMin.x = extent['xmin'];
+        this._extMin.y = extent['ymin'];
+        this._extMax.x = extent['xmax'];
+        this._extMax.y = extent['ymax'];
+        var min = map._transformToViewPoint(this._extMin),
+            max = map._transformToViewPoint(this._extMax);
+        if (!this._pxExtent) {
+            this._pxExtent = new Z.Extent(min, max);
+        } else {
+            if (min.x < max.x) {
+                this._pxExtent['xmin'] = min.x;
+                this._pxExtent['xmax'] = max.x;
+            } else {
+                this._pxExtent['xmax'] = min.x;
+                this._pxExtent['xmin'] = max.x;
+            }
+            if (min.y < max.y) {
+                this._pxExtent['ymin'] = min.y;
+                this._pxExtent['ymax'] = max.y;
+            } else {
+                this._pxExtent['ymax'] = min.y;
+                this._pxExtent['ymin'] = max.y;
+            }
+        }
+        return this._pxExtent._expand(this.style['lineWidth']/2);
     },
 
     _getRenderResources:function() {

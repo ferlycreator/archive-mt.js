@@ -302,24 +302,25 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         var me = this;
         var counter = 0;
         this._shouldEcoTransform = true;
+        var geoViewExt, geoPainter;
         this._layer._eachGeometry(function(geo) {
             //geo的map可能为null,因为绘制为延时方法
             if (!geo || !geo.isVisible() || !geo.getMap() || !geo.getLayer() || (!geo.getLayer().isCanvasRender())) {
                 return;
             }
-            var ext = geo._getPainter().getPixelExtent();
-            if (!ext || !ext.intersects(fullExtent)) {
+            geoPainter = geo._getPainter();
+            geoViewExt = geoPainter.getPixelExtent();
+            if (!geoViewExt || !geoViewExt.intersects(fullExtent)) {
                 return;
             }
             counter++;
-            var painter = geo._getPainter();
-            if (me._shouldEcoTransform && painter.hasPointSymbolizer()) {
+            if (me._shouldEcoTransform && geoPainter.hasPointSymbolizer()) {
                 me._shouldEcoTransform = false;
             }
             if (counter > me._layer.options['thresholdOfEcoTransform']) {
                 me._shouldEcoTransform = true;
             }
-            painter.paint();
+            geoPainter.paint();
         });
         this._canvasFullExtent = fullExtent;
     },
