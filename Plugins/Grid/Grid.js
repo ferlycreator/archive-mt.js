@@ -399,6 +399,7 @@ maptalks.Grid = maptalks.Class.extend({
         //添加行底部拉伸线
         var line = this._createAdjustLineForCol(map,cell);
         var cellWidth = cell.options['boxMinWidth'];
+        if(!cellWidth) cellWidth = this._cellWidth;
         this._width += cellWidth;
         var distance = map.pixelToDistance(cellWidth,0);
         var offset = map.locate(new maptalks.Coordinate(0,0),distance,0);
@@ -826,7 +827,9 @@ maptalks.Grid = maptalks.Class.extend({
                 for(var j=0,len=data.length;j<len;j++) {
                     var item = data[j];
                     var cellOffset = this._getCellOffset(i,insertColNum+j);
-                    var size = new maptalks.Size(this._colWidths[insertColNum+j], this._rowHeights[i]);
+                    var cellWidth = this._colWidths[insertColNum+j];
+                    if(!cellWidth) cellWidth = this._cellWidth;
+                    var size = new maptalks.Size(cellWidth, this._rowHeights[i]);
                     var cell  = this._createCell(item,cellOffset,size);
                     cell._row = i;
                     cell._col = insertColNum+j;
@@ -842,7 +845,9 @@ maptalks.Grid = maptalks.Class.extend({
                 cells.push(colCell);
             } else {
                 var cellOffset = this._getCellOffset(i,insertColNum);
-                var size = new maptalks.Size(this._colWidths[insertColNum], this._rowHeights[i]);
+                var cellWidth = this._colWidths[insertColNum];
+                if(!cellWidth) cellWidth = this._cellWidth;
+                var size = new maptalks.Size(cellWidth, this._rowHeights[i]);
                 var cell = this._createCell(data,cellOffset,size);
                 if(i==0) {
                     cell['header'] = 'new';
@@ -933,11 +938,6 @@ maptalks.Grid = maptalks.Class.extend({
     },
 
     _createRow: function(index, item) {
-        var rowData = this._data[index];
-        if(this.options['header']) {
-            rowData = this._data[index-1];
-        }
-        if(!rowData) return;
         var cols = new Array();
         for(var i=0;i<this._colNum;i++) {
             var col = this._columns[i];
@@ -951,12 +951,18 @@ maptalks.Grid = maptalks.Class.extend({
                 text = index;
             }
             var cellOffset = this._getCellOffset(index, i);
-            var size = new maptalks.Size(this._colWidths[i], this._rowHeights[index]);
+            var rowHeight = this._rowHeights[index];
+            if (!rowHeight) rowHeight = this._cellHeight;
+            var size = new maptalks.Size(this._colWidths[i], rowHeight);
             var cell = this._createCell(text,cellOffset,size);
             cell._row = index;
             cell._col = i;
             cols[i] = cell;
             if(this.options['dynamic']&&this.options['order']&&dataIndex==='maptalks_order') {
+                var rowData = this._data[index];
+                if(this.options['header']) {
+                    rowData = this._data[index-1];
+                }
                 var geometry = rowData[maptalks.Grid.dataindex_geometry];
                 var coordinate = geometry.getCenter();
                 this._addNumberLabelToGeometry(coordinate, cell);
@@ -1063,7 +1069,7 @@ maptalks.Grid = maptalks.Class.extend({
         if(!this._adjustLayer) {
             this._adjustLayer = new maptalks.VectorLayer(adjustLayerId);
             map.addLayer(this._adjustLayer);
-            this._adjustLayer.bringToBack();
+//            this._adjustLayer.bringToBack();
         }
         this._adjustRows = new Array();
         this._adjustCols = new Array();
