@@ -552,7 +552,7 @@ Z['Map']=Z.Map=Z.Class.extend({
                 this._fireEvent('baselayerchangeend');
             }
         }
-        this._baseTileLayer.onOnce('layerloaded',onBaseTileLayerLoaded,this);
+        this._baseTileLayer.once('layerloaded',onBaseTileLayerLoaded,this);
         this._baseTileLayer._loadTileConfig(function() {
             var tileConfig = me._baseTileLayer._getTileConfig();
             var changed = me._setTileConfig(tileConfig);

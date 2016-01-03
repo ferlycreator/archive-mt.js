@@ -163,7 +163,7 @@ Z.Eventable = {
  */
 Z.Eventable.on = Z.Eventable['addEventListener'];
 
-Z.Eventable.onOnce = function(eventTypeArr, handler, context) {
+Z.Eventable.once = function(eventTypeArr, handler, context) {
     var me = this;
     function onceHandler() {
         handler.call(this, arguments);
