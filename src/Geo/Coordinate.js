@@ -4,7 +4,10 @@
  * @author Maptalks Team
  */
 Z['Coordinate'] = Z.Coordinate = function(x, y) {
-    if (Z.Util.isArray(x)) {
+    if (!Z.Util.isNil(x) && !Z.Util.isNil(y)) {
+        this.x = parseFloat(x);
+        this.y = parseFloat(y);
+    } else if (Z.Util.isArray(x)) {
         //数组
         this.x = parseFloat(x[0]);
         this.y = parseFloat(x[1]);
@@ -12,9 +15,6 @@ Z['Coordinate'] = Z.Coordinate = function(x, y) {
         //对象
         this.x = x['x'];
         this.y = x['y'];
-    } else {
-        this.x = parseFloat(x);
-        this.y = parseFloat(y);
     }
     if (this.isNaN()) {
         throw new Error('coordinate is NaN');

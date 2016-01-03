@@ -167,9 +167,11 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
 
     _onMapEvent:function(param) {
         if (param['type'] === '_zoomend') {
-            this._layer._eachGeometry(function(geo) {
-                geo._onZoomEnd();
-            });
+            if (this._layer.isVisible()) {
+                this._layer._eachGeometry(function(geo) {
+                    geo._onZoomEnd();
+                });
+            }
             if (!this._resources) {
                 this.render();
             } else {

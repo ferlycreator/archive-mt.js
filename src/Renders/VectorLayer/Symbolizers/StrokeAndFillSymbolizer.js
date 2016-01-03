@@ -131,7 +131,7 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
         var layer = this.geometry.getLayer();
         delete this._rendResources;
         if (!layer.isCanvasRender()) {
-            this.symbolize.apply(this,layer._getRender().getPaintContext());
+            this.svg.apply(this,layer._getRender().getPaintContext());
         }
     },
 

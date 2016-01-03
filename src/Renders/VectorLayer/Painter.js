@@ -52,8 +52,15 @@ Z.Painter = Z.Class.extend({
         if (!contexts) {
             return;
         }
+        var layer = this.geometry.getLayer();
+        var isCanvas = layer.isCanvasRender();
         for (var i = this.symbolizers.length - 1; i >= 0; i--) {
-            this.symbolizers[i].symbolize.apply(this.symbolizers[i], contexts.concat(this._registerEvents, this));
+            var symbolizer = this.symbolizers[i];
+            if (isCanvas) {
+                symbolizer.canvas.apply(symbolizer, contexts);
+            } else {
+                symbolizer.svg.apply(symbolizer, contexts.concat(this._registerEvents, this));
+            }
         }
         this._painted = true;
     },
