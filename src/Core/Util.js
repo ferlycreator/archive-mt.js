@@ -247,7 +247,7 @@ Z.Util = {
      * @return {Number}     序号
      */
     searchInArray:function(obj, arr) {
-        if (!obj || !Z.Util.isArrayHasData(arr)) {
+        if (Z.Util.isNil(obj) || !Z.Util.isArrayHasData(arr)) {
             return -1;
         }
         for (var i = 0, len=arr.length; i < len; i++) {
@@ -542,6 +542,13 @@ Z.Util = {
         var script = document.createElement( "script" );
         script.text = code;
         document.head.appendChild( script ).parentNode.removeChild( script );
+    },
+
+    globalScript: function( file ) {
+        var script = document.createElement( "script" );
+        script.type = "text/javascript"
+        script.src = file;
+        document.head.appendChild( script );
     },
 
     /**

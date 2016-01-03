@@ -8,17 +8,20 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
     type: 'tile',
 
     options: {
-        'errorTileUrl':Z.prefix+'images/error.png',
-        'urlTemplate':Z.prefix+'images/blank.png',
+        'errorTileUrl':Z.prefix+'images/system/transparent.png',
+        'urlTemplate':Z.prefix+'images/system/transparent.png',
         'subdomains':[''],
         //是否检查
-        'showOnTileLoadComplete':true,
+        // 'showOnTileLoadComplete':true,
         'tileInfo':'web-mercator',
         'repeatWorld' : true,
 
-        'rendWhenPanning':false,
+        //increase opacity gradually when loading tiles
+        'gradualLoading' : true,
+
+        'renderWhenPanning':false,
         //移图时地图的更新间隔, 默认为0即实时更新, -1表示不更新.如果效率较慢则可改为适当的值
-        "rendSpanWhenPanning" : 0
+        "renderSpanWhenPanning" : 0
     },
 
 
@@ -232,7 +235,10 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
     },
 
     clear:function() {
-        this._render.clear();
+        if (this._render) {
+            this._render.clear();
+        }
+
     },
 
     _getTileSize:function() {

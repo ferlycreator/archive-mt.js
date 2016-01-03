@@ -30,6 +30,9 @@ Z.Painter = Z.Class.extend({
                 }
             }
         }
+        if (symbolizers.length === 0) {
+            throw new Error("no symbolizers can be created to draw, check the validity of the symbol.");
+        }
         return symbolizers;
     },
 

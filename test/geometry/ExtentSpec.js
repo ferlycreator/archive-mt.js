@@ -87,11 +87,11 @@ describe('ExtentSpec', function() {
             });
         });
 
-        it('isIntersect',function() {
+        it('intersects',function() {
             var ext1 = new Z.Extent(1,1,4,4);
 
-            expect(ext1.isIntersect(new Z.Extent(2,2,3,3))).to.be.ok();
-            expect(ext1.isIntersect(new Z.Extent(20,20,30,30))).to.not.be.ok();
+            expect(ext1.intersects(new Z.Extent(2,2,3,3))).to.be.ok();
+            expect(ext1.intersects(new Z.Extent(20,20,30,30))).to.not.be.ok();
 
         });
 

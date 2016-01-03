@@ -224,7 +224,7 @@ Z.Editor=Z.Class.extend({
         return outline;
     },
 
-    createHandleInstance:function(coordinate,opts) {
+    _createHandleInstance:function(coordinate,opts) {
         var symbol = {
             "markerType"        : opts['markerType'],
             "markerFill"        : "#ffffff",//"#d0d2d6",
@@ -252,7 +252,7 @@ Z.Editor=Z.Class.extend({
             opts = {};
         }
         var map = this.getMap();
-        var handle = this.createHandleInstance(coordinate,opts);
+        var handle = this._createHandleInstance(coordinate,opts);
         var me = this;
         function onHandleDragstart(param) {
             if (opts.onDown) {
@@ -322,7 +322,7 @@ Z.Editor=Z.Class.extend({
         var fnLocateHandles = function() {
             var pExt = geometry._getPainter().getPixelExtent(),
                 anchors = getResizeAnchors(pExt);
-            for (var i = anchors.length - 1; i >= 0; i--) {
+            for (var i = 0; i <anchors.length; i++) {
                 //ignore anchors in blacklist
                 if (Z.Util.isArrayHasData(blackList)) {
                     var isBlack = false;
@@ -353,6 +353,7 @@ Z.Editor=Z.Class.extend({
                             me._refresh();
                         }
                     });
+                    handle.setId(i);
                     anchorIndexes[i] = resizeHandles.length;
                     resizeHandles.push(handle);
                     me._appendHandler(handle);
@@ -366,6 +367,7 @@ Z.Editor=Z.Class.extend({
         fnLocateHandles();
         //refresh hooks to refresh handles' coordinates
         this._addRefreshHook(fnLocateHandles);
+        return resizeHandles;
     },
 
     /**
@@ -374,6 +376,7 @@ Z.Editor=Z.Class.extend({
     createMarkerEditor:function() {
         var marker = this._shadow,
             geometryToEdit = this._geometry;
+        var map = this.getMap();
         //only image marker and vector marker can be edit now.
         if (marker._canEdit()) {
             var symbol = marker.getSymbol();
@@ -403,14 +406,30 @@ Z.Editor=Z.Class.extend({
                 2, 1, 2
             ];
 
-            this._createResizeHandles(blackList,function(handleViewPoint, i) {
+            var resizeHandles = this._createResizeHandles(null,function(handleViewPoint, i) {
+
+
+                if (blackList && Z.Util.searchInArray(i, blackList) >= 0) {
+                    //need to change marker's coordinates
+                    var newCoordinates = map.viewPointToCoordinate(handleViewPoint);
+                    var coordinates = marker.getCoordinates();
+                    newCoordinates.x = coordinates.x;
+                    marker.setCoordinates(newCoordinates);
+                    geometryToEdit.setCoordinates(newCoordinates);
+                    //coordinates changed, and use mirror handle instead to caculate width and height
+                    var mirrorHandle = resizeHandles[resizeHandles.length-1-i];
+                    var mirrorViewPoint = map.coordinateToViewPoint(mirrorHandle.getCoordinates());
+                    handleViewPoint = mirrorViewPoint;
+                }
+
+                //caculate width and height
                 var viewCenter = marker._getCenterViewPoint().add(dxdy),
                     symbol = marker.getSymbol();
                 var wh = handleViewPoint.substract(viewCenter);
                 //if this marker's anchor is on its bottom, height doesn't need to multiply by 2.
                 var r = blackList?1:2;
                 var width = Math.abs(wh.x)*2,
-                    height = Math.abs(wh.y)*r;
+                height = Math.abs(wh.y)*r;
                 var ability = resizeAbilities[i];
                 if (ability === 0 || ability === 2) {
                     symbol['markerWidth'] = width;
@@ -464,20 +483,54 @@ Z.Editor=Z.Class.extend({
                 2, 1, 2
             ];
         var shadow = this._shadow,
-            ellipse = this._geometry;
+            geometryToEdit = this._geometry;
         var map = this.getMap();
         var me = this;
+        //handles in blackList will change geometry's coordinates
         var blackList = null;
         var isRect = this._geometry instanceof Z.Rectangle;
         if (isRect) {
             //resize handles to hide for rectangle
             blackList = [0,1,2,3,5];
         }
-        this._createResizeHandles(blackList,function(handleViewPoint, i) {
+        var resizeHandles = this._createResizeHandles(null,function(handleViewPoint, i) {
             var viewCenter;
             //ratio of width and height
             var r;
             if (isRect) {
+                //change rectangle's coordinates
+                if (blackList && Z.Util.searchInArray(i, blackList) >= 0) {
+                    var coordinates = shadow.getCoordinates(),
+                        handleCoordinates = map.viewPointToCoordinate(handleViewPoint);
+                    var newCoordinates;
+                    var mirrorHandle = resizeHandles[7];
+                    var mirrorViewPoint = map.coordinateToViewPoint(mirrorHandle.getCoordinates());
+                    switch (i) {
+                        case 0:
+                            newCoordinates = handleCoordinates;
+                            break;
+                        case 1:
+                            newCoordinates = new Z.Coordinate(coordinates.x, handleCoordinates.y);
+                            break;
+                        case 2:
+                            newCoordinates = new Z.Coordinate(coordinates.x, handleCoordinates.y);
+                            mirrorViewPoint = new Z.Point(handleViewPoint.x, mirrorViewPoint.y);
+                            break;
+                        case 3:
+                            newCoordinates = new Z.Coordinate(handleCoordinates.x, coordinates.y);
+                            break;
+                        case 5:
+                            newCoordinates = new Z.Coordinate(handleCoordinates.x, coordinates.y);
+                            mirrorViewPoint = new Z.Point(mirrorViewPoint.x, handleViewPoint.y);
+                            break;
+                        default:
+                            newCoordinates = null;
+                    }
+                    shadow.setCoordinates(newCoordinates);
+                    geometryToEdit.setCoordinates(newCoordinates);
+
+                    handleViewPoint = mirrorViewPoint;
+                }
                 r = 1;
                 viewCenter = map._transformToViewPoint(shadow._getPNw());
             } else {
@@ -490,11 +543,11 @@ Z.Editor=Z.Class.extend({
             var h = map.pixelToDistance(0,Math.abs(wh.y));
             if (ability === 0 || ability === 2) {
                 shadow.setWidth(w*r);
-                ellipse.setWidth(w*r);
+                geometryToEdit.setWidth(w*r);
             }
             if (ability === 1 || ability === 2) {
                 shadow.setHeight(h*r);
-                ellipse.setHeight(h*r);
+                geometryToEdit.setHeight(h*r);
             }
             me.fireEditEvent('shapechanging');
         });

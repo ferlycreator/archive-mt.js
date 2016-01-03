@@ -112,6 +112,7 @@ Z.Eventable = {
                 this.on(eventType, events[i].handler, events[i].context);
             }
         }
+        return this;
     },
 
     _executeListeners:function(eventType, param) {
@@ -168,7 +169,7 @@ Z.Eventable.onOnce = function(eventTypeArr, handler, context) {
         handler.call(this, arguments);
         me.off(eventTypeArr, onceHandler, context);
     }
-    this.on(eventTypeArr, onceHandler, context);
+    return this.on(eventTypeArr, onceHandler, context);
 }
 
 /**

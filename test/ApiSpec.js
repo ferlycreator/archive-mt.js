@@ -2189,11 +2189,11 @@ describe('API', function () {
             // expect(e3.ymax).to.eql(4);
         });
 
-        it('isIntersect', function() {
+        it('intersects', function() {
             var e1 = new Z.Extent(1, 1, 5, 5);
             var e2 = new Z.Extent(2, 2, 6, 6);
 
-            expect(e1.isIntersect(e2)).to.be.ok();
+            expect(e1.intersects(e2)).to.be.ok();
         });
 
         it('contains');

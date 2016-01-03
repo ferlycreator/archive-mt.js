@@ -10,7 +10,8 @@
     <title>MapTalks 测试: geometries</title>
 </head>
 <body scroll="no" onload="initMap();">
-<div id="mapObj" style="width:100%;height:100%;float:right;margin-top:0px"></div>
+<div style="width:10%;height:100%;float:right;margin-top:0px"><a href="javascript:mapObj.snap({'host':'http://localhost:11219', 'success':function(result){console.log(result);}});">截图</a></div>
+<div id="mapObj" style="width:90%;height:100%;float:right;margin-top:0px"></div>
 <script type="text/javascript" >
     var mapObj;
     function initMap(){
@@ -18,7 +19,8 @@
         mapObj = new maptalks.Map('mapObj', //放置mapObj的div id
         {
             center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
-            zoom:   15 //初始缩放级别
+            zoom:   15, //初始缩放级别
+            scaleControl : true
         });
         //设置底图图层
         mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
@@ -46,7 +48,7 @@
             //工具项
             items: [{
                 type : 'button',
-                content: '拾取坐标',
+                item: '拾取坐标',
                 click : function(){
                     mapObj.on('click', function(result){
                         console.log(result.coordinate);
