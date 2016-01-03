@@ -6,7 +6,7 @@ Z.Curve = Z.LineString.extend({
     _getRenderCanvasResources:function() {
         //draw a triangle arrow
 
-        var prjVertexes = this._getPrjPoints();
+        var prjVertexes = this._getPrjCoordinates();
         var points = this._transformToViewPoint(prjVertexes);
 
         var me = this;

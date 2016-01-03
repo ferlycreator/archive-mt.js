@@ -92,13 +92,13 @@ Z.Sector.include(Symboling.Center,{
 //----------------------------------------------------
 Z.Rectangle.include({
     _getRenderPoints:function(placement) {
-        var domNw = this.getMap()._transformToViewPoint(this._getPNw());
+        var domNw = this.getMap()._transformToViewPoint(this._getPrjCoordinates());
         return [domNw];
     },
 
     _getRenderPath:function() {
         var map = this.getMap();
-        var viewPoint = map._transformToViewPoint(this._getPNw());
+        var viewPoint = map._transformToViewPoint(this._getPrjCoordinates());
         var size = this._getRenderSize();
         var start = viewPoint.x+','+viewPoint.y;
         var path = 'M'+start+' L'+(viewPoint.x+size['width'])+','+viewPoint.y+
@@ -150,9 +150,9 @@ Symboling.Poly={
         var map = this.getMap();
         var points;
         if ('vertex' === placement) {
-            points = this._transformToViewPoint(this._getPrjPoints());
+            points = this._transformToViewPoint(this._getPrjCoordinates());
         } else if ('line' === placement) {
-            //var vertexes = this._transformToViewPoint(this._getPrjPoints());
+            //var vertexes = this._transformToViewPoint(this._getPrjCoordinates());
             points = [];
             //TODO 获取线段中心点
         } else {
@@ -166,7 +166,7 @@ Symboling.Poly={
 
 Z.Polyline.include(Symboling.Poly,{
     _getRenderPath:function() {
-        var viewPoint = this._transformToViewPoint(this._getPrjPoints());
+        var viewPoint = this._transformToViewPoint(this._getPrjCoordinates());
         var path = this._viewPointsToSvgPath(viewPoint,false,false);
         if (Z.Browser.vml) {
             //vml图形需要在末尾加个e表示图形结束
@@ -178,7 +178,7 @@ Z.Polyline.include(Symboling.Poly,{
 
 Z.Polygon.include(Symboling.Poly, {
     _getRenderPath:function() {
-        var viewPoints = this._transformToViewPoint(this._getPrjPoints());
+        var viewPoints = this._transformToViewPoint(this._getPrjCoordinates());
         var path = this._viewPointsToSvgPath(viewPoints,true,false);
         var holePathes = this._getHolePathes();
         if (Z.Util.isArrayHasData(holePathes)) {

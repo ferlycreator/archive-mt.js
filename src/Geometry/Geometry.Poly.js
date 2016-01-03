@@ -55,12 +55,12 @@ Z.Geometry.Poly={
         return result;
     },
 
-    _setPrjPoints:function(prjPoints) {
+    _setPrjCoordinates:function(prjPoints) {
         this._prjPoints = prjPoints;
         this._onShapeChanged();
     },
 
-    _getPrjPoints:function() {
+    _getPrjCoordinates:function() {
         if (!this._prjPoints) {
             var points = this._points;
             this._prjPoints = this._projectPoints(points);
@@ -78,7 +78,7 @@ Z.Geometry.Poly={
             return;
         }
         if (this._prjPoints) {
-            this._points = this._unprojectPoints(this._getPrjPoints());
+            this._points = this._unprojectPoints(this._getPrjCoordinates());
         }
         if (this._prjHoles) {
             this.holes = this._unprojectPoints(this._getPrjHoles());

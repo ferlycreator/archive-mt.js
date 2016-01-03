@@ -29,12 +29,12 @@ Z.LineString = Z.Polyline = Z.Vector.extend({
     setCoordinates:function(coordinates) {
         if (!coordinates) {
             this._points = null;
-            this._setPrjPoints(null);
+            this._setPrjCoordinates(null);
             return;
         }
         this._points = Z.GeoJSON.fromGeoJSONCoordinates(coordinates);
         if (this.getMap()) {
-            this._setPrjPoints(this._projectPoints(this._points));
+            this._setPrjCoordinates(this._projectPoints(this._points));
         } else {
             this._onShapeChanged();
         }
@@ -82,7 +82,7 @@ Z.LineString = Z.Polyline = Z.Vector.extend({
         if (!pxExtent.contains(point)) { return false; }
 
         // screen points
-        var points = this._transformToViewPoint(this._getPrjPoints());
+        var points = this._transformToViewPoint(this._getPrjCoordinates());
 
         var i, p1, p2,
             len = points.length;

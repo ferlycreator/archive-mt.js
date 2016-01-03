@@ -6,7 +6,7 @@
 Z.Geometry.Center = {
     //计算Geometry中心点在地图容器中的相对坐标
     _getCenterViewPoint:function() {
-        var pcenter = this._getPCenter();
+        var pcenter = this._getPrjCoordinates();
         if (!pcenter) {return null;}
         var map=this.getMap();
         if (!map) {
@@ -36,7 +36,7 @@ Z.Geometry.Center = {
             return this;
         }
         var projection = this._getProjection();
-        this._setPCenter(projection.project(this._coordinates));
+        this._setPrjCoordinates(projection.project(this._coordinates));
         return this;
     },
 
@@ -50,7 +50,7 @@ Z.Geometry.Center = {
     },
 
 
-    _getPCenter:function() {
+    _getPrjCoordinates:function() {
         var projection = this._getProjection();
         if (!projection) {return null;}
         if (!this._pcenter) {
@@ -62,7 +62,7 @@ Z.Geometry.Center = {
     },
 
     //设置投影坐标
-    _setPCenter:function(pcenter) {
+    _setPrjCoordinates:function(pcenter) {
         this._pcenter=pcenter;
         this._onPositionChanged();
     },

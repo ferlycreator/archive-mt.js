@@ -532,7 +532,7 @@ Z.Editor=Z.Class.extend({
                     handleViewPoint = mirrorViewPoint;
                 }
                 r = 1;
-                viewCenter = map._transformToViewPoint(shadow._getPNw());
+                viewCenter = map._transformToViewPoint(shadow._getPrjCoordinates());
             } else {
                 r = 2;
                 viewCenter = shadow._getCenterViewPoint();
@@ -578,7 +578,7 @@ Z.Editor=Z.Class.extend({
 
         }
         function getVertexPrjCoordinates() {
-            return shadow._getPrjPoints();
+            return shadow._getPrjCoordinates();
         }
         function onVertexAddOrRemove() {
             //restore index property of each handles.
@@ -599,7 +599,7 @@ Z.Editor=Z.Class.extend({
                 return;
             }
             prjCoordinates.splice(index,1);
-            shadow._setPrjPoints(prjCoordinates);
+            shadow._setPrjCoordinates(prjCoordinates);
             shadow._updateCache();
             //remove vertex handle
             Z.Util.removeFromArray(vertexHandles.splice(index,1)[0].remove(),me._editHandles);
@@ -683,7 +683,7 @@ Z.Editor=Z.Class.extend({
                     var pVertex = projection.project(handle.getCoordinates());
                     //update shadow's vertice
                     prjCoordinates.splice(vertexIndex+1,0,pVertex);
-                    shadow._setPrjPoints(prjCoordinates);
+                    shadow._setPrjCoordinates(prjCoordinates);
                     shadow._updateCache();
 
                     var symbol = handle.getSymbol();
