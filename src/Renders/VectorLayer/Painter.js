@@ -52,8 +52,15 @@ Z.Painter = Z.Class.extend({
         if (!contexts) {
             return;
         }
+        var layer = this.geometry.getLayer();
+        var isCanvas = layer.isCanvasRender();
         for (var i = this.symbolizers.length - 1; i >= 0; i--) {
-            this.symbolizers[i].symbolize.apply(this.symbolizers[i], contexts.concat(this._registerEvents, this));
+            var symbolizer = this.symbolizers[i];
+            if (isCanvas) {
+                symbolizer.canvas.apply(symbolizer, contexts);
+            } else {
+                symbolizer.svg.apply(symbolizer, contexts.concat(this._registerEvents, this));
+            }
         }
         this._painted = true;
     },
@@ -102,16 +109,18 @@ Z.Painter = Z.Class.extend({
 
     //需要实现的接口方法
     getPixelExtent:function() {
-        if (!this.pxExtent) {
+        if (!this._viewExtent) {
             if (this.symbolizers) {
-                this.pxExtent = new Z.Extent();
-                for (var i = this.symbolizers.length - 1; i >= 0; i--) {
-                    this.pxExtent = this.pxExtent.combine(this.symbolizers[i].getPixelExtent());
+                var viewExtent = new Z.Extent();
+                var len = this.symbolizers.length - 1;
+                for (var i = len; i >= 0; i--) {
+                    viewExtent._combine(this.symbolizers[i].getPixelExtent());
                 }
-                this.pxExtent._round();
+                viewExtent._round();
+                this._viewExtent = viewExtent;
             }
         }
-        return this.pxExtent;
+        return this._viewExtent;
     },
 
     setZIndex:function(change) {
@@ -223,6 +232,6 @@ Z.Painter = Z.Class.extend({
      * 删除缓存属性
      */
     _removeCache:function() {
-        delete this.pxExtent;
+        delete this._viewExtent;
     }
 });

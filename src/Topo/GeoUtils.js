@@ -74,7 +74,7 @@ Z.GeoUtils={
             if(!this.isPointInRect(point, extent)){
                 return -1;
             }
-            var pts = geo._getPrjPoints();
+            var pts = geo._getPrjCoordinates();
             if (geo instanceof Z.Polygon) {
                 pts = pts.concat([pts[0]]);
             }

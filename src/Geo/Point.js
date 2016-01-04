@@ -66,6 +66,13 @@ Z.Point.prototype={
             offy = this.y  - point.y;
         return new Z.Point(offx, offy);
     },
+
+    _substract: function(point) {
+        this.x -= point.x;
+        this.y -= point.y;
+        return this;
+    },
+
     //破坏性方法
     _multi: function(ratio) {
         this.x *= ratio;

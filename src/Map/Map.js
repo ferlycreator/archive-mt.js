@@ -552,7 +552,7 @@ Z['Map']=Z.Map=Z.Class.extend({
                 this._fireEvent('baselayerchangeend');
             }
         }
-        this._baseTileLayer.onOnce('layerloaded',onBaseTileLayerLoaded,this);
+        this._baseTileLayer.once('layerloaded',onBaseTileLayerLoaded,this);
         this._baseTileLayer._loadTileConfig(function() {
             var tileConfig = me._baseTileLayer._getTileConfig();
             var changed = me._setTileConfig(tileConfig);
@@ -1079,7 +1079,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      */
     _transformToViewPoint:function(pCoordinate) {
         var containerPoint = this._transform(pCoordinate);
-        return this._containerPointToViewPoint(containerPoint);
+        return this.__containerPointToViewPoint(containerPoint);
     },
 
     /**
@@ -1092,6 +1092,15 @@ Z['Map']=Z.Map=Z.Class.extend({
         if (!containerPoint) {return null;}
         var platformOffset = this.offsetPlatform();
         return containerPoint.substract(platformOffset);
+    },
+
+    /**
+     * destructive _containerPointToViewPoint
+     */
+    __containerPointToViewPoint: function(containerPoint) {
+        if (!containerPoint) {return null;}
+        var platformOffset = this.offsetPlatform();
+        return containerPoint._substract(platformOffset);
     },
 
     /**

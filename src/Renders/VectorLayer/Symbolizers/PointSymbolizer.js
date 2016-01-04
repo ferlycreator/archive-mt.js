@@ -21,7 +21,7 @@ Z.PointSymbolizer=Z.Symbolizer.extend({
         this.renderPoints = this.geometry._getRenderPoints(this.getPlacement());
         var layer = this.geometry.getLayer();
         if (!layer.isCanvasRender()) {
-            this.symbolize.apply(this,layer._getRender().getPaintContext());
+            this.svg.apply(this,layer._getRender().getPaintContext());
         }
     },
 

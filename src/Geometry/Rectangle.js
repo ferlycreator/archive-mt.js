@@ -38,7 +38,7 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
             return this;
         }
         var projection = this._getProjection();
-        this._setPNw(projection.project(this._coordinates));
+        this._setPrjCoordinates(projection.project(this._coordinates));
         return this;
     },
 
@@ -109,7 +109,7 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
         return null;
     },
 
-    _getPNw:function() {
+    _getPrjCoordinates:function() {
         var projection = this._getProjection();
         if (!projection) {return null;}
         if (!this._pnw) {
@@ -124,7 +124,7 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
      * 设置投影坐标
      * @param {Coordinate} pnw 投影坐标
      */
-    _setPNw:function(pnw) {
+    _setPrjCoordinates:function(pnw) {
         this._pnw=pnw;
         this._onPositionChanged();
     },

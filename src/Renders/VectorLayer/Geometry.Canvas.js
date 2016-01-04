@@ -4,7 +4,7 @@ if (Z.Browser.canvas) {
     var ellipseReources = {
         _getRenderCanvasResources:function() {
             var map = this.getMap();
-            var pcenter = this._getPCenter();
+            var pcenter = this._getPrjCoordinates();
             var pt = map._transformToViewPoint(pcenter);
             var size = this._getRenderSize();
             return {
@@ -21,7 +21,7 @@ if (Z.Browser.canvas) {
     Z.Rectangle.include({
         _getRenderCanvasResources:function() {
             var map = this.getMap();
-            var pt = map._transformToViewPoint(this._getPNw());
+            var pt = map._transformToViewPoint(this._getPrjCoordinates());
             var size = this._getRenderSize();
             return {
                 "fn" : Z.Canvas.rectangle,
@@ -33,7 +33,7 @@ if (Z.Browser.canvas) {
     Z.Sector.include({
         _getRenderCanvasResources:function() {
             var map = this.getMap();
-            var pcenter = this._getPCenter();
+            var pcenter = this._getPrjCoordinates();
             var pt = map._transformToViewPoint(pcenter);
             var size = this._getRenderSize();
             return {
@@ -71,7 +71,7 @@ if (Z.Browser.canvas) {
         _getRenderCanvasResources:function() {
             //draw a triangle arrow
 
-            var prjVertexes = this._getPrjPoints();
+            var prjVertexes = this._getPrjCoordinates();
             var points = this._transformToViewPoint(prjVertexes);
 
             var me = this;
@@ -106,7 +106,7 @@ if (Z.Browser.canvas) {
 
     Z.Polygon.include({
         _getRenderCanvasResources:function() {
-            var prjVertexes = this._getPrjPoints();
+            var prjVertexes = this._getPrjCoordinates();
             var points = this._transformToViewPoint(prjVertexes);
             return {
                 "fn" : Z.Canvas.polygon,

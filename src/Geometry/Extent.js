@@ -176,16 +176,7 @@ Z.Extent.prototype={
             (y <= this.ymax);
     },
 
-    /**
-     * 合并两个extent
-     * @param  {maptalks.Extent} ext1
-     * @param  {maptalks.Extent} ext2
-     * @returns {maptalks.Extent} 合并后的extent
-     */
-    combine:function(extent) {
-        if (!extent) {
-            return this;
-        }
+    __combine:function(extent) {
         var xmin = this['xmin'];
         if (!Z.Util.isNumber(xmin)) {
             xmin = extent['xmin'];
@@ -221,8 +212,33 @@ Z.Extent.prototype={
                 ymax = extent['ymax'];
             }
         }
+        return [xmin, ymin, xmax, ymax];
+    },
 
-        return new Z.Extent(xmin,ymin,xmax,ymax);
+    _combine:function(extent) {
+        if (!extent) {
+            return this;
+        }
+        var ext = this.__combine(extent);
+        this['xmin'] = ext[0];
+        this['ymin'] = ext[1];
+        this['xmax'] = ext[2];
+        this['ymax'] = ext[3];
+        return this;
+    },
+
+    /**
+     * 合并两个extent
+     * @param  {maptalks.Extent} ext1
+     * @param  {maptalks.Extent} ext2
+     * @returns {maptalks.Extent} 合并后的extent
+     */
+    combine:function(extent) {
+        if (!extent) {
+            return this;
+        }
+        var ext = this.__combine(extent);
+        return new Z.Extent(ext[0],ext[1],ext[2],ext[3]);
     },
 
     /**
@@ -237,6 +253,20 @@ Z.Extent.prototype={
         } else {
             return new Z.Extent(this['xmin']-distance, this['ymin']-distance,this['xmax']+distance,this['ymax']+distance);
         }
+    },
 
+    _expand:function(distance) {
+        if (distance instanceof Z.Size) {
+            this['xmin'] -= distance['width'];
+            this['ymin'] -= distance['height'];
+            this['xmax'] += distance['width'];
+            this['ymax'] += distance['height'];
+        } else {
+            this['xmin'] -= distance;
+            this['ymin'] -= distance;
+            this['xmax'] += distance;
+            this['ymax'] += distance;
+        }
+        return this;
     }
 };

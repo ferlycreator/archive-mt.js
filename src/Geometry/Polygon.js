@@ -239,7 +239,7 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
         if (!pxExtent.contains(point)) { return false; }
 
         // screen points
-        var points = this._transformToViewPoint(this._getPrjPoints());
+        var points = this._transformToViewPoint(this._getPrjCoordinates());
 
         var c = Z.GeoUtils.pointInsidePolygon(point, points);
         if (c) {

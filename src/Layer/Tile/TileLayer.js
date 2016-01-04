@@ -133,7 +133,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         var tileSize = this._getTileSize(),
             zoomLevel = map.getZoom(),
             mapDomOffset = map.offsetPlatform();
-        // console.log(mapDomOffset);
+
         var holderLeft=mapDomOffset.x,
             holderTop = mapDomOffset.y,
             mapWidth = map.width,
