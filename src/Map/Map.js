@@ -266,18 +266,16 @@ Z['Map']=Z.Map=Z.Class.extend({
         if (!center) {
             return this;
         }
+        if (!this._verifyExtent(center)) {
+            return this;
+        }
         center = new Z.Coordinate(center);
         if (!this._tileConfig || !this._loaded) {
             this._center = center;
             return this;
         }
         if (this._loaded && !this._center.equals(center)) {
-            /**
-             * 触发map的movestart事件
-             * @member maptalks.Map
-             * @event movestart
-             */
-            this._fireEvent('movestart');
+            this._onMoveStart();
         }
         var projection = this._getProjection();
         var _pcenter = projection.project(center);
@@ -293,7 +291,17 @@ Z['Map']=Z.Map=Z.Class.extend({
         this.offsetPlatform(offset);
     },
 
-    _onMoving:function(param) {
+    _onMoveStart:function() {
+        this._originCenter = this.getCenter();
+        /**
+         * 触发map的movestart事件
+         * @member maptalks.Map
+         * @event movestart
+         */
+        this._fireEvent('movestart');
+    },
+
+    _onMoving:function() {
         /**
          * 触发map的moving事件
          * @member maptalks.Map
@@ -302,7 +310,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         this._fireEvent('moving');
     },
 
-    _onMoveEnd:function(param) {
+    _onMoveEnd:function() {
         this._enablePanAnimation=true;
         this._isBusy = false;
         /**
@@ -311,6 +319,9 @@ Z['Map']=Z.Map=Z.Class.extend({
          * @event moveend
          */
         this._fireEvent('moveend');
+        if (!this._verifyExtent(this.getCenter())) {
+            this.panTo(this._originCenter);
+        }
     },
 
     /**
@@ -461,6 +472,28 @@ Z['Map']=Z.Map=Z.Class.extend({
             this.setZoom(zoomLevel);
         } else {
             this.setCenter(center);
+        }
+        return this;
+    },
+
+    getMaxExtent:function() {
+        return this.options['maxExtent'];
+    },
+
+    /**
+     * [setMaxExtent description]
+     * @param {Extent} extent map's max extent
+     */
+    setMaxExtent:function(extent) {
+        if (extent) {
+            var maxExt = new Z.Extent(extent)
+            this.options['maxExtent'] = maxExt;
+            var center = this.getCenter();
+            if (!this._verifyExtent(center)) {
+                this.panTo(maxExt.getCenter());
+            }
+        } else {
+            delete this.options['maxExtent'];
         }
         return this;
     },
@@ -979,6 +1012,14 @@ Z['Map']=Z.Map=Z.Class.extend({
 
     _setPrjCenter:function(pcenter) {
         this._prjCenter=pcenter;
+    },
+
+    _verifyExtent:function(center) {
+        var maxExt = this.getMaxExtent();
+        if (!maxExt) {
+            return true;
+        }
+        return maxExt.contains(new Z.Coordinate(center));
     },
 
     /**

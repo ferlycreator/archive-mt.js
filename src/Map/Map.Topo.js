@@ -89,7 +89,7 @@ Z.Map.include({
                     continue;
                 }
                 var pxExtent = !geo._getPainter()? null : geo._getPainter().getPixelExtent();
-                if (!pxExtent || !pxExtent.containsPoint(point)) {
+                if (!pxExtent || !pxExtent.contains(point)) {
                     continue;
                 }
                 if (geo._containsPoint(point) && (!filter || (filter && filter(geo)))) {

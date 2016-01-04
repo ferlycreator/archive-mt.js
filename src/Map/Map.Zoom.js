@@ -25,6 +25,10 @@ Z.Map.include({
         var resolutions=this._tileConfig['resolutions'];
         var endScale = resolutions[this._originZoomLevel]/resolutions[nextZoomLevel];
         var zoomOffset = this._getZoomCenterOffset(nextZoomLevel, transOrigin, startScale);
+        if (zoomOffset.x === 0 && zoomOffset.y === 0) {
+            //center is out of maxExtent
+            transOrigin = new Z.Point(this.width/2,this.height/2);
+        }
         /**
          * 触发map的zoomstart事件
          * @member maptalks.Map
@@ -100,6 +104,12 @@ Z.Map.include({
                     (origin.y-this.height/2)*(zScale-startScale)
                 );
         }
+
+        var newCenter = this.containerPointToCoordinate(new Z.Point(this.width/2+zoomOffset.x, this.height/2+zoomOffset.y));
+        if (!this._verifyExtent(newCenter)) {
+            return new Z.Point(0,0);
+        }
+
         return zoomOffset;
     },
 

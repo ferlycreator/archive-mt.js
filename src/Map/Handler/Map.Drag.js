@@ -46,7 +46,7 @@ Z.Map.Drag = Z.Handler.extend({
         this.startX = this.preX;
         this.startY = this.preY;
         map._isBusy = true;
-        map._fireEvent('movestart');
+        map._onMoveStart();
     },
 
     _onDragging:function(param) {
@@ -59,7 +59,7 @@ Z.Map.Drag = Z.Handler.extend({
         var currentDomOffset = map.offsetPlatform();
         map.offsetPlatform(new Z.Point(nextLeft,nextTop).substract(currentDomOffset));
         map._offsetCenterByPixel(new Z.Point(-nextLeft,-nextTop).add(currentDomOffset));
-        map._onMoving({'target':map});
+        map._onMoving();
     },
 
     _onDragEnd:function(param) {
@@ -77,6 +77,7 @@ Z.Map.Drag = Z.Handler.extend({
         } else {
             map._onMoveEnd();
         }
+
     }
 });
 

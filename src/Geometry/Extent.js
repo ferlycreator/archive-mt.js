@@ -78,11 +78,8 @@ Z.Extent.prototype={
         return this;
     },
 
-    containsPoint:function(point) {
-        if (point.x >= this['xmin'] && point.x <= this['xmax'] && point.y >= this['ymin'] && point.y <= this['ymax']) {
-            return true;
-        }
-        return false;
+    getCenter:function() {
+        return new Z.Coordinate(this['xmin']+this['xmax']/2, this['ymin']+this['ymax']/2);
     },
 
     getSize:function() {
@@ -157,19 +154,15 @@ Z.Extent.prototype={
     },
 
     /**
-    *
-    */
-    /**
      * 判断坐标是否在extent中
      * @param  {maptalks.Coordinate} coordinate
      * @returns {Boolean} true：坐标在extent中
      */
     contains: function(coordinate) {
         var x, y;
-        if (!Z.Util.isNil(coordinate.x)) {
-            x = coordinate.x;
-            y = coordinate.y;
-        }
+        var c = new Z.Coordinate(coordinate);
+        x = c.x;
+        y = c.y;
         return (x >= this.xmin) &&
             (x <= this.xmax) &&
             (y >= this.ymin) &&

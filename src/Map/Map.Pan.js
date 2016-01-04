@@ -20,7 +20,7 @@ Z.Map.include({
      * @expose
      */
     panBy:function(offset, options) {
-        this._fireEvent('movestart');
+        this._onMoveStart;
         if (!options) {
             options = {};
         }
@@ -29,7 +29,7 @@ Z.Map.include({
         } else {
             this.offsetPlatform(offset);
             this._offsetCenterByPixel(new Z.Point(-offset.x,-offset.y));
-            this._fireEvent('moving');
+            this._onMoving();;
             this._onMoveEnd();
         }
         return this;
