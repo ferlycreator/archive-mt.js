@@ -1,18 +1,18 @@
-maptalks.GridStyle = maptalks.Class.extend({
+maptalks.TableStyle = maptalks.Class.extend({
     /**
-     * 打开grid样式设置面板
+     * 打开table样式设置面板
      */
-    addTo: function(grid) {
+    addTo: function(table) {
         this._width = 200;
         this._height = 38;
-        this._grid = grid;
-        this._gridData = grid._grid;
-        this._map = grid._map;
-        this._panel = this._getPanelByKey(grid);
+        this._table = table;
+        this._tableData = table._table;
+        this._map = table._map;
+        this._panel = this._getPanelByKey(table);
         if(!this._panel) {
             this._panel = this._createPanel();
             this._registEvent();
-            this._putPanelInMap(grid, this._panel);
+            this._putPanelInMap(table, this._panel);
         }
         this._panel.show();
     },
@@ -36,7 +36,7 @@ maptalks.GridStyle = maptalks.Class.extend({
         this._map.on('moving zoomend', this._setPanelPosition, this)
                  .on('movestart', this.hide, this);
 
-        this._grid.on('dragging positionchanged', this._setPanelPosition, this)
+        this._table.on('dragging positionchanged', this._setPanelPosition, this)
                    .on('dragstart', this.hide, this)
                    .on('dragend', this.show, this);
     },
@@ -46,7 +46,7 @@ maptalks.GridStyle = maptalks.Class.extend({
         this._map.off('moving zoomend', this._setPanelPosition, this)
                  .off('movestart', this.hide, this);
 
-        this._grid.off('dragging positionchanged', this._setPanelPosition, this)
+        this._table.off('dragging positionchanged', this._setPanelPosition, this)
                     .off('dragstart', this.hide, this)
                     .off('dragend', this.show, this);
     },
@@ -57,7 +57,7 @@ maptalks.GridStyle = maptalks.Class.extend({
 
     _getViewPoint: function() {
         var mapOffset = this._map.offsetPlatform();
-        var coordinate = this._grid.options['position'];
+        var coordinate = this._table.options['position'];
         var position = this._map.coordinateToViewPoint(coordinate)
                             .substract({x:30, y:50})
                             .add(mapOffset);
@@ -87,7 +87,7 @@ maptalks.GridStyle = maptalks.Class.extend({
                 click : function(){
                     if(confirm('您确认要删除该表格！')){
                         me._panel.remove();
-                        me._grid.remove();
+                        me._table.remove();
                     }
                 }
             },{
@@ -102,7 +102,7 @@ maptalks.GridStyle = maptalks.Class.extend({
                     var color = target.style['background-color'];
                     maptalks.DomUtil.setStyle(bgDom, 'background-color:'+color);
                     //改变行与列的背景色
-                    me._setGridStyle('markerFill',color);
+                    me._setTableStyle('markerFill',color);
                 })
             }, {
                icon: 'images/toolbox/stroke.png',
@@ -116,7 +116,7 @@ maptalks.GridStyle = maptalks.Class.extend({
                    var color = target.style['background-color'];
                    maptalks.DomUtil.setStyle(borderDom, 'background-color:'+color);
                    //改变行与列的边框色
-                   me._setGridStyle('markerLineColor',color);
+                   me._setTableStyle('markerLineColor',color);
                })
 
            }, {
@@ -131,7 +131,7 @@ maptalks.GridStyle = maptalks.Class.extend({
                     var color = target.style['background-color'];
                     maptalks.DomUtil.setStyle(textColorDom, 'background-color:'+color);
                     //改变行与列的文字颜色色
-                    me._setGridStyle('textFill',color);
+                    me._setTableStyle('textFill',color);
                 })
             },
             {
@@ -143,7 +143,7 @@ maptalks.GridStyle = maptalks.Class.extend({
                     var textSize = parseFloat(target.innerText);
                     textSizeInputDom.value=textSize;
                     //改变行与列的背景色
-                    me._setGridStyle('textSize',textSize);
+                    me._setTableStyle('textSize',textSize);
                 })
 
             },
@@ -153,7 +153,7 @@ maptalks.GridStyle = maptalks.Class.extend({
                 height: 20,
                 trigger: 'click',
                 click : function(){
-                    me._setGridStyle('textFont','bolder');
+                    me._setTableStyle('textFont','bolder');
                 }
             },
             {
@@ -162,7 +162,7 @@ maptalks.GridStyle = maptalks.Class.extend({
                 height: 20,
                 trigger: 'click',
                 click : function(){
-                    me._setGridStyle('textFont','italic');
+                    me._setTableStyle('textFont','italic');
                 }
             },
             {
@@ -171,7 +171,7 @@ maptalks.GridStyle = maptalks.Class.extend({
                 height: 20,
                 trigger: 'click',
                 click : function(){
-                    me._setGridStyle('textAlign','left');
+                    me._setTableStyle('textAlign','left');
                 }
             }, {
                 icon: 'images/toolbox/center.png',
@@ -179,7 +179,7 @@ maptalks.GridStyle = maptalks.Class.extend({
                 height: 20,
                 trigger: 'click',
                 click : function(){
-                    me._setGridStyle('textAlign','center');
+                    me._setTableStyle('textAlign','center');
                 }
             }, {
                icon: 'images/toolbox/right.png',
@@ -187,7 +187,7 @@ maptalks.GridStyle = maptalks.Class.extend({
                height: 20,
                trigger: 'click',
                 click : function(){
-                   me._setGridStyle('textAlign','right');
+                   me._setTableStyle('textAlign','right');
                }
             }, {
                icon: 'images/toolbox/close.png',
@@ -202,9 +202,9 @@ maptalks.GridStyle = maptalks.Class.extend({
         return panel;
     },
 
-    _setGridStyle: function(attr,value) {
-        var rowNum = this._grid._currentRow;
-        var colNum = this._grid._currentCol;
+    _setTableStyle: function(attr,value) {
+        var rowNum = this._table._currentRow;
+        var colNum = this._table._currentCol;
         if(rowNum>-1) {
             this._setRowStyle(rowNum, attr, value);
         }
@@ -214,7 +214,7 @@ maptalks.GridStyle = maptalks.Class.extend({
     },
 
     _setRowStyle: function(rowNum, attr, value) {
-        var row = this._gridData[rowNum];
+        var row = this._tableData[rowNum];
         for(var j=0,rowLength=row.length;j<rowLength;j++) {
             var cell = row[j];
             var symbol = cell.getSymbol();
@@ -227,8 +227,8 @@ maptalks.GridStyle = maptalks.Class.extend({
     },
 
     _setColStyle: function(colNum, attr, value) {
-        for(var i=0,len=this._gridData.length;i<len;i++) {
-            var row = this._gridData[i];
+        for(var i=0,len=this._tableData.length;i<len;i++) {
+            var row = this._tableData[i];
             var cell = row[colNum];
             var symbol = cell.getSymbol();
             var style = value;

@@ -42,19 +42,19 @@
             //工具项
             items: [{
                 type : 'button',
-                icon: 'images/grid.png',
+                icon: 'images/table.png',
                 click : function(param){
-                     mapObj.on('click', markerGrid);
+                     mapObj.on('click', markerTable);
                 }
             }]
         });
         mapObj.addControl(toolbar);
     }
 
-    function markerGrid(param) {
-        mapObj.off('click', markerGrid);
+    function markerTable(param) {
+        mapObj.off('click', markerTable);
         var coordinate = param.coordinate;
-        var gridOptions = {
+        var tableOptions = {
             'title': 'title',
             'columns': [
                 {header:'Name', dataIndex: 'name', type: 'string'},
@@ -81,14 +81,14 @@
             'draggable': true,
             'editable' : true
         };
-        var grid = new maptalks.Grid(gridOptions);
-        grid.addTo(layer);
+        var table = new maptalks.Table(tableOptions);
+        table.addTo(layer);
     }
 </script>
 <!-- 引擎javascript开发包-->
 <script type="text/javascript" src="../../../maptalks.js"></script>
-<script type="text/javascript" src="../../../Plugins/Grid/Grid.js"></script>
-<script type="text/javascript" src="../../../Plugins/Grid/Grid.Style.js"></script>
+<script type="text/javascript" src="../../../Plugins/Table/Table.js"></script>
+<script type="text/javascript" src="../../../Plugins/Table/Table.Style.js"></script>
 <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
 <!--[if lt IE 9]>
   <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.min.js"></script>

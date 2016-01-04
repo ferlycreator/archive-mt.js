@@ -40,26 +40,28 @@
             vertical : false,
             //工具项
             items: [{
-                type : 'button',
-                content: '商场',
+                item: '商场',
+                width: 25,
+                height: 25,
                 click : function(param){
                      addMall();
                      currentLayerId = 'market';
                 }},{
-                type : 'button',
-                content: '公园',
+                item: '公园',
+                width: 25,
+                height: 25,
                 click : function(param){
                     addPark();
                     currentLayerId = 'park';
                 }},{
-                type : 'button',
-                icon: 'images/grid.png',
+                icon: 'images/table.png',
                 click : function(param){
-                     mapObj.on('click', markerGrid);
+                     mapObj.on('click', markerTable);
                 }
             },{
-                type : 'button',
-                content: '标签',
+                item: '标签',
+                width: 25,
+                height: 25,
                 click : function(param){
                      mapObj.on('click', markerLabel);
                 }
@@ -129,11 +131,11 @@
         return markers;
     }
 
-    function markerGrid(param) {
-        mapObj.off('click', markerGrid);
+    function markerTable(param) {
+        mapObj.off('click', markerTable);
         var coordinate = param.coordinate;
         var data = getData(currentLayerId);
-        var gridOptions = {
+        var tableOptions = {
             'title': 'title',
             'columns': getColumns(currentLayerId),
             'data': data,
@@ -152,8 +154,8 @@
             'editable' : true,
             'dynamic': true
         };
-        var grid = new maptalks.Grid(gridOptions);
-        grid.addTo(layer);
+        var table = new maptalks.Table(tableOptions);
+        table.addTo(layer);
     }
 
     function getColumns(layerId) {
@@ -185,6 +187,7 @@
             for(var key in properties){
                 item[key] = properties[key];
             }
+            item[maptalks.Table.dataindex_geometry] = geometry;
             data.push(item);
         }
         return data;
@@ -246,8 +249,8 @@
 </script>
 <!-- 引擎javascript开发包-->
 <script type="text/javascript" src="../../../maptalks.js"></script>
-<script type="text/javascript" src="../../../Plugins/Grid/Grid.js"></script>
-<script type="text/javascript" src="../../../Plugins/Grid/Grid.Style.js"></script>
+<script type="text/javascript" src="../../../Plugins/Table/Table.js"></script>
+<script type="text/javascript" src="../../../Plugins/Table/Table.Style.js"></script>
 <script type="text/javascript" src="../../../examples/toolbox/label/label_property.js"></script>
 <script type="text/javascript" src="data.js"></script>
 <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
