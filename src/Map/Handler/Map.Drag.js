@@ -69,7 +69,7 @@ Z.Map.Drag = Z.Handler.extend({
         var domOffset = map.offsetPlatform();
         var xSpan =  domOffset.x - this.startLeft;
         var ySpan =  domOffset.y - this.startTop;
-        if (t<280 && Math.abs(ySpan) > 5 && Math.abs(xSpan) > 5) {
+        if (t<280 && Math.abs(ySpan)+Math.abs(xSpan) > 5) {
             map._enablePanAnimation=true;
             var distance = new Z.Point(xSpan*Math.ceil(500/t),ySpan*Math.ceil(500/t)).multi(0.5);
             t = 5*t*(Math.abs(distance.x)+Math.abs(distance.y))/600;
