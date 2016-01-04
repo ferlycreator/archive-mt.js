@@ -44,6 +44,12 @@ Z.Util = {
     },
 
     loadImage:function(img, url) {
+        function errorFired(err) {
+            var onerrorFn = img.onerror;
+            if (onerrorFn) {
+                onerrorFn.call(img);
+            }
+        }
         if (Z.runningInNode) {
             try {
                 //canvas-node的Image对象
@@ -61,27 +67,26 @@ Z.Util = {
                         }
                         loader = this._nodeHttp;
                     }
-
-                        loader.get(url,
-                            function(res) {
-
-                                var data = new Buffer(parseInt(res.headers['content-length'],10));
-                                var pos = 0;
-                                res.on('data', function(chunk) {
-                                  chunk.copy(data, pos);
-                                  pos += chunk.length;
-                                });
-                                res.on('end', function () {
-                                    var onloadFn = img.onload;
-                                    if (onloadFn) {
-                                        img.onload = function() {
-                                            onloadFn.call(img);
-                                        };
-                                    }
-                                    img.src = data;
-                                });
+                    loader.get(url, function(res) {
+                        var data = new Buffer(parseInt(res.headers['content-length'],10));
+                        var pos = 0;
+                        res.on('data', function(chunk) {
+                          chunk.copy(data, pos);
+                          pos += chunk.length;
+                        });
+                        res.on('end', function () {
+                            var onloadFn = img.onload;
+                            if (onloadFn) {
+                                img.onload = function() {
+                                    onloadFn.call(img);
+                                };
                             }
-                        );
+                            img.src = data;
+                        });
+                    }).on('error', function(err) {
+                        console.error(err);
+                        errorFired(err);
+                    });
 
                 } else {
                     //读取本地图片
@@ -90,10 +95,7 @@ Z.Util = {
                     }
                     var data = this._nodeFS.readFile(url,function(err,data) {
                         if (err) {
-                            var onerrorFn = img.onerror;
-                            if (onerrorFn) {
-                                onerrorFn.call(img);
-                            }
+                            errorFired(err);
                         } else {
                             var onloadFn = img.onload;
                             if (onloadFn) {
@@ -108,10 +110,7 @@ Z.Util = {
                     });
                 }
             } catch (error) {
-                var onerrorFn = img.onerror;
-                if (onerrorFn) {
-                    onerrorFn.call(img);
-                }
+                errorFired(error);
             }
         } else {
             img.src=url;
