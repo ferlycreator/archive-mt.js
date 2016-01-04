@@ -1,7 +1,7 @@
-maptalks.Grid = {};
-maptalks.Grid.dataindex_geometry = 'maptalks_geometry';
+maptalks.Table = {};
+maptalks.Table.dataindex_geometry = 'maptalks_geometry';
 
-maptalks.Grid = maptalks.Class.extend({
+maptalks.Table = maptalks.Class.extend({
     includes: [maptalks.Eventable],
 
     /**
@@ -9,12 +9,12 @@ maptalks.Grid = maptalks.Class.extend({
      */
     'exceptionDefs':{
         'en-US':{
-            'NEED_DATA':'You must set data to Gird options.',
-            'NEED_COLUMN':'You must set columns to Gird options.'
+            'NEED_DATA':'You must set data to Table options.',
+            'NEED_COLUMN':'You must set columns to Table options.'
         },
         'zh-CN':{
-            'NEED_DATA':'你必须为Grid指定data。',
-            'NEED_COLUMN':'你必须为Grid指定columns。'
+            'NEED_DATA':'你必须为Table指定data。',
+            'NEED_COLUMN':'你必须为Table指定columns。'
         }
     },
 
@@ -93,7 +93,7 @@ maptalks.Grid = maptalks.Class.extend({
     },
 
     /**
-     * add grid to layer.
+     * add table to layer.
      * @param {maptalks.Layer} layer
      */
     addTo: function (layer) {
@@ -102,8 +102,8 @@ maptalks.Grid = maptalks.Class.extend({
         this._map = this._layer.getMap();
         //init row height and col width
         this._initRowHeightAndColWidth();
-        this._grid = this._createGrid();
-        this._addToLayer(this._grid,true);
+        this._table = this._createTable();
+        this._addToLayer(this._table,true);
         //create adjustment layer
         this._createAdjustLayer(this._map);
         var me=this;
@@ -229,10 +229,10 @@ maptalks.Grid = maptalks.Class.extend({
         //调整之前的数据集
         var end = rowNum+1;
         if(!below) end = rowNum;
-        var startDataset = this._grid.slice(0,end);
-        var lastDataset = this._grid.slice(end);
+        var startDataset = this._table.slice(0,end);
+        var lastDataset = this._table.slice(end);
         this._adjustDatasetForRow(newDataset.length, lastDataset);
-        this._grid = startDataset.concat(newDataset).concat(lastDataset);
+        this._table = startDataset.concat(newDataset).concat(lastDataset);
         this._rowNum +=newDataset.length;
         //延展列调整线
         this._extendColLine();
@@ -255,8 +255,8 @@ maptalks.Grid = maptalks.Class.extend({
 
     _changeRowOrder: function(sourceRowNum, targetRowNum) {
         if(sourceRowNum===targetRowNum) {return;}
-        var sourceRow = this._grid[sourceRowNum];
-        var targetRow = this._grid[targetRowNum];
+        var sourceRow = this._table[sourceRowNum];
+        var targetRow = this._table[targetRowNum];
         var firstSourceCell = sourceRow[0];
         var sourceRowSymbol = firstSourceCell.getSymbol();
         var sourceCellSize = firstSourceCell.getSize();
@@ -286,7 +286,7 @@ maptalks.Grid = maptalks.Class.extend({
                 sourceRow[i].fire('positionchanged',{target:sourceRow[i]});
             }
         }
-        this._grid[targetRowNum]=sourceRow;
+        this._table[targetRowNum]=sourceRow;
         for(var i=0,len=targetRow.length;i<len;i++) {
             var symbol=targetRow[i].getSymbol();
             symbol['markerDy']=targetRowDy;
@@ -298,7 +298,7 @@ maptalks.Grid = maptalks.Class.extend({
                 targetRow[i].fire('positionchanged',{target:targetRow[i]});
             }
         }
-        this._grid[sourceRowNum]=targetRow;
+        this._table[sourceRowNum]=targetRow;
     },
 
     moveCol: function(sourceColNum, direction) {
@@ -317,7 +317,7 @@ maptalks.Grid = maptalks.Class.extend({
 
     _changeColOrder: function(sourceColNum, targetColNum) {
         if(sourceColNum===targetColNum) {return;}
-        var firstRow = this._grid[0];
+        var firstRow = this._table[0];
         var firstSourceCell = firstRow[sourceColNum];
         var firstTargetCell = firstRow[targetColNum];
         var sourceSymbol = firstSourceCell.getSymbol();
@@ -337,8 +337,8 @@ maptalks.Grid = maptalks.Class.extend({
             targetColDx = targetColDx+sourceColWidth;
         }
         //调整列位置
-        for(var i=0,len=this._grid.length;i<len;i++) {
-            var row = this._grid[i];
+        for(var i=0,len=this._table.length;i<len;i++) {
+            var row = this._table[i];
             if(!row) return;
             var sourceCellSymbol = row[sourceColNum].getSymbol();
             sourceCellSymbol['markerDx']=sourceColDx;
@@ -437,11 +437,11 @@ maptalks.Grid = maptalks.Class.extend({
      * @param {Number} rowNum 行号
      */
     removeRow: function(rowNum) {
-        var removeRow = this._grid[rowNum];
+        var removeRow = this._table[rowNum];
         var firstCell = removeRow[0];
         var size = firstCell.getSize();
-        for(var i=rowNum,len=this._grid.length;i<len;i++) {
-            var row = this._grid[i];
+        for(var i=rowNum,len=this._table.length;i<len;i++) {
+            var row = this._table[i];
             if(!row) return;
             if(i===rowNum) {
                 this._removeAdjustLineForRow(row[0]);
@@ -461,7 +461,7 @@ maptalks.Grid = maptalks.Class.extend({
             }
         }
         //移除行数据
-        this._grid.splice(rowNum,1);
+        this._table.splice(rowNum,1);
         //总行数减少
         this._rowNum-=1;
         //延展列调整线
@@ -473,13 +473,13 @@ maptalks.Grid = maptalks.Class.extend({
      * @param {Number} colNum 列号
      */
     removeCol: function(colNum) {
-        var firstRow = this._grid[0];
+        var firstRow = this._table[0];
         var removeCell = firstRow[colNum];
         var removeSize = removeCell.getSize();
         var startPoint = this.options['position'];
         var map = this._adjustLayer.getMap();
-        for(var i=0,len=this._grid.length;i<len;i++) {
-            var row = this._grid[i];
+        for(var i=0,len=this._table.length;i<len;i++) {
+            var row = this._table[i];
             if(!row) return;
             for(var j=colNum,rowLength=row.length;j<rowLength;j++) {
                 var cell = row[j];
@@ -506,7 +506,7 @@ maptalks.Grid = maptalks.Class.extend({
                 }
             }
             //删除列数据
-            this._grid[i].splice(colNum,1);
+            this._table[i].splice(colNum,1);
         }
         this._colWidths.splice(colNum,1);
         this._adjustCols.splice(colNum,1);
@@ -517,16 +517,16 @@ maptalks.Grid = maptalks.Class.extend({
     },
 
     remove: function(){
-        for(var i=0,len=this._grid.length;i<len;i++) {
-            var row = this._grid[i];
+        for(var i=0,len=this._table.length;i<len;i++) {
+            var row = this._table[i];
             if(!row) return;
             for(var j=0,rowLength=row.length;j<rowLength;j++) {
                 row[j].remove();
             }
         }
-        this._gridHandler.remove();
-        this._grid = [];
-        delete this._grid;
+        this._tableHandler.remove();
+        this._table = [];
+        delete this._table;
         //删除行交互线
         for(var i=0,len=this._adjustRows.length;i<len;i++) {
             var line = this._adjustRows[i];
@@ -543,10 +543,10 @@ maptalks.Grid = maptalks.Class.extend({
         delete this._adjustCols;
     },
 
-    _addToLayer: function(grid, init) {
+    _addToLayer: function(table, init) {
         var me = this;
-        for(var i=0,len=grid.length;i<len;i++) {
-            var row = grid[i];
+        for(var i=0,len=table.length;i<len;i++) {
+            var row = table[i];
             if(!row) return;
             for(var j=0,rowNum=row.length;j<rowNum;j++) {
                 var cell = row[j];
@@ -594,7 +594,7 @@ maptalks.Grid = maptalks.Class.extend({
                     {'item': '设置列样式', 'click': function() {
                         me._currentCol = colNum;
                         me._currentRow = -1;
-                        me._setStyleForGrid();
+                        me._setStyleForTable();
                     }},
                     {'item': '删除列', 'click': function() {
                         me.removeCol(colNum);
@@ -602,16 +602,18 @@ maptalks.Grid = maptalks.Class.extend({
                 ]
             };
         } else if(colNum==0) {
-            menuOptions = {
-                'width': 100,
-                'style': 'grey',
-                'items' : [
+            var items = [];
+            if(!this.options['dynamic']){
+                items = items.concat([
                     {'item': '在上面添加行', 'click': function() {
                         me.addRow(rowNum, '空', false);
                     }},
                     {'item': '在下面添加行', 'click': function() {
                         me.addRow(rowNum, '空', true);
-                    }},
+                    }}
+                ]);
+            }
+            items = items.concat([
                     {'item': '上移', 'click': function() {
                         me.moveRow(rowNum, 'up');
                     }},
@@ -621,12 +623,16 @@ maptalks.Grid = maptalks.Class.extend({
                     {'item': '设置行样式', 'click': function() {
                         me._currentRow = rowNum;
                         me._currentCol = -1;
-                        me._setStyleForGrid();
+                        me._setStyleForTable();
                     }},
                     {'item': '删除行', 'click': function() {
                         me.removeRow(rowNum);
                     }}
-                ]
+            ]);
+            menuOptions = {
+                'width': 100,
+                'style': 'grey',
+                'items' : items
             };
         }
         var coordinate = event['coordinate'];
@@ -656,12 +662,12 @@ maptalks.Grid = maptalks.Class.extend({
         this._layer.addGeometry(marker);
         marker.on('dragstart', this._hideAdjustLayer,this);
         marker.on('dragend', this._showAdjustLayer,this);
-        marker.on('dragging',this._dragGrid,this);
-        this._gridHandler = marker;
+        marker.on('dragging',this._dragTable,this);
+        this._tableHandler = marker;
     },
 
-    _setStyleForGrid: function() {
-        var styleEditor = new maptalks.GridStyle();
+    _setStyleForTable: function() {
+        var styleEditor = new maptalks.TableStyle();
         styleEditor.addTo(this);
     },
 
@@ -673,10 +679,10 @@ maptalks.Grid = maptalks.Class.extend({
         this._adjustLayer.show();
     },
 
-    _dragGrid: function(event) {
+    _dragTable: function(event) {
         var dragOffset = event['dragOffset'];
-        for(var i=0,len=this._grid.length;i<len;i++) {
-            var row = this._grid[i];
+        for(var i=0,len=this._table.length;i<len;i++) {
+            var row = this._table[i];
             if(!row) return;
             for(var j=0,rowLength=row.length;j<rowLength;j++) {
                 var cell = row[j];
@@ -787,8 +793,8 @@ maptalks.Grid = maptalks.Class.extend({
             var item = this._initalData[i];
             newValues[i+1] = item[dataIndex];
         }
-        for(var i=1,len=this._grid.length;i<len;i++) {
-            var row = this._grid[i];
+        for(var i=1,len=this._table.length;i<len;i++) {
+            var row = this._table[i];
             if(!row) return;
             var cell = row[colNum];
             cell.setContent(newValues[i]);
@@ -817,7 +823,7 @@ maptalks.Grid = maptalks.Class.extend({
     _createCol: function(insertColNum, data) {
         var startCol = insertColNum;//调整起始列
         if(!data||data.length==0) data = '空';
-        //将列插入grid
+        //将列插入table
         var cells = new Array();
         var insertColLength = 1;
         for(var i=0;i<this._rowNum;i++) {
@@ -867,14 +873,14 @@ maptalks.Grid = maptalks.Class.extend({
                 }
             }
         }
-        for(var i=0,len=this._grid.length;i<len;i++) {
+        for(var i=0,len=this._table.length;i<len;i++) {
             var dataLength = data.length;
             if(dataLength>0) {
                 for(var j=0;j<dataLength;j++){
-                    this._grid[i].splice(insertColNum+j,0,cells[i]);
+                    this._table[i].splice(insertColNum+j,0,cells[i]);
                 }
             } else {
-                this._grid[i].splice(insertColNum,0,cells[i]);
+                this._table[i].splice(insertColNum,0,cells[i]);
             }
         }
         this._colNum+=insertColLength;
@@ -885,8 +891,8 @@ maptalks.Grid = maptalks.Class.extend({
     _adjustDatasetForCol: function(start,insertColLength) {
         var startPoint = this.options['position'];
         var map = this._adjustLayer.getMap();
-        for(var i=0,len=this._grid.length;i<len;i++) {
-            var rowData = this._grid[i];
+        for(var i=0,len=this._table.length;i<len;i++) {
+            var rowData = this._table[i];
             if(!rowData) return;
             for(var j=start+1,rowLength=rowData.length;j<rowLength;j++) {
                 var cell = rowData[j];
@@ -906,7 +912,7 @@ maptalks.Grid = maptalks.Class.extend({
         }
     },
 
-    _createGrid: function() {
+    _createTable: function() {
         var dataset = new Array();
         for(var i=0;i<this._rowNum;i++) {
             if(i==0&&this.options['header']) {
@@ -963,7 +969,7 @@ maptalks.Grid = maptalks.Class.extend({
                 if(this.options['header']) {
                     rowData = this._data[index-1];
                 }
-                var geometry = rowData[maptalks.Grid.dataindex_geometry];
+                var geometry = rowData[maptalks.Table.dataindex_geometry];
                 var coordinate = geometry.getCenter();
                 this._addNumberLabelToGeometry(coordinate, cell);
             }
@@ -973,7 +979,7 @@ maptalks.Grid = maptalks.Class.extend({
 
     _getCellOffset: function(row, col) {
         var dx=0,dy=0;
-        if(this._grid) {
+        if(this._table) {
             for(var i=0;i<row;i++){
                 dy+=this._rowHeights[i];
             }
@@ -1064,18 +1070,18 @@ maptalks.Grid = maptalks.Class.extend({
     },
 
     _createAdjustLayer: function(map) {
-        var adjustLayerId = 'grid_adjustment_layer';
+        var adjustLayerId = 'table_adjustment_layer';
         this._adjustLayer = map.getLayer(adjustLayerId);
         if(!this._adjustLayer) {
             this._adjustLayer = new maptalks.VectorLayer(adjustLayerId);
             map.addLayer(this._adjustLayer);
-//            this._adjustLayer.bringToBack();
+            this._adjustLayer.bringToBack();
         }
         this._adjustRows = new Array();
         this._adjustCols = new Array();
         //add row adjust line
-        for(var i=0,len=this._grid.length;i<len;i++) {
-            var row = this._grid[i];
+        for(var i=0,len=this._table.length;i<len;i++) {
+            var row = this._table[i];
             if(!row) return;
             var cell = row[0];
             var rowLine = this._createAdjustLineForRow(map,cell);
@@ -1084,7 +1090,7 @@ maptalks.Grid = maptalks.Class.extend({
         this._adjustLayer.addGeometry(this._adjustRows);
 
         //add col adjust line
-        var firstRow = this._grid[0];
+        var firstRow = this._table[0];
         for(var i=0;i<this._colNum;i++) {
             var cell = firstRow[i];
             var colLine = this._createAdjustLineForCol(map,cell);
@@ -1132,7 +1138,7 @@ maptalks.Grid = maptalks.Class.extend({
             rowLine.translate(offset);
             me._resizeRow(cell, dragOffset);
             me._translateRowLine(cell, new maptalks.Coordinate(0,dy));
-            //add dy to grid width
+            //add dy to table width
             me._extendColLine();
         });
     },
@@ -1167,7 +1173,7 @@ maptalks.Grid = maptalks.Class.extend({
         var pixel = this._map.distanceToPixel(0,distance);
         var height = pixel['height']*sign;
         for(var i=rowNum;i<this._rowNum;i++) {
-            var row = this._grid[i];
+            var row = this._table[i];
             for(var j=0;j<this._colNum;j++){
                 var cell = row[j];
                 var symbol = cell.getSymbol();
@@ -1222,7 +1228,7 @@ maptalks.Grid = maptalks.Class.extend({
             var width=pixel['x']-(cellDx+cellWidth/2);
             me._width+=width;
             me._resizeCol(cell,width);
-            //add dy to grid width
+            //add dy to table width
             me._extendRowLine();
 
             var dragOffset=event['dragOffset'];
@@ -1234,8 +1240,8 @@ maptalks.Grid = maptalks.Class.extend({
 
     _resizeCol: function(cell,width) {
         var colNum = cell._col;
-        for(var i=0,len=this._grid.length;i<len;i++) {
-            var row = this._grid[i];
+        for(var i=0,len=this._table.length;i<len;i++) {
+            var row = this._table[i];
             if(!row) return;
             for(var j=colNum,rowLength=row.length;j<rowLength;j++) {
                 var cell = row[j];
