@@ -184,6 +184,10 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
         return this.map._panels.mapWrapper;
     },
 
+    toDataURL:function(mimeType) {
+        return this._canvas.toDataURL(mimeType);
+    },
+
     /**
      * initialize container DOM of panels
      */

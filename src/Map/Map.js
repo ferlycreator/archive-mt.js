@@ -760,6 +760,39 @@ Z['Map']=Z.Map=Z.Class.extend({
         this._fireEvent('crschanged');
     },
 
+    toDataURL: function(options) {
+        if (!options) {
+            options = {};
+        }
+        var mimeType = options['mimeType'];
+        if (!mimeType) {
+            mimeType = "image/png";
+        }
+        var download = options['download'];
+        var render = this._getRender();
+        if (render) {
+            var file = options['filename'];
+            if (!file) {
+                file = "export";
+            }
+            var dataURL =  render.toDataURL(mimeType);
+            if (download && dataURL) {
+                var imgURL = dataURL;
+
+                var dlLink = document.createElement('a');
+                dlLink.download = file;
+                dlLink.href = imgURL;
+                dlLink.dataset.downloadurl = [mimeType, dlLink.download, dlLink.href].join(':');
+
+                document.body.appendChild(dlLink);
+                dlLink.click();
+                document.body.removeChild(dlLink);
+            }
+            return dataURL;
+        }
+        return null;
+    },
+
 
 //------------------------------坐标转化函数-----------------------------
     /**

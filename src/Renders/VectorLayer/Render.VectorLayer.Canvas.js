@@ -232,9 +232,13 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         var preResources = this._resources;
         this._resources = new Z.render.vectorlayer.Canvas.Resources();
         var promises = [];
+        var crossOrigin = this._layer.options['crossOrigin'];
         function onPromiseCallback(_url) {
             return function(resolve, reject) {
                         var img = new Image();
+                        if (crossOrigin) {
+                            img['crossOrigin'] = crossOrigin;
+                        }
                         img.onload = function(){
                             me._resources.addResource(_url,this);
                             resolve({});

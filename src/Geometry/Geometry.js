@@ -42,7 +42,8 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     options:{
         'visible'   : true,
         'editable'  : true,
-        'cursor'    : null
+        'cursor'    : null,
+        'crossOrigin' : null
     },
 
     /**
@@ -425,7 +426,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
             if (this.getInfoWindow) {
                 var infowindow = this.getInfoWindow();
                 if (infowindow) {
-                    json['infoWindow'] = infowindow.getOptions();
+                    json['infoWindow'] = infowindow.config();
                 }
             }
         }

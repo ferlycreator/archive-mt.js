@@ -145,7 +145,8 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
             me._tileCache.remove(tileImage[me.propertyOfTileId], this);
             me._clearTileRectAndRequest(this);
         }
-
+        var crossOrigin = this._layer.options['crossOrigin'];
+        var tileSize = this._layer._getTileSize();
         for (var p in this._tileQueue) {
             if (this._tileQueue.hasOwnProperty(p)) {
                 var tileId = p.split('@')[0];
@@ -153,12 +154,17 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
                 delete this._tileQueue[p];
                 if (!this._tileCache[tileId]) {
                     var tileImage = new Image();
+                    tileImage.width = tileSize['width'];
+                    tileImage.height = tileSize['height'];
                     tileImage[this.propertyOfTileId]=tileId;
                     tileImage[this.propertyOfPointOnTile] = tile['viewPoint'];
                     tileImage[this.propertyOfTileZoom] = tile['zoom'];
                     tileImage.onload = onTileLoad;
                     tileImage.onabort = onTileError;
                     tileImage.onerror = onTileError;
+                    if (crossOrigin) {
+                        tileImage.crossOrigin = crossOrigin;
+                    }
                     Z.Util.loadImage(tileImage, tile['url']);
                 } else {
                     this._drawTileAndRequest(this._tileCache[tileId]);
