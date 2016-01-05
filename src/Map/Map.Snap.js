@@ -28,7 +28,7 @@ Z.Map.include({
             url = 'http://'+ prefixHost + ':' + prefixPort + '/snapservice/';
         }
         var profile = this.toJSON(Z.Util.extend({}, options['profile'], {'clipExtent':extent}));
-        profile.options['extent'] = extent;
+        profile['extent'] = extent;
         profile.options['zoom'] = zoom;
 
         var snapConfig = {
