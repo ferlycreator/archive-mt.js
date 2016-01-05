@@ -44,78 +44,125 @@ Z.Util = {
     },
 
     loadImage:function(img, url) {
-        function errorFired(err) {
-            var onerrorFn = img.onerror;
-            if (onerrorFn) {
-                onerrorFn.call(img);
-            }
-        }
         if (Z.runningInNode) {
-            try {
-                //canvas-node的Image对象
-                if (Z.Util.isURL(url)) {
-                    //读取远程图片
-                    var loader;
-                    if (url.indexOf('https://') === 0) {
-                        if (!this._nodeHttps) {
-                            this._nodeHttps = require('https');
-                        }
-                        loader = this._nodeHttps;
-                    } else {
-                        if (!this._nodeHttp) {
-                            this._nodeHttp = require('http');
-                        }
-                        loader = this._nodeHttp;
-                    }
-                    loader.get(url, function(res) {
-                        var data = new Buffer(parseInt(res.headers['content-length'],10));
-                        var pos = 0;
-                        res.on('data', function(chunk) {
-                          chunk.copy(data, pos);
-                          pos += chunk.length;
-                        });
-                        res.on('end', function () {
-                            var onloadFn = img.onload;
-                            if (onloadFn) {
-                                img.onload = function() {
-                                    onloadFn.call(img);
-                                };
-                            }
-                            img.src = data;
-                        });
-                    }).on('error', function(err) {
-                        console.error(err);
-                        errorFired(err);
-                    });
-
-                } else {
-                    //读取本地图片
-                    if (!this._nodeFS) {
-                        this._nodeFS = require('fs');
-                    }
-                    var data = this._nodeFS.readFile(url,function(err,data) {
-                        if (err) {
-                            errorFired(err);
-                        } else {
-                            var onloadFn = img.onload;
-                            if (onloadFn) {
-                                img.onload = function() {
-                                    onloadFn.call(img);
-                                };
-                            }
-
-                            img.src = data;
-                        }
-
-                    });
+            function onError(err) {
+                console.error(err);
+                var onerrorFn = img.onerror;
+                if (onerrorFn) {
+                    onerrorFn.call(img);
                 }
+            }
+            function onLoadComplete(err, data) {
+                if (err) {
+                    onError(err);
+                    return;
+                }
+                var onloadFn = img.onload;
+                if (onloadFn) {
+                    img.onload = function() {
+                        onloadFn.call(img);
+                    };
+                }
+                img.src = data;
+            }
+            try {
+                var segs = url.split('.');
+                if (segs[segs.length-1] === 'svg') {
+                    Z.Util._convertSVG2PNG(url, onLoadComplete);
+                } else {
+                    //canvas-node的Image对象
+                    if (Z.Util.isURL(url)) {
+                        this._loadRemoteImage(img, url, onLoadComplete);
+                    } else {
+                        this._loadLocalImage(img,url, onLoadComplete);
+                    }
+                }
+
             } catch (error) {
-                errorFired(error);
+                 onError(error);
             }
         } else {
             img.src=url;
         }
         return this;
+    },
+
+    _loadRemoteImage:function(img, url, onComplete) {
+        //读取远程图片
+        var loader;
+        if (url.indexOf('https://') === 0) {
+            if (!this._nodeHttps) {
+                this._nodeHttps = require('https');
+            }
+            loader = this._nodeHttps;
+        } else {
+            if (!this._nodeHttp) {
+                this._nodeHttp = require('http');
+            }
+            loader = this._nodeHttp;
+        }
+        loader.get(url, function(res) {
+            var data = new Buffer(parseInt(res.headers['content-length'],10));
+            var pos = 0;
+            res.on('data', function(chunk) {
+              chunk.copy(data, pos);
+              pos += chunk.length;
+            });
+            res.on('end', function () {
+                onComplete(null, data);
+            });
+        }).on('error', onComplete);
+    },
+
+    _loadLocalImage:function(img, url, onComplete) {
+        //读取本地图片
+        if (!this._nodeFS) {
+            this._nodeFS = require('fs');
+        }
+        var data = this._nodeFS.readFile(url,onComplete);
+    },
+
+    _convertSVG2PNG:function(url, complete) {
+        if (!this._svg2png) {
+            //use svg2png to convert svg to png.
+            //https://github.com/domenic/svg2png
+            this._svg2png = require('svg2png');
+        }
+        if (!this._nodeFS) {
+            this._nodeFS = require('fs');
+        }
+        if (!this._svgFileCache) {
+            //cache 10 svg files.
+            this._svgFileCache = new Z.TileLayer.TileCache(10);
+        }
+        if (url.indexOf('http://') < 0 && url.indexOf('https://') < 0) {
+            //is a local file
+            url = ('file:///'+url).replace(/\\/g,'/');
+        }
+        var cache = this._svgFileCache;
+        if (cache.get(url)) {
+            complete(null, cache.get(url))
+            return;
+        }
+        var fs = this._nodeFS;
+        var now = new Date().getTime();
+        var tmpPngFile = (__dirname+'/tmp-'+now+'.png').replace(/\\/g,'/');
+        this._svg2png(url, tmpPngFile, function (error) {
+            if (error) {
+                fs.unlink(tmpPngFile);
+                complete(error);
+                return;
+            }
+            fs.readFile(tmpPngFile, function(err,data) {
+                fs.unlink(tmpPngFile);
+                if (err) {
+                    complete(err);
+                    return;
+                }
+                cache.add(url, data);
+                complete(null, data);
+            });
+        });
     },
 
     fixPNG:function(img) {
