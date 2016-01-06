@@ -379,29 +379,11 @@ Z.Canvas = {
             var rad = Math.PI / 180;
             var sDeg = rad*-endAngle;
             var eDeg = rad*-startAngle;
-            // 初始保存
-            ctx.save();
-            // 位移到目标点
-            ctx.translate(x, y);
             ctx.beginPath();
-            // 画出圆弧
-            ctx.arc(0,0,radius,sDeg, eDeg);
-            // 再次保存以备旋转
-            ctx.save();
-            // 旋转至起始角度
-            ctx.rotate(eDeg);
-            // 移动到终点，准备连接终点与圆心
-            //ctx.moveTo(radius,0);
-            // 连接到圆心
-            ctx.lineTo(0,0);
-            // 还原
-            ctx.restore();
-            // 旋转至起点角度
-            ctx.rotate(sDeg);
-            // 从圆心连接到起点
-            ctx.lineTo(radius,0);
+            ctx.moveTo(x,y);
+            ctx.lineTo(Z.Util.round(x-radius*Math.cos(sDeg)), Z.Util.round(y+radius*Math.sin(sDeg)));
+            ctx.arc(x, y, radius,sDeg, eDeg);
             ctx.closePath();
-            ctx.restore();
             Z.Canvas._stroke(ctx, lineOpacity);
         }
         pt = pt.round();
