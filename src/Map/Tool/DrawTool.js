@@ -50,7 +50,8 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
      * @expose
      */
     enable:function() {
-        if (!this.map) {return;}
+        if (!this.map || this._enabled) {return;}
+        this._enabled = true;
         this.map.config({'draggable': false});
         this.drawToolLayer = this._getDrawLayer();
         this._clearEvents();
@@ -76,6 +77,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
      * @expose
      */
     disable:function() {
+        this._enabled = false;
         if (!this.map) {return;}
         this.map.config({'draggable': true});
         this._endDraw();

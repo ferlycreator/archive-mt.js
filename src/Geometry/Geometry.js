@@ -513,8 +513,6 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (this.getLayer()) {
             throw new Error(this.exceptions['DUPLICATE_LAYER']);
         }
-        //更新缓存
-        this._updateCache();
         this._layer = layer;
         //如果投影发生改变,则清除掉所有的投影坐标属性
         this._clearProjection();
