@@ -232,15 +232,17 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
      */
     _onRemove:function() {
         this.clear();
-        // this._clearExecutors();
-        this._render.remove();
+        if (this._render) {
+            // this._clearExecutors();
+            this._render.remove();
+            delete this._render;
+        }
     },
 
     clear:function() {
         if (this._render) {
             this._render.clear();
         }
-
     },
 
     _getTileSize:function() {

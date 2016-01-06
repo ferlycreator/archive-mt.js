@@ -69,6 +69,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
     setId:function(id) {
         //TODO 设置id可能造成map无法找到layer
         this._id = id;
+        return this;
     },
 
     /**
@@ -126,6 +127,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
         }
         var min = bottomLayer.getZIndex();
         this.setZIndex(min-1);
+        return this;
     },
 
     /**
@@ -178,10 +180,10 @@ Z['Layer']=Z.Layer=Z.Class.extend({
     },
 
     remove:function() {
-        if (this._getRender()) {
-            this._getRender().remove();
+        if (this.map) {
+            this.map.removeLayer(this);
         }
-        delete this._render;
+        return this;
     },
 
      _prepare:function(map,zIndex) {

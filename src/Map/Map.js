@@ -707,8 +707,10 @@ Z['Map']=Z.Map=Z.Class.extend({
         if (!map || map != this) {
             return this;
         }
-        layer.remove();
         this._removeLayer(layer, this._layers);
+        if (this._loaded) {
+            layer._onRemove();
+        }
         var id = layer.getId();
         delete this._layerCache[id];
         return this;
@@ -722,9 +724,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         var index = Z.Util.searchInArray(layer,layerList);
         if (index > -1) {
             layerList.splice(index, 1);
-            if (this._loaded) {
-                layer._onRemove();
-            }
+
             for (var j=0, jlen=layerList.length;j<jlen;j++) {
                 if (layerList[j].setZIndex) {
                     layerList[j].setZIndex(j);
