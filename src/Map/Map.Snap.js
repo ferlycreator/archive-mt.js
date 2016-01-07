@@ -16,6 +16,7 @@ Z.Map.include({
         var extent = options['extent'] || this.getExtent(),
             zoom = options['zoom']  || this.getZoom(),
             format = options['format'] || "png";
+
         //optional host and port, if need another snap server to perform snapping.
         var host = options['host'];
         var url;
@@ -30,7 +31,24 @@ Z.Map.include({
         var profile = this.toJSON(Z.Util.extend({}, options['profile'], {'clipExtent':extent}));
         profile['extent'] = extent;
         profile.options['zoom'] = zoom;
+        var center = extent.getCenter();
+        profile.options['center'] = center;
 
+        //extra geometries to add to the snapping.
+        var extraGeometries = options['extraGeometries'];
+        if (extraGeometries) {
+            var extraLayer = new Z.VectorLayer(Z.Util.GUID());
+            if (Z.Util.isArrayHasData(extraGeometries)) {
+                for (var i = 0, len=extraGeometries.length; i < len; i++) {
+                    extraLayer.addGeometry(extraGeometries[i].copy());
+                }
+            } else {
+                extraLayer.addGeometry(extraGeometries.copy())
+            }
+
+            var extraLayerJSON = extraLayer.toJSON();
+            profile['layers'].push(extraLayerJSON);
+        }
         var snapConfig = {
             "format" : format,
             "profile" : profile

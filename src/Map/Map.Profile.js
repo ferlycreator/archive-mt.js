@@ -102,7 +102,7 @@ Z.Map.include({
             if (options['clipExtent'] === true)  {
                 extraLayerOptions['clipExtent'] = this.getExtent();
             } else {
-                extraLayerOptions['clipExtent'] =options['clipExtent'];
+                extraLayerOptions['clipExtent'] = options['clipExtent'];
             }
         }
 
@@ -124,6 +124,8 @@ Z.Map.include({
                 layersJSON.push(layer.toJSON(options));
             }
             profile["layers"] = layersJSON;
+        } else {
+            profile["layers"] = [];
         }
         return profile;
     }

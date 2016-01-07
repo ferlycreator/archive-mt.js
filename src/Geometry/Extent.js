@@ -79,7 +79,7 @@ Z.Extent.prototype={
     },
 
     getCenter:function() {
-        return new Z.Coordinate(this['xmin']+this['xmax']/2, this['ymin']+this['ymax']/2);
+        return new Z.Coordinate((this['xmin']+this['xmax'])/2, (this['ymin']+this['ymax'])/2);
     },
 
     getSize:function() {
