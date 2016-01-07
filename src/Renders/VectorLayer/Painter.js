@@ -49,7 +49,7 @@ Z.Painter = Z.Class.extend({
      */
     paint:function() {
         var contexts = this.geometry.getLayer()._getRender().getPaintContext();
-        if (!contexts) {
+        if (!contexts || !this.symbolizers) {
             return;
         }
         var layer = this.geometry.getLayer();

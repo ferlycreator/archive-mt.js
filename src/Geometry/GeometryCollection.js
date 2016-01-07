@@ -185,6 +185,18 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         }
     },
 
+    _removePainter:function() {
+        if (this._painter) {
+            this._painter.remove();
+        }
+        delete this._painter;
+        for (var i=0, len=this._geometries.length;i<len;i++) {
+            if (this._geometries[i]) {
+                this._geometries[i]._removePainter();
+            }
+        }
+    },
+
     _computeCenter:function(projection) {
         if (!projection || this.isEmpty()) {
             return null;
