@@ -11,8 +11,8 @@ Z.TileUtil={
             for (var i=0, len=resolutions.length;i<len;i++) {
                 var xcac = projection.unproject({x:pBase.x+resolutions[i],y:pBase.y}); //加上resolution后反算真经纬度
                 var ycac = projection.unproject(pBase.x,pBase.y+resolutions[i]); //加上resolution后反算真经纬度
-                var xscale = projection.getGeodesicLength(base,xcac);
-                var yScale = projection.getGeodesicLength(base,ycac);
+                var xscale = projection.measureLength(base,xcac);
+                var yScale = projection.measureLength(base,ycac);
                 xscales.push(xscale);
                 yscales.push(yScale);
             }

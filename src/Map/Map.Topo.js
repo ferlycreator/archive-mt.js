@@ -15,7 +15,7 @@ Z.Map.include({
         var p1 = new Z.Coordinate(lonlat1),
             p2 = new Z.Coordinate(lonlat2);
         if (p1.equals(p2)) {return 0;}
-        return this._getProjection().getGeodesicLength(p1, p2);
+        return this._getProjection().measureLength(p1, p2);
     },
 
     /**

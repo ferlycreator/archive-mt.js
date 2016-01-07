@@ -81,7 +81,7 @@ Z.Geometry.Poly={
             this._points = this._unprojectPoints(this._getPrjCoordinates());
         }
         if (this._prjHoles) {
-            this.holes = this._unprojectPoints(this._getPrjHoles());
+            this._holes = this._unprojectPoints(this._getPrjHoles());
         }
     },
 
@@ -108,7 +108,7 @@ Z.Geometry.Poly={
         return null;
     },
 
-    _computeCenter:function(projection) {
+    _computeCenter:function() {
         var ring=this._points;
         if (!Z.Util.isArrayHasData(ring)) {
             return null;
@@ -128,7 +128,7 @@ Z.Geometry.Poly={
         return new Z.Coordinate(sumx/counter, sumy/counter);
     },
 
-    _computeExtent:function(projection) {
+    _computeExtent:function() {
         var ring = this._points;
         if (!Z.Util.isArrayHasData(ring)) {
             return null;
@@ -137,16 +137,15 @@ Z.Geometry.Poly={
         if (this.hasHoles && this.hasHoles()) {
             rings = rings.concat(this.getHoles());
         }
-        return this._computePointsExtent(rings,projection);
+        return this._computePointsExtent(rings);
     },
 
      /**
       * 计算坐标数组的extent, 数组内的元素可以坐标或者坐标数组,坐标为经纬度坐标,而不是投影坐标
       * @param  {Point[]} points  points数组
-      * @param  {Projection[]} projection  projection对象
       * @returns {Extent} {@link maptalks.Extent}
       */
-    _computePointsExtent: function(points, projection) {
+    _computePointsExtent: function(points) {
         var result=null;
         var ext;
         for ( var i = 0, len = points.length; i < len; i++) {

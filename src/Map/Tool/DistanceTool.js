@@ -175,7 +175,7 @@ Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
         var lenSum = 0;
         var projection = this.map._getProjection();
         for (var i=1,len=rings.length;i<len;i++){
-            lenSum += projection.getGeodesicLength(rings[i-1],rings[i]);
+            lenSum += projection.measureLength(rings[i-1],rings[i]);
         }
         return parseFloat(lenSum);
     },

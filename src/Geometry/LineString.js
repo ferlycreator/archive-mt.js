@@ -53,16 +53,16 @@ Z.LineString = Z.Polyline = Z.Vector.extend({
         return this._points;
     },
 
-    _computeGeodesicLength:function(projection) {
+    _computeGeodesicLength:function(measurer) {
         var coordinates = this.getCoordinates();
         var result = 0;
         for (var i=0, len=coordinates.length;i<len-1;i++) {
-            result += projection.getGeodesicLength(coordinates[i],coordinates[i+1]);
+            result += measurer.measureLength(coordinates[i],coordinates[i+1]);
         }
         return result;
     },
 
-    _computeGeodesicArea:function(projection) {
+    _computeGeodesicArea:function(measurer) {
         return 0;
     },
 

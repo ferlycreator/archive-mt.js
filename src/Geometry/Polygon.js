@@ -48,7 +48,7 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
     setCoordinates:function(coordinates) {
         if (!coordinates) {
             this._points = null;
-            this.holes = null;
+            this._holes = null;
             this._projectRings();
             return;
         }
@@ -66,7 +66,7 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
                     }
                     holes.push(this._trimRing(rings[i]));
                 }
-                this.holes = holes;
+                this._holes = holes;
             }
         }
 
@@ -83,10 +83,10 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
         if (!this._points) {
             return [];
         }
-        if (Z.Util.isArrayHasData(this.holes)) {
+        if (Z.Util.isArrayHasData(this._holes)) {
             var holes = [];
-            for (var i = 0; i < this.holes.length; i++) {
-                holes.push(this._closeRing(this.holes[i]));
+            for (var i = 0; i < this._holes.length; i++) {
+                holes.push(this._closeRing(this._holes[i]));
             }
             return [this._closeRing(this._points)].concat(holes);
         }
@@ -99,7 +99,7 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
             return;
         }
         this._prjPoints = this._projectPoints(this._points);
-        this._prjHoles = this._projectPoints(this.holes);
+        this._prjHoles = this._projectPoints(this._holes);
         this._onShapeChanged();
     },
 
@@ -174,7 +174,7 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
      */
     getHoles:function() {
         if (this.hasHoles()) {
-            return this.holes;
+            return this._holes;
         }
         return null;
     },
@@ -185,8 +185,8 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
      * @expose
      */
     hasHoles:function() {
-        if (Z.Util.isArrayHasData(this.holes)) {
-            if (Z.Util.isArrayHasData(this.holes[0])) {
+        if (Z.Util.isArrayHasData(this._holes)) {
+            if (Z.Util.isArrayHasData(this._holes[0])) {
                 return true;
             }
         }
@@ -196,12 +196,12 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
 
     _getPrjHoles:function() {
         if (!this._prjHoles) {
-            this._prjHoles = this._projectPoints(this.holes);
+            this._prjHoles = this._projectPoints(this._holes);
         }
         return this._prjHoles;
     },
 
-    _computeGeodesicLength:function(projection) {
+    _computeGeodesicLength:function(measurer) {
         var rings = this.getCoordinates();
         if (!Z.Util.isArrayHasData(rings)) {
             return 0;
@@ -210,21 +210,21 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
         for (var i=0, len=rings.length;i<len;i++) {
             var ring = rings[i];
             for (var j=0, jlen=ring.length-1;j<jlen;j++) {
-                result += projection.getGeodesicLength(ring[j],ring[j+1]);
+                result += measurer.measureLength(ring[j],ring[j+1]);
             }
         }
         return result;
     },
 
-    _computeGeodesicArea:function(projection) {
+    _computeGeodesicArea:function(measurer) {
         var rings = this.getCoordinates();
         if (!Z.Util.isArrayHasData(rings)) {
             return 0;
         }
-        var result = projection.getGeodesicArea(rings[0]);
+        var result = measurer.measureArea(rings[0]);
         //holes
         for (var i=1, len=rings.length;i<len;i++) {
-            result -= projection.getGeodesicArea(rings[i]);
+            result -= measurer.measureArea(rings[i]);
 
         }
         return result;

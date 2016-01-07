@@ -52,3 +52,5 @@ Z.Projection.Util={
         return Z.Util.eachInArray(points, this, this.unproject);
     }
 };
+
+Z.ProjectionInstance={};

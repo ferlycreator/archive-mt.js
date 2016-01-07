@@ -1216,11 +1216,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     distanceToPixel: function(xDist,yDist) {
-        var tileConfig = this._getTileConfig();
-        if (!tileConfig) {
-            return null;
-        }
-        var projection = tileConfig.getProjectionInstance();
+        var projection = this._getProjection();
         if (!projection) {
             return null;
         }
@@ -1242,11 +1238,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     pixelToDistance:function(width, height) {
-        var tileConfig = this._getTileConfig();
-        if (!tileConfig) {
-            return null;
-        }
-        var projection = tileConfig.getProjectionInstance();
+        var projection = this._getProjection();
         if (!projection) {
             return null;
         }
@@ -1256,7 +1248,7 @@ Z['Map']=Z.Map=Z.Class.extend({
             res = this._getResolution();
         var pTarget = new Z.Coordinate(pcenter.x+width*res, pcenter.y+height*res);
         var target = projection.unproject(pTarget);
-        return projection.getGeodesicLength(target,center);
+        return projection.measureLength(target,center);
     },
 
     /**

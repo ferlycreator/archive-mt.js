@@ -88,13 +88,13 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
      * @expose
      */
     getShell:function() {
-        var projection = this._getProjection();
+        var measurer = this._getMeasurer();
         var nw =this._coordinates;
         var points = [];
         points.push(nw);
-        points.push(projection.locate(nw,this._width,0));
-        points.push(projection.locate(nw,this._width,this._height));
-        points.push(projection.locate(nw,0,this._height));
+        points.push(measurer.locate(nw,this._width,0));
+        points.push(measurer.locate(nw,this._width,this._height));
+        points.push(measurer.locate(nw,0,this._height));
         points.push(nw);
         return points;
 
@@ -148,12 +148,11 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
 
     /**
      * 计算中心店
-     * @param  {[type]} projection [description]
+     * @param  {[type]} measurer [description]
      * @return {[type]}            [description]
      */
-    _computeCenter:function(projection) {
-
-        return projection.locate(this._coordinates,this._width/2,-this._height/2);
+    _computeCenter:function(measurer) {
+        return measurer.locate(this._coordinates,this._width/2,-this._height/2);
     },
 
     _containsPoint: function(point) {
@@ -172,24 +171,24 @@ Z['Rectangle'] = Z.Rectangle = Z.Polygon.extend({
         return pxExtent.contains(point);
     },
 
-    _computeExtent:function(projection) {
-        if (!projection || !this._coordinates || Z.Util.isNil(this._width) || Z.Util.isNil(this._height)) {
+    _computeExtent:function(measurer) {
+        if (!measurer || !this._coordinates || Z.Util.isNil(this._width) || Z.Util.isNil(this._height)) {
             return null;
         }
         var width = this.getWidth(),
             height = this.getHeight();
-        var p1 = projection.locate(this._coordinates,width,-height);
+        var p1 = measurer.locate(this._coordinates,width,-height);
         return new Z.Extent(p1,this._coordinates);
     },
 
-    _computeGeodesicLength:function(projection) {
+    _computeGeodesicLength:function(measurer) {
         if (Z.Util.isNil(this._width) || Z.Util.isNil(this._height)) {
             return 0;
         }
         return 2*(this._width+this._height);
     },
 
-    _computeGeodesicArea:function(projection) {
+    _computeGeodesicArea:function(measurer) {
         if (Z.Util.isNil(this._width) || Z.Util.isNil(this._height)) {
             return 0;
         }

@@ -66,7 +66,7 @@ Z.Ellipse = Z.Polygon.extend({
      * @expose
      */
     getShell:function() {
-        var projection = this._getProjection();
+        var measurer = this._getMeasurer();
         var center = this.getCoordinates();
         var numberOfPoints = this.options['numberOfPoints'];
         var width = this.getWidth(),
@@ -79,7 +79,7 @@ Z.Ellipse = Z.Polygon.extend({
             var rad = (360*i/numberOfPoints)*Math.PI/180;
             var dx = Math.sqrt(s/(sx*Math.pow(Math.tan(rad),2)+sy));
             var dy = Math.sqrt(s/(sy*Math.pow(1/Math.tan(rad),2)+sx));
-            var vertex = projection.locate(center, dx, dy);
+            var vertex = measurer.locate(center, dx, dy);
             shell.push(vertex);
         }
         return shell;
@@ -125,18 +125,18 @@ Z.Ellipse = Z.Polygon.extend({
         return point.distanceTo(f1) + point.distanceTo(f2) <= d + 2 * t;
     },
 
-    _computeExtent:function(projection) {
-        if (!projection || !this._coordinates || Z.Util.isNil(this.width) || Z.Util.isNil(this.height)) {
+    _computeExtent:function(measurer) {
+        if (!measurer || !this._coordinates || Z.Util.isNil(this.width) || Z.Util.isNil(this.height)) {
             return null;
         }
         var width = this.getWidth(),
             height = this.getHeight();
-        var p1 = projection.locate(this._coordinates,width/2,height/2);
-        var p2 = projection.locate(this._coordinates,-width/2,-height/2);
+        var p1 = measurer.locate(this._coordinates,width/2,height/2);
+        var p2 = measurer.locate(this._coordinates,-width/2,-height/2);
         return new Z.Extent(p1,p2);
     },
 
-    _computeGeodesicLength:function(projection) {
+    _computeGeodesicLength:function(measurer) {
         if (Z.Util.isNil(this.width) || Z.Util.isNil(this.height)) {
             return 0;
         }
@@ -146,7 +146,7 @@ Z.Ellipse = Z.Polygon.extend({
         return 2*Math.PI*longer/2-4*Math.abs(this.width-this.height);
     },
 
-    _computeGeodesicArea:function(projection) {
+    _computeGeodesicArea:function(measurer) {
         if (Z.Util.isNil(this.width) || Z.Util.isNil(this.height)) {
             return 0;
         }

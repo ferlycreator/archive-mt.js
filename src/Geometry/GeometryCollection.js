@@ -382,8 +382,7 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
      * 获取端点数组
      */
     getLinkAnchors: function() {
-        var projection = this._getProjection();
-        var extent = this._computeExtent(projection);
+        var extent = this.getExtent();
         var anchors = [
             new Z.Coordinate(extent.xmin,extent.ymax),
             new Z.Coordinate(extent.xmax,extent.ymin),

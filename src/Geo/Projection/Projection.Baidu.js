@@ -8,7 +8,7 @@ Z.ProjectionInstance.Baidu={
 	}
 };
 
-Z.Util.extend(Z.ProjectionInstance.Baidu, Z.ProjectionInstance.GeoMethods.WGS84Geodesic);
+Z.Util.extend(Z.ProjectionInstance.Baidu, Z.measurer.Sphere.NORMAL);
 
 Z.ProjectionInstance.Baidu.projections={
     EARTHRADIUS: 6370996.81,

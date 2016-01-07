@@ -40,16 +40,6 @@ Z.Geometry.Center = {
         return this;
     },
 
-    /**
-     * 获取Marker的center
-     * @return {Coordinate} Marker的center
-     * @expose
-     */
-    getCenter:function() {
-        return this._coordinates;
-    },
-
-
     _getPrjCoordinates:function() {
         var projection = this._getProjection();
         if (!projection) {return null;}
@@ -80,7 +70,7 @@ Z.Geometry.Center = {
         this._pcenter = null;
     },
 
-    _computeCenter:function(projection) {
+    _computeCenter:function() {
         return this._coordinates;
     }
 };

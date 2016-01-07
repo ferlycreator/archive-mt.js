@@ -22,4 +22,4 @@ Z.ProjectionInstance.EPSG3857 = {
     }
 };
 
-Z.Util.extend(Z.ProjectionInstance.EPSG3857, Z.ProjectionInstance.GeoMethods.WGS84Geodesic);
+Z.Util.extend(Z.ProjectionInstance.EPSG3857, Z.measurer.Sphere.NORMAL);

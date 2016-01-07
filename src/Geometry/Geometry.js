@@ -43,7 +43,10 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         'visible'   : true,
         'editable'  : true,
         'cursor'    : null,
-        'crossOrigin' : null
+        'crossOrigin' : null,
+
+        //true means this is an euclidean geometry
+        'euclidean' :false
     },
 
     /**
@@ -153,8 +156,13 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      */
     getExtent:function() {
         var prjExt = this._getPrjExtent();
-        var p = this._getProjection();
-        return new Z.Extent(p.unproject({x:prjExt['xmin'],y:prjExt['ymin']}), p.unproject({x:prjExt['xmax'],y:prjExt['ymax']}));
+        if (prjExt) {
+            var p = this._getProjection();
+            return new Z.Extent(p.unproject({x:prjExt['xmin'],y:prjExt['ymin']}), p.unproject({x:prjExt['xmax'],y:prjExt['ymax']}));
+        } else {
+            return this._computeExtent(this._getMeasurer());
+        }
+
     },
 
     /**
@@ -177,7 +185,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     getCenter:function() {
-        return this._computeCenter(this._getProjection());
+        return this._computeCenter(this._getMeasurer());
     },
 
     /**
@@ -358,7 +366,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
         var properties = {};
         var crs = this.getCRS();
-        if (crs) {
+        if (crs && (Z.Util.isNil(opts['crs']) || opts['crs'])) {
             feature['crs'] = crs;
         }
         //opts没有设定properties或者设定的properties值为true,则导出properties
@@ -439,7 +447,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     getLength:function() {
-        return this._computeGeodesicLength(this._getProjection());
+        return this._computeGeodesicLength(this._getMeasurer());
     },
 
     /**
@@ -448,7 +456,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     getArea:function() {
-        return this._computeGeodesicArea(this._getProjection());
+        return this._computeGeodesicArea(this._getMeasurer());
     },
 
     /**
@@ -569,8 +577,8 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     },
 
     _getPrjExtent:function() {
-        if (!this._extent) {
-            var p = this._getProjection();
+        var p = this._getProjection();
+        if (!this._extent && p) {
             var ext = this._computeExtent(p);
             this._extent = new Z.Extent(p.project({x:ext['xmin'],y:ext['ymin']}), p.project({x:ext['xmax'],y:ext['ymax']}));
         }
@@ -610,14 +618,28 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         this._internalId = id;
     },
 
+    _getMeasurer:function() {
+        if (this._getProjection()) {
+            return this._getProjection();
+        }
+        if (this.options['euclidean']) {
+            if (!this._measurer || (!this._measurer instanceof Z.measurer.Euclidean)) {
+                this._measurer = Z.measurer.Euclidean;
+            }
+        } else {
+            if (!this._measurer || (!this._measurer instanceof Z.measurer.Sphere)) {
+                this._measurer = Z.measurer.Sphere.NORMAL;
+            }
+        }
+        return this._measurer;
+    },
 
     _getProjection:function() {
         var map = this.getMap();
-        if (map) {
+        if (map && map._getProjection()) {
             return map._getProjection();
         }
-        return Z.Projection.getDefault();
-        // return null;
+        return null;
     },
 
     //获取geometry样式中依赖的外部图片资源
