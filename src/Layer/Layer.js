@@ -186,6 +186,15 @@ Z['Layer']=Z.Layer=Z.Class.extend({
         return this;
     },
 
+    _onRemove:function() {
+        this.clear();
+        if (this._render) {
+            this._render.remove();
+            delete this._render;
+        }
+        delete this.map;
+    },
+
      _prepare:function(map,zIndex) {
         if (!map) {return;}
         this.map = map;

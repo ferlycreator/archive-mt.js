@@ -227,18 +227,6 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         });
     },
 
-    /**
-     * TileLayer的删除逻辑
-     */
-    _onRemove:function() {
-        this.clear();
-        if (this._render) {
-            // this._clearExecutors();
-            this._render.remove();
-            delete this._render;
-        }
-    },
-
     clear:function() {
         if (this._render) {
             this._render.clear();

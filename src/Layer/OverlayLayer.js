@@ -182,11 +182,6 @@ Z.OverlayLayer=Z.Layer.extend({
         return this;
     },
 
-    _onRemove:function() {
-        this.clear();
-        delete this.map;
-    },
-
     _getGeoCache:function() {
         return this._geoCache;
     }
