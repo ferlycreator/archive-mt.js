@@ -235,8 +235,20 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
     },
 
     _requestMapToRend:function() {
+        var me = this;
         if (this.getMap() && !this.getMap().isBusy()) {
-            this._mapRender.render();
+            if (Z.runningInNode && this._canvas && this._canvas.toBuffer) {
+                //node-canvas's buffer may be async
+                this._canvas.toBuffer(function(err, buf) {
+                    if (err == null) {
+                        me._mapRender.render();
+                    } else {
+                        console.error(err);
+                    }
+                })
+            } else {
+                this._mapRender.render();
+            }
         }
     },
 

@@ -331,9 +331,22 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
 
     _requestMapToRend:function() {
         if (this.getMap() && !this.getMap().isBusy()) {
-            this._mapRender.render();
+            var me = this;
+            if (Z.runningInNode && this._canvas && this._canvas.toBuffer) {
+                //node-canvas's buffer may be async
+                this._canvas.toBuffer(function(err, buf) {
+                    if (err == null) {
+                        me._mapRender.render();
+                        me._layer.fire('layerloaded');
+                    } else {
+                        console.error(err);
+                    }
+                })
+            } else {
+                this._mapRender.render();
+                this._layer.fire('layerloaded');
+            }
         }
-        this._layer.fire('layerloaded');
     }
 });
 
