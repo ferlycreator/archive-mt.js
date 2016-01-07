@@ -145,16 +145,23 @@ Z.Util = {
             return;
         }
         var fs = this._nodeFS;
+        function unlinkFile(file) {
+            fs.stat(file, function(err, stat) {
+                if (err == null) {
+                    fs.unlink(file);
+                }
+            });
+        }
         var now = new Date().getTime();
         var tmpPngFile = (__dirname+'/tmp-'+now+'.png').replace(/\\/g,'/');
         this._svg2png(url, tmpPngFile, function (error) {
             if (error) {
-                fs.unlink(tmpPngFile);
+                unlinkFile(tmpPngFile);
                 complete(error);
                 return;
             }
             fs.readFile(tmpPngFile, function(err,data) {
-                fs.unlink(tmpPngFile);
+                unlinkFile(tmpPngFile);
                 if (err) {
                     complete(err);
                     return;
