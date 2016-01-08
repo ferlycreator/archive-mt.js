@@ -204,6 +204,10 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
      * @param  {Image} tileImage 瓦片图片对象
      */
     _drawTileAndRequest:function(tileImage) {
+        //sometimes, layer may be removed from map here.
+        if (!this.getMap()) {
+            return;
+        }
         var zoomLevel = this.getMap().getZoom();
         if (zoomLevel !== tileImage[this.propertyOfTileZoom]) {
             return;

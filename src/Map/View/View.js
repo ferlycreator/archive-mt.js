@@ -23,6 +23,14 @@ Z.View.prototype = {
                 "right":20037508.34
             }
         },
+        "EPSG:4326" : {
+            "fullExtent": {
+                "top":90,
+                "left":-180,
+                "bottom":-90,
+                "right":180
+            }
+        },
         "BAIDU" : {
             "resolutions" : (function() {
                 var res = Math.pow(2,18);

@@ -131,7 +131,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
     },
 
     _getProjection:function() {
-        return this.map._getProjection();
+        return this.map.getProjection();
     },
 
     //注册鼠标响应事件

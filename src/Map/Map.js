@@ -123,7 +123,7 @@ Z['Map']=Z.Map=Z.Class.extend({
             var projection = this._view.getProjection();
             this.options['view']['projection'] = projection['name'];
         }
-        this._checkMapStatus();
+        this._resetMapStatus();
         this._fireEvent('viewchange');
     },
 
@@ -225,7 +225,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     getCenter:function() {
-        if (!this._loaded) {return this._center;}
+        if (!this._loaded || !this._prjCenter) {return this._center;}
         var projection = this.getProjection();
         return projection.unproject(this._prjCenter);
     },
@@ -966,7 +966,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     _Load:function() {
-        this._checkMapStatus();
+        this._resetMapStatus();
         this._registerDomEvents();
         this._loadAllLayers();
         this._loaded = true;
@@ -1032,7 +1032,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * View修改后检查当前地图状态是否吻合新的View设定
      * @return {[type]} [description]
      */
-    _checkMapStatus:function(){
+    _resetMapStatus:function(){
         var maxZoom = this.getMaxZoom(),
             minZoom = this.getMinZoom();
         var viewMaxZoom = this._view.getMaxZoom(),
@@ -1054,6 +1054,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         if (this._zoomLevel < minZoom) {
             this._zoomLevel = minZoom;
         }
+        delete this._prjCenter;
         this._center = this.getCenter();
         var projection = this.getProjection();
         this._prjCenter = projection.project(this._center);

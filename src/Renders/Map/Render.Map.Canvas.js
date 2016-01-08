@@ -63,14 +63,20 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
         if (map.options['zoomAnimation']) {
             this._context.save();
             var baseTileLayer = map.getBaseTileLayer();
-            var baseLayerImage = baseTileLayer._getRender().getCanvasImage();
+            var baseLayerImage;
+            if (baseTileLayer) {
+                baseLayerImage =  baseTileLayer._getRender().getCanvasImage();
+            }
+
 
             var width = this._canvas.width,
                 height = this._canvas.height;
             var layersToTransform;
             if (!map.options['layerZoomAnimation']) {
                 //zoom animation with better performance, only animate baseTileLayer, ignore other layers.
-                this._drawLayerCanvasImage(baseLayerImage, width, height);
+                if (baseLayerImage) {
+                    this._drawLayerCanvasImage(baseLayerImage, width, height);
+                }
                 layersToTransform = [baseTileLayer];
             } else {
                 //default zoom animation, animate all the layers.
@@ -88,7 +94,9 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
                     this._clearCanvas();
                     //only draw basetile layer
                     matrixes[1].applyToContext(this._context);
-                    this._drawLayerCanvasImage(baseLayerImage, width, height);
+                    if (baseLayerImage) {
+                        this._drawLayerCanvasImage(baseLayerImage, width, height);
+                    }
                     this._canvasBackgroundImage = Z.DomUtil.copyCanvas(this._canvas);
                     this._context.restore();
                     fn.call(me);
@@ -373,7 +381,7 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
 
     _getAllLayerToCanvas:function() {
         var layers = this.map._getLayers(function(layer) {
-            if (layer.isCanvasRender()) {
+            if (layer && layer.isCanvasRender()) {
                 return true;
             }
             return false;
