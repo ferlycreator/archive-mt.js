@@ -1,16 +1,12 @@
-Z.ProjectionInstance.Baidu={
-	srs:'BAIDU',
-	project:function(p){
-		return this.projections.convertLL2MC(p);
-	},
-	unproject:function(p){
-		return this.projections.convertMC2LL(p);
-	}
-};
-
-Z.Util.extend(Z.ProjectionInstance.Baidu, Z.measurer.Sphere.NORMAL);
-
-Z.ProjectionInstance.Baidu.projections={
+Z.Projection.BAIDU = Z.Util.extend({}, Z.Projection.Common, {
+    name : "BAIDU",
+    project:function(p){
+        return this.convertLL2MC(p);
+    },
+    unproject:function(p){
+        return this.convertMC2LL(p);
+    }
+}, Z.measurer.Sphere.NORMAL, {
     EARTHRADIUS: 6370996.81,
     MCBAND: [12890594.86, 8362377.87, 5591021, 3481989.83, 1678043.12, 0],
     LLBAND: [75, 60, 45, 30, 15, 0],
@@ -60,9 +56,9 @@ Z.ProjectionInstance.Baidu.projections={
         var T = cD[0] + cD[1] * Math.abs(cC.x);
         var cB = Math.abs(cC.y) / cD[9];
         var cE = cD[2] + cD[3] * cB + cD[4] * cB * cB +
-        		cD[5] * cB * cB * cB + cD[6] * cB * cB * cB * cB +
-        		cD[7] * cB * cB * cB * cB * cB +
-        		cD[8] * cB * cB * cB * cB * cB * cB;
+                cD[5] * cB * cB * cB + cD[6] * cB * cB * cB * cB +
+                cD[7] * cB * cB * cB * cB * cB +
+                cD[8] * cB * cB * cB * cB * cB * cB;
         T *= (cC.x < 0 ? -1 : 1);
         cE *= (cC.y < 0 ? -1 : 1);
         return new Z.Coordinate(T, cE);
@@ -91,4 +87,4 @@ Z.ProjectionInstance.Baidu.projections={
         }
         return cC;
     }
-};
+});

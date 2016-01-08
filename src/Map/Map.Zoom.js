@@ -22,7 +22,7 @@ Z.Map.include({
 
     _onZoomStart:function(startScale, transOrigin, nextZoomLevel) {
         var me = this;
-        var resolutions=this._tileConfig['resolutions'];
+        var resolutions=this._getResolutions();
         var endScale = resolutions[this._originZoomLevel]/resolutions[nextZoomLevel];
         var zoomOffset = this._getZoomCenterOffset(nextZoomLevel, transOrigin, startScale);
         if (zoomOffset.x === 0 && zoomOffset.y === 0) {
@@ -88,7 +88,7 @@ Z.Map.include({
         if (Z.Util.isNil(startScale)) {
             startScale = 1;
         }
-        var resolutions=this._tileConfig['resolutions'];
+        var resolutions=this._getResolutions();
         var zScale;
         var zoomOffset;
         if (nextZoomLevel<this._originZoomLevel) {

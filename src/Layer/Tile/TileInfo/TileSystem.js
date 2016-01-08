@@ -20,18 +20,24 @@ Z.Util.extend(Z.TileSystem, {
     //TMS瓦片系统的参考资料:
     //http://wiki.osgeo.org/wiki/Tile_Map_Service_Specification
     //OSGEO组织的TMS瓦片系统, profile为global-mercator, mbtiles等tms标准瓦片服务采用该标准
-    'tms-global-mercator' : new Z.TileSystem(1, 1, -20037508.34, -20037508.34),
+    'tms-global-mercator' : new Z.TileSystem([1, 1, -20037508.34, -20037508.34]),
 
     //OSGEO组织的TMS瓦片系统, profile为global-geodetic
-    'tms-global-geodetic' : new Z.TileSystem(1, 1, -180, -90),
+    'tms-global-geodetic' : new Z.TileSystem([1, 1, -180, -90]),
 
     //谷歌, 必应,高德, 腾讯等地图服务采用的瓦片系统
-    'web-mercator' : new Z.TileSystem(1, -1, -20037508.34, 20037508.34),
+    'web-mercator' : new Z.TileSystem([1, -1, -20037508.34, 20037508.34]),
 
     //百度地图采用的瓦片系统
-    // 'baidu' : new Z.TileSystem(1, 1, 0, 0),
-
-    getInstance:function(ts) {
-        return Z.TileSystem[ts.toLowerCase()];
-    }
+    'baidu' : new Z.TileSystem([1, 1, 0, 0])
 });
+
+Z.TileSystem.getDefault = function(projection) {
+    if (projection['name'].toLowerCase() === 'baidu') {
+        return 'baidu';
+    } else if (projection['name'].toLowerCase() === 'EPSG:4326'.toLowerCase()) {
+        return 'tms-global-geodetic';
+    } else {
+        return 'web-mercator';
+    }
+}

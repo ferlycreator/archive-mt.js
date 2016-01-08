@@ -71,13 +71,14 @@ Z['DynamicLayer'] = Z.DynamicLayer = Z.TileLayer.extend({
      */
     _getRequestUrl: function(topIndex, leftIndex, zoom) {
         var map = this.getMap();
-        var tileConfig = map._getTileConfig();
-        var sw = tileConfig.getTileProjectedSw(topIndex, leftIndex, zoom);
+        var res = map._getResolution(zoom);
+        var tileConfig = this._getTileConfig();
+        var sw = tileConfig.getTileProjectedSw(topIndex, leftIndex, res);
         var parts = [];
         parts.push(this.options.baseUrl);
         parts.push(this._token);
         parts.push(zoom);
-        parts.push(tileConfig.getResolution(zoom));
+        parts.push(res);
         parts.push(sw[0]); // xmin
         parts.push(sw[1]); // ymin
         var url = parts.join('/');

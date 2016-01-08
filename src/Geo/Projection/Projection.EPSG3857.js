@@ -1,5 +1,5 @@
-Z.ProjectionInstance.EPSG3857 = {
-    srs: 'EPSG:3857',
+Z.Projection.EPSG3857 = Z.Util.extend({}, Z.Projection.Common, {
+    name : "EPSG:3857",
     radUnit : Math.PI / 180,
     r180 : 2.003750834E7/180,
 
@@ -20,6 +20,6 @@ Z.ProjectionInstance.EPSG3857 = {
         c = (2 * Math.atan(Math.exp(c * radUnit)) - Math.PI / 2)/radUnit;
         return new Z.Coordinate(x / r180, c);
     }
-};
+}, Z.measurer.Sphere.NORMAL);
 
-Z.Util.extend(Z.ProjectionInstance.EPSG3857, Z.measurer.Sphere.NORMAL);
+Z.Projection.DEFAULT = Z.Projection.EPSG3857;

@@ -1,3 +1,28 @@
+Z.TileInfo = {
+    //谷歌, 必应,高德, 腾讯等地图服务采用的瓦片系统
+    'web-mercator' : {
+        'tileSystem' : [1, -1, -20037508.34, 20037508.34],
+        'tileSize' : {'width':256, 'height':256}
+    },
+    //TMS瓦片系统的参考资料:
+    //http://wiki.osgeo.org/wiki/Tile_Map_Service_Specification
+    //OSGEO组织的TMS瓦片系统, profile为global-mercator, mbtiles等tms标准瓦片服务采用该标准
+    'tms-global-mercator' : {
+        'tileSystem' : [1, 1, -20037508.34, -20037508.34],
+        'tileSize' : {'width':256, 'height':256}
+    },
+
+    'tms-global-geodetic' : {
+        'tileSystem' : [1, 1, -180, -90],
+        'tileSize' : {'width':256, 'height':256}
+    },
+
+    'baidu' : {
+        'tileSystem' : [1, 1, 0, 0],
+        'tileSize' : {'width':256, 'height':256}
+    }
+};
+
 Z['TileInfo']={
     'web-mercator':{
         'projection':'EPSG:3857', //4326 | 3857 | bd09
@@ -40,8 +65,8 @@ Z['TileInfo']={
         'projection':'EPSG:3857', // 4326 | 3857 | bd09 | pixel
         'tileSystem':'TMS-GLOBAL-MERCATOR',
         // 'transformation' : [1, 0, 0, 1, -20037508.34, -20037508.34],
-        'maxZoom':22,
-        'minZoom':1,
+        'maxZoom':21,
+        'minZoom':0,
         'resolutions':[
             156543.0339,
             78271.51695,
