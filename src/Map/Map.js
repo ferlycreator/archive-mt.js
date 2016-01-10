@@ -10,6 +10,8 @@ Z['Map']=Z.Map=Z.Class.extend({
     includes: [Z.Eventable,Z.HandlerBus],
 
     options:{
+        "clipFullExtent" : true,
+
         "zoomAnimation" : true,
         "zoomAnimationDuration" : 300,
         //controls whether other layers than base tilelayer will show during zoom animation.

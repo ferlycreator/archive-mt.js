@@ -16,6 +16,8 @@ Z.Geometry.Poly={
             return result;
         }
         var map = this.getMap();
+        var fullExtent = map.getFullExtent(),
+            isClipping = map.options['clipFullExtent'];
         var is2dArray = Z.Util.isArray(points[0]),
             isSimplify = this.getLayer() && this.getLayer().options['enableSimplify'];
         var tolerance;
@@ -28,7 +30,7 @@ Z.Geometry.Poly={
         }
         for (var i=0,len=points.length;i<len;i++) {
             var p = points[i];
-            if (Z.Util.isNil(p)) {
+            if (Z.Util.isNil(p) || !(isClipping && fullExtent.contains(p)) {
                 continue;
             }
             if (is2dArray) {
