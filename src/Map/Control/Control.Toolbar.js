@@ -25,32 +25,12 @@ Z.Control.Toolbar = Z.Control.extend({
                     return fn({'target':me, 'index':index, 'childIndex': childIndex});
                 }
         }
-        function onMenuHover(index) {
+        function onMenuItemHover(index) {
             return function(e) {
                     if (dom._childrenMenu) {
                         return;
                     }
-                    var menuDom = Z.DomUtil.createEl('div','maptalks-dropMenu');
-                    menuDom.appendChild(Z.DomUtil.createEl('em','maptalks-ico'));
-                    var menuUL = Z.DomUtil.createEl('ul');
-                    menuDom.appendChild(menuUL);
-                    var children = me._getItems()[index]['children'];
-                    for (var i = 0; i < children.length; i++) {
-                        var child = children[i];
-                        var li = Z.DomUtil.createEl('li');
-                        li.innerHTML = '<a href="javascript:;">'+child['item']+'</a>'
-                        li.style.cursor = 'pointer';
-                        Z.DomUtil.on(li,'mouseout',Z.DomUtil.stopPropagation);
-                        Z.DomUtil.on(li.childNodes[0],'click',(onButtonClick)(child['click'], index, i));
-                        menuUL.appendChild(li);
-                    }
-                    Z.DomUtil.on(menuDom,'mouseout',function(e) {
-                        //TODO mouseout解决不完美, 鼠标移出menuDom时, mouseout并不能随时响应
-                        if (e.target.nodeName.toLowerCase() === 'div') {
-                            Z.DomUtil.removeDomNode(menuDom);
-                            delete dom._childrenMenu;
-                        }
-                    });
+
                     this.appendChild(menuDom);
                     dom._childrenMenu = menuDom;
                 }
@@ -66,12 +46,46 @@ Z.Control.Toolbar = Z.Control.extend({
                     Z.DomUtil.on(li,'click',(onButtonClick)(item['click'], i, null));
                 }
                 if (Z.Util.isArrayHasData(item['children'])) {
-                    Z.DomUtil.on(li,'mouseover',(onMenuHover)(i));
+                    var dropMenu = this._createDropMenu(i);
+                    li.appendChild(dropMenu);
+                    li._menu = dropMenu;
+                    Z.DomUtil.on(li,'mouseover',function() {
+                        this._menu.style.display = "";
+                    });
+                    Z.DomUtil.on(li,'mouseout',function() {
+                        this._menu.style.display = "none";
+                    });
                 }
                 ul.appendChild(li);
             }
         }
         return dom;
+    },
+
+    _createDropMenu:function(index) {
+        var me = this;
+        function onButtonClick(fn, index, childIndex) {
+            var item = me._getItems()[index];
+            return function(e) {
+                    Z.DomUtil.stopPropagation(e);
+                    return fn({'target':item, 'index':index, 'childIndex': childIndex});
+                }
+        }
+        var menuDom = Z.DomUtil.createEl('div','maptalks-dropMenu');
+        menuDom.style.display = "none";
+        menuDom.appendChild(Z.DomUtil.createEl('em','maptalks-ico'));
+        var menuUL = Z.DomUtil.createEl('ul');
+        menuDom.appendChild(menuUL);
+        var children = this._getItems()[index]['children'];
+        for (var i = 0; i < children.length; i++) {
+            var child = children[i];
+            var li = Z.DomUtil.createEl('li');
+            li.innerHTML = '<a href="javascript:;">'+child['item']+'</a>'
+            li.style.cursor = 'pointer';
+            Z.DomUtil.on(li.childNodes[0],'click',(onButtonClick)(child['click'], index, i));
+            menuUL.appendChild(li);
+        }
+        return menuDom;
     },
 
     _getItems:function() {
