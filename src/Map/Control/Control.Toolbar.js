@@ -20,21 +20,13 @@ Z.Control.Toolbar = Z.Control.extend({
         }
         var me = this;
         function onButtonClick(fn, index, childIndex) {
+            var item = me._getItems()[index];
             return function(e) {
                     Z.DomUtil.stopPropagation(e);
-                    return fn({'target':me, 'index':index, 'childIndex': childIndex});
+                    return fn({'target':item, 'index':index, 'childIndex': childIndex});
                 }
         }
-        function onMenuItemHover(index) {
-            return function(e) {
-                    if (dom._childrenMenu) {
-                        return;
-                    }
 
-                    this.appendChild(menuDom);
-                    dom._childrenMenu = menuDom;
-                }
-        }
         var items = this.options['items'];
         if(Z.Util.isArrayHasData(items)) {
             for(var i=0,len=items.length;i<len;i++) {
@@ -65,7 +57,7 @@ Z.Control.Toolbar = Z.Control.extend({
     _createDropMenu:function(index) {
         var me = this;
         function onButtonClick(fn, index, childIndex) {
-            var item = me._getItems()[index];
+            var item = me._getItems()[index]['children'][childIndex];
             return function(e) {
                     Z.DomUtil.stopPropagation(e);
                     return fn({'target':item, 'index':index, 'childIndex': childIndex});
