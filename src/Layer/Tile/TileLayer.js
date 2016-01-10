@@ -124,7 +124,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         if (!this._tileConfig) {
             var map = this.getMap();
             //如果tilelayer本身没有设定tileconfig,则继承地图基础底图的tileconfig
-            if (map && map.getBaseTileLayer()) {
+            if (map && map.getBaseTileLayer() && map.getBaseTileLayer()._getTileConfig) {
                 tileConfig = map.getBaseTileLayer()._getTileConfig();
             }
         }

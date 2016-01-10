@@ -1096,6 +1096,9 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     _verifyExtent:function(center) {
+        if (!center) {
+            return false;
+        }
         var maxExt = this.getMaxExtent();
         if (!maxExt) {
             return true;

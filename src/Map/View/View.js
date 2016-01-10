@@ -90,7 +90,10 @@ Z.View.prototype = {
                 throw new Error('must provide a valid fullExtent in map\'s view.');
             }
         }
-        this._fullExtent = fullExtent;
+        this._fullExtent = new Z.Extent(new Z.Coordinate(fullExtent["left"], fullExtent["top"]),
+                            new Z.Coordinate(fullExtent["right"], fullExtent["bottom"]));
+        //set left, right, top, bottom value
+        Z.Util.extend(this._fullExtent, fullExtent);
 
         var a = fullExtent['right']>fullExtent['left']?1:-1,
             b = fullExtent['top']>fullExtent['bottom']?-1:1;

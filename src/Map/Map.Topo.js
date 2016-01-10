@@ -11,11 +11,11 @@ Z.Map.include({
      * @expose
      */
     computeDistance: function(lonlat1, lonlat2) {
-        if (!this._getProjection()) {return null;}
+        if (!this.getProjection()) {return null;}
         var p1 = new Z.Coordinate(lonlat1),
             p2 = new Z.Coordinate(lonlat2);
         if (p1.equals(p2)) {return 0;}
-        return this._getProjection().measureLength(p1, p2);
+        return this.getProjection().measureLength(p1, p2);
     },
 
     /**
@@ -26,7 +26,7 @@ Z.Map.include({
      * @expose
      */
     computeGeodesicLength:function(geometry) {
-        return geometry._computeGeodesicLength(this._getProjection());
+        return geometry._computeGeodesicLength(this.getProjection());
     },
 
     /**
@@ -37,7 +37,7 @@ Z.Map.include({
      * @expose
      */
     computeGeodesicArea:function(geometry) {
-        return geometry._computeGeodesicArea(this._getProjection());
+        return geometry._computeGeodesicArea(this.getProjection());
     },
 
     /**

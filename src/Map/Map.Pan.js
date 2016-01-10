@@ -6,7 +6,10 @@ Z.Map.include({
      * @expose
      */
     panTo:function(coordinate, options) {
-        var projection = this._getProjection();
+        if (!coordinate) {
+            return;
+        }
+        var projection = this.getProjection();
         var p = projection.project(new Z.Coordinate(coordinate));
         var span = this._getPixelDistance(p);
         this.panBy(span, options);

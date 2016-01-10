@@ -160,7 +160,7 @@ Z.Extent.prototype={
      */
     contains: function(coordinate) {
         var x, y;
-        var c = new Z.Coordinate(coordinate);
+        var c = (coordinate instanceof Z.Coordinate)?coordinate:new Z.Coordinate(coordinate);
         x = c.x;
         y = c.y;
         return (x >= this.xmin) &&
