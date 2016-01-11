@@ -499,10 +499,15 @@ function registerGeometryCommonTest(geometry,_context) {
             var measurer = geometry._getMeasurer();
             expect(measurer).to.be(Z.measurer.WGS84Sphere);
 
-            geometry.config('measure', 'euclidean');
+            geometry.config('measure', 'identity');
 
             measurer = geometry._getMeasurer();
-            expect(measurer).to.be(Z.measurer.Euclidean);
+            expect(measurer).to.be(Z.measurer.Identity);
+
+            geometry.config('measure', 'baidu');
+
+            measurer = geometry._getMeasurer();
+            expect(measurer).to.be(Z.measurer.BaiduSphere);
         });
     });
 

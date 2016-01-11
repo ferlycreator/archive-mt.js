@@ -7,4 +7,4 @@ Z.ProjectionInstance.Pixel={
         return new Z.Coordinate(p);
     }
 };
-Z.Util.extend(Z.ProjectionInstance.Pixel, Z.measurer.Euclidean);
+Z.Util.extend(Z.ProjectionInstance.Pixel, Z.measurer.Identity);

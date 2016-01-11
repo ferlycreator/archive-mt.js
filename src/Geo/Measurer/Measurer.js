@@ -1,7 +1,7 @@
 Z.measurer = {};
 
 Z.Measurer = {
-    getMeasurer:function(name) {
+    getInstance:function(name) {
         if (!name) {
             return Z.Measurer.DEFAULT;
         }

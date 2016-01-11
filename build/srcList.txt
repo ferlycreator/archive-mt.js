@@ -15,7 +15,7 @@
 ../src/Geo/Transformation/Transformation.js
 ../src/Geo/Measurer/Measurer.js
 ../src/Geo/Measurer/Sphere.js
-../src/Geo/Measurer/Euclidean.js
+../src/Geo/Measurer/Identity.js
 ../src/Geo/Projection/Projection.js
 ../src/Geo/Projection/Projection.EPSG3857.js
 ../src/Geo/Projection/Projection.EPSG4326.js
