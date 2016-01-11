@@ -23,7 +23,7 @@ describe('#Map', function () {
         };
         map = new Z.Map(container, option);
         tile = new Z.TileLayer('tile', {
-            tileInfo: 'web-mercator',
+
             urlTemplate:"http://t{s}.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}",
             subdomains: [1, 2, 3]
         });
@@ -54,11 +54,11 @@ describe('#Map', function () {
     });
 
     describe('#setCenter', function() {
-        it('setCenter后, getCenter返回结果与指定center相等(Load之前)', function() {
+        it('setCenter后, getCenter返回结果与指定center近似相等(Load之前)', function() {
             var nc = new Z.Coordinate(119, 32);
             map.setCenter(nc);
 
-            expect(map.getCenter()).to.eql(nc);
+            expect(map.getCenter()).to.nearCoord(nc);
         });
 
         it('setCenter后, getCenter返回结果与指定center相等(Load之后)', function() {

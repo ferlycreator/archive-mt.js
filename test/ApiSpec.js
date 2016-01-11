@@ -18,7 +18,6 @@ describe('API', function () {
         };
         map = new Z.Map(container, option);
         tile = new Z.TileLayer('tile', {
-            tileInfo: 'web-mercator',
             urlTemplate:"http://t{s}.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}",
             subdomains: [1, 2, 3]
         });
@@ -101,7 +100,7 @@ describe('API', function () {
         it('getMinZoom', function () {
             var zoom = map.getMinZoom();
 
-            expect(zoom).to.be.above(0);
+            expect(zoom).to.be.above(-1);
         });
 
         it('setMinZoom', function () {
@@ -147,7 +146,7 @@ describe('API', function () {
 
         it('setBaseTileLayer', function () {
             var tile2 = new Z.TileLayer('tile2', {
-                tileInfo: 'web-mercator',
+
                 urlTemplate:"http://t{s}.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}",
                 subdomains: [0, 1, 2]
             });

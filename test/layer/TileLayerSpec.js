@@ -23,7 +23,7 @@ describe('#TileLayer', function() {
     describe("#WebMercator", function() {
         it("", function() {
             var tile = new Z.TileLayer('tile', {
-                tileInfo: 'web-mercator',
+
                 urlTemplate:"http://t{s}.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}",
                 subdomains: [1, 2, 3]
             });

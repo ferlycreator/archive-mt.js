@@ -17,7 +17,7 @@ describe('PolylineSpec', function() {
         };
         map = new Z.Map(container, option);
         tile = new Z.TileLayer('tile', {
-            tileInfo: 'web-mercator',
+
             urlTemplate:"http://t{s}.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}",
             subdomains: [1, 2, 3]
         });
@@ -54,11 +54,11 @@ describe('PolylineSpec', function() {
             var polyline = new Z.Polyline([
                 {x: 0, y: 0},
                 {x: 0, y: 10},
-                {x: 0, y: 90}
+                {x: 0, y: 80}
             ]);
             layer.addGeometry(polyline);
 
-            expect(polyline.getCenter()).to.nearCoord(new Z.Coordinate(0, 100/3));
+            expect(polyline.getCenter()).to.nearCoord(new Z.Coordinate(0, 30));
         });
     });
 
@@ -66,11 +66,11 @@ describe('PolylineSpec', function() {
         var polyline = new Z.Polyline([
             {x: 0, y: 0},
             {x: 0, y: 10},
-            {x: 0, y: 90}
+            {x: 0, y: 80}
         ]);
-        layer.addGeometry(polyline);
+        // layer.addGeometry(polyline);
 
-        expect(polyline.getExtent()).to.eql(new Z.Extent(0, 0, 0, 90));
+        expect(polyline.getExtent()).to.eql(new Z.Extent(0, 0, 0, 80));
     });
 
     describe('geometry fires events', function() {
@@ -78,7 +78,7 @@ describe('PolylineSpec', function() {
             var points = [
                 {x: 0, y: 0},
                 {x: 0, y: 10},
-                {x: 0, y: 90}
+                {x: 0, y: 80}
             ];
             var vector = new Z.Polyline(points);
             new GeoEventsTester().testSVGEvents(vector, map);
@@ -88,7 +88,7 @@ describe('PolylineSpec', function() {
             var points = [
                 {x: 0, y: 0},
                 {x: 0, y: 10},
-                {x: 0, y: 90}
+                {x: 0, y: 80}
             ];
             var vector = new Z.Polyline(points);
             new GeoEventsTester().testCanvasEvents(vector, map, vector.getCenter());
@@ -99,7 +99,7 @@ describe('PolylineSpec', function() {
         var points = [
                 {x: 0, y: 0},
                 {x: 0, y: 10},
-                {x: 0, y: 90}
+                {x: 0, y: 80}
             ];
             var vector = new Z.Polyline(points);
         GeoSymbolTester.testGeoSymbols(vector, map);
