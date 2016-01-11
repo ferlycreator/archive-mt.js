@@ -490,7 +490,7 @@ function registerGeometryCommonTest(geometry,_context) {
             setupGeometry();
 
             var projection = geometry._getProjection();
-            expect(projection.srs).to.be(_context.map._getProjection().srs);
+            expect(projection.srs).to.be(_context.map.getProjection().srs);
 
             teardownGeometry();
         });

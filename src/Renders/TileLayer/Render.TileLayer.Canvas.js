@@ -70,7 +70,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
 
         var tiles = tileGrid['tiles'],
             tileCache = this._tileCache,
-            tileSize = this._layer._getTileSize();
+            tileSize = this._layer.getTileSize();
 
         this._canvasFullExtent =  this.getMap()._getViewExtent();
         //遍历瓦片
@@ -146,7 +146,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
             me._clearTileRectAndRequest(this);
         }
         var crossOrigin = this._layer.options['crossOrigin'];
-        var tileSize = this._layer._getTileSize();
+        var tileSize = this._layer.getTileSize();
         for (var p in this._tileQueue) {
             if (this._tileQueue.hasOwnProperty(p)) {
                 var tileId = p.split('@')[0];
@@ -181,7 +181,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         if (!point) {
             return;
         }
-        var tileSize = this._layer._getTileSize();
+        var tileSize = this._layer.getTileSize();
         var opacity = this._layer.config()['opacity'];
         var isFaded = !Z.Util.isNil(opacity) && opacity < 1;
         var alpha;
@@ -204,6 +204,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
      * @param  {Image} tileImage 瓦片图片对象
      */
     _drawTileAndRequest:function(tileImage) {
+        //sometimes, layer may be removed from map here.
         if (!this.getMap()) {
             return;
         }
@@ -216,7 +217,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         var point = tileImage[this.propertyOfPointOnTile];
         this._drawTile(point, tileImage);
 
-        var tileSize = this._layer._getTileSize();
+        var tileSize = this._layer.getTileSize();
         var viewExtent = this.getMap()._getViewExtent();
         if (viewExtent.intersects(new Z.Extent(point, point.add(new Z.Point(tileSize['width'], tileSize['height']))))) {
             this._requestMapToRend();

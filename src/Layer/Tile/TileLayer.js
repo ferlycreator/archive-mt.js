@@ -8,22 +8,26 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
     type: 'tile',
 
     options: {
-        'errorTileUrl':Z.prefix+'images/system/transparent.png',
-        'urlTemplate':Z.prefix+'images/system/transparent.png',
-        'subdomains':[''],
-        //是否检查
-        // 'showOnTileLoadComplete':true,
-        'tileInfo':'web-mercator',
-        'repeatWorld' : true,
+        'errorTileUrl'  : Z.prefix+'images/system/transparent.png',
+        'urlTemplate'   : Z.prefix+'images/system/transparent.png',
+        'subdomains'    : [''],
+
+        'repeatWorld'   : true,
 
         //increase opacity gradually when loading tiles
         'gradualLoading' : true,
 
-        'renderWhenPanning':false,
+        'renderWhenPanning' : false,
         //移图时地图的更新间隔, 默认为0即实时更新, -1表示不更新.如果效率较慢则可改为适当的值
         'renderSpanWhenPanning' : 0,
 
         'crossOrigin' : null,
+
+        'tileSize' : {
+            'width'   : 256,
+            'height'  : 256
+        },
+        'tileSystem' : null
     },
 
 
@@ -52,15 +56,43 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
      * load the tile layer, can't be overrided by sub-classes
      */
     load:function(){
-        if (!this._render) {
-            this._initRender();
-            this._render.initContainer();
-            var zIndex = this.getZIndex();
-            if (!Z.Util.isNil(zIndex)) {
-                this._render.setZIndex(zIndex);
-            }
+        if (!this.getMap()) {return;}
+        this._initTileConfig();
+        this._initRender();
+        this._render.initContainer();
+        var zIndex = this.getZIndex();
+        if (!Z.Util.isNil(zIndex)) {
+            this._render.setZIndex(zIndex);
         }
-        this._load();
+        if (this._prepareLoad()) {
+            this._render.render(true);
+        }
+    },
+
+    getTileSize:function() {
+        return Z.Util.extend({}, this.options['tileSize']);
+    },
+
+    isCanvasRender:function() {
+        if (Z.Browser.canvas) {
+            return true;
+        } else {
+            return false;
+        }
+    },
+
+    clear:function() {
+        if (this._render) {
+            this._render.clear();
+        }
+    },
+
+    /**
+     * 载入前的准备操作
+     */
+    _prepareLoad:function() {
+        //nothing to do here, just return true
+        return true;
     },
 
     _initRender:function() {
@@ -73,55 +105,38 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         }
     },
 
-    isCanvasRender:function() {
-        if (Z.Browser.canvas) {
-            return true;
-        } else {
-            return false;
-        }
-    },
-
-    /**
-     * 载入前的准备操作
-     */
-    _prepareLoad:function() {
-        //nothing to do here, just return true
-        return true;
-    },
-
-    _load:function() {
-        if (!this.getMap()) {return;}
-        this.clear();
-        if (this._prepareLoad()) {
-            this._render.render(true);
-        }
-    },
 
     /**
      * * 加载TileConfig
      * @param  {fn} onLoaded 加载完成后的回调函数
      */
-    _loadTileConfig:function(onLoaded) {
-        //TileLayer只支持预定义的TILEINFO
-        this._tileConfig = new Z.TileConfig(this.options['tileInfo']);
-        if (onLoaded) {
-            onLoaded();
+    _initTileConfig:function() {
+        if (this.options['tileSystem']) {
+            this._tileConfig = new Z.TileConfig(this.options['tileSystem'], this.getMap().getFullExtent(), this.getTileSize());
+        } else {
+            var map = this.getMap();
+            this._defaultTileConfig = new Z.TileConfig(Z.TileSystem.getDefault(map.getProjection()), map.getFullExtent(), this.getTileSize());
         }
     },
 
     _getTileConfig:function(){
+        var tileConfig = this._tileConfig;
         if (!this._tileConfig) {
+            var map = this.getMap();
             //如果tilelayer本身没有设定tileconfig,则继承地图基础底图的tileconfig
-            if (this.map) {
-                return this.map._getTileConfig();
+            if (map && map.getBaseTileLayer() && map.getBaseTileLayer()._getTileConfig) {
+                tileConfig = map.getBaseTileLayer()._getTileConfig();
             }
         }
-        return this._tileConfig;
+        if (!tileConfig) {
+            return this._defaultTileConfig;
+        }
+        return tileConfig;
     },
 
     _getTiles:function(canvasSize) {
         // rendWhenReady = false;
-        var map =this.map;
+        var map =this.getMap();
         if (!map) {
             return null;
         }
@@ -132,8 +147,9 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         var tileConfig = this._getTileConfig();
         if (!tileConfig) {return null;}
 
-        var tileSize = this._getTileSize(),
-            zoomLevel = map.getZoom(),
+        var tileSize = this.getTileSize(),
+            zoom = map.getZoom(),
+            res = map._getResolution(),
             mapDomOffset = map.offsetPlatform();
 
         var holderLeft=mapDomOffset.x,
@@ -141,7 +157,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
             mapWidth = map.width,
             mapHeight = map.height;
             //中心瓦片信息,包括瓦片编号,和中心点在瓦片上相对左上角的位置
-        var centerTileIndex =  tileConfig.getCenterTileIndex(map._getPrjCenter(), zoomLevel);
+        var centerTileIndex =  tileConfig.getCenterTileIndex(map._getPrjCenter(), res);
         //计算中心瓦片的top和left偏移值
         var centerTileViewPoint=new Z.Point(parseFloat(mapWidth/2-centerTileIndex["offsetLeft"]),
                                                 parseFloat(mapHeight/2-centerTileIndex["offsetTop"])).round();
@@ -155,7 +171,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
             tileRightNum=Math.ceil(Math.abs((canvasSize['width'] - mapWidth)/2 + mapWidth-centerTileViewPoint.x)/tileSize["width"]);
 
     //  只加中心的瓦片，用做调试
-    //  var centerTileImg = this._createTileImage(centerTileViewPoint.x,centerTileViewPoint.y,this.config._getTileUrl(centerTileIndex["topIndex"],centerTileIndex["leftIndex"],zoomLevel),tileSize["height"],tileSize["width"]);
+    //  var centerTileImg = this._createTileImage(centerTileViewPoint.x,centerTileViewPoint.y,this.config._getTileUrl(centerTileIndex["topIndex"],centerTileIndex["leftIndex"],zoom),tileSize["height"],tileSize["width"]);
     //  tileContainer.appendChild(centerTileImg);
 
         var tiles = [];
@@ -163,16 +179,16 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         //TODO 瓦片从中心开始加起
         for (var i=-(tileLeftNum);i<tileRightNum;i++){
             for (var j=-(tileTopNum);j<=tileBottomNum;j++){
-                    var tileIndex = tileConfig.getNeighorTileIndex(centerTileIndex["y"], centerTileIndex["x"], j,i, zoomLevel, this.options['repeatWorld']);
+                    var tileIndex = tileConfig.getNeighorTileIndex(centerTileIndex["y"], centerTileIndex["x"], j,i, res, this.options['repeatWorld']);
                     var tileLeft = centerTileViewPoint.x + tileSize["width"]*i-holderLeft;
                     var tileTop = centerTileViewPoint.y +tileSize["height"]*j-holderTop;
-                    var tileUrl = this._getTileUrl(tileIndex["x"],tileIndex["y"],zoomLevel);
-                    var tileId=[tileIndex["y"], tileIndex["x"], zoomLevel].join('__');
+                    var tileUrl = this._getTileUrl(tileIndex["x"],tileIndex["y"],zoom);
+                    var tileId=[tileIndex["y"], tileIndex["x"], zoom].join('__');
                     var tileDesc = {
                         'url' : tileUrl,
                         'viewPoint': new Z.Point(tileLeft, tileTop),
                         'id'  : tileId,
-                        'zoom' : zoomLevel
+                        'zoom' : zoom
                     };
                     tiles.push(tileDesc);
                     fullExtent = fullExtent.combine(new Z.Extent(tileDesc['viewPoint'], tileDesc['viewPoint'].add(new Z.Point(tileSize['width'],tileSize['height']))));
@@ -225,15 +241,5 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
             }
             return value;
         });
-    },
-
-    clear:function() {
-        if (this._render) {
-            this._render.clear();
-        }
-    },
-
-    _getTileSize:function() {
-        return this._getTileConfig()['tileSize'];
     }
 });

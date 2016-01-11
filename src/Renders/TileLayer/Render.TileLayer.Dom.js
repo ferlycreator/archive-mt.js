@@ -187,11 +187,10 @@ Z.render.tilelayer.Dom.prototype = {
         var map = this._layer.getMap();
         var mapHeight = map.height,
             mapWidth = map.width,
-            mapDomOffset = map.offsetPlatform(),
-            tileConfig = this._layer._getTileConfig();
+            mapDomOffset = map.offsetPlatform();
         var _holderLeft = mapDomOffset.x,
             _holderTop = mapDomOffset.y,
-            _tileSize = tileConfig["tileSize"];
+            _tileSize = this._layer.getTileSize();
         var currentTile = null;
         try {
             currentTile = tileContainer.firstChild;
@@ -231,7 +230,7 @@ Z.render.tilelayer.Dom.prototype = {
      */
     _createTileImage:function(_tileLeft, _tileTop, url,  onloadFn) {
         var tileImage = new Image(),
-            tileSize = this._layer._getTileSize();
+            tileSize = this._layer.getTileSize();
         // var padding = this.getPadding();
 
 

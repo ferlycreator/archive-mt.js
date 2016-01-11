@@ -627,8 +627,8 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     _getProjection:function() {
         var map = this.getMap();
-        if (map && map._getProjection()) {
-            return map._getProjection();
+        if (map && map.getProjection()) {
+            return map.getProjection();
         }
         return null;
     },

@@ -1,8 +1,7 @@
-//aka sphericalMercator
-Z.ProjectionInstance.EPSG3857 = {
-    srs: 'EPSG:3857',
-    rad : Math.PI / 180,
-    metersPerDegree : 2.003750834E7/180,
+Z.Projection.EPSG3857 = Z.Util.extend({}, Z.Projection.Common, {
+    name : "EPSG:3857",
+    radUnit : Math.PI / 180,
+    r180 : 2.003750834E7/180,
 
     project: function(lnglat) {
         var rad = this.rad,
