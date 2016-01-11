@@ -374,8 +374,11 @@ Z.Canvas = {
         Z.Canvas.fillCanvas(ctx, fillOpacity);
     },
 
-    sector:function(ctx, pt, size, startAngle, endAngle, lineOpacity, fillOpacity) {
+    sector:function(ctx, pt, size, angles, lineOpacity, fillOpacity) {
+        var startAngle = angles[0],
+            endAngle = angles[1];
         function sector(ctx, x, y, radius, startAngle, endAngle) {
+            console.log(x, y, radius, startAngle, endAngle);
             var rad = Math.PI / 180;
             var sDeg = rad*-endAngle;
             var eDeg = rad*-startAngle;
