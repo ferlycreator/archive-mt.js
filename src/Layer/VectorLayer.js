@@ -6,7 +6,7 @@ Z.VectorLayer=Z.OverlayLayer.extend({
         'enableSimplify'            : true,
         'cursor'                    : 'pointer',
         'geometryEvents'            : true,
-        'thresholdOfEcoTransform'   : 100
+        'thresholdOfEcoTransform'   : 50
     },
 
     /**

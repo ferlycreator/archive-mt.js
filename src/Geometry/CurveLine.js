@@ -1,6 +1,6 @@
-Z.Curve = Z.LineString.extend({
+Z.CurveLine = Z.LineString.extend({
     options:{
-        'bezierCurveDegree' : 3
+        'curveDegree' : 3
     },
 
     _getRenderCanvasResources:function() {
@@ -11,7 +11,7 @@ Z.Curve = Z.LineString.extend({
 
         var me = this;
         var fn = function(_ctx, _points, _dasharray, _lineOpacity) {
-            var degree = me.options['bezierCurveDegree'],
+            var degree = me.options['curveDegree'],
                 curveFn = (degree === 3?Z.Canvas._bezierCurveTo:Z.Canvas._quadraticCurveTo);
             var len = _points.length;
             _ctx.beginPath();
