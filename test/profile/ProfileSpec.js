@@ -100,7 +100,8 @@ describe('#Map Profile', function () {
             });
             expect(profile.baseTileLayer).to.be.ok();
             expect(profile.baseTileLayer.options.visible).not.to.be.ok();
-            expect(profile.layers).not.to.be.ok();
+            expect(profile.layers).to.be.ok();
+            expect(profile.layers).to.have.length(0);
         });
 
         it('get map from a simple profile',function() {

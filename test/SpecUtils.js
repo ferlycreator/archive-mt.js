@@ -191,7 +191,9 @@ var GeoSymbolTester = {
         for (i = this.markerSymbols.length - 1; i >= 0; i--) {
             geometry.setSymbol(this.markerSymbols[i]);
         }
-        geometry.setSymbol(this.lineAndFill);
+        if (!(geometry instanceof Z.Marker) && !(geometry instanceof Z.MultiPoint)) {
+            geometry.setSymbol(this.lineAndFill);
+        }
         geometry.remove();
         layer = new maptalks.VectorLayer("symboltest_layer_canvas",{"render":"canvas"});
         map.addLayer(layer);
@@ -199,7 +201,9 @@ var GeoSymbolTester = {
         for (i = this.markerSymbols.length - 1; i >= 0; i--) {
             geometry.setSymbol(this.markerSymbols[i]);
         }
-        geometry.setSymbol(this.lineAndFill);
+        if (!(geometry instanceof Z.Marker) && !(geometry instanceof Z.MultiPoint)) {
+            geometry.setSymbol(this.lineAndFill);
+        }
     }
 };
 
