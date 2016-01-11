@@ -6,4 +6,4 @@ Z.Projection.IDENTITY = Z.Util.extend({}, Z.Projection.Common, {
     unproject:function(p){
         return new Z.Coordinate(p.x,p.y);
     }
-}, Z.measurer.Euclidean);
+}, Z.measurer.Identity);

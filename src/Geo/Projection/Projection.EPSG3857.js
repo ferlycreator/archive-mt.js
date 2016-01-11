@@ -20,6 +20,4 @@ Z.Projection.EPSG3857 = Z.Util.extend({}, Z.Projection.Common, {
         c = (2 * Math.atan(Math.exp(c * rad)) - Math.PI / 2)/rad;
         return new Z.Coordinate(x / metersPerDegree, c);
     }
-};
-
-Z.Util.extend(Z.ProjectionInstance.EPSG3857, Z.measurer.WGS84Sphere);
+}, Z.measurer.WGS84Sphere);

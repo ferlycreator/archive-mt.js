@@ -6,7 +6,7 @@ Z.Projection.BAIDU = Z.Util.extend({}, Z.Projection.Common, {
     unproject:function(p){
         return this.convertMC2LL(p);
     }
-}, Z.measurer.Sphere.NORMAL, {
+}, Z.measurer.BaiduSphere, {
     EARTHRADIUS: 6370996.81,
     MCBAND: [12890594.86, 8362377.87, 5591021, 3481989.83, 1678043.12, 0],
     LLBAND: [75, 60, 45, 30, 15, 0],

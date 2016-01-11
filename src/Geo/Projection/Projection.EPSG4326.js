@@ -6,5 +6,4 @@ Z.Projection.EPSG4326 = Z.Util.extend({}, Z.Projection.Common, {
     unproject:function(p){
         return new Z.Coordinate(p.x,p.y);
     }
-};
-Z.Util.extend(Z.ProjectionInstance.EPSG4326, Z.measurer.WGS84Sphere);
+}, Z.measurer.WGS84Sphere);
