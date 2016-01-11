@@ -7,4 +7,4 @@ Z.ProjectionInstance.EPSG4326={
         return new Z.Coordinate(p.x,p.y);
     }
 };
-Z.Util.extend(Z.ProjectionInstance.EPSG4326, Z.measurer.Sphere.NORMAL);
+Z.Util.extend(Z.ProjectionInstance.EPSG4326, Z.measurer.WGS84Sphere);

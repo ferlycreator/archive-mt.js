@@ -46,7 +46,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         'crossOrigin' : null,
 
         //true means this is an euclidean geometry
-        'euclidean' :false
+        'measure' : 'wgs84', // euclidean
     },
 
     /**
@@ -622,16 +622,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (this._getProjection()) {
             return this._getProjection();
         }
-        if (this.options['euclidean']) {
-            if (!this._measurer || (!this._measurer instanceof Z.measurer.Euclidean)) {
-                this._measurer = Z.measurer.Euclidean;
-            }
-        } else {
-            if (!this._measurer || (!this._measurer instanceof Z.measurer.Sphere)) {
-                this._measurer = Z.measurer.Sphere.NORMAL;
-            }
-        }
-        return this._measurer;
+        return Z.Measurer.getMeasurer(this.options['measure']);
     },
 
     _getProjection:function() {

@@ -47,8 +47,9 @@ Z.measurer.Sphere.prototype = {
     }
 }
 
-Z.measurer.Sphere.NORMAL = {
-    sphere : new Z.measurer.Sphere(6370996.81),
+Z.measurer.WGS84Sphere = {
+    name : 'wgs84',
+    sphere : new Z.measurer.Sphere(6378137), //6370996.81
     measureLength: function() {
         return this.sphere.measureLength.apply(this.sphere,arguments);
     },
