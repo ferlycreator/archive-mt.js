@@ -33,9 +33,9 @@ Z.Util.extend(Z.TileSystem, {
 });
 
 Z.TileSystem.getDefault = function(projection) {
-    if (projection['name'].toLowerCase() === 'baidu') {
+    if (projection['code'].toLowerCase() === 'baidu') {
         return 'baidu';
-    } else if (projection['name'].toLowerCase() === 'EPSG:4326'.toLowerCase()) {
+    } else if (projection['code'].toLowerCase() === 'EPSG:4326'.toLowerCase()) {
         return 'tms-global-geodetic';
     } else {
         return 'web-mercator';

@@ -60,7 +60,7 @@ Z.View.prototype = {
             if (Z.Util.isString(projection)) {
                 for (var p in Z.Projection) {
                     if (Z.Projection.hasOwnProperty(p)) {
-                        var regName = Z.Projection[p]['name'];
+                        var regName = Z.Projection[p]['code'];
                         if (regName && regName.toLowerCase() === projection.toLowerCase()) {
                             projection = Z.Projection[p];
                             break;
@@ -71,13 +71,16 @@ Z.View.prototype = {
         } else {
             projection = Z.Projection.DEFAULT;
         }
-        if (Z.Util.isString(projection)) {
+        if (!projection || Z.Util.isString(projection)) {
             throw new Error('must provide a valid projection in map\'s view.');
         }
         this._projection = projection;
         var resolutions = this.options['resolutions'];
         if (!resolutions) {
-            resolutions = this.defaultView[projection['name']]['resolutions'];
+            var defaultView = this.defaultView[projection['code']];
+            if (defaultView) {
+                resolutions = defaultView['resolutions']
+            }
             if (!resolutions) {
                 throw new Error('must provide valid resolutions in map\'s view.');
             }
@@ -85,7 +88,7 @@ Z.View.prototype = {
         this._resolutions = resolutions;
         var fullExtent = this.options['fullExtent'];
         if (!fullExtent) {
-            fullExtent = this.defaultView[projection['name']]['fullExtent'];
+            fullExtent = this.defaultView[projection['code']]['fullExtent'];
             if (!resolutions) {
                 throw new Error('must provide a valid fullExtent in map\'s view.');
             }

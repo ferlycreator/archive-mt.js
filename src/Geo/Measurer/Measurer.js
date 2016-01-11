@@ -7,7 +7,7 @@ Z.Measurer = {
         }
         for (var p in Z.measurer) {
             if (Z.measurer.hasOwnProperty(p)) {
-                var mName = Z.measurer[p].name;
+                var mName = Z.measurer[p]['measure'];
                 if (!mName) {
                     continue;
                 }

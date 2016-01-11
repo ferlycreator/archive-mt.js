@@ -1,5 +1,5 @@
 Z.measurer.Identity = {
-    name : 'IDENTITY',
+    'measure' : 'IDENTITY',
     measureLength:function(c1,c2){
         if (!c1 || !c2) {return 0;}
         try {

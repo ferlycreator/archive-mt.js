@@ -48,7 +48,7 @@ Z.measurer.Sphere.prototype = {
 }
 
 Z.measurer.WGS84Sphere = {
-    name : 'EPSG:4326',
+    'measure' : 'EPSG:4326',
     sphere : new Z.measurer.Sphere(6378137),
     measureLength: function() {
         return this.sphere.measureLength.apply(this.sphere,arguments);
@@ -62,7 +62,7 @@ Z.measurer.WGS84Sphere = {
 }
 
 Z.measurer.BaiduSphere = {
-    name : 'BAIDU',
+    'measure' : 'BAIDU',
     sphere : new Z.measurer.Sphere(6370996.81),
     measureLength: function() {
         return this.sphere.measureLength.apply(this.sphere,arguments);

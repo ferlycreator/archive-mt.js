@@ -119,18 +119,22 @@ Z['Map']=Z.Map=Z.Class.extend({
 
     setView:function(view) {
         var oldView = this._view;
+        if (oldView && !view) {
+            return;
+        }
         this.options['view'] =  view;
         this._view = new Z.View(view);
         if (this.options['view'] && Z.Util.isFunction(this.options['view']['projection'])) {
             var projection = this._view.getProjection();
-            this.options['view']['projection'] = projection['name'];
+            //save projection code for map profiling (toJSON/fromJSON)
+            this.options['view']['projection'] = projection['code'];
         }
         this._resetMapStatus();
         this._fireEvent('viewchange');
     },
 
     onConfig:function(conf) {
-        if (conf['view'] !== undefined) {
+        if (!Z.Util.isNil(conf['view'])) {
             this.setView(conf['view']);
         }
     },
@@ -441,12 +445,12 @@ Z['Map']=Z.Map=Z.Class.extend({
             var xz = -1;
             var yz = -1;
             for ( var i = this.getMinZoom(), len = this.getMaxZoom(); i < len; i++) {
-                if (projectedExtent.x / resolutions[i] >= this.width) {
+                if (Z.Util.round(projectedExtent.x / resolutions[i]) >= this.width) {
                     if (xz == -1) {
                         xz = i;
                     }
                 }
-                if (projectedExtent.y / resolutions[i] >= this.height) {
+                if (Z.Util.round(projectedExtent.y / resolutions[i]) >= this.height) {
                     if (yz == -1) {
                         yz = i;
                     }
@@ -490,11 +494,13 @@ Z['Map']=Z.Map=Z.Class.extend({
             this._fireEvent('baselayerchangestart');
             this._baseTileLayer._onRemove();
         }
-        baseTileLayer.config({
-            'renderWhenPanning':true
-        });
-        if (!baseTileLayer.options['tileSystem']) {
-            baseTileLayer.config('tileSystem', Z.TileSystem.getDefault(this.getProjection()));
+        if (baseTileLayer instanceof Z.TileLayer) {
+            baseTileLayer.config({
+                'renderWhenPanning':true
+            });
+            if (!baseTileLayer.options['tileSystem']) {
+                baseTileLayer.config('tileSystem', Z.TileSystem.getDefault(this.getProjection()));
+            }
         }
         baseTileLayer._prepare(this,-1);
         this._baseTileLayer = baseTileLayer;
@@ -506,11 +512,6 @@ Z['Map']=Z.Map=Z.Class.extend({
         }
         this._baseTileLayer.once('layerloaded',onBaseTileLayerLoaded,this);
         this._baseTileLayer.load();
-        // if (this._loaded) {
-        //     this._baseTileLayer.load();
-        // } else {
-        //     this._Load();
-        // }
         return this;
     },
 

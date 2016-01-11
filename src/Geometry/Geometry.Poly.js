@@ -30,7 +30,7 @@ Z.Geometry.Poly={
         }
         for (var i=0,len=points.length;i<len;i++) {
             var p = points[i];
-            if (Z.Util.isNil(p) || !(isClipping && fullExtent.contains(p)) {
+            if (Z.Util.isNil(p) || !(isClipping && fullExtent.contains(p))) {
                 continue;
             }
             if (is2dArray) {

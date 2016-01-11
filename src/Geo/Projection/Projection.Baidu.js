@@ -1,5 +1,5 @@
 Z.Projection.BAIDU = Z.Util.extend({}, Z.Projection.Common, {
-    name : "BAIDU",
+    code : "BAIDU",
     project:function(p){
         return this.convertLL2MC(p);
     },
