@@ -46,7 +46,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         'crossOrigin' : null,
 
         //true means this is an euclidean geometry
-        'measure' : 'wgs84', // euclidean
+        'measure' : 'EPSG:4326', // BAIDU, IDENTITY
     },
 
     /**
@@ -622,7 +622,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (this._getProjection()) {
             return this._getProjection();
         }
-        return Z.Measurer.getMeasurer(this.options['measure']);
+        return Z.Measurer.getInstance(this.options['measure']);
     },
 
     _getProjection:function() {
