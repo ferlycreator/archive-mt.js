@@ -629,7 +629,9 @@ Z['Map']=Z.Map=Z.Class.extend({
             layer._onRemove();
         }
         var id = layer.getId();
-        delete this._layerCache[id];
+        if (this._layerCache) {
+            delete this._layerCache[id];
+        }
         return this;
     },
 
