@@ -4,6 +4,7 @@ SvgData = {
         this
         ._addLabel()
         ._addPictureMarker()
+        ._addSVGMarker()
         ._addTextMarker()
         ._addVectorMarker()
         ._addShieldMarker()
@@ -22,15 +23,15 @@ SvgData = {
        var option = {
            'symbol': {
                'markerFillOpacity': 0.3,
-               'textFaceName': 'arial',
+               'textFaceName': 'Arial monospace',
                'textSize': 16,
-               'textFill': '#ff0000',
-               'textWrapWidth': 250
+               'textFill': '#ff0000'/*,
+               'textWrapWidth': 250*/
            },
            'draggable': true
        };
        //创建label
-       var label = new maptalks.Label('###########SVG############', coordinate, option).addTo(this.layer);
+       var label = new maptalks.Label('###########中文SVG############', coordinate, option).addTo(this.layer);
        return this;
     },
     _addPictureMarker: function() {
@@ -40,6 +41,24 @@ SvgData = {
             'markerFile': '../../images/resource/marker.png',
             'markerWidth': 22,
             'markerHeight': 30,
+            'markerDx': 0,
+            'markerDy' :0
+        };
+        //创建点对象
+        var marker = new maptalks.Marker(coordinate,{'draggable':true});
+        //设置点样式
+        marker.setSymbol(icon);
+        //将点添加到Layer
+        this.layer.addGeometry(marker);
+        return this;
+    },
+    _addSVGMarker: function() {
+         var coordinate = new maptalks.Coordinate(121.47395347076484,31.251107599217637);
+        //设置图片
+        var icon = {
+            'markerFile': 'ph.svg',
+            'markerWidth': 26,
+            'markerHeight': 34,
             'markerDx': 0,
             'markerDy' :0
         };
@@ -340,7 +359,7 @@ SvgData = {
             'lineOpacity' : 1,
             'polygon-fill' : '#ff00ff',
             'polygonFill' : 'rgb(255, 255, 0)',
-            'polygonOpacity' : 0.8
+            'polygonOpacity' : 0.4
         });
         this.layer.addGeometry(sector);
         return this;

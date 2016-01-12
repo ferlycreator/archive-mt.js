@@ -21,7 +21,7 @@
             zoom:   16 //初始缩放级别
         });
         //设置底图图层
-        mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
+        mapObj.setBaseLayer(new maptalks.TileLayer('tile', //底图id
         {
             tileInfo: 'web-mercator',
             urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
@@ -33,21 +33,28 @@
         mapObj.addLayer(layer);
 
         //创建线对象
-        var curve = new maptalks.Curve(
+        var curve = new maptalks.CurveLine(
             //线端点坐标数组
             [[121.48416288620015,31.24488412311837],[121.48394830947899,31.242664302121515],[121.48595460182202,31.242535881128543],[121.48695238357557,31.244838259576046],[121.48944147354125,31.24487495041167],[121.49018176322932,31.242664302121515],[121.49290688758839,31.242765204207824],[121.49358280426011,31.245040058995645],[121.49601825004554,31.245159303904526],[121.49715550666777,31.242921143583686]],
             //bezierCurveDegree指贝塞尔曲线的度, 取值为2或者3即二阶贝塞尔曲线或三阶贝塞尔曲线
-            {draggable: true, bezierCurveDegree:3, arrowStyle:"classic"});
+            {draggable: true, curveType:1, arrowStyle:"classic"});
+         var line = new maptalks.LineString(
+            //线端点坐标数组
+            [[121.48416288620015,31.24488412311837],[121.48394830947899,31.242664302121515],[121.48595460182202,31.242535881128543],[121.48695238357557,31.244838259576046],[121.48944147354125,31.24487495041167],[121.49018176322932,31.242664302121515],[121.49290688758839,31.242765204207824],[121.49358280426011,31.245040058995645],[121.49601825004554,31.245159303904526],[121.49715550666777,31.242921143583686]]);
+         line.setSymbol({
+            lineWidth : 1,
+            'lineColor' : '#000000'
+         });
         //设置线样式
         var curveSymbol = {
             'lineColor' : '#ff00ff',
             'lineWidth' : 5,
-            'lineDasharray' : [20,10,5,5,5,10],//线形
-            'lineOpacity' : 1
+            // 'lineDasharray' : [20,10,5,5,5,10],//线形
+            'lineOpacity' : 0.4
         };
         curve.setSymbol(curveSymbol);
         //将线添加到Layer
-        layer.addGeometry(curve);
+        layer.addGeometry([curve,line]);
     }
 </script>
 <!-- 引擎javascript开发包-->
