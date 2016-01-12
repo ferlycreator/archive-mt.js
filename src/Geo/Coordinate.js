@@ -3,7 +3,7 @@
  * @class maptalks.Coordinate
  * @author Maptalks Team
  */
-Z['Coordinate'] = Z.Coordinate = function(x, y) {
+Z.Coordinate = function(x, y) {
     if (!Z.Util.isNil(x) && !Z.Util.isNil(y)) {
         this.x = Z.Util.isNumber(x)?x:parseFloat(x);
         this.y = Z.Util.isNumber(y)?y:parseFloat(y);

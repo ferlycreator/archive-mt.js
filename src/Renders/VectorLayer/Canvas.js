@@ -314,6 +314,49 @@ Z.Canvas = {
         }
     },
 
+    /**
+     * draw a arc from p1 to p2 with degree of (p1, center) and (p2, center)
+     * @param  {Context} ctx    canvas context
+     * @param  {Point} p1      point 1
+     * @param  {Point} p2      point 2
+     * @param  {Number} degree arc degree between p1 and p2
+     */
+    _arcBetween : function(ctx, p1, p2, degree) {
+        console.log(p1, p2, degree);
+        var a = degree * Math.PI/180;
+        var dist = p1.distanceTo(p2),
+            r = dist/2/Math.sin(a/2);
+
+        var a_p1p2 = Math.asin((p2.y-p1.y)/dist);
+        if (p1.x > p2.x) {
+            a_p1p2 = Math.PI - a_p1p2;
+        }
+
+        var a_cp2 = 90*Math.PI/180 - a/2;
+
+        var da = a_p1p2 - a_cp2;
+
+        var dx = Math.cos(da)*r,
+            dy = Math.sin(da)*r;
+
+        var cx, cy;
+        cy = p1.y + dy,
+        cx = p1.x + dx;
+
+        var startAngle = Math.asin((p2.y-cy)/r);
+        if (cx > p2.x) {
+            startAngle = Math.PI - startAngle;
+        }
+        var endAngle = startAngle+a;
+
+        ctx.beginPath();
+        ctx.arc(Z.Util.round(cx), Z.Util.round(cy), Z.Util.round(r), startAngle, endAngle);
+    },
+
+    _lineTo:function(ctx, p) {
+        ctx.lineTo(p.x, p.y);
+    },
+
     bezierCurve:function(ctx, points, lineDashArray, lineOpacity) {
         ctx.beginPath(points);
         var start = points[0].round();

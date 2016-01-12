@@ -4,7 +4,12 @@
  * @extends maptalks.Class
  * @author Maptalks Team
  */
-Z.Linker = Z.Class.extend({
+Z.ConnectorLine = Z.CurveLine.extend({
+
+    options: {
+
+    },
+
     /**
      * @constructor
      * @param {Object} options 连接配置及其它设置
@@ -16,48 +21,12 @@ Z.Linker = Z.Class.extend({
         }
      * @returns {maptalks.Linker}
      */
-    initialize: function (options) {
-        if(!options) {return;}
-        Z.Util.setOptions(this, options);
-        this._linkSource = options['linkSource'];
-        this._linkTarget = options['linkTarget'];
-        return this;
-    },
-
-    /**
-     * add linker to layer
-     * @param {maptalks.Layer} layer
-     * @returns {maptalks.Linker}
-     * @expose
-     */
-    addTo: function (layer) {
-        this.remove();
-        this._map = layer.getMap();
-        var linkPoints = this._computeLinkPoint();
-        this._linker  = new Z.Polyline(linkPoints);
-        var symbol = this.options['symbol'];
-        if(symbol) {
-            this._linker.setSymbol(symbol);
-        }
-        layer.addGeometry(this._linker);
+    initialize: function (src, target, options) {
+        this._connSource = src;
+        this._connTarget = target;
         this._registEvents();
-        return this;
-    },
-
-    /**
-     * 显示连接线
-     * @expose
-     */
-    show: function() {
-        this._linker.show();
-    },
-
-    /**
-     * 隐藏连接线
-     * @expose
-     */
-    hide: function() {
-        this._linker.hide();
+        this._updateCoordinates();
+        this._initOptions(opts);
     },
 
     /**
@@ -65,55 +34,75 @@ Z.Linker = Z.Class.extend({
      * @expose
      */
     remove: function () {
-        if (!this._map) {
-            return this;
-        }
-        if(this._linker) {
-            this._linker.remove();
-        }
-        this._linkSource.off('dragging positionchanged', this._changeLinkPath, this)
+        this._connSource.off('dragging positionchanged', this._changeLinkPath, this)
                         .off('remove', this.remove, this);
-        this._linkTarget.off('dragging positionchanged', this._changeLinkPath, this)
+        this._connTarget.off('dragging positionchanged', this._changeLinkPath, this)
                         .off('remove', this.remove, this);
+    },
+
+    _updateCoordinates:function() {
+        var map = this.getMap();
+        var srcPoints = this._connSource.getConnectPoints();
+        var targetPoints = this._connTarget.getConnectPoints();
+        var minDist = 0;
+        var c1,c2;
+        for(var i=0,len=srcPoints.length;i<len;i++) {
+            var p1 = srcPoints[i];
+            for(var j=0,length=targetPoints.length;j<length;j++) {
+                var p2 = targetPoints[j];
+                var dist = map.computeDistance(p1, p2);
+                if(i===0&&j===0) {
+                    c1 = p1;
+                    c2 = p2;
+                    minDist = dist;
+                } else {
+                    if(dist < minDist) {
+                        c1 = p1;
+                        c2 = p2;
+                    }
+                }
+            }
+        }
+        this.setCoordinates([c1, c2]);
     },
 
     _registEvents: function() {
         var me = this;
-        this._linkSource.on('dragging positionchanged', this._changeLinkPath, this)
+        this._connSource.on('dragging positionchanged', this._changeLinkPath, this)
                         .on('remove', this.remove, this);
-        this._linkTarget.on('dragging positionchanged', this._changeLinkPath, this)
+        this._connTarget.on('dragging positionchanged', this._changeLinkPath, this)
                         .on('remove', this.remove, this);
         var trigger = this.options['trigger'];
         me._linker.hide();
         if ('moving' === trigger) {
-            this._linkSource.on('dragstart', function(){
+            this._connSource.on('dragstart', function(){
                 me._linker.show();
             }).on('dragend', function(){
                 me._linker.hide();
             });
-            this._linkTarget.on('dragstart', function(){
+            this._connTarget.on('dragstart', function(){
                 me._linker.show();
             }).on('dragend', function(){
                 me._linker.hide();
             });
         } else if ('click' === trigger) {
-            this._linkSource.on('mousedown', function(){
+            this._connSource.on('mousedown', function(){
                 me._linker.show();
             }).on('mouseup', function(){
                 me._linker.hide();
             });
-            this._linkTarget.on('mousedown', function(){
+            this._connTarget.on('mousedown', function(){
                 me._linker.show();
             }).on('mouseup', function(){
                 me._linker.hide();
             });
         } else if ('hover' === trigger) {
-            this._linkSource.on('mouseover', function(){
+            this._connSource.on('mouseover', function(){
                 me._linker.show();
             }).on('mouseout', function(){
                 me._linker.hide();
             });
-            this._linkTarget.on('mouseover', function(){
+            this._connTarget.on('mouseover', function(){
                 me._linker.show();
             }).on('mouseout', function(){
                 me._linker.hide();
@@ -129,8 +118,8 @@ Z.Linker = Z.Class.extend({
     },
 
     _computeLinkPoint: function() {
-        var sourceVertexs = this._linkSource.getLinkAnchors();
-        var targetVertexs = this._linkTarget.getLinkAnchors();
+        var sourceVertexs = this._connSource.getConnectPoints();
+        var targetVertexs = this._connTarget.getConnectPoints();
         var lastDistance = 0;
         var nearestSourcePoint,nearestTargetPoint;
         for(var i=0,len=sourceVertexs.length;i<len;i++) {

@@ -462,7 +462,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     /**
      * 获取图形顶点坐标数组
      */
-    getLinkAnchors: function() {
+    getConnectPoints: function() {
         return [this.getCenter()];
     },
 
