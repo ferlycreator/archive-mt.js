@@ -36,7 +36,7 @@ describe('CircleSpec', function() {
             var spy = sinon.spy();
 
             var vector = new Z.Circle(center, 1);
-            vector.on('shapechanged positionchanged',spy);
+            vector.on('shapechange positionchange',spy);
 
             function evaluate() {
                 var rnd = Math.random()*0.001;

@@ -94,7 +94,7 @@ Z.Geometry.Drag = Z.Handler.extend({
         }
         this._dragStageLayer.addGeometry(this._shadow);
         this._dragStageLayer.addGeometry(shadowConnectors);
-        this.target.on('symbolchanged', this._onTargetUpdated, this);
+        this.target.on('symbolchange', this._onTargetUpdated, this);
         this.target.hide();
         this._shadow._fireEvent('dragstart');
         /**
@@ -164,7 +164,7 @@ Z.Geometry.Drag = Z.Handler.extend({
         }
         // map.off('mousemove', this._dragging, this);
         // map.off('mouseup', this._endDrag, this);
-        this.target.off('symbolchanged', this._onTargetUpdated, this);
+        this.target.off('symbolchange', this._onTargetUpdated, this);
         if (map['draggable']) {
             map['draggable'].enable();
         }

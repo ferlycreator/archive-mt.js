@@ -309,10 +309,8 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         var json = this.toJSON();
         //FIXME symbol信息没有被拷贝过来
         var ret = Z.Geometry.fromJSON(json);
-        if (this._isEditingOrDragging()) {
-            //when geometry is editing or dragging, visible may be set to false
-            ret.options['visible'] = true;
-        }
+        //restore visibility
+        ret.options['visible'] = true;
         return ret;
     },
 
@@ -681,9 +679,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (painter) {
             painter.repaint();
         }
-        if (!this._isEditingOrDragging()) {
-            this._fireEvent('shapechanged');
-        }
+        this._fireEvent('shapechange');
     },
 
     _onPositionChanged:function() {
@@ -692,9 +688,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (painter) {
             painter.repaint();
         }
-        if (!this._isEditingOrDragging()) {
-            this._fireEvent('positionchanged');
-        }
+        this._fireEvent('positionchange');
     },
 
     _onSymbolChanged:function() {
@@ -702,7 +696,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (painter) {
             painter.refreshSymbol();
         }
-        this._fireEvent('symbolchanged');
+        this._fireEvent('symbolchange');
     },
     /**
      * 设置Geometry的父Geometry, 父Geometry为包含该geometry的Collection类型Geometry

@@ -176,12 +176,12 @@ Z.Label = Z.Marker.extend({
         }
     },
     _registerEvents: function() {
-        this.on('shapechanged', this._refresh, this);
+        this.on('shapechange', this._refresh, this);
         this.on('remove', this._onLabelRemove, this);
         return this;
     },
     _onLabelRemove:function() {
-        this.off('shapechanged', this._refresh, this);
+        this.off('shapechange', this._refresh, this);
         this.off('remove', this._onLabelRemove,this);
     }
 });

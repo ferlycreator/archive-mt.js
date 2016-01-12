@@ -48,7 +48,7 @@ describe('SectorSpec', function() {
             var spy = sinon.spy();
 
             var vector = new Z.Sector(center, 1, 0, 270);
-            vector.on('shapechanged positionchanged',spy);
+            vector.on('shapechange positionchange',spy);
 
             function evaluate() {
                 var rnd = Math.random()*0.001;

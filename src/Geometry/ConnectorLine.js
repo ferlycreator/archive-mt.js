@@ -84,9 +84,9 @@ Z.ConnectorLine = Z.CurveLine.extend({
     _onRemove: function () {
         Z.Util.removeFromArray(this, this._connSource.__connectors);
         Z.Util.removeFromArray(this, this._connTarget.__connectors);
-        this._connSource.off('dragging positionchanged', this._updateCoordinates, this)
+        this._connSource.off('dragging positionchange', this._updateCoordinates, this)
                         .off('remove', this._onRemove, this);
-        this._connTarget.off('dragging positionchanged', this._updateCoordinates, this)
+        this._connTarget.off('dragging positionchange', this._updateCoordinates, this)
                         .off('remove', this._onRemove, this);
         this._connSource.off('dragstart mousedown mouseover', this._showConnect, this);
         this._connSource.off('dragend mouseup mouseout', this.hide, this);
@@ -112,9 +112,9 @@ Z.ConnectorLine = Z.CurveLine.extend({
         }
         this._connSource.__connectors.push(this);
         this._connTarget.__connectors.push(this);
-        this._connSource.on('dragging positionchanged', this._updateCoordinates, this)
+        this._connSource.on('dragging positionchange', this._updateCoordinates, this)
                         .on('remove', this.remove, this);
-        this._connTarget.on('dragging positionchanged', this._updateCoordinates, this)
+        this._connTarget.on('dragging positionchange', this._updateCoordinates, this)
                         .on('remove', this.remove, this);
         var trigger = this.options['trigger'];
         this.hide();

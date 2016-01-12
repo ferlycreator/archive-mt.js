@@ -466,7 +466,7 @@ Z.Editor=Z.Class.extend({
             }
             shadow.setRadius(r);
             circle.setRadius(r);
-            me.fireEditEvent('shapechanging');
+            me.fireEditEvent('shapechange');
         });
     },
 
@@ -549,7 +549,7 @@ Z.Editor=Z.Class.extend({
                 shadow.setHeight(h*r);
                 geometryToEdit.setHeight(h*r);
             }
-            me.fireEditEvent('shapechanging');
+            me.fireEditEvent('shapechange');
         });
     },
 
@@ -640,7 +640,7 @@ Z.Editor=Z.Class.extend({
                 newVertexHandles[nextIndex][propertyOfVertexRefreshFn]();
             }
 
-            me.fireEditEvent('shapechanging');
+            me.fireEditEvent('shapechange');
         }
         function createVertexHandle(index) {
             var vertex = getVertexCoordinates()[index];
@@ -692,7 +692,7 @@ Z.Editor=Z.Class.extend({
 
                     //add two "new vertex" handles
                     newVertexHandles.splice(vertexIndex,0, createNewVertexHandle.call(me, vertexIndex),createNewVertexHandle.call(me, vertexIndex+1));
-                    me.fireEditEvent('shapechanged');
+                    me.fireEditEvent('shapechange');
                 },
                 onMove:function(handleViewPoint) {
                     moveVertexHandle(handleViewPoint,handle[propertyOfVertexIndex]+1);
