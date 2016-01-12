@@ -41,7 +41,7 @@ Z.CurveLine = Z.LineString.extend({
                         points.push(_points[i+ii+1]);
                     }
                     var args = [_ctx].concat(points);
-                    if (curveFn == Z.Canvas._arcTo) {
+                    if (curveFn == Z.Canvas._arcBetween) {
                         //arc start point
                         args.splice(1,0,p);
                         args = args.concat([arcDegree]);

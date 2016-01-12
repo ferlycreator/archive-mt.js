@@ -322,16 +322,16 @@ Z.Canvas = {
      * @param  {Number} degree arc degree between p1 and p2
      */
     _arcBetween : function(ctx, p1, p2, degree) {
-        console.log(p1, p2, degree);
         var a = degree * Math.PI/180;
         var dist = p1.distanceTo(p2),
+            //radius of circle
             r = dist/2/Math.sin(a/2);
-
+        //angle between p1 and p2
         var a_p1p2 = Math.asin((p2.y-p1.y)/dist);
         if (p1.x > p2.x) {
             a_p1p2 = Math.PI - a_p1p2;
         }
-
+        //angle between circle center and p2
         var a_cp2 = 90*Math.PI/180 - a/2;
 
         var da = a_p1p2 - a_cp2;
