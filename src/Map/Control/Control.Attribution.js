@@ -14,7 +14,7 @@ Z.Control.Attribution = Z.Control.extend({
 			'bottom': '0',
 			'right': '0'
 		},
-		'content' : '<a href="www.gis.com" target="_blank" style="text-decoration:none;cursor: pointer;color: #6490C4; ">@ X-GIS</a>'
+		'defaultContent' : '<a href="http://www.maptalks.org" target="_blank" style="text-decoration:none;cursor: pointer;color: #6490C4; ">Powered By Maptalks</a>'
 	},
 
 	statics: {
@@ -52,30 +52,22 @@ Z.Map.mergeOptions({
      * @cfg {Boolean} [attributionControl="false"] 是否显示版权信息
      * @member maptalks.Map
      */
-	'attributionControl' : false,
-	/**
-     * @cfg {Object}  attributionControlOptions 版权信息参数
-     * @member maptalks.Map
-     */
-	'attributionControlOptions' : {
-		'position' : {
-			'bottom': '0',
-			'right': '0'
-		},
-        'content' : '<a href="www.gis.com" target="_blank" style="text-decoration:none;cursor: pointer;color: #6490C4; ">@ X-GIS</a>'
-	}
+	'attributionControl' : false
 });
 
 Z.Map.addOnLoadHook(function () {
 	if (this.options['attributionControl']) {
-		var attributionControlOptions = this.options['attributionControlOptions'];
-		if(!attributionControlOptions['position']) {
-			attributionControlOptions['position'] = {
+		var options = this.options['attributionControlOptions'];
+		if(!options['position']) {
+			options['position'] = {
 				'bottom': '0',
 				'right': '0'
 			};
 		}
-		this.attributionControl = new Z.Control.Attribution(attributionControlOptions);
+        if (!options['content']) {
+            options['content'] = this.options['defaultContent'];
+        }
+		this.attributionControl = new Z.Control.Attribution(options);
 		this.addControl(this.attributionControl);
 	}
 });

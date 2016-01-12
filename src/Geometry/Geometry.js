@@ -590,12 +590,18 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (!layer) {
             return;
         }
+        if (isFireEvent) {
+            this._fireEvent('removestart');
+        }
         //label
         //contextmenu
         this._unbindMenu();
         //infowindow
         this._unbindInfoWindow();
 
+        if (this._onRemove) {
+            this._onRemove();
+        }
 
         if (isFireEvent) {
             this._removePainter();

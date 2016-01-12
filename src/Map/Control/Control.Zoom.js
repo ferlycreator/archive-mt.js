@@ -94,7 +94,8 @@ Z['Control']['Zoom'] = Z.Control.Zoom = Z.Control.extend({
         //TODO slider dot拖放缩放逻辑还没有实现
     },
 
-    _onRemove: function (map) {
+    _onRemove: function () {
+        var map = this.getMap();
         map.off('_zoomend _zoomstart', this._onZoomEnd, this);
     }
 });

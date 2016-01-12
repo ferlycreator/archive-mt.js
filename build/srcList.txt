@@ -51,6 +51,7 @@
 ../src/Geometry/Polygon.js
 ../src/Geometry/LineString.js
 ../src/Geometry/CurveLine.js
+../src/Geometry/ConnectorLine.js
 ../src/Geometry/Ellipse.js
 ../src/Geometry/Circle.js
 ../src/Geometry/Sector.js
@@ -119,7 +120,6 @@
 ../src/Map/Control/Control.Toolbar.js
 ../src/Map/UI/Button.js
 ../src/Map/UI/Toolbar.js
-../src/Linker/Linker.js
 ../src/Topo/GeoUtils.js
 ../src/Topo/SimplifyUtil.js
 ../src/Query/SpatialFilter.js
