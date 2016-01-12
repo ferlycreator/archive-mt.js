@@ -73,9 +73,30 @@ Z.Geometry.Drag = Z.Handler.extend({
         this._shadow.isDragging=function() {
             return true;
         };
+        //copy connectors
+        var shadowConnectors = [];
+        if (Z.ConnectorLine._hasConnectors(this.target)) {
+            var connectors = Z.ConnectorLine._getConnectors(this.target);
+
+            for (var i = 0; i < connectors.length; i++) {
+                var targetConn = connectors[i];
+                var connOptions = targetConn.config(),
+                    connSymbol = targetConn.getSymbol();
+                    connOptions['symbol'] = connSymbol;
+                var conn;
+                if (targetConn.getConnectSource() == this.target) {
+                     conn = new maptalks.ConnectorLine(this._shadow, targetConn.getConnectTarget(),connOptions);
+                } else {
+                     conn = new maptalks.ConnectorLine(targetConn.getConnectSource(), this._shadow, connOptions);
+                }
+                shadowConnectors.push(conn);
+            }
+        }
         this._dragStageLayer.addGeometry(this._shadow);
+        this._dragStageLayer.addGeometry(shadowConnectors);
         this.target.on('symbolchanged', this._onTargetUpdated, this);
         this.target.hide();
+        this._shadow._fireEvent('dragstart');
         /**
          * 触发geometry的dragstart事件
          * @member maptalks.Geometry
@@ -121,6 +142,7 @@ Z.Geometry.Drag = Z.Handler.extend({
         this._shadow.translate(dragOffset);
         this.target.translate(dragOffset);
         param['dragOffset'] = dragOffset;
+        this._shadow._fireEvent('dragging');
         /**
          * 触发geometry的dragging事件
          * @member maptalks.Geometry
@@ -146,6 +168,7 @@ Z.Geometry.Drag = Z.Handler.extend({
         if (map['draggable']) {
             map['draggable'].enable();
         }
+        this._shadow._fireEvent('dragend', param);
         this._shadow.remove();
         delete this._shadow;
         this.target.show();

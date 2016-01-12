@@ -19,8 +19,11 @@ Z.ConnectorLine = Z.CurveLine.extend({
         this._connSource = src;
         this._connTarget = target;
         this._registEvents();
-        this._updateCoordinates();
         this._initOptions(options);
+    },
+
+    getConnectSource:function() {
+        return this._connSource;
     },
 
     setConnectSource:function(src) {
@@ -29,6 +32,10 @@ Z.ConnectorLine = Z.CurveLine.extend({
         this._updateCoordinates();
         this._registEvents();
         return this;
+    },
+
+    getConnectTarget:function() {
+        return this._connTarget;
     },
 
     setConnectTarget:function(target) {
@@ -75,16 +82,36 @@ Z.ConnectorLine = Z.CurveLine.extend({
     },
 
     _onRemove: function () {
+        Z.Util.removeFromArray(this, this._connSource.__connectors);
+        Z.Util.removeFromArray(this, this._connTarget.__connectors);
         this._connSource.off('dragging positionchanged', this._updateCoordinates, this)
                         .off('remove', this._onRemove, this);
         this._connTarget.off('dragging positionchanged', this._updateCoordinates, this)
                         .off('remove', this._onRemove, this);
-        this._connSource.off('dragstart mousedown mouseover', this.show, this);
+        this._connSource.off('dragstart mousedown mouseover', this._showConnect, this);
         this._connSource.off('dragend mouseup mouseout', this.hide, this);
+    },
+
+    _showConnect:function() {
+        if (!this._connSource || !this._connTarget) {
+            return;
+        }
+        if (this._connSource.isVisible() && this._connTarget.isVisible()) {
+            this._updateCoordinates();
+            this.show();
+        }
     },
 
     _registEvents: function() {
         var me = this;
+        if (!this._connSource.__connectors) {
+            this._connSource.__connectors = [];
+        }
+        if (!this._connTarget.__connectors) {
+            this._connTarget.__connectors = [];
+        }
+        this._connSource.__connectors.push(this);
+        this._connTarget.__connectors.push(this);
         this._connSource.on('dragging positionchanged', this._updateCoordinates, this)
                         .on('remove', this.remove, this);
         this._connTarget.on('dragging positionchanged', this._updateCoordinates, this)
@@ -92,16 +119,27 @@ Z.ConnectorLine = Z.CurveLine.extend({
         var trigger = this.options['trigger'];
         this.hide();
         if ('moving' === trigger) {
-            this._connSource.on('dragstart', this.show, this).on('dragend', this.hide, this);
-            this._connTarget.on('dragstart', this.show, this).on('dragend', this.hide, this);
+            this._connSource.on('dragstart', this._showConnect, this).on('dragend', this.hide, this);
+            this._connTarget.on('dragstart', this._showConnect, this).on('dragend', this.hide, this);
         } else if ('click' === trigger) {
-            this._connSource.on('mousedown', this.show, this).on('mouseup', this.hide, this);
-            this._connTarget.on('mousedown', this.show, this).on('mouseup', this.hide, this);
+            this._connSource.on('mousedown', this._showConnect, this).on('mouseup', this.hide, this);
+            this._connTarget.on('mousedown', this._showConnect, this).on('mouseup', this.hide, this);
         } else if ('hover' === trigger) {
-            this._connSource.on('mouseover', this.show, this).on('mouseout', this.hide, this);
-            this._connTarget.on('mouseover', this.show, this).on('mouseout', this.hide, this);
+            this._connSource.on('mouseover', this._showConnect, this).on('mouseout', this.hide, this);
+            this._connTarget.on('mouseover', this._showConnect, this).on('mouseout', this.hide, this);
         } else {
-            this.show();
+            this._showConnect();
         }
+    }
+});
+
+
+Z.Util.extend(Z.ConnectorLine, {
+    _hasConnectors:function(geometry) {
+        return (geometry.__connectors != null && geometry.__connectors.length > 0);
+    },
+
+    _getConnectors:function(geometry) {
+        return geometry.__connectors;
     }
 });
