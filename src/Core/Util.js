@@ -148,7 +148,12 @@ Z.Util = {
         function unlinkFile(file) {
             fs.stat(file, function(err, stat) {
                 if (err == null) {
-                    fs.unlink(file);
+                    try {
+                        fs.unlink(file);
+                    } catch (fserr) {
+                        console.error(fserr);
+                    }
+
                 }
             });
         }

@@ -158,7 +158,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         var prjExt = this._getPrjExtent();
         if (prjExt) {
             var p = this._getProjection();
-            return new Z.Extent(p.unproject({x:prjExt['xmin'],y:prjExt['ymin']}), p.unproject({x:prjExt['xmax'],y:prjExt['ymax']}));
+            return new Z.Extent(p.unproject(new Z.Coordinate(prjExt['xmin'],prjExt['ymin'])), p.unproject(new Z.Coordinate(prjExt['xmax'],prjExt['ymax'])));
         } else {
             return this._computeExtent(this._getMeasurer());
         }
@@ -578,7 +578,11 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         var p = this._getProjection();
         if (!this._extent && p) {
             var ext = this._computeExtent(p);
-            this._extent = new Z.Extent(p.project({x:ext['xmin'],y:ext['ymin']}), p.project({x:ext['xmax'],y:ext['ymax']}));
+            if (ext) {
+                this._extent = new Z.Extent(p.project(new Z.Coordinate(ext['xmin'],ext['ymin'])),
+                    p.project(new Z.Coordinate(ext['xmax'],ext['ymax'])));
+            }
+
         }
         return this._extent;
     },

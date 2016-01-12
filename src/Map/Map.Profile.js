@@ -29,7 +29,8 @@ Z.Layer.include({
                 var geoJSONs = [];
                 var geometries = this.getGeometries();
                 for (var i = 0, len=geometries.length; i < len; i++) {
-                    if (clipExtent && !clipExtent.intersects(geometries[i].getExtent())) {
+                    var geoExt = geometries[i].getExtent();
+                    if (!geoExt || (clipExtent && !clipExtent.intersects(geoExt))) {
                         continue;
                     }
                     geoJSONs.push(geometries[i].toJSON(options['geometries']));
