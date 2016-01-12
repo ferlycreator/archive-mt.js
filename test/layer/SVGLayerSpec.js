@@ -33,7 +33,7 @@ describe('SVGLayer', function() {
         var layer = new Z.VectorLayer('id');
 
         beforeEach(function() {
-            map.setBaseTileLayer(tile);
+            map.setBaseLayer(tile);
             map.addLayer(layer);
         });
 

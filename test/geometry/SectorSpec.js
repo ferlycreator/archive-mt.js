@@ -21,7 +21,7 @@ describe('SectorSpec', function() {
             urlTemplate:"http://t{s}.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}",
             subdomains: [1, 2, 3]
         });
-        map.setBaseTileLayer(tile);
+        map.setBaseLayer(tile);
         layer = new Z.VectorLayer('id');
         map.addLayer(layer);
     });

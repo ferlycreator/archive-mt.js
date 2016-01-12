@@ -62,7 +62,7 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
         this._clearCanvas();
         if (map.options['zoomAnimation']) {
             this._context.save();
-            var baseTileLayer = map.getBaseTileLayer();
+            var baseTileLayer = map.getBaseLayer();
             var baseLayerImage;
             if (baseTileLayer) {
                 baseLayerImage =  baseTileLayer._getRender().getCanvasImage();

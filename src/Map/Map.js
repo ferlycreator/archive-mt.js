@@ -36,7 +36,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     //根据不同的语言定义不同的错误信息
     exceptionDefs:{
         'en-US':{
-            'NO_BASE_TILE_LAYER':'Map has no baseTileLayer, pls specify a baseTileLayer by setBaseTileLayer method before loading.',
+            'NO_BASE_TILE_LAYER':'Map has no baseTileLayer, pls specify a baseTileLayer by setBaseLayer method before loading.',
             'INVALID_OPTION':'Invalid options provided.',
             'INVALID_CENTER':'Invalid Center',
             'INVALID_LAYER_ID':'Invalid id for the layer',
@@ -44,7 +44,7 @@ Z['Map']=Z.Map=Z.Class.extend({
             'INVALID_CRS' : 'the crs is invalid'
         },
         'zh-CN':{
-            'NO_BASE_TILE_LAYER':'地图没有设置基础图层,请在调用Map.Load之前调用setBaseTileLayer设定基础图层',
+            'NO_BASE_TILE_LAYER':'地图没有设置基础图层,请在调用Map.Load之前调用setBaseLayer设定基础图层',
             'INVALID_OPTION':'无效的option.',
             'INVALID_CENTER':'无效的中心点',
             'INVALID_LAYER_ID':'图层的id无效',
@@ -90,7 +90,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         this._panels={};
 
         //Layers
-        this._baseTileLayer=null;
+        this._baseLayer=null;
         this._layers = [];
 
         //shallow copy options
@@ -478,8 +478,8 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {TileLayer} [基础地图图层]
      * @expose
      */
-    getBaseTileLayer:function() {
-        return this._baseTileLayer;
+    getBaseLayer:function() {
+        return this._baseLayer;
     },
 
     /**
@@ -487,12 +487,12 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @param  {TileLayer} baseTileLayer 瓦片图层
      * @expose
      */
-    setBaseTileLayer:function(baseTileLayer) {
+    setBaseLayer:function(baseTileLayer) {
         var isChange = false;
-        if (this._baseTileLayer) {
+        if (this._baseLayer) {
             isChange = true;
             this._fireEvent('baselayerchangestart');
-            this._baseTileLayer._onRemove();
+            this._baseLayer.remove();
         }
         if (baseTileLayer instanceof Z.TileLayer) {
             baseTileLayer.config({
@@ -503,15 +503,15 @@ Z['Map']=Z.Map=Z.Class.extend({
             }
         }
         baseTileLayer._prepare(this,-1);
-        this._baseTileLayer = baseTileLayer;
+        this._baseLayer = baseTileLayer;
         function onBaseTileLayerLoaded() {
             this._fireEvent('baselayerload');
             if (isChange) {
                 this._fireEvent('baselayerchangeend');
             }
         }
-        this._baseTileLayer.once('layerloaded',onBaseTileLayerLoaded,this);
-        this._baseTileLayer.load();
+        this._baseLayer.once('layerloaded',onBaseTileLayerLoaded,this);
+        this._baseLayer.load();
         return this;
     },
 
@@ -521,7 +521,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      */
     getLayers:function(filter) {
         return this._getLayers(function(layer) {
-            if (layer === this._baseTileLayer || layer.getId().indexOf(Z.internalLayerPrefix) >= 0) {
+            if (layer === this._baseLayer || layer.getId().indexOf(Z.internalLayerPrefix) >= 0) {
                 return false;
             }
             if (filter) {
@@ -994,7 +994,7 @@ Z['Map']=Z.Map=Z.Class.extend({
                 layer.load();
             }
         }
-        if (this._baseTileLayer) {this._baseTileLayer.load();}
+        if (this._baseLayer) {this._baseLayer.load();}
         this._eachLayer(loadLayer,this.getLayers());
     },
 
@@ -1006,7 +1006,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {[Layer]}        符合过滤条件的图层数组
      */
     _getLayers:function(filter) {
-        var layers = [this._baseTileLayer].concat(this._layers);
+        var layers = [this._baseLayer].concat(this._layers);
         var result = [];
         for (var i = 0; i < layers.length; i++) {
             if (!filter || filter.call(this,layers[i])) {

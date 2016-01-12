@@ -89,7 +89,7 @@ Z.Map.include({
         profile["options"]["center"] = this.getCenter();
         profile["options"]["zoom"] = this.getZoom();
 
-        var baseTileLayer = this.getBaseTileLayer();
+        var baseTileLayer = this.getBaseLayer();
         profile['baseTileLayer'] = baseTileLayer.toJSON(options['baseTileLayer']);
         if (!Z.Util.isNil(options['baseTileLayer']) && !options['baseTileLayer']) {
             profile['baseTileLayer']['options']['visible'] = false;
@@ -140,7 +140,7 @@ Z.Map.fromJSON=function(container, mapJSON, options) {
     }
     var map = new Z.Map(container, mapJSON["options"]);
     var baseTileLayer = Z.Layer.fromJSON(mapJSON["baseTileLayer"]);
-    map.setBaseTileLayer(baseTileLayer);
+    map.setBaseLayer(baseTileLayer);
     if (Z.Util.isNil(options['layers']) || options['layers']) {
         var layers = [];
         var layerJSONs = mapJSON["layers"];

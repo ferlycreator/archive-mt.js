@@ -31,7 +31,7 @@ describe('CanvasLayer', function() {
         var layer = new Z.VectorLayer('id', {render: 'canvas'});
 
         beforeEach(function() {
-            map.setBaseTileLayer(tile);
+            map.setBaseLayer(tile);
             map.addLayer(layer);
         });
 

@@ -85,7 +85,7 @@ describe('#Map Profile', function () {
 
     describe('Map can profile',function() {
         it('get simple Profile',function() {
-            map.setBaseTileLayer(tile);
+            map.setBaseLayer(tile);
             var profile = map.toJSON();
             expect(profile).to.be.ok();
             var config = map.config();
@@ -105,7 +105,7 @@ describe('#Map Profile', function () {
         });
 
         it('get map from a simple profile',function() {
-            map.setBaseTileLayer(tile);
+            map.setBaseLayer(tile);
             var profile = map.toJSON();
             var container2 = document.createElement('div');
             container2.style.width = '800px';
@@ -114,11 +114,11 @@ describe('#Map Profile', function () {
             var profileMap = Z.Map.fromJSON(container2, profile);
 
             expect(profileMap).to.be.ok();
-            expect(profileMap.getBaseTileLayer()).to.be.ok();
+            expect(profileMap.getBaseLayer()).to.be.ok();
         });
 
         it("get profile with various layers",function() {
-            map.setBaseTileLayer(tile);
+            map.setBaseLayer(tile);
             var tile2 = new maptalks.TileLayer('road',{
                 urlTemplate:"http://t{s}.tianditu.com/DataServer?T=cva_w&x={x}&y={y}&l={z}",
                 subdomains:['1','2','3','4','5'],
@@ -140,7 +140,7 @@ describe('#Map Profile', function () {
         });
 
         it("get profile of selected layers",function() {
-            map.setBaseTileLayer(tile);
+            map.setBaseLayer(tile);
             var tile2 = new maptalks.TileLayer('road',{
                 urlTemplate:"http://t{s}.tianditu.com/DataServer?T=cva_w&x={x}&y={y}&l={z}",
                 subdomains:['1','2','3','4','5'],
@@ -170,7 +170,7 @@ describe('#Map Profile', function () {
         });
 
         it('get map from various profile',function() {
-            map.setBaseTileLayer(tile);
+            map.setBaseLayer(tile);
             var tile2 = new maptalks.TileLayer('road',{
                 urlTemplate:"http://t{s}.tianditu.com/DataServer?T=cva_w&x={x}&y={y}&l={z}",
                 subdomains:['1','2','3','4','5'],
@@ -192,7 +192,7 @@ describe('#Map Profile', function () {
             var profileMap = Z.Map.fromJSON(container2, profile);
 
             expect(profileMap).to.be.ok();
-            expect(profileMap.getBaseTileLayer()).to.be.ok();
+            expect(profileMap.getBaseLayer()).to.be.ok();
             var layers = profileMap.getLayers();
             expect(layers).to.have.length(3);
             expect(layers[0].toJSON()).to.be.eql(tile2.toJSON());
