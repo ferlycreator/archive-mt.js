@@ -23,7 +23,7 @@ Z.Point=function(x,y) {
      }
 };
 
-Z.Point.prototype={
+Z.Util.extend(Z.Point.prototype,{
     _abs:function() {
         this.x = Math.abs(this.x);
         this.y = Math.abs(this.y);
@@ -88,4 +88,4 @@ Z.Point.prototype={
     toString:function() {
         return [this.x,this.y].join(',');
     }
-};
+});

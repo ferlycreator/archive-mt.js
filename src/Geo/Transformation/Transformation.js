@@ -19,7 +19,7 @@ Z.Transformation = function(matrix) {
     this.matrix = matrix;
 };
 
-Z.Transformation.prototype = {
+Z.Util.extend(Z.Transformation.prototype,  {
     /**
      * 像素坐标方向是固定方向的, 和html标准一致, 即从左到右增大, 从上到下增大
      * prj coordinate -> point
@@ -55,4 +55,4 @@ Z.Transformation.prototype = {
         var y_ = (y*scale/matrix[1]+matrix[3]);
         return new Z.Coordinate(x_,y_);
     }
-};
+});

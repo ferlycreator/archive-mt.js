@@ -64,7 +64,7 @@ Z['Extent']= Z.Extent =
     }
 };
 
-Z.Extent.prototype={
+Z.Util.extend(Z.Extent.prototype,{
     round:function() {
         return new Z.Extent(Z.Util.round(this['xmin']), Z.Util.round(this['ymin']),
             Z.Util.round(this['xmax']),Z.Util.round(this['ymax']));
@@ -262,4 +262,4 @@ Z.Extent.prototype={
         }
         return this;
     }
-};
+});

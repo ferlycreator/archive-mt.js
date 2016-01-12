@@ -378,7 +378,6 @@ Z.Canvas = {
         var startAngle = angles[0],
             endAngle = angles[1];
         function sector(ctx, x, y, radius, startAngle, endAngle) {
-            console.log(x, y, radius, startAngle, endAngle);
             var rad = Math.PI / 180;
             var sDeg = rad*-endAngle;
             var eDeg = rad*-startAngle;

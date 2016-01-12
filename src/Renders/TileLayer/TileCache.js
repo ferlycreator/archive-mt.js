@@ -7,7 +7,7 @@ Z.TileLayer.TileCache=function(capacity) {
     this.capacity = capacity;
 };
 
-Z.TileLayer.TileCache.prototype = {
+Z.Util.extend(Z.TileLayer.TileCache.prototype, {
     add:function(key, tile) {
         this._cache[key] = tile;
         this._queue.push(key);
@@ -38,4 +38,4 @@ Z.TileLayer.TileCache.prototype = {
         },1000);
 
     }
-};
+});

@@ -11,7 +11,7 @@ Z.SpatialFilter=function(geometry, relation) {
     this.relation = relation;
 };
 
-Z.SpatialFilter.prototype={
+Z.Util.extend(Z.SpatialFilter.prototype,{
     /**
      * 获取SpatialFilter中的geometry
      * @return {maptalks.Geometry} SpatialFilter的Geometry
@@ -38,7 +38,7 @@ Z.SpatialFilter.prototype={
         return jsonObj;
     }
 
-};
+});
 
 Z.Util.extend(Z.SpatialFilter,{
     /**

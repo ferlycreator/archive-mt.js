@@ -19,7 +19,7 @@ Z.FeatureQuery=function(opts) {
     this.mapdb = opts['mapdb'];
 };
 
-Z.FeatureQuery.prototype={
+Z.Util.extend(Z.FeatureQuery.prototype,{
 
     /**
      * 检查查询参数是否正常
@@ -212,4 +212,4 @@ Z.FeatureQuery.prototype={
         }
         return ret;
     }
-};
+});

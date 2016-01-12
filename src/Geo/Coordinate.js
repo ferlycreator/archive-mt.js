@@ -21,7 +21,7 @@ Z['Coordinate'] = Z.Coordinate = function(x, y) {
     }
 };
 
-Z.Coordinate.prototype={
+Z.Util.extend(Z.Coordinate.prototype,{
     add:function(d) {
         return new Z.Coordinate(this.x+d.x, this.y+d.y);
     },
@@ -49,4 +49,4 @@ Z.Coordinate.prototype={
     toArray:function() {
         return [this.x, this.y];
     }
-};
+});

@@ -2,7 +2,7 @@ Z.measurer.Sphere = function(radius) {
     this._radius = radius;
 }
 
-Z.measurer.Sphere.prototype = {
+Z.Util.extend(Z.measurer.Sphere.prototype, {
     rad: function(a) { return a * Math.PI / 180; },
 
     measureLength:function(c1,c2){
@@ -45,7 +45,7 @@ Z.measurer.Sphere.prototype = {
         rx = rx + sx * (xDist > 0 ? 1 : -1);
         return new Z.Coordinate(rx * 180 / Math.PI, ry * 180 / Math.PI);
     }
-}
+});
 
 Z.measurer.WGS84Sphere = {
     'measure' : 'EPSG:4326',

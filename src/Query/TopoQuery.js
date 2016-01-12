@@ -18,7 +18,7 @@ Z.TopoQuery=function(opts) {
     }
 };
 
-Z.TopoQuery.prototype={
+Z.Util.extend(Z.TopoQuery.prototype, {
     //默认结果的symbol
     defaultSymbol : {
         'lineColor' : '#800040',
@@ -169,4 +169,4 @@ Z.TopoQuery.prototype={
         });
         ajax.post();
     }
-};
+});

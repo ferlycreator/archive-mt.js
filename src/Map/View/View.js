@@ -6,7 +6,7 @@ Z.View = function(options) {
     this._initView();
 }
 
-Z.View.prototype = {
+Z.Util.extend(Z.View.prototype, {
     defaultView: {
         "EPSG:3857" : {
             "resolutions" : (function() {
@@ -135,5 +135,5 @@ Z.View.prototype = {
         return this._resolutions.length - 1;
     }
 
-}
+});
 

@@ -695,7 +695,7 @@ function(sUrl,sRecvTyp,sQueryString,oResultFunc,responseType) {
     }
 };
 
-Z.Util.Ajax.prototype= {
+Z.Util.extend(Z.Util.Ajax.prototype, {
     /**
      * XMLHttp Request
      * @member maptalks.Util.Ajax
@@ -786,7 +786,7 @@ Z.Util.Ajax.prototype= {
             }
         }
     }
-};
+});
 
 /**
  * 载入外部资源, 并执行回调函数, 参数为资源内容

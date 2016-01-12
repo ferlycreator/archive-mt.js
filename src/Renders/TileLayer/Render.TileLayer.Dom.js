@@ -5,7 +5,7 @@ Z.render.tilelayer.Dom = function(layer) {
     this._registerEvents();
 };
 
-Z.render.tilelayer.Dom.prototype = {
+Z.Util.extend(Z.render.tilelayer.Dom.prototype, {
     _registerEvents:function() {
         var map = this._layer.getMap();
         map.on('_moveend _resize _zoomend _zoomstart',this._onMapEvent,this);
@@ -277,4 +277,4 @@ Z.render.tilelayer.Dom.prototype = {
         // tileImage.src=url;
         return tileImage;
     }
-};
+});

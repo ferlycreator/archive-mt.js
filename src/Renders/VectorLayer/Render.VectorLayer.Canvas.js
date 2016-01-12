@@ -355,7 +355,7 @@ Z.render.vectorlayer.Canvas.Resources=function() {
     this._resources = {};
 };
 
-Z.render.vectorlayer.Canvas.Resources.prototype={
+Z.Util.extend(Z.render.vectorlayer.Canvas.Resources.prototype,{
     addResource:function(url, img) {
         this._resources[url] = img;
     },
@@ -363,4 +363,4 @@ Z.render.vectorlayer.Canvas.Resources.prototype={
     getImage:function(url) {
         return this._resources[url];
     }
-};
+});

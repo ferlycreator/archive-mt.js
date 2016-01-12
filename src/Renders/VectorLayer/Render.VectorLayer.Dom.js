@@ -5,7 +5,7 @@ Z.render.vectorlayer.Dom = function(layer) {
     this._vectorPaper = this.getMap()._getRender().getSvgPaper();
 };
 
-Z.render.vectorlayer.Dom.prototype= {
+Z.Util.extend(Z.render.vectorlayer.Dom.prototype, {
 
     _registerEvents:function() {
         this.getMap().on('_zoomend',this._onMapEvent,this);
@@ -107,4 +107,4 @@ Z.render.vectorlayer.Dom.prototype= {
             }
         });
     }
-};
+});
