@@ -44,27 +44,27 @@ Z.Util = {
     },
 
     loadImage:function(img, url) {
+        function onError(err) {
+            console.error(err);
+            var onerrorFn = img.onerror;
+            if (onerrorFn) {
+                onerrorFn.call(img);
+            }
+        }
+        function onLoadComplete(err, data) {
+            if (err) {
+                onError(err);
+                return;
+            }
+            var onloadFn = img.onload;
+            if (onloadFn) {
+                img.onload = function() {
+                    onloadFn.call(img);
+                };
+            }
+            img.src = data;
+        }
         if (Z.runningInNode) {
-            function onError(err) {
-                console.error(err);
-                var onerrorFn = img.onerror;
-                if (onerrorFn) {
-                    onerrorFn.call(img);
-                }
-            }
-            function onLoadComplete(err, data) {
-                if (err) {
-                    onError(err);
-                    return;
-                }
-                var onloadFn = img.onload;
-                if (onloadFn) {
-                    img.onload = function() {
-                        onloadFn.call(img);
-                    };
-                }
-                img.src = data;
-            }
             try {
                 var segs = url.split('.');
                 if (segs[segs.length-1] === 'svg') {
