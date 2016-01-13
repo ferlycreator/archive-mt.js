@@ -57,6 +57,9 @@ Z.Util.extend(Z.FeatureQuery.prototype,{
             'spatialFilter': spatialFilter,
             'condition': opts['condition']
         };
+        if (opts['inputCRS']) {
+            queryFilter['inputCRS'] = opts['inputCRS'];
+        }
         if (opts['resultCRS']) {
             queryFilter['resultCRS'] = opts['resultCRS'];
         }
@@ -177,6 +180,9 @@ Z.Util.extend(Z.FeatureQuery.prototype,{
         var ret = 'encoding=utf-8';
         //ret+="&method=add";
         ret+='&mapdb='+this.mapdb;
+        if (queryFilter['inputCRS']) {
+            ret+='&inputCrs='+encodeURIComponent(JSON.stringify(queryFilter['inputCRS']));
+        }
         if (queryFilter['resultCRS']) {
             ret+='&resultCrs='+encodeURIComponent(JSON.stringify(queryFilter['resultCRS']));
         }

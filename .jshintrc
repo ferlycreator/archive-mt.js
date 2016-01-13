@@ -29,6 +29,7 @@
       //node.js
       "exports" : true,
       "module" : true,
+      "maptalks": true,
       "Z": true
   }
 }
