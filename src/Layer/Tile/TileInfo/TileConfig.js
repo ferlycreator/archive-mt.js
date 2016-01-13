@@ -140,16 +140,16 @@ Z.TileConfig=Z.Class.extend({
         },
 
         /**
-         * 计算瓦片左上角的经纬度坐标
+         * 计算瓦片左下角的大地投影坐标
          * @param  {[type]} tileY     [description]
          * @param  {[type]} tileX     [description]
-         * @param  {[type]} zoomLevel [description]
+         * @param  {[type]} res       [description]
          * @return {[type]}           [description]
          */
         getTileProjectedSw: function(tileY, tileX, res) {
             var tileSystem = this.tileSystem;
             var tileSize = this['tileSize'];
-            var y = tileSystem['origin']['y'] + tileSystem['scale']['y']*(tileY+(tileSystem['scale']['y']==1?2:1))*(res* tileSize['height']);
+            var y = tileSystem['origin']['y'] + tileSystem['scale']['y']*(tileY+(tileSystem['scale']['y']==1?0:1))*(res* tileSize['height']);
             var x = tileSystem['scale']['x']*(tileX+(tileSystem['scale']['x']==1?0:1))*res*tileSize['width']+tileSystem['origin']['x'];
             return [x, y];
         }
