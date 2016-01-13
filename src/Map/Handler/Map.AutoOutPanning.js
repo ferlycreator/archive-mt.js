@@ -30,15 +30,16 @@ Z.Map.AutoOutPanning = Z.Handler.extend({
         var size = this.target.getSize();
         var offset = new Z.Point(0,0);
         var containerPoint = param['containerPoint'];
+        var step = 6;
         if (containerPoint.x <= 0) {
-            offset.x = 2;
+            offset.x = step;
         } else if (containerPoint.x >= size['width']) {
-            offset.x = -2;
+            offset.x = -step;
         }
         if (containerPoint.y <= 0) {
-            offset.y = 2;
+            offset.y = step;
         } else if (containerPoint.y >= size['height']) {
-            offset.y = -2;
+            offset.y = -step;
         }
         this._offset = offset;
         this._animationId = Z.Util.requestAnimFrame(Z.Util.bind(this._pan,this));
