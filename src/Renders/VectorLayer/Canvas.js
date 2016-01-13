@@ -428,9 +428,8 @@ Z.Canvas = {
             var eDeg = rad*-startAngle;
             ctx.beginPath();
             ctx.moveTo(x,y);
-            ctx.lineTo(Z.Util.round(x-radius*Math.cos(sDeg)), Z.Util.round(y+radius*Math.sin(sDeg)));
             ctx.arc(x, y, radius,sDeg, eDeg);
-            ctx.closePath();
+            ctx.lineTo(x,y);
             Z.Canvas._stroke(ctx, lineOpacity);
         }
         pt = pt.round();
