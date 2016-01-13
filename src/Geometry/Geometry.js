@@ -44,7 +44,8 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         'editable'  : true,
         'cursor'    : null,
         'crossOrigin' : null,
-
+        'shadowBlur' : 0,
+        'shadowColor' : 'black',
         //true means this is an euclidean geometry
         'measure' : 'EPSG:4326', // BAIDU, IDENTITY
     },

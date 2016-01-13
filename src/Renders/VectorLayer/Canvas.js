@@ -20,6 +20,8 @@ Z.Canvas = {
         ctx.textBaseline='hanging';
         var fontSize = 11;
         ctx.font=fontSize+'px arial';
+        ctx.shadowBlur = null;
+        ctx.shadowColor = null;
         if (ctx.setLineDash) {
             ctx.setLineDash([]);
         }
