@@ -101,13 +101,24 @@ Z['Map']=Z.Map=Z.Class.extend({
         this._center = new Z.Coordinate(opts['center']);
         delete opts['center'];
 
-        //内部变量, 控制当前地图是否允许panAnimation
-        this._enablePanAnimation = true;
+        var baseLayer = opts['baseLayer'];
+        delete opts['baseLayer'];
+        var layers = opts['layers'];
+        delete opts['layers'];
 
         //坐标类型
         Z.Util.setOptions(this,opts);
         this.setView(opts['view']);
 
+        if (baseLayer) {
+            this.setBaseLayer(baseLayer);
+        }
+        if (layers) {
+            this.addLayer(layers);
+        }
+
+        //内部变量, 控制当前地图是否允许panAnimation
+        this._enablePanAnimation = true;
         this._mapViewPoint=new Z.Point(0,0);
 
         this._initRender();
@@ -511,7 +522,9 @@ Z['Map']=Z.Map=Z.Class.extend({
             }
         }
         this._baseLayer.once('layerloaded',onBaseTileLayerLoaded,this);
-        this._baseLayer.load();
+        if (this._loaded) {
+            this._baseLayer.load();
+        }
         return this;
     },
 
