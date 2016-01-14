@@ -340,14 +340,10 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
             this._context.globalAlpha *= layerImage['opacity'];
         }
         if (Z.runningInNode) {
-            if (canvasImage.toBuffer) {
-                //node-canvas
-                canvasImage = new Image();
-                var buffer = layerImage['image'].toBuffer();
-                canvasImage.src = buffer;
-            } else {
-                //canvas2svg
-                canvasImage = canvasImage.getContext('2d');
+            var context = canvasImage.getContext('2d');
+            if (context.getSvg) {
+                 //canvas2svg
+                canvasImage = context;
             }
             //CanvasMock并不一定实现了drawImage(img, sx, sy, w, h, dx, dy, w, h)
             this._context.drawImage(canvasImage, point.x, point.y);

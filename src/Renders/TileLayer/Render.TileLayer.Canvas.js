@@ -208,23 +208,31 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         if (!this.getMap()) {
             return;
         }
-        var zoomLevel = this.getMap().getZoom();
-        if (zoomLevel !== tileImage[this.propertyOfTileZoom]) {
+        var zoom = this.getMap().getZoom();
+        if (zoom !== tileImage[this.propertyOfTileZoom]) {
             return;
         }
-
         this._tileToLoadCounter--;
         var point = tileImage[this.propertyOfPointOnTile];
         this._drawTile(point, tileImage);
 
-        var tileSize = this._layer.getTileSize();
-        var viewExtent = this.getMap()._getViewExtent();
-        if (viewExtent.intersects(new Z.Extent(point, point.add(new Z.Point(tileSize['width'], tileSize['height']))))) {
-            this._requestMapToRend();
+        if (!Z.runningInNode) {
+            var tileSize = this._layer.getTileSize();
+            var viewExtent = this.getMap()._getViewExtent();
+            if (viewExtent.intersects(new Z.Extent(point, point.add(new Z.Point(tileSize['width'], tileSize['height']))))) {
+                this._requestMapToRend();
+            }
         }
         if (this._tileToLoadCounter === 0) {
-             this._fireLoadedEvent();
+            this._onTileLoadComplete();
         }
+    },
+
+    _onTileLoadComplete:function() {
+        if (Z.runningInNode) {
+            this._requestMapToRend();
+        }
+        this._fireLoadedEvent();
     },
 
     /**
@@ -232,27 +240,25 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
      * @param  {Point} point        瓦片左上角坐标
      */
     _clearTileRectAndRequest:function(point,tileImage) {
+        if (!this.getMap()) {
+            return;
+        }
+        var zoom = this.getMap().getZoom();
+        if (zoom !== tileImage[this.propertyOfTileZoom]) {
+            return;
+        }
         this._tileToLoadCounter--;
         if (this._tileToLoadCounter === 0) {
-             this._fireLoadedEvent();
+            this._onTileLoadComplete();
         }
     },
 
     _requestMapToRend:function() {
         var me = this;
         if (this.getMap() && !this.getMap().isBusy()) {
-            if (Z.runningInNode && this._canvas && this._canvas.toBuffer) {
-                //node-canvas's buffer may be async
-                this._canvas.toBuffer(function(err, buf) {
-                    if (err == null) {
-                        me._mapRender.render();
-                    } else {
-                        console.error(err);
-                    }
-                })
-            } else {
+
                 this._mapRender.render();
-            }
+
         }
     },
 
