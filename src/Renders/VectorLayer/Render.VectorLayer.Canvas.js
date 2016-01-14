@@ -70,6 +70,47 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
 
     },
 
+    draw:function() {
+        var map = this.getMap();
+        if (!map) {
+            return;
+        }
+
+        //载入资源后再进行绘制
+        if (!this._canvas) {
+            this._createCanvas();
+        }
+        if (this._layer.isEmpty()) {
+            return;
+        }
+        var fullExtent = map._getViewExtent();
+        this._clearCanvas();
+        var me = this;
+        var counter = 0;
+        this._shouldEcoTransform = true;
+        var geoViewExt, geoPainter;
+        this._layer._eachGeometry(function(geo) {
+            //geo的map可能为null,因为绘制为延时方法
+            if (!geo || !geo.isVisible() || !geo.getMap() || !geo.getLayer() || (!geo.getLayer().isCanvasRender())) {
+                return;
+            }
+            geoPainter = geo._getPainter();
+            geoViewExt = geoPainter.getPixelExtent();
+            if (!geoViewExt || !geoViewExt.intersects(fullExtent)) {
+                return;
+            }
+            counter++;
+            if (me._shouldEcoTransform && geoPainter.hasPointSymbolizer()) {
+                me._shouldEcoTransform = false;
+            }
+            if (counter > me._layer.options['thresholdOfEcoTransform']) {
+                me._shouldEcoTransform = true;
+            }
+            geoPainter.paint();
+        });
+        this._canvasFullExtent = fullExtent;
+    },
+
     getPaintContext:function() {
         if (!this._context) {
             return null;
@@ -284,49 +325,6 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         } else {
             onComplete.call(context);
         }
-    },
-
-
-
-    draw:function() {
-        var map = this.getMap();
-        if (!map) {
-            return;
-        }
-
-        //载入资源后再进行绘制
-        if (!this._canvas) {
-            this._createCanvas();
-        }
-        if (this._layer.isEmpty()) {
-            return;
-        }
-        var fullExtent = map._getViewExtent();
-        this._clearCanvas();
-        var me = this;
-        var counter = 0;
-        this._shouldEcoTransform = true;
-        var geoViewExt, geoPainter;
-        this._layer._eachGeometry(function(geo) {
-            //geo的map可能为null,因为绘制为延时方法
-            if (!geo || !geo.isVisible() || !geo.getMap() || !geo.getLayer() || (!geo.getLayer().isCanvasRender())) {
-                return;
-            }
-            geoPainter = geo._getPainter();
-            geoViewExt = geoPainter.getPixelExtent();
-            if (!geoViewExt || !geoViewExt.intersects(fullExtent)) {
-                return;
-            }
-            counter++;
-            if (me._shouldEcoTransform && geoPainter.hasPointSymbolizer()) {
-                me._shouldEcoTransform = false;
-            }
-            if (counter > me._layer.options['thresholdOfEcoTransform']) {
-                me._shouldEcoTransform = true;
-            }
-            geoPainter.paint();
-        });
-        this._canvasFullExtent = fullExtent;
     },
 
     _requestMapToRend:function() {

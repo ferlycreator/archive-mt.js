@@ -61,13 +61,13 @@ Z.Geometry.Drag = Z.Handler.extend({
         this._prepareDragHandler();
         this._dragHandler.onMouseDown(param['domEvent']);
 
-        delete this._preCoordDragged;
         this._isDragging = true;
 
         this._prepareShadow();
         this.target.on('symbolchange', this._onTargetUpdated, this);
         this.target.hide();
         this._shadow._fireEvent('dragstart');
+        this._preCoordDragged = param['coordinate'];
         /**
          * 触发geometry的dragstart事件
          * @member maptalks.Geometry
@@ -202,6 +202,12 @@ Z.Geometry.Drag = Z.Handler.extend({
         if (map) {
              //restore map status
             map._trySetCursor('default');
+            if (Z.Util.isNil(this._mapDraggable)) {
+                this._mapDraggable = true;
+            }
+            if (Z.Util.isNil(this._autoOutPanning)) {
+                this._autoOutPanning = false;
+            }
             map.config({
                 'draggable': this._mapDraggable,
                 'autoOutPanning' : this._autoOutPanning

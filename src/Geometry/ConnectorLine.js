@@ -90,6 +90,8 @@ Z.ConnectorLine = Z.CurveLine.extend({
                         .off('remove', this._onRemove, this);
         this._connSource.off('dragstart mousedown mouseover', this._showConnect, this);
         this._connSource.off('dragend mouseup mouseout', this.hide, this);
+        this._connSource.off('show', this._showConnect, this).off('hide', this.hide, this);
+        this._connTarget.off('show', this._showConnect, this).off('hide', this.hide, this);
     },
 
     _showConnect:function() {
@@ -116,6 +118,8 @@ Z.ConnectorLine = Z.CurveLine.extend({
                         .on('remove', this.remove, this);
         this._connTarget.on('dragging positionchange', this._updateCoordinates, this)
                         .on('remove', this.remove, this);
+        this._connSource.on('show', this._showConnect, this).on('hide', this.hide, this);
+        this._connTarget.on('show', this._showConnect, this).on('hide', this.hide, this);
         var trigger = this.options['showOn'];
         this.hide();
         if ('moving' === trigger) {
@@ -130,6 +134,9 @@ Z.ConnectorLine = Z.CurveLine.extend({
         } else {
             this._showConnect();
         }
+    },
+    _isEditingOrDragging:function() {
+        return this._connSource._isEditingOrDragging() || this._connTarget._isEditingOrDragging();
     }
 });
 

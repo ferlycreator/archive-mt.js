@@ -217,7 +217,9 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     show:function() {
         this.options['visible'] = true;
         if (this.getMap()) {
+            this._getPainter().repaint();
             this._getPainter().show();
+            this._fireEvent('show');
         }
         return this;
     },
@@ -230,6 +232,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         this.options['visible'] = false;
         if (this.getMap()) {
             this._getPainter().hide();
+            this._fireEvent('hide');
         }
         return this;
     },
@@ -283,7 +286,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * 图形按给定的坐标偏移量平移
      * @param  {Coordinate} offset 坐标偏移量
      */
-     translate:function(offset) {
+    translate:function(offset) {
         if (!offset || (offset.x === 0 && offset.y === 0)) {
             return this;
         }
@@ -680,26 +683,32 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     _onShapeChanged:function() {
         this._extent = null;
-        var painter = this._getPainter();
-        if (painter) {
-            painter.repaint();
+        if (this.isVisible()) {
+            var painter = this._getPainter();
+            if (painter) {
+                painter.repaint();
+            }
         }
         this._fireEvent('shapechange');
     },
 
     _onPositionChanged:function() {
         this._extent = null;
-        var painter = this._getPainter();
-        if (painter) {
-            painter.repaint();
+        if (this.isVisible()) {
+            var painter = this._getPainter();
+            if (painter) {
+                painter.repaint();
+            }
         }
         this._fireEvent('positionchange');
     },
 
     _onSymbolChanged:function() {
-        var painter = this._getPainter();
-        if (painter) {
-            painter.refreshSymbol();
+        if (this.isVisible()) {
+            var painter = this._getPainter();
+            if (painter) {
+                painter.refreshSymbol();
+            }
         }
         this._fireEvent('symbolchange');
     },
