@@ -163,14 +163,14 @@ Z.Geometry.Drag = Z.Handler.extend({
         this._shadow.translate(dragOffset);
         this.target.translate(dragOffset);
         eventParam['dragOffset'] = dragOffset;
-        this._shadow._fireEvent('dragging');
+        this._shadow._fireEvent('dragging', eventParam);
         /**
          * 触发geometry的dragging事件
          * @member maptalks.Geometry
          * @event dragging
          * @return {Object} params: {'target':geometry, 'containerPoint':containerPoint, 'coordinate':coordinate,'domEvent':event};
          */
-        this.target._fireEvent('dragging', param);
+        this.target._fireEvent('dragging', eventParam);
     },
 
     /**

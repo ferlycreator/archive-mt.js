@@ -239,7 +239,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
      * 清除瓦片区域, 并请求地图重绘
      * @param  {Point} point        瓦片左上角坐标
      */
-    _clearTileRectAndRequest:function(point,tileImage) {
+    _clearTileRectAndRequest:function(tileImage) {
         if (!this.getMap()) {
             return;
         }

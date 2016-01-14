@@ -172,7 +172,6 @@ Z.animation.zoom = function(options) {
         } else if (time < start + duration) {
           var delta = easing((time - start) / duration);
           var s = scale1+(scale2-scale1)*delta;
-          // console.log(p);
           return new Z.animation.Frame({'playing':true,'startTime':start, 'end':false}, null, s);
         } else {
           return new Z.animation.Frame({'playing':false,'startTime':start, 'end':true}, null, scale2);

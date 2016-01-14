@@ -256,7 +256,6 @@ Z.Painter = Z.Class.extend({
 
     _rendCanvas:function(needPromise) {
         if (!this.geometry.getMap() || this.geometry.getMap().isBusy()) {
-            // console.log('is busy do not refresh painter');
             return;
         }
         var layer = this.geometry.getLayer();
@@ -294,7 +293,6 @@ Z.Painter = Z.Class.extend({
         if (!this._painted) {
             return;
         }
-        // console.log('painter refreshSymbol');
         var layer = this.geometry.getLayer();
         if (layer.isCanvasRender()) {
             this._rendCanvas(true);
