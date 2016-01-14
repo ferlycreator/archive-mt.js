@@ -10,7 +10,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     includes: [Z.Eventable,Z.HandlerBus],
 
     options:{
-        "clipFullExtent" : true,
+        "clipFullExtent" : false,
 
         "zoomAnimation" : true,
         "zoomAnimationDuration" : 300,

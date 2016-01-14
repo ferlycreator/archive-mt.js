@@ -6,19 +6,19 @@
 Z.Geometry.Poly={
     /**
      * 将points中的坐标转化为用于显示的容器坐标
-     * @param  {Point[]} points  points数组
+     * @param  {Coordinate[]} prjCoords  投影坐标数组
      * @returns {Point[]} 容器坐标数组
      * @ignore
      */
-    _transformToViewPoint:function(points) {
+    _transformToViewPoint:function(prjCoords) {
         var result = [];
-        if (!Z.Util.isArrayHasData(points)) {
+        if (!Z.Util.isArrayHasData(prjCoords)) {
             return result;
         }
         var map = this.getMap();
         var fullExtent = map.getFullExtent(),
             isClipping = map.options['clipFullExtent'];
-        var is2dArray = Z.Util.isArray(points[0]),
+        var is2dArray = Z.Util.isArray(prjCoords[0]),
             isSimplify = this.getLayer() && this.getLayer().options['enableSimplify'];
         var tolerance;
         if (isSimplify) {
@@ -26,11 +26,11 @@ Z.Geometry.Poly={
             tolerance = map._getResolution()*pxTolerance;
         }
         if (!is2dArray && isSimplify) {
-            points = Z.Simplify.simplify(points, tolerance, false);
+            prjCoords = Z.Simplify.simplify(prjCoords, tolerance, false);
         }
-        for (var i=0,len=points.length;i<len;i++) {
-            var p = points[i];
-            if (Z.Util.isNil(p) || !(isClipping && fullExtent.contains(p))) {
+        for (var i=0,len=prjCoords.length;i<len;i++) {
+            var p = prjCoords[i];
+            if (Z.Util.isNil(p) || (isClipping && !fullExtent.contains(p))) {
                 continue;
             }
             if (is2dArray) {
