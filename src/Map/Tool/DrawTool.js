@@ -58,6 +58,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         this._mapDoubleClickZoom = map.options['doubleClickZoom'];
         map.config({
             'draggable': false,
+            'doubleClickZoom':false,
             'autoOutPanning' : true
         });
         this.drawToolLayer = this._getDrawLayer();
@@ -84,6 +85,9 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
      * @expose
      */
     disable:function() {
+        if (!this._enabled || !this.map) {
+            return;
+        }
         this._enabled = false;
         var map = this.map;
         if (!map) {return;}

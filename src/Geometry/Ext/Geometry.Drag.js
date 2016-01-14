@@ -185,10 +185,11 @@ Z.Geometry.Drag = Z.Handler.extend({
      * 结束移动Geometry, 退出移动模式
      */
     _endDrag: function(param) {
-       var map = this.target.getMap(),
+        var map = this.target.getMap();
+        var eventParam;
+        if (map) {
             eventParam = map._parseEvent(param['domEvent']);
-
-
+        }
         this.target.off('symbolchange', this._onTargetUpdated, this);
 
         this._shadow._fireEvent('dragend', eventParam);
@@ -198,12 +199,15 @@ Z.Geometry.Drag = Z.Handler.extend({
         delete this._preCoordDragged;
         this._dragHandler.disable();
         delete this._dragHandler;
-        //restore map status
-        map._trySetCursor('default');
-        map.config({
-            'draggable': this._mapDraggable,
-            'autoOutPanning' : this._autoOutPanning
-        });
+        if (map) {
+             //restore map status
+            map._trySetCursor('default');
+            map.config({
+                'draggable': this._mapDraggable,
+                'autoOutPanning' : this._autoOutPanning
+            });
+        }
+
         delete this._autoOutPanning;
         delete this._mapDraggable;
         this._isDragging = false;
