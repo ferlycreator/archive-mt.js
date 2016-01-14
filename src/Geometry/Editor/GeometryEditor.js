@@ -261,8 +261,9 @@ Z.Editor=Z.Class.extend({
         }
         function onHandleDragging(param) {
             me._hideContext();
+            var viewPoint = map._transformToViewPoint(handle._getPrjCoordinates());
             if (opts.onMove) {
-                opts.onMove.call(me, map._containerPointToViewPoint(param['containerPoint']));
+                opts.onMove.call(me, viewPoint);
             }
         }
         function onHandleDragEnd(ev) {
