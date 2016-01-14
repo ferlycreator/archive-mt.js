@@ -19,14 +19,17 @@
     function initMap(){
         //创建地图对象
         mapObj = new maptalks.Map('mapObj', {
-            center: new maptalks.Coordinate(121.489935, 31.24432),
-            zoom: 5
+            view: {
+                projection: 'baidu'
+            },
+            center:  new maptalks.Coordinate(121.489935, 31.24432),
+            zoom:   5
         });
         //设置底图图层
         mapObj.setBaseLayer(new maptalks.TileLayer('tile', {
-            tileInfo: 'web-mercator',
-            urlTemplate: 'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',
-            subdomains: [1, 2, 3]
+            tileInfo: 'baidu',
+            urlTemplate: 'http://online{s}.map.bdimg.com/tile/?qt=tile&x={x}&y={y}&z={z}&styles=pl',
+            subdomains: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         }));
 
         var spatial = {
@@ -58,6 +61,8 @@
         var options = {
             baseUrl: 'http://127.0.0.1:8080/maps',
             mapdb: 'testdb',
+            // need to set resultCRS as below
+            resultCRS: maptalks.CRS.createProj4('+proj=bmerc +datum=BD09'),
             layers: [layerDef]
         };
 

@@ -7,6 +7,8 @@ Z['DynamicLayer'] = Z.DynamicLayer = Z.TileLayer.extend({
     options: {
         baseUrl: '',
         format: 'png',
+        // inputCRS: Z.CRS.createProj4('+proj=longlat +datum=GCJ02'),
+        resultCRS: Z.CRS.createProj4('+proj=merc +datum=GCJ02'),
         showOnTileLoadComplete: false
         // mapdb: '',
         // layers: [{name: 'name', condition: '', spatialFilter: {}, cartocss: '', cartocss_version: ''}]
@@ -87,7 +89,6 @@ Z['DynamicLayer'] = Z.DynamicLayer = Z.TileLayer.extend({
     },
 
     _formQueryString: function() {
-        var map = this.getMap();
         var mapConfig = {};
         mapConfig.version = '1.0.0';
         // mapConfig.extent = [];
@@ -95,14 +96,19 @@ Z['DynamicLayer'] = Z.DynamicLayer = Z.TileLayer.extend({
         for(var i = 0, len = this.options.layers.length; i < len; i++) {
             var l = this.options.layers[i];
             var q = {
-                // avoid string "undefined"
+                // avoid pass string "undefined" to query service
                 condition: l.condition ? l.condition : '',
-                resultCrs: map.getCRS(),
                 resultFields: ['*']
             };
+            if (this.options.inputCRS) {
+                q.inputCRS = this.options.inputCRS;
+            } // else, spatialFilter will be treat as in layer's CRS
+            if (this.options.resultCRS) {
+                q.resultCRS = this.options.resultCRS;
+            } // else, result will be return in layer's CRS
             if (l.spatialFilter && Z.Util.isObject(l.spatialFilter)) {
                 if (l.spatialFilter instanceof Z.SpatialFilter) {
-                    q.spatialFilter = l.spatialFilter.toJSON;
+                    q.spatialFilter = l.spatialFilter.toJSON();
                 } else {
                     q.spatialFilter = l.spatialFilter;
                 }
