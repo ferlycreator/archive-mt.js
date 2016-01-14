@@ -50,11 +50,13 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
      * @expose
      */
     enable:function() {
-        if (!this.map || this._enabled) {return;}
+        var map = this.map;
+        if (!map || this._enabled) {return;}
         this._enabled = true;
         this._mapDraggable = map.options['draggable'];
-        this._autoOutPanning = this.map.options['autoOutPanning'];
-        this.map.config({
+        this._autoOutPanning = map.options['autoOutPanning'];
+        this._mapDoubleClickZoom = map.options['doubleClickZoom'];
+        map.config({
             'draggable': false,
             'autoOutPanning' : true
         });
@@ -83,15 +85,18 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
      */
     disable:function() {
         this._enabled = false;
-        if (!this.map) {return;}
+        var map = this.map;
+        if (!map) {return;}
         map.config({
             'draggable': this._mapDraggable,
-            'autoOutPanning' : this._autoOutPanning
+            'autoOutPanning' : this._autoOutPanning,
+            'doubleClickZoom' : this._mapDoubleClickZoom
         });
         delete this._autoOutPanning;
         delete this._mapDraggable;
+        delete this._mapDoubleClickZoom;
         this._endDraw();
-        this.map.removeLayer(this._getDrawLayer());
+        map.removeLayer(this._getDrawLayer());
         this._clearEvents();
         return this;
     },
@@ -146,29 +151,29 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
 
     //注册鼠标响应事件
     _registerEvents: function() {
-        this.map.config({'doubleClickZoom':false});
+        var map = this.map;
         var mode = this.mode;
         if (Z.Util.isNil(mode)) {
             mode = Z.Geometry['TYPE_CIRCLE'];
         }
         if (Z.Geometry['TYPE_POLYGON'] == mode || Z.Geometry['TYPE_LINESTRING'] == mode) {
-            this.map.on('click',this._clickForPath, this);
-            this.map.on('mousemove',this._mousemoveForPath,this);
-            this.map.on('dblclick',this._dblclickForPath,this);
+            map.on('click',this._clickForPath, this);
+            map.on('mousemove',this._mousemoveForPath,this);
+            map.on('dblclick',this._dblclickForPath,this);
         } else if (Z.Geometry['TYPE_POINT'] == mode) {
-            this.map.on('click',this._clickForPoint, this);
+            map.on('click',this._clickForPoint, this);
         } else {
-            this.map.on('mousedown',this._mousedownToDraw, this);
+            map.on('mousedown',this._mousedownToDraw, this);
         }
     },
 
     _clearEvents: function() {
-        this.map.off('click',this._clickForPath, this);
-        this.map.off('click',this._clickForPoint, this);
-        this.map.off('mousemove',this._mousemoveForPath,this);
-        this.map.off('dblclick',this._dblclickForPath,this);
-        this.map.off('mousedown',this._mousedownToDraw,this);
-        this.map.config({'doubleClickZoom':true});
+        var map = this.map;
+        map.off('click',this._clickForPath, this);
+        map.off('click',this._clickForPoint, this);
+        map.off('mousemove',this._mousemoveForPath,this);
+        map.off('dblclick',this._dblclickForPath,this);
+        map.off('mousedown',this._mousedownToDraw,this);
     },
 
     _addGeometryToStage:function(geometry) {
