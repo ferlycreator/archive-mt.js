@@ -278,7 +278,6 @@ Z.Editor=Z.Class.extend({
         if (opts.onRefresh) {
             handle['maptalks--editor-refresh-fn'] = opts.onRefresh;
         }
-        // this._appendHandler(handle, opts);
         this._editStageLayer.addGeometry(handle);
         return handle;
     },

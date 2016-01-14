@@ -7,8 +7,8 @@
 Z.ConnectorLine = Z.CurveLine.extend({
 
     options: {
-        trigger : 'moving',
-        curveType : 0
+        curveType : 0,
+        showOn : 'always'
     },
 
     /**
@@ -116,7 +116,7 @@ Z.ConnectorLine = Z.CurveLine.extend({
                         .on('remove', this.remove, this);
         this._connTarget.on('dragging positionchange', this._updateCoordinates, this)
                         .on('remove', this.remove, this);
-        var trigger = this.options['trigger'];
+        var trigger = this.options['showOn'];
         this.hide();
         if ('moving' === trigger) {
             this._connSource.on('dragstart', this._showConnect, this).on('dragend', this.hide, this);
