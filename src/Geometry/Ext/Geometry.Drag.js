@@ -57,10 +57,7 @@ Z.Geometry.Drag = Z.Handler.extend({
             return;
         }
 
-        map._trySetCursor('move');
-        if (map['draggable']) {
-            map['draggable'].disable();
-        }
+        this._prepareMap();
         this._prepareDragHandler();
         this._dragHandler.onMouseDown(param['domEvent']);
 
@@ -79,6 +76,17 @@ Z.Geometry.Drag = Z.Handler.extend({
          */
         this.target._fireEvent('dragstart');
         return this;
+    },
+
+    _prepareMap:function() {
+        var map = this.target.getMap();
+        this._mapDraggable = map.options['draggable'];
+        this._autoOutPanning = map.options['autoOutPanning'];
+        map._trySetCursor('move');
+        map.config({
+            'draggable': false,
+            'autoOutPanning' : true
+        });
     },
 
     _prepareDragHandler:function() {
@@ -180,10 +188,6 @@ Z.Geometry.Drag = Z.Handler.extend({
        var map = this.target.getMap(),
             eventParam = map._parseEvent(param['domEvent']);
 
-        map._trySetCursor('default');
-        if (map['draggable']) {
-            map['draggable'].enable();
-        }
 
         this.target.off('symbolchange', this._onTargetUpdated, this);
 
@@ -194,6 +198,14 @@ Z.Geometry.Drag = Z.Handler.extend({
         delete this._preCoordDragged;
         this._dragHandler.disable();
         delete this._dragHandler;
+        //restore map status
+        map._trySetCursor('default');
+        map.config({
+            'draggable': this._mapDraggable,
+            'autoOutPanning' : this._autoOutPanning
+        });
+        delete this._autoOutPanning;
+        delete this._mapDraggable;
         this._isDragging = false;
         /**
          * 触发geometry的dragend事件
