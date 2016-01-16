@@ -60,6 +60,7 @@ Z.ConnectorLine = Z.CurveLine.extend({
         var srcPoints = this._connSource.getConnectPoints();
         var targetPoints = this._connTarget.getConnectPoints();
         var minDist = 0;
+        var oldCoordinates = this.getCoordinates();
         var c1,c2;
         for(var i=0,len=srcPoints.length;i<len;i++) {
             var p1 = srcPoints[i];
@@ -78,7 +79,9 @@ Z.ConnectorLine = Z.CurveLine.extend({
                 }
             }
         }
-        this.setCoordinates([c1, c2]);
+        if (!Z.Util.isArrayHasData(oldCoordinates) || (!oldCoordinates[0].equals(c1) || !oldCoordinates[1].equals(c2))) {
+            this.setCoordinates([c1, c2]);
+        }
     },
 
     _onRemove: function () {
