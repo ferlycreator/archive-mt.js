@@ -15,18 +15,6 @@ Z.Geometry.Drag = Z.Handler.extend({
     dragStageLayerId : Z.internalLayerPrefix+'_drag_stage',
 
     START: Z.Browser.touch ? ['touchstart', 'mousedown'] : ['mousedown'],
-    END: {
-        mousedown: 'mouseup',
-        touchstart: 'touchend',
-        pointerdown: 'touchend',
-        MSPointerDown: 'touchend'
-    },
-    MOVE: {
-        mousedown: 'mousemove',
-        touchstart: 'touchmove',
-        pointerdown: 'touchmove',
-        MSPointerDown: 'touchmove'
-    },
 
     addHooks: function () {
         this.target.on(this.START.join(' '), this._startDrag, this);
@@ -34,6 +22,7 @@ Z.Geometry.Drag = Z.Handler.extend({
     },
     removeHooks: function () {
         this.target.off(this.START.join(' '), this._startDrag, this);
+
     },
     /**
      * 开始移动Geometry, 进入移动模式
@@ -57,17 +46,11 @@ Z.Geometry.Drag = Z.Handler.extend({
             return;
         }
 
-        this._prepareMap();
+        this.target.on('click', this._endDrag, this);
+        this._preCoordDragged = param['coordinate'];
         this._prepareDragHandler();
         this._dragHandler.onMouseDown(param['domEvent']);
-
-        this._isDragging = true;
-
-        this._prepareShadow();
-        this.target.on('symbolchange', this._onTargetUpdated, this);
-        this.target.hide();
-        this._shadow._fireEvent('dragstart');
-        this._preCoordDragged = param['coordinate'];
+        this._moved = false;
         /**
          * 触发geometry的dragstart事件
          * @member maptalks.Geometry
@@ -90,30 +73,31 @@ Z.Geometry.Drag = Z.Handler.extend({
     },
 
     _prepareDragHandler:function() {
-        var map = this.target.getMap();
-        this._dom = map._containerDOM;
+        // var map = this.target.getMap();
+        this._dom = document;//map._containerDOM;
         this._dragHandler = new Z.Handler.Drag(this._dom);
-
         this._dragHandler.on("dragging", this._dragging, this);
         this._dragHandler.on("dragend", this._endDrag, this);
-
         this._dragHandler.enable();
     },
 
     _prepareShadow:function() {
+        var target = this.target;
         this._prepareDragStageLayer();
         if (this._shadow) {
             this._shadow.remove();
         }
-        this._shadow = this.target.copy();
-        this._shadow.setId(null);
-        this._shadow.isDragging=function() {
+
+        this._shadow = target.copy();
+        var shadow = this._shadow;
+        shadow.setId(null);
+        shadow.isDragging=function() {
             return true;
         };
         //copy connectors
         var shadowConnectors = [];
-        if (Z.ConnectorLine._hasConnectors(this.target)) {
-            var connectors = Z.ConnectorLine._getConnectors(this.target);
+        if (Z.ConnectorLine._hasConnectors(target)) {
+            var connectors = Z.ConnectorLine._getConnectors(target);
 
             for (var i = 0; i < connectors.length; i++) {
                 var targetConn = connectors[i];
@@ -121,16 +105,15 @@ Z.Geometry.Drag = Z.Handler.extend({
                     connSymbol = targetConn.getSymbol();
                     connOptions['symbol'] = connSymbol;
                 var conn;
-                if (targetConn.getConnectSource() == this.target) {
-                     conn = new maptalks.ConnectorLine(this._shadow, targetConn.getConnectTarget(),connOptions);
+                if (targetConn.getConnectSource() == target) {
+                     conn = new maptalks.ConnectorLine(shadow, targetConn.getConnectTarget(),connOptions);
                 } else {
-                     conn = new maptalks.ConnectorLine(targetConn.getConnectSource(), this._shadow, connOptions);
+                     conn = new maptalks.ConnectorLine(targetConn.getConnectSource(), shadow, connOptions);
                 }
                 shadowConnectors.push(conn);
             }
         }
-        this._dragStageLayer.addGeometry(shadowConnectors);
-        this._dragStageLayer.addGeometry(this._shadow);
+        this._dragStageLayer.addGeometry(shadowConnectors.concat(shadow));
     },
 
     _onTargetUpdated:function() {
@@ -156,6 +139,24 @@ Z.Geometry.Drag = Z.Handler.extend({
         if ( domEvent.touches && domEvent.touches.length > 1) {
             return;
         }
+
+
+        if (!this._moved) {
+            this._moved = true;
+            this.target.on('symbolchange', this._onTargetUpdated, this);
+
+            this._prepareMap();
+
+
+            this._isDragging = true;
+
+            this._prepareShadow();
+            this.target.hide();
+
+            this._shadow._fireEvent('dragstart');
+            return;
+        }
+
         var axis = this._shadow.options['draggableAxis'];
         var currentCoord = eventParam['coordinate'];
         if(!this._preCoordDragged) {
@@ -185,6 +186,14 @@ Z.Geometry.Drag = Z.Handler.extend({
      * 结束移动Geometry, 退出移动模式
      */
     _endDrag: function(param) {
+        if (this._dragHandler) {
+            this.target.off('click', this._endDrag, this);
+            this._dragHandler.disable();
+            delete this._dragHandler;
+        }
+        if (!this._moved) {
+            return;
+        }
         var map = this.target.getMap();
         var eventParam;
         if (map) {
@@ -192,22 +201,18 @@ Z.Geometry.Drag = Z.Handler.extend({
         }
         this.target.off('symbolchange', this._onTargetUpdated, this);
 
-        this._shadow._fireEvent('dragend', eventParam);
-        this._shadow.remove();
-        delete this._shadow;
         this.target.show();
+        if (this._shadow) {
+            this._shadow._fireEvent('dragend', eventParam);
+            this._shadow.remove();
+            delete this._shadow;
+        }
+
         delete this._preCoordDragged;
-        this._dragHandler.disable();
-        delete this._dragHandler;
-        if (map) {
-             //restore map status
-            map._trySetCursor('default');
-            if (Z.Util.isNil(this._mapDraggable)) {
-                this._mapDraggable = true;
-            }
-            if (Z.Util.isNil(this._autoOutPanning)) {
-                this._autoOutPanning = false;
-            }
+
+        //restore map status
+        map._trySetCursor('default');
+        if (!Z.Util.isNil(this._mapDraggable) && !Z.Util.isNil(this._autoOutPanning)) {
             map.config({
                 'draggable': this._mapDraggable,
                 'autoOutPanning' : this._autoOutPanning
