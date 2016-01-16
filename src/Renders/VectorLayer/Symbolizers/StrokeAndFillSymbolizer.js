@@ -42,9 +42,6 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
         this._prepareContext(ctx);
         Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'], strokeAndFill['fill'], resources);
         canvasResources['fn'].apply(this, [ctx].concat(canvasResources['context']).concat([strokeAndFill['stroke']['stroke-opacity'], strokeAndFill['fill']['fill-opacity']]));
-        // if (this.geometry instanceof Z.Polygon) {
-        //     Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']['fill-opacity']);
-        // }
     },
 
     getSvgDom:function() {

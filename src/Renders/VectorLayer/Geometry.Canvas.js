@@ -106,12 +106,21 @@ if (Z.Browser.canvas) {
 
     Z.Polygon.include({
         _getRenderCanvasResources:function() {
-            var prjVertexes = this._getPrjCoordinates();
-            var points = this._transformToViewPoint(prjVertexes);
-            return {
+            var prjVertexes = this._getPrjCoordinates(),
+                points = this._transformToViewPoint(prjVertexes);
+            var prjHoles = this._getPrjHoles();
+            var holePoints = [];
+            if (Z.Util.isArrayHasData(prjHoles)) {
+                for (var i = 0; i < prjHoles.length; i++) {
+                    var holPoints = this._transformToViewPoint(prjHoles[i]);
+                    holePoints.push(holPoints);
+                }
+            }
+           var resource =  {
                 "fn" : Z.Canvas.polygon,
-                "context" : [points,this.getSymbol()['lineDasharray']]
+                "context" : [[points].concat(holePoints),this.getSymbol()['lineDasharray']]
             };
+            return resource;
         }
     });
 }

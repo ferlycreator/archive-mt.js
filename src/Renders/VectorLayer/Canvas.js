@@ -90,11 +90,12 @@ Z.Canvas = {
 
     fillCanvas:function(ctx, fillOpacity){
         if (Z.Util.isNil(fillOpacity)) {
-            fillOpacity = 1;
+           fillOpacity = 1
         }
         var alpha = ctx.globalAlpha;
+
         ctx.globalAlpha *= fillOpacity;
-        ctx.fill('evenodd');
+        ctx.fill();
         ctx.globalAlpha = alpha;
     },
 
@@ -289,31 +290,50 @@ Z.Canvas = {
     polygon:function(ctx, points, lineDashArray, lineOpacity, fillOpacity) {
         var isPatternLine = !Z.Util.isString(ctx.strokeStyle);
         var fillFirst = (Z.Util.isArrayHasData(lineDashArray) && !ctx.setLineDash) || isPatternLine;
-        //因为canvas只填充moveto,lineto,lineto的空间, 而dashline的moveto不再构成封闭空间, 所以重新绘制图形轮廓用于填充
+        if (!Z.Util.isArrayHasData(points[0])) {
+            points = [points];
+        }
+
         if (fillFirst) {
+            //因为canvas只填充moveto,lineto,lineto的空间, 而dashline的moveto不再构成封闭空间, 所以重新绘制图形轮廓用于填充
             ctx.save();
-            ctx.beginPath();
-            ctx.strokeStyle = 'rgba(255,255,255,0)';
-            for (var j = points.length - 1; j >= 0; j--) {
-                var outline = points[j].round();
-                if (j === points.length - 1) {
-                    ctx.moveTo(outline.x, outline.y);
-                } else {
-                    ctx.lineTo(outline.x,outline.y);
+            for (var i = 0; i < points.length; i++) {
+                Z.Canvas._ring(ctx, points[i], null, 0);
+               if (!fillFirst) {
+                    var o = fillOpacity;
+                    if (i > 0) {
+                        ctx.globalCompositeOperation = "destination-out";
+                        o = 1;
+                    }
+                    Z.Canvas.fillCanvas(ctx, o);
                 }
+                ctx.globalCompositeOperation = "source-over";
+                Z.Canvas._stroke(ctx, 0);
             }
-            ctx.closePath();
-            Z.Canvas._stroke(ctx, lineOpacity);
-            Z.Canvas.fillCanvas(ctx, fillOpacity);
             ctx.restore();
         }
-        ctx.beginPath();
-        Z.Canvas._path(ctx,points,lineDashArray, lineOpacity);
-        ctx.closePath();
-        Z.Canvas._stroke(ctx, lineOpacity);
-        if (!fillFirst) {
-            Z.Canvas.fillCanvas(ctx, fillOpacity);
+        for (var i = 0; i < points.length; i++) {
+
+            Z.Canvas._ring(ctx, points[i], lineDashArray, lineOpacity);
+
+            if (!fillFirst) {
+                var o = fillOpacity;
+                if (i > 0) {
+                    ctx.globalCompositeOperation = "destination-out";
+                    o = 1;
+                }
+                Z.Canvas.fillCanvas(ctx, o);
+            }
+            ctx.globalCompositeOperation = "source-over";
+            Z.Canvas._stroke(ctx, lineOpacity);
         }
+
+    },
+
+    _ring:function(ctx, ring,lineDashArray, lineOpacity) {
+        ctx.beginPath();
+        Z.Canvas._path(ctx,ring,lineDashArray, lineOpacity);
+        ctx.closePath();
     },
 
     /**
