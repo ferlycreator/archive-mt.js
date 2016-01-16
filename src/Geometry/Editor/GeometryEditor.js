@@ -64,7 +64,7 @@ Z.Editor=Z.Class.extend({
         //TODO geometry copy没有将event复制到新建的geometry,对于编辑这个功能会存在一些问题
         //原geometry上可能绑定了其它监听其click/dragging的事件,在编辑时就无法响应了.
         shadow.copyEventListener(geometry);
-        shadow.setId(null).config({'draggable': true, 'cursor' : 'move'});
+        shadow.setId(null).config({'draggable': true, 'dragShadow':false, 'cursor' : 'move'});
         shadow.isEditing=function() {
             return  true;
         };
