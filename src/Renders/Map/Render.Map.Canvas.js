@@ -209,32 +209,26 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
 
         containerDOM.innerHTML = '';
 
-        var controlWrapper = Z.DomUtil.createEl('div');
-        controlWrapper.className = 'MAP_CONTROL_WRAPPER';
+        var controlWrapper = Z.DomUtil.createEl('div', 'MAP_CONTROL_WRAPPER');
 
-        var controlsContainer = Z.DomUtil.createEl('div');
-        controlsContainer.className = 'MAP_CONTROLS_CONTAINER';
+        var controlsContainer = Z.DomUtil.createEl('div', 'MAP_CONTROLS_CONTAINER');
         controlWrapper.appendChild(controlsContainer);
         //map wrapper定义了全局的背景色, hidden overflow等css属性
-        var mapWrapper = Z.DomUtil.createEl('div');
+        var mapWrapper = Z.DomUtil.createEl('div', 'MAP_WRAPPER');
         mapWrapper.style.cssText = 'position:absolute;overflow:hidden;';
-        mapWrapper.className='MAP_WRAPPER';
         containerDOM.appendChild(mapWrapper);
 
         // 最外层的div
-        var mapPlatform = Z.DomUtil.createEl('div');
-        mapPlatform.className = 'MAP_PLATFORM';
+        var mapPlatform = Z.DomUtil.createEl('div', 'MAP_PLATFORM');
         mapPlatform.style.cssText = 'position:absolute;top:0px;left:0px;';
         mapWrapper.appendChild(mapPlatform);
         mapWrapper.appendChild(controlWrapper);
 
-        var mapViewPort = Z.DomUtil.createEl('div');
-        mapViewPort.className = 'MAP_VIEWPORT';
+        var mapViewPort = Z.DomUtil.createEl('div', 'MAP_VIEWPORT');
         mapViewPort.style.cssText = 'position:absolute;top:0px;left:0px;z-index:10;-moz-user-select:none;-webkit-user-select: none;';
 
 
-        var tipContainer = Z.DomUtil.createEl('div');
-        tipContainer.className = 'MAP_CONTAINER';
+        var tipContainer = Z.DomUtil.createEl('div', 'MAP_CONTAINER');
         tipContainer.style.cssText = 'position:absolute;top:0px;left:0px;';
         tipContainer.style.border = 'none';
         var popMenuContainer = tipContainer.cloneNode(false);

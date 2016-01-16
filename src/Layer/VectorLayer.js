@@ -34,6 +34,16 @@ Z.VectorLayer=Z.OverlayLayer.extend({
         return false;
     },
 
+
+    load:function() {
+        if (!this._render) {
+            this._initRender();
+            this._render.setZIndex(this.getZIndex());
+        }
+        this._render.render();
+        return this;
+    },
+
     _initRender:function() {
         if (this.isCanvasRender()) {
             this._render = new Z.render.vectorlayer.Canvas(this,{
@@ -44,15 +54,6 @@ Z.VectorLayer=Z.OverlayLayer.extend({
                 'visible':this.isVisible()
             });
         }
-    },
-
-    load:function() {
-        if (!this._render) {
-            this._initRender();
-            this._render.setZIndex(this.getZIndex());
-        }
-        this._render.render();
-        return this;
     },
 
 
