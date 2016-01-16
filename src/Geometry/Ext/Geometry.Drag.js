@@ -123,12 +123,15 @@ Z.Geometry.Drag = Z.Handler.extend({
     },
 
      _prepareDragStageLayer:function() {
-        var map=this.target.getMap();
+        var map=this.target.getMap(),
+            layer=this.target.getLayer();
         this._dragStageLayer = map.getLayer(this.dragStageLayerId);
         if (!this._dragStageLayer) {
             this._dragStageLayer = new Z.VectorLayer(this.dragStageLayerId);
             map.addLayer(this._dragStageLayer);
         }
+        //copy resources to avoid repeat resource loading.
+        this._dragStageLayer._getRender()._resources = layer._getRender()._resources;
     },
 
     _dragging: function(param) {
