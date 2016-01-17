@@ -307,7 +307,9 @@ Z.Canvas = {
                     }
                     Z.Canvas.fillCanvas(ctx, o);
                 }
-                ctx.globalCompositeOperation = "source-over";
+                if (i > 0) {
+                    ctx.globalCompositeOperation = "source-over";
+                }
                 Z.Canvas._stroke(ctx, 0);
             }
             ctx.restore();
@@ -324,7 +326,10 @@ Z.Canvas = {
                 }
                 Z.Canvas.fillCanvas(ctx, o);
             }
-            ctx.globalCompositeOperation = "source-over";
+            if (i > 0) {
+                //return to default compositeOperation to display strokes.
+                ctx.globalCompositeOperation = "source-over";
+            }
             Z.Canvas._stroke(ctx, lineOpacity);
         }
 

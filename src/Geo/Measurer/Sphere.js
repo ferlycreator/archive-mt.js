@@ -1,5 +1,5 @@
 Z.measurer.Sphere = function(radius) {
-    this._radius = radius;
+    this.radius = radius;
 }
 
 Z.Util.extend(Z.measurer.Sphere.prototype, {
@@ -8,11 +8,11 @@ Z.Util.extend(Z.measurer.Sphere.prototype, {
     measureLength:function(c1,c2){
         if (!c1 || !c2) {return 0;}
         var b=this.rad(c1.y),d=this.rad(c2.y),e=b-d,f=this.rad(c1.x)-this.rad(c2.x);
-        b=2*Math.asin(Math.sqrt(Math.pow(Math.sin(e/2),2)+Math.cos(b)*Math.cos(d)*Math.pow(Math.sin(f/2),2)));b*=this._radius;
+        b=2*Math.asin(Math.sqrt(Math.pow(Math.sin(e/2),2)+Math.cos(b)*Math.cos(d)*Math.pow(Math.sin(f/2),2)));b*=this.radius;
         return Math.round(b*1E4)/1E4;
     },
     measureArea:function(coordinates) {
-        var a=this._radius*Math.PI/180,
+        var a=this.radius*Math.PI/180,
             b=0,
             c=coordinates,
             d=c.length;
@@ -36,11 +36,11 @@ Z.Util.extend(Z.measurer.Sphere.prototype, {
         var dy = Math.abs(yDist);
         var ry = this.rad(c.y);
         var rx = this.rad(c.x);
-        var sy = Math.sin(dy / (2 * this._radius)) * 2;
+        var sy = Math.sin(dy / (2 * this.radius)) * 2;
         ry = ry + sy * (yDist > 0 ? 1 : -1);
-        var sx = 2 * Math.sqrt(Math.pow(Math.sin(dx / (2 * this._radius)), 2)/ Math.pow(Math.cos(ry), 2));
+        var sx = 2 * Math.sqrt(Math.pow(Math.sin(dx / (2 * this.radius)), 2)/ Math.pow(Math.cos(ry), 2));
         //              2 * Math.asin(Math.sqrt(Math.abs((Math.sin(xDist
-        //              / (2 * this._radius)))
+        //              / (2 * this.radius)))
         //              / (2 * Math.pow(Math.cos(ry), 2)))));
         rx = rx + sx * (xDist > 0 ? 1 : -1);
         return new Z.Coordinate(rx * 180 / Math.PI, ry * 180 / Math.PI);

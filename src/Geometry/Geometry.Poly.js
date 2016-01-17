@@ -15,12 +15,17 @@ Z.Geometry.Poly={
         if (!Z.Util.isArrayHasData(prjCoords)) {
             return result;
         }
-        var map = this.getMap();
-        var fullExtent = map.getFullExtent(),
-            isClipping = map.options['clipFullExtent'];
-        var is2dArray = Z.Util.isArray(prjCoords[0]),
-            isSimplify = this.getLayer() && this.getLayer().options['enableSimplify'];
-        var tolerance;
+        var map = this.getMap(),
+            fullExtent = map.getFullExtent(),
+            projection = this._getProjection();
+
+        var isAntiMeridian = this.options['antiMeridian'];
+
+        var isClipping = map.options['clipFullExtent'],
+            isSimplify = this.getLayer() && this.getLayer().options['enableSimplify'],
+            tolerance,
+            is2dArray = Z.Util.isArray(prjCoords[0])
+
         if (isSimplify) {
             var pxTolerance = 2;
             tolerance = map._getResolution()*pxTolerance;
@@ -28,6 +33,7 @@ Z.Geometry.Poly={
         if (!is2dArray && isSimplify) {
             prjCoords = Z.Simplify.simplify(prjCoords, tolerance, false);
         }
+        var preCoordinate;
         for (var i=0,len=prjCoords.length;i<len;i++) {
             var p = prjCoords[i];
             if (Z.Util.isNil(p) || (isClipping && !fullExtent.contains(p))) {
@@ -50,11 +56,38 @@ Z.Geometry.Poly={
                 }
                 result.push(p_r);
             } else {
+                if (i > 0 && (isAntiMeridian && isAntiMeridian !== 'default')) {
+                    p = this._antiMeridian(p, prjCoords[i-1], projection, isAntiMeridian);
+                }
                 var pp = map._transformToViewPoint(p);
                 result.push(pp);
             }
         }
+        delete this._preAntiMeridianCoord;
         return result;
+    },
+
+    _antiMeridian:function(p, preCoord, projection, isAntiMeridian) {
+        var pre;
+        if (this._preAntiMeridianCoord) {
+            pre = this._preAntiMeridianCoord;
+        } else {
+            pre = projection?projection.unproject(preCoord):preCoord;
+        }
+        var current = projection?projection.unproject(p):p;
+        var d = current.x - pre.x;
+        if (isAntiMeridian === 'continuous') {
+            if (Math.abs(d) > 180) {
+                if (d > 0) {
+                    current._substract(new Z.Coordinate(180*2,0))
+                } else {
+                    current._add(new Z.Coordinate(180*2,0))
+                }
+                p = projection?projection.unproject(current):current;
+            }
+        }
+        this._preAntiMeridianCoord = current;
+        return p;
     },
 
     _setPrjCoordinates:function(prjPoints) {
@@ -149,15 +182,25 @@ Z.Geometry.Poly={
       */
     _computePointsExtent: function(points) {
         var result=null;
-        var ext;
+        var ext,
+            isAntiMeridian = this.options['antiMeridian'];
         for ( var i = 0, len = points.length; i < len; i++) {
+            var p;
             if (Z.Util.isArray(points[i])) {
                 for ( var j = 0, jlen = points[i].length; j < jlen; j++) {
-                    ext = new Z.Extent(points[i][j],points[i][j]);
+                    p = points[i][j];
+                    if (j > 0 && (isAntiMeridian && isAntiMeridian !== 'default')) {
+                        p = this._antiMeridian(p, points[i][j-1], null, isAntiMeridian);
+                    }
+                    ext = new Z.Extent(p,p);
                     result = ext.combine(result);
                 }
             } else {
-                ext = new Z.Extent(points[i],points[i]);
+                p = points[i];
+                if (i > 0 && (isAntiMeridian && isAntiMeridian !== 'default')) {
+                    p = this._antiMeridian(p, points[i-1], null, isAntiMeridian);
+                }
+                ext = new Z.Extent(p,p);
                 result = ext.combine(result);
             }
         }

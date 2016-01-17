@@ -22,9 +22,22 @@ Z.Coordinate = function(x, y) {
 };
 
 Z.Util.extend(Z.Coordinate.prototype,{
+    _add: function(d) {
+        this.x += d.x;
+        this.y += d.y;
+        return this;
+    },
+
     add:function(d) {
         return new Z.Coordinate(this.x+d.x, this.y+d.y);
     },
+
+    _substract: function(d) {
+        this.x -= d.x;
+        this.y -= d.y;
+        return this;
+    },
+
     substract:function(d) {
         return new Z.Coordinate(this.x-d.x, this.y-d.y);
     },

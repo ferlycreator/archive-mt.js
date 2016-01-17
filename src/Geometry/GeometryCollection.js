@@ -127,6 +127,13 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         return this;
     },
 
+    onConfig:function(config) {
+        var geometries = this.getGeometries();
+        for (var i=0,len=geometries.length;i<len;i++) {
+            this._geometries[i].config(config);
+        }
+    },
+
     /**
      * _prepare this geometry collection
      * @param  {Z.Layer} layer [description]

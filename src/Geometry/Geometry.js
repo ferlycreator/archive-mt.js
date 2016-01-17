@@ -142,13 +142,51 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         return this;
     },
 
-    _prepareSymbol:function(symbol) {
-              //属性的变量名转化为驼峰风格
-       var camelSymbol = Z.Util.convertFieldNameStyle(symbol,'camel');
-       this._convertResourceUrl(camelSymbol);
-       return camelSymbol;
+    /**
+     * Return the first coordinate of the geometry.
+     * @return {Coordinate} First Coordinate
+     */
+    getFirstCoordinate:function() {
+        if (this instanceof Z.GeometryCollection) {
+            var geometries = this.getGeometries();
+            if (!geometries || !Z.Util.isArrayHasData(geometries)) {
+                return null;
+            }
+            return this.geometries[0].getFirstCoordinate();
+        }
+        var coordinates = this.getCoordinates();
+        if (!Z.Util.isArray(coordinates)) {
+            return coordinates;
+        }
+        var first = coordinates;
+        do {
+            first = first[0];
+        } while (Z.Util.isArray(first));
+        return first;
     },
 
+    /**
+     * Return the last coordinate of the geometry.
+     * @return {Coordinate} Last Coordinate
+     */
+    getLastCoordinate:function() {
+        if (this instanceof Z.GeometryCollection) {
+            var geometries = this.getGeometries();
+            if (!geometries || !Z.Util.isArrayHasData(geometries)) {
+                return null;
+            }
+            return this.geometries[geometries.length-1].getLastCoordinate();
+        }
+        var coordinates = this.getCoordinates();
+        if (!Z.Util.isArray(coordinates)) {
+            return coordinates;
+        }
+        var last = coordinates;
+        do {
+            last = last[last.length-1];
+        } while (Z.Util.isArray(last));
+        return last;
+    },
 
     /**
      * 计算Geometry的外接矩形范围
@@ -530,6 +568,12 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     },
 
+    _prepareSymbol:function(symbol) {
+              //属性的变量名转化为驼峰风格
+       var camelSymbol = Z.Util.convertFieldNameStyle(symbol,'camel');
+       this._convertResourceUrl(camelSymbol);
+       return camelSymbol;
+    },
 
     /**
      * 资源url从相对路径转为绝对路径
@@ -583,6 +627,24 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (!this._extent && p) {
             var ext = this._computeExtent(p);
             if (ext) {
+                var isAntiMeridian = this.options['antiMeridian'];
+                if (isAntiMeridian && isAntiMeridian !== 'default') {
+                    var firstCoordinate = this.getFirstCoordinate();
+                    if (isAntiMeridian === 'continuous') {
+                        if (ext['xmax'] - ext['xmin'] > 180) {
+                            if (firstCoordinate.x > 0) {
+                                ext['xmin'] += 360;
+                            } else {
+                                ext['xmax'] -= 360;
+                            }
+                        }
+                    }
+                    if (ext['xmax'] < ext['xmin']) {
+                        var tmp = ext['xmax'];
+                        ext['xmax'] = ext['xmin'];
+                        ext['xmin'] = tmp;
+                    }
+                }
                 this._extent = new Z.Extent(p.project(new Z.Coordinate(ext['xmin'],ext['ymin'])),
                     p.project(new Z.Coordinate(ext['xmax'],ext['ymax'])));
             }

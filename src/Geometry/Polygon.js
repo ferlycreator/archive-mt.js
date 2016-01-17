@@ -28,6 +28,10 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
         }
     },
 
+    options:{
+        "antiMeridian" : "default"
+    },
+
     /**
      * @constructor
      * @param {maptalks.Coordinate[]} coordinates

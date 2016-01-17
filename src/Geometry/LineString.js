@@ -11,6 +11,7 @@ Z.LineString = Z.Polyline = Z.Vector.extend({
     type:Z.Geometry['TYPE_LINESTRING'],
 
     options:{
+        "antiMeridian" : "default",
         "arrowStyle" : null,
         "arrowPlacement" : "vertex-last" //vertex-first, vertex-last, vertex-firstlast, point
     },
