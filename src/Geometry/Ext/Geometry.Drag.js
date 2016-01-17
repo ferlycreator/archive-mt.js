@@ -120,7 +120,7 @@ Z.Geometry.Drag = Z.Handler.extend({
                 shadowConnectors.push(conn);
             }
         }
-        this._dragStageLayer.addGeometry(shadowConnectors.concat(shadow));
+        this._dragStageLayer.bringToFront().addGeometry(shadowConnectors.concat(shadow));
     },
 
     _onTargetUpdated:function() {
