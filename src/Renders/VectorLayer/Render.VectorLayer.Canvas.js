@@ -86,7 +86,8 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         if (!this._canvas) {
             this._createCanvas();
         }
-        if (this._layer.isEmpty() || !this._layer.isVisible()) {
+        var layer = this._layer;
+        if (layer.isEmpty() || !layer.isVisible()) {
             return;
         }
         var fullExtent = map._getViewExtent();
@@ -95,7 +96,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         var counter = 0;
         this._shouldEcoTransform = true;
         var geoViewExt, geoPainter;
-        this._layer._eachGeometry(function(geo) {
+        layer._eachGeometry(function(geo) {
             //geo的map可能为null,因为绘制为延时方法
             if (!geo || !geo.isVisible() || !geo.getMap() || !geo.getLayer() || (!geo.getLayer().isCanvasRender())) {
                 return;
@@ -109,7 +110,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
             if (me._shouldEcoTransform && geoPainter.hasPointSymbolizer()) {
                 me._shouldEcoTransform = false;
             }
-            if (counter > me._layer.options['thresholdOfEcoTransform']) {
+            if (counter > layer.options['thresholdOfEcoTransform']) {
                 me._shouldEcoTransform = true;
             }
             geoPainter.paint();
