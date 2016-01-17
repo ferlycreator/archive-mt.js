@@ -242,6 +242,10 @@ Z.Painter = Z.Class.extend({
         this._refreshSymbolizers();
     },
 
+    onGeometryChange:function() {
+        this._removeCache();
+    },
+
     repaint:function(){
         this._removeCache();
         this._refreshSymbolizers();

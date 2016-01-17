@@ -745,10 +745,12 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     _onShapeChanged:function() {
         this._extent = null;
-        if (this.isVisible()) {
-            var painter = this._getPainter();
-            if (painter) {
+        var painter = this._getPainter();
+        if (painter) {
+            if (this.isVisible()) {
                 painter.repaint();
+            } else {
+                painter.onGeometryChange();
             }
         }
         this._fireEvent('shapechange');
@@ -756,10 +758,12 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     _onPositionChanged:function() {
         this._extent = null;
-        if (this.isVisible()) {
-            var painter = this._getPainter();
-            if (painter) {
+        var painter = this._getPainter();
+        if (painter) {
+            if (this.isVisible()) {
                 painter.repaint();
+            } else {
+                painter.onGeometryChange();
             }
         }
         this._fireEvent('positionchange');

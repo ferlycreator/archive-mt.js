@@ -296,7 +296,7 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
         }
         if (!Z.Browser.mobile && Z.Browser.canvas) {
              this._onMapMouseMove=function(param) {
-                var vp = map._containerPointToViewPoint(param['containerPoint']);
+                var vp = param['viewPoint'];
                 var layers = map.getLayers();
                 var hit = false,
                     cursor;

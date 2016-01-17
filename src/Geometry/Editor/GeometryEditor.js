@@ -10,8 +10,6 @@ Z.Editor=Z.Class.extend({
 
     editStageLayerId : Z.internalLayerPrefix+'_edit_stage',
 
-    editHandleFill : '#d0d2d6',
-
     /**
      * @constructor
      * @param {maptalks._shadow} geometry 待编辑图形
@@ -240,6 +238,7 @@ Z.Editor=Z.Class.extend({
         }
         var handle = new Z.Marker(coordinate,{
             'draggable' : true,
+            'dragShadow' : false,
             'draggableAxis' : opts['axis'],
             'cursor'    : opts['cursor'],
             'symbol'    : symbol
@@ -256,7 +255,7 @@ Z.Editor=Z.Class.extend({
         var me = this;
         function onHandleDragstart(param) {
             if (opts.onDown) {
-                opts.onDown.call(me, map._containerPointToViewPoint(param['containerPoint']));
+                opts.onDown.call(me, param['viewPoint']);
             }
         }
         function onHandleDragging(param) {
@@ -377,7 +376,7 @@ Z.Editor=Z.Class.extend({
         var marker = this._shadow,
             geometryToEdit = this._geometry;
         var map = this.getMap();
-        //only image marker and vector marker can be edit now.
+        //only image marker and vector marker can be edited now.
         if (marker._canEdit()) {
             var symbol = marker.getSymbol();
             var dxdy = new Z.Point(0,0);
@@ -466,7 +465,7 @@ Z.Editor=Z.Class.extend({
             }
             shadow.setRadius(r);
             circle.setRadius(r);
-            me._updateAndFireEvent('shapechange');
+            // me._updateAndFireEvent('shapechange');
         });
     },
 
@@ -549,7 +548,7 @@ Z.Editor=Z.Class.extend({
                 shadow.setHeight(h*r);
                 geometryToEdit.setHeight(h*r);
             }
-            me._updateAndFireEvent('shapechange');
+            // me._updateAndFireEvent('shapechange');
         });
     },
 
