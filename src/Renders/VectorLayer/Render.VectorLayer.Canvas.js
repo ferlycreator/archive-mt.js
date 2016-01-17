@@ -19,6 +19,9 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
      * 实时绘制并请求地图重绘
      */
     renderImmediate:function() {
+        if (!this._layer.isVisible()) {
+            return;
+        }
         this.draw();
         this._requestMapToRend();
     },
@@ -31,6 +34,9 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
     render:function(geometries, ignorePromise) {
         this._clearTimeout();
         if (!this.getMap() || this.getMap().isBusy()) {
+            return;
+        }
+        if (!this._layer.isVisible()) {
             return;
         }
         if (Z.Util.isArrayHasData(geometries) && geometries.length === 1) {
@@ -80,7 +86,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         if (!this._canvas) {
             this._createCanvas();
         }
-        if (this._layer.isEmpty()) {
+        if (this._layer.isEmpty() || !this._layer.isVisible()) {
             return;
         }
         var fullExtent = map._getViewExtent();
@@ -132,10 +138,10 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
      * @expose
      */
     show: function() {
-        /*this._layer._eachGeometry(function(geo) {
-            geo.show();
-        });*/
-        this._requestMapToRend();
+        this._layer._eachGeometry(function(geo) {
+            geo._onZoomEnd();
+        });
+        this.render();
     },
 
     /**
@@ -143,9 +149,6 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
      * @expose
      */
     hide: function() {
-        /*this._layer._eachGeometry(function(geo) {
-            geo.hide();
-        });*/
         this._requestMapToRend();
     },
 

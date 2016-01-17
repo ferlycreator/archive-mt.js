@@ -223,18 +223,20 @@ Z.Painter = Z.Class.extend({
                 this.paint();
             }
         } else {
+            this._removeCache();
+            this._refreshSymbolizers();
             this._eachSymbolizer(function(symbolizer) {
                 symbolizer.show();
             });
         }
-        this._rendCanvas(false);
+        this._requestToRender();
     },
 
     hide:function(){
         this._eachSymbolizer(function(symbolizer) {
             symbolizer.hide();
         });
-        this._rendCanvas(false);
+        this._requestToRender();
     },
 
     onZoomEnd:function() {
@@ -242,14 +244,12 @@ Z.Painter = Z.Class.extend({
         this._refreshSymbolizers();
     },
 
-    onGeometryChange:function() {
-        this._removeCache();
-    },
-
     repaint:function(){
         this._removeCache();
         this._refreshSymbolizers();
-        this._rendCanvas(false);
+        if (this.geometry.isVisible()) {
+            this._requestToRender();
+        }
     },
 
     _refreshSymbolizers:function() {
@@ -258,29 +258,30 @@ Z.Painter = Z.Class.extend({
         });
     },
 
-    _rendCanvas:function(needPromise) {
-        if (!this.geometry.getMap() || this.geometry.getMap().isBusy()) {
+    _requestToRender:function() {
+        var geometry = this.geometry;
+        if (!geometry.getMap() || geometry.getMap().isBusy()) {
             return;
         }
-        var layer = this.geometry.getLayer();
+        var needPromise = false,
+            layer = geometry.getLayer(),
+            render = layer._getRender();
+        if (!render) {
+            return;
+        }
         //check if geometry's resources have already loaded, if not, layer render needs to promise to load resources at first.
-        var resources = this.geometry._getExternalResource();
-        if (!needPromise && Z.Util.isArrayHasData(resources)) {
+        var resources = geometry._getExternalResource();
+        if (Z.Util.isArrayHasData(resources)) {
             for (var i = resources.length - 1; i >= 0; i--) {
-            if (!layer._getRender().isResourceLoaded(resources[i])) {
+            if (!render.isResourceLoaded(resources[i])) {
                     needPromise = true;
                     break;
                 }
             }
         }
         if (layer.isCanvasRender()) {
-            var isRealTime = !needPromise && ((this.geometry.isEditing && this.geometry.isEditing())
-                                || (this.geometry.isDragging && this.geometry.isDragging()));
-            var render = this.geometry.getLayer()._getRender();
-            if (!render) {
-                return;
-            }
-            if (isRealTime) {
+            var immediate = !needPromise && geometry._isEditingOrDragging();
+            if (immediate) {
                 render.renderImmediate();
             } else {
                 render.render(null,!needPromise);
@@ -292,16 +293,19 @@ Z.Painter = Z.Class.extend({
      * symbol发生变化后, 刷新symbol
      */
     refreshSymbol:function() {
+        this._removeCache();
         this._removeSymbolizers();
         this.symbolizers = this._createSymbolizers();
         if (!this._painted) {
             return;
         }
-        var layer = this.geometry.getLayer();
-        if (layer.isCanvasRender()) {
-            this._rendCanvas(true);
-        } else {
-            this.paint();
+        if (this.geometry.isVisible()) {
+            var layer = this.geometry.getLayer();
+            if (layer.isCanvasRender()) {
+                this._requestToRender();
+            } else {
+                this.paint();
+            }
         }
     },
 

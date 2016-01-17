@@ -255,9 +255,10 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     show:function() {
         this.options['visible'] = true;
         if (this.getMap()) {
-            this._getPainter().repaint();
-            this._getPainter().show();
-            this._fireEvent('show');
+            var painter = this._getPainter();
+            if (painter) {
+                painter.show();
+            }
         }
         return this;
     },
@@ -269,7 +270,10 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     hide:function() {
         this.options['visible'] = false;
         if (this.getMap()) {
-            this._getPainter().hide();
+            var painter = this._getPainter();
+            if (painter) {
+                painter.hide();
+            }
             this._fireEvent('hide');
         }
         return this;
@@ -747,11 +751,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         this._extent = null;
         var painter = this._getPainter();
         if (painter) {
-            if (this.isVisible()) {
-                painter.repaint();
-            } else {
-                painter.onGeometryChange();
-            }
+            painter.repaint();
         }
         this._fireEvent('shapechange');
     },
@@ -760,21 +760,15 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         this._extent = null;
         var painter = this._getPainter();
         if (painter) {
-            if (this.isVisible()) {
-                painter.repaint();
-            } else {
-                painter.onGeometryChange();
-            }
+            painter.repaint();
         }
         this._fireEvent('positionchange');
     },
 
     _onSymbolChanged:function() {
-        if (this.isVisible()) {
-            var painter = this._getPainter();
-            if (painter) {
-                painter.refreshSymbol();
-            }
+        var painter = this._getPainter();
+        if (painter) {
+            painter.refreshSymbol();
         }
         this._fireEvent('symbolchange');
     },
