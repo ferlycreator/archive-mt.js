@@ -261,5 +261,15 @@ Z.Util.extend(Z.Extent.prototype,{
             this['ymax'] += distance;
         }
         return this;
+    },
+
+    toPolygon:function() {
+        var xmin = this['xmin'],
+            ymin = this['ymin'],
+            xmax = this['xmax'],
+            ymax = this['ymax'];
+        return new Z.Polygon([
+                [xmin, ymax], [xmax, ymax], [xmax, ymin], [xmin, ymin], [xmin, ymax]
+            ]);
     }
 });
