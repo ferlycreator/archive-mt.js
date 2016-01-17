@@ -56,17 +56,18 @@ Z.Editor=Z.Class.extend({
         if (!this._geometry || !this._geometry.getMap() || this._geometry.editing) {return;}
         this.editing = true;
         var geometry = this._geometry;
+        this._geometryDraggable = geometry.options['draggable'];
         this.prepare();
+        geometry.config('draggable', false);
         //edits are applied to a shadow of geometry to improve performance.
         var shadow = geometry.copy();
         //TODO geometry copy没有将event复制到新建的geometry,对于编辑这个功能会存在一些问题
         //原geometry上可能绑定了其它监听其click/dragging的事件,在编辑时就无法响应了.
         shadow.copyEventListener(geometry);
-        shadow.setId(null).config({'draggable': true, 'dragShadow':false, 'cursor' : 'move'});
+        shadow.setId(null).config({'draggable': true, 'dragShadow':true, 'cursor' : 'move'});
         shadow.isEditing=function() {
             return  true;
         };
-        shadow.on('dragstart', this._onShadowDragStart, this);
         shadow.on('dragend', this._onShadowDragEnd, this);
         this._shadow = shadow;
         geometry.hide();
@@ -107,13 +108,19 @@ Z.Editor=Z.Class.extend({
             this._shadow.remove();
             delete this._shadow;
         }
-
-        if (this._shadowOfShadow) {
-            this._shadowOfShadow.remove();
-            delete this._shadowOfShadow;
+        if (!Z.Util.isNil(this._geometryDraggable)) {
+            this._geometry.config('draggable', this._geometryDraggable);
+            delete this._geometryDraggable;
         }
         this._geometry.show();
         this._editStageLayer.removeGeometry(this._editHandles);
+        if (Z.Util.isArrayHasData(this._eventListeners)) {
+            for (var i = this._eventListeners.length - 1; i >= 0; i--) {
+                var listener = this._eventListeners[i];
+                listener[0].off(listener[1], listener[2], this);
+            }
+            this._eventListeners = [];
+        }
         this._editHandles = [];
         this._refreshHooks = [];
         if (this.options['symbol']) {
@@ -130,30 +137,7 @@ Z.Editor=Z.Class.extend({
         return this.editing;
     },
 
-    _onShadowDragStart:function() {
-        //clone another shadow to stay where it was.
-        this._shadowOfShadow = this._shadow.copy();
-        this._shadowOfShadow.isEditing = function() {
-            return true;
-        };
-        this._editStageLayer.addGeometry(this._shadowOfShadow);
-        var symbol = this._shadow.getSymbol();
-        //reduce shadow's opacity when dragging it.
-        if (Z.Util.isNumber(symbol['opacity'])) {
-            symbol['opacity'] *= 0.4;
-        } else {
-            symbol['opacity'] = 0.4;
-        }
-        this._shadow.setSymbol(symbol);
-
-    },
-
     _onShadowDragEnd:function() {
-        var symbol=this._shadowOfShadow.getSymbol();
-        this._shadowOfShadow.remove();
-        delete this._shadowOfShadow;
-        this._shadow.setSymbol(symbol);
-
         this._update();
         this._refresh();
     },
@@ -217,6 +201,7 @@ Z.Editor=Z.Class.extend({
         };
 
         fnResizeOutline();
+        this._editOutline = outline;
         // outline._editOnRefresh = fnResizeOutline;
         this._addRefreshHook(fnResizeOutline);
         return outline;
@@ -299,7 +284,7 @@ Z.Editor=Z.Class.extend({
             'x',       'x',
             null, 'y', null
         ];
-        var geometry = this._shadow;
+        var geometry = this._geometry;
         function getResizeAnchors(ext) {
             return [
                 ext.getMin(),
@@ -406,8 +391,6 @@ Z.Editor=Z.Class.extend({
             ];
 
             var resizeHandles = this._createResizeHandles(null,function(handleViewPoint, i) {
-
-
                 if (blackList && Z.Util.searchInArray(i, blackList) >= 0) {
                     //need to change marker's coordinates
                     var newCoordinates = map.viewPointToCoordinate(handleViewPoint);
@@ -439,7 +422,29 @@ Z.Editor=Z.Class.extend({
                 marker.setSymbol(symbol);
                 geometryToEdit.setSymbol(symbol);
             });
-
+            function onZoomStart() {
+                if (Z.Util.isArrayHasData(resizeHandles)) {
+                    for (var i = resizeHandles.length - 1; i >= 0; i--) {
+                        resizeHandles[i].hide();
+                    }
+                }
+                if (this._editOutline) {
+                    this._editOutline.hide();
+                }
+            }
+            function onZoomEnd() {
+                this._refresh();
+                if (Z.Util.isArrayHasData(resizeHandles)) {
+                    for (var i = resizeHandles.length - 1; i >= 0; i--) {
+                        resizeHandles[i].show();
+                    }
+                }
+                if (this._editOutline) {
+                    this._editOutline.show();
+                }
+            }
+            this._addListener([map, 'zoomstart', onZoomStart]);
+            this._addListener([map, 'zoomend', onZoomEnd]);
         }
     },
 
@@ -759,6 +764,14 @@ Z.Editor=Z.Class.extend({
             this._geometry.closeMenu();
             this._geometry.closeInfoWindow();
         }
+    },
+
+    _addListener:function(listener) {
+        if (!this._eventListeners) {
+            this._eventListeners = [];
+        }
+        this._eventListeners.push(listener);
+        listener[0].on(listener[1], listener[2],this);
     },
 
     _addRefreshHook:function(fn) {
