@@ -49,11 +49,16 @@ Z.Geometry.Poly={
                 }
                 var p_r = [];
                 for (var j=0,jlen=p.length;j<jlen;j++) {
+                    var pp = p[j];
                     if (Z.Util.isNil(p[j])) {
                         continue;
                     }
-                    p_r.push(map._transformToViewPoint(p[j]));
+                    if (j > 0 && (isAntiMeridian && isAntiMeridian !== 'default')) {
+                        pp = this._antiMeridian(pp, p[j-1], projection, isAntiMeridian);
+                    }
+                    p_r.push(map._transformToViewPoint(pp));
                 }
+                delete this._preAntiMeridianCoord;
                 result.push(p_r);
             } else {
                 if (i > 0 && (isAntiMeridian && isAntiMeridian !== 'default')) {
@@ -69,6 +74,7 @@ Z.Geometry.Poly={
 
     _antiMeridian:function(p, preCoord, projection, isAntiMeridian) {
         var pre;
+        //cache last projected coordinate, to improve some perf.
         if (this._preAntiMeridianCoord) {
             pre = this._preAntiMeridianCoord;
         } else {
