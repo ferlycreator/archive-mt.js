@@ -131,6 +131,7 @@ Z['Button'] = Z.Button = Z.Class.extend({
         var _spanDom = Z.DomUtil.createEl('span');
         var icon = options['icon'];
         var content = options['item'];
+        var title = options['title'];
         var html = options['html'];
         if(icon) {
             var width = Z.Util.getValueOrDefault(options['iconWidth'],options['width']);
@@ -140,6 +141,9 @@ Z['Button'] = Z.Button = Z.Class.extend({
             _imgDom.border=0;
             _imgDom.width=width;
             _imgDom.height=height;
+            if(title) {
+                _imgDom.title=title;
+            }
             _spanDom.appendChild(_imgDom);
             if(content) {
                 if(html) {

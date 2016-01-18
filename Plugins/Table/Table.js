@@ -38,7 +38,7 @@ maptalks.Table = maptalks.Class.extend({
         'symbol': {
             'lineColor': '#ffffff',
             'fill': '#4e98dd',
-            'textFaceName': 'arial',
+            'textFaceName': 'monospace',
             'textSize': 12,
             'textFill': '#ebf2f9',
             'textWrapWidth': 100
@@ -156,7 +156,7 @@ maptalks.Table = maptalks.Class.extend({
             'markerHeight' : 18,
             'markerWidth': 18,
 
-            'textFaceName': maptalks.Util.getValueOrDefault(cellSymbol['textFaceName'],'arial'),
+            'textFaceName': maptalks.Util.getValueOrDefault(cellSymbol['textFaceName'],'monospace'),
             'textSize': cellSymbol['textSize'],
             'textFill': maptalks.Util.getValueOrDefault(cellSymbol['textFill'],'#ff0000'),
             'textOpacity': cellSymbol['textOpacity'],
@@ -514,6 +514,48 @@ maptalks.Table = maptalks.Class.extend({
         this._colNum-=1;
         //延展行调整线
         this._extendRowLine();
+    },
+
+    hide: function(){
+        for(var i=0,len=this._table.length;i<len;i++) {
+            var row = this._table[i];
+            if(!row) return;
+            for(var j=0,rowLength=row.length;j<rowLength;j++) {
+                row[j].hide();
+            }
+        }
+        this._tableHandler.hide();
+        //删除行交互线
+        for(var i=0,len=this._adjustRows.length;i<len;i++) {
+            var line = this._adjustRows[i];
+            line.hide();
+        }
+        //删除列交互线
+        for(var i=0,len=this._adjustCols.length;i<len;i++) {
+            var line =this._adjustCols[i];
+            line.hide();
+        }
+    },
+
+    show: function(){
+        for(var i=0,len=this._table.length;i<len;i++) {
+            var row = this._table[i];
+            if(!row) return;
+            for(var j=0,rowLength=row.length;j<rowLength;j++) {
+                row[j].show();
+            }
+        }
+        this._tableHandler.show();
+        //删除行交互线
+        for(var i=0,len=this._adjustRows.length;i<len;i++) {
+            var line = this._adjustRows[i];
+            line.show();
+        }
+        //删除列交互线
+        for(var i=0,len=this._adjustCols.length;i<len;i++) {
+            var line =this._adjustCols[i];
+            line.show();
+        }
     },
 
     remove: function(){
@@ -1033,7 +1075,7 @@ maptalks.Table = maptalks.Class.extend({
                    'markerDx': cellOffset['dx'],
                    'markerDy': cellOffset['dy'],
 
-                   'textFaceName': maptalks.Util.getValueOrDefault(symbol['textFaceName'],'arial'),
+                   'textFaceName': maptalks.Util.getValueOrDefault(symbol['textFaceName'],'monospace'),
                    'textSize': textSize,
                    'textFill': maptalks.Util.getValueOrDefault(symbol['textFill'],'#ff0000'),
                    'textOpacity': 1,
