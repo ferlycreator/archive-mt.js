@@ -93,7 +93,7 @@ Z.Control.Panel = Z.Control.extend({
     /**
      * 获取panel端点数组
      */
-    getLinkAnchors: function() {
+    getConnectPoints: function() {
         var map = this._map;
         var containerPoint = this.getContainerPoint();
         var controlContainer = this.getContainer(),

@@ -70,7 +70,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
 
         var tiles = tileGrid['tiles'],
             tileCache = this._tileCache,
-            tileSize = this._layer._getTileSize();
+            tileSize = this._layer.getTileSize();
 
         this._canvasFullExtent =  this.getMap()._getViewExtent();
         //遍历瓦片
@@ -145,7 +145,8 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
             me._tileCache.remove(tileImage[me.propertyOfTileId], this);
             me._clearTileRectAndRequest(this);
         }
-
+        var crossOrigin = this._layer.options['crossOrigin'];
+        var tileSize = this._layer.getTileSize();
         for (var p in this._tileQueue) {
             if (this._tileQueue.hasOwnProperty(p)) {
                 var tileId = p.split('@')[0];
@@ -153,12 +154,17 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
                 delete this._tileQueue[p];
                 if (!this._tileCache[tileId]) {
                     var tileImage = new Image();
+                    tileImage.width = tileSize['width'];
+                    tileImage.height = tileSize['height'];
                     tileImage[this.propertyOfTileId]=tileId;
                     tileImage[this.propertyOfPointOnTile] = tile['viewPoint'];
                     tileImage[this.propertyOfTileZoom] = tile['zoom'];
                     tileImage.onload = onTileLoad;
                     tileImage.onabort = onTileError;
                     tileImage.onerror = onTileError;
+                    if (crossOrigin) {
+                        tileImage.crossOrigin = crossOrigin;
+                    }
                     Z.Util.loadImage(tileImage, tile['url']);
                 } else {
                     this._drawTileAndRequest(this._tileCache[tileId]);
@@ -175,7 +181,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         if (!point) {
             return;
         }
-        var tileSize = this._layer._getTileSize();
+        var tileSize = this._layer.getTileSize();
         var opacity = this._layer.config()['opacity'];
         var isFaded = !Z.Util.isNil(opacity) && opacity < 1;
         var alpha;
@@ -198,39 +204,61 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
      * @param  {Image} tileImage 瓦片图片对象
      */
     _drawTileAndRequest:function(tileImage) {
-        var zoomLevel = this.getMap().getZoom();
-        if (zoomLevel !== tileImage[this.propertyOfTileZoom]) {
+        //sometimes, layer may be removed from map here.
+        if (!this.getMap()) {
             return;
         }
-
+        var zoom = this.getMap().getZoom();
+        if (zoom !== tileImage[this.propertyOfTileZoom]) {
+            return;
+        }
         this._tileToLoadCounter--;
         var point = tileImage[this.propertyOfPointOnTile];
         this._drawTile(point, tileImage);
 
-        var tileSize = this._layer._getTileSize();
-        var viewExtent = this.getMap()._getViewExtent();
-        if (viewExtent.intersects(new Z.Extent(point, point.add(new Z.Point(tileSize['width'], tileSize['height']))))) {
-            this._requestMapToRend();
+        if (!Z.runningInNode) {
+            var tileSize = this._layer.getTileSize();
+            var viewExtent = this.getMap()._getViewExtent();
+            if (viewExtent.intersects(new Z.Extent(point, point.add(new Z.Point(tileSize['width'], tileSize['height']))))) {
+                this._requestMapToRend();
+            }
         }
         if (this._tileToLoadCounter === 0) {
-             this._fireLoadedEvent();
+            this._onTileLoadComplete();
         }
+    },
+
+    _onTileLoadComplete:function() {
+        if (Z.runningInNode) {
+            this._requestMapToRend();
+        }
+        this._fireLoadedEvent();
     },
 
     /**
      * 清除瓦片区域, 并请求地图重绘
      * @param  {Point} point        瓦片左上角坐标
      */
-    _clearTileRectAndRequest:function(point,tileImage) {
+    _clearTileRectAndRequest:function(tileImage) {
+        if (!this.getMap()) {
+            return;
+        }
+        var zoom = this.getMap().getZoom();
+        if (zoom !== tileImage[this.propertyOfTileZoom]) {
+            return;
+        }
         this._tileToLoadCounter--;
         if (this._tileToLoadCounter === 0) {
-             this._fireLoadedEvent();
+            this._onTileLoadComplete();
         }
     },
 
     _requestMapToRend:function() {
+        var me = this;
         if (this.getMap() && !this.getMap().isBusy()) {
-            this._mapRender.render();
+
+                this._mapRender.render();
+
         }
     },
 

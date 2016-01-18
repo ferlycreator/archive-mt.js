@@ -18,11 +18,10 @@ describe('API', function () {
         };
         map = new Z.Map(container, option);
         tile = new Z.TileLayer('tile', {
-            tileInfo: 'web-mercator',
             urlTemplate:"http://t{s}.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}",
             subdomains: [1, 2, 3]
         });
-        map.setBaseTileLayer(tile);
+        map.setBaseLayer(tile);
     });
 
     afterEach(function () {
@@ -101,7 +100,7 @@ describe('API', function () {
         it('getMinZoom', function () {
             var zoom = map.getMinZoom();
 
-            expect(zoom).to.be.above(0);
+            expect(zoom).to.be.above(-1);
         });
 
         it('setMinZoom', function () {
@@ -141,18 +140,18 @@ describe('API', function () {
             expect(fitZoom).to.eql(zoom);
         });
 
-        it('getBaseTileLayer', function () {
-            expect(map.getBaseTileLayer()).to.equal(tile);
+        it('getBaseLayer', function () {
+            expect(map.getBaseLayer()).to.equal(tile);
         });
 
-        it('setBaseTileLayer', function () {
+        it('setBaseLayer', function () {
             var tile2 = new Z.TileLayer('tile2', {
-                tileInfo: 'web-mercator',
+
                 urlTemplate:"http://t{s}.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}",
                 subdomains: [0, 1, 2]
             });
             expect(function () {
-                map.setBaseTileLayer(tile2);
+                map.setBaseLayer(tile2);
             }).to.not.throwException();
         });
 

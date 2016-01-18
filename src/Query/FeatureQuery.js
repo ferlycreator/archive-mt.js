@@ -19,7 +19,7 @@ Z.FeatureQuery=function(opts) {
     this.mapdb = opts['mapdb'];
 };
 
-Z.FeatureQuery.prototype={
+Z.Util.extend(Z.FeatureQuery.prototype,{
 
     /**
      * 检查查询参数是否正常
@@ -57,6 +57,9 @@ Z.FeatureQuery.prototype={
             'spatialFilter': spatialFilter,
             'condition': opts['condition']
         };
+        if (opts['inputCRS']) {
+            queryFilter['inputCRS'] = opts['inputCRS'];
+        }
         if (opts['resultCRS']) {
             queryFilter['resultCRS'] = opts['resultCRS'];
         }
@@ -177,6 +180,9 @@ Z.FeatureQuery.prototype={
         var ret = 'encoding=utf-8';
         //ret+="&method=add";
         ret+='&mapdb='+this.mapdb;
+        if (queryFilter['inputCRS']) {
+            ret+='&inputCrs='+encodeURIComponent(JSON.stringify(queryFilter['inputCRS']));
+        }
         if (queryFilter['resultCRS']) {
             ret+='&resultCrs='+encodeURIComponent(JSON.stringify(queryFilter['resultCRS']));
         }
@@ -212,4 +218,4 @@ Z.FeatureQuery.prototype={
         }
         return ret;
     }
-};
+});

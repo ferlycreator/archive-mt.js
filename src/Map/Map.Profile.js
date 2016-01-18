@@ -29,7 +29,8 @@ Z.Layer.include({
                 var geoJSONs = [];
                 var geometries = this.getGeometries();
                 for (var i = 0, len=geometries.length; i < len; i++) {
-                    if (clipExtent && !clipExtent.intersects(geometries[i].getExtent())) {
+                    var geoExt = geometries[i].getExtent();
+                    if (!geoExt || (clipExtent && !clipExtent.intersects(geoExt))) {
                         continue;
                     }
                     geoJSONs.push(geometries[i].toJSON(options['geometries']));
@@ -89,7 +90,7 @@ Z.Map.include({
         profile["options"]["center"] = this.getCenter();
         profile["options"]["zoom"] = this.getZoom();
 
-        var baseTileLayer = this.getBaseTileLayer();
+        var baseTileLayer = this.getBaseLayer();
         profile['baseTileLayer'] = baseTileLayer.toJSON(options['baseTileLayer']);
         if (!Z.Util.isNil(options['baseTileLayer']) && !options['baseTileLayer']) {
             profile['baseTileLayer']['options']['visible'] = false;
@@ -102,7 +103,7 @@ Z.Map.include({
             if (options['clipExtent'] === true)  {
                 extraLayerOptions['clipExtent'] = this.getExtent();
             } else {
-                extraLayerOptions['clipExtent'] =options['clipExtent'];
+                extraLayerOptions['clipExtent'] = options['clipExtent'];
             }
         }
 
@@ -124,6 +125,8 @@ Z.Map.include({
                 layersJSON.push(layer.toJSON(options));
             }
             profile["layers"] = layersJSON;
+        } else {
+            profile["layers"] = [];
         }
         return profile;
     }
@@ -138,7 +141,7 @@ Z.Map.fromJSON=function(container, mapJSON, options) {
     }
     var map = new Z.Map(container, mapJSON["options"]);
     var baseTileLayer = Z.Layer.fromJSON(mapJSON["baseTileLayer"]);
-    map.setBaseTileLayer(baseTileLayer);
+    map.setBaseLayer(baseTileLayer);
     if (Z.Util.isNil(options['layers']) || options['layers']) {
         var layers = [];
         var layerJSONs = mapJSON["layers"];

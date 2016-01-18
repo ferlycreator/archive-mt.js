@@ -70,7 +70,7 @@ Z.Map.include({
         this._fireDOMEvent(this, e, type);
     },
 
-    _fireDOMEvent: function (target, e, type) {
+    _parseEvent:function(e, type) {
         var eventParam = {
             'domEvent': e
         };
@@ -80,9 +80,14 @@ Z.Map.include({
                 var containerPoint = Z.DomUtil.getEventContainerPoint(actual, this._containerDOM);
                 eventParam['coordinate'] = this.containerPointToCoordinate(containerPoint);
                 eventParam['containerPoint'] = containerPoint;
-                /*'viewPoint':this._containerPointToViewPoint(containerPoint),*/
+                eventParam['viewPoint'] = this._containerPointToViewPoint(containerPoint);
             }
         }
+        return eventParam;
+    },
+
+    _fireDOMEvent: function (target, e, type) {
+        var eventParam = this._parseEvent(e, type);
 
         //阻止右键菜单
         if (type === 'contextmenu') {

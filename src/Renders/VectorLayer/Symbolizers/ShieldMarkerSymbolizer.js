@@ -191,7 +191,7 @@ Z.ShieldMarkerSymbolizer.test=function(geometry, symbol) {
     if (!geometry || !symbol) {
         return false;
     }
-    if (!Z.Util.isNil(symbol['shieldName'])) {
+    if (!Z.Util.isNil(symbol['shieldName']) || !Z.Util.isNil(symbol['shieldFile'])) {
         return true;
     }
     return false;

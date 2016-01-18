@@ -18,7 +18,7 @@ describe('SVGLayer', function() {
         };
         map = new Z.Map(container, option);
         tile = new Z.TileLayer('tile', {
-            tileInfo: 'web-mercator',
+
             urlTemplate:"http://t{s}.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}",
             subdomains: [1, 2, 3]
         });
@@ -33,7 +33,7 @@ describe('SVGLayer', function() {
         var layer = new Z.VectorLayer('id');
 
         beforeEach(function() {
-            map.setBaseTileLayer(tile);
+            map.setBaseLayer(tile);
             map.addLayer(layer);
         });
 

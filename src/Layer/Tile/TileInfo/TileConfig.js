@@ -22,44 +22,18 @@ Z.TileConfig=Z.Class.extend({
          * 初始化方法
          * @param  {[TileInfo]} tileInfo [图层配置属性,参考TileInfo.js中的例子]
          */
-        initialize:function(tileInfo) {
-            if (!this.checkTileInfo(tileInfo)) {
-                throw new Error(this.exceptions['INVALID_TILEINFO']+':'+tileInfo);
-            }
-            //tileInfo是预设值的字符串
-            var lodName = null;
-            //预定义的lodinfo
-            if (Z.Util.isString(tileInfo)) {
-                lodName = tileInfo;
-                tileInfo = Z['TileInfo'][tileInfo.toLowerCase()];
-                if (!tileInfo) {
-                    throw new Error(this.exceptions['INVALID_TILEINFO']+':'+lodName);
-                }
-            }
-            this.prepareTileInfo(tileInfo);
-
+        initialize:function(tileSystem, fullExtent, tileSize) {
+            this.tileSize = tileSize;
+            this.fullExtent = fullExtent;
+            this.prepareTileInfo(tileSystem, fullExtent);
         },
 
-        prepareTileInfo:function(tileInfo) {
-            this.tileInfo = tileInfo;
-            Z.Util.extend(this,tileInfo);
-            if (!this['padding']) {
-                this['padding'] = {
-                    'width':0,
-                    'height':0
-                };
-            }
-            this.projectionInstance = Z.Projection.getInstance(tileInfo['projection']);
-
+        prepareTileInfo:function(tileSystem, fullExtent) {
             var tileSystem;
-            if (!tileInfo['tileSystem']) {
-                //默认是WEB-MERCATOR瓦片系统
-                tileSystem = Z.TileSystem['web-mercator'];
-            } else if (Z.Util.isString(tileInfo['tileSystem'])){
-                tileSystem = Z.TileSystem.getInstance(tileInfo['tileSystem']);
-            } else {
-                var tsPrams = tileInfo['tileSystem'];
-                tileSystem = new Z.TileSystem(tsPrams);
+            if (Z.Util.isString(tileSystem)){
+                tileSystem = Z.TileSystem[tileSystem.toLowerCase()];
+            } else if (Z.Util.isArray(tileSystem)) {
+                tileSystem = new Z.TileSystem(tileSystem);
             }
 
             if (!tileSystem) {
@@ -68,7 +42,6 @@ Z.TileConfig=Z.Class.extend({
             this.tileSystem = tileSystem;
 
             //自动计算transformation
-            var fullExtent = tileInfo['fullExtent'];
             var a = fullExtent['right']>fullExtent['left']?1:-1,
                 b = fullExtent['top']>fullExtent['bottom']?-1:1,
                 c = tileSystem['origin']['x'],
@@ -78,57 +51,9 @@ Z.TileConfig=Z.Class.extend({
             tileSystem['transOrigin'] = this.transformation.transform(tileSystem['origin'],1);
         },
 
-        checkTileInfo:function(tileInfo) {
-            if (!tileInfo) {return false;}
-            if (Z.Util.isString(tileInfo) && (Z['TileInfo'][tileInfo.toLowerCase()])) {
-                return true;
-            }
-            if (!tileInfo['projection']) {
-                return false;
-            }
-            return true;
-        },
-
-        load:function(afterLoadFn){
-            //如果已经有resolutions等属性,则说明无需初始化
-            if (this['resolutions']) {
-                if (afterLoadFn) {
-                    afterLoadFn();
-                }
-                return;
-            }
-            //TODO maptalks和arcgis图层的初始化
-        },
-
-        equals:function(tileConfig, zoomLevel) {
-            try {
-                return tileConfig['resolutions'][zoomLevel] === this['resolutions'][zoomLevel] &&
-                this['projection'] === tileConfig['projection'];
-            } catch (error) {
-                return false;
-            }
-
-        },
-
-        getProjectionInstance:function() {
-
-            return this.projectionInstance;
-        },
-
-        getTransformationInstance:function() {
-            return this.transformation;
-        },
-
-        getResolution:function(z) {
-            if (this['resolutions']) {
-                return this['resolutions'][z];
-            }
-            return 0;
-        },
-         getTileIndex:function(point, zoomLevel) {
+        getTileIndex:function(point, res) {
             var tileSystem = this.tileSystem, tileSize=this['tileSize'],
-                transOrigin = tileSystem['transOrigin'],
-                res = this['resolutions'][zoomLevel];
+                transOrigin = tileSystem['transOrigin'];
 
             var tileX = Math.floor((point.x-transOrigin.x)/(tileSize['width']*res));
             var tileY = -Math.floor((point.y-transOrigin.y)/(tileSize['height']*res));
@@ -139,21 +64,20 @@ Z.TileConfig=Z.Class.extend({
         /**
          * 根据中心点投影坐标, 计算中心点对应的瓦片和瓦片内偏移量
          * @param  {[type]} pLonlat   [description]
-         * @param  {[type]} zoomLevel [description]
+         * @param  {[type]} res [description]
          * @return {[type]}           [description]
          */
-        getCenterTileIndex:function( pLonlat, zoomLevel) {
+        getCenterTileIndex:function( pLonlat, res) {
             var tileSystem = this.tileSystem,
-                resolution = this['resolutions'][zoomLevel],
                 tileSize = this['tileSize'];
             var point = this.transformation.transform(pLonlat, 1);
-            var tileIndex = this.getTileIndex(point,zoomLevel);
+            var tileIndex = this.getTileIndex(point,res);
 
             var tileLeft = tileIndex['x']*tileSize['width'];
             var tileTop = tileIndex['y']*tileSize['height'];
 
-            var offsetLeft = Math.round(point.x/resolution-tileSystem['scale']['x']*tileLeft);
-            var offsetTop = Math.round(point.y/resolution+tileSystem['scale']['y']*tileTop);
+            var offsetLeft = Math.round(point.x/res-tileSystem['scale']['x']*tileLeft);
+            var offsetTop = Math.round(point.y/res+tileSystem['scale']['y']*tileTop);
 
             //如果x方向为左大右小
             if (tileSystem['scale']['x']<0) {
@@ -179,13 +103,13 @@ Z.TileConfig=Z.Class.extend({
          * @param  {[type]} zoomLevel [description]
          * @return {[type]}         [description]
          */
-        getNeighorTileIndex:function(tileY, tileX, offsetY,offsetX, zoomLevel, isRepeatWorld) {
+        getNeighorTileIndex:function(tileY, tileX, offsetY,offsetX, res, isRepeatWorld) {
             var tileSystem = this.tileSystem;
             var x = (tileX+tileSystem['scale']['x']*offsetX);
             var y = (tileY-tileSystem['scale']['y']*offsetY);
             //连续世界瓦片计算
             if (isRepeatWorld) {
-                var ext = this._getTileFullExtent(zoomLevel);
+                var ext = this._getTileFullIndex(res);
                 if (x < ext['xmin']) {
                     x = ext['xmax'] - (ext['xmin']-x) % (ext['xmax']-ext['xmin']);
                     if (x === ext['xmax']) {
@@ -207,45 +131,27 @@ Z.TileConfig=Z.Class.extend({
             return {'x':x, 'y':y};
         },
 
-        _getTileFullExtent:function(zoomLevel) {
+        _getTileFullIndex:function(res) {
             var ext = this.fullExtent;
             var transformation = this.transformation;
-            var nwIndex = this.getTileIndex(transformation.transform(new Z.Coordinate(ext['left'],ext['right']),1),zoomLevel);
-            var seIndex = this.getTileIndex(transformation.transform(new Z.Coordinate(ext['right'],ext['bottom']),1),zoomLevel);
+            var nwIndex = this.getTileIndex(transformation.transform(new Z.Coordinate(ext['left'],ext['right']),1),res);
+            var seIndex = this.getTileIndex(transformation.transform(new Z.Coordinate(ext['right'],ext['bottom']),1),res);
             return new Z.Extent(nwIndex, seIndex);
         },
 
         /**
-         * 计算瓦片左上角的经纬度坐标
+         * 计算瓦片左下角的大地投影坐标
          * @param  {[type]} tileY     [description]
          * @param  {[type]} tileX     [description]
-         * @param  {[type]} zoomLevel [description]
+         * @param  {[type]} res       [description]
          * @return {[type]}           [description]
          */
-        getTileProjectedSw: function(tileY, tileX, zoomLevel) {
+        getTileProjectedSw: function(tileY, tileX, res) {
             var tileSystem = this.tileSystem;
-            var resolution = this['resolutions'][zoomLevel];
             var tileSize = this['tileSize'];
-            var y = tileSystem['origin']['y'] + tileSystem['scale']['y']*(tileY+(tileSystem['scale']['y']==1?2:1))*(resolution* tileSize['height']);
-            var x = tileSystem['scale']['x']*(tileX+(tileSystem['scale']['x']==1?0:1))*resolution*tileSize['width']+tileSystem['origin']['x'];
+            var y = tileSystem['origin']['y'] + tileSystem['scale']['y']*(tileY+(tileSystem['scale']['y']==1?0:1))*(res* tileSize['height']);
+            var x = tileSystem['scale']['x']*(tileX+(tileSystem['scale']['x']==1?0:1))*res*tileSize['width']+tileSystem['origin']['x'];
             return [x, y];
-        },
-
-        /**
-         * 计算瓦片左上角的经纬度坐标
-         * @param  {[type]} tileY     [description]
-         * @param  {[type]} tileX     [description]
-         * @param  {[type]} zoomLevel [description]
-         * @return {[type]}           [description]
-         */
-        getTileProjectedNw:function(tileY,tileX,zoomLevel) {
-            var tileSystem = this.tileSystem;
-            var resolution = this['resolutions'][zoomLevel];
-            var tileSize = this['tileSize'];
-            // var maxExtent = this['origin'];
-            var y = tileSystem['origin']['y'] + tileSystem['scale']['y']*(tileY+(tileSystem['scale']['y']==1?1:0))*(resolution* tileSize['height']);
-            var x = tileSystem['scale']['x']*(tileX+(tileSystem['scale']['x']==1?0:1))*resolution*tileSize['width']+tileSystem['origin']['x'];
-            return this.getProjectionInstance().unproject({x:x,y:y});
         }
 
 

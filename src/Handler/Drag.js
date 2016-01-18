@@ -85,6 +85,7 @@ Z.Handler.Drag = Z.Handler.extend({
              * @return {Object} mousePos: {'left': 0px, 'top': 0px}
              */
             this.fire('dragstart',{
+                'domEvent' : event,
                 'mousePos':this.startPos.copy()
             });
             this.moved = true;
@@ -95,6 +96,7 @@ Z.Handler.Drag = Z.Handler.extend({
              * @return {Object} mousePos: {'left': 0px, 'top': 0px}
              */
             this.fire('dragging',{
+                    'domEvent' : event,
                     'mousePos': new Z.Point(actual.clientX, actual.clientY)
                 });
             /*try {
@@ -131,6 +133,7 @@ Z.Handler.Drag = Z.Handler.extend({
              * @return {Object} mousePos: {'left': 0px, 'top': 0px}
              */
             this.fire('dragend',{
+                'domEvent' : event,
                 'mousePos': new Z.Point(parseInt(actual.clientX,0),parseInt(actual.clientY,0))
             });
         }

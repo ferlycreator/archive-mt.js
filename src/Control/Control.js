@@ -69,6 +69,10 @@ Z.Control = Z.Class.extend({
         return this;
     },
 
+    getMap:function() {
+        return this._map;
+    },
+
     _updatePosition: function(){
         var position = this.options['position'];
         for (var p in position) {

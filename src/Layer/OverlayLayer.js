@@ -76,12 +76,11 @@ Z.OverlayLayer=Z.Layer.extend({
      * @expose
      */
     addGeometry:function(geometries,fitView) {
-        if (!geometries) {return;}
+        if (!geometries) {return this;}
         if (!Z.Util.isArray(geometries)) {
-            this.addGeometry([geometries],fitView);
-            return;
+            return this.addGeometry([geometries],fitView);
         } else if (!Z.Util.isArrayHasData(geometries)) {
-            return;
+            return this;
         }
         var fitCounter = 0;
         var centerSum = {x:0,y:0};
@@ -156,14 +155,14 @@ Z.OverlayLayer=Z.Layer.extend({
             for (var i = geometry.length - 1; i >= 0; i--) {
                 this.removeGeometry(geometry[i]);
             }
-            return;
+            return this;
         }
         if (!(geometry instanceof Z.Geometry)) {
             geometry = this.getGeometryById(geometry);
         }
         if (!geometry) {return this;}
         if (this != geometry.getLayer()) {
-            return;
+            return this;
         }
         geometry.remove();
         return this;
@@ -180,11 +179,6 @@ Z.OverlayLayer=Z.Layer.extend({
         this._geoMap={};
         this._geoCache={};
         return this;
-    },
-
-    _onRemove:function() {
-        this.clear();
-        delete this.map;
     },
 
     _getGeoCache:function() {

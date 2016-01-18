@@ -5,7 +5,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style type="text/css">
-        html,body{ margin:0px; height:100%; };
+        html,body {
+            margin: 0;
+            height: 100%;
+        }
     </style>
     <title>MapTalks 示例: 动态图层</title>
 </head>
@@ -15,17 +18,15 @@
     var mapObj;
     function initMap(){
         //创建地图对象
-        mapObj = new maptalks.Map('mapObj', //放置mapObj的div id
-        {
-            center:  new maptalks.Coordinate(121.489935,31.24432), //初始中心点坐标
-            zoom:   5 //初始缩放级别
+        mapObj = new maptalks.Map('mapObj', {
+            center: new maptalks.Coordinate(121.489935, 31.24432),
+            zoom: 5
         });
         //设置底图图层
-        mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
-        {
+        mapObj.setBaseLayer(new maptalks.TileLayer('tile', {
             tileInfo: 'web-mercator',
-            urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
-            subdomains:[1,2,3]//地图服务url子域名变量,对应urlTemplate中占位符{s}的值
+            urlTemplate: 'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',
+            subdomains: [1, 2, 3]
         }));
 
         var spatial = {

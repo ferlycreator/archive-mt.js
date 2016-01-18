@@ -20,6 +20,8 @@ Z.Canvas = {
         ctx.textBaseline='hanging';
         var fontSize = 11;
         ctx.font=fontSize+'px arial';
+        ctx.shadowBlur = null;
+        ctx.shadowColor = null;
         if (ctx.setLineDash) {
             ctx.setLineDash([]);
         }
@@ -88,11 +90,12 @@ Z.Canvas = {
 
     fillCanvas:function(ctx, fillOpacity){
         if (Z.Util.isNil(fillOpacity)) {
-            fillOpacity = 1;
+           fillOpacity = 1
         }
         var alpha = ctx.globalAlpha;
+
         ctx.globalAlpha *= fillOpacity;
-        ctx.fill('evenodd');
+        ctx.fill();
         ctx.globalAlpha = alpha;
     },
 
@@ -287,31 +290,98 @@ Z.Canvas = {
     polygon:function(ctx, points, lineDashArray, lineOpacity, fillOpacity) {
         var isPatternLine = !Z.Util.isString(ctx.strokeStyle);
         var fillFirst = (Z.Util.isArrayHasData(lineDashArray) && !ctx.setLineDash) || isPatternLine;
-        //因为canvas只填充moveto,lineto,lineto的空间, 而dashline的moveto不再构成封闭空间, 所以重新绘制图形轮廓用于填充
+        if (!Z.Util.isArrayHasData(points[0])) {
+            points = [points];
+        }
+
         if (fillFirst) {
+            //因为canvas只填充moveto,lineto,lineto的空间, 而dashline的moveto不再构成封闭空间, 所以重新绘制图形轮廓用于填充
             ctx.save();
-            ctx.beginPath();
-            ctx.strokeStyle = 'rgba(255,255,255,0)';
-            for (var j = points.length - 1; j >= 0; j--) {
-                var outline = points[j].round();
-                if (j === points.length - 1) {
-                    ctx.moveTo(outline.x, outline.y);
-                } else {
-                    ctx.lineTo(outline.x,outline.y);
+            for (var i = 0; i < points.length; i++) {
+                Z.Canvas._ring(ctx, points[i], null, 0);
+               if (!fillFirst) {
+                    var o = fillOpacity;
+                    if (i > 0) {
+                        ctx.globalCompositeOperation = "destination-out";
+                        o = 1;
+                    }
+                    Z.Canvas.fillCanvas(ctx, o);
                 }
+                if (i > 0) {
+                    ctx.globalCompositeOperation = "source-over";
+                }
+                Z.Canvas._stroke(ctx, 0);
             }
-            ctx.closePath();
-            Z.Canvas._stroke(ctx, lineOpacity);
-            Z.Canvas.fillCanvas(ctx, fillOpacity);
             ctx.restore();
         }
-        ctx.beginPath();
-        Z.Canvas._path(ctx,points,lineDashArray, lineOpacity);
-        ctx.closePath();
-        Z.Canvas._stroke(ctx, lineOpacity);
-        if (!fillFirst) {
-            Z.Canvas.fillCanvas(ctx, fillOpacity);
+        for (var i = 0; i < points.length; i++) {
+
+            Z.Canvas._ring(ctx, points[i], lineDashArray, lineOpacity);
+
+            if (!fillFirst) {
+                var o = fillOpacity;
+                if (i > 0) {
+                    ctx.globalCompositeOperation = "destination-out";
+                    o = 1;
+                }
+                Z.Canvas.fillCanvas(ctx, o);
+            }
+            if (i > 0) {
+                //return to default compositeOperation to display strokes.
+                ctx.globalCompositeOperation = "source-over";
+            }
+            Z.Canvas._stroke(ctx, lineOpacity);
         }
+
+    },
+
+    _ring:function(ctx, ring,lineDashArray, lineOpacity) {
+        ctx.beginPath();
+        Z.Canvas._path(ctx,ring,lineDashArray, lineOpacity);
+        ctx.closePath();
+    },
+
+    /**
+     * draw a arc from p1 to p2 with degree of (p1, center) and (p2, center)
+     * @param  {Context} ctx    canvas context
+     * @param  {Point} p1      point 1
+     * @param  {Point} p2      point 2
+     * @param  {Number} degree arc degree between p1 and p2
+     */
+    _arcBetween : function(ctx, p1, p2, degree) {
+        var a = degree * Math.PI/180;
+        var dist = p1.distanceTo(p2),
+            //radius of circle
+            r = dist/2/Math.sin(a/2);
+        //angle between p1 and p2
+        var a_p1p2 = Math.asin((p2.y-p1.y)/dist);
+        if (p1.x > p2.x) {
+            a_p1p2 = Math.PI - a_p1p2;
+        }
+        //angle between circle center and p2
+        var a_cp2 = 90*Math.PI/180 - a/2;
+
+        var da = a_p1p2 - a_cp2;
+
+        var dx = Math.cos(da)*r,
+            dy = Math.sin(da)*r;
+
+        var cx, cy;
+        cy = p1.y + dy,
+        cx = p1.x + dx;
+
+        var startAngle = Math.asin((p2.y-cy)/r);
+        if (cx > p2.x) {
+            startAngle = Math.PI - startAngle;
+        }
+        var endAngle = startAngle+a;
+
+        ctx.beginPath();
+        ctx.arc(Z.Util.round(cx), Z.Util.round(cy), Z.Util.round(r), startAngle, endAngle);
+    },
+
+    _lineTo:function(ctx, p) {
+        ctx.lineTo(p.x, p.y);
     },
 
     bezierCurve:function(ctx, points, lineDashArray, lineOpacity) {
@@ -374,34 +444,17 @@ Z.Canvas = {
         Z.Canvas.fillCanvas(ctx, fillOpacity);
     },
 
-    sector:function(ctx, pt, size, startAngle, endAngle, lineOpacity, fillOpacity) {
+    sector:function(ctx, pt, size, angles, lineOpacity, fillOpacity) {
+        var startAngle = angles[0],
+            endAngle = angles[1];
         function sector(ctx, x, y, radius, startAngle, endAngle) {
             var rad = Math.PI / 180;
             var sDeg = rad*-endAngle;
             var eDeg = rad*-startAngle;
-            // 初始保存
-            ctx.save();
-            // 位移到目标点
-            ctx.translate(x, y);
             ctx.beginPath();
-            // 画出圆弧
-            ctx.arc(0,0,radius,sDeg, eDeg);
-            // 再次保存以备旋转
-            ctx.save();
-            // 旋转至起始角度
-            ctx.rotate(eDeg);
-            // 移动到终点，准备连接终点与圆心
-            //ctx.moveTo(radius,0);
-            // 连接到圆心
-            ctx.lineTo(0,0);
-            // 还原
-            ctx.restore();
-            // 旋转至起点角度
-            ctx.rotate(sDeg);
-            // 从圆心连接到起点
-            ctx.lineTo(radius,0);
-            ctx.closePath();
-            ctx.restore();
+            ctx.moveTo(x,y);
+            ctx.arc(x, y, radius,sDeg, eDeg);
+            ctx.lineTo(x,y);
             Z.Canvas._stroke(ctx, lineOpacity);
         }
         pt = pt.round();

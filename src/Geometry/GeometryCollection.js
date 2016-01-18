@@ -127,6 +127,13 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         return this;
     },
 
+    onConfig:function(config) {
+        var geometries = this.getGeometries();
+        for (var i=0,len=geometries.length;i<len;i++) {
+            this._geometries[i].config(config);
+        }
+    },
+
     /**
      * _prepare this geometry collection
      * @param  {Z.Layer} layer [description]
@@ -181,6 +188,18 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         for (var i=0, len=this._geometries.length;i<len;i++) {
             if (this._geometries[i] && this._geometries[i]._updateCache) {
                 this._geometries[i]._updateCache();
+            }
+        }
+    },
+
+    _removePainter:function() {
+        if (this._painter) {
+            this._painter.remove();
+        }
+        delete this._painter;
+        for (var i=0, len=this._geometries.length;i<len;i++) {
+            if (this._geometries[i]) {
+                this._geometries[i]._removePainter();
             }
         }
     },
@@ -369,9 +388,8 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
     /**
      * 获取端点数组
      */
-    getLinkAnchors: function() {
-        var projection = this._getProjection();
-        var extent = this._computeExtent(projection);
+    getConnectPoints: function() {
+        var extent = this.getExtent();
         var anchors = [
             new Z.Coordinate(extent.xmin,extent.ymax),
             new Z.Coordinate(extent.xmax,extent.ymin),

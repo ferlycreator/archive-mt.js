@@ -13,8 +13,10 @@
 ../src/Geo/CRS.js
 ../src/Geo/Matrix/Matrix.js
 ../src/Geo/Transformation/Transformation.js
+../src/Geo/Measurer/Measurer.js
+../src/Geo/Measurer/Sphere.js
+../src/Geo/Measurer/Identity.js
 ../src/Geo/Projection/Projection.js
-../src/Geo/Projection/Projection.Common.js
 ../src/Geo/Projection/Projection.EPSG3857.js
 ../src/Geo/Projection/Projection.EPSG4326.js
 ../src/Geo/Projection/Projection.Baidu.js
@@ -48,7 +50,8 @@
 ../src/Geometry/Label.js
 ../src/Geometry/Polygon.js
 ../src/Geometry/LineString.js
-../src/Geometry/Curve.js
+../src/Geometry/CurveLine.js
+../src/Geometry/ConnectorLine.js
 ../src/Geometry/Ellipse.js
 ../src/Geometry/Circle.js
 ../src/Geometry/Sector.js
@@ -61,6 +64,7 @@
 ../src/Geometry/GeoJSON.js
 ../src/Geometry/Editor/GeometryEditor.js
 ../src/Geometry/Editor/Label.Edit.js
+../src/Map/View/View.js
 ../src/Map/Map.js
 ../src/Map/Map.Animation.js
 ../src/Map/Map.Pan.js
@@ -72,6 +76,7 @@
 ../src/Map/Map.FullScreen.js
 ../src/Map/Map.Profile.js
 ../src/Map/Handler/Map.Drag.js
+../src/Map/Handler/Map.AutoOutPanning.js
 ../src/Map/Handler/Map.DoubleClickZoom.js
 ../src/Map/Handler/Map.ScrollWheelZoom.js
 ../src/Map/Handler/Map.TouchZoom.js
@@ -116,7 +121,6 @@
 ../src/Map/Control/Control.Toolbar.js
 ../src/Map/UI/Button.js
 ../src/Map/UI/Toolbar.js
-../src/Linker/Linker.js
 ../src/Topo/GeoUtils.js
 ../src/Topo/SimplifyUtil.js
 ../src/Query/SpatialFilter.js

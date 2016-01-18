@@ -42,7 +42,12 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     options:{
         'visible'   : true,
         'editable'  : true,
-        'cursor'    : null
+        'cursor'    : null,
+        'crossOrigin' : null,
+        'shadowBlur' : 0,
+        'shadowColor' : 'black',
+        //true means this is an euclidean geometry
+        'measure' : 'EPSG:4326', // BAIDU, IDENTITY
     },
 
     /**
@@ -137,13 +142,51 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         return this;
     },
 
-    _prepareSymbol:function(symbol) {
-              //属性的变量名转化为驼峰风格
-       var camelSymbol = Z.Util.convertFieldNameStyle(symbol,'camel');
-       this._convertResourceUrl(camelSymbol);
-       return camelSymbol;
+    /**
+     * Return the first coordinate of the geometry.
+     * @return {Coordinate} First Coordinate
+     */
+    getFirstCoordinate:function() {
+        if (this instanceof Z.GeometryCollection) {
+            var geometries = this.getGeometries();
+            if (!geometries || !Z.Util.isArrayHasData(geometries)) {
+                return null;
+            }
+            return this.geometries[0].getFirstCoordinate();
+        }
+        var coordinates = this.getCoordinates();
+        if (!Z.Util.isArray(coordinates)) {
+            return coordinates;
+        }
+        var first = coordinates;
+        do {
+            first = first[0];
+        } while (Z.Util.isArray(first));
+        return first;
     },
 
+    /**
+     * Return the last coordinate of the geometry.
+     * @return {Coordinate} Last Coordinate
+     */
+    getLastCoordinate:function() {
+        if (this instanceof Z.GeometryCollection) {
+            var geometries = this.getGeometries();
+            if (!geometries || !Z.Util.isArrayHasData(geometries)) {
+                return null;
+            }
+            return this.geometries[geometries.length-1].getLastCoordinate();
+        }
+        var coordinates = this.getCoordinates();
+        if (!Z.Util.isArray(coordinates)) {
+            return coordinates;
+        }
+        var last = coordinates;
+        do {
+            last = last[last.length-1];
+        } while (Z.Util.isArray(last));
+        return last;
+    },
 
     /**
      * 计算Geometry的外接矩形范围
@@ -152,8 +195,13 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      */
     getExtent:function() {
         var prjExt = this._getPrjExtent();
-        var p = this._getProjection();
-        return new Z.Extent(p.unproject({x:prjExt['xmin'],y:prjExt['ymin']}), p.unproject({x:prjExt['xmax'],y:prjExt['ymax']}));
+        if (prjExt) {
+            var p = this._getProjection();
+            return new Z.Extent(p.unproject(new Z.Coordinate(prjExt['xmin'],prjExt['ymin'])), p.unproject(new Z.Coordinate(prjExt['xmax'],prjExt['ymax'])));
+        } else {
+            return this._computeExtent(this._getMeasurer());
+        }
+
     },
 
     /**
@@ -176,7 +224,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     getCenter:function() {
-        return this._computeCenter(this._getProjection());
+        return this._computeCenter(this._getMeasurer());
     },
 
     /**
@@ -207,7 +255,10 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     show:function() {
         this.options['visible'] = true;
         if (this.getMap()) {
-            this._getPainter().show();
+            var painter = this._getPainter();
+            if (painter) {
+                painter.show();
+            }
         }
         return this;
     },
@@ -219,7 +270,11 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     hide:function() {
         this.options['visible'] = false;
         if (this.getMap()) {
-            this._getPainter().hide();
+            var painter = this._getPainter();
+            if (painter) {
+                painter.hide();
+            }
+            this._fireEvent('hide');
         }
         return this;
     },
@@ -273,7 +328,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * 图形按给定的坐标偏移量平移
      * @param  {Coordinate} offset 坐标偏移量
      */
-     translate:function(offset) {
+    translate:function(offset) {
         if (!offset || (offset.x === 0 && offset.y === 0)) {
             return this;
         }
@@ -300,10 +355,8 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         var json = this.toJSON();
         //FIXME symbol信息没有被拷贝过来
         var ret = Z.Geometry.fromJSON(json);
-        if (this._isEditingOrDragging()) {
-            //when geometry is editing or dragging, visible may be set to false
-            ret.options['visible'] = true;
-        }
+        //restore visibility
+        ret.options['visible'] = true;
         return ret;
     },
 
@@ -357,7 +410,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
         var properties = {};
         var crs = this.getCRS();
-        if (crs) {
+        if (crs && (Z.Util.isNil(opts['crs']) || opts['crs'])) {
             feature['crs'] = crs;
         }
         //opts没有设定properties或者设定的properties值为true,则导出properties
@@ -425,7 +478,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
             if (this.getInfoWindow) {
                 var infowindow = this.getInfoWindow();
                 if (infowindow) {
-                    json['infoWindow'] = infowindow.getOptions();
+                    json['infoWindow'] = infowindow.config();
                 }
             }
         }
@@ -438,7 +491,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     getLength:function() {
-        return this._computeGeodesicLength(this._getProjection());
+        return this._computeGeodesicLength(this._getMeasurer());
     },
 
     /**
@@ -447,13 +500,13 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @expose
      */
     getArea:function() {
-        return this._computeGeodesicArea(this._getProjection());
+        return this._computeGeodesicArea(this._getMeasurer());
     },
 
     /**
      * 获取图形顶点坐标数组
      */
-    getLinkAnchors: function() {
+    getConnectPoints: function() {
         return [this.getCenter()];
     },
 
@@ -512,8 +565,6 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (this.getLayer()) {
             throw new Error(this.exceptions['DUPLICATE_LAYER']);
         }
-        //更新缓存
-        this._updateCache();
         this._layer = layer;
         //如果投影发生改变,则清除掉所有的投影坐标属性
         this._clearProjection();
@@ -521,6 +572,12 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     },
 
+    _prepareSymbol:function(symbol) {
+              //属性的变量名转化为驼峰风格
+       var camelSymbol = Z.Util.convertFieldNameStyle(symbol,'camel');
+       this._convertResourceUrl(camelSymbol);
+       return camelSymbol;
+    },
 
     /**
      * 资源url从相对路径转为绝对路径
@@ -570,10 +627,32 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     },
 
     _getPrjExtent:function() {
-        if (!this._extent) {
-            var p = this._getProjection();
+        var p = this._getProjection();
+        if (!this._extent && p) {
             var ext = this._computeExtent(p);
-            this._extent = new Z.Extent(p.project({x:ext['xmin'],y:ext['ymin']}), p.project({x:ext['xmax'],y:ext['ymax']}));
+            if (ext) {
+                var isAntiMeridian = this.options['antiMeridian'];
+                if (isAntiMeridian && isAntiMeridian !== 'default') {
+                    var firstCoordinate = this.getFirstCoordinate();
+                    if (isAntiMeridian === 'continuous') {
+                        if (ext['xmax'] - ext['xmin'] > 180) {
+                            if (firstCoordinate.x > 0) {
+                                ext['xmin'] += 360;
+                            } else {
+                                ext['xmax'] -= 360;
+                            }
+                        }
+                    }
+                    if (ext['xmax'] < ext['xmin']) {
+                        var tmp = ext['xmax'];
+                        ext['xmax'] = ext['xmin'];
+                        ext['xmin'] = tmp;
+                    }
+                }
+                this._extent = new Z.Extent(p.project(new Z.Coordinate(ext['xmin'],ext['ymin'])),
+                    p.project(new Z.Coordinate(ext['xmax'],ext['ymax'])));
+            }
+
         }
         return this._extent;
     },
@@ -583,12 +662,18 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (!layer) {
             return;
         }
+        if (isFireEvent) {
+            this._fireEvent('removestart');
+        }
         //label
         //contextmenu
         this._unbindMenu();
         //infowindow
         this._unbindInfoWindow();
 
+        if (this._onRemove) {
+            this._onRemove();
+        }
 
         if (isFireEvent) {
             this._removePainter();
@@ -611,14 +696,19 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         this._internalId = id;
     },
 
+    _getMeasurer:function() {
+        if (this._getProjection()) {
+            return this._getProjection();
+        }
+        return Z.Measurer.getInstance(this.options['measure']);
+    },
 
     _getProjection:function() {
         var map = this.getMap();
-        if (map) {
-            return map._getProjection();
+        if (map && map.getProjection()) {
+            return map.getProjection();
         }
-        return Z.Projection.getDefault();
-        // return null;
+        return null;
     },
 
     //获取geometry样式中依赖的外部图片资源
@@ -663,9 +753,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (painter) {
             painter.repaint();
         }
-        if (!this._isEditingOrDragging()) {
-            this._fireEvent('shapechanged');
-        }
+        this._fireEvent('shapechange');
     },
 
     _onPositionChanged:function() {
@@ -674,9 +762,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (painter) {
             painter.repaint();
         }
-        if (!this._isEditingOrDragging()) {
-            this._fireEvent('positionchanged');
-        }
+        this._fireEvent('positionchange');
     },
 
     _onSymbolChanged:function() {
@@ -684,7 +770,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (painter) {
             painter.refreshSymbol();
         }
-        this._fireEvent('symbolchanged');
+        this._fireEvent('symbolchange');
     },
     /**
      * 设置Geometry的父Geometry, 父Geometry为包含该geometry的Collection类型Geometry

@@ -17,11 +17,11 @@ describe('SectorSpec', function() {
         };
         map = new Z.Map(container, option);
         tile = new Z.TileLayer('tile', {
-            tileInfo: 'web-mercator',
+
             urlTemplate:"http://t{s}.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}",
             subdomains: [1, 2, 3]
         });
-        map.setBaseTileLayer(tile);
+        map.setBaseLayer(tile);
         layer = new Z.VectorLayer('id');
         map.addLayer(layer);
     });
@@ -48,7 +48,7 @@ describe('SectorSpec', function() {
             var spy = sinon.spy();
 
             var vector = new Z.Sector(center, 1, 0, 270);
-            vector.on('shapechanged positionchanged',spy);
+            vector.on('shapechange positionchange',spy);
 
             function evaluate() {
                 var rnd = Math.random()*0.001;

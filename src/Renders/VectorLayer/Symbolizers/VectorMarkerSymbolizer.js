@@ -77,7 +77,7 @@ Z.VectorMarkerSymbolizer = Z.PointSymbolizer.extend({
             } else if (markerType === 'pie') {
                 point = point.add(new Z.Point(0,-style['markerLineWidth']/2));
                 var angle = Math.atan(width/2/height)*180/Math.PI;
-                Z.Canvas.sector(ctx, point, height, 90-angle, 90+angle, lineOpacity, fillOpacity);
+                Z.Canvas.sector(ctx, point, height, [90-angle, 90+angle], lineOpacity, fillOpacity);
             } else {
                 //ellipse default
                 Z.Canvas.ellipse(ctx, point, new Z.Size(width/2,height/2), lineOpacity, fillOpacity);

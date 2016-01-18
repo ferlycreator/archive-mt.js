@@ -85,12 +85,10 @@ Z.Url = function(prefix) {
     }
 };
 
-Z.Url.prototype = {
-    getHost:function() {
-        return this.host;
-    },
+Z.Url.prototype.getHost = function() {
+    return this.host;
+};
 
-    getPort:function() {
-        return this.port;
-    }
+Z.Url.prototype.getPort = function() {
+    return this.port;
 };

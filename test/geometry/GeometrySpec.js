@@ -485,14 +485,29 @@ function registerGeometryCommonTest(geometry,_context) {
 
         it('getProjection',function() {
             var projection = geometry._getProjection();
-            expect(projection).to.be.ok();
+            expect(projection).not.to.be.ok();
 
             setupGeometry();
 
             var projection = geometry._getProjection();
-            expect(projection.srs).to.be(_context.map._getProjection().srs);
+            expect(projection.srs).to.be(_context.map.getProjection().srs);
 
             teardownGeometry();
+        });
+
+        it('getMeasurer',function() {
+            var measurer = geometry._getMeasurer();
+            expect(measurer).to.be(Z.measurer.WGS84Sphere);
+
+            geometry.config('measure', 'identity');
+
+            measurer = geometry._getMeasurer();
+            expect(measurer).to.be(Z.measurer.Identity);
+
+            geometry.config('measure', 'baidu');
+
+            measurer = geometry._getMeasurer();
+            expect(measurer).to.be(Z.measurer.BaiduSphere);
         });
     });
 

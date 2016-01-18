@@ -18,7 +18,6 @@ Z.PointSymbolizer=Z.Symbolizer.extend({
 
     //所有point symbolizer的共同的refresh方法
     refresh:function() {
-        this.renderPoints = this.geometry._getRenderPoints(this.getPlacement());
         var layer = this.geometry.getLayer();
         if (!layer.isCanvasRender()) {
             this.svg.apply(this,layer._getRender().getPaintContext());
@@ -108,10 +107,7 @@ Z.PointSymbolizer=Z.Symbolizer.extend({
     },
 
     _getRenderPoints:function() {
-        if (!this.renderPoints) {
-            this.renderPoints = this.geometry._getRenderPoints(this.getPlacement());
-        }
-        return this.renderPoints;
+       return this.geometry._getPainter()._getRenderPoints(this.getPlacement());
     },
 
     /**

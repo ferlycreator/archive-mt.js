@@ -23,7 +23,7 @@ Z.Point=function(x,y) {
      }
 };
 
-Z.Point.prototype={
+Z.Util.extend(Z.Point.prototype,{
     _abs:function() {
         this.x = Math.abs(this.x);
         this.y = Math.abs(this.y);
@@ -61,17 +61,19 @@ Z.Point.prototype={
         return new Z.Point(offx, offy);
     },
 
+    _substract: function(point) {
+        this.x -= point.x;
+        this.y -= point.y;
+        return this;
+    },
+
     substract: function(point) {
         var offx = this.x - point.x,
             offy = this.y  - point.y;
         return new Z.Point(offx, offy);
     },
 
-    _substract: function(point) {
-        this.x -= point.x;
-        this.y -= point.y;
-        return this;
-    },
+
 
     //破坏性方法
     _multi: function(ratio) {
@@ -88,4 +90,4 @@ Z.Point.prototype={
     toString:function() {
         return [this.x,this.y].join(',');
     }
-};
+});

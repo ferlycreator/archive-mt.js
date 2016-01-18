@@ -44,7 +44,7 @@ Z.Geometry.include({
             var containerPoint = Z.DomUtil.getEventContainerPoint(actual, map._containerDOM);
             eventParam['coordinate'] = map.containerPointToCoordinate(containerPoint);
             eventParam['containerPoint'] = containerPoint;
-            /*'viewPoint':this._containerPointToViewPoint(containerPoint),*/
+            eventParam['viewPoint'] = map._containerPointToViewPoint(containerPoint);
         }
 
         //统一的参数, target是geometry引用, pixel是事件的屏幕坐标, coordinate是事件的经纬度坐标

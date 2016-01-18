@@ -42,9 +42,6 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
         this._prepareContext(ctx);
         Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'], strokeAndFill['fill'], resources);
         canvasResources['fn'].apply(this, [ctx].concat(canvasResources['context']).concat([strokeAndFill['stroke']['stroke-opacity'], strokeAndFill['fill']['fill-opacity']]));
-        // if (this.geometry instanceof Z.Polygon) {
-        //     Z.Canvas.fillCanvas(ctx, strokeAndFill['fill']['fill-opacity']);
-        // }
     },
 
     getSvgDom:function() {
@@ -95,73 +92,11 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
     },
 
     _getRenderResources:function() {
-        if (!this._rendResources) {
-            //render resources geometry returned are based on view points.
-            this._rendResources = this.geometry._getRenderCanvasResources();
-        }
-        var matrix;
-        var map = this.getMap();
-        var layer = this.geometry.getLayer();
-        if (layer.isCanvasRender()) {
-            matrix = map._getRender().getTransform();
-        }
-
-        var context =this._rendResources['context'];
-        var transContext = [];
-        //refer to Geometry.Canvas
-        var points = context[0];
-        var containerPoints;
-        //convert view points to container points needed by canvas
-        if (Z.Util.isArray(points)) {
-            containerPoints = Z.Util.eachInArray(points, this, function(point) {
-                var cp = map._viewPointToContainerPoint(point);
-                if (matrix) {
-                    return matrix.applyToPointInstance(cp);
-                }
-                return cp;
-            });
-        } else if (points instanceof Z.Point) {
-            containerPoints = map._viewPointToContainerPoint(points);
-            if (matrix) {
-                containerPoints = matrix.applyToPointInstance(containerPoints);
-            }
-        }
-        transContext.push(containerPoints);
-        var scale;
-
-        //scale width ,height or radius if geometry has
-        for (var i = 1, len = context.length;i<len;i++) {
-            if (matrix) {
-
-                if (Z.Util.isNumber(context[i]) || (context[i] instanceof Z.Size)) {
-                    if (matrix && !scale) {
-                        scale = matrix._scale;
-                    }
-                    if (Z.Util.isNumber(context[i])) {
-                        transContext.push(scale.x*context[i]);
-                    } else {
-                        transContext.push(new Z.Size(context[i].width*scale.x, context[i].height*scale.y));
-                    }
-                } else {
-                    transContext.push(context[i]);
-                }
-            } else {
-                transContext.push(context[i]);
-            }
-
-        }
-
-        var resources = {
-            'fn' : this._rendResources['fn'],
-            'context' : transContext
-        };
-
-        return resources;
+        return this.geometry._getPainter()._getRenderResources();
     },
 
     refresh:function() {
         var layer = this.geometry.getLayer();
-        delete this._rendResources;
         if (!layer.isCanvasRender()) {
             this.svg.apply(this,layer._getRender().getPaintContext());
         }

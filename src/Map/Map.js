@@ -10,6 +10,8 @@ Z['Map']=Z.Map=Z.Class.extend({
     includes: [Z.Eventable,Z.HandlerBus],
 
     options:{
+        "clipFullExtent" : false,
+
         "zoomAnimation" : true,
         "zoomAnimationDuration" : 300,
         //controls whether other layers than base tilelayer will show during zoom animation.
@@ -34,8 +36,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     //根据不同的语言定义不同的错误信息
     exceptionDefs:{
         'en-US':{
-            'NO_BASE_TILE_LAYER':'Map has no baseTileLayer, pls specify a baseTileLayer by setBaseTileLayer method before loading.',
-            'INVALID_TILECONFIG':'TileConfig of Map is invalid.',
+            'NO_BASE_TILE_LAYER':'Map has no baseTileLayer, pls specify a baseTileLayer by setBaseLayer method before loading.',
             'INVALID_OPTION':'Invalid options provided.',
             'INVALID_CENTER':'Invalid Center',
             'INVALID_LAYER_ID':'Invalid id for the layer',
@@ -43,8 +44,7 @@ Z['Map']=Z.Map=Z.Class.extend({
             'INVALID_CRS' : 'the crs is invalid'
         },
         'zh-CN':{
-            'NO_BASE_TILE_LAYER':'地图没有设置基础图层,请在调用Map.Load之前调用setBaseTileLayer设定基础图层',
-            'INVALID_TILECONFIG':'LOD配置无效.',
+            'NO_BASE_TILE_LAYER':'地图没有设置基础图层,请在调用Map.Load之前调用setBaseLayer设定基础图层',
             'INVALID_OPTION':'无效的option.',
             'INVALID_CENTER':'无效的中心点',
             'INVALID_LAYER_ID':'图层的id无效',
@@ -87,11 +87,10 @@ Z['Map']=Z.Map=Z.Class.extend({
 
 
         //Layer of Details, always derived from baseTileLayer
-        this._tileConfig=null;
         this._panels={};
 
         //Layers
-        this._baseTileLayer=null;
+        this._baseLayer=null;
         this._layers = [];
 
         //shallow copy options
@@ -102,17 +101,61 @@ Z['Map']=Z.Map=Z.Class.extend({
         this._center = new Z.Coordinate(opts['center']);
         delete opts['center'];
 
-        //内部变量, 控制当前地图是否允许panAnimation
-        this._enablePanAnimation = true;
+        var baseLayer = opts['baseLayer'];
+        delete opts['baseLayer'];
+        var layers = opts['layers'];
+        delete opts['layers'];
 
         //坐标类型
         Z.Util.setOptions(this,opts);
+        this.setView(opts['view']);
 
+        if (baseLayer) {
+            this.setBaseLayer(baseLayer);
+        }
+        if (layers) {
+            this.addLayer(layers);
+        }
+
+        //内部变量, 控制当前地图是否允许panAnimation
+        this._enablePanAnimation = true;
         this._mapViewPoint=new Z.Point(0,0);
 
         this._initRender();
         this._getRender().initContainer();
         this._updateMapSize(this._getContainerDomSize());
+
+        this._Load();
+    },
+
+    setView:function(view) {
+        var oldView = this._view;
+        if (oldView && !view) {
+            return;
+        }
+        this.options['view'] =  view;
+        this._view = new Z.View(view);
+        if (this.options['view'] && Z.Util.isFunction(this.options['view']['projection'])) {
+            var projection = this._view.getProjection();
+            //save projection code for map profiling (toJSON/fromJSON)
+            this.options['view']['projection'] = projection['code'];
+        }
+        this._resetMapStatus();
+        this._fireEvent('viewchange');
+    },
+
+    onConfig:function(conf) {
+        if (!Z.Util.isNil(conf['view'])) {
+            this.setView(conf['view']);
+        }
+    },
+
+    getProjection:function() {
+        return this._view.getProjection();
+    },
+
+    getFullExtent:function() {
+        return this._view.getFullExtent();
     },
 
     /**
@@ -159,43 +202,6 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     /**
-     * try to change cursor when map is not setCursored
-     * @param  {String} cursor css cursor
-     */
-    _trySetCursor:function(cursor) {
-        if (!this._cursor && !this._priorityCursor) {
-            if (!cursor) {
-                cursor = 'default';
-            }
-            var panel = this.getPanel();
-            if (panel && panel.style) {
-                panel.style.cursor = cursor;
-            }
-        }
-        return this;
-    },
-
-    _setPriorityCursor:function(cursor) {
-        if (!cursor) {
-            var hasCursor = false;
-            if (this._priorityCursor) {
-                hasCursor = true;
-            }
-            delete this._priorityCursor;
-            if (hasCursor) {
-                this.setCursor(this._cursor);
-            }
-        } else {
-            this._priorityCursor = cursor;
-            var panel = this.getPanel();
-            if (panel && panel.style) {
-                panel.style.cursor = cursor;
-            }
-        }
-        return this;
-    },
-
-    /**
      * 获取地图容器的宽度和高度
      * @return {{'width':?, 'height':?}}} 地图容器大小,单位像素
      * @expose
@@ -213,15 +219,11 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     getExtent:function() {
-        var tileConfig = this._getTileConfig();
-        if (!tileConfig) {
-            return null;
-        }
-        var projection = this._getProjection();
+        var projection = this.getProjection();
         if (!projection) {
             return null;
         }
-        var res = this._tileConfig['resolutions'][this._zoomLevel];
+        var res = this._getResolution();
         if (Z.Util.isNil(res)) {
             return null;
         }
@@ -235,25 +237,13 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     /**
-     * 获得地图可视范围的viewPoint范围
-     * @return {Extent} 可视范围的ViewPoint范围
-     */
-    _getViewExtent:function() {
-        var size = this.getSize();
-        var offset = this.offsetPlatform();
-        var min = new Z.Point(0,0);
-        var max = new Z.Point(size['width'],size['height']);
-        return new Z.Extent(min.substract(offset), max.substract(offset));
-    },
-
-    /**
      * 获取地图的中心点
      * @return {Coordinate} 坐标
      * @expose
      */
     getCenter:function() {
-        if (!this._tileConfig || !this._loaded) {return this._center;}
-        var projection = this._tileConfig.getProjectionInstance();
+        if (!this._loaded || !this._prjCenter) {return this._center;}
+        var projection = this.getProjection();
         return projection.unproject(this._prjCenter);
     },
 
@@ -266,64 +256,23 @@ Z['Map']=Z.Map=Z.Class.extend({
         if (!center) {
             return this;
         }
+        if (!this._verifyExtent(center)) {
+            return this;
+        }
         center = new Z.Coordinate(center);
-        if (!this._tileConfig || !this._loaded) {
+        if (!this._loaded) {
             this._center = center;
             return this;
         }
         if (this._loaded && !this._center.equals(center)) {
-            /**
-             * 触发map的movestart事件
-             * @member maptalks.Map
-             * @event movestart
-             */
-            this._fireEvent('movestart');
+            this._onMoveStart();
         }
-        var projection = this._getProjection();
+        var projection = this.getProjection();
         var _pcenter = projection.project(center);
         this._setPrjCenterAndMove(_pcenter);
         // XXX: fire 'moveend' or not?
         this._onMoveEnd();
         return this;
-    },
-
-    _setPrjCenterAndMove:function(pcenter) {
-        var offset = this._getPixelDistance(pcenter);
-        this._setPrjCenter(pcenter);
-        this.offsetPlatform(offset);
-    },
-
-    _onMoving:function(param) {
-        /**
-         * 触发map的moving事件
-         * @member maptalks.Map
-         * @event moving
-         */
-        this._fireEvent('moving');
-    },
-
-    _onMoveEnd:function(param) {
-        this._enablePanAnimation=true;
-        this._isBusy = false;
-        /**
-         * 触发map的moveend事件
-         * @member maptalks.Map
-         * @event moveend
-         */
-        this._fireEvent('moveend');
-    },
-
-    /**
-     * 获取指定的投影坐标与当前的地图中心点的像素距离
-     * @param  {Coordinate} pcenter 像素坐标
-     * @return {Point}          像素距离
-     */
-    _getPixelDistance:function(pcenter) {
-        var current = this._getPrjCenter();
-        var curr_px = this._transform(current);
-        var pcenter_px = this._transform(pcenter);
-        var span = new Z.Point((-pcenter_px.x+curr_px.x),(curr_px.y-pcenter_px.y));
-        return span;
     },
 
     isBusy:function() {
@@ -350,7 +299,7 @@ Z['Map']=Z.Map=Z.Class.extend({
             fromZoom = this.getZoom();
         }
         var res = this._getResolution(fromZoom),
-            resolutions = this._getTileConfig()['resolutions'],
+            resolutions = this._getResolutions(),
             min = Number.MAX_VALUE,
             hit = -1;
         for (var i = resolutions.length - 1; i >= 0; i--) {
@@ -392,9 +341,9 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     setMaxZoom:function(zoomLevel) {
-        var tileConfig = this._getTileConfig();
-        if (zoomLevel > tileConfig['maxZoom']) {
-            zoomLevel = tileConfig['maxZoom'];
+        var viewMaxZoom = this._view.getMaxZoom();
+        if (zoomLevel > viewMaxZoom) {
+            zoomLevel = viewMaxZoom;
         }
         if (zoomLevel < this._zoomLevel) {
             this.setZoom(zoomLevel);
@@ -418,9 +367,9 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     setMinZoom:function(zoomLevel) {
-        var tileConfig = this._getTileConfig();
-        if (zoomLevel < tileConfig['minZoom']) {
-            zoomLevel = tileConfig['minZoom'];
+        var viewMinZoom = this._view.getMinZoom();
+        if (zoomLevel < viewMinZoom) {
+            zoomLevel = viewMinZoom;
         }
         this.options['minZoom']=zoomLevel;
         return this;
@@ -451,16 +400,33 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @expose
      */
     setCenterAndZoom:function(center,zoomLevel) {
-        if (!this._tileConfig || !this._loaded) {
-            this._center = center;
-            this._zoomLevel = zoomLevel;
-            return this;
-        }
         if (this._zoomLevel != zoomLevel) {
             this.setCenter(center);
             this.setZoom(zoomLevel);
         } else {
             this.setCenter(center);
+        }
+        return this;
+    },
+
+    getMaxExtent:function() {
+        return this.options['maxExtent'];
+    },
+
+    /**
+     * [setMaxExtent description]
+     * @param {Extent} extent map's max extent
+     */
+    setMaxExtent:function(extent) {
+        if (extent) {
+            var maxExt = new Z.Extent(extent)
+            this.options['maxExtent'] = maxExt;
+            var center = this.getCenter();
+            if (!this._verifyExtent(center)) {
+                this.panTo(maxExt.getCenter());
+            }
+        } else {
+            delete this.options['maxExtent'];
         }
         return this;
     },
@@ -482,20 +448,20 @@ Z['Map']=Z.Map=Z.Class.extend({
             return this.getMaxZoom();
         }
         try {
-            var projection = this._getProjection();
+            var projection = this.getProjection();
             var x = Math.abs(extent["xmin"] - extent["xmax"]);
             var y = Math.abs(extent["ymin"] - extent["ymax"]);
             var projectedExtent = projection.project({x:x, y:y});
-            var resolutions = this._getTileConfig()['resolutions'];
+            var resolutions = this._getResolutions();
             var xz = -1;
             var yz = -1;
             for ( var i = this.getMinZoom(), len = this.getMaxZoom(); i < len; i++) {
-                if (projectedExtent.x / resolutions[i] >= this.width) {
+                if (Z.Util.round(projectedExtent.x / resolutions[i]) >= this.width) {
                     if (xz == -1) {
                         xz = i;
                     }
                 }
-                if (projectedExtent.y / resolutions[i] >= this.height) {
+                if (Z.Util.round(projectedExtent.y / resolutions[i]) >= this.height) {
                     if (yz == -1) {
                         yz = i;
                     }
@@ -523,8 +489,8 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {TileLayer} [基础地图图层]
      * @expose
      */
-    getBaseTileLayer:function() {
-        return this._baseTileLayer;
+    getBaseLayer:function() {
+        return this._baseLayer;
     },
 
     /**
@@ -532,47 +498,50 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @param  {TileLayer} baseTileLayer 瓦片图层
      * @expose
      */
-    setBaseTileLayer:function(baseTileLayer) {
+    setBaseLayer:function(baseTileLayer) {
         var isChange = false;
-        if (this._baseTileLayer) {
+        if (this._baseLayer) {
             isChange = true;
             this._fireEvent('baselayerchangestart');
-            this._baseTileLayer._onRemove();
+            this._baseLayer.remove();
         }
-        baseTileLayer.config({
-            'renderWhenPanning':true
-        });
+        if (baseTileLayer instanceof Z.TileLayer) {
+            baseTileLayer.config({
+                'renderWhenPanning':true
+            });
+            if (!baseTileLayer.options['tileSystem']) {
+                baseTileLayer.config('tileSystem', Z.TileSystem.getDefault(this.getProjection()));
+            }
+        }
         baseTileLayer._prepare(this,-1);
-        this._baseTileLayer = baseTileLayer;
-        var me = this;
-        //删除背景
+        this._baseLayer = baseTileLayer;
         function onBaseTileLayerLoaded() {
             this._fireEvent('baselayerload');
             if (isChange) {
                 this._fireEvent('baselayerchangeend');
             }
         }
-        this._baseTileLayer.once('layerloaded',onBaseTileLayerLoaded,this);
-        this._baseTileLayer._loadTileConfig(function() {
-            var tileConfig = me._baseTileLayer._getTileConfig();
-            var changed = me._setTileConfig(tileConfig);
-            if (me._loaded) {
-                me._baseTileLayer.load();
-                if (changed) {
-                    /**
-                     * 瓦片配置改变事件
-                     * @member maptalks.Map
-                     * @event tileconfigchange
-                     * @return {Object} param: {'target': map}
-                     */
-                    me._fireEvent('tileconfigchange');
-                }
-            } else {
-                me._Load();
-            }
-
-        });
+        this._baseLayer.once('layerloaded',onBaseTileLayerLoaded,this);
+        if (this._loaded) {
+            this._baseLayer.load();
+        }
         return this;
+    },
+
+     /**
+     * 获取所有图层
+     * @return {[type]} [description]
+     */
+    getLayers:function(filter) {
+        return this._getLayers(function(layer) {
+            if (layer === this._baseLayer || layer.getId().indexOf(Z.internalLayerPrefix) >= 0) {
+                return false;
+            }
+            if (filter) {
+                return filter(layer);
+            }
+            return true;
+        });
     },
 
     /**
@@ -622,12 +591,6 @@ Z['Map']=Z.Map=Z.Class.extend({
         return this;
     },
 
-    _sortLayersByZIndex:function(layerList) {
-        layerList.sort(function(a,b) {
-            return a.getZIndex()-b.getZIndex();
-        });
-    },
-
     /**
      * 图层排序
      * @param  {String | layers} layerIds 图层id或者图层
@@ -674,31 +637,18 @@ Z['Map']=Z.Map=Z.Class.extend({
         if (!map || map != this) {
             return this;
         }
-        layer.remove();
         this._removeLayer(layer, this._layers);
+        if (this._loaded) {
+            layer._onRemove();
+        }
         var id = layer.getId();
-        delete this._layerCache[id];
+        if (this._layerCache) {
+            delete this._layerCache[id];
+        }
         return this;
     },
 
-    /**
-     * 从layerList中删除某个图层
-     */
-    _removeLayer:function(layer,layerList) {
-        if (!layer || !layerList) {return;}
-        var index = Z.Util.searchInArray(layer,layerList);
-        if (index > -1) {
-            layerList.splice(index, 1);
-            if (this._loaded) {
-                layer._onRemove();
-            }
-            for (var j=0, jlen=layerList.length;j<jlen;j++) {
-                if (layerList[j].setZIndex) {
-                    layerList[j].setZIndex(j);
-                }
-            }
-        }
-    },
+
 
     /**
      * 获取地图的坐标类型
@@ -727,15 +677,46 @@ Z['Map']=Z.Map=Z.Class.extend({
         this._fireEvent('crschanged');
     },
 
+    toDataURL: function(options) {
+        if (!options) {
+            options = {};
+        }
+        var mimeType = options['mimeType'];
+        if (!mimeType) {
+            mimeType = "image/png";
+        }
+        var download = options['download'];
+        var render = this._getRender();
+        if (render) {
+            var file = options['filename'];
+            if (!file) {
+                file = "export";
+            }
+            var dataURL =  render.toDataURL(mimeType);
+            if (download && dataURL) {
+                var imgURL = dataURL;
 
-//------------------------------坐标转化函数-----------------------------
+                var dlLink = document.createElement('a');
+                dlLink.download = file;
+                dlLink.href = imgURL;
+                dlLink.dataset.downloadurl = [mimeType, dlLink.download, dlLink.href].join(':');
+
+                document.body.appendChild(dlLink);
+                dlLink.click();
+                document.body.removeChild(dlLink);
+            }
+            return dataURL;
+        }
+        return null;
+    },
+
     /**
      * 将地理坐标转化为容器偏转坐标
      * @param {Coordinate} coordinate 地理坐标
      * @return {Point} 容器偏转坐标
      */
     coordinateToViewPoint: function(coordinate) {
-        var projection = this._getProjection();
+        var projection = this.getProjection();
         if (!coordinate || !projection) {return null;}
         var pCoordinate = projection.project(coordinate);
         return this._transformToViewPoint(pCoordinate).round();
@@ -747,7 +728,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {Coordinate} 地理坐标
      */
     viewPointToCoordinate: function(viewPoint) {
-        var projection = this._getProjection();
+        var projection = this.getProjection();
         if (!viewPoint || !projection) {return null;}
         var p = this._untransformFromViewPoint(viewPoint);
         var c = projection.unproject(p);
@@ -760,7 +741,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {Point} 屏幕坐标
      */
     coordinateToContainerPoint: function(coordinate) {
-        var projection = this._getProjection();
+        var projection = this.getProjection();
         if (!coordinate || !projection) {return null;}
         var pCoordinate = projection.project(coordinate);
         var offset = this._transform(pCoordinate);
@@ -773,13 +754,13 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {coordinate} 地理坐标
      */
     containerPointToCoordinate: function(containerPoint) {
-        var projection = this._getProjection();
+        var projection = this.getProjection();
         if (!containerPoint || !projection) {return null;}
         var pCoordinate = this._untransform(containerPoint);
         var coordinate = projection.unproject(pCoordinate);
         return coordinate;
     },
-//-----------------------------------------------------------------------
+
     /**
      * Checks if the map container size changed
      */
@@ -808,6 +789,194 @@ Z['Map']=Z.Map=Z.Class.extend({
         return this;
     },
 
+    /**
+     * 在当前比例尺下将距离转换为像素长度
+     * @param  {Number} xDist x轴上的距离
+     * @param  {Number} yDist y轴上的距离
+     * @return {Size}   结果属性上的width为x轴上的像素长度, height为y轴上的像素长度
+     * @expose
+     */
+    distanceToPixel: function(xDist,yDist) {
+        var projection = this.getProjection();
+        if (!projection) {
+            return null;
+        }
+        //计算前刷新scales
+        var center = this.getCenter(),
+            target = projection.locate(center,xDist,yDist),
+            res = this._getResolution();
+
+        var width = !xDist?0:(projection.project(new Z.Coordinate(target.x, center.y)).x-projection.project(center).x)/res;
+        var height = !yDist?0:(projection.project(new Z.Coordinate(target.x, center.y)).y-projection.project(target).y)/res;
+        return new Z.Size(Math.round(Math.abs(width)), Math.round(Math.abs(height)));
+    },
+
+    /**
+     * 像素转化为距离
+     * @param  {Number} width 横轴像素长度
+     * @param  {Number} height 纵轴像素长度
+     * @return {Number}    distance
+     * @expose
+     */
+    pixelToDistance:function(width, height) {
+        var projection = this.getProjection();
+        if (!projection) {
+            return null;
+        }
+        //计算前刷新scales
+        var center = this.getCenter(),
+            pcenter = this._getPrjCenter(),
+            res = this._getResolution();
+        var pTarget = new Z.Coordinate(pcenter.x+width*res, pcenter.y+height*res);
+        var target = projection.unproject(pTarget);
+        return projection.measureLength(target,center);
+    },
+
+    /**
+     * 返回距离coordinate坐标距离为dx, dy的坐标
+     * @param  {Coordinate} coordinate 坐标
+     * @param  {Number} dx         x轴上的距离, 地图CRS为经纬度时,单位为米, 地图CRS为像素时, 单位为像素
+     * @param  {Number} dy         y轴上的距离, 地图CRS为经纬度时,单位为米, 地图CRS为像素时, 单位为像素
+     * @return {Coordinate}            新的坐标
+     */
+    locate:function(coordinate, dx, dy) {
+        return this.getProjection().locate(coordinate,dx,dy);
+    },
+
+    /**
+    * 获取地图容器
+    */
+    getPanel: function() {
+        return this._getRender().getPanel();
+    },
+
+//-----------------------------------------------------------
+
+    /**
+     * try to change cursor when map is not setCursored
+     * @param  {String} cursor css cursor
+     */
+    _trySetCursor:function(cursor) {
+        if (!this._cursor && !this._priorityCursor) {
+            if (!cursor) {
+                cursor = 'default';
+            }
+            var panel = this.getPanel();
+            if (panel && panel.style) {
+                panel.style.cursor = cursor;
+            }
+        }
+        return this;
+    },
+
+    _setPriorityCursor:function(cursor) {
+        if (!cursor) {
+            var hasCursor = false;
+            if (this._priorityCursor) {
+                hasCursor = true;
+            }
+            delete this._priorityCursor;
+            if (hasCursor) {
+                this.setCursor(this._cursor);
+            }
+        } else {
+            this._priorityCursor = cursor;
+            var panel = this.getPanel();
+            if (panel && panel.style) {
+                panel.style.cursor = cursor;
+            }
+        }
+        return this;
+    },
+
+     /**
+     * 获得地图可视范围的viewPoint范围
+     * @return {Extent} 可视范围的ViewPoint范围
+     */
+    _getViewExtent:function() {
+        var size = this.getSize();
+        var offset = this.offsetPlatform();
+        var min = new Z.Point(0,0);
+        var max = new Z.Point(size['width'],size['height']);
+        return new Z.Extent(min.substract(offset), max.substract(offset));
+    },
+
+    _setPrjCenterAndMove:function(pcenter) {
+        var offset = this._getPixelDistance(pcenter);
+        this._setPrjCenter(pcenter);
+        this.offsetPlatform(offset);
+    },
+
+    /**
+     * 从layerList中删除某个图层
+     */
+    _removeLayer:function(layer,layerList) {
+        if (!layer || !layerList) {return;}
+        var index = Z.Util.searchInArray(layer,layerList);
+        if (index > -1) {
+            layerList.splice(index, 1);
+
+            for (var j=0, jlen=layerList.length;j<jlen;j++) {
+                if (layerList[j].setZIndex) {
+                    layerList[j].setZIndex(j);
+                }
+            }
+        }
+    },
+
+    _sortLayersByZIndex:function(layerList) {
+        layerList.sort(function(a,b) {
+            return a.getZIndex()-b.getZIndex();
+        });
+    },
+
+
+    _onMoveStart:function() {
+        this._originCenter = this.getCenter();
+        /**
+         * 触发map的movestart事件
+         * @member maptalks.Map
+         * @event movestart
+         */
+        this._fireEvent('movestart');
+    },
+
+    _onMoving:function() {
+        /**
+         * 触发map的moving事件
+         * @member maptalks.Map
+         * @event moving
+         */
+        this._fireEvent('moving');
+    },
+
+    _onMoveEnd:function() {
+        this._enablePanAnimation=true;
+        this._isBusy = false;
+        /**
+         * 触发map的moveend事件
+         * @member maptalks.Map
+         * @event moveend
+         */
+        this._fireEvent('moveend');
+        if (!this._verifyExtent(this.getCenter())) {
+            this.panTo(this._originCenter);
+        }
+    },
+
+    /**
+     * 获取指定的投影坐标与当前的地图中心点的像素距离
+     * @param  {Coordinate} pcenter 像素坐标
+     * @return {Point}          像素距离
+     */
+    _getPixelDistance:function(pcenter) {
+        var current = this._getPrjCenter();
+        var curr_px = this._transform(current);
+        var pcenter_px = this._transform(pcenter);
+        var span = new Z.Point((-pcenter_px.x+curr_px.x),(curr_px.y-pcenter_px.y));
+        return span;
+    },
+
     _fireEvent:function(eventName, param) {
         //fire internal events at first
         this.fire('_'+eventName,param);
@@ -815,11 +984,11 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     _Load:function() {
+        this._resetMapStatus();
         this._registerDomEvents();
         this._loadAllLayers();
         this._loaded = true;
         this._callOnLoadHooks();
-        //this.fire('mapready');
     },
 
     _initRender:function() {
@@ -840,22 +1009,11 @@ Z['Map']=Z.Map=Z.Class.extend({
                 layer.load();
             }
         }
-        if (this._baseTileLayer) {this._baseTileLayer.load();}
+        if (this._baseLayer) {this._baseLayer.load();}
         this._eachLayer(loadLayer,this.getLayers());
     },
 
-    /**
-     * 获取所有图层
-     * @return {[type]} [description]
-     */
-    getLayers:function() {
-        return this._getLayers(function(layer) {
-            if (layer === this._baseTileLayer || layer.getId().indexOf(Z.internalLayerPrefix) >= 0) {
-                return false;
-            }
-            return true;
-        });
-    },
+
 
     /**
      * 获取符合filter过滤条件的图层
@@ -863,7 +1021,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {[Layer]}        符合过滤条件的图层数组
      */
     _getLayers:function(filter) {
-        var layers = [this._baseTileLayer].concat(this._layers);
+        var layers = [this._baseLayer].concat(this._layers);
         var result = [];
         for (var i = 0; i < layers.length; i++) {
             if (!filter || filter.call(this,layers[i])) {
@@ -888,61 +1046,35 @@ Z['Map']=Z.Map=Z.Class.extend({
         }
     },
 
-    _getTileConfig:function() {
-        return this._tileConfig;
-    },
-
-    _getProjection:function() {
-        var tileConfig = this._getTileConfig();
-        if (tileConfig) {
-            return tileConfig.getProjectionInstance();
-        }
-        return null;
-    },
-
     /**
-     * 设置地图的tileConfig
-     * @param {TileConfig} tileConfig  新的tileConfig
-     */
-    _setTileConfig:function(tileConfig) {
-        if (!tileConfig || !tileConfig.load) {
-            throw new Error(this.exceptions['INVALID_TILECONFIG']);
-        }
-        //tileConfig相同,无需改变
-        if (this._tileConfig && this._tileConfig.equals(tileConfig, this.getZoom())) {
-            return false;
-        }
-        this._tileConfig = tileConfig;
-        this._checkMapStatus();
-        return true;
-    },
-
-    /**
-     * TileConfig修改后检查当前地图状态是否吻合新的TileConfig规则
+     * View修改后检查当前地图状态是否吻合新的View设定
      * @return {[type]} [description]
      */
-    _checkMapStatus:function(){
+    _resetMapStatus:function(){
         var maxZoom = this.getMaxZoom(),
             minZoom = this.getMinZoom();
-        if (!maxZoom || maxZoom > this._tileConfig['maxZoom']) {
-            this.setMaxZoom(this._tileConfig['maxZoom']);
+        var viewMaxZoom = this._view.getMaxZoom(),
+            viewMinZoom = this._view.getMinZoom();
+        if (!maxZoom || maxZoom === -1 || maxZoom > viewMaxZoom) {
+            this.setMaxZoom(viewMaxZoom);
         }
-        if (!minZoom || minZoom < this._tileConfig['minZoom']) {
-            this.setMinZoom(this._tileConfig['minZoom']);
-        }
-        if (maxZoom < minZoom) {
-            this.setMaxZoom(minZoom);
+        if (!minZoom || minZoom === -1 || minZoom < viewMinZoom) {
+            this.setMinZoom(viewMinZoom);
         }
         maxZoom = this.getMaxZoom(),
         minZoom = this.getMinZoom();
+        if (maxZoom < minZoom) {
+            this.setMaxZoom(minZoom);
+        }
         if (!this._zoomLevel || this._zoomLevel > maxZoom) {
             this._zoomLevel = maxZoom;
         }
         if (this._zoomLevel < minZoom) {
             this._zoomLevel = minZoom;
         }
+        delete this._prjCenter;
         this._center = this.getCenter();
-        var projection = this._tileConfig.getProjectionInstance();
+        var projection = this.getProjection();
         this._prjCenter = projection.project(this._center);
     },
 
@@ -979,6 +1111,17 @@ Z['Map']=Z.Map=Z.Class.extend({
 
     _setPrjCenter:function(pcenter) {
         this._prjCenter=pcenter;
+    },
+
+    _verifyExtent:function(center) {
+        if (!center) {
+            return false;
+        }
+        var maxExt = this.getMaxExtent();
+        if (!maxExt) {
+            return true;
+        }
+        return maxExt.contains(new Z.Coordinate(center));
     },
 
     /**
@@ -1023,7 +1166,11 @@ Z['Map']=Z.Map=Z.Class.extend({
         if (Z.Util.isNil(zoom)) {
             zoom = this.getZoom();
         }
-        return this._tileConfig.getResolution(zoom);
+        return this._view.getResolution(zoom);
+    },
+
+    _getResolutions:function() {
+        return this._view.getResolutions();
     },
 
     /**
@@ -1033,7 +1180,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {Coordinate}           Coordinate
      */
     _untransform:function(domPos) {
-        var transformation =  this._getTileConfig().getTransformationInstance();
+        var transformation =  this._view.getTransformation();
         var res = this._getResolution();
 
         var pcenter = this._getPrjCenter();
@@ -1059,8 +1206,8 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {[type]}             [description]
      */
     _transform:function(pCoordinate) {
-        var transformation =  this._getTileConfig().getTransformationInstance();
-        var res = this._getResolution();//_tileConfig.getResolution(this.getZoom());//['resolutions'][this._zoomLevel];
+        var transformation =  this._view.getTransformation();
+        var res = this._getResolution();
 
         var pcenter = this._getPrjCenter();
         var centerPoint = transformation.transform(pcenter, res);
@@ -1123,84 +1270,11 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {Extent}         [Extent计算结果]
      */
     _computeExtentByPixelSize: function(plonlat, pnw, pse) {
-        var tileConfig = this._getTileConfig();
-        if (!tileConfig) {
-            return null;
-        }
-        var projection = tileConfig.getProjectionInstance();
-        var res = this._getResolution();//tileConfig['resolutions'][this.getZoom()];
+        var projection = this.getProjection();
+        var res = this._getResolution();
         var nw = projection.unproject({x: plonlat.x - pnw.x*res, y: plonlat.y + pnw.x*res});
         var se = projection.unproject({x: plonlat.x + pse.y*res, y: plonlat.y - pse.y*res});
         return new Z.Extent(nw,se);
-    },
-
-    /**
-     * 在当前比例尺下将距离转换为像素长度
-     * @param  {Number} xDist x轴上的距离
-     * @param  {Number} yDist y轴上的距离
-     * @return {Size}   结果属性上的width为x轴上的像素长度, height为y轴上的像素长度
-     * @expose
-     */
-    distanceToPixel: function(xDist,yDist) {
-        var tileConfig = this._getTileConfig();
-        if (!tileConfig) {
-            return null;
-        }
-        var projection = tileConfig.getProjectionInstance();
-        if (!projection) {
-            return null;
-        }
-        //计算前刷新scales
-        var center = this.getCenter(),
-            target = projection.locate(center,xDist,yDist),
-            res = this._getResolution();
-
-        var width = !xDist?0:(projection.project(new Z.Coordinate(target.x, center.y)).x-projection.project(center).x)/res;
-        var height = !yDist?0:(projection.project(new Z.Coordinate(target.x, center.y)).y-projection.project(target).y)/res;
-        return new Z.Size(Math.round(Math.abs(width)), Math.round(Math.abs(height)));
-    },
-
-    /**
-     * 像素转化为距离
-     * @param  {Number} width 横轴像素长度
-     * @param  {Number} height 纵轴像素长度
-     * @return {Number}    distance
-     * @expose
-     */
-    pixelToDistance:function(width, height) {
-        var tileConfig = this._getTileConfig();
-        if (!tileConfig) {
-            return null;
-        }
-        var projection = tileConfig.getProjectionInstance();
-        if (!projection) {
-            return null;
-        }
-        //计算前刷新scales
-        var center = this.getCenter(),
-            pcenter = this._getPrjCenter(),
-            res = this._getResolution();
-        var pTarget = new Z.Coordinate(pcenter.x+width*res, pcenter.y+height*res);
-        var target = projection.unproject(pTarget);
-        return projection.getGeodesicLength(target,center);
-    },
-
-    /**
-     * 返回距离coordinate坐标距离为dx, dy的坐标
-     * @param  {Coordinate} coordinate 坐标
-     * @param  {Number} dx         x轴上的距离, 地图CRS为经纬度时,单位为米, 地图CRS为像素时, 单位为像素
-     * @param  {Number} dy         y轴上的距离, 地图CRS为经纬度时,单位为米, 地图CRS为像素时, 单位为像素
-     * @return {Coordinate}            新的坐标
-     */
-    locate:function(coordinate, dx, dy) {
-        return this._getProjection().locate(coordinate,dx,dy);
-    },
-
-    /**
-    * 获取地图容器
-    */
-    getPanel: function() {
-        return this._getRender().getPanel();
     }
 });
 

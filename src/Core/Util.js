@@ -44,79 +44,137 @@ Z.Util = {
     },
 
     loadImage:function(img, url) {
+        function onError(err) {
+            console.error(err);
+            var onerrorFn = img.onerror;
+            if (onerrorFn) {
+                onerrorFn.call(img);
+            }
+        }
+        function onLoadComplete(err, data) {
+            if (err) {
+                onError(err);
+                return;
+            }
+            var onloadFn = img.onload;
+            if (onloadFn) {
+                img.onload = function() {
+                    onloadFn.call(img);
+                };
+            }
+            img.src = data;
+        }
         if (Z.runningInNode) {
             try {
-                //canvas-node的Image对象
-                if (Z.Util.isURL(url)) {
-                    //读取远程图片
-                    var loader;
-                    if (url.indexOf('https://') === 0) {
-                        if (!this._nodeHttps) {
-                            this._nodeHttps = require('https');
-                        }
-                        loader = this._nodeHttps;
-                    } else {
-                        if (!this._nodeHttp) {
-                            this._nodeHttp = require('http');
-                        }
-                        loader = this._nodeHttp;
-                    }
-
-                        loader.get(url,
-                            function(res) {
-
-                                var data = new Buffer(parseInt(res.headers['content-length'],10));
-                                var pos = 0;
-                                res.on('data', function(chunk) {
-                                  chunk.copy(data, pos);
-                                  pos += chunk.length;
-                                });
-                                res.on('end', function () {
-                                    var onloadFn = img.onload;
-                                    if (onloadFn) {
-                                        img.onload = function() {
-                                            onloadFn.call(img);
-                                        };
-                                    }
-                                    img.src = data;
-                                });
-                            }
-                        );
-
+                var segs = url.split('.');
+                if (segs[segs.length-1] === 'svg') {
+                    Z.Util._convertSVG2PNG(url, onLoadComplete);
                 } else {
-                    //读取本地图片
-                    if (!this._nodeFS) {
-                        this._nodeFS = require('fs');
+                    //canvas-node的Image对象
+                    if (Z.Util.isURL(url)) {
+                        this._loadRemoteImage(img, url, onLoadComplete);
+                    } else {
+                        this._loadLocalImage(img,url, onLoadComplete);
                     }
-                    var data = this._nodeFS.readFile(url,function(err,data) {
-                        if (err) {
-                            var onerrorFn = img.onerror;
-                            if (onerrorFn) {
-                                onerrorFn.call(img);
-                            }
-                        } else {
-                            var onloadFn = img.onload;
-                            if (onloadFn) {
-                                img.onload = function() {
-                                    onloadFn.call(img);
-                                };
-                            }
-
-                            img.src = data;
-                        }
-
-                    });
                 }
+
             } catch (error) {
-                var onerrorFn = img.onerror;
-                if (onerrorFn) {
-                    onerrorFn.call(img);
-                }
+                 onError(error);
             }
         } else {
             img.src=url;
         }
         return this;
+    },
+
+    _loadRemoteImage:function(img, url, onComplete) {
+        //读取远程图片
+        var loader;
+        if (url.indexOf('https://') === 0) {
+            if (!this._nodeHttps) {
+                this._nodeHttps = require('https');
+            }
+            loader = this._nodeHttps;
+        } else {
+            if (!this._nodeHttp) {
+                this._nodeHttp = require('http');
+            }
+            loader = this._nodeHttp;
+        }
+        loader.get(url, function(res) {
+            var data = new Buffer(parseInt(res.headers['content-length'],10));
+            var pos = 0;
+            res.on('data', function(chunk) {
+              chunk.copy(data, pos);
+              pos += chunk.length;
+            });
+            res.on('end', function () {
+                onComplete(null, data);
+            });
+        }).on('error', onComplete);
+    },
+
+    _loadLocalImage:function(img, url, onComplete) {
+        //读取本地图片
+        if (!this._nodeFS) {
+            this._nodeFS = require('fs');
+        }
+        var data = this._nodeFS.readFile(url,onComplete);
+    },
+
+    _convertSVG2PNG:function(url, complete) {
+        if (!this._svg2png) {
+            //use svg2png to convert svg to png.
+            //https://github.com/domenic/svg2png
+            this._svg2png = require('svg2png');
+        }
+        if (!this._nodeFS) {
+            this._nodeFS = require('fs');
+        }
+        if (!this._svgFileCache) {
+            //cache 10 svg files.
+            this._svgFileCache = new Z.TileLayer.TileCache(10);
+        }
+        if (url.indexOf('http://') < 0 && url.indexOf('https://') < 0) {
+            //is a local file
+            url = ('file:///'+url).replace(/\\/g,'/');
+        }
+        var cache = this._svgFileCache;
+        if (cache.get(url)) {
+            complete(null, cache.get(url))
+            return;
+        }
+        var fs = this._nodeFS;
+        function unlinkFile(file) {
+            fs.stat(file, function(err, stat) {
+                if (err == null) {
+                    try {
+                        fs.unlink(file);
+                    } catch (fserr) {
+                        console.error(fserr);
+                    }
+
+                }
+            });
+        }
+        var now = new Date().getTime();
+        var tmpPngFile = (__dirname+'/tmp-'+now+'.png').replace(/\\/g,'/');
+        this._svg2png(url, tmpPngFile, function (error) {
+            if (error) {
+                unlinkFile(tmpPngFile);
+                complete(error);
+                return;
+            }
+            fs.readFile(tmpPngFile, function(err,data) {
+                unlinkFile(tmpPngFile);
+                if (err) {
+                    complete(err);
+                    return;
+                }
+                cache.add(url, data);
+                complete(null, data);
+            });
+        });
     },
 
     fixPNG:function(img) {
@@ -642,7 +700,7 @@ function(sUrl,sRecvTyp,sQueryString,oResultFunc,responseType) {
     }
 };
 
-Z.Util.Ajax.prototype= {
+Z.Util.extend(Z.Util.Ajax.prototype, {
     /**
      * XMLHttp Request
      * @member maptalks.Util.Ajax
@@ -733,7 +791,7 @@ Z.Util.Ajax.prototype= {
             }
         }
     }
-};
+});
 
 /**
  * 载入外部资源, 并执行回调函数, 参数为资源内容

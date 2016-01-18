@@ -34,7 +34,8 @@ Z['Control']['Scale'] = Z.Control.Scale = Z.Control.extend({
         return this._scaleContainer;
     },
 
-    _onRemove: function (map) {
+    _onRemove: function () {
+        var map = this.getMap();
         map.off('zoomend', this._update, this);
     },
 

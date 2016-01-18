@@ -23,6 +23,11 @@ Z.Symbolizer = Z.Class.extend({
         } else {
             ctx.globalAlpha = layerOpacity;
         }
+        var shadowBlur = this.geometry.options['shadowBlur'];
+        if (Z.Util.isNumber(shadowBlur) && shadowBlur > 0) {
+            ctx.shadowBlur = shadowBlur;
+            ctx.shadowColor = this.geometry.options['shadowColor'];
+        }
     },
 
     getMap:function() {

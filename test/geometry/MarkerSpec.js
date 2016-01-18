@@ -92,10 +92,10 @@ describe('Marker', function() {
 
     describe('#setSymbol', function() {
 
-        it('fires symbolchanged event', function() {
+        it('fires symbolchange event', function() {
             var spy = sinon.spy();
             var marker = new Z.Marker(center);
-            marker.on('symbolchanged', spy);
+            marker.on('symbolchange', spy);
             marker.setSymbol({
                 'marker-type' : 'ellipse',
                 'marker-line-color': '#ff0000',

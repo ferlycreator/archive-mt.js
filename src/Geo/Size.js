@@ -8,7 +8,7 @@ Z.Size=function(width,height) {
     this['height']=height;
 };
 
-Z.Size.prototype={
+Z.Util.extend(Z.Size.prototype,{
     copy:function() {
         return new Z.Size(this['width'], this['height']);
     },
@@ -23,4 +23,4 @@ Z.Size.prototype={
     multi:function(ratio) {
         return new Z.Size(this['width']*ratio, this['height']*ratio);
     }
-};
+});

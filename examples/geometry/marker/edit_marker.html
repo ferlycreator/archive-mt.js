@@ -21,7 +21,7 @@
             zoom:   17 //初始缩放级别
         });
         //设置底图图层
-        mapObj.setBaseTileLayer(new maptalks.TileLayer('tile', //底图id
+        mapObj.setBaseLayer(new maptalks.TileLayer('tile', //底图id
         {
             tileInfo: 'web-mercator',
             urlTemplate:'http://emap{s}.mapabc.com/mapabc/maptile?&x={x}&y={y}&z={z}',//底图服务url
@@ -37,28 +37,28 @@
             //工具项
             items: [{
                 type : 'button',
-                content: '编辑',
+                item: '编辑',
                 click : function(){
                     marker.startEdit();
                 }
             }, {
                 type : 'button',
-                content: '停止编辑',
+                item: '停止编辑',
                 click : function(){
                     marker.endEdit();
                 }
             }, {
                 type : 'button',
-                content: '删除',
+                item: '删除',
                 click : function(){
                     marker.remove();
                 }
             }, {
                 type : 'button',
-                content: '变更样式',
+                item: '变更样式',
                 click : function(){
                     var icon = {
-                        'markerType': 'pin',
+                        'markerType': 'bar',
                         'markerOpacity': 0.5,
                         'markerFillOpacity': 1,
                         'markerLineColor': '#0000ff',

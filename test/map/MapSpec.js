@@ -23,7 +23,7 @@ describe('#Map', function () {
         };
         map = new Z.Map(container, option);
         tile = new Z.TileLayer('tile', {
-            tileInfo: 'web-mercator',
+
             urlTemplate:"http://t{s}.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}",
             subdomains: [1, 2, 3]
         });
@@ -40,13 +40,13 @@ describe('#Map', function () {
         });
 
         it('getCenter返回结果与初始化时指定center相等(Load之后)', function() {
-            map.setBaseTileLayer(tile);
+            map.setBaseLayer(tile);
 
             expect(map.getCenter()).to.nearCoord(center);
         });
 
         it('getCenter返回结果与初始化时指定center相等(setZoom之后)', function() {
-            map.setBaseTileLayer(tile);
+            map.setBaseLayer(tile);
             map.setZoom(13);
 
             expect(map.getCenter()).to.nearCoord(center);
@@ -54,15 +54,15 @@ describe('#Map', function () {
     });
 
     describe('#setCenter', function() {
-        it('setCenter后, getCenter返回结果与指定center相等(Load之前)', function() {
+        it('setCenter后, getCenter返回结果与指定center近似相等(Load之前)', function() {
             var nc = new Z.Coordinate(119, 32);
             map.setCenter(nc);
 
-            expect(map.getCenter()).to.eql(nc);
+            expect(map.getCenter()).to.nearCoord(nc);
         });
 
         it('setCenter后, getCenter返回结果与指定center相等(Load之后)', function() {
-            map.setBaseTileLayer(tile);
+            map.setBaseLayer(tile);
 
             var nc = new Z.Coordinate(122, 32);
             map.setCenter(nc);
@@ -71,7 +71,7 @@ describe('#Map', function () {
         });
 
         it('setCenter设定中心点为当前地图中心点, 不应该触发movestart', function() {
-            map.setBaseTileLayer(tile);
+            map.setBaseLayer(tile);
 
             var spy = sinon.spy();
             map.on('movestart', spy);
@@ -81,7 +81,7 @@ describe('#Map', function () {
         });
 
         it('setCenter设定中心点为当前地图中心点, 应该触发moveend', function() {
-            map.setBaseTileLayer(tile);
+            map.setBaseLayer(tile);
 
             var spy = sinon.spy();
             map.on('moveend', spy);
@@ -91,7 +91,7 @@ describe('#Map', function () {
         });
 
         it('setCenter设定中心点不同于当前地图中心点, 应该触发movestart', function() {
-            map.setBaseTileLayer(tile);
+            map.setBaseLayer(tile);
 
             var spy = sinon.spy();
             map.on('movestart', spy);
@@ -102,7 +102,7 @@ describe('#Map', function () {
         });
 
         it('setCenter设定中心点不同于当前地图中心点, 应该触发moveend', function() {
-            map.setBaseTileLayer(tile);
+            map.setBaseLayer(tile);
 
             var spy = sinon.spy();
             map.on('moveend', spy);
@@ -115,7 +115,7 @@ describe('#Map', function () {
 
     describe('#Zoom Level', function() {
         it('get (min/max/current)zoom level', function() {
-            map.setBaseTileLayer(tile);
+            map.setBaseLayer(tile);
 
             expect(map.getZoom()).to.eql(17);
             expect(map.getMinZoom()).to.be.a('number');
@@ -123,7 +123,7 @@ describe('#Map', function () {
         });
 
         it('set (min/max/current)zoom level', function() {
-            map.setBaseTileLayer(tile);
+            map.setBaseLayer(tile);
 
             var min = 3, max = 14, cur = max + 1;
             map.setMinZoom(min);
@@ -136,7 +136,7 @@ describe('#Map', function () {
         });
 
         it('set max zoom level to less than current zoom level', function() {
-            map.setBaseTileLayer(tile);
+            map.setBaseLayer(tile);
 
             var max = 14, cur = max + 1;
             map.setZoom(cur);
@@ -147,7 +147,7 @@ describe('#Map', function () {
         });
 
         it('zoom in/out', function() {
-            map.setBaseTileLayer(tile);
+            map.setBaseLayer(tile);
 
             var min = 3, max = 14, cur = 8;
             map.setMinZoom(min);
@@ -159,7 +159,7 @@ describe('#Map', function () {
         });
     });
 
-    describe('#setBaseTileLayer', function() {
+    describe('#setBaseLayer', function() {
         it('set base tile');
     });
 
@@ -173,7 +173,7 @@ describe('#Map', function () {
         });
 
         it('图层加入已载入地图时立即触发loaded事件', function() {
-            // map.setBaseTileLayer(tile);
+            // map.setBaseLayer(tile);
 
             // var spy = sinon.spy();
             // var layer = new Z.VectorLayer('id');
@@ -188,7 +188,7 @@ describe('#Map', function () {
             // layer.on('loaded', spy);
             // map.addLayer(layer);
             // map.removeLayer(layer);
-            // map.setBaseTileLayer(tile);
+            // map.setBaseLayer(tile);
 
             // expect(spy.called).to.not.be.ok();
         });
@@ -199,7 +199,7 @@ describe('#Map', function () {
             // layer.on('loaded', spy);
             // map.addLayer(layer);
             // expect(spy.called).to.not.be.ok();
-            // map.setBaseTileLayer(tile);
+            // map.setBaseLayer(tile);
 
             // expect(spy.called).to.be.ok();
         });
@@ -215,7 +215,7 @@ describe('#Map', function () {
         });
 
         it('删除图层后getLayer返回null(地图已载入)', function() {
-            map.setBaseTileLayer(tile);
+            map.setBaseLayer(tile);
 
             var layer = new Z.VectorLayer('id');
             map.addLayer(layer);
@@ -238,7 +238,7 @@ describe('#Map', function () {
     describe('events', function() {
 
         it('double click', function() {
-            map.setBaseTileLayer(tile);
+            map.setBaseLayer(tile);
 
             var spy = sinon.spy();
             map.on('dblclick', spy);
@@ -249,7 +249,7 @@ describe('#Map', function () {
         });
 
         it("mousedown following mouseup on map should not trigger move events", function() {
-            map.setBaseTileLayer(tile);
+            map.setBaseLayer(tile);
 
             var spy = sinon.spy();
             map.on('movestart moving moveend', spy);

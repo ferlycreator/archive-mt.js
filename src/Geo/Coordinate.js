@@ -3,7 +3,7 @@
  * @class maptalks.Coordinate
  * @author Maptalks Team
  */
-Z['Coordinate'] = Z.Coordinate = function(x, y) {
+Z.Coordinate = function(x, y) {
     if (!Z.Util.isNil(x) && !Z.Util.isNil(y)) {
         this.x = Z.Util.isNumber(x)?x:parseFloat(x);
         this.y = Z.Util.isNumber(y)?y:parseFloat(y);
@@ -21,10 +21,23 @@ Z['Coordinate'] = Z.Coordinate = function(x, y) {
     }
 };
 
-Z.Coordinate.prototype={
+Z.Util.extend(Z.Coordinate.prototype,{
+    _add: function(d) {
+        this.x += d.x;
+        this.y += d.y;
+        return this;
+    },
+
     add:function(d) {
         return new Z.Coordinate(this.x+d.x, this.y+d.y);
     },
+
+    _substract: function(d) {
+        this.x -= d.x;
+        this.y -= d.y;
+        return this;
+    },
+
     substract:function(d) {
         return new Z.Coordinate(this.x-d.x, this.y-d.y);
     },
@@ -45,5 +58,8 @@ Z.Coordinate.prototype={
     },
     isNaN:function() {
         return isNaN(this.x) || isNaN(this.y);
+    },
+    toArray:function() {
+        return [this.x, this.y];
     }
-};
+});

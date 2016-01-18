@@ -28,7 +28,7 @@ Z['MaptalksTileLayer'] = Z.MaptalksTileLayer = Z.TileLayer.extend({
      * * 加载TileConfig
      * @param  {fn} onLoaded 加载完成后的回调函数
      */
-    _loadTileConfig:function(onLoaded) {
+    _initTileConfig:function(onLoaded) {
         this._readAndParseServiceInfo(function() {
             if (onLoaded) {
                 onLoaded();

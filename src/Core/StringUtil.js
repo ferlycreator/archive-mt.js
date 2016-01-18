@@ -111,7 +111,7 @@ Z.StringUtil = {
      * @return {String} 替换后的文本
      */
     content: function (str, props) {
-        if (!Z.Util.isObject(props)) {
+        if (!Z.Util.isObject(props) || !Z.Util.isString(str)) {
             return str;
         }
         return str.replace(Z.StringUtil._contentExpRe, function (str, key) {

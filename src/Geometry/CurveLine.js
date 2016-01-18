@@ -1,18 +1,25 @@
-Z.Curve = Z.LineString.extend({
+Z.CurveLine = Z.LineString.extend({
     options:{
-        'bezierCurveDegree' : 3
+        'curveType'   : 1,
+        'arcDegree'     : 90
     },
 
     _getRenderCanvasResources:function() {
         //draw a triangle arrow
-
         var prjVertexes = this._getPrjCoordinates();
         var points = this._transformToViewPoint(prjVertexes);
-
+        var arcDegree = this.options['arcDegree'],
+            curveType = this.options['curveType'];
         var me = this;
         var fn = function(_ctx, _points, _dasharray, _lineOpacity) {
-            var degree = me.options['bezierCurveDegree'],
-                curveFn = (degree === 3?Z.Canvas._bezierCurveTo:Z.Canvas._quadraticCurveTo);
+
+            var curveFn, degree;
+            switch (curveType) {
+                case 0 : curveFn = Z.Canvas._lineTo; degree = 1; break;
+                case 1 : curveFn = Z.Canvas._arcBetween; degree = 1; break;
+                case 2 : curveFn = Z.Canvas._quadraticCurveTo; degree = 2; break;
+                case 3 : curveFn = Z.Canvas._bezierCurveTo; degree = 3; break;
+            }
             var len = _points.length;
             _ctx.beginPath();
             for (var i = 0; i < len; i+=degree) {
@@ -33,7 +40,14 @@ Z.Curve = Z.LineString.extend({
                     for (var ii = 0; ii < degree; ii++) {
                         points.push(_points[i+ii+1]);
                     }
-                    curveFn.apply(Z.Canvas,[_ctx].concat(points));
+                    var args = [_ctx].concat(points);
+                    if (curveFn == Z.Canvas._arcBetween) {
+                        //arc start point
+                        args.splice(1,0,p);
+                        args = args.concat([arcDegree]);
+                    }
+                    curveFn.apply(Z.Canvas,args);
+                    Z.Canvas._stroke(_ctx, this.strokeAndFill['stroke']['stroke-opacity']);
                 }
             };
             Z.Canvas._stroke(_ctx, this.strokeAndFill['stroke']['stroke-opacity']);
@@ -49,11 +63,12 @@ Z.Curve = Z.LineString.extend({
                 if (placement === 'vertex-last' || placement === 'vertex-firstlast') {
                     me._arrow(_ctx, _points[_points.length-2], _points[_points.length-1], _lineOpacity);
                 }
-                // if (placement === 'point') {
-                //     for (var i = 0, len = _points.length-1; i < len; i++) {
-                //         me._arrow(_ctx, _points[i], _points[i+1], _lineOpacity);
-                //     }
-                // }
+                //besizerCurves doesn't have point arrows
+                if ((curveType === 0 || curveType === 1) && placement === 'point') {
+                    for (var i = 0, len = _points.length-1; i < len; i++) {
+                        me._arrow(_ctx, _points[i], _points[i+1], _lineOpacity);
+                    }
+                }
             }
 
         };

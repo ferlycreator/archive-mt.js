@@ -62,15 +62,21 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
         this._clearCanvas();
         if (map.options['zoomAnimation']) {
             this._context.save();
-            var baseTileLayer = map.getBaseTileLayer();
-            var baseLayerImage = baseTileLayer._getRender().getCanvasImage();
+            var baseTileLayer = map.getBaseLayer();
+            var baseLayerImage;
+            if (baseTileLayer) {
+                baseLayerImage =  baseTileLayer._getRender().getCanvasImage();
+            }
+
 
             var width = this._canvas.width,
                 height = this._canvas.height;
             var layersToTransform;
             if (!map.options['layerZoomAnimation']) {
                 //zoom animation with better performance, only animate baseTileLayer, ignore other layers.
-                this._drawLayerCanvasImage(baseLayerImage, width, height);
+                if (baseLayerImage) {
+                    this._drawLayerCanvasImage(baseLayerImage, width, height);
+                }
                 layersToTransform = [baseTileLayer];
             } else {
                 //default zoom animation, animate all the layers.
@@ -88,7 +94,9 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
                     this._clearCanvas();
                     //only draw basetile layer
                     matrixes[1].applyToContext(this._context);
-                    this._drawLayerCanvasImage(baseLayerImage, width, height);
+                    if (baseLayerImage) {
+                        this._drawLayerCanvasImage(baseLayerImage, width, height);
+                    }
                     this._canvasBackgroundImage = Z.DomUtil.copyCanvas(this._canvas);
                     this._context.restore();
                     fn.call(me);
@@ -184,6 +192,10 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
         return this.map._panels.mapWrapper;
     },
 
+    toDataURL:function(mimeType) {
+        return this._canvas.toDataURL(mimeType);
+    },
+
     /**
      * initialize container DOM of panels
      */
@@ -197,32 +209,26 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
 
         containerDOM.innerHTML = '';
 
-        var controlWrapper = Z.DomUtil.createEl('div');
-        controlWrapper.className = 'MAP_CONTROL_WRAPPER';
+        var controlWrapper = Z.DomUtil.createEl('div', 'MAP_CONTROL_WRAPPER');
 
-        var controlsContainer = Z.DomUtil.createEl('div');
-        controlsContainer.className = 'MAP_CONTROLS_CONTAINER';
+        var controlsContainer = Z.DomUtil.createEl('div', 'MAP_CONTROLS_CONTAINER');
         controlWrapper.appendChild(controlsContainer);
         //map wrapper定义了全局的背景色, hidden overflow等css属性
-        var mapWrapper = Z.DomUtil.createEl('div');
+        var mapWrapper = Z.DomUtil.createEl('div', 'MAP_WRAPPER');
         mapWrapper.style.cssText = 'position:absolute;overflow:hidden;';
-        mapWrapper.className='MAP_WRAPPER';
         containerDOM.appendChild(mapWrapper);
 
         // 最外层的div
-        var mapPlatform = Z.DomUtil.createEl('div');
-        mapPlatform.className = 'MAP_PLATFORM';
+        var mapPlatform = Z.DomUtil.createEl('div', 'MAP_PLATFORM');
         mapPlatform.style.cssText = 'position:absolute;top:0px;left:0px;';
         mapWrapper.appendChild(mapPlatform);
         mapWrapper.appendChild(controlWrapper);
 
-        var mapViewPort = Z.DomUtil.createEl('div');
-        mapViewPort.className = 'MAP_VIEWPORT';
+        var mapViewPort = Z.DomUtil.createEl('div', 'MAP_VIEWPORT');
         mapViewPort.style.cssText = 'position:absolute;top:0px;left:0px;z-index:10;-moz-user-select:none;-webkit-user-select: none;';
 
 
-        var tipContainer = Z.DomUtil.createEl('div');
-        tipContainer.className = 'MAP_CONTAINER';
+        var tipContainer = Z.DomUtil.createEl('div', 'MAP_CONTAINER');
         tipContainer.style.cssText = 'position:absolute;top:0px;left:0px;';
         tipContainer.style.border = 'none';
         var popMenuContainer = tipContainer.cloneNode(false);
@@ -290,7 +296,7 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
         }
         if (!Z.Browser.mobile && Z.Browser.canvas) {
              this._onMapMouseMove=function(param) {
-                var vp = map._containerPointToViewPoint(param['containerPoint']);
+                var vp = param['viewPoint'];
                 var layers = map.getLayers();
                 var hit = false,
                     cursor;
@@ -328,14 +334,10 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
             this._context.globalAlpha *= layerImage['opacity'];
         }
         if (Z.runningInNode) {
-            if (canvasImage.toBuffer) {
-                //node-canvas
-                canvasImage = new Image();
-                var buffer = layerImage['image'].toBuffer();
-                canvasImage.src = buffer;
-            } else {
-                //canvas2svg
-                canvasImage = canvasImage.getContext('2d');
+            var context = canvasImage.getContext('2d');
+            if (context.getSvg) {
+                 //canvas2svg
+                canvasImage = context;
             }
             //CanvasMock并不一定实现了drawImage(img, sx, sy, w, h, dx, dy, w, h)
             this._context.drawImage(canvasImage, point.x, point.y);
@@ -369,7 +371,7 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
 
     _getAllLayerToCanvas:function() {
         var layers = this.map._getLayers(function(layer) {
-            if (layer.isCanvasRender()) {
+            if (layer && layer.isCanvasRender()) {
                 return true;
             }
             return false;

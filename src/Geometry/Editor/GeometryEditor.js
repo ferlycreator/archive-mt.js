@@ -10,8 +10,6 @@ Z.Editor=Z.Class.extend({
 
     editStageLayerId : Z.internalLayerPrefix+'_edit_stage',
 
-    editHandleFill : '#d0d2d6',
-
     /**
      * @constructor
      * @param {maptalks._shadow} geometry 待编辑图形
@@ -58,17 +56,18 @@ Z.Editor=Z.Class.extend({
         if (!this._geometry || !this._geometry.getMap() || this._geometry.editing) {return;}
         this.editing = true;
         var geometry = this._geometry;
+        this._geometryDraggable = geometry.options['draggable'];
         this.prepare();
+        geometry.config('draggable', false);
         //edits are applied to a shadow of geometry to improve performance.
         var shadow = geometry.copy();
         //TODO geometry copy没有将event复制到新建的geometry,对于编辑这个功能会存在一些问题
         //原geometry上可能绑定了其它监听其click/dragging的事件,在编辑时就无法响应了.
         shadow.copyEventListener(geometry);
-        shadow.setId(null).config({'draggable': true, 'cursor' : 'move'});
+        shadow.setId(null).config({'draggable': true, 'dragShadow':true, 'cursor' : 'move'});
         shadow.isEditing=function() {
             return  true;
         };
-        shadow.on('dragstart', this._onShadowDragStart, this);
         shadow.on('dragend', this._onShadowDragEnd, this);
         this._shadow = shadow;
         geometry.hide();
@@ -109,13 +108,19 @@ Z.Editor=Z.Class.extend({
             this._shadow.remove();
             delete this._shadow;
         }
-
-        if (this._shadowOfShadow) {
-            this._shadowOfShadow.remove();
-            delete this._shadowOfShadow;
+        if (!Z.Util.isNil(this._geometryDraggable)) {
+            this._geometry.config('draggable', this._geometryDraggable);
+            delete this._geometryDraggable;
         }
         this._geometry.show();
         this._editStageLayer.removeGeometry(this._editHandles);
+        if (Z.Util.isArrayHasData(this._eventListeners)) {
+            for (var i = this._eventListeners.length - 1; i >= 0; i--) {
+                var listener = this._eventListeners[i];
+                listener[0].off(listener[1], listener[2], this);
+            }
+            this._eventListeners = [];
+        }
         this._editHandles = [];
         this._refreshHooks = [];
         if (this.options['symbol']) {
@@ -132,30 +137,7 @@ Z.Editor=Z.Class.extend({
         return this.editing;
     },
 
-    _onShadowDragStart:function() {
-        //clone another shadow to stay where it was.
-        this._shadowOfShadow = this._shadow.copy();
-        this._shadowOfShadow.isEditing = function() {
-            return true;
-        };
-        this._editStageLayer.addGeometry(this._shadowOfShadow);
-        var symbol = this._shadow.getSymbol();
-        //reduce shadow's opacity when dragging it.
-        if (Z.Util.isNumber(symbol['opacity'])) {
-            symbol['opacity'] *= 0.4;
-        } else {
-            symbol['opacity'] = 0.4;
-        }
-        this._shadow.setSymbol(symbol);
-
-    },
-
     _onShadowDragEnd:function() {
-        var symbol=this._shadowOfShadow.getSymbol();
-        this._shadowOfShadow.remove();
-        delete this._shadowOfShadow;
-        this._shadow.setSymbol(symbol);
-
         this._update();
         this._refresh();
     },
@@ -180,7 +162,7 @@ Z.Editor=Z.Class.extend({
         }
     },
 
-    fireEditEvent:function(eventName) {
+    _updateAndFireEvent:function(eventName) {
         if (!this._shadow) {
             return;
         }
@@ -219,6 +201,7 @@ Z.Editor=Z.Class.extend({
         };
 
         fnResizeOutline();
+        this._editOutline = outline;
         // outline._editOnRefresh = fnResizeOutline;
         this._addRefreshHook(fnResizeOutline);
         return outline;
@@ -240,6 +223,7 @@ Z.Editor=Z.Class.extend({
         }
         var handle = new Z.Marker(coordinate,{
             'draggable' : true,
+            'dragShadow' : false,
             'draggableAxis' : opts['axis'],
             'cursor'    : opts['cursor'],
             'symbol'    : symbol
@@ -256,13 +240,14 @@ Z.Editor=Z.Class.extend({
         var me = this;
         function onHandleDragstart(param) {
             if (opts.onDown) {
-                opts.onDown.call(me, map._containerPointToViewPoint(param['containerPoint']));
+                opts.onDown.call(me, param['viewPoint']);
             }
         }
         function onHandleDragging(param) {
             me._hideContext();
+            var viewPoint = map._transformToViewPoint(handle._getPrjCoordinates());
             if (opts.onMove) {
-                opts.onMove.call(me, map._containerPointToViewPoint(param['containerPoint']));
+                opts.onMove.call(me, viewPoint);
             }
         }
         function onHandleDragEnd(ev) {
@@ -277,7 +262,6 @@ Z.Editor=Z.Class.extend({
         if (opts.onRefresh) {
             handle['maptalks--editor-refresh-fn'] = opts.onRefresh;
         }
-        // this._appendHandler(handle, opts);
         this._editStageLayer.addGeometry(handle);
         return handle;
     },
@@ -300,7 +284,7 @@ Z.Editor=Z.Class.extend({
             'x',       'x',
             null, 'y', null
         ];
-        var geometry = this._shadow;
+        var geometry = this._geometry;
         function getResizeAnchors(ext) {
             return [
                 ext.getMin(),
@@ -377,7 +361,7 @@ Z.Editor=Z.Class.extend({
         var marker = this._shadow,
             geometryToEdit = this._geometry;
         var map = this.getMap();
-        //only image marker and vector marker can be edit now.
+        //only image marker and vector marker can be edited now.
         if (marker._canEdit()) {
             var symbol = marker.getSymbol();
             var dxdy = new Z.Point(0,0);
@@ -407,8 +391,6 @@ Z.Editor=Z.Class.extend({
             ];
 
             var resizeHandles = this._createResizeHandles(null,function(handleViewPoint, i) {
-
-
                 if (blackList && Z.Util.searchInArray(i, blackList) >= 0) {
                     //need to change marker's coordinates
                     var newCoordinates = map.viewPointToCoordinate(handleViewPoint);
@@ -440,7 +422,29 @@ Z.Editor=Z.Class.extend({
                 marker.setSymbol(symbol);
                 geometryToEdit.setSymbol(symbol);
             });
-
+            function onZoomStart() {
+                if (Z.Util.isArrayHasData(resizeHandles)) {
+                    for (var i = resizeHandles.length - 1; i >= 0; i--) {
+                        resizeHandles[i].hide();
+                    }
+                }
+                if (this._editOutline) {
+                    this._editOutline.hide();
+                }
+            }
+            function onZoomEnd() {
+                this._refresh();
+                if (Z.Util.isArrayHasData(resizeHandles)) {
+                    for (var i = resizeHandles.length - 1; i >= 0; i--) {
+                        resizeHandles[i].show();
+                    }
+                }
+                if (this._editOutline) {
+                    this._editOutline.show();
+                }
+            }
+            this._addListener([map, 'zoomstart', onZoomStart]);
+            this._addListener([map, 'zoomend', onZoomEnd]);
         }
     },
 
@@ -466,7 +470,7 @@ Z.Editor=Z.Class.extend({
             }
             shadow.setRadius(r);
             circle.setRadius(r);
-            me.fireEditEvent('shapechanging');
+            // me._updateAndFireEvent('shapechange');
         });
     },
 
@@ -549,7 +553,7 @@ Z.Editor=Z.Class.extend({
                 shadow.setHeight(h*r);
                 geometryToEdit.setHeight(h*r);
             }
-            me.fireEditEvent('shapechanging');
+            // me._updateAndFireEvent('shapechange');
         });
     },
 
@@ -562,7 +566,7 @@ Z.Editor=Z.Class.extend({
         var map = this.getMap(),
             shadow = this._shadow,
             me = this,
-            projection = map._getProjection();
+            projection = map.getProjection();
         var verticeLimit = shadow instanceof Z.Polygon? 3:2;
         var propertyOfVertexRefreshFn = 'maptalks--editor-refresh-fn',
             propertyOfVertexIndex = 'maptalks--editor-vertex-index';
@@ -640,7 +644,7 @@ Z.Editor=Z.Class.extend({
                 newVertexHandles[nextIndex][propertyOfVertexRefreshFn]();
             }
 
-            me.fireEditEvent('shapechanging');
+            me._updateAndFireEvent('shapechange');
         }
         function createVertexHandle(index) {
             var vertex = getVertexCoordinates()[index];
@@ -692,7 +696,7 @@ Z.Editor=Z.Class.extend({
 
                     //add two "new vertex" handles
                     newVertexHandles.splice(vertexIndex,0, createNewVertexHandle.call(me, vertexIndex),createNewVertexHandle.call(me, vertexIndex+1));
-                    me.fireEditEvent('shapechanged');
+                    me._updateAndFireEvent('shapechange');
                 },
                 onMove:function(handleViewPoint) {
                     moveVertexHandle(handleViewPoint,handle[propertyOfVertexIndex]+1);
@@ -760,6 +764,14 @@ Z.Editor=Z.Class.extend({
             this._geometry.closeMenu();
             this._geometry.closeInfoWindow();
         }
+    },
+
+    _addListener:function(listener) {
+        if (!this._eventListeners) {
+            this._eventListeners = [];
+        }
+        this._eventListeners.push(listener);
+        listener[0].on(listener[1], listener[2],this);
     },
 
     _addRefreshHook:function(fn) {

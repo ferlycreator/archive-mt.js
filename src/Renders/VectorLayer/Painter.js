@@ -14,6 +14,10 @@ Z.Painter = Z.Class.extend({
         this.symbolizers = this._createSymbolizers();
     },
 
+    getMap:function() {
+        return this.geometry.getMap();
+    },
+
     /**
      * 构造symbolizers
      * @return {[type]} [description]
@@ -40,6 +44,89 @@ Z.Painter = Z.Class.extend({
         return this._hasPointSymbolizer;
     },
 
+    /**
+     * for point symbolizers
+     * @return {[Point]} points to render
+     */
+    _getRenderPoints:function(placement) {
+        if (!this._renderPoints) {
+            this._renderPoints = {};
+        }
+        if (!this._renderPoints[placement]) {
+            this._renderPoints[placement] = this.geometry._getRenderPoints(placement);
+        }
+        return this._renderPoints[placement];
+    },
+
+    /**
+     * for strokeAndFillSymbolizer
+     * @return {[Object]} resources to render vector
+     */
+    _getRenderResources:function() {
+        if (!this._rendResources) {
+            //render resources geometry returned are based on view points.
+            this._rendResources = this.geometry._getRenderCanvasResources();
+        }
+        var matrix;
+        var map = this.getMap();
+        var layer = this.geometry.getLayer();
+        if (layer.isCanvasRender()) {
+            matrix = map._getRender().getTransform();
+        }
+
+        var context =this._rendResources['context'];
+        var transContext = [];
+        //refer to Geometry.Canvas
+        var points = context[0];
+        var containerPoints;
+        //convert view points to container points needed by canvas
+        if (Z.Util.isArray(points)) {
+            containerPoints = Z.Util.eachInArray(points, this, function(point) {
+                var cp = map._viewPointToContainerPoint(point);
+                if (matrix) {
+                    return matrix.applyToPointInstance(cp);
+                }
+                return cp;
+            });
+        } else if (points instanceof Z.Point) {
+            containerPoints = map._viewPointToContainerPoint(points);
+            if (matrix) {
+                containerPoints = matrix.applyToPointInstance(containerPoints);
+            }
+        }
+        transContext.push(containerPoints);
+        var scale;
+
+        //scale width ,height or radius if geometry has
+        for (var i = 1, len = context.length;i<len;i++) {
+            if (matrix) {
+
+                if (Z.Util.isNumber(context[i]) || (context[i] instanceof Z.Size)) {
+                    if (matrix && !scale) {
+                        scale = matrix._scale;
+                    }
+                    if (Z.Util.isNumber(context[i])) {
+                        transContext.push(scale.x*context[i]);
+                    } else {
+                        transContext.push(new Z.Size(context[i].width*scale.x, context[i].height*scale.y));
+                    }
+                } else {
+                    transContext.push(context[i]);
+                }
+            } else {
+                transContext.push(context[i]);
+            }
+
+        }
+
+        var resources = {
+            'fn' : this._rendResources['fn'],
+            'context' : transContext
+        };
+
+        return resources;
+    },
+
     _getSymbol:function() {
         return this.geometry.getSymbol();
     },
@@ -49,7 +136,7 @@ Z.Painter = Z.Class.extend({
      */
     paint:function() {
         var contexts = this.geometry.getLayer()._getRender().getPaintContext();
-        if (!contexts) {
+        if (!contexts || !this.symbolizers) {
             return;
         }
         var layer = this.geometry.getLayer();
@@ -136,60 +223,65 @@ Z.Painter = Z.Class.extend({
                 this.paint();
             }
         } else {
+            this._removeCache();
+            this._refreshSymbolizers();
             this._eachSymbolizer(function(symbolizer) {
                 symbolizer.show();
             });
         }
-        this._rendCanvas(false);
+        this._requestToRender();
     },
 
     hide:function(){
         this._eachSymbolizer(function(symbolizer) {
             symbolizer.hide();
         });
-        this._rendCanvas(false);
+        this._requestToRender();
     },
 
     onZoomEnd:function() {
+        this._removeCache();
         this._refreshSymbolizers();
     },
 
     repaint:function(){
+        this._removeCache();
         this._refreshSymbolizers();
-        this._rendCanvas(false);
+        if (this.geometry.isVisible()) {
+            this._requestToRender();
+        }
     },
 
     _refreshSymbolizers:function() {
-        this._removeCache();
         this._eachSymbolizer(function(symbolizer) {
             symbolizer.refresh();
         });
     },
 
-    _rendCanvas:function(needPromise) {
-        if (!this.geometry.getMap() || this.geometry.getMap().isBusy()) {
-            // console.log('is busy do not refresh painter');
+    _requestToRender:function() {
+        var geometry = this.geometry;
+        if (!geometry.getMap() || geometry.getMap().isBusy()) {
             return;
         }
-        var layer = this.geometry.getLayer();
+        var needPromise = false,
+            layer = geometry.getLayer(),
+            render = layer._getRender();
+        if (!render) {
+            return;
+        }
         //check if geometry's resources have already loaded, if not, layer render needs to promise to load resources at first.
-        var resources = this.geometry._getExternalResource();
-        if (!needPromise && Z.Util.isArrayHasData(resources)) {
+        var resources = geometry._getExternalResource();
+        if (Z.Util.isArrayHasData(resources)) {
             for (var i = resources.length - 1; i >= 0; i--) {
-            if (!layer._getRender().isResourceLoaded(resources[i])) {
+            if (!render.isResourceLoaded(resources[i])) {
                     needPromise = true;
                     break;
                 }
             }
         }
         if (layer.isCanvasRender()) {
-            var isRealTime = !needPromise && ((this.geometry.isEditing && this.geometry.isEditing())
-                                || (this.geometry.isDragging && this.geometry.isDragging()));
-            var render = this.geometry.getLayer()._getRender();
-            if (!render) {
-                return;
-            }
-            if (isRealTime) {
+            var immediate = !needPromise && geometry._isEditingOrDragging();
+            if (immediate) {
                 render.renderImmediate();
             } else {
                 render.render(null,!needPromise);
@@ -207,12 +299,13 @@ Z.Painter = Z.Class.extend({
         if (!this._painted) {
             return;
         }
-        // console.log('painter refreshSymbol');
-        var layer = this.geometry.getLayer();
-        if (layer.isCanvasRender()) {
-            this._rendCanvas(true);
-        } else {
-            this.paint();
+        if (this.geometry.isVisible()) {
+            var layer = this.geometry.getLayer();
+            if (layer.isCanvasRender()) {
+                this._requestToRender();
+            } else {
+                this.paint();
+            }
         }
     },
 
@@ -232,6 +325,8 @@ Z.Painter = Z.Class.extend({
      * 删除缓存属性
      */
     _removeCache:function() {
+        delete this._renderPoints;
+        delete this._rendResources;
         delete this._viewExtent;
     }
 });

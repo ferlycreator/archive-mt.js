@@ -110,11 +110,6 @@ Z.GeoUtils={
                             var px = (point.y-b)/k;
                             precision = point.x-px;
                         }
-
-                        //console.log(precision);
-                        // var precision = (curPt.x - point.x) * (nextPt.y - point.y) -
-                        //     (nextPt.x - point.x) * (curPt.y - point.y);
-
                     }
                 }
                 // console.log(precision);
