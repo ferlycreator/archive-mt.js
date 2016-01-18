@@ -82,7 +82,7 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
                 //default zoom animation, animate all the layers.
                 this.render();
             }
-            Z.animation.animate(new Z.animation.zoom({
+            Z.Animation.animate(new Z.animation.zoom({
                 'scale1' : startScale,
                 'scale2': endScale,
                 'duration' : duration
