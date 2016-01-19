@@ -2,6 +2,12 @@
 Z.animation = {};
 
 Z.Animation = {
+    speed:{
+        'slow'   : 2000,
+        'normal' : 1000,
+        'fast'   : 500
+    },
+
     now : function() {
         if (!Date.now) {
             return new Date().getTime();
@@ -9,46 +15,132 @@ Z.Animation = {
         return Date.now();
     },
 
-    animate : function(animation, framer, listener, context) {
-        var now = Z.Animation.now();
-        var frame = animation(now);
-
-        if (frame.state['playing']) {
-            var animeFrameId = Z.Util.requestAnimFrame(function() {
-                framer.animeFrameId = animeFrameId;
-                if (listener) {
-                    var pause;
-                    if (context) {
-                        pause = listener.call(context,frame);
-                    } else {
-                        pause = listener(frame);
-                    }
-                    if (pause) {
-                        Z.Util.cancelAnimFrame(framer.animeFrameId);
-                        return;
-                    }
-                }
-                framer._rendAnimationFrame(frame);
-                Z.Animation.animate(animation, framer, listener, context);
-            });
-        } else {
-            if (!frame.state['end']) {
-                 //延迟到开始时间再开始
-                setTimeout(function() {
-                    Z.Animation.animate(animation, framer, listener, context);
-                },frame.state['startTime']-now);
-            } else {
-                if (listener) {
-                    setTimeout(function() {
-                        if (context) {
-                            listener.call(context,frame);
+    framing:function(styles, options) {
+        var styles = styles,
+            duration = options['speed'];
+        if (Z.Util.isString(duration)) {duration = Z.Animation.speed[duration];}
+        if (!duration) {Z.Animation.speed['normal'];}
+        var easing = options['easing']?Z.animation.Easing[options['easing']]:Z.animation.Easing.out;
+        if (!easing) {easing = Z.animation.Easing.out;}
+        var start = options['start'] ? options['start'] : Z.Animation.now();
+        //caculate
+        var dStyles = {},
+            startStyles = {},
+            endStyles = {};
+        if (styles) {
+            for (var p in styles) {
+                if (styles.hasOwnProperty(p)) {
+                    var values = styles[p];
+                    if (Z.Util.isArray(values)) {
+                        if (Z.Util.isNumber(values[0])) {
+                            startStyles[p] = values[0];
+                            endStyles[p] = values[1];
+                            dStyles[p] = values[1] - values[0];
                         } else {
-                            listener(frame);
+                            var v = values[0];
+                            if (Z.Util.isArray(values[0])) {
+                                v = new Z.Coordinate(v);
+                            }
+                            var clazz = v.constructor;
+                            startStyles[p] = new clazz(v);
+                            endStyles[p] = new clazz(values[1]);
+                            dStyles[p] = new clazz(values[1])._substract(new clazz(v));
                         }
-                    },1);
+                    } else {
+                        if (Z.Util.isNumber(values)) {
+                            dStyles[p] = values;
+                            endStyles[p] = values;
+                            startStyles[p] = 0;
+                        } else {
+                            var v = values;
+                            if (Z.Util.isArray(values)) {
+                                v = new Z.Coordinate(v);
+                            }
+                            var clazz = v.constructor;
+                            var pnt = new clazz(values);
+                            dStyles[p] = pnt;
+                            endStyles[p] = pnt;
+                            startStyles[p] = new clazz(0,0);
+                        }
+                    }
+
                 }
             }
         }
+        return function(time) {
+            var state, d;
+            if (time < start) {
+              state = {
+                'playing' : 0,
+                'elapsed' : 0,
+                'delta'   : 0
+              };
+              d = startStyles;
+            } else if (time < start + duration) {
+              var delta = easing((time - start) / duration);
+              state = {
+                'playing' : 1,
+                'elapsed' : time-start,
+                'delta' : delta
+              };
+              if (dStyles) {
+                    d = {};
+                    for (var p in dStyles) {
+                        if (dStyles.hasOwnProperty(p)) {
+                            var values = dStyles[p];
+                            if (Z.Util.isNumber(values)) {
+                                d[p] = startStyles[p] + delta*dStyles[p];
+                            } else {
+                                d[p] = startStyles[p].add(dStyles[p].multi(delta));
+                            }
+                        }
+                    }
+              }
+            } else {
+              state = {
+                'playing' : 0,
+                'elapsed' : time-start,
+                'delta' : 1
+              };
+              d = endStyles;
+            }
+            state['start'] = start;
+            return new Z.animation.Frame(state ,d);
+        };
+
+    },
+
+    animate : function(styles, options, step) {
+        var animation = Z.Animation.framing(styles, options);
+        var player = function() {
+            var now = Z.Animation.now();
+            var frame = animation(now);
+            if (frame.state['elapsed']) {
+                //animation started
+                if (frame.state['playing']) {
+                    var animeFrameId = Z.Util.requestAnimFrame(function() {
+                        step._animeFrameId = animeFrameId;
+                        var endPlay = step(frame);
+                        if (endPlay) {
+                            Z.Util.cancelAnimFrame(step._animeFrameId);
+                            return;
+                        }
+                        player(animation, step);
+                    });
+                } else {
+                    setTimeout(function() {
+                        step(frame);
+                    },1);
+                }
+            } else {
+                //延迟到开始时间再开始
+                setTimeout(function() {
+                    player(animation, step);
+                },frame.state['start']-now);
+            }
+        }
+        player();
+
     }
 };
 
@@ -59,7 +151,7 @@ Z.animation.Easing = {
          * @return {number} Output between 0 and 1.
          * @api
          */
-        easeIn : function(t) {
+        in : function(t) {
           return Math.pow(t, 3);
         },
 
@@ -70,8 +162,8 @@ Z.animation.Easing = {
          * @return {number} Output between 0 and 1.
          * @api
          */
-        easeOut : function(t) {
-          return 1 - Z.animation.Easing.easeIn(1 - t);
+        out : function(t) {
+          return 1 - Z.animation.Easing.in(1 - t);
         },
 
 
@@ -120,10 +212,9 @@ Z.animation.Easing = {
  * @param {Point} distance  移动距离
  * @param {Number} scale     放大比例
  */
-Z.animation.Frame = function(state, distance, scale) {
+Z.animation.Frame = function(state, styles) {
     this.state = state;
-    this.distance = distance;
-    this.scale = scale;
+    this.styles = styles;
 };
 
 /**

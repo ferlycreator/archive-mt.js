@@ -82,14 +82,14 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
                 //default zoom animation, animate all the layers.
                 this.render();
             }
-            Z.Animation.animate(new Z.animation.zoom({
-                'scale1' : startScale,
-                'scale2': endScale,
-                'duration' : duration
-            }), map, function(frame) {
-                var matrixes = this.getZoomMatrix(frame.scale, transOrigin);
+            Z.Animation.animate({
+                'scale' : [startScale, endScale]
+            }, {
+                'speed' : duration
+            }, Z.Util.bind(function(frame) {
+                var matrixes = this.getZoomMatrix(frame.styles['scale'], transOrigin);
                 this.transform(matrixes[0], matrixes[1], layersToTransform);
-                if (frame.state['end']) {
+                if (!frame.state['playing']) {
                     delete this._transMatrix;
                     this._clearCanvas();
                     //only draw basetile layer
@@ -101,7 +101,7 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
                     this._context.restore();
                     fn.call(me);
                 }
-            }, this);
+            }, this));
         } else {
             fn.call(me);
         }
@@ -432,6 +432,6 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
      * @ignore
      */
     _onResize:function() {
-        this.map.invalidateSize();
+        this.map.checkSize();
     }
 });
