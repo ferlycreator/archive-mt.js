@@ -43,6 +43,7 @@
 ../src/Geometry/Ext/Geometry.Edit.js
 ../src/Geometry/Ext/Geometry.Drag.js
 ../src/Geometry/Ext/Geometry.Events.js
+../src/Geometry/Ext/Geometry.Animation.js
 ../src/Geometry/Extent.js
 ../src/Geometry/Vector.js
 ../src/Geometry/Geometry.Center.js
