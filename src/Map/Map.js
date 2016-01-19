@@ -762,9 +762,33 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     /**
+     * 屏幕坐标到地图容器偏移坐标
+     *
+     * @param containerPoint
+     * @returns {viewPoint}
+     */
+    containerPointToViewPoint: function(containerPoint) {
+        if (!containerPoint) {return null;}
+        var platformOffset = this.offsetPlatform();
+        return containerPoint.substract(platformOffset);
+    },
+
+    /**
+     * 地图容器偏移坐标到屏幕坐标的转换
+     *
+     * @param viewPoint
+     * @returns {containerPoint}
+     */
+    viewPointToContainerPoint: function(viewPoint) {
+        if (!viewPoint) {return null;}
+        var platformOffset = this.offsetPlatform();
+        return viewPoint.add(platformOffset);
+    },
+
+    /**
      * Checks if the map container size changed
      */
-    invalidateSize:function() {
+    checkSize:function() {
         if (this._resizeTimeout) {
             clearTimeout(this._resizeTimeout);
         }
@@ -1197,7 +1221,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {[type]}        [description]
      */
     _untransformFromViewPoint:function(domPos) {
-        return this._untransform(this._viewPointToContainerPoint(domPos));
+        return this._untransform(this.viewPointToContainerPoint(domPos));
     },
 
     /**
@@ -1226,41 +1250,19 @@ Z['Map']=Z.Map=Z.Class.extend({
      */
     _transformToViewPoint:function(pCoordinate) {
         var containerPoint = this._transform(pCoordinate);
-        return this.__containerPointToViewPoint(containerPoint);
+        return this._containerPointToViewPoint(containerPoint);
     },
 
     /**
-     * 屏幕坐标到地图容器偏移坐标
-     *
-     * @param containerPoint
-     * @returns {viewPoint}
+     * destructive containerPointToViewPoint
      */
     _containerPointToViewPoint: function(containerPoint) {
-        if (!containerPoint) {return null;}
-        var platformOffset = this.offsetPlatform();
-        return containerPoint.substract(platformOffset);
-    },
-
-    /**
-     * destructive _containerPointToViewPoint
-     */
-    __containerPointToViewPoint: function(containerPoint) {
         if (!containerPoint) {return null;}
         var platformOffset = this.offsetPlatform();
         return containerPoint._substract(platformOffset);
     },
 
-    /**
-     * 地图容器偏移坐标到屏幕坐标的转换
-     *
-     * @param viewPoint
-     * @returns {containerPoint}
-     */
-    _viewPointToContainerPoint: function(viewPoint) {
-        if (!viewPoint) {return null;}
-        var platformOffset = this.offsetPlatform();
-        return viewPoint.add(platformOffset);
-    },
+
 
     /**
      * 根据中心点投影坐标和像素范围,计算像素范围的Extent

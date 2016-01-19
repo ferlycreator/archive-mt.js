@@ -119,7 +119,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
 
         var size = this._canvasFullExtent.getSize();
         var point = this._canvasFullExtent.getMin();
-        return {'image':this._canvas,'layer':this._layer,'point':this.getMap()._viewPointToContainerPoint(point),'size':size,'opacity':gradualOpacity};
+        return {'image':this._canvas,'layer':this._layer,'point':this.getMap().viewPointToContainerPoint(point),'size':size,'opacity':gradualOpacity};
     },
 
     _scheduleLoadTileQueue:function() {

@@ -125,7 +125,7 @@ Z.PointSymbolizer=Z.Symbolizer.extend({
         }
 
         var containerPoints = Z.Util.eachInArray(points,this,function(point) {
-            return map._viewPointToContainerPoint(point)._add(dxdy);
+            return map.viewPointToContainerPoint(point)._add(dxdy);
         });
         var layer = this.geometry.getLayer();
         if (layer.isCanvasRender()) {
