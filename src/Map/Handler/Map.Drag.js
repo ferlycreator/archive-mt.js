@@ -73,7 +73,7 @@ Z.Map.Drag = Z.Handler.extend({
             map._enablePanAnimation=true;
             var distance = new Z.Point(xSpan*Math.ceil(500/t),ySpan*Math.ceil(500/t)).multi(0.5);
             t = 5*t*(Math.abs(distance.x)+Math.abs(distance.y))/600;
-            map._panAnimation(distance,t);
+            map._panAnimation(distance._multi(2/3),t);
         } else {
             map._onMoveEnd();
         }
