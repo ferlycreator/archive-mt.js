@@ -67,7 +67,6 @@
 ../src/Geometry/Editor/Label.Edit.js
 ../src/Map/View/View.js
 ../src/Map/Map.js
-../src/Map/Map.Animation.js
 ../src/Map/Map.Pan.js
 ../src/Map/Map.Zoom.js
 ../src/Map/Map.Topo.js
