@@ -182,9 +182,7 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
 
     _addGeometryToStage:function(geometry) {
         var drawLayer = this._getDrawLayer();
-        geometry.isEditing = function() {
-            return true;
-        };
+        geometry._isRenderImmediate(true);
         drawLayer.addGeometry(geometry);
     },
 

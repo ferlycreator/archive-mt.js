@@ -41,7 +41,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         }
         if (Z.Util.isArrayHasData(geometries) && geometries.length === 1) {
             //if geometry is being editted or dragged, draw it ASAP
-            if (geometries[0]._isEditingOrDragging()) {
+            if (geometries[0]._isRenderImmediate()) {
                 var resources = geometries[0]._getExternalResource();
                 //if true, it means geometry's resources are all loaded and ready to draw.
                 var isReadyToDraw = true;

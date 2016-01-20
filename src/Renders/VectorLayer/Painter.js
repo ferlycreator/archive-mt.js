@@ -280,7 +280,7 @@ Z.Painter = Z.Class.extend({
             }
         }
         if (layer.isCanvasRender()) {
-            var immediate = !needPromise && geometry._isEditingOrDragging();
+            var immediate = !needPromise && geometry._isRenderImmediate();
             if (immediate) {
                 render.renderImmediate();
             } else {

@@ -140,6 +140,9 @@ Z.ConnectorLine = Z.CurveLine.extend({
     },
     _isEditingOrDragging:function() {
         return this._connSource._isEditingOrDragging() || this._connTarget._isEditingOrDragging();
+    },
+    _isRenderImmediate:function() {
+        return this._connSource._isRenderImmediate() || this._connTarget._isRenderImmediate();
     }
 });
 

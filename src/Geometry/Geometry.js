@@ -743,6 +743,14 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
     },
 
+    _isRenderImmediate:function(r) {
+        if (Z.Util.isNil(r)) {
+            return this._isEditingOrDragging() || this._im;
+        }
+        this._im = r;
+        return this;
+    },
+
     _isEditingOrDragging:function() {
         return ((this.isEditing && this.isEditing()) || (this.isDragging && this.isDragging()));
     },

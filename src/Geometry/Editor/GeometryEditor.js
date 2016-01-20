@@ -65,9 +65,7 @@ Z.Editor=Z.Class.extend({
         //原geometry上可能绑定了其它监听其click/dragging的事件,在编辑时就无法响应了.
         shadow.copyEventListener(geometry);
         shadow.setId(null).config({'draggable': true, 'dragShadow':true, 'cursor' : 'move'});
-        shadow.isEditing=function() {
-            return  true;
-        };
+        shadow._isRenderImmediate(true);
         shadow.on('dragend', this._onShadowDragEnd, this);
         this._shadow = shadow;
         geometry.hide();
