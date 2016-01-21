@@ -45,7 +45,7 @@ Z.Symbolizer.colorProperties = [
  * @return {Boolean}      true/false
  */
 Z.Symbolizer.testColor = function(prop) {
-    if (!prop) {return false;}
+    if (!prop || !Z.Util.isString(prop)) {return false;}
     if (Z.Util.searchInArray(prop, colorProperties) >= 0) {
         return true;
     }

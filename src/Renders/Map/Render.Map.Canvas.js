@@ -82,26 +82,30 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
                 //default zoom animation, animate all the layers.
                 this.render();
             }
-            Z.Animation.animate({
-                'scale' : [startScale, endScale]
-            }, {
-                'speed' : duration
-            }, Z.Util.bind(function(frame) {
-                var matrixes = this.getZoomMatrix(frame.styles['scale'], transOrigin);
-                this.transform(matrixes[0], matrixes[1], layersToTransform);
-                if (!frame.state['playing']) {
-                    delete this._transMatrix;
-                    this._clearCanvas();
-                    //only draw basetile layer
-                    matrixes[1].applyToContext(this._context);
-                    if (baseLayerImage) {
-                        this._drawLayerCanvasImage(baseLayerImage, width, height);
+            Z.Animation.animate(
+                {
+                    'scale' : [startScale, endScale]
+                },
+                {
+                    'speed' : duration
+                },
+                Z.Util.bind(function(frame) {
+                    var matrixes = this.getZoomMatrix(frame.styles['scale'], transOrigin);
+                    this.transform(matrixes[0], matrixes[1], layersToTransform);
+                    if (!frame.state['playing']) {
+                        delete this._transMatrix;
+                        this._clearCanvas();
+                        //only draw basetile layer
+                        matrixes[1].applyToContext(this._context);
+                        if (baseLayerImage) {
+                            this._drawLayerCanvasImage(baseLayerImage, width, height);
+                        }
+                        this._canvasBackgroundImage = Z.DomUtil.copyCanvas(this._canvas);
+                        this._context.restore();
+                        fn.call(me);
                     }
-                    this._canvasBackgroundImage = Z.DomUtil.copyCanvas(this._canvas);
-                    this._context.restore();
-                    fn.call(me);
-                }
-            }, this));
+                }, this)
+            );
         } else {
             fn.call(me);
         }

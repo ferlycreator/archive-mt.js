@@ -15,57 +15,107 @@ Z.Animation = {
         return Date.now();
     },
 
+    /**
+     * resolve styles to start, distance and end.
+     * @param  {Object} styles to resolve
+     * @return {[Object]}        styles resolved
+     */
+    _resolveStyles:function(styles) {
+        if (!styles) {
+            return null;
+        }
+        var dStyles = {}, startStyles = {}, endStyles = {};
+        for (var p in styles) {
+            if (styles.hasOwnProperty(p)) {
+                var values = styles[p];
+                if (Z.Util.isArray(values)) {
+                    //[v1,v2], v1 is the start and v2 is the end.
+                    var v1 = values[0],
+                        v2 = values[1];
+                    if (Z.Util.isNumber(v1)) {
+                        startStyles[p] = v1;
+                        endStyles[p] = v2;
+                        dStyles[p] = v2 - v1;
+                    } else {
+                        if (Z.Util.isArray(v1)) {
+                            v1 = new Z.Coordinate(v1);
+                        } else if (Z.Symbolizer.testColor(v1)) {
+                            v1 = new Z.Color(v1);
+                        }
+                        var clazz = v1.constructor;
+                        startStyles[p] = new clazz(v1);
+                        endStyles[p] = new clazz(v2);
+                        dStyles[p] = new clazz(v2)._substract(new clazz(v1));
+                    }
+                } else {
+                    //values is just the distance, no start and end.
+                    if (Z.Util.isNumber(values)) {
+                        dStyles[p] = values;
+                        endStyles[p] = values;
+                        startStyles[p] = 0;
+                    } else {
+                        var v = values;
+                        if (Z.Util.isArray(values)) {
+                            v = new Z.Coordinate(v);
+                        } else if (Z.Symbolizer.testColor(values)) {
+                            v = new Z.Color(values);
+                        }
+                        var clazz = v.constructor;
+                        if (clazz === Object) {
+                            //an object with literal notations, resolve it as a child style.
+                            var childStyles = Z.Animation._calcD(v);
+                            startStyles[p] = childStyles[0];
+                            dStyles[p] = childStyles[1];
+                            endStyles[p] = childStyles[2];
+                        } else {
+                            v = new clazz(values);
+                            dStyles[p] = v;
+                            endStyles[p] = v;
+                            startStyles[p] = new clazz(0,0);
+                        }
+                    }
+                }
+            }
+        }
+        return [startStyles, dStyles, endStyles];
+    },
+
     framing:function(styles, options) {
         var styles = styles,
             duration = options['speed'];
         if (Z.Util.isString(duration)) {duration = Z.Animation.speed[duration];}
-        if (!duration) {Z.Animation.speed['normal'];}
+        if (!duration) {duration = Z.Animation.speed['normal'];}
         var easing = options['easing']?Z.animation.Easing[options['easing']]:Z.animation.Easing.out;
         if (!easing) {easing = Z.animation.Easing.out;}
         var start = options['start'] ? options['start'] : Z.Animation.now();
-        //caculate
-        var dStyles = {},
-            startStyles = {},
-            endStyles = {};
+        var dStyles, startStyles, endStyles;
+        styles = Z.Animation._resolveStyles(styles);
         if (styles) {
-            for (var p in styles) {
-                if (styles.hasOwnProperty(p)) {
-                    var values = styles[p];
-                    if (Z.Util.isArray(values)) {
-                        if (Z.Util.isNumber(values[0])) {
-                            startStyles[p] = values[0];
-                            endStyles[p] = values[1];
-                            dStyles[p] = values[1] - values[0];
-                        } else {
-                            var v = values[0];
-                            if (Z.Util.isArray(values[0])) {
-                                v = new Z.Coordinate(v);
-                            }
-                            var clazz = v.constructor;
-                            startStyles[p] = new clazz(v);
-                            endStyles[p] = new clazz(values[1]);
-                            dStyles[p] = new clazz(values[1])._substract(new clazz(v));
-                        }
+            startStyles = styles[0];
+            dStyles = styles[1];
+            endStyles = styles[2];
+        }
+        var deltaStyles = function(delta, start, dist) {
+            if (!start || !dist) {
+                return null;
+            }
+            var d = {};
+            for (var p in dist) {
+                if (dist.hasOwnProperty(p)) {
+                    var v = dist[p];
+                    if (Z.Util.isNumber(v)) {
+                        d[p] = start[p] + delta*dist[p];
                     } else {
-                        if (Z.Util.isNumber(values)) {
-                            dStyles[p] = values;
-                            endStyles[p] = values;
-                            startStyles[p] = 0;
+                        var clazz = v.constructor;
+                        if (clazz.constructor === Object) {
+                            d[p] = deltaStyles(delta, start[p], dist[p]);
                         } else {
-                            var v = values;
-                            if (Z.Util.isArray(values)) {
-                                v = new Z.Coordinate(v);
-                            }
-                            var clazz = v.constructor;
-                            var pnt = new clazz(values);
-                            dStyles[p] = pnt;
-                            endStyles[p] = pnt;
-                            startStyles[p] = new clazz(0,0);
+                            d[p] = start[p].add(dist[p].multi(delta));
                         }
                     }
-
                 }
             }
+            return d;
         }
         return function(time) {
             var state, d;
@@ -78,24 +128,13 @@ Z.Animation = {
               d = startStyles;
             } else if (time < start + duration) {
               var delta = easing((time - start) / duration);
+              // console.log(delta);
               state = {
                 'playing' : 1,
                 'elapsed' : time-start,
                 'delta' : delta
               };
-              if (dStyles) {
-                    d = {};
-                    for (var p in dStyles) {
-                        if (dStyles.hasOwnProperty(p)) {
-                            var values = dStyles[p];
-                            if (Z.Util.isNumber(values)) {
-                                d[p] = startStyles[p] + delta*dStyles[p];
-                            } else {
-                                d[p] = startStyles[p].add(dStyles[p].multi(delta));
-                            }
-                        }
-                    }
-              }
+              d = deltaStyles(delta, startStyles, dStyles);
             } else {
               state = {
                 'playing' : 0,
@@ -110,7 +149,14 @@ Z.Animation = {
 
     },
 
+    _requestAnimFrame:function(fn) {
+        Z.Util.requestAnimFrame(fn);
+    },
+
     animate : function(styles, options, step) {
+        if (!options) {
+            options = {};
+        }
         var animation = Z.Animation.framing(styles, options);
         var player = function() {
             var now = Z.Animation.now();
@@ -118,28 +164,33 @@ Z.Animation = {
             if (frame.state['elapsed']) {
                 //animation started
                 if (frame.state['playing']) {
-                    var animeFrameId = Z.Util.requestAnimFrame(function() {
-                        step._animeFrameId = animeFrameId;
-                        var endPlay = step(frame);
-                        if (endPlay) {
-                            Z.Util.cancelAnimFrame(step._animeFrameId);
-                            return;
+                    var animeFrameId = Z.Animation._requestAnimFrame(function() {
+                        if (step) {
+                            step._animeFrameId = animeFrameId;
+                            var endPlay = step(frame);
+                            if (endPlay) {
+                                Z.Util.cancelAnimFrame(step._animeFrameId);
+                                return;
+                            }
                         }
-                        player(animation, step);
+
+                        player();
                     });
                 } else {
+                    if (step) {
                     setTimeout(function() {
-                        step(frame);
-                    },1);
+                            step(frame);
+                        },1);
+                    }
                 }
             } else {
                 //延迟到开始时间再开始
                 setTimeout(function() {
-                    player(animation, step);
+                    player();
                 },frame.state['start']-now);
             }
         }
-        player();
+        Z.Animation._requestAnimFrame(player);
 
     }
 };
