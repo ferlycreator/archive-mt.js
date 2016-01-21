@@ -78,7 +78,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         var oldId = this.getId();
         this._id = id;
         //FIXME _idchanged没有被图层监听, layer.getGeometryById会出现bug
-        this._fireEvent('_idchanged',{'oldId':oldId,'newId':id});
+        this._fireEvent('idchange',{'oldId':oldId,'newId':id});
         return this;
     },
 
@@ -556,11 +556,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     },
 
     //调用prepare时,layer已经注册到map上
-    _prepare:function(layer) {
-        this._rootPrepare(layer);
-    },
-
-    _rootPrepare:function(layer) {
+    _bindLayer:function(layer) {
         //Geometry不允许被重复添加到多个图层上
         if (this.getLayer()) {
             throw new Error(this.exceptions['DUPLICATE_LAYER']);
@@ -569,7 +565,6 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         //如果投影发生改变,则清除掉所有的投影坐标属性
         this._clearProjection();
         this.callInitHooks();
-
     },
 
     _prepareSymbol:function(symbol) {

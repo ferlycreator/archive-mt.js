@@ -140,21 +140,20 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
      * @return {[type]}       [description]
      * @override
      */
-    _prepare:function(layer) {
+    _bindLayer:function(layer) {
         this._rootPrepare(layer);
-        this._prepareGeometries();
+        this._bindGeometries();
     },
 
     /**
      * _prepare the geometries, 在geometries发生改变时调用
      * @return {[type]} [description]
      */
-    _prepareGeometries:function() {
+    _bindGeometries:function() {
         var layer = this.getLayer();
         var geometries = this.getGeometries();
         for (var i=0,len=geometries.length;i<len;i++) {
-
-            this._geometries[i]._prepare(layer);
+            this._geometries[i]._bindLayer(layer);
         }
     },
 

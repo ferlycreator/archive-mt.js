@@ -103,7 +103,7 @@ Z.OverlayLayer=Z.Layer.extend({
             geo._setInternalId(internalId);
             this._geoCache[internalId] = geo;
             this._counter++;
-            geo._prepare(this);
+            geo._bindLayer(this);
             if (fitView) {
                 var geoCenter = geo.getCenter();
                 var geoExtent = geo.getExtent();
