@@ -69,6 +69,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
     setId:function(id) {
         //TODO 设置id可能造成map无法找到layer
         this._id = id;
+        this.fire('idchange');
         return this;
     },
 
@@ -186,6 +187,23 @@ Z['Layer']=Z.Layer=Z.Class.extend({
         return this;
     },
 
+    getMask:function() {
+        return this._mask;
+    },
+
+    setMask:function(mask) {
+        if (!(mask instanceof Z.Polygon || mask instanceof Z.MultiPolygon)) {
+            throw new Error('mask has to be a Polygon or a MultiPolygon');
+        }
+        this._mask = mask;
+        this._getRender().render();
+    },
+
+    clearMask:function(mask) {
+        delete this._mask;
+        this._getRender().render();
+    },
+
     _onRemove:function() {
         this.clear();
         if (this._render) {
@@ -195,7 +213,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
         delete this.map;
     },
 
-     _prepare:function(map,zIndex) {
+     _bindMap:function(map,zIndex) {
         if (!map) {return;}
         this.map = map;
         this.setZIndex(zIndex);

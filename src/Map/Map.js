@@ -10,20 +10,23 @@ Z['Map']=Z.Map=Z.Class.extend({
     includes: [Z.Eventable,Z.HandlerBus],
 
     options:{
-        "clipFullExtent" : false,
+        'clipFullExtent' : false,
 
-        "zoomAnimation" : true,
-        "zoomAnimationDuration" : 300,
+        'zoomAnimation' : true,
+        'zoomAnimationDuration' : 300,
         //controls whether other layers than base tilelayer will show during zoom animation.
-        "layerZoomAnimation" : true,
+        'layerZoomAnimation' : true,
 
         //economically transform, whether point symbolizers transforms during transformation (eg. zoom animation)
         //set to true can prevent drastic low performance when number of point symbolizers is large.
-        "ecoTransform" : false,
+        'ecoTransform' : false,
 
-        "panAnimation":true,
+        'panAnimation':true,
         //default pan animation duration
-        "panAnimationDuration" : 600,
+        'panAnimationDuration' : 600,
+
+        'maskColor' : '#000',
+        'maskOpacity' : 1,
 
         'enableZoom':true,
         'enableInfoWindow':true,
@@ -172,22 +175,6 @@ Z['Map']=Z.Map=Z.Class.extend({
      */
     isLoaded:function() {
         return this._loaded;
-    },
-
-    /**
-     * 设定地图鼠标跟随提示框内容，设定的提示框会一直跟随鼠标显示
-     * @param {Dom} tipElement 鼠标提示框内容
-     */
-    setMouseTip:function(tipElement) {
-
-    },
-
-    /**
-     * 移除鼠标提示框
-     * @return {[type]} [description]
-     */
-    removeMouseTip:function() {
-
     },
 
     /**
@@ -513,7 +500,7 @@ Z['Map']=Z.Map=Z.Class.extend({
                 baseTileLayer.config('tileSystem', Z.TileSystem.getDefault(this.getProjection()));
             }
         }
-        baseTileLayer._prepare(this,-1);
+        baseTileLayer._bindMap(this,-1);
         this._baseLayer = baseTileLayer;
         function onBaseTileLayerLoaded() {
             this._fireEvent('baselayerload');
@@ -582,7 +569,7 @@ Z['Map']=Z.Map=Z.Class.extend({
                 throw new Error(this.exceptions['DUPLICATE_LAYER_ID']+':'+id);
             }
             this._layerCache[id] = layer;
-            layer._prepare(this, this._layers.length);
+        layer._bindMap(this, this._layers.length);
             this._layers.push(layer);
             if (this._loaded) {
                 layer.load();
@@ -675,6 +662,23 @@ Z['Map']=Z.Map=Z.Class.extend({
          * @event crschanged
          */
         this._fireEvent('crschanged');
+    },
+
+    getMask:function() {
+        return this._mask;
+    },
+
+    setMask:function(mask) {
+        if (!(mask instanceof Z.Polygon || mask instanceof Z.MultiPolygon)) {
+            throw new Error('mask has to be a Polygon or a MultiPolygon');
+        }
+        this._mask = mask;
+        this._getRender().render();
+    },
+
+    clearMask:function(mask) {
+        delete this._mask;
+        this._getRender().render();
     },
 
     toDataURL: function(options) {
@@ -918,6 +922,13 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {Extent} 可视范围的ViewPoint范围
      */
     _getViewExtent:function() {
+        if (this._mask) {
+            var maskExt = this._mask._computeExtent(this.getProjection());
+            return new Z.Extent(
+                this.coordinateToViewPoint(maskExt.getMin()),
+                this.coordinateToViewPoint(maskExt.getMax())
+                );
+        }
         var size = this.getSize();
         var offset = this.offsetPlatform();
         var min = new Z.Point(0,0);
