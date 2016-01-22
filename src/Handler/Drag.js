@@ -73,41 +73,44 @@ Z.Handler.Drag = Z.Handler.extend({
         var dom = this.dom;
         Z.DomUtil.preventDefault(event);
         var actual = event.touches ? event.touches[0] : event;
-        var newPos = new Z.Point(actual.clientX, actual.clientY),
-            offset = newPos.substract(this.startPos);
-        if (!offset.x && !offset.y) {
-            return;
-        }
-        if (!this.moved) {
-            /**
-             * 触发dragstart事件
-             * @event dragstart
-             * @return {Object} mousePos: {'left': 0px, 'top': 0px}
-             */
-            this.fire('dragstart',{
-                'domEvent' : event,
-                'mousePos':this.startPos.copy()
-            });
-            this.moved = true;
-        } else {
-             /**
-             * 触发dragging事件
-             * @event dragging
-             * @return {Object} mousePos: {'left': 0px, 'top': 0px}
-             */
-            this.fire('dragging',{
+        Z.Util.requestAnimFrame(Z.Util.bind(function() {
+            var newPos = new Z.Point(actual.clientX, actual.clientY),
+                offset = newPos.substract(this.startPos);
+            if (!offset.x && !offset.y) {
+                return;
+            }
+            if (!this.moved) {
+                /**
+                 * 触发dragstart事件
+                 * @event dragstart
+                 * @return {Object} mousePos: {'left': 0px, 'top': 0px}
+                 */
+                this.fire('dragstart',{
                     'domEvent' : event,
-                    'mousePos': new Z.Point(actual.clientX, actual.clientY)
+                    'mousePos':this.startPos.copy()
                 });
-            /*try {
+                this.moved = true;
+            } else {
+                 /**
+                 * 触发dragging事件
+                 * @event dragging
+                 * @return {Object} mousePos: {'left': 0px, 'top': 0px}
+                 */
+                this.fire('dragging',{
+                        'domEvent' : event,
+                        'mousePos': new Z.Point(actual.clientX, actual.clientY)
+                    });
+                /*try {
 
-            } catch (error) {
-                Z.DomUtil.off(document,'mousemove',this.onMouseMove);
-                Z.DomUtil.off(document,'mouseup',this.onMouseUp);
-            }*/
+                } catch (error) {
+                    Z.DomUtil.off(document,'mousemove',this.onMouseMove);
+                    Z.DomUtil.off(document,'mouseup',this.onMouseUp);
+                }*/
 
-        }
-        // this.moving = true;
+            }
+            // this.moving = true;
+        },this));
+
 
 
     },
