@@ -22,6 +22,13 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
      * 基于Canvas的渲染方法, layers总定义了要渲染的图层
      */
     render:function() {
+        if (this._animeFrameId) {
+            Z.Util.cancelAnimFrame(this._animeFrameId);
+        }
+        this._animeFrameId = Z.Util.requestAnimFrame(Z.Util.bind(this._renderLayers, this));
+    },
+
+    _renderLayers:function() {
         if (!this._canvas) {
             this._createCanvas();
         }
