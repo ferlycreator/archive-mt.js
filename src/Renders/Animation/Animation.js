@@ -8,13 +8,6 @@ Z.Animation = {
         'fast'   : 500
     },
 
-    now : function() {
-        if (!Date.now) {
-            return new Date().getTime();
-        }
-        return Date.now();
-    },
-
     /**
      * resolve styles to start, distance and end.
      * @param  {Object} styles to resolve
@@ -87,7 +80,7 @@ Z.Animation = {
         if (!duration) {duration = Z.Animation.speed['normal'];}
         var easing = options['easing']?Z.animation.Easing[options['easing']]:Z.animation.Easing.out;
         if (!easing) {easing = Z.animation.Easing.out;}
-        var start = options['start'] ? options['start'] : Z.Animation.now();
+        var start = options['start'] ? options['start'] : Z.Util.now();
         var dStyles, startStyles, endStyles;
         styles = Z.Animation._resolveStyles(styles);
         if (styles) {
@@ -128,7 +121,6 @@ Z.Animation = {
               d = startStyles;
             } else if (time < start + duration) {
               var delta = easing((time - start) / duration);
-              // console.log(delta);
               state = {
                 'playing' : 1,
                 'elapsed' : time-start,
@@ -159,7 +151,7 @@ Z.Animation = {
         }
         var animation = Z.Animation.framing(styles, options);
         var player = function() {
-            var now = Z.Animation.now();
+            var now = Z.Util.now();
             var frame = animation(now);
             if (frame.state['elapsed']) {
                 //animation started
@@ -178,7 +170,7 @@ Z.Animation = {
                     });
                 } else {
                     if (step) {
-                    setTimeout(function() {
+                        setTimeout(function() {
                             step(frame);
                         },1);
                     }
@@ -258,10 +250,9 @@ Z.animation.Easing = {
 };
 
 /**
- * Animation的一帧
- * @param {Boolean} playing 是否处于播放状态
- * @param {Point} distance  移动距离
- * @param {Number} scale     放大比例
+ * Animation Frame
+ * @param {Object} state animation state
+ * @param {Object} styles  styles to animate
  */
 Z.animation.Frame = function(state, styles) {
     this.state = state;
