@@ -1,4 +1,7 @@
-Z.animation = {
+//package
+Z.animation = {};
+
+Z.Animation = {
     now : function() {
         if (!Date.now) {
             return new Date().getTime();
@@ -7,7 +10,7 @@ Z.animation = {
     },
 
     animate : function(animation, framer, listener, context) {
-        var now = Z.animation.now();
+        var now = Z.Animation.now();
         var frame = animation(now);
 
         if (frame.state['playing']) {
@@ -26,13 +29,13 @@ Z.animation = {
                     }
                 }
                 framer._rendAnimationFrame(frame);
-                Z.animation.animate(animation, framer, listener, context);
+                Z.Animation.animate(animation, framer, listener, context);
             });
         } else {
             if (!frame.state['end']) {
                  //延迟到开始时间再开始
                 setTimeout(function() {
-                    Z.animation.animate(animation, framer, listener, context);
+                    Z.Animation.animate(animation, framer, listener, context);
                 },frame.state['startTime']-now);
             } else {
                 if (listener) {

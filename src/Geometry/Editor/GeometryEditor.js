@@ -358,9 +358,32 @@ Z.Editor=Z.Class.extend({
      * 标注和自定义标注编辑器
      */
     createMarkerEditor:function() {
+
         var marker = this._shadow,
-            geometryToEdit = this._geometry;
-        var map = this.getMap();
+            geometryToEdit = this._geometry,
+            map = this.getMap(),
+            resizeHandles;
+        function onZoomStart() {
+            if (Z.Util.isArrayHasData(resizeHandles)) {
+                for (var i = resizeHandles.length - 1; i >= 0; i--) {
+                    resizeHandles[i].hide();
+                }
+            }
+            if (this._editOutline) {
+                this._editOutline.hide();
+            }
+        }
+        function onZoomEnd() {
+            this._refresh();
+            if (Z.Util.isArrayHasData(resizeHandles)) {
+                for (var i = resizeHandles.length - 1; i >= 0; i--) {
+                    resizeHandles[i].show();
+                }
+            }
+            if (this._editOutline) {
+                this._editOutline.show();
+            }
+        }
         //only image marker and vector marker can be edited now.
         if (marker._canEdit()) {
             var symbol = marker.getSymbol();
@@ -390,7 +413,7 @@ Z.Editor=Z.Class.extend({
                 2, 1, 2
             ];
 
-            var resizeHandles = this._createResizeHandles(null,function(handleViewPoint, i) {
+            resizeHandles = this._createResizeHandles(null,function(handleViewPoint, i) {
                 if (blackList && Z.Util.searchInArray(i, blackList) >= 0) {
                     //need to change marker's coordinates
                     var newCoordinates = map.viewPointToCoordinate(handleViewPoint);
@@ -422,27 +445,6 @@ Z.Editor=Z.Class.extend({
                 marker.setSymbol(symbol);
                 geometryToEdit.setSymbol(symbol);
             });
-            function onZoomStart() {
-                if (Z.Util.isArrayHasData(resizeHandles)) {
-                    for (var i = resizeHandles.length - 1; i >= 0; i--) {
-                        resizeHandles[i].hide();
-                    }
-                }
-                if (this._editOutline) {
-                    this._editOutline.hide();
-                }
-            }
-            function onZoomEnd() {
-                this._refresh();
-                if (Z.Util.isArrayHasData(resizeHandles)) {
-                    for (var i = resizeHandles.length - 1; i >= 0; i--) {
-                        resizeHandles[i].show();
-                    }
-                }
-                if (this._editOutline) {
-                    this._editOutline.show();
-                }
-            }
             this._addListener([map, 'zoomstart', onZoomStart]);
             this._addListener([map, 'zoomend', onZoomEnd]);
         }

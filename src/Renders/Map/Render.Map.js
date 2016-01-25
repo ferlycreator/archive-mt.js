@@ -33,7 +33,7 @@ Z.render.map.Render = Z.Class.extend({
                 duration = t;
             }
             map._panAnimating = true;
-            Z.animation.animate(new Z.animation.pan({
+            Z.Animation.animate(new Z.animation.pan({
                 'distance': distance,
                 'duration' : duration
             }), map, function(frame) {
@@ -41,6 +41,14 @@ Z.render.map.Render = Z.Class.extend({
                     map._panAnimating = false;
                     map._onMoveEnd();
                     return true;
+                }
+
+                if (frame.state['playing'] && frame.distance) {
+                    var offset =frame.distance;
+                    offset = offset.round();
+                    map.offsetPlatform(offset);
+                    map._offsetCenterByPixel(offset.multi(-1));
+                    map._fireEvent('moving');
                 }
                 if (frame.state['end']) {
                     map._panAnimating = false;
