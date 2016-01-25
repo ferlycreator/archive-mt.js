@@ -1,7 +1,13 @@
 Z.Geometry.include({
     animate:function(styles, options, callback) {
+        if (Z.Util.isFunction(options)) {
+            callback = options;
+            options = null;
+        }
+        var map = this.getMap(),
+            projection = this._getProjection();
         var isFocusing;
-        if (options) {isFocusing = options['focus'];delete options['focus'];}
+        if (options) {isFocusing = options['focus'];}
         this._isRenderImmediate(true);
         var aniStyles = {};
         var symbol = this.getSymbol();
@@ -25,7 +31,15 @@ Z.Geometry.include({
                 }
             }
         }
+        var started = false;
         Z.Animation.animate(aniStyles, options, Z.Util.bind(function(frame) {
+            if (!frame.state['elapsed']) {
+                return;
+            }
+            if (!started && isFocusing) {
+                map._onMoveStart();
+                started = true;
+            }
             var styles = frame.styles;
             for (var p in styles) {
                 if (p !== 'symbol' && p !== 'translate' && styles.hasOwnProperty(p)) {
@@ -43,7 +57,14 @@ Z.Geometry.include({
                 this.setSymbol(symbol);
             }
             if (isFocusing) {
-                this.getMap().setCenter(this.getCenter());
+                var center = this.getCenter();
+                var p = projection.project(center);
+                map._setPrjCenterAndMove(p);
+                if (!frame.state['playing']) {
+                    map._onMoveEnd();
+                } else {
+                    map._onMoving()
+                }
             }
             if (callback) {
                 callback();

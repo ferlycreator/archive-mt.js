@@ -16,11 +16,11 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
 
         'renderWhenPanning' : false,
         //移图时地图的更新间隔, 默认为0即实时更新, -1表示不更新.如果效率较慢则可改为适当的值
-        'renderSpanWhenPanning' : 0,
+        'renderSpanWhenPanning' : 100,
 
         'crossOrigin' : null,
 
-        'tileSize' : {
+    'tileSize' : {
             'width'   : 256,
             'height'  : 256
         },

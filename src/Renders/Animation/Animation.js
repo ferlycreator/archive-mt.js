@@ -2,6 +2,7 @@
 Z.animation = {};
 
 Z.Animation = {
+    //predefined speed constants.
     speed:{
         'slow'   : 2000,
         'normal' : 1000,
@@ -78,8 +79,8 @@ Z.Animation = {
             duration = options['speed'];
         if (Z.Util.isString(duration)) {duration = Z.Animation.speed[duration];}
         if (!duration) {duration = Z.Animation.speed['normal'];}
-        var easing = options['easing']?Z.animation.Easing[options['easing']]:Z.animation.Easing.out;
-        if (!easing) {easing = Z.animation.Easing.out;}
+        var easing = options['easing']?Z.animation.Easing[options['easing']]:Z.animation.Easing.linear;
+        if (!easing) {easing = Z.animation.Easing.linear;}
         var start = options['start'] ? options['start'] : Z.Util.now();
         var dStyles, startStyles, endStyles;
         styles = Z.Animation._resolveStyles(styles);

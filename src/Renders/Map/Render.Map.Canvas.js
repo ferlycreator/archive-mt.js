@@ -95,6 +95,7 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
                     'scale' : [startScale, endScale]
                 },
                 {
+                    'easing' : 'out',
                     'speed' : duration
                 },
                 Z.Util.bind(function(frame) {

@@ -37,6 +37,7 @@ Z.render.map.Render = Z.Class.extend({
             Z.Animation.animate({
                 'distance' : distance
             }, {
+                'easing' : 'out',
                 'speed' : duration
             }, function(frame) {
                 if (!map._enablePanAnimation) {
