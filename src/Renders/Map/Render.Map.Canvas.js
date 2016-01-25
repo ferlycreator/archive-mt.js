@@ -22,7 +22,8 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
      * 基于Canvas的渲染方法, layers总定义了要渲染的图层
      */
     render:function() {
-        var map = this.map;
+        var map = this.map,
+            size = map.getSize();
         if (!this._canvas) {
             this._createCanvas();
         }
@@ -32,8 +33,12 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
         }
         var mwidth = this._canvas.width,
             mheight = this._canvas.height;
-        if (this._canvasBackgroundImage) {
-            Z.Canvas.image(this._context, map.viewPointToContainerPoint(new Z.Point(0,0)), this._canvasBackgroundImage);
+
+        if (map.options['zoomBackground'] && this._canvasBg) {
+            var scale = this._canvasBgRes/map._getResolution();
+            var p = map.coordinateToContainerPoint(this._canvasBgCoord);
+            var bSize = size._multi(scale);
+            Z.Canvas.image(this._context, p, this._canvasBg, bSize['width'], bSize['height']);
         }
         var layers = this._getAllLayerToCanvas();
         for (var i = 0, len=layers.length; i < len; i++) {
@@ -54,21 +59,23 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
         var map = this.map;
         var me = this;
         if (Z.Browser.ielt9) {
-            setTimeout(function() {
-                fn.call(me);
-            },duration);
+            fn.call(me);
             return;
         }
 
         this._clearCanvas();
+        var baseTileLayer = map.getBaseLayer();
+        var baseLayerImage;
+        if (baseTileLayer) {
+            baseLayerImage =  baseTileLayer._getRender().getCanvasImage();
+            if (map.options['zoomBackground']) {
+                this._canvasBg = Z.DomUtil.copyCanvas(baseLayerImage['image']);
+                this._canvasBgRes = map._getResolution();
+                this._canvasBgCoord = map.containerPointToCoordinate(baseLayerImage['point']);
+            }
+        }
         if (map.options['zoomAnimation']) {
             this._context.save();
-            var baseTileLayer = map.getBaseLayer();
-            var baseLayerImage;
-            if (baseTileLayer) {
-                baseLayerImage =  baseTileLayer._getRender().getCanvasImage();
-            }
-
 
             var width = this._canvas.width,
                 height = this._canvas.height;
@@ -101,7 +108,7 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
                         if (baseLayerImage) {
                             this._drawLayerCanvasImage(baseLayerImage, width, height);
                         }
-                        this._canvasBackgroundImage = Z.DomUtil.copyCanvas(this._canvas);
+
                         this._context.restore();
                         fn.call(me);
                     }
@@ -286,14 +293,12 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
     _registerEvents:function() {
         var map = this.map;
         map.on('_baselayerchangestart _baselayerchangeend _baselayerload',function() {
-           delete this._canvasBackgroundImage;
            this.render();
         },this);
         map.on('_moving', function() {
             this.render();
         },this);
         map.on('_zoomstart',function() {
-            delete this._canvasBackgroundImage;
             this._clearCanvas();
         },this);
         if (typeof window !== 'undefined' ) {
