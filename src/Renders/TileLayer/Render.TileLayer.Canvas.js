@@ -110,7 +110,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         }
         var size = this._canvasFullExtent.getSize();
         var point = this._canvasFullExtent.getMin();
-        return {'image':this._canvas,'layer':this._layer,'point':this.getMap()._viewPointToContainerPoint(point),'size':size};
+        return {'image':this._canvas,'layer':this._layer,'point':this.getMap().viewPointToContainerPoint(point),'size':size};
     },
 
     _scheduleLoadTileQueue:function() {
@@ -287,7 +287,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
     },
 
     _fireLoadedEvent:function() {
-        this._layer.fire('layerloaded');
+        this._layer.fire('layerload');
     }
 
 });

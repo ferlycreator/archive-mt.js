@@ -22,6 +22,7 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
      * 基于Canvas的渲染方法, layers总定义了要渲染的图层
      */
     render:function() {
+        var map = this.map;
         if (!this._canvas) {
             this._createCanvas();
         }
@@ -32,7 +33,7 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
         var mwidth = this._canvas.width,
             mheight = this._canvas.height;
         if (this._canvasBackgroundImage) {
-            Z.Canvas.image(this._context, new Z.Point(0,0), this._canvasBackgroundImage);
+            Z.Canvas.image(this._context, map.viewPointToContainerPoint(new Z.Point(0,0)), this._canvasBackgroundImage);
         }
         var layers = this._getAllLayerToCanvas();
         for (var i = 0, len=layers.length; i < len; i++) {
@@ -284,7 +285,7 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
 
     _registerEvents:function() {
         var map = this.map;
-        map.on('_movestart _baselayerchangestart _baselayerchangeend _baselayerload',function() {
+        map.on('_baselayerchangestart _baselayerchangeend _baselayerload',function() {
            delete this._canvasBackgroundImage;
            this.render();
         },this);

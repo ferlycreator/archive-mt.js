@@ -334,7 +334,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
     _requestMapToRend:function() {
         if (this.getMap() && !this.getMap().isBusy()) {
             this._mapRender.render();
-            this._layer.fire('layerloaded');
+            this._layer.fire('layerload');
         }
     }
 });

@@ -502,13 +502,14 @@ Z['Map']=Z.Map=Z.Class.extend({
         }
         baseTileLayer._bindMap(this,-1);
         this._baseLayer = baseTileLayer;
-        function onBaseTileLayerLoaded() {
+        function onBaseTilelayerload() {
             this._fireEvent('baselayerload');
             if (isChange) {
+                isChange = false;
                 this._fireEvent('baselayerchangeend');
             }
         }
-        this._baseLayer.once('layerloaded',onBaseTileLayerLoaded,this);
+        this._baseLayer.on('layerload',onBaseTilelayerload,this);
         if (this._loaded) {
             this._baseLayer.load();
         }
