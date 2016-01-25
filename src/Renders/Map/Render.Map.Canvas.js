@@ -330,9 +330,6 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
         var point = layerImage['point'];
         var size = layerImage['size'];
         var canvasImage = layerImage['image'];
-        if (Z.Util.isNumber(layerImage['opacity'])) {
-            this._context.globalAlpha *= layerImage['opacity'];
-        }
         if (Z.runningInNode) {
             var context = canvasImage.getContext('2d');
             if (context.getSvg) {
