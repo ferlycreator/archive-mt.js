@@ -143,7 +143,32 @@ Z.Animation = {
     },
 
     _requestAnimFrame:function(fn) {
-        Z.Util.requestAnimFrame(fn);
+        if (!this._frameQueue) {
+            this._frameQueue = [];
+        }
+        this._frameQueue.push(fn);
+        this._a();
+    },
+
+    _a:function() {
+        if (!this._animationFrameId) {
+            this._animationFrameId = Z.Util.requestAnimFrame(Z.Util.bind(Z.Animation._run, Z.Animation));
+        }
+    },
+
+    _run:function() {
+        if (this._frameQueue.length) {
+            var running = [].concat(this._frameQueue);
+            this._frameQueue = [];
+            for (var i = 0; i < running.length; i++) {
+                running[i]();
+            }
+            if (this._frameQueue.length) {
+                this._animationFrameId = Z.Util.requestAnimFrame(Z.Util.bind(Z.Animation._run, Z.Animation));
+            } else {
+                delete this._animationFrameId;
+            }
+        }
     },
 
     animate : function(styles, options, step) {

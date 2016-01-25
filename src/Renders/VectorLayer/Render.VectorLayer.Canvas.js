@@ -72,7 +72,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
             } else {
                 me._promise();
             }
-        },10);
+        },1);
 
     },
 

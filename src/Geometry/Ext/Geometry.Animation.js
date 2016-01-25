@@ -8,7 +8,6 @@ Z.Geometry.include({
             projection = this._getProjection();
         var isFocusing;
         if (options) {isFocusing = options['focus'];}
-        this._isRenderImmediate(true);
         var aniStyles = {};
         var symbol = this.getSymbol();
         //prepare styles for animation
