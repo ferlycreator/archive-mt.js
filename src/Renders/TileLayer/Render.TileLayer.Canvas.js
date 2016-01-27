@@ -101,7 +101,6 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
             this._totalTileToLoad = this._tileToLoadCounter;
             this._scheduleLoadTileQueue();
         }
-
     },
 
     getCanvasImage:function() {
@@ -137,10 +136,8 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
             me._tileCache.add(this[me.propertyOfTileId], this);
             me._tileRended[me.propertyOfTileId] = this;
             me._drawTileAndRequest(this);
-
         }
         function onTileError() {
-            me._tileCache.remove(tileImage[me.propertyOfTileId], this);
             me._clearTileRectAndRequest(this);
         }
         var crossOrigin = this._layer.options['crossOrigin'];
@@ -242,7 +239,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
             return;
         }
         var zoom = this.getMap().getZoom();
-        if (zoom !== tileImage[this.propertyOfTileZoom]) {
+        if (!Z.Util.isNil(tileImage[this.propertyOfTileZoom]) && zoom !== tileImage[this.propertyOfTileZoom]) {
             return;
         }
         this._tileToLoadCounter--;
