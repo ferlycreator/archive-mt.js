@@ -521,7 +521,7 @@ Z['Map']=Z.Map=Z.Class.extend({
                 this._fireEvent('baselayerchangeend');
             }
         }
-        this._baseLayer.once('layerloaded',onBaseTileLayerLoaded,this);
+        this._baseLayer.on('layerloaded',onBaseTileLayerLoaded,this);
         if (this._loaded) {
             this._baseLayer.load();
         }
