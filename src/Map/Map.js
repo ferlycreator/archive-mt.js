@@ -933,6 +933,8 @@ Z['Map']=Z.Map=Z.Class.extend({
 
     _onMoveStart:function() {
         this._originCenter = this.getCenter();
+        this._isBusy = true;
+        this._trySetCursor('move');
         /**
          * 触发map的movestart事件
          * @member maptalks.Map
@@ -953,6 +955,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     _onMoveEnd:function() {
         this._enablePanAnimation=true;
         this._isBusy = false;
+        this._trySetCursor('default');
         /**
          * 触发map的moveend事件
          * @member maptalks.Map

@@ -312,7 +312,7 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
                 }
                 if (hit) {
                     map._trySetCursor(cursor);
-                } else {
+                } else if (!map.isBusy()){
                     map._trySetCursor('default');
                 }
             };
