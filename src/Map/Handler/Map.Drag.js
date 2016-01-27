@@ -45,13 +45,11 @@ Z.Map.Drag = Z.Handler.extend({
         this.preY = param['mousePos'].y;
         this.startX = this.preX;
         this.startY = this.preY;
-        map._isBusy = true;
         map._onMoveStart();
     },
 
     _onDragging:function(param) {
         var map = this.target;
-        map._trySetCursor('move');
         var mx = param['mousePos'].x,
             my = param['mousePos'].y;
         var nextLeft = (this.startLeft + mx - this.startX);
@@ -64,7 +62,6 @@ Z.Map.Drag = Z.Handler.extend({
 
     _onDragEnd:function(param) {
         var map = this.target;
-        map._trySetCursor('default');
         var t = new Date().getTime()-this.startDragTime;
         var domOffset = map.offsetPlatform();
         var xSpan =  domOffset.x - this.startLeft;
