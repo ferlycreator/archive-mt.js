@@ -294,14 +294,14 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
     _registerEvents:function() {
         var map = this.map;
         map.on('_baselayerchangestart _baselayerchangeend _baselayerload',function() {
-           delete this._canvasBackgroundImage;
+           delete this._canvasBg;
            this.render();
         },this);
         map.on('_moving', function() {
             this.render();
         },this);
         map.on('_zoomstart',function() {
-            delete this._canvasBackgroundImage;
+            delete this._canvasBg;
             this._clearCanvas();
         },this);
         if (typeof window !== 'undefined' ) {
