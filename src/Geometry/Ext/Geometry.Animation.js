@@ -21,8 +21,10 @@ Z.Geometry.include({
                     aniStyles[p] = [current, v];
                 } else if (p === 'symbol') {
                     var aniSymbol = {};
-                    for (sp in v) {
-                        aniSymbol[sp] = [symbol[sp], v['symbol'][sp]];
+                    for (var sp in v) {
+                        if (v.hasOwnProperty(sp)) {
+                            aniSymbol[sp] = [symbol[sp], v[sp]];
+                        }
                     }
                     aniStyles['symbol'] = aniSymbol;
                 } else if (p === 'translate'){

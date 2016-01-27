@@ -22,62 +22,45 @@ Z.Animation = {
         for (var p in styles) {
             if (styles.hasOwnProperty(p)) {
                 var values = styles[p];
-                if (Z.Util.isArray(values)) {
-                    //[v1,v2], v1 is the start and v2 is the end.
-                    var v1 = values[0],
-                        v2 = values[1];
-                    if (Z.Util.isNumber(v1)) {
-                        if (v1 === v2) {
-                            continue;
-                        }
-                        startStyles[p] = v1;
-                        endStyles[p] = v2;
-                        dStyles[p] = v2 - v1;
+                var clazz;
+                if (!Z.Util.isArray(values)) {
+                    clazz = values.constructor;
+                    if (clazz === Object) {
+                        //an object with literal notations, resolve it as a child style.
+                        var childStyles = Z.Animation._resolveStyles(values);
+                        startStyles[p] = childStyles[0];
+                        dStyles[p] = childStyles[1];
+                        endStyles[p] = childStyles[2];
+                        continue;
+                    } else if (Z.Util.isNumber(values)) {
+                        values = [0, values];
                     } else {
-                        if (Z.Util.isArray(v1)) {
-                            v1 = new Z.Coordinate(v1);
-                        } else if (Z.Symbolizer.testColor(v1)) {
-                            v1 = new Z.Color(v1);
-                        }
-                        v2 = new clazz(v2);
-                        if (v1.equals(v2)) {
-                            continue;
-                        }
-                        var clazz = v1.constructor;
-                        startStyles[p] = v1;
-                        endStyles[p] = v2;
-                        dStyles[p] = v2._substract(v1);
+                        values = [new clazz(0,0), values];
                     }
                 } else {
-                    //values is just the distance, no start and end.
-                    if (Z.Util.isNumber(values)) {
-                        if (values === 0) {
-                            continue;
-                        }
-                        dStyles[p] = values;
-                        endStyles[p] = values;
-                        startStyles[p] = 0;
-                    } else {
-                        var v = values;
-                        if (Z.Util.isArray(values)) {
-                            v = new Z.Coordinate(v);
-                        } else if (Z.Symbolizer.testColor(values)) {
-                            v = new Z.Color(values);
-                        }
-                        var clazz = v.constructor;
-                        if (clazz === Object) {
-                            //an object with literal notations, resolve it as a child style.
-                            var childStyles = Z.Animation._calcD(v);
-                            startStyles[p] = childStyles[0];
-                            dStyles[p] = childStyles[1];
-                            endStyles[p] = childStyles[2];
-                        } else {
-                            v = new clazz(values);
-                            dStyles[p] = v;
-                            endStyles[p] = v;
-                            startStyles[p] = new clazz(0,0);
-                        }
+                    clazz = Z.Util.isArray(values[0])?Z.Coordinate:values[0].constructor;
+                }
+                //[v1,v2], v1 is the start and v2 is the end.
+                var v1 = values[0],
+                    v2 = values[1];
+                if (Z.Util.isNumber(v1)) {
+                    if (v1 === v2) {
+                        continue;
                     }
+                    startStyles[p] = v1;
+                    endStyles[p] = v2;
+                    dStyles[p] = v2 - v1;
+                } else {
+                    if (Z.Util.isArray(v1)) {
+                        v1 = new Z.Coordinate(v1);
+                    }
+                    v2 = new clazz(v2);
+                    if (v1.equals(v2)) {
+                        continue;
+                    }
+                    startStyles[p] = v1;
+                    endStyles[p] = v2;
+                    dStyles[p] = v2._substract(v1);
                 }
             }
         }
@@ -111,7 +94,7 @@ Z.Animation = {
                         d[p] = start[p] + delta*dist[p];
                     } else {
                         var clazz = v.constructor;
-                        if (clazz.constructor === Object) {
+                        if (clazz === Object) {
                             d[p] = deltaStyles(delta, start[p], dist[p]);
                         } else {
                             d[p] = start[p].add(dist[p].multi(delta));
