@@ -296,6 +296,9 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
         }
         if (!Z.Browser.mobile && Z.Browser.canvas) {
              this._onMapMouseMove=function(param) {
+                if (map.isBusy()) {
+                    return;
+                }
                 var vp = param['viewPoint'];
                 var layers = map.getLayers();
                 var hit = false,
@@ -312,7 +315,7 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
                 }
                 if (hit) {
                     map._trySetCursor(cursor);
-                } else if (!map.isBusy()){
+                } else {
                     map._trySetCursor('default');
                 }
             };
