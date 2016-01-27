@@ -53,9 +53,9 @@ Z.Geometry.include({
             if (translate) {
                 this.translate(translate);
             }
-            var symbol = styles['symbol'];
-            if (symbol) {
-                this.setSymbol(symbol);
+            var dSymbol = styles['symbol'];
+            if (dSymbol) {
+                this.setSymbol(Z.Util.extend({},symbol,dSymbol));
             }
             if (isFocusing) {
                 var center = this.getCenter();
