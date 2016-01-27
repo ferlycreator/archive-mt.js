@@ -33,7 +33,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
      */
     render:function(geometries, ignorePromise) {
         this._clearTimeout();
-        if (!this.getMap() || this.getMap().isBusy()) {
+        if (!this.getMap()) {
             return;
         }
         if (!this._layer.isVisible()) {
@@ -249,7 +249,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
      * @return {[Promise]} promise数组
      */
     _promise:function() {
-        if (!this.getMap() || this.getMap().isBusy()) {
+        if (!this.getMap()) {
             return;
         }
         if (this._layer.isEmpty()) {
@@ -332,7 +332,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
     },
 
     _requestMapToRend:function() {
-        if (this.getMap() && !this.getMap().isBusy()) {
+        if (this.getMap()) {
             this._mapRender.render();
             this._layer.fire('layerload');
         }

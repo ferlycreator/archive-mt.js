@@ -27,6 +27,9 @@ Z.Animation = {
                     var v1 = values[0],
                         v2 = values[1];
                     if (Z.Util.isNumber(v1)) {
+                        if (v1 === v2) {
+                            continue;
+                        }
                         startStyles[p] = v1;
                         endStyles[p] = v2;
                         dStyles[p] = v2 - v1;
@@ -36,14 +39,21 @@ Z.Animation = {
                         } else if (Z.Symbolizer.testColor(v1)) {
                             v1 = new Z.Color(v1);
                         }
+                        v2 = new clazz(v2);
+                        if (v1.equals(v2)) {
+                            continue;
+                        }
                         var clazz = v1.constructor;
-                        startStyles[p] = new clazz(v1);
-                        endStyles[p] = new clazz(v2);
-                        dStyles[p] = new clazz(v2)._substract(new clazz(v1));
+                        startStyles[p] = v1;
+                        endStyles[p] = v2;
+                        dStyles[p] = v2._substract(v1);
                     }
                 } else {
                     //values is just the distance, no start and end.
                     if (Z.Util.isNumber(values)) {
+                        if (values === 0) {
+                            continue;
+                        }
                         dStyles[p] = values;
                         endStyles[p] = values;
                         startStyles[p] = 0;
