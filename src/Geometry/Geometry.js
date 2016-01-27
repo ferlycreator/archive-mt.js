@@ -557,6 +557,10 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     //调用prepare时,layer已经注册到map上
     _bindLayer:function(layer) {
+        this._commonBindLayer(layer);
+    },
+
+    _commonBindLayer:function(layer) {
         //Geometry不允许被重复添加到多个图层上
         if (this.getLayer()) {
             throw new Error(this.exceptions['DUPLICATE_LAYER']);
@@ -739,8 +743,11 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     },
 
     _isRenderImmediate:function(r) {
+        if (this._getParent()) {
+            return this._getParent()._isRenderImmediate();
+        }
         if (Z.Util.isNil(r)) {
-            return this._isEditingOrDragging() || this._im;
+            return (this._isEditingOrDragging() || this._im)?true:false;
         }
         this._im = r;
         return this;

@@ -40,7 +40,7 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
         }
         this._geometries = geometries;
         if (this.getLayer()) {
-            this._prepareGeometries();
+            this._bindGeometries();
             this._onShapeChanged();
         }
         return this;
@@ -141,7 +141,7 @@ Z['GeometryCollection'] = Z.GeometryCollection = Z.Geometry.extend({
      * @override
      */
     _bindLayer:function(layer) {
-        this._rootPrepare(layer);
+        this._commonBindLayer(layer);
         this._bindGeometries();
     },
 
