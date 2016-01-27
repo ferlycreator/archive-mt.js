@@ -13,7 +13,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         'clipFullExtent' : false,
 
         'zoomAnimation' : true,
-        'zoomAnimationDuration' : 300,
+        'zoomAnimationDuration' : 250,
         'zoomBackground' : true,
         //controls whether other layers than base tilelayer will show during zoom animation.
         'layerZoomAnimation' : true,

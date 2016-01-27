@@ -260,7 +260,7 @@ Z.Painter = Z.Class.extend({
 
     _requestToRender:function() {
         var geometry = this.geometry;
-        if (!geometry.getMap() || geometry.getMap().isBusy()) {
+        if (!geometry.getMap()) {
             return;
         }
         var needPromise = false,

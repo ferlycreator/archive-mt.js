@@ -12,6 +12,8 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         'urlTemplate'   : Z.prefix+'images/system/transparent.png',
         'subdomains'    : [''],
 
+        'gradualLoading' : true,
+
         'repeatWorld'   : true,
 
         'renderWhenPanning' : false,

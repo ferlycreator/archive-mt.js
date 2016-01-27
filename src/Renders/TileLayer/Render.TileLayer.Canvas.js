@@ -108,9 +108,16 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
         if (!this._canvasFullExtent || this._tileZoom !== this.getMap().getZoom()) {
             return null;
         }
+         var gradualOpacity = null;
+        if (this._gradualLoading && this._totalTileToLoad && this._layer.options['gradualLoading']) {
+            gradualOpacity = ((this._totalTileToLoad - this._tileToLoadCounter) / this._totalTileToLoad)*1.5 ;
+            if (gradualOpacity > 1) {
+                gradualOpacity = 1;
+            }
+        }
         var size = this._canvasFullExtent.getSize();
         var point = this._canvasFullExtent.getMin();
-        return {'image':this._canvas,'layer':this._layer,'point':this.getMap().viewPointToContainerPoint(point),'size':size};
+        return {'image':this._canvas,'layer':this._layer,'point':this.getMap().viewPointToContainerPoint(point),'size':size,'opacity':gradualOpacity};
     },
 
     _scheduleLoadTileQueue:function() {
@@ -245,15 +252,18 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
     },
 
     _requestMapToRend:function() {
-        if (this._mapRenderRequest) {
-            clearTimeout(this._mapRenderRequest);
+        if (this.getMap() && !this.getMap().isBusy()) {
+            this._mapRender.render();
         }
-        var me = this;
-        this._mapRenderRequest = setTimeout(function() {
-            if (me.getMap() && !me.getMap().isBusy()) {
-                me._mapRender.render();
-            }
-        }, 10);
+        // if (this._mapRenderRequest) {
+        //     clearTimeout(this._mapRenderRequest);
+        // }
+        // var me = this;
+        // this._mapRenderRequest = setTimeout(function() {
+        //     if (me.getMap() && !me.getMap().isBusy()) {
+        //         me._mapRender.render();
+        //     }
+        // }, 10);
     },
 
     _registerEvents:function() {
@@ -264,12 +274,14 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
             if (Z.Util.isNumber(rendSpan) && rendSpan >= 0) {
                 if (rendSpan > 0) {
                     this._onMapMoving = Z.Util.throttle(function() {
+                            this._gradualLoading = false;
                             this.render();
                         },rendSpan,this);
                 } else {
                     this._onMapMoving = function() {
-                            this.render();
-                        };
+                        this._gradualLoading = false;
+                        this.render();
+                    };
                 }
                 map.on('_moving',this._onMapMoving,this);
             }
@@ -279,6 +291,11 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
 
     _onMapEvent:function(param) {
         if (param['type'] === '_moveend' || param['type'] === '_zoomend') {
+            if (param['type'] === '_zoomend') {
+                this._gradualLoading = true;
+            } else {
+                this._gradualLoading = false;
+            }
             this.render();
         } else if (param['type'] === '_resize') {
             this._resizeCanvas();
