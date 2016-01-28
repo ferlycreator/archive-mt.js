@@ -318,7 +318,6 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
             } else {
                 this._gradualLoading = false;
             }
-            console.log('zoomend');
             this.render();
         } else if (param['type'] === '_resize') {
             this._resizeCanvas();
