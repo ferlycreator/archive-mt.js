@@ -211,12 +211,18 @@ Z['Layer']=Z.Layer=Z.Class.extend({
             });
         }
         this._mask = mask;
+        if (!this.getMap() || this.getMap().isBusy()) {
+            return;
+        }
         var render = this._getRender();
         render && render.render();
     },
 
     clearMask:function(mask) {
         delete this._mask;
+        if (!this.getMap() || this.getMap().isBusy()) {
+            return;
+        }
         var render = this._getRender();
         render && render.render();
     },

@@ -51,7 +51,8 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
     },
 
     render:function() {
-        var tileGrid = this._layer._getTiles();
+        var layer = this._layer;
+        var tileGrid = layer._getTiles();
         if (!tileGrid) {
             return;
         }
@@ -68,7 +69,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
 
         var tiles = tileGrid['tiles'],
             tileCache = this._tileCache,
-            tileSize = this._layer.getTileSize();
+            tileSize = layer.getTileSize();
 
         this._canvasFullExtent =  this.getMap()._getViewExtent();
         var viewExtent = this._canvasFullExtent;
@@ -77,7 +78,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
             this._clipped=false;
         }
         this._clearCanvas();
-        var mask = this._layer.getMask();
+        var mask = layer.getMask();
         if (mask) {
             var maskPxExtent = mask._getPainter().getPixelExtent();
             if (!maskPxExtent.intersects(viewExtent)) {
@@ -317,6 +318,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
             } else {
                 this._gradualLoading = false;
             }
+            console.log('zoomend');
             this.render();
         } else if (param['type'] === '_resize') {
             this._resizeCanvas();

@@ -907,13 +907,6 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {Extent} 可视范围的ViewPoint范围
      */
     _getViewExtent:function() {
-        if (this._mask) {
-            var maskExt = this._mask._computeExtent(this.getProjection());
-            return new Z.Extent(
-                this.coordinateToViewPoint(maskExt.getMin()),
-                this.coordinateToViewPoint(maskExt.getMax())
-                );
-        }
         var size = this.getSize();
         var offset = this.offsetPlatform();
         var min = new Z.Point(0,0);
