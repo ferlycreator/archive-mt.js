@@ -90,11 +90,27 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         if (layer.isEmpty() || !layer.isVisible()) {
             return;
         }
-        var fullExtent = map._getViewExtent();
-        this._clearCanvas();
+        var viewExtent = map._getViewExtent();
+
         var me = this;
         var counter = 0;
         this._shouldEcoTransform = true;
+        if (this._clipped) {
+            this._context.restore();
+        }
+        this._clearCanvas();
+        var mask = layer.getMask();
+        if (mask) {
+            var maskPxExtent = mask._getPainter().getPixelExtent();
+            if (!maskPxExtent.intersects(viewExtent)) {
+                return;
+            }
+            this._context.save();
+            mask._getPainter().paint();
+            this._context.clip();
+            this._clipped = true;
+            viewExtent = viewExtent.intersection(maskPxExtent);
+        }
         var geoViewExt, geoPainter;
         layer._eachGeometry(function(geo) {
             //geo的map可能为null,因为绘制为延时方法
@@ -103,7 +119,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
             }
             geoPainter = geo._getPainter();
             geoViewExt = geoPainter.getPixelExtent();
-            if (!geoViewExt || !geoViewExt.intersects(fullExtent)) {
+            if (!geoViewExt || !geoViewExt.intersects(viewExtent)) {
                 return;
             }
             counter++;
@@ -115,7 +131,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
             }
             geoPainter.paint();
         });
-        this._canvasFullExtent = fullExtent;
+        this._canvasFullExtent = map._getViewExtent();
     },
 
     getPaintContext:function() {
@@ -142,6 +158,10 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
         this._layer._eachGeometry(function(geo) {
             geo._onZoomEnd();
         });
+        var mask = this._layer.getMask();
+        if (mask) {
+            mask._onZoomEnd();
+        }
         this.render();
     },
 
@@ -216,6 +236,10 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
                 this._layer._eachGeometry(function(geo) {
                     geo._onZoomEnd();
                 });
+                var mask = this._layer.getMask();
+                if (mask) {
+                    mask._onZoomEnd();
+                }
             }
             if (!this._resources) {
                 this.render();

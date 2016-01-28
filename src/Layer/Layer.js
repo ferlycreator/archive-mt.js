@@ -192,16 +192,33 @@ Z['Layer']=Z.Layer=Z.Class.extend({
     },
 
     setMask:function(mask) {
-        if (!(mask instanceof Z.Polygon || mask instanceof Z.MultiPolygon)) {
+        if (!((mask instanceof Z.Marker && Z.VectorMarkerSymbolizer.test(mask, mask.getSymbol()))
+            || mask instanceof Z.Polygon || mask instanceof Z.MultiPolygon)) {
             throw new Error('mask has to be a Polygon or a MultiPolygon');
         }
+
+        mask._bindLayer(this);
+        mask._isRenderImmediate(true);
+        if (mask instanceof Z.Marker ) {
+            mask.setSymbol(Z.Util.extend({},mask.getSymbol(),{
+                'markerLineWidth': 0,
+                'markerFillOpacity': 0
+            }));
+        } else {
+            mask.setSymbol({
+                'lineWidth':0,
+                'polygonOpacity':0
+            });
+        }
         this._mask = mask;
-        this._getRender().render();
+        var render = this._getRender();
+        render && render.render();
     },
 
     clearMask:function(mask) {
         delete this._mask;
-        this._getRender().render();
+        var render = this._getRender();
+        render && render.render();
     },
 
     _onRemove:function() {

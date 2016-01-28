@@ -666,23 +666,6 @@ Z['Map']=Z.Map=Z.Class.extend({
         this._fireEvent('crschanged');
     },
 
-    getMask:function() {
-        return this._mask;
-    },
-
-    setMask:function(mask) {
-        if (!(mask instanceof Z.Polygon || mask instanceof Z.MultiPolygon)) {
-            throw new Error('mask has to be a Polygon or a MultiPolygon');
-        }
-        this._mask = mask;
-        this._getRender().render();
-    },
-
-    clearMask:function(mask) {
-        delete this._mask;
-        this._getRender().render();
-    },
-
     toDataURL: function(options) {
         if (!options) {
             options = {};
@@ -837,8 +820,8 @@ Z['Map']=Z.Map=Z.Class.extend({
             res = this._getResolution();
 
         var width = !xDist?0:(projection.project(new Z.Coordinate(target.x, center.y)).x-projection.project(center).x)/res;
-        var height = !yDist?0:(projection.project(new Z.Coordinate(target.x, center.y)).y-projection.project(target).y)/res;
-        return new Z.Size(Math.round(Math.abs(width)), Math.round(Math.abs(height)));
+        var height = !yDist?0:(projection.project(new Z.Coordinate(center.x, target.y)).y-projection.project(center).y)/res;
+        return new Z.Size(Math.abs(width), Math.abs(height));
     },
 
     /**
