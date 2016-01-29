@@ -92,14 +92,14 @@ describe('#Map Profile', function () {
             config.center = map.getCenter();
             config.zoom = map.getZoom();
             expect(profile.options).to.be.eql(config);
-            expect(profile.baseTileLayer).to.be.ok();
+            expect(profile.baseLayer).to.be.ok();
 
             profile = map.toJSON({
-                "baseTileLayer" : false,
+                "baseLayer" : false,
                 "layers" : false
             });
-            expect(profile.baseTileLayer).to.be.ok();
-            expect(profile.baseTileLayer.options.visible).not.to.be.ok();
+            expect(profile.baseLayer).to.be.ok();
+            expect(profile.baseLayer.options.visible).not.to.be.ok();
             expect(profile.layers).to.be.ok();
             expect(profile.layers).to.have.length(0);
         });
@@ -201,5 +201,97 @@ describe('#Map Profile', function () {
         });
 
 
+    });
+
+    describe('profile basic geometries',function() {
+        it('profile all types of basic geometries',function() {
+            var all = genAllTypeGeometries();
+            for (var i = 0; i < all.length; i++) {
+                var g = all[i];
+                var json = g.toJSON();
+                var deser = Z.Geometry.fromJSON(json);
+                var deserJSON = deser.toJSON();
+                expect(json).not.to.be.empty();
+                expect(json).to.be.eql(deserJSON);
+            }
+
+        })
+    });
+
+    describe('profile CurveLine and Label',function() {
+        it('profile CurveLine',function() {
+            var curve = new maptalks.CurveLine(
+                //线端点坐标数组
+                [[121.48416288620015,31.24488412311837],[121.48394830947899,31.242664302121515],[121.48595460182202,31.242535881128543],[121.48695238357557,31.244838259576046],[121.48944147354125,31.24487495041167],[121.49018176322932,31.242664302121515],[121.49290688758839,31.242765204207824],[121.49358280426011,31.245040058995645],[121.49601825004554,31.245159303904526],[121.49715550666777,31.242921143583686]],
+                //bezierCurveDegree指贝塞尔曲线的度, 取值为2或者3即二阶贝塞尔曲线或三阶贝塞尔曲线
+                {draggable: true, curveType:1, arcDegree:120});
+            curve.setProperties({
+                'foo' : 1
+            });
+            curve.setSymbol({
+                'lineWidth' : 2,
+                'lineColor' : '#ff0000'
+            });
+            var json = curve.toJSON();
+            var deser = maptalks.Geometry.fromJSON(json);
+            expect(deser instanceof maptalks.CurveLine).to.be.ok();
+            var options = deser.config();
+            expect(options.draggable).to.be.ok();
+            expect(options.curveType).to.be.eql(1);
+            expect(options.arcDegree).to.be.eql(120);
+            expect(deser.getCoordinates()).to.be.eql(curve.getCoordinates());
+            expect(deser.getProperties()).to.be.eql(curve.getProperties());
+            expect(deser.getSymbol()).to.be.eql(curve.getSymbol());
+        });
+
+        it('profile Label',function() {
+            var options = {
+                'symbol': {
+                    'markerLineColor': '#ff0000',
+                    'markerLineWidth': 1,
+                    'markerLineOpacity': 0.9,
+                    'markerLineDasharray': null,
+                    'markerFill': '#4e98dd',
+                    'markerFillOpacity': 0.9,
+
+                    'textFaceName': 'arial',
+                    'textSize': 12,
+                    'textFill': '#ff0000',
+                    'textOpacity': 1,
+                    'textSpacing': 30,
+                    'textWrapWidth': null,//auto
+                    'textWrapBefore': false,
+                    //'textWrapCharacter': '\n',
+                    'textLineSpacing': 8,
+                    'textHorizontalAlignment': 'middle',//left middle right
+                    'textVerticalAlignment': 'bottom',//top middle bottom
+                },
+               'draggable': false,
+               'boxAutoSize': false,
+               'boxMinWidth': 500,
+               'boxMinHeight': 100
+            };
+            //创建label
+            var label = new maptalks.Label('文本标签', [100,0], options);
+            label.setProperties({
+                'foo' : 1
+            });
+            label.setSymbol({
+                'lineWidth' : 2,
+                'lineColor' : '#ff0000'
+            });
+            var json = label.toJSON();
+            var deser = maptalks.Geometry.fromJSON(json);
+            expect(deser instanceof maptalks.Label).to.be.ok();
+            var options = deser.config();
+            expect(options.draggable).not.to.be.ok();
+            expect(options.boxAutoSize).not.to.be.ok();
+            expect(options.boxMinWidth).to.be.eql(500);
+            expect(options.boxMinHeight).to.be.eql(100);
+            expect(deser.getContent()).to.be.eql(label.getContent());
+            expect(deser.getCoordinates()).to.be.eql(label.getCoordinates());
+            expect(deser.getProperties()).to.be.eql(label.getProperties());
+            expect(deser.getSymbol()).to.be.eql(label.getSymbol());
+        });
     });
 });

@@ -466,22 +466,8 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         var json = {
             "feature" : this.toGeoJSON(options)
         };
-        if (Z.Util.isNil(options['options']) || options['options']) {
-            json['options'] = this.config();
-        }
-        if (Z.Util.isNil(options['symbol']) || options['symbol']) {
-            if (this.getSymbol()) {
-                json['symbol'] = this.getSymbol();
-            }
-        }
-        if (Z.Util.isNil(options['infoWindow']) || options['infoWindow']) {
-            if (this.getInfoWindow) {
-                var infowindow = this.getInfoWindow();
-                if (infowindow) {
-                    json['infoWindow'] = infowindow.config();
-                }
-            }
-        }
+        var other = this._exportGraphicOptions(options);
+        Z.Util.extend(json,other);
         return json;
     },
 
@@ -806,6 +792,27 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
     },
 
+    _exportGraphicOptions:function(options) {
+        var json = {};
+        if (Z.Util.isNil(options['options']) || options['options']) {
+            json['options'] = this.config();
+        }
+        if (Z.Util.isNil(options['symbol']) || options['symbol']) {
+            if (this.getSymbol()) {
+                json['symbol'] = this.getSymbol();
+            }
+        }
+        if (Z.Util.isNil(options['infoWindow']) || options['infoWindow']) {
+            if (this.getInfoWindow) {
+                var infowindow = this.getInfoWindow();
+                if (infowindow) {
+                    json['infoWindow'] = infowindow.config();
+                }
+            }
+        }
+        return json;
+    },
+
     _exportGeoJSONGeometry:function() {
         var points = this.getCoordinates();
         var coordinates = Z.GeoJSON.toGeoJSONCoordinates(points);
@@ -818,10 +825,15 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 });
 
 Z.Geometry.fromJSON = function(json) {
-    var feature = json['feature'];
-    var geometry = Z.GeoJSON.fromGeoJSON(feature);
-    if (json['options']) {
-        geometry.config(json['options']);
+    var geometry;
+    if (json['subType']) {
+        geometry = Z[json['subType']]._fromJSON(json);
+    } else {
+        var feature = json['feature'];
+        geometry = Z.GeoJSON.fromGeoJSON(feature);
+        if (json['options']) {
+            geometry.config(json['options']);
+        }
     }
     if (json['symbol']) {
         geometry.setSymbol(json['symbol']);

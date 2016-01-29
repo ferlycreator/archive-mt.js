@@ -18,7 +18,7 @@
         }
     },
     //地图底图
-    "baseTileLayer":{
+    "baseLayer":{
         //图层类别
         "type" : "tile",
         //图层id
