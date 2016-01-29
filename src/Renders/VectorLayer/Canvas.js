@@ -50,12 +50,17 @@ Z.Canvas = {
                     var imgUrl = Z.Util.extractCssUrl(strokeColor);
                     var imageTexture = resources.getImage(imgUrl);
                     if (imageTexture) {
-                        //Todo set image width and height for lineWidth
-                        var  patternCanvas = this.createCanvas(strokeWidth,strokeWidth);
-                        var patternCtx = patternCanvas.getContext('2d');
-                        patternCtx.drawImage(imageTexture,0,0,strokeWidth,strokeWidth);
+                        if (imageTexture instanceof Image) {
+                            var w = Z.Util.round(imageTexture.width*strokeWidth/imageTexture.height);
+                            var patternCanvas = this.createCanvas(w,strokeWidth,ctx.canvas.constructor);
+                            var patternCtx = patternCanvas.getContext('2d');
+                            patternCtx.drawImage(imageTexture,0,0,w,strokeWidth);
+                            resources.addResource(imgUrl,patternCanvas);
+                            imageTexture = patternCanvas;
+                        }
+                        //line pattern will override stroke-dasharray
                         strokeSymbol['stroke-dasharray'] = [];
-                        ctx.strokeStyle = ctx.createPattern(patternCanvas, 'repeat');
+                        ctx.strokeStyle = ctx.createPattern(imageTexture, 'repeat');
                     }
                  } else {
                     ctx.strokeStyle = Z.Canvas.getRgba(strokeColor,1);
@@ -198,9 +203,10 @@ Z.Canvas = {
         function fillWithPattern(p1, p2) {
             var dx = p1.x - p2.x;
             var dy = p1.y - p2.y;
+            var degree = Math.atan2(dy,dx);
             ctx.save();
-            ctx.translate(p1.x, p1.y-ctx.lineWidth/2);
-            ctx.rotate(Math.atan2(dy,dx));
+            ctx.translate(p1.x, p1.y-ctx.lineWidth/2/Math.cos(degree));
+            ctx.rotate(degree);
             Z.Canvas._stroke(ctx, lineOpacity);
             ctx.restore();
         }
