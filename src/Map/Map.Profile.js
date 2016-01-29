@@ -90,8 +90,8 @@ Z.Map.include({
         profile["options"]["center"] = this.getCenter();
         profile["options"]["zoom"] = this.getZoom();
 
-        var baseTileLayer = this.getBaseLayer();
-        profile['baseLayer'] = baseTileLayer.toJSON(options['baseLayer']);
+        var baseLayer = this.getBaseLayer();
+        profile['baseLayer'] = baseLayer.toJSON(options['baseLayer']);
         if (!Z.Util.isNil(options['baseLayer']) && !options['baseLayer']) {
             profile['baseLayer']['options']['visible'] = false;
         }

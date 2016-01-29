@@ -56,10 +56,10 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
         }
 
         this._clearCanvas();
-        var baseTileLayer = map.getBaseLayer();
+        var baseLayer = map.getBaseLayer();
         var baseLayerImage;
-        if (baseTileLayer) {
-            baseLayerImage =  baseTileLayer._getRender().getCanvasImage();
+        if (baseLayer) {
+            baseLayerImage =  baseLayer._getRender().getCanvasImage();
         }
         if (map.options['zoomAnimation']) {
             this._context.save();
@@ -68,11 +68,11 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
                 height = this._canvas.height;
             var layersToTransform;
             if (!map.options['layerZoomAnimation']) {
-                //zoom animation with better performance, only animate baseTileLayer, ignore other layers.
+                //zoom animation with better performance, only animate baseLayer, ignore other layers.
                 if (baseLayerImage) {
                     this._drawLayerCanvasImage(baseLayerImage, width, height);
                 }
-                layersToTransform = [baseTileLayer];
+                layersToTransform = [baseLayer];
             } else {
                 //default zoom animation, animate all the layers.
                 this.render();

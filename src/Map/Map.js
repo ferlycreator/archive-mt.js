@@ -40,7 +40,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     //根据不同的语言定义不同的错误信息
     exceptionDefs:{
         'en-US':{
-            'NO_BASE_TILE_LAYER':'Map has no baseTileLayer, pls specify a baseTileLayer by setBaseLayer method before loading.',
+            'NO_BASE_TILE_LAYER':'Map has no baseLayer, pls specify a baseLayer by setBaseLayer method before loading.',
             'INVALID_OPTION':'Invalid options provided.',
             'INVALID_CENTER':'Invalid Center',
             'INVALID_LAYER_ID':'Invalid id for the layer',
@@ -90,7 +90,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         }
 
 
-        //Layer of Details, always derived from baseTileLayer
+        //Layer of Details, always derived from baseLayer
         this._panels={};
 
         //Layers
@@ -483,34 +483,34 @@ Z['Map']=Z.Map=Z.Class.extend({
 
     /**
      * 设定地图的基础瓦片图层
-     * @param  {TileLayer} baseTileLayer 瓦片图层
+     * @param  {TileLayer} baseLayer 瓦片图层
      * @expose
      */
-    setBaseLayer:function(baseTileLayer) {
+    setBaseLayer:function(baseLayer) {
         var isChange = false;
         if (this._baseLayer) {
             isChange = true;
             this._fireEvent('baselayerchangestart');
             this._baseLayer.remove();
         }
-        if (baseTileLayer instanceof Z.TileLayer) {
-            baseTileLayer.config({
+        if (baseLayer instanceof Z.TileLayer) {
+            baseLayer.config({
                 'renderWhenPanning':true
             });
-            if (!baseTileLayer.options['tileSystem']) {
-                baseTileLayer.config('tileSystem', Z.TileSystem.getDefault(this.getProjection()));
+            if (!baseLayer.options['tileSystem']) {
+                baseLayer.config('tileSystem', Z.TileSystem.getDefault(this.getProjection()));
             }
         }
-        baseTileLayer._bindMap(this,-1);
-        this._baseLayer = baseTileLayer;
-        function onBaseTilelayerload() {
+        baseLayer._bindMap(this,-1);
+        this._baseLayer = baseLayer;
+        function onbaseLayerload() {
             this._fireEvent('baselayerload');
             if (isChange) {
                 isChange = false;
                 this._fireEvent('baselayerchangeend');
             }
         }
-        this._baseLayer.on('layerload',onBaseTilelayerload,this);
+        this._baseLayer.on('layerload',onbaseLayerload,this);
         if (this._loaded) {
             this._baseLayer.load();
         }
