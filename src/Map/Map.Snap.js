@@ -16,7 +16,8 @@ Z.Map.include({
         var extent = options['extent'] || this.getExtent(),
             zoom = options['zoom']  || this.getZoom(),
             format = options['format'] || "png";
-
+        var serverDir = options['serverDir'],
+            serverFileName = options['serverFileName'];
         //optional host and port, if need another snap server to perform snapping.
         var host = options['host'];
         var url;
@@ -52,7 +53,9 @@ Z.Map.include({
         var snapConfig = {
             "format" : format,
             "profile" : profile
-        }
+        };
+        serverDir && snapConfig['serverDir'] = serverDir;
+        serverFileName && snapConfig['serverFileName'] = serverFileName;
         var ajax = new Z.Util.Ajax(url, 0, JSON.stringify(snapConfig), function(responseText) {
             var result = JSON.parse(responseText);
             if (result['success']) {
