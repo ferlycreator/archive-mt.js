@@ -30,18 +30,6 @@ describe('API', function () {
 
     describe('Map', function () {
 
-        it('setMouseTip', function () {
-            expect(function () {
-                map.setMouseTip();
-            }).to.not.throwException();
-        });
-
-        it('removeMouseTip', function () {
-            expect(function () {
-                map.removeMouseTip();
-            }).to.not.throwException();
-        });
-
         it('getSize', function () {
             var size = map.getSize();
 

@@ -821,7 +821,7 @@ Z['Map']=Z.Map=Z.Class.extend({
 
         var width = !xDist?0:(projection.project(new Z.Coordinate(target.x, center.y)).x-projection.project(center).x)/res;
         var height = !yDist?0:(projection.project(new Z.Coordinate(center.x, target.y)).y-projection.project(center).y)/res;
-        return new Z.Size(Math.abs(width), Math.abs(height));
+        return new Z.Size(Math.abs(width), Math.abs(height))._round();
     },
 
     /**

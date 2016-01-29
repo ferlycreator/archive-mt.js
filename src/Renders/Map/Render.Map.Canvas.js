@@ -61,7 +61,7 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
         if (baseLayer) {
             baseLayerImage =  baseLayer._getRender().getCanvasImage();
         }
-        if (map.options['zoomAnimation']) {
+        if (map.options['zoomAnimation'] && this._context) {
             this._context.save();
 
             var width = this._canvas.width,
