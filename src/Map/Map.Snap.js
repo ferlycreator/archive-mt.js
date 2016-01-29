@@ -54,8 +54,8 @@ Z.Map.include({
             "format" : format,
             "profile" : profile
         };
-        serverDir && snapConfig['serverDir'] = serverDir;
-        serverFileName && snapConfig['serverFileName'] = serverFileName;
+        if (serverDir) {snapConfig['serverDir'] = serverDir;}
+        if (serverFileName) {snapConfig['serverFileName'] = serverFileName;}
         var ajax = new Z.Util.Ajax(url, 0, JSON.stringify(snapConfig), function(responseText) {
             var result = JSON.parse(responseText);
             if (result['success']) {
