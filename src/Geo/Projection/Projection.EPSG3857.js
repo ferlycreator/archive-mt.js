@@ -2,12 +2,12 @@ Z.Projection.EPSG3857 = Z.Util.extend({}, Z.Projection.Common, {
     code : "EPSG:3857",
     rad : Math.PI / 180,
     metersPerDegree : 2.003750834E7/180,
-    MAX_LATITUDE : 85.0511287798,
+    maxLatitude : 85.0511287798,
 
     project: function(lnglat) {
        var rad = this.rad,
             metersPerDegree = this.metersPerDegree,
-            max = this.MAX_LATITUDE;
+            max = this.maxLatitude;
         var lng = lnglat.x, lat = Math.max(Math.min(max, lnglat.y), -max);
         var c;
         if (lat === 0) {

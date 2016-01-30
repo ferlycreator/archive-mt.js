@@ -8,12 +8,6 @@ Z.Class = function () {};
 Z.Class.extend = function (props) {
     // extended class with the new prototype
     var NewClass = function () {
-        //将类上的options定义复制到对象上
-        /*if (this.options) {
-            var classOptions = this.options;
-            this.options = {};
-            Z.Util.extend(this.options, classOptions);
-        }*/
         // call the constructor
         if (this.initialize) {
             this.initialize.apply(this, arguments);

@@ -83,7 +83,7 @@ Z['HeatmapLayer'] = Z.HeatmapLayer = Z.Layer.extend({
           var coordinate = entry.coordinate;
 
           // we don't wanna render points that are not even on the map ;-)
-          if (!Z.GeoUtils.isPointInRect(coordinate, bounds)) {
+          if (!bounds.contains(coordinate)) {
             continue;
           }
           // local max is the maximum within current bounds
@@ -91,7 +91,7 @@ Z['HeatmapLayer'] = Z.HeatmapLayer = Z.Layer.extend({
             localMax = value;
           }
 
-          if(!Z.GeoUtils.isPointInRect(coordinate, bounds)) {
+          if(!bounds.contains(coordinate)) {
             continue;
           }
 

@@ -1,9 +1,9 @@
 Z.Projection.IDENTITY = Z.Util.extend({}, Z.Projection.Common, {
     code : "IDENTITY",
     project:function(p){
-        return new Z.Coordinate(p.x,p.y);
+        return p.copy();
     },
     unproject:function(p){
-        return new Z.Coordinate(p.x,p.y);
+        return p.copy();
     }
 }, Z.measurer.Identity);

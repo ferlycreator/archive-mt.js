@@ -259,6 +259,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
             if (painter) {
                 painter.show();
             }
+            this._fireEvent('show');
         }
         return this;
     },
@@ -329,7 +330,11 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      * @param  {Coordinate} offset 坐标偏移量
      */
     translate:function(offset) {
-        if (!offset || (offset.x === 0 && offset.y === 0)) {
+        if (!offset) {
+            return this;
+        }
+        offset = new Z.Coordinate(offset);
+        if (offset.x === 0 && offset.y === 0) {
             return this;
         }
         var coordinates = this.getCoordinates();

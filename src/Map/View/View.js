@@ -29,7 +29,14 @@ Z.Util.extend(Z.View.prototype, {
                 "left":-180,
                 "bottom":-90,
                 "right":180
-            }
+            },
+            "resolutions" : (function() {
+                var resolutions = [];
+                for (var i=0; i < 21; i++) {
+                    resolutions[i] = 180/(Math.pow(2, i)*128);
+                }
+                return resolutions;
+            })()
         },
         "BAIDU" : {
             "resolutions" : (function() {
