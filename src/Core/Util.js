@@ -10,6 +10,13 @@ Z.Util = {
      */
     globalCounter: 0,
 
+    now:function() {
+        if (!Date.now) {
+            return new Date().getTime();
+        }
+        return Date.now();
+    },
+
     /**
      * 类扩展
      * @param {Object} 父类

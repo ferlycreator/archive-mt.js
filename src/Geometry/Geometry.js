@@ -78,7 +78,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         var oldId = this.getId();
         this._id = id;
         //FIXME _idchanged没有被图层监听, layer.getGeometryById会出现bug
-        this._fireEvent('_idchanged',{'oldId':oldId,'newId':id});
+        this._fireEvent('idchange',{'oldId':oldId,'newId':id});
         return this;
     },
 
@@ -466,22 +466,8 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         var json = {
             "feature" : this.toGeoJSON(options)
         };
-        if (Z.Util.isNil(options['options']) || options['options']) {
-            json['options'] = this.config();
-        }
-        if (Z.Util.isNil(options['symbol']) || options['symbol']) {
-            if (this.getSymbol()) {
-                json['symbol'] = this.getSymbol();
-            }
-        }
-        if (Z.Util.isNil(options['infoWindow']) || options['infoWindow']) {
-            if (this.getInfoWindow) {
-                var infowindow = this.getInfoWindow();
-                if (infowindow) {
-                    json['infoWindow'] = infowindow.config();
-                }
-            }
-        }
+        var other = this._exportGraphicOptions(options);
+        Z.Util.extend(json,other);
         return json;
     },
 
@@ -556,11 +542,11 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
     },
 
     //调用prepare时,layer已经注册到map上
-    _prepare:function(layer) {
-        this._rootPrepare(layer);
+    _bindLayer:function(layer) {
+        this._commonBindLayer(layer);
     },
 
-    _rootPrepare:function(layer) {
+    _commonBindLayer:function(layer) {
         //Geometry不允许被重复添加到多个图层上
         if (this.getLayer()) {
             throw new Error(this.exceptions['DUPLICATE_LAYER']);
@@ -569,7 +555,6 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         //如果投影发生改变,则清除掉所有的投影坐标属性
         this._clearProjection();
         this.callInitHooks();
-
     },
 
     _prepareSymbol:function(symbol) {
@@ -743,6 +728,17 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
     },
 
+    _isRenderImmediate:function(r) {
+        if (this._getParent()) {
+            return this._getParent()._isRenderImmediate();
+        }
+        if (Z.Util.isNil(r)) {
+            return (this._isEditingOrDragging() || this._im)?true:false;
+        }
+        this._im = r;
+        return this;
+    },
+
     _isEditingOrDragging:function() {
         return ((this.isEditing && this.isEditing()) || (this.isDragging && this.isDragging()));
     },
@@ -796,6 +792,27 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         }
     },
 
+    _exportGraphicOptions:function(options) {
+        var json = {};
+        if (Z.Util.isNil(options['options']) || options['options']) {
+            json['options'] = this.config();
+        }
+        if (Z.Util.isNil(options['symbol']) || options['symbol']) {
+            if (this.getSymbol()) {
+                json['symbol'] = this.getSymbol();
+            }
+        }
+        if (Z.Util.isNil(options['infoWindow']) || options['infoWindow']) {
+            if (this.getInfoWindow) {
+                var infowindow = this.getInfoWindow();
+                if (infowindow) {
+                    json['infoWindow'] = infowindow.config();
+                }
+            }
+        }
+        return json;
+    },
+
     _exportGeoJSONGeometry:function() {
         var points = this.getCoordinates();
         var coordinates = Z.GeoJSON.toGeoJSONCoordinates(points);
@@ -808,10 +825,15 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 });
 
 Z.Geometry.fromJSON = function(json) {
-    var feature = json['feature'];
-    var geometry = Z.GeoJSON.fromGeoJSON(feature);
-    if (json['options']) {
-        geometry.config(json['options']);
+    var geometry;
+    if (json['subType']) {
+        geometry = Z[json['subType']]._fromJSON(json);
+    } else {
+        var feature = json['feature'];
+        geometry = Z.GeoJSON.fromGeoJSON(feature);
+        if (json['options']) {
+            geometry.config(json['options']);
+        }
     }
     if (json['symbol']) {
         geometry.setSymbol(json['symbol']);

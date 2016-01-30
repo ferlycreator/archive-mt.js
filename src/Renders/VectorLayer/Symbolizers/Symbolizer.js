@@ -34,3 +34,20 @@ Z.Symbolizer = Z.Class.extend({
         return this.geometry.getMap();
     }
 });
+
+Z.Symbolizer.colorProperties = [
+        "lineColor", "polygonFill", "markerFill", "markerLineColor", "textFill", "shieldFill", "shieldHaloFill"
+    ];
+
+/**
+ * test if the prop is a property of color
+ * @param  {String} prop property to test
+ * @return {Boolean}      true/false
+ */
+Z.Symbolizer.testColor = function(prop) {
+    if (!prop || !Z.Util.isString(prop)) {return false;}
+    if (Z.Util.searchInArray(prop, colorProperties) >= 0) {
+        return true;
+    }
+    return false;
+}

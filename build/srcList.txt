@@ -37,11 +37,13 @@
 ../src/Layer/DynamicLayer.js
 ../src/Layer/OverlayLayer.js
 ../src/Layer/VectorLayer.js
-../src/Layer/HeatmapLayer.js
+../src/Layer/Ext/HeatmapLayer.js
+../src/Layer/Ext/D3Layer.js
 ../src/Geometry/Geometry.js
 ../src/Geometry/Ext/Geometry.Edit.js
 ../src/Geometry/Ext/Geometry.Drag.js
 ../src/Geometry/Ext/Geometry.Events.js
+../src/Geometry/Ext/Geometry.Animation.js
 ../src/Geometry/Extent.js
 ../src/Geometry/Vector.js
 ../src/Geometry/Geometry.Center.js
@@ -66,7 +68,6 @@
 ../src/Geometry/Editor/Label.Edit.js
 ../src/Map/View/View.js
 ../src/Map/Map.js
-../src/Map/Map.Animation.js
 ../src/Map/Map.Pan.js
 ../src/Map/Map.Zoom.js
 ../src/Map/Map.Topo.js

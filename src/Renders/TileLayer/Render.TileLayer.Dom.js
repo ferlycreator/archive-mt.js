@@ -105,7 +105,7 @@ Z.Util.extend(Z.render.tilelayer.Dom.prototype, {
                 me._completeExecutor=setTimeout(function() {
                     tileContainer.appendChild(dSegment);
                     me._fireEventExecutor=setTimeout(function() {
-                        me._layer.fire('layerloaded');
+                        me._layer.fire('layerload');
                     },500);
                 },10);
             }

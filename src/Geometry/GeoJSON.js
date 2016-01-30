@@ -110,18 +110,10 @@ Z.GeoJSON={
                 //返回geometry数组
                 var result = this.fromGeoJSON(features, crs);
                 return result;
-            } else if ('Point' === type) {
-                return new Z.Marker(geoJSONObj['coordinates'],options);
-            } else if ('LineString' === type) {
-                return new Z.Polyline(geoJSONObj['coordinates'],options);
-            } else if ('Polygon' === type) {
-                return new Z.Polygon(geoJSONObj['coordinates'],options);
-            } else if ('MultiPoint' === type) {
-                return new Z.MultiPoint(geoJSONObj['coordinates'],options);
-            } else if ('MultiLineString' === type) {
-                return new Z.MultiPolyline(geoJSONObj['coordinates'],options);
-            } else if ('MultiPolygon' === type) {
-                return new Z.MultiPolygon(geoJSONObj['coordinates'],options);
+            } else if (Z.Util.searchInArray(type,
+                ['Point','LineString','Polygon','MultiPoint','MultiLineString','MultiPolygon']) >= 0) {
+                var clazz = (type === 'Point'?'Marker':type);
+                return new Z[clazz](geoJSONObj['coordinates'],options);
             } else if ('GeometryCollection' === type) {
                 var geometries = geoJSONObj['geometries'];
                 if (!Z.Util.isArrayHasData(geometries)) {
@@ -135,10 +127,8 @@ Z.GeoJSON={
                 return new Z.GeometryCollection(mGeos,options);
             } else if ('Circle' === type) {
                 return new Z.Circle(geoJSONObj['coordinates'], geoJSONObj['radius'],options);
-            } else if ('Ellipse' === type) {
-                return new Z.Ellipse(geoJSONObj['coordinates'], geoJSONObj['width'], geoJSONObj['height'],options);
-            } else if ('Rectangle' === type) {
-                return new Z.Rectangle(geoJSONObj['coordinates'], geoJSONObj['width'], geoJSONObj['height'],options);
+            } else if ('Ellipse' === type || 'Rectangle' === type) {
+                return new Z[type](geoJSONObj['coordinates'], geoJSONObj['width'], geoJSONObj['height'],options);
             } else if ('Sector' === type) {
                 return new Z.Sector(geoJSONObj['coordinates'], geoJSONObj['radius'], geoJSONObj['startAngle'], geoJSONObj['endAngle'],options);
             }

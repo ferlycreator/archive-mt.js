@@ -12,10 +12,9 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         'urlTemplate'   : Z.prefix+'images/system/transparent.png',
         'subdomains'    : [''],
 
-        'repeatWorld'   : true,
-
-        //increase opacity gradually when loading tiles
         'gradualLoading' : true,
+
+        'repeatWorld'   : true,
 
         'renderWhenPanning' : false,
         //移图时地图的更新间隔, 默认为0即实时更新, -1表示不更新.如果效率较慢则可改为适当的值
@@ -23,7 +22,7 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
 
         'crossOrigin' : null,
 
-        'tileSize' : {
+    'tileSize' : {
             'width'   : 256,
             'height'  : 256
         },
@@ -194,9 +193,13 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
                     fullExtent = fullExtent.combine(new Z.Extent(tileDesc['viewPoint'], tileDesc['viewPoint'].add(new Z.Point(tileSize['width'],tileSize['height']))));
             }
         }
+        var sortOrder = 1;
+        if (Z.Browser.ie || Z.Browser.edge) {
+            sortOrder = -1;
+        }
         //瓦片排序, 地图中心的瓦片排在末尾, 末尾的瓦片先载入
         tiles.sort(function (a, b) {
-            return b['viewPoint'].distanceTo(centerTileViewPoint)-a['viewPoint'].distanceTo(centerTileViewPoint);
+            return sortOrder*(b['viewPoint'].distanceTo(centerTileViewPoint)-a['viewPoint'].distanceTo(centerTileViewPoint));
         });
         return {
             'tiles' : tiles,

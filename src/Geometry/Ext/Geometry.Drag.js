@@ -98,9 +98,7 @@ Z.Geometry.Drag = Z.Handler.extend({
             shadow.setSymbol(symbol);
         }
         shadow.setId(null);
-        shadow.isDragging=function() {
-            return true;
-        };
+        shadow._isRenderImmediate(true);
         //copy connectors
         var shadowConnectors = [];
         if (Z.ConnectorLine._hasConnectors(target)) {

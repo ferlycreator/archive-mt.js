@@ -33,29 +33,37 @@ Z.render.map.Render = Z.Class.extend({
                 duration = t;
             }
             map._panAnimating = true;
-            Z.Animation.animate(new Z.animation.pan({
-                'distance': distance,
-                'duration' : duration
-            }), map, function(frame) {
+            var preDist = null;
+            Z.Animation.animate({
+                'distance' : distance
+            }, {
+                'easing' : 'out',
+                'speed' : duration
+            }, function(frame) {
                 if (!map._enablePanAnimation) {
                     map._panAnimating = false;
                     map._onMoveEnd();
                     return true;
                 }
 
-                if (frame.state['playing'] && frame.distance) {
-                    var offset =frame.distance;
-                    offset = offset.round();
+                if (frame.state['playing'] && frame.styles['distance']) {
+                    var dist =frame.styles['distance'];
+                    dist = dist.round();
+                    if (!preDist) {
+                        preDist = dist;
+                    }
+                    var offset = dist.substract(preDist);
                     map.offsetPlatform(offset);
                     map._offsetCenterByPixel(offset.multi(-1));
+                    preDist = dist;
                     map._fireEvent('moving');
                 }
-                if (frame.state['end']) {
+                if (!frame.state['playing']) {
                     map._panAnimating = false;
                     map._onMoveEnd();
                     return true;
                 }
-            }, this);
+            });
         } else {
             map._onMoveEnd();
         }

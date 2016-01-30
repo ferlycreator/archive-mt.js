@@ -69,6 +69,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
     setId:function(id) {
         //TODO 设置id可能造成map无法找到layer
         this._id = id;
+        this.fire('idchange');
         return this;
     },
 
@@ -186,6 +187,46 @@ Z['Layer']=Z.Layer=Z.Class.extend({
         return this;
     },
 
+    getMask:function() {
+        return this._mask;
+    },
+
+    setMask:function(mask) {
+        if (!((mask instanceof Z.Marker && Z.VectorMarkerSymbolizer.test(mask, mask.getSymbol()))
+            || mask instanceof Z.Polygon || mask instanceof Z.MultiPolygon)) {
+            throw new Error('mask has to be a Polygon or a MultiPolygon');
+        }
+
+        mask._bindLayer(this);
+        mask._isRenderImmediate(true);
+        if (mask instanceof Z.Marker ) {
+            mask.setSymbol(Z.Util.extend({},mask.getSymbol(),{
+                'markerLineWidth': 0,
+                'markerFillOpacity': 0
+            }));
+        } else {
+            mask.setSymbol({
+                'lineWidth':0,
+                'polygonOpacity':0
+            });
+        }
+        this._mask = mask;
+        if (!this.getMap() || this.getMap().isBusy()) {
+            return;
+        }
+        var render = this._getRender();
+        render && render.render();
+    },
+
+    clearMask:function(mask) {
+        delete this._mask;
+        if (!this.getMap() || this.getMap().isBusy()) {
+            return;
+        }
+        var render = this._getRender();
+        render && render.render();
+    },
+
     _onRemove:function() {
         this.clear();
         if (this._render) {
@@ -195,7 +236,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
         delete this.map;
     },
 
-     _prepare:function(map,zIndex) {
+     _bindMap:function(map,zIndex) {
         if (!map) {return;}
         this.map = map;
         this.setZIndex(zIndex);

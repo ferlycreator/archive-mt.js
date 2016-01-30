@@ -51,16 +51,15 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
     },
 
     render:function() {
-        var tileGrid = this._layer._getTiles();
+        var layer = this._layer;
+        var tileGrid = layer._getTiles();
         if (!tileGrid) {
             return;
         }
         this._rending = true;
         if (!this._canvas) {
-            this._gradualLoading = true;
             this._createCanvas();
         }
-
         if (!this._tileRended) {
             this._tileRended = {};
         }
@@ -70,56 +69,79 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
 
         var tiles = tileGrid['tiles'],
             tileCache = this._tileCache,
-            tileSize = this._layer.getTileSize();
+            tileSize = layer.getTileSize();
 
         this._canvasFullExtent =  this.getMap()._getViewExtent();
+        var viewExtent = this._canvasFullExtent;
+        if (this._clipped) {
+            this._context.restore();
+            this._clipped=false;
+        }
+        this._clearCanvas();
+        var mask = layer.getMask();
+        if (mask) {
+            var maskPxExtent = mask._getPainter().getPixelExtent();
+            if (!maskPxExtent.intersects(viewExtent)) {
+                return;
+            }
+            this._context.save();
+            mask._getPainter().paint();
+            this._context.clip();
+            this._clipped = true;
+            // viewExtent = viewExtent.intersection(maskPxExtent);
+        }
         //遍历瓦片
         this._tileToLoadCounter = 0;
-        this._clearCanvas();
+
 
         for (var i = tiles.length - 1; i >= 0; i--) {
             var tile = tiles[i];
             var tileId = tiles[i]['id'];
             //如果缓存中已存有瓦片, 则从不再请求而从缓存中读取.
             var cached = tileRended[tileId] || tileCache.get(tileId);
+            if (!viewExtent.intersects(new Z.Extent(tile['viewPoint'],
+                                tile['viewPoint'].add(new Z.Point(tileSize['width'], tileSize['height']))))) {
+                continue;
+            }
             if (cached) {
                     //画瓦片
-                    this._drawTile(tile['viewPoint'], cached);
-                    this._tileRended[tileId] = cached;
+                this._drawTile(tile['viewPoint'], cached);
+                this._tileRended[tileId] = cached;
             } else {
-                if (this._canvasFullExtent.intersects(new Z.Extent(tile['viewPoint'], tile['viewPoint'].add(new Z.Point(tileSize['width'], tileSize['height']))))) {
-                    this._tileToLoadCounter++;
-                    this._tileQueue[tileId+"@"+tile['viewPoint'].toString()] = tile;
-                }
+
+                this._tileToLoadCounter++;
+                this._tileQueue[tileId+"@"+tile['viewPoint'].toString()] = tile;
             }
         }
 
         this._rending = false;
         if (this._tileToLoadCounter === 0){
-            this._requestMapToRend();
             this._fireLoadedEvent();
+            this._requestMapToRend();
         } else {
             this._totalTileToLoad = this._tileToLoadCounter;
             this._scheduleLoadTileQueue();
         }
-
     },
 
     getCanvasImage:function() {
         if (!this._canvasFullExtent || this._tileZoom !== this.getMap().getZoom()) {
             return null;
         }
-        var gradualOpacity = null;
+         var gradualOpacity = null;
         if (this._gradualLoading && this._totalTileToLoad && this._layer.options['gradualLoading']) {
-            gradualOpacity = ((this._totalTileToLoad - this._tileToLoadCounter) / this._totalTileToLoad) * 2;
+            gradualOpacity = ((this._totalTileToLoad - this._tileToLoadCounter) / this._totalTileToLoad)*1.5 ;
             if (gradualOpacity > 1) {
                 gradualOpacity = 1;
             }
         }
-
         var size = this._canvasFullExtent.getSize();
         var point = this._canvasFullExtent.getMin();
-        return {'image':this._canvas,'layer':this._layer,'point':this.getMap()._viewPointToContainerPoint(point),'size':size,'opacity':gradualOpacity};
+        return {'image':this._canvas,'layer':this._layer,'point':this.getMap().viewPointToContainerPoint(point),'size':size,'opacity':gradualOpacity};
+    },
+
+    getPaintContext:function() {
+        return [this._context];
     },
 
     _scheduleLoadTileQueue:function() {
@@ -139,10 +161,8 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
             me._tileCache.add(this[me.propertyOfTileId], this);
             me._tileRended[me.propertyOfTileId] = this;
             me._drawTileAndRequest(this);
-
         }
         function onTileError() {
-            me._tileCache.remove(tileImage[me.propertyOfTileId], this);
             me._clearTileRectAndRequest(this);
         }
         var crossOrigin = this._layer.options['crossOrigin'];
@@ -244,7 +264,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
             return;
         }
         var zoom = this.getMap().getZoom();
-        if (zoom !== tileImage[this.propertyOfTileZoom]) {
+        if (!Z.Util.isNil(tileImage[this.propertyOfTileZoom]) && zoom !== tileImage[this.propertyOfTileZoom]) {
             return;
         }
         this._tileToLoadCounter--;
@@ -254,12 +274,18 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
     },
 
     _requestMapToRend:function() {
-        var me = this;
-        if (this.getMap() && !this.getMap().isBusy()) {
-
-                this._mapRender.render();
-
+        // if (this.getMap() && !this.getMap().isBusy()) {
+        //     this._mapRender.render();
+        // }
+        if (this._mapRenderRequest) {
+            clearTimeout(this._mapRenderRequest);
         }
+        var me = this;
+        this._mapRenderRequest = setTimeout(function() {
+            if (me.getMap() && !me.getMap().isBusy()) {
+                me._mapRender.render();
+            }
+        }, 10);
     },
 
     _registerEvents:function() {
@@ -275,9 +301,9 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
                         },rendSpan,this);
                 } else {
                     this._onMapMoving = function() {
-                            this._gradualLoading = false;
-                            this.render();
-                        };
+                        this._gradualLoading = false;
+                        this.render();
+                    };
                 }
                 map.on('_moving',this._onMapMoving,this);
             }
@@ -300,7 +326,7 @@ Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
     },
 
     _fireLoadedEvent:function() {
-        this._layer.fire('layerloaded');
+        this._layer.fire('layerload');
     }
 
 });

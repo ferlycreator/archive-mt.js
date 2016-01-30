@@ -4,6 +4,19 @@ Z.CurveLine = Z.LineString.extend({
         'arcDegree'     : 90
     },
 
+    toJSON:function(options) {
+        if (!options) {
+            options = {};
+        }
+        var json = {
+            "feature" : this.toGeoJSON(options),
+            "subType" : "CurveLine"
+        };
+        var other = this._exportGraphicOptions(options);
+        Z.Util.extend(json,other);
+        return json;
+    },
+
     _getRenderCanvasResources:function() {
         //draw a triangle arrow
         var prjVertexes = this._getPrjCoordinates();
@@ -74,8 +87,14 @@ Z.CurveLine = Z.LineString.extend({
         };
         return {
             "fn" : fn,
-            //TODO dasharray可能不从本身的symbol来
             "context" : [points,this.getSymbol()['lineDasharray'], this.getSymbol()['lineOpacity']]
         };
     }
 });
+
+Z.CurveLine._fromJSON=function(json) {
+    var feature = json['feature'];
+    var curveLine = new Z.CurveLine(feature['geometry']['coordinates'], json['options']);
+    curveLine.setProperties(feature['properties']);
+    return curveLine;
+}

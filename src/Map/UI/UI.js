@@ -60,7 +60,7 @@ Z.UIComponent = Z.Class.extend({
                 mapWidth = mapSize['width'],
                 mapHeight = mapSize['height'];
 
-            var containerPoint = this._map._viewPointToContainerPoint(anchor);
+            var containerPoint = this._map.viewPointToContainerPoint(anchor);
             var size = this.getSize(),
                 clientWidth = dom.clientWidth,
                 clientHeight = dom.clientHeight;

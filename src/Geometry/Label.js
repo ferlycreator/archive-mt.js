@@ -105,6 +105,20 @@ Z.Label = Z.Marker.extend({
        return this;
     },
 
+    toJSON:function(options) {
+        if (!options) {
+            options = {};
+        }
+        var json = {
+            "feature" : this.toGeoJSON(options),
+            "subType" : "Label",
+            "content" : this._content
+        };
+        var other = this._exportGraphicOptions(options);
+        Z.Util.extend(json,other);
+        return json;
+    },
+
     _refresh:function(noEvent) {
         var symbol = this.getSymbol();
         symbol['textName'] = this._content;
@@ -185,3 +199,10 @@ Z.Label = Z.Marker.extend({
         this.off('remove', this._onLabelRemove,this);
     }
 });
+
+Z.Label._fromJSON=function(json) {
+    var feature = json['feature'];
+    var label = new Z.Label(json['content'], feature['geometry']['coordinates'], json['options']);
+    label.setProperties(feature['properties']);
+    return label;
+}

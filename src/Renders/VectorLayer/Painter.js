@@ -82,14 +82,14 @@ Z.Painter = Z.Class.extend({
         //convert view points to container points needed by canvas
         if (Z.Util.isArray(points)) {
             containerPoints = Z.Util.eachInArray(points, this, function(point) {
-                var cp = map._viewPointToContainerPoint(point);
+                var cp = map.viewPointToContainerPoint(point);
                 if (matrix) {
                     return matrix.applyToPointInstance(cp);
                 }
                 return cp;
             });
         } else if (points instanceof Z.Point) {
-            containerPoints = map._viewPointToContainerPoint(points);
+            containerPoints = map.viewPointToContainerPoint(points);
             if (matrix) {
                 containerPoints = matrix.applyToPointInstance(containerPoints);
             }
@@ -260,7 +260,7 @@ Z.Painter = Z.Class.extend({
 
     _requestToRender:function() {
         var geometry = this.geometry;
-        if (!geometry.getMap() || geometry.getMap().isBusy()) {
+        if (!geometry.getMap()) {
             return;
         }
         var needPromise = false,
@@ -280,7 +280,7 @@ Z.Painter = Z.Class.extend({
             }
         }
         if (layer.isCanvasRender()) {
-            var immediate = !needPromise && geometry._isEditingOrDragging();
+            var immediate = !needPromise && geometry._isRenderImmediate();
             if (immediate) {
                 render.renderImmediate();
             } else {

@@ -90,10 +90,10 @@ Z.Map.include({
         profile["options"]["center"] = this.getCenter();
         profile["options"]["zoom"] = this.getZoom();
 
-        var baseTileLayer = this.getBaseLayer();
-        profile['baseTileLayer'] = baseTileLayer.toJSON(options['baseTileLayer']);
-        if (!Z.Util.isNil(options['baseTileLayer']) && !options['baseTileLayer']) {
-            profile['baseTileLayer']['options']['visible'] = false;
+        var baseLayer = this.getBaseLayer();
+        profile['baseLayer'] = baseLayer.toJSON(options['baseLayer']);
+        if (!Z.Util.isNil(options['baseLayer']) && !options['baseLayer']) {
+            profile['baseLayer']['options']['visible'] = false;
         }
 
         var extraLayerOptions = {};
@@ -140,8 +140,8 @@ Z.Map.fromJSON=function(container, mapJSON, options) {
         options = {};
     }
     var map = new Z.Map(container, mapJSON["options"]);
-    var baseTileLayer = Z.Layer.fromJSON(mapJSON["baseTileLayer"]);
-    map.setBaseLayer(baseTileLayer);
+    var baseLayer = Z.Layer.fromJSON(mapJSON["baseLayer"]);
+    map.setBaseLayer(baseLayer);
     if (Z.Util.isNil(options['layers']) || options['layers']) {
         var layers = [];
         var layerJSONs = mapJSON["layers"];

@@ -234,6 +234,15 @@ Z.Util.extend(Z.Extent.prototype,{
         return new Z.Extent(ext[0],ext[1],ext[2],ext[3]);
     },
 
+    intersection:function(extent) {
+        if (!this.intersects(extent)) {
+            return null;
+        }
+        return new Z.Extent(Math.max(this['xmin'], extent['xmin']),Math.max(this['ymin'], extent['ymin']),
+            Math.min(this['xmax'], extent['xmax']),Math.min(this['ymax'], extent['ymax'])
+            );
+    },
+
     /**
      * 扩大Extent
      * @param  {maptalks.Extent} ext 初始extent

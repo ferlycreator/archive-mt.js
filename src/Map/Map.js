@@ -10,20 +10,24 @@ Z['Map']=Z.Map=Z.Class.extend({
     includes: [Z.Eventable,Z.HandlerBus],
 
     options:{
-        "clipFullExtent" : false,
+        'clipFullExtent' : false,
 
-        "zoomAnimation" : true,
-        "zoomAnimationDuration" : 300,
+        'zoomAnimation' : true,
+        'zoomAnimationDuration' : 250,
+        'zoomBackground' : true,
         //controls whether other layers than base tilelayer will show during zoom animation.
-        "layerZoomAnimation" : true,
+        'layerZoomAnimation' : true,
 
         //economically transform, whether point symbolizers transforms during transformation (eg. zoom animation)
         //set to true can prevent drastic low performance when number of point symbolizers is large.
-        "ecoTransform" : false,
+        'ecoTransform' : false,
 
-        "panAnimation":true,
+        'panAnimation':true,
         //default pan animation duration
-        "panAnimationDuration" : 600,
+        'panAnimationDuration' : 600,
+
+        'maskColor' : '#000',
+        'maskOpacity' : 1,
 
         'enableZoom':true,
         'enableInfoWindow':true,
@@ -36,7 +40,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     //根据不同的语言定义不同的错误信息
     exceptionDefs:{
         'en-US':{
-            'NO_BASE_TILE_LAYER':'Map has no baseTileLayer, pls specify a baseTileLayer by setBaseLayer method before loading.',
+            'NO_BASE_TILE_LAYER':'Map has no baseLayer, pls specify a baseLayer by setBaseLayer method before loading.',
             'INVALID_OPTION':'Invalid options provided.',
             'INVALID_CENTER':'Invalid Center',
             'INVALID_LAYER_ID':'Invalid id for the layer',
@@ -86,7 +90,7 @@ Z['Map']=Z.Map=Z.Class.extend({
         }
 
 
-        //Layer of Details, always derived from baseTileLayer
+        //Layer of Details, always derived from baseLayer
         this._panels={};
 
         //Layers
@@ -172,22 +176,6 @@ Z['Map']=Z.Map=Z.Class.extend({
      */
     isLoaded:function() {
         return this._loaded;
-    },
-
-    /**
-     * 设定地图鼠标跟随提示框内容，设定的提示框会一直跟随鼠标显示
-     * @param {Dom} tipElement 鼠标提示框内容
-     */
-    setMouseTip:function(tipElement) {
-
-    },
-
-    /**
-     * 移除鼠标提示框
-     * @return {[type]} [description]
-     */
-    removeMouseTip:function() {
-
     },
 
     /**
@@ -495,33 +483,34 @@ Z['Map']=Z.Map=Z.Class.extend({
 
     /**
      * 设定地图的基础瓦片图层
-     * @param  {TileLayer} baseTileLayer 瓦片图层
+     * @param  {TileLayer} baseLayer 瓦片图层
      * @expose
      */
-    setBaseLayer:function(baseTileLayer) {
+    setBaseLayer:function(baseLayer) {
         var isChange = false;
         if (this._baseLayer) {
             isChange = true;
             this._fireEvent('baselayerchangestart');
             this._baseLayer.remove();
         }
-        if (baseTileLayer instanceof Z.TileLayer) {
-            baseTileLayer.config({
+        if (baseLayer instanceof Z.TileLayer) {
+            baseLayer.config({
                 'renderWhenPanning':true
             });
-            if (!baseTileLayer.options['tileSystem']) {
-                baseTileLayer.config('tileSystem', Z.TileSystem.getDefault(this.getProjection()));
+            if (!baseLayer.options['tileSystem']) {
+                baseLayer.config('tileSystem', Z.TileSystem.getDefault(this.getProjection()));
             }
         }
-        baseTileLayer._prepare(this,-1);
-        this._baseLayer = baseTileLayer;
-        function onBaseTileLayerLoaded() {
+        baseLayer._bindMap(this,-1);
+        this._baseLayer = baseLayer;
+        function onbaseLayerload() {
             this._fireEvent('baselayerload');
             if (isChange) {
+                isChange = false;
                 this._fireEvent('baselayerchangeend');
             }
         }
-        this._baseLayer.once('layerloaded',onBaseTileLayerLoaded,this);
+        this._baseLayer.on('layerload',onbaseLayerload,this);
         if (this._loaded) {
             this._baseLayer.load();
         }
@@ -582,7 +571,7 @@ Z['Map']=Z.Map=Z.Class.extend({
                 throw new Error(this.exceptions['DUPLICATE_LAYER_ID']+':'+id);
             }
             this._layerCache[id] = layer;
-            layer._prepare(this, this._layers.length);
+        layer._bindMap(this, this._layers.length);
             this._layers.push(layer);
             if (this._loaded) {
                 layer.load();
@@ -762,9 +751,33 @@ Z['Map']=Z.Map=Z.Class.extend({
     },
 
     /**
+     * 屏幕坐标到地图容器偏移坐标
+     *
+     * @param containerPoint
+     * @returns {viewPoint}
+     */
+    containerPointToViewPoint: function(containerPoint) {
+        if (!containerPoint) {return null;}
+        var platformOffset = this.offsetPlatform();
+        return containerPoint.substract(platformOffset);
+    },
+
+    /**
+     * 地图容器偏移坐标到屏幕坐标的转换
+     *
+     * @param viewPoint
+     * @returns {containerPoint}
+     */
+    viewPointToContainerPoint: function(viewPoint) {
+        if (!viewPoint) {return null;}
+        var platformOffset = this.offsetPlatform();
+        return viewPoint.add(platformOffset);
+    },
+
+    /**
      * Checks if the map container size changed
      */
-    invalidateSize:function() {
+    checkSize:function() {
         if (this._resizeTimeout) {
             clearTimeout(this._resizeTimeout);
         }
@@ -807,8 +820,8 @@ Z['Map']=Z.Map=Z.Class.extend({
             res = this._getResolution();
 
         var width = !xDist?0:(projection.project(new Z.Coordinate(target.x, center.y)).x-projection.project(center).x)/res;
-        var height = !yDist?0:(projection.project(new Z.Coordinate(target.x, center.y)).y-projection.project(target).y)/res;
-        return new Z.Size(Math.round(Math.abs(width)), Math.round(Math.abs(height)));
+        var height = !yDist?0:(projection.project(new Z.Coordinate(center.x, target.y)).y-projection.project(center).y)/res;
+        return new Z.Size(Math.abs(width), Math.abs(height))._round();
     },
 
     /**
@@ -933,6 +946,8 @@ Z['Map']=Z.Map=Z.Class.extend({
 
     _onMoveStart:function() {
         this._originCenter = this.getCenter();
+        this._isBusy = true;
+        this._trySetCursor('move');
         /**
          * 触发map的movestart事件
          * @member maptalks.Map
@@ -953,6 +968,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     _onMoveEnd:function() {
         this._enablePanAnimation=true;
         this._isBusy = false;
+        this._trySetCursor('default');
         /**
          * 触发map的moveend事件
          * @member maptalks.Map
@@ -1197,7 +1213,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {[type]}        [description]
      */
     _untransformFromViewPoint:function(domPos) {
-        return this._untransform(this._viewPointToContainerPoint(domPos));
+        return this._untransform(this.viewPointToContainerPoint(domPos));
     },
 
     /**
@@ -1226,41 +1242,19 @@ Z['Map']=Z.Map=Z.Class.extend({
      */
     _transformToViewPoint:function(pCoordinate) {
         var containerPoint = this._transform(pCoordinate);
-        return this.__containerPointToViewPoint(containerPoint);
+        return this._containerPointToViewPoint(containerPoint);
     },
 
     /**
-     * 屏幕坐标到地图容器偏移坐标
-     *
-     * @param containerPoint
-     * @returns {viewPoint}
+     * destructive containerPointToViewPoint
      */
     _containerPointToViewPoint: function(containerPoint) {
-        if (!containerPoint) {return null;}
-        var platformOffset = this.offsetPlatform();
-        return containerPoint.substract(platformOffset);
-    },
-
-    /**
-     * destructive _containerPointToViewPoint
-     */
-    __containerPointToViewPoint: function(containerPoint) {
         if (!containerPoint) {return null;}
         var platformOffset = this.offsetPlatform();
         return containerPoint._substract(platformOffset);
     },
 
-    /**
-     * 地图容器偏移坐标到屏幕坐标的转换
-     *
-     * @param viewPoint
-     * @returns {containerPoint}
-     */
-    _viewPointToContainerPoint: function(viewPoint) {
-        if (!viewPoint) {return null;}
-        var platformOffset = this.offsetPlatform();
-        return viewPoint.add(platformOffset);
-    },
+
 
     /**
      * 根据中心点投影坐标和像素范围,计算像素范围的Extent
