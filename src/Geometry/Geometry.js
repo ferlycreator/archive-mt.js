@@ -341,7 +341,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (coordinates) {
             if (Z.Util.isArray(coordinates)) {
                 var offseted = Z.Util.eachInArray(coordinates,this,function(coord) {
-                    return coord.add(offset);
+                        return coord.add(offset);
                 });
                 this.setCoordinates(offseted);
             } else {

@@ -43,10 +43,10 @@ module.exports = function(config) {
     exclude: [
     ],
 
-    // preprocessors: {
-    //   //'src/**/*.js': 'coverage',
-    //   'test/**/*.js': [ 'browserify' ] //Mention path as per your test js folder
-    // },
+    preprocessors: {
+      'src/!(Maptalks)/**/!(Matrix|Promise).js': ['coverage']
+      // 'test/**/*.js': [ 'browserify' ] //Mention path as per your test js folder
+    },
     // add additional browserify configuration properties here
     // such as transform and/or debug=true to generate source maps
     // browserify: {

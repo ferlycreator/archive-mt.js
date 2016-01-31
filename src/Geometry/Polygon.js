@@ -126,14 +126,14 @@ Z['Polygon']=Z.Polygon = Z.Vector.extend({
         }
         var lastPoint = ring[ring.length-1];
         var isClose = true;
-        var least = 4;
+        // var least = 4;
         if (ring[0].x != lastPoint.x || ring[0].y != lastPoint.y ) {
-            least = 3;
+            // least = 3;
             isClose = false;
         }
-        if (ring.length < least) {
+        // if (ring.length < least) {
             //throw new Error(this.exceptions['INVALID_COORDINATES']+', ring length is only '+ring.length);
-        }
+        // }
         return isClose;
     },
 
