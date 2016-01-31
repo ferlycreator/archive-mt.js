@@ -60,6 +60,9 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
         var baseLayerImage;
         if (baseLayer) {
             baseLayerImage =  baseLayer._getRender().getCanvasImage();
+            this._canvasBg = Z.DomUtil.copyCanvas(baseLayerImage['image']);
+            this._canvasBgRes = map._getResolution();
+            this._canvasBgCoord = map.containerPointToCoordinate(baseLayerImage['point']);
         }
         if (map.options['zoomAnimation'] && this._context) {
             this._context.save();
@@ -95,7 +98,7 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
                         matrixes[1].applyToContext(this._context);
                         if (baseLayerImage) {
                             this._drawLayerCanvasImage(baseLayerImage, width, height);
-                            this._canvasBg = Z.DomUtil.copyCanvas(this._canvas);
+                            // this._canvasBg = Z.DomUtil.copyCanvas(this._canvas);
                         }
 
                         this._context.restore();
@@ -375,8 +378,13 @@ Z.render.map.Canvas = Z.render.map.Render.extend({
     },
 
     _drawBackground:function() {
+        var map = this.map,
+            size = map.getSize();
         if (this._canvasBg) {
-            Z.Canvas.image(this._context, new Z.Point(0,0), this._canvasBg);
+            var scale = this._canvasBgRes/map._getResolution();
+            var p = map.coordinateToContainerPoint(this._canvasBgCoord);
+            var bSize = size._multi(scale);
+            Z.Canvas.image(this._context, p, this._canvasBg, bSize['width'], bSize['height']);
         }
     },
 
