@@ -140,8 +140,10 @@ Z.Map.fromJSON=function(container, mapJSON, options) {
         options = {};
     }
     var map = new Z.Map(container, mapJSON["options"]);
-    var baseLayer = Z.Layer.fromJSON(mapJSON["baseLayer"]);
-    map.setBaseLayer(baseLayer);
+    if (Z.Util.isNil(options['baseLayer']) || options['baseLayer']) {
+        var baseLayer = Z.Layer.fromJSON(mapJSON["baseLayer"]);
+        map.setBaseLayer(baseLayer);
+    }
     if (Z.Util.isNil(options['layers']) || options['layers']) {
         var layers = [];
         var layerJSONs = mapJSON["layers"];
