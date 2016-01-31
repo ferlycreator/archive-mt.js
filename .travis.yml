@@ -4,6 +4,7 @@ node_js:
   - "0.10"
 before_script:
   - "npm install -g gulp"
-script: "gulp test --cov"
+script: "gulp test"
 after_script:
+    - gulp test --cov
     - ./node_modules/.bin/gulp coveralls

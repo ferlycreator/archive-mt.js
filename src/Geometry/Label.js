@@ -78,6 +78,10 @@ Z.Label = Z.Marker.extend({
         return this;
     },
 
+    getTextAlign:function() {
+        return this.options['textAlign'];
+    },
+
      /**
      * 设置text相对label水平对齐方式
      */
@@ -85,8 +89,8 @@ Z.Label = Z.Marker.extend({
         if(this.options['textAlign']!==textAlign) {
             this._setTextAlign(textAlign);
             this.options['textAlign'] = textAlign;
-            return this;
         }
+        return this;
     },
 
     setSymbol:function(symbol, noEvent) {

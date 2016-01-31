@@ -32,6 +32,10 @@ Z.Util.extend(Z.Coordinate.prototype,{
         return new Z.Coordinate(this.x+d.x, this.y+d.y);
     },
 
+    copy:function() {
+        return new Z.Coordinate(this.x, this.y);
+    },
+
     _substract: function(d) {
         this.x -= d.x;
         this.y -= d.y;

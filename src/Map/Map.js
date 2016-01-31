@@ -853,7 +853,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {Coordinate}            新的坐标
      */
     locate:function(coordinate, dx, dy) {
-        return this.getProjection().locate(coordinate,dx,dy);
+        return this.getProjection().locate(new Z.Coordinate(coordinate),dx,dy);
     },
 
     /**

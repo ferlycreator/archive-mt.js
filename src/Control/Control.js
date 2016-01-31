@@ -111,7 +111,7 @@ Z.Control = Z.Class.extend({
     getContainerPoint:function() {
         var position = this.options['position'];
 
-        var size = thia._map.getSize();
+        var size = this._map.getSize();
         var x,y;
         if (!Z.Util.isNil(position['top'])) {
             x = position['top'];
@@ -140,6 +140,7 @@ Z.Control = Z.Class.extend({
      */
     show: function() {
         this._container.style.display="";
+        return this;
     },
 
     /**
@@ -147,6 +148,7 @@ Z.Control = Z.Class.extend({
      */
     hide: function() {
         this._container.style.display="none";
+        return this;
     },
 
     /**
@@ -191,9 +193,6 @@ Z.Map.include({
      * @expose
      */
     removeControl: function (control) {
-        if (this.isCanvasRender()) {
-            return this;
-        }
         control.remove();
         return this;
     }

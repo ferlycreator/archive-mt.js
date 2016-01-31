@@ -109,4 +109,23 @@ describe('PolygonSpec', function() {
             var vector = new Z.Polygon(points);
         GeoSymbolTester.testGeoSymbols(vector, map);
     });
+
+    it('can be a anti-meridian polygon',function() {
+         var points = [
+        [[179,10],[-170,10],[-169, -10],[179, -10]],
+        [[180,5],[-175,5],[-171, -5],[180, -5]]
+        ];
+        var vector = new Z.Polygon(points,{antiMeridian : 'continuous',});
+        layer.addGeometry(vector);
+
+        var points2 = [
+        [[179,10],[168,10],[167, -10],[179, -10]]
+        ];
+        var comparison = new Z.Polygon(points2);
+        layer.addGeometry(comparison);
+
+        var size = vector.getSize();
+        var compared = comparison.getSize();
+        expect(size).to.be.eql(compared);
+    });
 });

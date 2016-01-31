@@ -14,9 +14,6 @@ Z.Point=function(x,y) {
     } else if (Z.Util.isArrayHasData(x)) {
         this.x = x[0];
         this.y = x[1];
-     } else {
-        this.y = y;
-        this.x = x;
      }
      if (this.isNaN()) {
         throw new Error('point is NaN');
