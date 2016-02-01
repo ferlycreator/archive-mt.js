@@ -105,7 +105,7 @@ Z.Eventable = {
     */
     copyEventListener: function(target) {
         var eventMap = target._eventMap;
-        if(!eventMap) return;
+        if(!eventMap) {return this;}
         for (var eventType in eventMap) {
             var events = eventMap[eventType];
             for(var i=0,len=events.length;i<len;i++) {

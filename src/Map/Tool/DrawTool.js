@@ -55,7 +55,9 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         this._enabled = true;
         this._mapDraggable = map.options['draggable'];
         this._mapDoubleClickZoom = map.options['doubleClickZoom'];
+        this._autoBorderPanning = map.options['autoBorderPanning'];
         map.config({
+            'autoBorderPanning' : true,
             'draggable': false,
             'doubleClickZoom':false
         });
@@ -90,9 +92,11 @@ Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
         var map = this.map;
         if (!map) {return;}
         map.config({
+            'autoBorderPanning' : this._autoBorderPanning,
             'draggable': this._mapDraggable,
             'doubleClickZoom' : this._mapDoubleClickZoom
         });
+        delete this._autoBorderPanning;
         delete this._mapDraggable;
         delete this._mapDoubleClickZoom;
         this._endDraw();

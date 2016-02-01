@@ -1,12 +1,12 @@
 Z.Map.mergeOptions({
     /**
-     * @cfg {Boolean} [AutoOutPanning="false"] 鼠标移到地图外时自动移图
+     * @cfg {Boolean} [autoBorderPanning="false"] 鼠标移到地图外时自动移图
      * @member maptalks.Map
      */
-    'autoOutPanning': false
+    'autoBorderPanning': false
 });
 
-Z.Map.AutoOutPanning = Z.Handler.extend({
+Z.Map.AutoBorderPanning = Z.Handler.extend({
     //threshold to trigger panning, in px
     threshold : 10,
     //number of px to move when panning is triggered
@@ -28,16 +28,17 @@ Z.Map.AutoOutPanning = Z.Handler.extend({
         var eventParam = this.target._parseEvent(event);
         var mousePos = eventParam['containerPoint']
         var size = this.target.getSize();
-        var step = 3;
         var tests = [mousePos.x, size['width'] - mousePos.x,
                 mousePos.y, size['height'] - mousePos.y];
 
         var min = Math.min.apply(Math, tests),
             absMin = Math.abs(min);
+
         if (absMin === 0 || absMin > this.threshold) {
             this._cancelPan();
             return;
         }
+        var step = this.step;
         var offset = new Z.Point(0,0);
         if (tests[0] === min) {
             offset.x = step;
@@ -49,8 +50,8 @@ Z.Map.AutoOutPanning = Z.Handler.extend({
         } else if (tests[3] === min) {
             offset.y = -step;
         }
-        this._offset = offset;
-        this._animationId = Z.Util.requestAnimFrame(Z.Util.bind(this._pan,this));
+        this._stepOffset = offset;
+        this._pan();
     },
 
     _onMouseOut: function(event) {
@@ -58,17 +59,16 @@ Z.Map.AutoOutPanning = Z.Handler.extend({
     },
 
     _cancelPan:function() {
-        delete this._offset;
+        delete this._stepOffset;
         if (this._animationId) {
             Z.Util.cancelAnimFrame(this._animationId);
             delete this._animationId;
-            delete this._offset;
         }
     },
 
     _pan:function() {
-        if (this._offset) {
-            this.target.panBy(this._offset, {
+        if (this._stepOffset) {
+            this.target.panBy(this._stepOffset, {
                 'animation':false
             });
             this._animationId = Z.Util.requestAnimFrame(Z.Util.bind(this._pan,this));
@@ -76,4 +76,4 @@ Z.Map.AutoOutPanning = Z.Handler.extend({
     }
 });
 
-Z.Map.addInitHook('addHandler', 'autoOutPanning', Z.Map.AutoOutPanning);
+Z.Map.addInitHook('addHandler', 'autoBorderPanning', Z.Map.AutoBorderPanning);

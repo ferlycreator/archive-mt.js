@@ -735,7 +735,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     _isRenderImmediate:function(r) {
         if (this._getParent()) {
-            return this._getParent()._isRenderImmediate();
+            return this._getParent()._isRenderImmediate(r);
         }
         if (Z.Util.isNil(r)) {
             return (this._isEditingOrDragging() || this._im)?true:false;

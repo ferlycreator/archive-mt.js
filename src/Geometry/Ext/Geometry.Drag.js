@@ -57,7 +57,7 @@ Z.Geometry.Drag = Z.Handler.extend({
          * @event dragstart
          * @return {Object} params: {'target':this}
          */
-        this.target._fireEvent('dragstart');
+        this.target._fireEvent('dragstart', param);
         return this;
     },
 
@@ -118,6 +118,7 @@ Z.Geometry.Drag = Z.Handler.extend({
                 shadowConnectors.push(conn);
             }
         }
+        this._shadowConnectors = shadowConnectors;
         this._dragStageLayer.bringToFront().addGeometry(shadowConnectors.concat(shadow));
     },
 
@@ -127,7 +128,7 @@ Z.Geometry.Drag = Z.Handler.extend({
         }
     },
 
-     _prepareDragStageLayer:function() {
+    _prepareDragStageLayer:function() {
         var map=this.target.getMap(),
             layer=this.target.getLayer();
         this._dragStageLayer = map.getLayer(this.dragStageLayerId);
@@ -149,7 +150,6 @@ Z.Geometry.Drag = Z.Handler.extend({
             return;
         }
 
-
         if (!this._moved) {
             this._moved = true;
             target.on('symbolchange', this._onTargetUpdated, this);
@@ -159,10 +159,9 @@ Z.Geometry.Drag = Z.Handler.extend({
             if (!target.options['dragShadow']) {
                 target.hide();
             }
-            this._shadow._fireEvent('dragstart');
+            this._shadow._fireEvent('dragstart', eventParam);
             return;
         }
-
         var axis = this._shadow.options['draggableAxis'];
         var currentCoord = eventParam['coordinate'];
         if(!this._preCoordDragged) {
@@ -206,7 +205,6 @@ Z.Geometry.Drag = Z.Handler.extend({
         if (!map) {
             return;
         }
-        map.getLayer(this.dragStageLayerId).clear();
         var eventParam;
         if (map) {
             eventParam = map._parseEvent(param['domEvent']);
@@ -225,7 +223,10 @@ Z.Geometry.Drag = Z.Handler.extend({
             shadow.remove();
             delete this._shadow;
         }
-
+        if (this._shadowConnectors) {
+            map.getLayer(this.dragStageLayerId).removeGeometry(this._shadowConnectors);
+            delete this._shadowConnectors;
+        }
         delete this._preCoordDragged;
 
         //restore map status
@@ -237,7 +238,7 @@ Z.Geometry.Drag = Z.Handler.extend({
             'draggable': this._mapDraggable
         });
 
-        delete this._autoOutPanning;
+        delete this._autoBorderPanning;
         delete this._mapDraggable;
         this._isDragging = false;
         /**
