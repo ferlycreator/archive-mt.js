@@ -69,11 +69,19 @@ Z.Control.Toolbar = Z.Control.extend({
         var menuUL = Z.DomUtil.createEl('ul');
         menuDom.appendChild(menuUL);
         var children = this._getItems()[index]['children'];
+        var liWidth = 0;
+        for(var i=0,len=children.length;i<len;i++) {
+            var size = Z.StringUtil.stringLength(children[i]['item'],'12px');
+            if (size.width > liWidth) {
+                liWidth = size.width;
+            }
+        }
         for (var i = 0; i < children.length; i++) {
             var child = children[i];
             var li = Z.DomUtil.createEl('li');
             li.innerHTML = '<a href="javascript:;">'+child['item']+'</a>'
             li.style.cursor = 'pointer';
+            li.style.width = liWidth+'px';
             Z.DomUtil.on(li.childNodes[0],'click',(onButtonClick)(child['click'], index, i));
             menuUL.appendChild(li);
         }
