@@ -7,6 +7,11 @@ Z.Map.mergeOptions({
 });
 
 Z.Map.AutoOutPanning = Z.Handler.extend({
+    //threshold to trigger panning, in px
+    threshold : 10,
+    //number of px to move when panning is triggered
+    step : 4,
+
     addHooks: function () {
         this._dom = this.target._containerDOM;
         Z.DomUtil.on(this._dom, 'mousemove', this._onMouseMove, this);
@@ -20,37 +25,20 @@ Z.Map.AutoOutPanning = Z.Handler.extend({
     },
 
     _onMouseMove: function(event) {
-        if (Z.Browser.ie) {
-            var eventParam = this.target._parseEvent(event);
-            this._mousePosition = eventParam['containerPoint']
-        }
-        //stop panning
-        this._cancelPan();
-    },
-
-    _onMouseOut: function(event) {
+        var eventParam = this.target._parseEvent(event);
+        var mousePos = eventParam['containerPoint']
         var size = this.target.getSize();
-        var step = 6;
-        var offset = new Z.Point(0,0);
-        var tests;
-        if (Z.Browser.ie) {
-            var lastMousePos = this._mousePosition;
-            if (!lastMousePos) {
-                return;
-            }
-            tests = [lastMousePos.x, size['width'] - lastMousePos.x,
-                    lastMousePos.y, size['height'] - lastMousePos.y];
+        var step = 3;
+        var tests = [mousePos.x, size['width'] - mousePos.x,
+                mousePos.y, size['height'] - mousePos.y];
 
-        } else {
-            var eventParam = this.target._parseEvent(event);
-
-            var containerPoint = eventParam['containerPoint'];
-            var domEvent = eventParam['domEvent'];
-
-            tests = [containerPoint.x, size['width'] - containerPoint.x,
-                    containerPoint.y, size['height'] - containerPoint.y]
+        var min = Math.min.apply(Math, tests),
+            absMin = Math.abs(min);
+        if (absMin === 0 || absMin > this.threshold) {
+            this._cancelPan();
+            return;
         }
-        var min = Math.min.apply(Math, tests);
+        var offset = new Z.Point(0,0);
         if (tests[0] === min) {
             offset.x = step;
         } else if (tests[1] === min) {
@@ -65,7 +53,12 @@ Z.Map.AutoOutPanning = Z.Handler.extend({
         this._animationId = Z.Util.requestAnimFrame(Z.Util.bind(this._pan,this));
     },
 
+    _onMouseOut: function(event) {
+        this._cancelPan();
+    },
+
     _cancelPan:function() {
+        delete this._offset;
         if (this._animationId) {
             Z.Util.cancelAnimFrame(this._animationId);
             delete this._animationId;
