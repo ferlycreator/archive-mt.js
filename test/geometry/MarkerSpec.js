@@ -4,11 +4,13 @@ describe('Marker', function() {
     var map;
     var tile;
     var center = new Z.Coordinate(118.846825, 32.046534);
+    var canvasContainer;
 
     beforeEach(function() {
         var setups = commonSetupMap(center);
         container = setups.container;
         map = setups.map;
+        canvasContainer = map._panels.mapPlatform;
     });
 
     afterEach(function() {
@@ -125,6 +127,32 @@ describe('Marker', function() {
     it('can have various symbols',function() {
         var vector = new Z.Marker(center);
         GeoSymbolTester.testGeoSymbols(vector, map);
+    });
+
+    it("Marker._containsPoint", function() {
+
+        var geometry = new Z.Marker(center, {
+            symbol: {
+                markerFile : Z.prefix + 'images/resource/marker.png',
+                markerHeight : 30,
+                markerWidth : 22,
+                dx : 0,
+                dy : 0
+            }
+        });
+        layer = new Z.VectorLayer('id');
+        map.addLayer(layer);
+        layer.addGeometry(geometry);
+
+        var spy = sinon.spy();
+        geometry.on('click', spy);
+        //TODO 因为marker的width和height为0, 所以无法击中
+        happen.click(canvasContainer, {
+            clientX: 400 + 8,
+            clientY: 300 + 8
+        });
+
+        //expect(spy.called).to.be.ok();
     });
 
 });

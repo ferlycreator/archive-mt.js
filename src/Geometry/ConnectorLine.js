@@ -101,7 +101,8 @@ Z.ConnectorLine = Z.CurveLine.extend({
         if (!this._connSource || !this._connTarget) {
             return;
         }
-        if (this._connSource.isVisible() && this._connTarget.isVisible()) {
+        if ((this._connSource instanceof Z.Control || this._connSource.isVisible()) &&
+            (this._connTarget instanceof Z.Control || this._connTarget.isVisible())) {
             this._updateCoordinates();
             this.show();
         }
@@ -139,10 +140,12 @@ Z.ConnectorLine = Z.CurveLine.extend({
         }
     },
     _isEditingOrDragging:function() {
-        return this._connSource._isEditingOrDragging() || this._connTarget._isEditingOrDragging();
+        return ((!(this._connSource instanceof Z.Control) && this._connSource._isEditingOrDragging())
+            || (!(this._connTarget instanceof Z.Control) && this._connTarget._isEditingOrDragging()));
     },
     _isRenderImmediate:function() {
-        return this._connSource._isRenderImmediate() || this._connTarget._isRenderImmediate();
+        return ((!(this._connSource instanceof Z.Control) && this._connSource._isRenderImmediate())
+            || (!(this._connTarget instanceof Z.Control) && this._connTarget._isRenderImmediate()));
     }
 });
 

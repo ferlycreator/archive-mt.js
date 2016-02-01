@@ -5,6 +5,7 @@ describe('PolygonSpec', function() {
     var tile;
     var center = new Z.Coordinate(118.846825, 32.046534);
     var layer;
+    var canvasContainer;
 
     beforeEach(function() {
        var setups = commonSetupMap(center);
@@ -12,6 +13,7 @@ describe('PolygonSpec', function() {
         map = setups.map;
         layer = new Z.VectorLayer('id');
         map.addLayer(layer);
+        canvasContainer = map._panels.mapPlatform;
     });
 
     afterEach(function() {
@@ -108,6 +110,35 @@ describe('PolygonSpec', function() {
             ];
             var vector = new Z.Polygon(points);
         GeoSymbolTester.testGeoSymbols(vector, map);
+    });
+
+    it("Polygon._containsPoint", function() {
+        layer.clear();
+        var geometry = new Z.Polygon([[
+            new Z.Coordinate([center.x, center.y + 0.001]),
+            new Z.Coordinate([center.x, center.y]),
+            new Z.Coordinate([center.x + 0.002, center.y])
+        ]], {
+            symbol: {
+                'lineWidth': 6
+            }
+        });
+        layer.addGeometry(geometry);
+
+        var spy = sinon.spy();
+        geometry.on('click', spy);
+
+        happen.click(canvasContainer, {
+            clientX: 400 + 8 - 4,
+            clientY: 300 + 8
+        });
+        expect(spy.called).to.not.be.ok();
+
+        happen.click(canvasContainer, {
+            clientX: 400 + 8 - 3,
+            clientY: 300 + 8
+        });
+        expect(spy.called).to.be.ok();
     });
 
     it('can be a anti-meridian polygon',function() {

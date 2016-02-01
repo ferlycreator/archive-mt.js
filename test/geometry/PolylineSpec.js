@@ -5,25 +5,15 @@ describe('PolylineSpec', function() {
     var tile;
     var center = new Z.Coordinate(118.846825, 32.046534);
     var layer;
+    var canvasContainer;
 
     beforeEach(function() {
-        container = document.createElement('div');
-        container.style.width = '800px';
-        container.style.height = '600px';
-        document.body.appendChild(container);
-        var option = {
-            zoom: 17,
-            center: center
-        };
-        map = new Z.Map(container, option);
-        tile = new Z.TileLayer('tile', {
-
-            urlTemplate:"http://t{s}.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}",
-            subdomains: [1, 2, 3]
-        });
-        map.setBaseLayer(tile);
+        var setups = commonSetupMap(center);
+        container = setups.container;
+        map = setups.map;
         layer = new Z.VectorLayer('id');
         map.addLayer(layer);
+        canvasContainer = map._panels.mapPlatform;
     });
 
     afterEach(function() {
@@ -103,5 +93,30 @@ describe('PolylineSpec', function() {
             ];
             var vector = new Z.Polyline(points);
         GeoSymbolTester.testGeoSymbols(vector, map);
+    });
+
+    it("Rectangle._containsPoint", function() {
+        layer.clear();
+        var geometry = new Z.Rectangle(center, 20, 10, {
+            symbol: {
+                'lineWidth': 6
+            }
+        });
+        layer.addGeometry(geometry);
+
+        var spy = sinon.spy();
+        geometry.on('click', spy);
+
+        happen.click(canvasContainer, {
+            clientX: 400 + 8,
+            clientY: 300 + 8 - 4
+        });
+        expect(spy.called).to.not.be.ok();
+
+        happen.click(canvasContainer, {
+            clientX: 400 + 8,
+            clientY: 300 + 8 - 3
+        });
+        expect(spy.called).to.be.ok();
     });
 });

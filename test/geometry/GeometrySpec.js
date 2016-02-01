@@ -1,13 +1,15 @@
-describe('Geometry', function() {
+describe('#Geometry', function() {
 
     var container;
     var map;
     var tile;
     var center = new Z.Coordinate(118.846825, 32.046534);
     var layer;
+    var clock;
     var context = {
         map:map,
-        layer:layer
+        layer:layer,
+        clock:clock
     };
     var canvasContainer;
 
@@ -20,194 +22,15 @@ describe('Geometry', function() {
         context.map = map;
         context.layer = layer;
         canvasContainer = map._panels.mapPlatform;
+        context.clock = sinon.useFakeTimers();
     });
 
     afterEach(function() {
+        context.clock.restore();
         map.removeLayer(layer);
         document.body.removeChild(container);
     });
 
-    it("Marker._containsPoint", function() {
-        layer.clear();
-        var geometry = new Z.Marker(center, {
-            symbol: {
-                markerFile : Z.prefix + 'images/resource/marker.png',
-                markerHeight : 30,
-                markerWidth : 22,
-                dx : 0,
-                dy : 0
-            }
-        });
-        layer.addGeometry(geometry);
-
-        var spy = sinon.spy();
-        geometry.on('click', spy);
-        //TODO 因为marker的width和height为0, 所以无法击中
-        happen.click(canvasContainer, {
-            clientX: 400 + 8,
-            clientY: 300 + 8
-        });
-
-        //expect(spy.called).to.be.ok();
-    });
-
-    it("Circle._containsPoint", function() {
-        layer.clear();
-        var geometry = new Z.Circle(center, 10, {
-            symbol: {
-                'lineWidth': 6
-            }
-        });
-        layer.addGeometry(geometry);
-
-        var spy = sinon.spy();
-        geometry.on('click', spy);
-
-        happen.click(canvasContainer, {
-            clientX: 400 + 8 + 10 + 4,
-            clientY: 300 + 8
-        });
-        expect(spy.called).to.not.be.ok();
-
-        happen.click(canvasContainer, {
-            clientX: 400 + 8 + 10 + 3,
-            clientY: 300 + 8
-        });
-        expect(spy.called).to.be.ok();
-    });
-
-    it("Ellipse._containsPoint", function() {
-        layer.clear();
-        var geometry = new Z.Ellipse(center, 20, 10, {
-            symbol: {
-                'lineWidth': 6
-            }
-        });
-        layer.addGeometry(geometry);
-
-        var spy = sinon.spy();
-        geometry.on('click', spy);
-
-        happen.click(canvasContainer, {
-            clientX: 400 + 8 + 10 + 4,
-            clientY: 300 + 8
-        });
-        expect(spy.called).to.not.be.ok();
-
-        happen.click(canvasContainer, {
-            clientX: 400 + 8 + 10 + 3,
-            clientY: 300 + 8
-        });
-        expect(spy.called).to.be.ok();
-    });
-
-    it("Sector._containsPoint", function() {
-        layer.clear();
-        var geometry = new Z.Sector(center, 10, 90, 405, {
-            symbol: {
-                'lineWidth': 6
-            }
-        });
-        layer.addGeometry(geometry);
-
-        var spy = sinon.spy();
-        geometry.on('click', spy);
-
-        happen.click(canvasContainer, {
-            clientX: 400 + 8 + (10 - 3),
-            clientY: 300 + 8 - (10 - 2)
-        });
-        expect(spy.called).to.not.be.ok();
-
-        happen.click(canvasContainer, {
-            clientX: 400 + 8,
-            clientY: 300 + 8 - 10
-        });
-        expect(spy.called).to.be.ok();
-    });
-
-    it("Rectangle._containsPoint", function() {
-        layer.clear();
-        var geometry = new Z.Rectangle(center, 20, 10, {
-            symbol: {
-                'lineWidth': 6
-            }
-        });
-        layer.addGeometry(geometry);
-
-        var spy = sinon.spy();
-        geometry.on('click', spy);
-
-        happen.click(canvasContainer, {
-            clientX: 400 + 8,
-            clientY: 300 + 8 - 4
-        });
-        expect(spy.called).to.not.be.ok();
-
-        happen.click(canvasContainer, {
-            clientX: 400 + 8,
-            clientY: 300 + 8 - 3
-        });
-        expect(spy.called).to.be.ok();
-    });
-
-    it("Polyline._containsPoint", function() {
-        layer.clear();
-        var geometry = new Z.Polyline([
-            new Z.Coordinate([center.x, center.y + 0.001]),
-            new Z.Coordinate([center.x, center.y]),
-            new Z.Coordinate([center.x + 0.002, center.y])
-        ], {
-            symbol: {
-                'lineWidth': 6
-            }
-        });
-        layer.addGeometry(geometry);
-
-        var spy = sinon.spy();
-        geometry.on('click', spy);
-
-        happen.click(canvasContainer, {
-            clientX: 400 + 8 + 4,
-            clientY: 300 + 8 - 4
-        });
-        expect(spy.called).to.not.be.ok();
-
-        happen.click(canvasContainer, {
-            clientX: 400 + 8 + 3,
-            clientY: 300 + 8 - 3
-        });
-        expect(spy.called).to.be.ok();
-    });
-
-    it("Polygon._containsPoint", function() {
-        layer.clear();
-        var geometry = new Z.Polygon([[
-            new Z.Coordinate([center.x, center.y + 0.001]),
-            new Z.Coordinate([center.x, center.y]),
-            new Z.Coordinate([center.x + 0.002, center.y])
-        ]], {
-            symbol: {
-                'lineWidth': 6
-            }
-        });
-        layer.addGeometry(geometry);
-
-        var spy = sinon.spy();
-        geometry.on('click', spy);
-
-        happen.click(canvasContainer, {
-            clientX: 400 + 8 - 4,
-            clientY: 300 + 8
-        });
-        expect(spy.called).to.not.be.ok();
-
-        happen.click(canvasContainer, {
-            clientX: 400 + 8 - 3,
-            clientY: 300 + 8
-        });
-        expect(spy.called).to.be.ok();
-    });
     // 测试所有类型Geometry的公共方法
     var geometries = genAllTypeGeometries();
 
@@ -233,7 +56,6 @@ function registerGeometryCommonTest(geometry,_context) {
     }
 
     var type = geometry.getType();
-
     context(type+':getter and setters.',function() {
         it('id', function() {
             geometry.setId('id');
@@ -490,7 +312,7 @@ function registerGeometryCommonTest(geometry,_context) {
             setupGeometry();
 
             var projection = geometry._getProjection();
-            expect(projection.srs).to.be(_context.map.getProjection().srs);
+            expect(projection.code).to.be(_context.map.getProjection().code);
 
             teardownGeometry();
         });
@@ -510,18 +332,15 @@ function registerGeometryCommonTest(geometry,_context) {
             expect(measurer).to.be(Z.measurer.BaiduSphere);
         });
     });
-
-    //TODO zoomend的测试存在回调后map已经不存在的问题
-    /*context(type+':map events listeners',function() {
+    var spy;
+    context(type+':map events listeners',function() {
         it ('onZoomEnd',function() {
+            var map = _context.map;
+            map.config('zoomAnimation',false);
             setupGeometry();
-            var spy = sinon.spy(geometry,'_onZoomEnd');
-            _context.map.on('zoomend',function() {
-                expect(spy.called).to.be.ok();
-                teardownGeometry();
-            });
-            _context.map.zoomOut();
-
+            spy = sinon.spy(geometry,'_onZoomEnd');
+            map.zoomOut();
+            expect(spy.called).to.be.ok();
         });
-    });*/
+    });
 }
