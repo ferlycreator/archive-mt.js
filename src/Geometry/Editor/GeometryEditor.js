@@ -56,15 +56,13 @@ Z.Editor=Z.Class.extend({
         if (!this._geometry || !this._geometry.getMap() || this._geometry.editing) {return;}
         this.editing = true;
         var geometry = this._geometry;
-        this._geometryDraggable = geometry.options['draggable'];
         this.prepare();
-        geometry.config('draggable', false);
         //edits are applied to a shadow of geometry to improve performance.
         var shadow = geometry.copy();
         //TODO geometry copy没有将event复制到新建的geometry,对于编辑这个功能会存在一些问题
         //原geometry上可能绑定了其它监听其click/dragging的事件,在编辑时就无法响应了.
         shadow.copyEventListener(geometry);
-        shadow.setId(null).config({'draggable': true, 'dragShadow':true, 'cursor' : 'move'});
+        shadow.setId(null).config({'draggable': false});
         shadow._isRenderImmediate(true);
         shadow.on('dragend', this._onShadowDragEnd, this);
         this._shadow = shadow;
@@ -75,6 +73,9 @@ Z.Editor=Z.Class.extend({
             this._createOutline();
         }
         this._editStageLayer.bringToFront().addGeometry(shadow);
+        if (!(geometry instanceof Z.Marker)) {
+            this._createCenterHandle();
+        }
         if (geometry instanceof Z.Marker) {
             this.createMarkerEditor();
         } else if (geometry instanceof Z.Circle) {
@@ -105,10 +106,6 @@ Z.Editor=Z.Class.extend({
             this._update();
             this._shadow.remove();
             delete this._shadow;
-        }
-        if (!Z.Util.isNil(this._geometryDraggable)) {
-            this._geometry.config('draggable', this._geometryDraggable);
-            delete this._geometryDraggable;
         }
         this._geometry.show();
         this._editStageLayer.removeGeometry(this._editHandles);
@@ -205,6 +202,44 @@ Z.Editor=Z.Class.extend({
         return outline;
     },
 
+    _createCenterHandle:function() {
+        var me = this;
+        var center = this._shadow.getCenter();
+        var shadow;
+        var handle = me.createHandle(center,{
+            'markerType' : 'ellipse',
+            'dxdy'       : new Z.Point(0,0),
+            'cursor'     : 'move',
+            onDown:function(v, param) {
+                shadow = this._shadow.copy();
+                shadow._isRenderImmediate(true);
+                var symbol = shadow.getSymbol(),
+                    op = symbol['opacity'];
+                if (Z.Util.isNil(op)) {
+                    symbol['opacity'] = 0.5;
+                } else {
+                    symbol['opacity'] *= 0.5;
+                }
+                shadow.setSymbol(symbol).addTo(this._editStageLayer);
+            },
+            onMove:function(v,param) {
+                var dragOffset = param['dragOffset'];
+                shadow.translate(dragOffset);
+                this._geometry.translate(dragOffset);
+            },
+            onUp:function(param) {
+                this._shadow.setCoordinates(this._geometry.getCoordinates());
+                shadow.remove();
+                me._refresh();
+            }
+        });
+        this._appendHandler(handle);
+        this._addRefreshHook(function() {
+            var center = this._shadow.getCenter();
+            handle.setCoordinates(center);
+        });
+    },
+
     _createHandleInstance:function(coordinate,opts) {
         var symbol = {
             "markerType"        : opts['markerType'],
@@ -238,19 +273,19 @@ Z.Editor=Z.Class.extend({
         var me = this;
         function onHandleDragstart(param) {
             if (opts.onDown) {
-                opts.onDown.call(me, param['viewPoint']);
+                opts.onDown.call(me, param['viewPoint'], param);
             }
         }
         function onHandleDragging(param) {
             me._hideContext();
             var viewPoint = map._transformToViewPoint(handle._getPrjCoordinates());
             if (opts.onMove) {
-                opts.onMove.call(me, viewPoint);
+                opts.onMove.call(me, viewPoint, param);
             }
         }
         function onHandleDragEnd(ev) {
             if (opts.onUp) {
-                opts.onUp.call(me);
+                opts.onUp.call(me, ev);
             }
         }
         handle.on('dragstart', onHandleDragstart, this);
@@ -470,7 +505,6 @@ Z.Editor=Z.Class.extend({
             }
             shadow.setRadius(r);
             circle.setRadius(r);
-            // me._updateAndFireEvent('shapechange');
         });
     },
 
@@ -659,6 +693,9 @@ Z.Editor=Z.Class.extend({
                 onRefresh:function() {
                     vertex = getVertexCoordinates()[handle[propertyOfVertexIndex]];
                     handle.setCoordinates(vertex);
+                },
+                onUp:function() {
+                    me._refresh();
                 }
             });
             handle[propertyOfVertexIndex] = index;
