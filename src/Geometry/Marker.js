@@ -36,17 +36,17 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
         return pxExtent.contains(point);
     },
 
-    _computeExtent: function(projection) {
+    _computeExtent: function() {
         var coordinates = this.getCenter();
         if (!coordinates) {return null;}
         return new Z.Extent(coordinates,coordinates);
     },
 
-    _computeGeodesicLength:function(projection) {
+    _computeGeodesicLength:function() {
         return 0;
     },
 
-    _computeGeodesicArea:function(projection) {
+    _computeGeodesicArea:function() {
         return 0;
     }
 });

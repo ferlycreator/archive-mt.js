@@ -382,12 +382,6 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
      */
     toGeoJSONGeometry:function(opts) {
         var gJson = this._exportGeoJSONGeometry();
-        if (!opts || opts['crs']) {
-            var crs = this.getCRS();
-            if (crs) {
-                gJson['crs'] = crs;
-            }
-        }
         return gJson;
     },
 
@@ -414,10 +408,6 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
             feature['id'] = id;
         }
         var properties = {};
-        var crs = this.getCRS();
-        if (crs && (Z.Util.isNil(opts['crs']) || opts['crs'])) {
-            feature['crs'] = crs;
-        }
         //opts没有设定properties或者设定的properties值为true,则导出properties
         if (Z.Util.isNil(opts['properties']) || opts['properties']) {
             var geoProperties = this.getProperties();
@@ -501,28 +491,6 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         return [this.getCenter()];
     },
 
-    /**
-     * 返回Geometry的CRS
-     * @return {CRS} CRS
-     */
-    getCRS:function() {
-        //如果有map,则map的坐标类型优先级更高
-        var map = this.getMap();
-        if (map) {
-            return map.getCRS();
-        }
-        return this._crs;
-    },
-
-    /**
-     * 设置Geometry的CRS
-     * @param {CRS} crs CRS
-     */
-    setCRS:function(crs) {
-        this._crs = crs;
-        return this;
-    },
-
     //初始化传入的option参数
     _initOptions:function(opts) {
         if (!opts) {
@@ -532,17 +500,12 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         delete opts['symbol'];
         var id = opts['id'];
         delete opts['id'];
-        var crs = opts['crs'];
-        delete opts['crs'];
         Z.Util.setOptions(this,opts);
         if (symbol) {
             this.setSymbol(symbol);
         }
         if (!Z.Util.isNil(id)) {
             this.setId(id);
-        }
-        if (crs) {
-            this.setCRS(crs);
         }
     },
 

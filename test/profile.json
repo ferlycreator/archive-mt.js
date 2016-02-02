@@ -9,13 +9,7 @@
     //地图options
     "options":{
         "center" : [121, 19],
-        "zoom" : 15,
-        "crs":{
-            "type": "cnCoordinateType",
-            "properties":{
-                "name":"gcj02"
-            }
-        }
+        "zoom" : 15
     },
     //地图底图
     "baseLayer":{

@@ -31,7 +31,6 @@ Z.Map=Z.Class.extend({
 
         'enableZoom':true,
         'enableInfoWindow':true,
-        'crs':Z.CRS.GCJ02,
 
         'maxZoom' : null,
         'minZoom' : null,
@@ -46,16 +45,14 @@ Z.Map=Z.Class.extend({
             'INVALID_OPTION':'Invalid options provided.',
             'INVALID_CENTER':'Invalid Center',
             'INVALID_LAYER_ID':'Invalid id for the layer',
-            'DUPLICATE_LAYER_ID':'the id of the layer is duplicate with another layer',
-            'INVALID_CRS' : 'the crs is invalid'
+            'DUPLICATE_LAYER_ID':'the id of the layer is duplicate with another layer'
         },
         'zh-CN':{
             'NO_BASE_TILE_LAYER':'地图没有设置基础图层,请在调用Map.Load之前调用setBaseLayer设定基础图层',
             'INVALID_OPTION':'无效的option.',
             'INVALID_CENTER':'无效的中心点',
             'INVALID_LAYER_ID':'图层的id无效',
-            'DUPLICATE_LAYER_ID':'重复的图层id',
-            'INVALID_CRS' : '非法的CRS.'
+            'DUPLICATE_LAYER_ID':'重复的图层id'
         }
     },
 
@@ -641,35 +638,6 @@ Z.Map=Z.Class.extend({
             delete this._layerCache[id];
         }
         return this;
-    },
-
-
-
-    /**
-     * 获取地图的坐标类型
-     * @return {String} 坐标类型
-     * @expose
-     */
-    getCRS:function() {
-        return this.options['crs'];
-    },
-
-    /**
-     * 设置地图的坐标类型
-     * @param {String} crs 坐标类型
-     */
-    setCRS:function(crs) {
-        if (!crs || !(crs instanceof Z.CRS)) {
-            throw new Error(this.exceptions['INVALID_CRS']);
-        }
-        //判断coordinateType是否有效
-        this.options['crs'] = crs;
-        /**
-         * 触发map的crschanged事件
-         * @member maptalks.Map
-         * @event crschanged
-         */
-        this._fireEvent('crschanged');
     },
 
     toDataURL: function(options) {

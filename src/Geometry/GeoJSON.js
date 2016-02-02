@@ -11,7 +11,7 @@ Z.GeoJSON={
          * @return {Geometry | [Geometry]}      转化的Geometry对象或数组
          * @expose
          */
-        fromGeoJSON:function(geoJSON, crs) {
+        fromGeoJSON:function(geoJSON) {
             if (Z.Util.isString(geoJSON)) {
                 geoJSON = Z.Util.parseJSON(geoJSON);
             }
@@ -19,17 +19,11 @@ Z.GeoJSON={
                 var resultGeos = [];
                 for (var i=0,len=geoJSON.length;i<len;i++) {
                     var geo = this._fromGeoJSONInstance(geoJSON[i]);
-                    if (crs) {
-                        geo.setCRS(crs);
-                    }
                     resultGeos.push(geo);
                 }
                 return resultGeos;
             } else {
                 var resultGeo = this._fromGeoJSONInstance(geoJSON);
-                if (crs) {
-                    resultGeo.setCRS(crs);
-                }
                 return resultGeo;
             }
 
@@ -84,11 +78,8 @@ Z.GeoJSON={
             if (!geoJSONObj || Z.Util.isNil(geoJSONObj['type'])) {
                 return null;
             }
-            var crs = geoJSONObj['crs'];
             var options = {};
-            if (crs) {
-                options['crs'] = crs;
-            }
+
             var type = geoJSONObj['type'];
             if ('Feature' === type) {
                 var geoJSONGeo = geoJSONObj['geometry'];
@@ -98,9 +89,6 @@ Z.GeoJSON={
                 }
                 geometry.setId(geoJSONObj['id']);
                 geometry.setProperties(geoJSONObj['properties']);
-                if (crs) {
-                    geometry.setCRS(crs);
-                }
                 return geometry;
             } else if ('FeatureCollection' === type) {
                 var features = geoJSONObj['features'];
@@ -108,7 +96,7 @@ Z.GeoJSON={
                     return null;
                 }
                 //返回geometry数组
-                var result = this.fromGeoJSON(features, crs);
+                var result = this.fromGeoJSON(features);
                 return result;
             } else if (Z.Util.searchInArray(type,
                 ['Point','LineString','Polygon','MultiPoint','MultiLineString','MultiPolygon']) >= 0) {

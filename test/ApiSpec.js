@@ -149,11 +149,11 @@ describe('API', function () {
         it('addLayer', function () {
         });
 
-        it('getCRS', function () {
-            var t = map.getCRS();
+        // it('getCRS', function () {
+        //     var t = map.getCRS();
 
-            expect(t).to.not.be(null);
-        });
+        //     expect(t).to.not.be(null);
+        // });
 
         it('coordinateToContainerPoint', function () {
             var point = map.coordinateToContainerPoint({x: 1, y: 1});

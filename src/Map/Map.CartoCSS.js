@@ -46,7 +46,7 @@ Z.Map.include({
     _rendCartoCSS:function(cssContent) {
         var shader = new window['carto']['RendererJS']()['render'](cssContent);
         this._cartoCSSShader = shader;
-        this._fireEvent('cartocssloaded');
+        this._fireEvent('cartocssload');
     },
 
     /**
