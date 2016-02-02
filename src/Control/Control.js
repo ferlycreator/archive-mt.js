@@ -1,3 +1,6 @@
+//package
+Z.control = {};
+
 /**
  * 组件类
  * @class maptalks.Control

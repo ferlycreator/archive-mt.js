@@ -28,7 +28,7 @@
     });
 
     it("events", function() {
-        var nav = new Z.Control.Nav();
+        var nav = new Z.control.Nav();
         var spy = sinon.spy();
         nav._panToLeft = spy;
         nav._panToRight = spy;
@@ -66,7 +66,7 @@
         });
 
         it("can pan left correctly", function() {
-            var control = new Z.Control.Nav();
+            var control = new Z.control.Nav();
             map.addControl(control);
             var pos = map.offsetPlatform();
             var offset;
@@ -81,7 +81,7 @@
         });
 
         it("can pan right correctly", function() {
-            var control = new Z.Control.Nav();
+            var control = new Z.control.Nav();
             map.addControl(control);
             var pos = map.offsetPlatform();
             var offset;
@@ -95,7 +95,7 @@
         });
 
         it("can pan down correctly", function() {
-            var control = new Z.Control.Nav();
+            var control = new Z.control.Nav();
             map.addControl(control);
             var pos = map.offsetPlatform();
             var offset;
@@ -110,7 +110,7 @@
         });
 
         it("can pan up correctly", function() {
-            var control = new Z.Control.Nav();
+            var control = new Z.control.Nav();
             map.addControl(control);
             var pos = map.offsetPlatform();
             var offset;

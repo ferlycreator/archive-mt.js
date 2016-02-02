@@ -21,7 +21,7 @@ describe("Control Common Test", function() {
             subdomains: [1, 2, 3]
         });
         map.setBaseLayer(tile);
-        control = new Z.Control.Scale({
+        control = new Z.control.Scale({
             metric: true,
             imperial: true
         });

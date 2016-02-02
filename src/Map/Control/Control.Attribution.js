@@ -4,7 +4,7 @@
  * @extends maptalks.Control
  * @author Maptalks Team
  */
-Z.Control.Attribution = Z.Control.extend({
+Z.control.Attribution = Z.Control.extend({
 
     /**
      * @cfg {Object} options 版权信息控件属性
@@ -24,7 +24,7 @@ Z.Control.Attribution = Z.Control.extend({
 
 	buildOn: function (map) {
 		this._attributionContainer = Z.DomUtil.createEl('div');
-		Z.DomUtil.setStyle(this._attributionContainer, Z.Control.Attribution['maptalks-control-attribution-bg']);
+		Z.DomUtil.setStyle(this._attributionContainer, Z.control.Attribution['maptalks-control-attribution-bg']);
         Z.DomUtil.on(this._attributionContainer, 'mousedown mousemove dblclick contextmenu', Z.DomUtil.stopPropagation);
         this._update();
 		return this._attributionContainer;
@@ -67,7 +67,7 @@ Z.Map.addOnLoadHook(function () {
         if (!options['content']) {
             options['content'] = this.options['defaultContent'];
         }
-		this.attributionControl = new Z.Control.Attribution(options);
+		this.attributionControl = new Z.control.Attribution(options);
 		this.addControl(this.attributionControl);
 	}
 });

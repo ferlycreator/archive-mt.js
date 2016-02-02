@@ -5,7 +5,7 @@
  * @extends maptalks.Control
  * @author Maptalks Team
  */
-Z['Control']['Scale'] = Z.Control.Scale = Z.Control.extend({
+Z.control.Scale = Z.Control.extend({
 
     /**
      * @cfg {Object} options 比例尺属性
@@ -41,10 +41,10 @@ Z['Control']['Scale'] = Z.Control.Scale = Z.Control.extend({
 
     _addScales: function () {
         if (this.options['metric']) {
-            this._mScale = Z.DomUtil.createElOn('div', Z.Control.Scale['maptalks-control-scale'], this._scaleContainer);
+            this._mScale = Z.DomUtil.createElOn('div', Z.control.Scale['maptalks-control-scale'], this._scaleContainer);
         }
         if (this.options['imperial']) {
-            this._iScale = Z.DomUtil.createElOn('div', Z.Control.Scale['maptalks-control-scale'], this._scaleContainer);
+            this._iScale = Z.DomUtil.createElOn('div', Z.control.Scale['maptalks-control-scale'], this._scaleContainer);
         }
     },
 
@@ -113,7 +113,7 @@ Z.Map.mergeOptions({
 
 Z.Map.addOnLoadHook(function () {
     if (this.options['scaleControl']) {
-        this.scaleControl = new Z.Control.Scale(this.options['scaleControl']);
+        this.scaleControl = new Z.control.Scale(this.options['scaleControl']);
         this.addControl(this.scaleControl);
     }
 });

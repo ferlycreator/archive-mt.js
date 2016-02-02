@@ -1,4 +1,4 @@
-Z.Control.Toolbar = Z.Control.extend({
+Z.control.Toolbar = Z.Control.extend({
 
     options:{
         'position' : Z.Control['top_right'],

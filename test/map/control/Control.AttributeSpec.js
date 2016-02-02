@@ -28,7 +28,7 @@ describe("Control.Attribution", function() {
     });
 
     it("contains specified content", function() {
-        var control = new Z.Control.Attribution({
+        var control = new Z.control.Attribution({
             content: 'content'
         });
         map.addControl(control);
@@ -37,7 +37,7 @@ describe("Control.Attribution", function() {
     });
 
     it("setContent correctly", function() {
-        var control = new Z.Control.Attribution({
+        var control = new Z.control.Attribution({
             content: 'content'
         });
         map.addControl(control);

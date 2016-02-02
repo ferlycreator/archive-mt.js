@@ -4,7 +4,7 @@
  * @extends maptalks.Control
  * @author Maptalks Team
  */
-Z.Control.Nav = Z.Control.extend({
+Z.control.Nav = Z.Control.extend({
 
     /**
      * @cfg {Object} options 导航控件属性
@@ -29,7 +29,7 @@ Z.Map.mergeOptions({
 
 Z.Map.addOnLoadHook(function () {
     if (this.options['navControl']) {
-        this.navControl = new Z.Control.Nav();
+        this.navControl = new Z.control.Nav();
         this.addControl(this.navControl);
     }
 });

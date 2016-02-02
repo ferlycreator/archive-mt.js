@@ -590,7 +590,7 @@ describe('API', function () {
     describe('Control.Attribution', function() {
 
         it('setContent', function() {
-            var attribution = new Z.Control.Attribution({
+            var attribution = new Z.control.Attribution({
                 id: 'id',
                 position: {
                     bottom: 10,

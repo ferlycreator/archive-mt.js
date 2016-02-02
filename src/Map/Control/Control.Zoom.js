@@ -4,7 +4,7 @@
  * @extends maptalks.Control
  * @author Maptalks Team
  */
-Z['Control']['Zoom'] = Z.Control.Zoom = Z.Control.extend({
+Z.control.Zoom = Z.Control.extend({
 
     /**
      * @cfg {Object} options zoom控件属性
@@ -114,7 +114,7 @@ Z.Map.addOnLoadHook(function () {
         if (options === true) {
             options = {};
         }
-        this.zoomControl = new Z.Control.Zoom(options);
+        this.zoomControl = new Z.control.Zoom(options);
         this.addControl(this.zoomControl);
     }
 });

@@ -31,7 +31,7 @@ describe("Control.Zoom", function() {
     describe("Zoom button", function() {
 
         it("when enabled, can trigger correct events", function() {
-            var control = new Z.Control.Zoom();
+            var control = new Z.control.Zoom();
             var spy = sinon.spy();
             map.zoomIn = spy;
             map.zoomOut = spy;
@@ -48,7 +48,7 @@ describe("Control.Zoom", function() {
         });
 
         it("when zoom in button clicked, change zoom correctly", function() {
-            var control = new Z.Control.Zoom();
+            var control = new Z.control.Zoom();
             map.addControl(control);
             var zoom = map.getZoom();
 
@@ -57,7 +57,7 @@ describe("Control.Zoom", function() {
         });
 
         it("when zoom out button clicked, change zoom correctly", function() {
-            var control = new Z.Control.Zoom();
+            var control = new Z.control.Zoom();
             map.addControl(control);
             var zoom = map.getZoom();
 
@@ -66,7 +66,7 @@ describe("Control.Zoom", function() {
         });
 
        /* it("when disabled, don't update zoom of map", function() {
-            var control = new Z.Control.Zoom();
+            var control = new Z.control.Zoom();
             map.addControl(control);
             var zoom = map.getZoom();
             control.disable();

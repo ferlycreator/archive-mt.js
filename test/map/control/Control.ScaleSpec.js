@@ -28,7 +28,7 @@ describe("Control.Scale", function() {
     });
 
     it("widgets contain correct value after initialized", function() {
-        var control = new Z.Control.Scale({
+        var control = new Z.control.Scale({
             metric: true,
             imperial: true
         });

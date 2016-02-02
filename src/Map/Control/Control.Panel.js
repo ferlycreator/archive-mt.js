@@ -5,7 +5,7 @@
  * @mixins maptalks.Eventable
  * @author Maptalks Team
  */
-Z.Control.Panel = Z.Control.extend({
+Z.control.Panel = Z.Control.extend({
     /**
      * @cfg {Object} options 面板属性
      */
