@@ -98,9 +98,9 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         var size = this.getMap().getSize();
         //支持Canvas且地图容器大小没有超过canvas最大大小
         if (this.isCanvasRender() && Z.DomUtil.testCanvasSize(size)) {
-            this._render = new Z.render.tilelayer.Canvas(this);
+            this._render = new Z.renderer.tilelayer.Canvas(this);
         } else {
-            this._render = new Z.render.tilelayer.Dom(this);
+            this._render = new Z.renderer.tilelayer.Dom(this);
         }
     },
 

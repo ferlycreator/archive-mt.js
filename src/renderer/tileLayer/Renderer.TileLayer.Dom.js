@@ -1,11 +1,11 @@
-Z.render.tilelayer.Dom = function(layer) {
+Z.renderer.tilelayer.Dom = function(layer) {
     this._layer = layer;
     this._mapRender = layer.getMap()._getRender();
     this._tileMap={};
     this._registerEvents();
 };
 
-Z.Util.extend(Z.render.tilelayer.Dom.prototype, {
+Z.Util.extend(Z.renderer.tilelayer.Dom.prototype, {
     _registerEvents:function() {
         var map = this._layer.getMap();
         map.on('_moveend _resize _zoomend _zoomstart',this._onMapEvent,this);

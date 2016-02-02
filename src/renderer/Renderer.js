@@ -1,6 +1,6 @@
-Z.render={};
+Z.renderer={};
 
-Z.render.Canvas=Z.Class.extend({
+Z.renderer.Canvas=Z.Class.extend({
     _createCanvas:function() {
         if (this._canvas) {
             return;
@@ -31,8 +31,7 @@ Z.render.Canvas=Z.Class.extend({
             Z.Canvas.resetContextState(this._context);
         }
         var canvas = this._canvas;
-        //retina屏支持
-
+        //retina support
         var r = Z.Browser.retina?2:1;
         canvas.height = r * size['height'];
         canvas.width = r * size['width'];

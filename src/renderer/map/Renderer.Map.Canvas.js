@@ -1,4 +1,4 @@
-Z.render.map.Canvas = Z.render.map.Render.extend({
+Z.renderer.map.Canvas = Z.renderer.map.Renderer.extend({
     initialize:function(map) {
         this.map = map;
         //container is a <canvas> element

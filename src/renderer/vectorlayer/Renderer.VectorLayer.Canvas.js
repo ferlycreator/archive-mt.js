@@ -1,4 +1,4 @@
-Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
+Z.renderer.vectorlayer.Canvas=Z.renderer.Canvas.extend({
 
     initialize:function(layer) {
         this._layer = layer;
@@ -299,7 +299,7 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
     _loadResources:function(resourceUrls, onComplete, context) {
         var me = this;
         var preResources = this._resources;
-        this._resources = new Z.render.vectorlayer.Canvas.Resources();
+        this._resources = new Z.renderer.vectorlayer.Canvas.Resources();
         var promises = [];
         var crossOrigin = this._layer.options['crossOrigin'];
         function onPromiseCallback(_url) {
@@ -364,11 +364,11 @@ Z.render.vectorlayer.Canvas=Z.render.Canvas.extend({
 });
 
 
-Z.render.vectorlayer.Canvas.Resources=function() {
+Z.renderer.vectorlayer.Canvas.Resources=function() {
     this._resources = {};
 };
 
-Z.Util.extend(Z.render.vectorlayer.Canvas.Resources.prototype,{
+Z.Util.extend(Z.renderer.vectorlayer.Canvas.Resources.prototype,{
     addResource:function(url, img) {
         this._resources[url] = img;
     },

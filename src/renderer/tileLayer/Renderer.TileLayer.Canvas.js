@@ -1,4 +1,4 @@
-Z.render.tilelayer.Canvas = Z.render.Canvas.extend({
+Z.renderer.tilelayer.Canvas = Z.renderer.Canvas.extend({
 
     propertyOfPointOnTile   : '--maptalks-tile-point',
     propertyOfTileId        : '--maptalks-tile-id',

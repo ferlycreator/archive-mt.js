@@ -1,4 +1,4 @@
-Z.render.map.Dom = Z.render.map.Render.extend({
+Z.renderer.map.Dom = Z.renderer.map.Renderer.extend({
     initialize:function(map) {
         this.map = map;
         this._panels = map._panels;

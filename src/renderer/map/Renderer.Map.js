@@ -1,9 +1,9 @@
-Z.render.map={};
+Z.renderer.map={};
 
 /**
  * Common functions of map renders.
  */
-Z.render.map.Render = Z.Class.extend({
+Z.renderer.map.Renderer = Z.Class.extend({
 
     /**
      * get Transform Matrix for zooming

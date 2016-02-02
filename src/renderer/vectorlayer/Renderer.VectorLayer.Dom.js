@@ -1,11 +1,11 @@
-Z.render.vectorlayer.Dom = function(layer) {
+Z.renderer.vectorlayer.Dom = function(layer) {
     this._layer = layer;
     this._registerEvents();
     this._layerContainer = this.getMap()._getRender().getLayerRenderContainer(this._layer);
     this._vectorPaper = this.getMap()._getRender().getSvgPaper();
 };
 
-Z.Util.extend(Z.render.vectorlayer.Dom.prototype, {
+Z.Util.extend(Z.renderer.vectorlayer.Dom.prototype, {
 
     _registerEvents:function() {
         this.getMap().on('_zoomend',this._onMapEvent,this);

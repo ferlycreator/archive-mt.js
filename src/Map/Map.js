@@ -167,7 +167,7 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {Boolean}
      */
     isCanvasRender:function() {
-        return this._render && this._render instanceof Z.render.map.Canvas;
+        return this._render && this._render instanceof Z.renderer.map.Canvas;
     },
 
     /**
@@ -1009,9 +1009,9 @@ Z['Map']=Z.Map=Z.Class.extend({
 
     _initRender:function() {
         if (Z.Browser.canvas) {
-            this._render = new Z.render.map.Canvas(this);
+            this._render = new Z.renderer.map.Canvas(this);
         } else {
-            this._render = new Z.render.map.Dom(this);
+            this._render = new Z.renderer.map.Dom(this);
         }
     },
 
