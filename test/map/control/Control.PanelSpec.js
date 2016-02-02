@@ -16,7 +16,7 @@ describe("Control.Panel", function() {
     });
 
     it("add a panel", function() {
-        var panel = new maptalks.Control.Panel({
+        var panel = new maptalks.control.Panel({
             position : {//放置panel的位置
                 top: '150',
                 left: '150'
@@ -57,7 +57,7 @@ describe("Control.Panel", function() {
     //             top: '150',
     //             left: '150'
     //         };
-    //     var panel = new maptalks.Control.Panel({
+    //     var panel = new maptalks.control.Panel({
     //         position : position,
     //         draggable: true,//能否拖动
     //         custom: false, //content值能否为html

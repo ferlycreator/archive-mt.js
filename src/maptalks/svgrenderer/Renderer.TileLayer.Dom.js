@@ -1,6 +1,6 @@
 Z.renderer.tilelayer.Dom = function(layer) {
     this._layer = layer;
-    this._mapRender = layer.getMap()._getRender();
+    this._mapRender = layer.getMap()._getRenderer();
     this._tileMap={};
     this._registerEvents();
 };
@@ -155,7 +155,7 @@ Z.Util.extend(Z.renderer.tilelayer.Dom.prototype, {
     },
 
     initContainer:function() {
-        var mapContainer = this._mapRender.getLayerRenderContainer(this._layer);
+        var mapContainer = this._mapRender.getLayerRendererContainer(this._layer);
         if (!mapContainer) {return;}
         //生成地图瓦片装载div
         var tileContainer = Z.DomUtil.createEl('div');

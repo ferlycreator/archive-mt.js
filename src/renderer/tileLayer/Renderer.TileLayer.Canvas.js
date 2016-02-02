@@ -6,7 +6,7 @@ Z.renderer.tilelayer.Canvas = Z.renderer.Canvas.extend({
 
     initialize:function(layer) {
         this._layer = layer;
-        this._mapRender = layer.getMap()._getRender();
+        this._mapRender = layer.getMap()._getRenderer();
         this._tileCache = new Z.TileLayer.TileCache();
         this._registerEvents();
         this._tileQueue = {};
@@ -330,3 +330,5 @@ Z.renderer.tilelayer.Canvas = Z.renderer.Canvas.extend({
     }
 
 });
+
+Z.TileLayer.registerRenderer('canvas',Z.renderer.tilelayer.Canvas);

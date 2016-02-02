@@ -1,4 +1,4 @@
-Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
+Z.symbolizer.ShieldMarkerSymbolizer = Z.symbolizer.PointSymbolizer.extend({
     defaultSymbol:{
         "shieldFile"       : null,
         "shieldOpacity"    :  1,
@@ -32,29 +32,7 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
         this.shieldFileHeight = 0;
     },
 
-    svg:function(container, vectorcontainer, zIndex, _container, _vectorcontainer, callback, context) {
-        if (!this.shieldFile) {
-            var me = this;
-            var img = new Image();
-            var svgContainer = (_vectorcontainer && _vectorcontainer.appendChild)?_vectorcontainer:vectorcontainer;
-            img.onload=function() {
-                me.shieldFileWidth = this.width;
-                me.shieldFileHeight = this.height;
-                me.shieldFile = this;
-                me._svgMarkers(svgContainer,zIndex);
-                if (callback) {
-                    callback.call(context);
-                }
-            };
-            Z.Util.loadImage(img, this.symbol['shieldFile']);
-            //img.src=this.symbol['shieldFile'];
-        } else {
-            this._svgMarkers(vectorcontainer,zIndex);
-        }
-
-    },
-
-    canvas:function(ctx, resources) {
+    symbolize:function(ctx, resources) {
         var cookedPoints = this._getRenderContainerPoints();
         if (!Z.Util.isArrayHasData(cookedPoints)) {
             return;
@@ -134,30 +112,6 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
         return result;
     },
 
-    /**
-     * 生成图片标注
-     * @param point
-     */
-    createMarkerDom: function() {
-        var style = this.style;
-        var svgGroup = Z.SVG.group();
-         if (style['shieldFile']) {
-            var svgImage = Z.SVG.image(style['shieldFile'],this.shieldFileWidth,this.shieldFileHeight);
-            this._offsetMarker(svgImage, new Z.Point(-this.shieldFileWidth/2, -this.shieldFileHeight/2));
-            svgGroup.appendChild(svgImage);
-        }
-        var textStyle = this.style;
-        var textSize = this.textDesc['size'];
-        var svgText = Z.SVG.text(this.textContent, textStyle, textSize);
-        Z.SVG.updateTextStyle(svgText, textStyle, textSize);
-        var strokeAndFill = this.translateStrokeAndFill(textStyle);
-        Z.SVG.updateShapeStyle(svgText, strokeAndFill['stroke'], strokeAndFill['fill']);
-        this._offsetMarker(svgText, new Z.Point(style['textDx'], style['textDy']));
-        svgGroup.appendChild(svgText);
-        return svgGroup;
-    },
-
-
     translateStrokeAndFill:function(s) {
         var result = {
             "stroke" :{
@@ -187,8 +141,12 @@ Z.ShieldMarkerSymbolizer = Z.PointSymbolizer.extend({
 
 
 
-Z.ShieldMarkerSymbolizer.test=function(geometry, symbol) {
+Z.symbolizer.ShieldMarkerSymbolizer.test=function(geometry, symbol) {
     if (!geometry || !symbol) {
+        return false;
+    }
+    var layer = geometry.getLayer();
+    if (!layer || !layer.isCanvasRender()) {
         return false;
     }
     if (!Z.Util.isNil(symbol['shieldName']) || !Z.Util.isNil(symbol['shieldFile'])) {

@@ -22,11 +22,14 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
 
         'crossOrigin' : null,
 
-    'tileSize' : {
+        'tileSize' : {
             'width'   : 256,
             'height'  : 256
         },
-        'tileSystem' : null
+
+        'tileSystem' : null,
+
+        'renderer'  : 'canvas'
     },
 
 
@@ -57,14 +60,14 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
     load:function(){
         if (!this.getMap()) {return;}
         this._initTileConfig();
-        this._initRender();
-        this._render.initContainer();
+        this._initRenderer();
+        this._renderer.initContainer();
         var zIndex = this.getZIndex();
         if (!Z.Util.isNil(zIndex)) {
-            this._render.setZIndex(zIndex);
+            this._renderer.setZIndex(zIndex);
         }
         if (this._prepareLoad()) {
-            this._render.render(true);
+            this._renderer.render(true);
         }
     },
 
@@ -72,17 +75,9 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         return Z.Util.extend({}, this.options['tileSize']);
     },
 
-    isCanvasRender:function() {
-        if (Z.Browser.canvas) {
-            return true;
-        } else {
-            return false;
-        }
-    },
-
     clear:function() {
-        if (this._render) {
-            this._render.clear();
+        if (this._renderer) {
+            this._renderer.clear();
         }
     },
 
@@ -92,16 +87,6 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
     _prepareLoad:function() {
         //nothing to do here, just return true
         return true;
-    },
-
-    _initRender:function() {
-        var size = this.getMap().getSize();
-        //支持Canvas且地图容器大小没有超过canvas最大大小
-        if (this.isCanvasRender() && Z.DomUtil.testCanvasSize(size)) {
-            this._render = new Z.renderer.tilelayer.Canvas(this);
-        } else {
-            this._render = new Z.renderer.tilelayer.Dom(this);
-        }
     },
 
 
@@ -246,3 +231,5 @@ Z['TileLayer'] = Z.TileLayer = Z.Layer.extend({
         });
     }
 });
+
+Z.Util.extend(Z.TileLayer,Z.Renderable);

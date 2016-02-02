@@ -119,7 +119,7 @@ Z.OverlayLayer=Z.Layer.extend({
         }
         var map = this.getMap();
         if (map) {
-            this._getRender().render(geometries);
+            this._getRenderer().render(geometries);
             if (fitView) {
                 var z = map.getFitZoom(extent);
                 var center = {x:centerSum.x/fitCounter, y:centerSum.y/fitCounter};

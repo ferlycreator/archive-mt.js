@@ -6,8 +6,8 @@ Z.Geometry.include({
      */
     startEdit: function(opts) {
         this.endEdit();
-        this.editor = new Z.Editor(this,opts);
-        this.editor.start();
+        this._editor = new Z.Editor(this,opts);
+        this._editor.start();
     },
 
     /**
@@ -16,8 +16,9 @@ Z.Geometry.include({
      * @expose
      */
     endEdit: function() {
-        if (this.editor) {
-            this.editor.stop();
+        if (this._editor) {
+            this._editor.stop();
+            delete this._editor;
         }
     },
 
@@ -28,8 +29,8 @@ Z.Geometry.include({
      * @expose
      */
     isEditing: function() {
-        if (this.editor) {
-            return this.editor.isEditing();
+        if (this._editor) {
+            return this._editor.isEditing();
         }
         return false;
     }

@@ -1,8 +1,8 @@
 Z.renderer.vectorlayer.Dom = function(layer) {
     this._layer = layer;
     this._registerEvents();
-    this._layerContainer = this.getMap()._getRender().getLayerRenderContainer(this._layer);
-    this._vectorPaper = this.getMap()._getRender().getSvgPaper();
+    this._layerContainer = this.getMap()._getRenderer().getLayerRendererContainer(this._layer);
+    this._vectorPaper = this.getMap()._getRenderer().getSvgPaper();
 };
 
 Z.Util.extend(Z.renderer.vectorlayer.Dom.prototype, {

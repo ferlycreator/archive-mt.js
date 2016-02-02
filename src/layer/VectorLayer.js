@@ -1,4 +1,3 @@
-//TODO render的程序结构不是很好, 需要重构
 Z.VectorLayer=Z.OverlayLayer.extend({
     type : 'vector',
 
@@ -6,7 +5,8 @@ Z.VectorLayer=Z.OverlayLayer.extend({
         'enableSimplify'            : true,
         'cursor'                    : 'pointer',
         'geometryEvents'            : true,
-        'thresholdOfEcoTransform'   : 50
+        'thresholdOfEcoTransform'   : 50,
+        'renderer'                  : 'canvas'
     },
 
     /**
@@ -19,41 +19,15 @@ Z.VectorLayer=Z.OverlayLayer.extend({
 
     },
 
-    /**
-     * 是否用Canvas渲染
-     * @return {Boolean}
-     * @expose
-     */
-    isCanvasRender:function() {
-        if (this.getMap() && this.getMap().isCanvasRender()) {
-            return true;
-        }
-        if (Z.Browser.canvas) {
-            return true;
-        }
-        return false;
-    },
-
-
     load:function() {
-        if (!this._render) {
-            this._initRender();
-            this._render.setZIndex(this.getZIndex());
+        var renderer = this._getRenderer();
+        if (!renderer) {
+            this._initRenderer();
+            renderer = this._getRenderer();
+            renderer.setZIndex(this.getZIndex());
         }
-        this._render.render();
+        renderer.render();
         return this;
-    },
-
-    _initRender:function() {
-        if (this.isCanvasRender()) {
-            this._render = new Z.renderer.vectorlayer.Canvas(this,{
-                'visible':this.isVisible()
-            });
-        } else {
-            this._render = new Z.renderer.vectorlayer.Dom(this,{
-                'visible':this.isVisible()
-            });
-        }
     },
 
 
@@ -78,8 +52,10 @@ Z.VectorLayer=Z.OverlayLayer.extend({
         }
         delete this._geoCache[internalId];
         this._counter--;
-        if (this.isCanvasRender() && this._render) {
-            this._render.render();
+        if (this.isCanvasRender()) {
+            this._getRenderer().render();
         }
     }
 });
+
+Z.Util.extend(Z.VectorLayer,Z.Renderable);

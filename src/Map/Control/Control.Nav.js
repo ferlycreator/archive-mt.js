@@ -1,6 +1,6 @@
 /**
  * 导航控件
- * @class maptalks.Control.Nav
+ * @class maptalks.control.Nav
  * @extends maptalks.Control
  * @author Maptalks Team
  */

@@ -1,7 +1,7 @@
 /**
  * TODO 该控件完全照抄的Leaflet, 需要重写
  * 比例尺控件
- * @class maptalks.Control.Scale
+ * @class maptalks.control.Scale
  * @extends maptalks.Control
  * @author Maptalks Team
  */

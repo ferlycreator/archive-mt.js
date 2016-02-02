@@ -1,4 +1,4 @@
-Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
+Z.symbolizer.TextMarkerSymbolizer = Z.symbolizer.PointSymbolizer.extend({
     defaultSymbol:{
         "textFaceName"      : "arial",
         "textSize"          : 10,
@@ -29,11 +29,7 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
         this.textDesc = Z.StringUtil.splitTextToRow(this.textContent, this.style);
     },
 
-    svg:function(container, vectorcontainer, zIndex) {
-        this._svgMarkers(vectorcontainer,zIndex);
-    },
-
-    canvas:function(ctx, resources) {
+    symbolize:function(ctx, resources) {
         var cookedPoints = this._getRenderContainerPoints();
         if (!Z.Util.isArrayHasData(cookedPoints)) {
             return;
@@ -109,28 +105,17 @@ Z.TextMarkerSymbolizer = Z.PointSymbolizer.extend({
             }
         }
         return result;
-    },
-    /**
-     * 生成文字标注
-     * @param point
-     */
-    createMarkerDom: function() {
-        var style = this.style,
-            textContent = this.textContent,
-            size = this.textSize,
-            strokeAndFill = this.strokeAndFill;
-
-        var svgText = Z.SVG.text(textContent, style, size);
-        Z.SVG.updateTextStyle(svgText, style, size);
-        Z.SVG.updateShapeStyle(svgText, strokeAndFill['stroke'], strokeAndFill['fill']);
-        return svgText;
     }
 });
 
 
 
-Z.TextMarkerSymbolizer.test=function(geometry, symbol) {
+Z.symbolizer.TextMarkerSymbolizer.test=function(geometry, symbol) {
     if (!geometry || !symbol) {
+        return false;
+    }
+    var layer = geometry.getLayer();
+    if (!layer || !layer.isCanvasRender()) {
         return false;
     }
     if (!Z.Util.isNil(symbol['textName'])) {
@@ -139,7 +124,7 @@ Z.TextMarkerSymbolizer.test=function(geometry, symbol) {
     return false;
 };
 
-Z.TextMarkerSymbolizer.getFont=function(style) {
+Z.symbolizer.TextMarkerSymbolizer.getFont=function(style) {
     if (style['textFont']) {
         return style['textFont'];
     } else {

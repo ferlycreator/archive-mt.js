@@ -137,7 +137,7 @@ Z.Geometry.Drag = Z.Handler.extend({
             map.addLayer(this._dragStageLayer);
         }
         //copy resources to avoid repeat resource loading.
-        this._dragStageLayer._getRender()._resources = layer._getRender()._resources;
+        this._dragStageLayer._getRenderer()._resources = layer._getRenderer()._resources;
     },
 
     _dragging: function(param) {

@@ -5,7 +5,7 @@
  * @mixins maptalks.Eventable
  * @author Maptalks Team
  */
-Z['Map']=Z.Map=Z.Class.extend({
+Z.Map=Z.Class.extend({
 
     includes: [Z.Eventable,Z.HandlerBus],
 
@@ -34,7 +34,9 @@ Z['Map']=Z.Map=Z.Class.extend({
         'crs':Z.CRS.GCJ02,
 
         'maxZoom' : null,
-        'minZoom' : null
+        'minZoom' : null,
+
+        'renderer' : 'canvas'
     },
 
     //根据不同的语言定义不同的错误信息
@@ -125,8 +127,8 @@ Z['Map']=Z.Map=Z.Class.extend({
         this._enablePanAnimation = true;
         this._mapViewPoint=new Z.Point(0,0);
 
-        this._initRender();
-        this._getRender().initContainer();
+        this._initRenderer();
+        this._getRenderer().initContainer();
         this._updateMapSize(this._getContainerDomSize());
 
         this._Load();
@@ -167,7 +169,11 @@ Z['Map']=Z.Map=Z.Class.extend({
      * @return {Boolean}
      */
     isCanvasRender:function() {
-        return this._render && this._render instanceof Z.renderer.map.Canvas;
+        var renderer = this._getRenderer();
+        if (renderer) {
+            return renderer.isCanvasRender();
+        }
+        return false;
     },
 
     /**
@@ -675,7 +681,7 @@ Z['Map']=Z.Map=Z.Class.extend({
             mimeType = "image/png";
         }
         var download = options['download'];
-        var render = this._getRender();
+        var render = this._getRenderer();
         if (render) {
             var file = options['filename'];
             if (!file) {
@@ -860,7 +866,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     * 获取地图容器
     */
     getPanel: function() {
-        return this._getRender().getPanel();
+        return this._getRenderer().getPanel();
     },
 
 //-----------------------------------------------------------
@@ -1007,16 +1013,14 @@ Z['Map']=Z.Map=Z.Class.extend({
         this._callOnLoadHooks();
     },
 
-    _initRender:function() {
-        if (Z.Browser.canvas) {
-            this._render = new Z.renderer.map.Canvas(this);
-        } else {
-            this._render = new Z.renderer.map.Dom(this);
-        }
+    _initRenderer:function() {
+        var renderer = this.options['renderer'];
+        var clazz = Z.Map.getRendererClass(renderer);
+        this._renderer = new clazz(this);
     },
 
-    _getRender:function() {
-        return this._render;
+    _getRenderer:function() {
+        return this._renderer;
     },
 
     _loadAllLayers:function() {
@@ -1113,7 +1117,7 @@ Z['Map']=Z.Map=Z.Class.extend({
     _updateMapSize:function(mSize) {
         this.width = mSize['width'];
         this.height = mSize['height'];
-        this._getRender().updateMapSize(mSize);
+        this._getRenderer().updateMapSize(mSize);
         return this;
     },
 
@@ -1165,7 +1169,7 @@ Z['Map']=Z.Map=Z.Class.extend({
             return this._mapViewPoint;
         } else {
             this._mapViewPoint = this._mapViewPoint.add(offset);
-            this._getRender().offsetPlatform(offset);
+            this._getRenderer().offsetPlatform(offset);
             return this;
         }
     },
@@ -1300,3 +1304,4 @@ Z.Map.addOnLoadHook = function (fn) { // (Function) || (String, args...)
 };
 
 
+Z.Util.extend(Z.Map,Z.Renderable);

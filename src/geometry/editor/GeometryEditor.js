@@ -430,7 +430,7 @@ Z.Editor=Z.Class.extend({
 
             var blackList = null;
 
-            if (Z.VectorMarkerSymbolizer.test(geometryToEdit, symbol)) {
+            if (Z.symbolizer.VectorMarkerSymbolizer.test(geometryToEdit, symbol)) {
                 if (symbol['markerType'] === 'pin' || symbol['markerType'] === 'pie' || symbol['markerType'] === 'bar') {
                     //as these types of markers' anchor stands on its bottom, hide southern resize handles to prevent
                     //any change of coordinates when resizing it.

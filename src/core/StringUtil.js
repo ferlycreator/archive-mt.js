@@ -132,7 +132,7 @@ Z.StringUtil = {
      * @return {Object} 分割后的文本信息{rowNum: rowNum, textSize: textSize, rows: textRows};
      */
     splitTextToRow: function(text, style) {
-        var font = Z.TextMarkerSymbolizer.getFont(style);
+        var font = Z.symbolizer.TextMarkerSymbolizer.getFont(style);
         var lineSpacing = Z.Util.getValueOrDefault(style['textLineSpacing'],0);
         var rawTextSize = Z.StringUtil.stringLength(text,font);
         var textWidth = rawTextSize['width'];

@@ -2,7 +2,7 @@ Z.renderer.vectorlayer.Canvas=Z.renderer.Canvas.extend({
 
     initialize:function(layer) {
         this._layer = layer;
-        this._mapRender = layer.getMap()._getRender();
+        this._mapRender = layer.getMap()._getRenderer();
         this._registerEvents();
     },
 
@@ -66,7 +66,7 @@ Z.renderer.vectorlayer.Canvas=Z.renderer.Canvas.extend({
         }
 
         var me = this;
-        this._rendTimeout = setTimeout(function() {
+        this._renderTimeout = setTimeout(function() {
             if (ignorePromise) {
                 me.renderImmediate();
             } else {
@@ -263,8 +263,8 @@ Z.renderer.vectorlayer.Canvas=Z.renderer.Canvas.extend({
     },
 
     _clearTimeout:function() {
-        if (this._rendTimeout) {
-            clearTimeout(this._rendTimeout);
+        if (this._renderTimeout) {
+            clearTimeout(this._renderTimeout);
         }
     },
 
@@ -377,3 +377,6 @@ Z.Util.extend(Z.renderer.vectorlayer.Canvas.Resources.prototype,{
         return this._resources[url];
     }
 });
+
+Z.VectorLayer.registerRenderer('canvas',Z.renderer.vectorlayer.Canvas);
+

@@ -36,7 +36,7 @@ describe('#ConnectorLineSpec', function() {
         });
 
         it('can connect geometries with panel', function() {
-            var panel = new maptalks.Control.Panel({
+            var panel = new maptalks.control.Panel({
                 position : {//放置panel的位置
                     top: '150',
                     left: '150'

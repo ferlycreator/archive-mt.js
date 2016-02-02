@@ -1,6 +1,10 @@
 Z.renderer={};
 
 Z.renderer.Canvas=Z.Class.extend({
+    isCanvasRender:function() {
+        return true;
+    },
+
     _createCanvas:function() {
         if (this._canvas) {
             return;

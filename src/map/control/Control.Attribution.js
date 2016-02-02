@@ -1,6 +1,6 @@
 /**
  * 版权信息组件
- * @class maptalks.Control.Attribution
+ * @class maptalks.control.Attribution
  * @extends maptalks.Control
  * @author Maptalks Team
  */

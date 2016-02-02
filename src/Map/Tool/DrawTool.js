@@ -73,7 +73,7 @@ Z.DrawTool = Z.Class.extend({
         var resources = Z.Geometry.getExternalResource(symbol);
         if (Z.Util.isArrayHasData(resources)) {
             //load external resources at first
-            this.drawToolLayer._getRender()._loadResources(resources, onComplete, this);
+            this.drawToolLayer._getRenderer()._loadResources(resources, onComplete, this);
         } else {
             onComplete.call(this);
         }

@@ -29,7 +29,7 @@ Z.Canvas = {
     },
 
     prepareCanvasFont:function(ctx, style) {
-        var font = Z.TextMarkerSymbolizer.getFont(style);
+        var font = Z.symbolizer.TextMarkerSymbolizer.getFont(style);
         ctx.font = font;
         var fill=style['textFill'];
         if (!fill) {return;}

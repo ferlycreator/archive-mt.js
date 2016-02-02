@@ -1,4 +1,4 @@
-Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
+Z.symbolizer.StrokeAndFillSymbolizer = Z.symbolizer.CanvasSymbolizer.extend({
 
     defaultSymbol:{
         "lineColor" : "#474cf8",
@@ -18,34 +18,12 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
         this.strokeAndFill = this.translateStrokeAndFill(this.style);
     },
 
-    svg:function(container, vectorContainer , zIndex) {
-        var svgPath = this.geometry._getRenderPath();
-        if (!this.svgDom) {
-            this.svgDom = Z.SVG.path(svgPath);
-            //鼠标样式
-            this.svgDom.style.cursor = "pointer";
-            vectorContainer.appendChild(this.svgDom);
-        } else {
-            Z.SVG.updatePath(this.svgDom, svgPath);
-        }
-        var strokeAndFill = this.strokeAndFill;
-        if (this.geometry instanceof Z.Polygon) {
-            Z.SVG.updateShapeStyle(this.svgDom, strokeAndFill['stroke'], strokeAndFill['fill'], this.getMap()._getRender().getSvgPaper());
-        } else {
-            Z.SVG.updateShapeStyle(this.svgDom, strokeAndFill['stroke'], {"fill": "#ffffff","fill-opacity": 0});
-        }
-    },
-
-    canvas:function(ctx, resources) {
+    symbolize:function(ctx, resources) {
         var canvasResources = this._getRenderResources();
         var strokeAndFill = this.strokeAndFill;
         this._prepareContext(ctx);
         Z.Canvas.prepareCanvas(ctx, strokeAndFill['stroke'], strokeAndFill['fill'], resources);
         canvasResources['fn'].apply(this, [ctx].concat(canvasResources['context']).concat([strokeAndFill['stroke']['stroke-opacity'], strokeAndFill['fill']['fill-opacity']]));
-    },
-
-    getSvgDom:function() {
-        return [this.svgDom];
     },
 
     getPixelExtent:function() {
@@ -93,38 +71,6 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
 
     _getRenderResources:function() {
         return this.geometry._getPainter()._getRenderResources();
-    },
-
-    refresh:function() {
-        var layer = this.geometry.getLayer();
-        if (!layer.isCanvasRender()) {
-            this.svg.apply(this,layer._getRender().getPaintContext());
-        }
-    },
-
-    //所有point symbolizer的共同的remove方法
-    remove:function() {
-        if (this.svgDom) {
-            Z.DomUtil.removeDomNode(this.svgDom);
-        }
-    },
-
-    setZIndex:function(zIndex) {
-        if (this.svgDom) {
-            this.svgDom.style.zIndex = zIndex;
-        }
-    },
-
-    show:function(){
-        if (this.svgDom) {
-            this.svgDom.style.display = "";
-        }
-    },
-
-    hide:function(){
-        if (this.svgDom) {
-            this.svgDom.style.display = "none";
-        }
     },
 
     translate:function() {
@@ -179,8 +125,12 @@ Z.StrokeAndFillSymbolizer = Z.Symbolizer.extend({
 
 });
 
-Z.StrokeAndFillSymbolizer.test=function(geometry,symbol) {
+Z.symbolizer.StrokeAndFillSymbolizer.test=function(geometry,symbol) {
     if (!geometry) {
+        return false;
+    }
+    var layer = geometry.getLayer();
+    if (!layer || !layer.isCanvasRender()) {
         return false;
     }
     if (geometry instanceof Z.Marker) {

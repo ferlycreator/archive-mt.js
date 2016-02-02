@@ -218,7 +218,7 @@ gulp.task('test', ['styles'], function (done) {
   };
   if (options.coverage) {
     karmaConfig.preprocessors = {
-      'src/!(Maptalks)/**/!(Matrix|Promise).js': ['coverage']
+      'src/!(maptalks)/**/!(Matrix|Promise).js': ['coverage']
     };
     /*karmaConfig.coverageReporter = {
       type : 'html',

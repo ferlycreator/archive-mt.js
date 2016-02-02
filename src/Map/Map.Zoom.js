@@ -36,7 +36,7 @@ Z.Map.include({
          * @return {Object} params: {'target':this}
          */
         var zoomDuration = this.options['zoomAnimationDuration']*Math.abs(endScale - startScale)/Math.abs(endScale-1);
-        this._getRender().onZoomStart(startScale, endScale, transOrigin, zoomDuration, function(){
+        this._getRenderer().onZoomStart(startScale, endScale, transOrigin, zoomDuration, function(){
             me._onZoomEnd(nextZoomLevel, zoomOffset);
         });
     },
@@ -48,7 +48,7 @@ Z.Map.include({
         }
         var _originZoomLevel = this._originZoomLevel;
         this._originZoomLevel=nextZoomLevel;
-        this._getRender().onZoomEnd();
+        this._getRenderer().onZoomEnd();
         this._zooming = false;
         this._enablePanAnimation=true;
         /**

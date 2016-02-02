@@ -39,7 +39,7 @@ Z.Map.include({
     },
 
     _panAnimation:function(offset, t) {
-        this._getRender().panAnimation(offset, t);
+        this._getRenderer().panAnimation(offset, t);
     }
 
 });

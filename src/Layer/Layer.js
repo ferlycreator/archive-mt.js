@@ -42,8 +42,8 @@ Z['Layer']=Z.Layer=Z.Class.extend({
             var layerList = this._getLayerList();
             this.map._sortLayersByZIndex(layerList);
         }
-        if (this._render) {
-            this._render.setZIndex(zIndex);
+        if (this._renderer) {
+            this._renderer.setZIndex(zIndex);
         }
         return this;
     },
@@ -71,6 +71,19 @@ Z['Layer']=Z.Layer=Z.Class.extend({
         this._id = id;
         this.fire('idchange');
         return this;
+    },
+
+    /**
+     * 是否用Canvas渲染
+     * @return {Boolean}
+     * @expose
+     */
+    isCanvasRender:function() {
+        var renderer = this._getRenderer();
+        if (renderer) {
+            return renderer.isCanvasRender();
+        }
+        return false;
     },
 
     /**
@@ -137,8 +150,8 @@ Z['Layer']=Z.Layer=Z.Class.extend({
     show:function() {
         if (!this.options['visible']) {
             this.options['visible'] = true;
-            if (this._getRender()) {
-                this._getRender().show();
+            if (this._getRenderer()) {
+                this._getRenderer().show();
             }
         }
         return this;
@@ -150,8 +163,8 @@ Z['Layer']=Z.Layer=Z.Class.extend({
     hide:function() {
         if (this.options['visible']) {
             this.options['visible'] = false;
-            if (this._getRender()) {
-                this._getRender().hide();
+            if (this._getRenderer()) {
+                this._getRenderer().hide();
             }
         }
         return this;
@@ -214,7 +227,7 @@ Z['Layer']=Z.Layer=Z.Class.extend({
         if (!this.getMap() || this.getMap().isBusy()) {
             return;
         }
-        var render = this._getRender();
+        var render = this._getRenderer();
         render && render.render();
     },
 
@@ -223,27 +236,33 @@ Z['Layer']=Z.Layer=Z.Class.extend({
         if (!this.getMap() || this.getMap().isBusy()) {
             return;
         }
-        var render = this._getRender();
+        var render = this._getRenderer();
         render && render.render();
     },
 
     _onRemove:function() {
         this.clear();
-        if (this._render) {
-            this._render.remove();
-            delete this._render;
+        if (this._renderer) {
+            this._renderer.remove();
+            delete this._renderer;
         }
         delete this.map;
     },
 
-     _bindMap:function(map,zIndex) {
+    _bindMap:function(map,zIndex) {
         if (!map) {return;}
         this.map = map;
         this.setZIndex(zIndex);
     },
 
-    _getRender:function() {
-        return this._render;
+    _initRenderer:function() {
+        var renderer = this.options['renderer'];
+        var clazz = this.constructor.getRendererClass(renderer);
+        this._renderer = new clazz(this);
+    },
+
+    _getRenderer:function() {
+        return this._renderer;
     },
 
 

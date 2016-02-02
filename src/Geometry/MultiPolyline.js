@@ -4,7 +4,7 @@
  * @extends maptalks.MultiPoly
  * @author Maptalks Team
  */
-Z['MultiLineString']=Z['MultiPolyline']=Z.MultiPolyline = Z.MultiPoly.extend({
+Z.MultiLineString=Z.MultiPolyline = Z.MultiPoly.extend({
     GeometryType:Z.Polyline,
 
     type:Z.Geometry['TYPE_MULTILINESTRING'],

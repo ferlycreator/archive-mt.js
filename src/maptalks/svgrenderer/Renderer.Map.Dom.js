@@ -5,12 +5,16 @@ Z.renderer.map.Dom = Z.renderer.map.Renderer.extend({
         this._registerEvents();
     },
 
+    isCanvasRender:function() {
+        return false;
+    },
+
     /**
      * 获取图层渲染容器
      * @param  {Layer} layer 图层
      * @return {Dom}       容器Dom对象
      */
-    getLayerRenderContainer:function(layer) {
+    getLayerRendererContainer:function(layer) {
         if (layer instanceof Z.TileLayer) {
             return this._panels.tileContainer;
         } else if (layer instanceof Z.VectorLayer) {

@@ -6,12 +6,16 @@ Z.renderer.map.Canvas = Z.renderer.map.Renderer.extend({
         this._registerEvents();
     },
 
+    isCanvasRender:function() {
+        return true;
+    },
+
     /**
      * 获取图层渲染容器
      * @param  {Layer} layer 图层
      * @return {Dom}       容器Dom对象
      */
-    getLayerRenderContainer:function(layer) {
+    getLayerRendererContainer:function(layer) {
         if (!this._canvas) {
             this._createCanvas();
         }
@@ -37,7 +41,7 @@ Z.renderer.map.Canvas = Z.renderer.map.Renderer.extend({
             if (!layers[i].isVisible()) {
                 continue;
             }
-            var render = layers[i]._getRender();
+            var render = layers[i]._getRenderer();
             if (render) {
                 var layerImage = render.getCanvasImage();
                 if (layerImage && layerImage['image']) {
@@ -59,7 +63,7 @@ Z.renderer.map.Canvas = Z.renderer.map.Renderer.extend({
         var baseLayer = map.getBaseLayer();
         var baseLayerImage;
         if (baseLayer) {
-            baseLayerImage =  baseLayer._getRender().getCanvasImage();
+            baseLayerImage =  baseLayer._getRenderer().getCanvasImage();
             this._canvasBg = Z.DomUtil.copyCanvas(baseLayerImage['image']);
             this._canvasBgRes = map._getResolution();
             this._canvasBgCoord = map.containerPointToCoordinate(baseLayerImage['point']);
@@ -144,7 +148,7 @@ Z.renderer.map.Canvas = Z.renderer.map.Renderer.extend({
             if (!layers[i].isVisible()) {
                 continue;
             }
-            var render = layers[i]._getRender();
+            var render = layers[i]._getRenderer();
             if (render) {
                 if (!ecoTransform) {
                     this._context.save();
@@ -311,7 +315,7 @@ Z.renderer.map.Canvas = Z.renderer.map.Renderer.extend({
                 for (var i = layers.length - 1; i >= 0; i--) {
                     var layer = layers[i];
                     if (layer instanceof Z.VectorLayer && layer.isCanvasRender()) {
-                        if (layer.options['cursor'] !== 'default' && layer._getRender().hitDetect(vp)) {
+                        if (layer.options['cursor'] !== 'default' && layer._getRenderer().hitDetect(vp)) {
                             cursor = layer.options['cursor'];
                             hit = true;
                             break;
@@ -454,3 +458,5 @@ Z.renderer.map.Canvas = Z.renderer.map.Renderer.extend({
         this.map.checkSize();
     }
 });
+
+Z.Map.registerRenderer('canvas', Z.renderer.map.Canvas);

@@ -1,13 +1,5 @@
 Z.Painter = Z.Class.extend({
-    //注册的symbolizer
-    registerSymbolizers : [
-        Z.StrokeAndFillSymbolizer,
-        Z.ImageMarkerSymbolizer,
-        Z.VectorMarkerSymbolizer,
-        Z.ShieldMarkerSymbolizer,
-        Z.TextMarkerSymbolizer
 
-    ],
 
     initialize:function(geometry) {
         this.geometry = geometry;
@@ -25,11 +17,12 @@ Z.Painter = Z.Class.extend({
     _createSymbolizers:function() {
         var symbol = this._getSymbol();
         var symbolizers = [];
-        for (var i = this.registerSymbolizers.length - 1; i >= 0; i--) {
-            if (this.registerSymbolizers[i].test(this.geometry, symbol)) {
-                var symbolizer = new this.registerSymbolizers[i](symbol, this.geometry);
+        var regSymbolizers = Z.Painter.registerSymbolizers;
+        for (var i = regSymbolizers.length - 1; i >= 0; i--) {
+            if (regSymbolizers[i].test(this.geometry, symbol)) {
+                var symbolizer = new regSymbolizers[i](symbol, this.geometry);
                 symbolizers.push(symbolizer);
-                if (symbolizer instanceof Z.PointSymbolizer) {
+                if (symbolizer instanceof Z.symbolizer.PointSymbolizer) {
                     this._hasPointSymbolizer = true;
                 }
             }
@@ -71,7 +64,7 @@ Z.Painter = Z.Class.extend({
         var map = this.getMap();
         var layer = this.geometry.getLayer();
         if (layer.isCanvasRender()) {
-            matrix = map._getRender().getTransform();
+            matrix = map._getRenderer().getTransform();
         }
 
         var context =this._rendResources['context'];
@@ -135,52 +128,18 @@ Z.Painter = Z.Class.extend({
      * 绘制图形
      */
     paint:function() {
-        var contexts = this.geometry.getLayer()._getRender().getPaintContext();
+        var contexts = this.geometry.getLayer()._getRenderer().getPaintContext();
         if (!contexts || !this.symbolizers) {
             return;
         }
         var layer = this.geometry.getLayer();
-        var isCanvas = layer.isCanvasRender();
+        var args = contexts.concat([this]);
         for (var i = this.symbolizers.length - 1; i >= 0; i--) {
             var symbolizer = this.symbolizers[i];
-            if (isCanvas) {
-                symbolizer.canvas.apply(symbolizer, contexts);
-            } else {
-                symbolizer.svg.apply(symbolizer, contexts.concat(this._registerEvents, this));
-            }
+            symbolizer.symbolize.apply(symbolizer, args);
         }
         this._painted = true;
     },
-
-    _registerEvents:function() {
-        var layer = this.geometry.getLayer();
-        if (layer.isCanvasRender()) {
-            return;
-        }
-        //svg类型
-        var geometry = this.geometry;
-        var doms = this.getSvgDom();
-        if (Z.Util.isArrayHasData(doms)) {
-            for (var j = doms.length - 1; j >= 0; j--) {
-                Z.DomUtil.on(doms[j], 'mousedown mouseup click dblclick contextmenu', geometry._onEvent, geometry);
-                Z.DomUtil.on(doms[j], 'mouseover', geometry._onMouseOver, geometry);
-                Z.DomUtil.on(doms[j], 'mouseout', geometry._onMouseOut, geometry);
-            }
-        }
-    },
-
-    /**
-     * 获取svg图形的dom
-     */
-    getSvgDom:function() {
-        var result = [];
-        for (var i = this.symbolizers.length - 1; i >= 0; i--) {
-            var doms = this.symbolizers[i].getSvgDom();
-            result = result.concat(doms);
-        }
-        return result;
-    },
-
 
     _eachSymbolizer:function(fn,context) {
         if (!this.symbolizers) {
@@ -265,7 +224,7 @@ Z.Painter = Z.Class.extend({
         }
         var needPromise = false,
             layer = geometry.getLayer(),
-            render = layer._getRender();
+            render = layer._getRenderer();
         if (!render) {
             return;
         }
@@ -330,3 +289,12 @@ Z.Painter = Z.Class.extend({
         delete this._viewExtent;
     }
 });
+
+//注册的symbolizer
+Z.Painter.registerSymbolizers = [
+        Z.symbolizer.StrokeAndFillSymbolizer,
+        Z.symbolizer.ImageMarkerSymbolizer,
+        Z.symbolizer.VectorMarkerSymbolizer,
+        Z.symbolizer.ShieldMarkerSymbolizer,
+        Z.symbolizer.TextMarkerSymbolizer
+    ];

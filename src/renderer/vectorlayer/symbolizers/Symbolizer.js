@@ -1,3 +1,5 @@
+//package
+Z.symbolizer = {};
 /**
  * Symbolizer共同的父类,需要实现的接口有
  * @class maptalks.Symbolizer
@@ -12,24 +14,6 @@
  * test: 定义在类上, 测试传入的geometry和symbol是否应由该Symbolizer渲染
  */
 Z.Symbolizer = Z.Class.extend({
-    _prepareContext:function(ctx) {
-        var symbol = this.symbol;
-        // ctx.restore();
-        Z.Canvas.setDefaultCanvasSetting(ctx);
-        var layer = this.geometry.getLayer(),
-            layerOpacity = layer.options['opacity'];
-        if (Z.Util.isNumber(symbol['opacity'])) {
-            ctx.globalAlpha = symbol['opacity']*layerOpacity;
-        } else {
-            ctx.globalAlpha = layerOpacity;
-        }
-        var shadowBlur = this.geometry.options['shadowBlur'];
-        if (Z.Util.isNumber(shadowBlur) && shadowBlur > 0) {
-            ctx.shadowBlur = shadowBlur;
-            ctx.shadowColor = this.geometry.options['shadowColor'];
-        }
-    },
-
     getMap:function() {
         return this.geometry.getMap();
     }

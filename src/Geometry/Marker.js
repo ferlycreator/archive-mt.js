@@ -28,7 +28,7 @@ Z['Marker']=Z.Marker=Z.Geometry.extend({
      * @return {Boolean}
      */
     _canEdit:function() {
-        return Z.VectorMarkerSymbolizer.test(this, this.getSymbol()) || Z.ImageMarkerSymbolizer.test(this, this.getSymbol());
+        return Z.symbolizer.VectorMarkerSymbolizer.test(this, this.getSymbol()) || Z.symbolizer.ImageMarkerSymbolizer.test(this, this.getSymbol());
     },
 
     _containsPoint: function(point) {
