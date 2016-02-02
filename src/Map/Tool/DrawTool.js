@@ -5,7 +5,7 @@
  * @mixins maptalks.Eventable
  * @author Maptalks Team
  */
-Z['DrawTool'] = Z.DrawTool = Z.Class.extend({
+Z.DrawTool = Z.Class.extend({
     includes: [Z.Eventable],
 
     /**

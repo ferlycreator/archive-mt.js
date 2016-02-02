@@ -5,7 +5,7 @@
  * @mixins maptalks.Eventable
  * @author Maptalks Team
  */
-Z['ComputeAreaTool'] = Z.ComputeAreaTool = Z.Class.extend({
+Z.ComputeAreaTool = Z.Class.extend({
     includes: [Z.Eventable],
 
     options:{

@@ -5,7 +5,7 @@
  * @mixins maptalks.Eventable
  * @author Maptalks Team
  */
-Z['DistanceTool'] = Z.DistanceTool = Z.Class.extend({
+Z.DistanceTool = Z.Class.extend({
     includes: [Z.Eventable],
 
     /**
