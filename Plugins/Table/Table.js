@@ -92,6 +92,41 @@ maptalks.Table = maptalks.Class.extend({
         return this;
     },
 
+    toJSON: function(){
+        return {
+            'options': this.options,
+            'colums' : this._columns,
+            'colNum': this._colNum,
+            'data': this._data,
+            'rowNum': this._rowNum,
+            'rowHeights': this._rowHeights,
+            'colWidths': this._colWidths
+        };
+    },
+
+    initByJson: function(json) {
+        var options = json['options'];
+        this._columns = json['colums'];
+        this._colNum = json['colNum'];
+        this._data = [];
+        //处理其中geometry
+        var data = json['data'];
+        if(options['dynamic']&&data&&data.length>0) {
+            for(var i=0,len=data.length;i<len;i++) {
+                var item = data[i];
+                var geoJson = item[maptalks.Table.dataindex_geometry];
+                item[maptalks.Table.dataindex_geometry] = maptalks.Geometry.fromJSON(geoJson);
+                this._data.push(item);
+            }
+        } else {
+            this._data = json['data'];
+        }
+        this._rowNum = json['rowNum'];
+        this._rowHeights = json['rowHeights'];
+        this._colWidths = json['colWidths'];
+        return this;
+    },
+
     /**
      * add table to layer.
      * @param {maptalks.Layer} layer
@@ -583,6 +618,8 @@ maptalks.Table = maptalks.Class.extend({
         }
         this._adjustCols=[];
         delete this._adjustCols;
+        //抛出事件
+        this.fire('remove',this);
     },
 
     _addToLayer: function(table, init) {
@@ -1099,13 +1136,17 @@ maptalks.Table = maptalks.Class.extend({
     },
 
     _refrestAdjustLayer: function(map) {
-        for(var i=0,len=this._adjustRows.length;i<len;i++) {
-            var line = this._adjustRows[i];
-            line.remove();
+        if(this._adjustRows) {
+            for(var i=0,len=this._adjustRows.length;i<len;i++) {
+                var line = this._adjustRows[i];
+                line.remove();
+            }
         }
-        for(var i=0,len=this._adjustCols.length;i<len;i++) {
-            var line = this._adjustCols[i];
-            line.remove();
+        if(this._adjustCols) {
+            for(var i=0,len=this._adjustCols.length;i<len;i++) {
+                var line = this._adjustCols[i];
+                line.remove();
+            }
         }
         this._createAdjustLayer(map);
 
@@ -1122,23 +1163,24 @@ maptalks.Table = maptalks.Class.extend({
         this._adjustRows = new Array();
         this._adjustCols = new Array();
         //add row adjust line
-        for(var i=0,len=this._table.length;i<len;i++) {
-            var row = this._table[i];
-            if(!row) return;
-            var cell = row[0];
-            var rowLine = this._createAdjustLineForRow(map,cell);
-            this._adjustRows.push(rowLine);
+        if(this._table) {
+            for(var i=0,len=this._table.length;i<len;i++) {
+                var row = this._table[i];
+                if(!row) return;
+                var cell = row[0];
+                var rowLine = this._createAdjustLineForRow(map,cell);
+                this._adjustRows.push(rowLine);
+            }
+            this._adjustLayer.addGeometry(this._adjustRows);
+            //add col adjust line
+            var firstRow = this._table[0];
+            for(var i=0;i<this._colNum;i++) {
+                var cell = firstRow[i];
+                var colLine = this._createAdjustLineForCol(map,cell);
+                this._adjustCols.push(colLine);
+            }
+            this._adjustLayer.addGeometry(this._adjustCols);
         }
-        this._adjustLayer.addGeometry(this._adjustRows);
-
-        //add col adjust line
-        var firstRow = this._table[0];
-        for(var i=0;i<this._colNum;i++) {
-            var cell = firstRow[i];
-            var colLine = this._createAdjustLineForCol(map,cell);
-            this._adjustCols.push(colLine);
-        }
-        this._adjustLayer.addGeometry(this._adjustCols);
     },
 
     _createAdjustLineForRow: function(map,cell) {
