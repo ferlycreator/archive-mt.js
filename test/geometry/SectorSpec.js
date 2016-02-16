@@ -5,25 +5,15 @@ describe('SectorSpec', function() {
     var tile;
     var center = new Z.Coordinate(118.846825, 32.046534);
     var layer;
+    var canvasContainer;
 
     beforeEach(function() {
-        container = document.createElement('div');
-        container.style.width = '800px';
-        container.style.height = '600px';
-        document.body.appendChild(container);
-        var option = {
-            zoom: 17,
-            center: center
-        };
-        map = new Z.Map(container, option);
-        tile = new Z.TileLayer('tile', {
-
-            urlTemplate:"http://t{s}.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}",
-            subdomains: [1, 2, 3]
-        });
-        map.setBaseLayer(tile);
+       var setups = commonSetupMap(center);
+        container = setups.container;
+        map = setups.map;
         layer = new Z.VectorLayer('id');
         map.addLayer(layer);
+        canvasContainer = map._panels.mapPlatform;
     });
 
     afterEach(function() {
@@ -125,5 +115,30 @@ describe('SectorSpec', function() {
     it('can have various symbols',function() {
         var vector = new Z.Sector(center, 1, 0, 270);
         GeoSymbolTester.testGeoSymbols(vector, map);
+    });
+
+    it("Sector._containsPoint", function() {
+        layer.clear();
+        var geometry = new Z.Sector(center, 10, 90, 405, {
+            symbol: {
+                'lineWidth': 6
+            }
+        });
+        layer.addGeometry(geometry);
+
+        var spy = sinon.spy();
+        geometry.on('click', spy);
+
+        happen.click(canvasContainer, {
+            clientX: 400 + 8 + (10 - 3),
+            clientY: 300 + 8 - (10 - 2)
+        });
+        expect(spy.called).to.not.be.ok();
+
+        happen.click(canvasContainer, {
+            clientX: 400 + 8,
+            clientY: 300 + 8 - 10
+        });
+        expect(spy.called).to.be.ok();
     });
 });

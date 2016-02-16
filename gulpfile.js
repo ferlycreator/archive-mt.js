@@ -175,18 +175,16 @@ gulp.task('connect', function() {
   });
 });
 
-gulp.task('reload', ['build'], function () {
+gulp.task('reload', [], function () {
   gulp.src(['./dist/**/*'])
     .pipe(connect.reload());
 });
 
 gulp.task('watch', function () {
-  gulp.watch([
-    'src/**/*.js',
-    'examples/**/*',
-    'assets/css/*.css',
-    'build/srcList.txt'
-  ], ['reload']);
+  gulp.watch(['src/**/*.js', 'build/srcList.txt'], ['scripts', 'reload']);
+  gulp.watch(['assets/css**/*.css','assets/images/*.*'], ['styles', 'reload']);
+  gulp.watch(['examples/**/*'], ['examples', 'reload']);
+
 });
 
 gulp.task('server',['build','connect','watch']);
@@ -220,7 +218,7 @@ gulp.task('test', ['styles'], function (done) {
   };
   if (options.coverage) {
     karmaConfig.preprocessors = {
-      'src/**/*.js': 'coverage'
+      'src/!(Maptalks)/**/!(Matrix|Promise).js': ['coverage']
     };
     /*karmaConfig.coverageReporter = {
       type : 'html',

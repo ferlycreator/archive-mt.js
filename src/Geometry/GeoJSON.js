@@ -69,7 +69,7 @@ Z.GeoJSON={
                         result.push(this.fromGeoJSONCoordinates(child));
                     }
                 } else {
-                    result.push(child);
+                    result.push(new Z.Coordinate(child));
                 }
             }
             return result;

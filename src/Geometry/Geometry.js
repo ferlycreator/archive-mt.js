@@ -341,7 +341,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
         if (coordinates) {
             if (Z.Util.isArray(coordinates)) {
                 var offseted = Z.Util.eachInArray(coordinates,this,function(coord) {
-                    return coord.add(offset);
+                        return coord.add(offset);
                 });
                 this.setCoordinates(offseted);
             } else {
@@ -735,7 +735,7 @@ Z['Geometry']=Z.Geometry=Z.Class.extend({
 
     _isRenderImmediate:function(r) {
         if (this._getParent()) {
-            return this._getParent()._isRenderImmediate();
+            return this._getParent()._isRenderImmediate(r);
         }
         if (Z.Util.isNil(r)) {
             return (this._isEditingOrDragging() || this._im)?true:false;

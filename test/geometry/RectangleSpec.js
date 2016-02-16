@@ -5,6 +5,7 @@ describe('RectangleSpec', function() {
     var tile;
     var center = new Z.Coordinate(118.846825, 32.046534);
     var layer;
+    var canvasContainer;
 
     beforeEach(function() {
         var setups = commonSetupMap(center);
@@ -12,6 +13,7 @@ describe('RectangleSpec', function() {
         map = setups.map;
         layer = new Z.VectorLayer('id');
         map.addLayer(layer);
+        canvasContainer = map._panels.mapPlatform;
     });
 
     afterEach(function() {

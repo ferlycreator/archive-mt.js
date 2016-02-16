@@ -7,11 +7,13 @@ describe('CircleSpec', function() {
     var tile;
     var center = new Z.Coordinate(118.846825, 32.046534);
     var layer;
+    var canvasContainer;
 
     beforeEach(function() {
         var setups = commonSetupMap(center);
         container = setups.container;
         map = setups.map;
+        canvasContainer = map._panels.mapPlatform;
     });
 
     afterEach(function() {
@@ -102,5 +104,32 @@ describe('CircleSpec', function() {
     it('can have various symbols',function() {
         var vector = new Z.Circle(center,100);
         GeoSymbolTester.testGeoSymbols(vector, map);
+    });
+
+    it("Circle._containsPoint", function() {
+
+        var geometry = new Z.Circle(center, 10, {
+            symbol: {
+                'lineWidth': 6
+            }
+        });
+        layer = new Z.VectorLayer('id');
+        map.addLayer(layer);
+        layer.addGeometry(geometry);
+
+        var spy = sinon.spy();
+        geometry.on('click', spy);
+
+        happen.click(canvasContainer, {
+            clientX: 400 + 8 + 10 + 4,
+            clientY: 300 + 8
+        });
+        expect(spy.called).to.not.be.ok();
+
+        happen.click(canvasContainer, {
+            clientX: 400 + 8 + 10 + 3,
+            clientY: 300 + 8
+        });
+        expect(spy.called).to.be.ok();
     });
 });

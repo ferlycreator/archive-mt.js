@@ -59,6 +59,7 @@ Z.Control.Panel = Z.Control.extend({
     },
 
     _onDragStart:function(param) {
+        console.log('drag');
         this._startPos = param['mousePos'];
         this._startPosition = Z.Util.extend({},this.options['position']);
     },
